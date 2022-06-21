@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .control import LocalControl
 from .loader import LocalLoader
@@ -17,7 +16,7 @@ class LocalPlugin(Plugin):
 
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "file":
-            return LocalControl(descriptor)
+            return LocalControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "file":

@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from ... import helpers
 from .dialect import BigqueryDialect
@@ -31,7 +30,7 @@ class BigqueryPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "bigquery":
-            return BigqueryDialect(descriptor)
+            return BigqueryDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "bigquery":

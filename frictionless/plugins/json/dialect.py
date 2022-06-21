@@ -7,6 +7,8 @@ from ...dialect import Dialect
 class JsonDialect(Dialect):
     """Json dialect representation"""
 
+    # Properties
+
     keys: Optional[List[str]] = None
     """TODO: add docs"""
 

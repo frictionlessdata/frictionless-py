@@ -1,4 +1,3 @@
-# type: ignore
 import typing
 from ...plugin import Plugin
 from .dialect import InlineDialect
@@ -27,7 +26,7 @@ class InlinePlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "inline":
-            return InlineDialect(descriptor)
+            return InlineDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "inline":

@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import ExcelDialect
 from .parser import XlsxParser, XlsParser
@@ -17,7 +16,7 @@ class ExcelPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format in ["xlsx", "xls"]:
-            return ExcelDialect(descriptor)
+            return ExcelDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "xlsx":

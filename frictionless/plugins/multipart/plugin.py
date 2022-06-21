@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .control import MultipartControl
 from .loader import MultipartLoader
@@ -23,7 +22,7 @@ class MultipartPlugin(Plugin):
 
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "multipart":
-            return MultipartControl(descriptor)
+            return MultipartControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "multipart":

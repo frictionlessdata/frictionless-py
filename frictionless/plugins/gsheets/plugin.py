@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import GsheetsDialect
 from .parser import GsheetsParser
@@ -29,7 +28,7 @@ class GsheetsPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "gsheets":
-            return GsheetsDialect(descriptor)
+            return GsheetsDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "gsheets":

@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import PandasDialect
 from .parser import PandasParser
@@ -31,7 +30,7 @@ class PandasPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "pandas":
-            return PandasDialect(descriptor)
+            return PandasDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "pandas":

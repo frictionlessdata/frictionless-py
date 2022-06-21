@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import CkanDialect
 from .parser import CkanParser
@@ -21,7 +20,7 @@ class CkanPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "ckan":
-            return CkanDialect(descriptor)
+            return CkanDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "ckan":

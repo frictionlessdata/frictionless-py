@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .control import BufferControl
 from .loader import BufferLoader
@@ -24,7 +23,7 @@ class BufferPlugin(Plugin):
 
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "buffer":
-            return BufferControl(descriptor)
+            return BufferControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "buffer":

@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import HtmlDialect
 from .parser import HtmlParser
@@ -18,7 +17,7 @@ class HtmlPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "html":
-            return HtmlDialect(descriptor)
+            return HtmlDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "html":

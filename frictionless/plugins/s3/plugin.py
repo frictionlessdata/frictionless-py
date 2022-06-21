@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .control import S3Control
 from .loader import S3Loader
@@ -18,7 +17,7 @@ class S3Plugin(Plugin):
 
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "s3":
-            return S3Control(descriptor)
+            return S3Control.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "s3":

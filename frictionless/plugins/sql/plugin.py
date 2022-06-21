@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import SqlDialect
 from .parser import SqlParser
@@ -31,7 +30,7 @@ class SqlPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "sql":
-            return SqlDialect(descriptor)
+            return SqlDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "sql":

@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import CsvDialect
 from .parser import CsvParser
@@ -19,7 +18,8 @@ class CsvPlugin(Plugin):
         if resource.format == "csv":
             return CsvDialect(descriptor)
         elif resource.format == "tsv":
-            return CsvDialect(descriptor, delimiter="\t")
+            descriptor["delimiter"] = "\t"
+            return CsvDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format in ["csv", "tsv"]:

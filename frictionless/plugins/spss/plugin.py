@@ -1,4 +1,3 @@
-# type: ignore
 from ...plugin import Plugin
 from .dialect import SpssDialect
 from .parser import SpssParser
@@ -17,7 +16,7 @@ class SpssPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         if resource.format in ["sav", "zsav"]:
-            return SpssDialect(descriptor)
+            return SpssDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format in ["sav", "zsav"]:

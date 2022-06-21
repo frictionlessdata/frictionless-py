@@ -122,7 +122,7 @@ class System:
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        return Control(descriptor)
+        return Control.from_descriptor(descriptor)
 
     def create_dialect(self, resource: Resource, *, descriptor: dict) -> Dialect:
         """Create dialect
@@ -139,7 +139,7 @@ class System:
             dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
-        return Dialect(descriptor)
+        return Dialect.from_descriptor(descriptor)
 
     def create_error(self, descriptor: dict) -> Error:
         """Create error

@@ -1,4 +1,3 @@
-# type: ignore
 import requests
 from ...plugin import Plugin
 from .control import RemoteControl
@@ -19,7 +18,7 @@ class RemotePlugin(Plugin):
 
     def create_control(self, resource, *, descriptor):
         if resource.scheme in settings.DEFAULT_SCHEMES:
-            return RemoteControl(descriptor)
+            return RemoteControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme in settings.DEFAULT_SCHEMES:
