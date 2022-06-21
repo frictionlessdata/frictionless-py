@@ -1,9 +1,9 @@
 from __future__ import annotations
-from .metadata import Metadata
+from .metadata2 import Metadata2
 from . import errors
 
 
-class Control(Metadata):
+class Control(Metadata2):
     """Control representation
 
     API      | Usage
