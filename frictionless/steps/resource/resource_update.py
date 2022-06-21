@@ -8,6 +8,7 @@ from ... import helpers
 # The step updating resource might benefit from having schema_patch argument
 
 
+# TODO: rebase on dataclass
 class resource_update(Step):
     """Update resource"""
 

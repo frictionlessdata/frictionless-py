@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass
 from ...step import Step
 from ...field import Field
 
@@ -8,21 +9,11 @@ from ...field import Field
 # Some of the following step use **options - we need to review/fix it
 
 
+@dataclass
 class field_unpack(Step):
     """Unpack field"""
 
     code = "field-unpack"
-
-    def __init__(
-        self,
-        *,
-        name: str,
-        to_names: List[str],
-        preserve: bool = False,
-    ):
-        self.name = name
-        self.to_names = to_names
-        self.preserve = preserve
 
     # Properties
 
@@ -32,7 +23,7 @@ class field_unpack(Step):
     to_names: List[str]
     """TODO: add docs"""
 
-    preserve: bool
+    preserve: bool = False
     """TODO: add docs"""
 
     # Transform

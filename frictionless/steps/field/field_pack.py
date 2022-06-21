@@ -1,13 +1,15 @@
 from __future__ import annotations
-from ...step import Step
-from ...field import Field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, List, Iterator, Optional
 from petl.compat import next, text_type
+from ...field import Field
+from ...step import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource
 
 
+@dataclass
 class field_pack(Step):
     """Pack fields
 
@@ -30,19 +32,6 @@ class field_pack(Step):
 
     code = "field-pack"
 
-    def __init__(
-        self,
-        *,
-        name: str,
-        from_names: List[str],
-        field_type: Optional[str] = None,
-        preserve: bool = False,
-    ):
-        self.name = name
-        self.from_names = from_names
-        self.field_type = field_type
-        self.preserve = preserve
-
     # Properties
 
     name: str
@@ -51,10 +40,10 @@ class field_pack(Step):
     from_names: List[str]
     """TODO: add docs"""
 
-    field_type: Optional[str]
+    field_type: Optional[str] = None
     """TODO: add docs"""
 
-    preserve: bool
+    preserve: bool = False
     """TODO: add docs"""
 
     # Transform

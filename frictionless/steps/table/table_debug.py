@@ -1,4 +1,5 @@
 from typing import Any
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -12,17 +13,11 @@ from ...step import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@dataclass
 class table_debug(Step):
     """Debug table"""
 
     code = "table-debug"
-
-    def __init__(
-        self,
-        *,
-        function: Any,
-    ):
-        self.function = function
 
     # Properties
 

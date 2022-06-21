@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -7,17 +8,11 @@ from ...step import Step
 # Some of the following step use **options - we need to review/fix it
 
 
+@dataclass
 class field_remove(Step):
     """Remove field"""
 
     code = "field-remove"
-
-    def __init__(
-        self,
-        *,
-        names: List[str],
-    ):
-        self.names = names
 
     # Properties
 

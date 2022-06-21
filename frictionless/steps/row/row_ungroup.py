@@ -1,4 +1,5 @@
 import petl
+from dataclasses import dataclass
 from typing import Optional
 from ...step import Step
 
@@ -8,21 +9,11 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_ungroup(Step):
     """Ungroup rows"""
 
     code = "row-ungroup"
-
-    def __init__(
-        self,
-        *,
-        selection: str,
-        group_name: str,
-        value_name: Optional[str] = None,
-    ):
-        self.selection = selection
-        self.group_name = group_name
-        self.value_name = value_name
 
     # Properties
 
@@ -32,7 +23,7 @@ class row_ungroup(Step):
     group_name: str
     """TODO: add docs"""
 
-    value_name: Optional[str]
+    value_name: Optional[str] = None
     """TODO: add docs"""
 
     def transform_resource(self, resource):

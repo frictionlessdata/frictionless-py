@@ -1,4 +1,5 @@
 from typing import Optional, List
+from dataclasses import dataclass, field
 from ...step import Step
 from ...field import Field
 
@@ -13,31 +14,21 @@ from ...field import Field
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@dataclass
 class table_melt(Step):
     """Melt tables"""
 
     code = "table-melt"
-
-    def __init__(
-        self,
-        *,
-        field_name: str,
-        variables: Optional[str] = None,
-        to_field_names: List[str] = ["variable", "value"],
-    ):
-        self.field_name = field_name
-        self.variables = variables
-        self.to_field_names = to_field_names.copy()
 
     # Properties
 
     field_name: str
     """TODO: add docs"""
 
-    variables: Optional[str]
+    variables: Optional[str] = None
     """TODO: add docs"""
 
-    to_field_names: List[str]
+    to_field_names: List[str] = field(default_factory=lambda: ["variable", "value"])
     """TODO: add docs"""
 
     # Transform

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -6,19 +7,11 @@ from ...step import Step
 # Some of the following step use **options - we need to review/fix it
 
 
+@dataclass
 class field_move(Step):
     """Move field"""
 
     code = "field-move"
-
-    def __init__(
-        self,
-        *,
-        name: str,
-        position: int,
-    ):
-        self.name = name
-        self.position = position
 
     # Properties
 

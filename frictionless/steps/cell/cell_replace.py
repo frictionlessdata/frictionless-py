@@ -1,4 +1,5 @@
 import petl
+from dataclasses import dataclass
 from typing import Optional
 from ...step import Step
 
@@ -8,21 +9,11 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_replace(Step):
     """Replace cell"""
 
     code = "cell-replace"
-
-    def __init__(
-        self,
-        *,
-        pattern: str,
-        replace: str,
-        field_name: Optional[str] = None,
-    ):
-        self.pattern = pattern
-        self.replace = replace
-        self.field_name = field_name
 
     # Properties
 
@@ -32,7 +23,7 @@ class cell_replace(Step):
     replace: str
     """TODO: add docs"""
 
-    field_name: Optional[str]
+    field_name: Optional[str] = None
     """TODO: add docs"""
 
     # Transform

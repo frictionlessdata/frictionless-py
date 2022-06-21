@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -6,19 +7,11 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_split(Step):
     """Split rows"""
 
     code = "row-add"
-
-    def __init__(
-        self,
-        *,
-        pattern: str,
-        field_name: str,
-    ):
-        self.pattern = pattern
-        self.field_name = field_name
 
     # Properties
 

@@ -1,4 +1,5 @@
 import simpleeval
+from dataclasses import dataclass
 from typing import Optional, Any
 from ...step import Step
 
@@ -8,26 +9,18 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_filter(Step):
     """Filter rows"""
 
     code = "row-filter"
 
-    def __init__(
-        self,
-        *,
-        formula: Optional[Any] = None,
-        function: Optional[Any] = None,
-    ):
-        self.formula = formula
-        self.function = function
-
     # Properties
 
-    formula: Optional[Any]
+    formula: Optional[Any] = None
     """TODO: add docs"""
 
-    function: Optional[Any]
+    function: Optional[Any] = None
     """TODO: add docs"""
 
     # Transform

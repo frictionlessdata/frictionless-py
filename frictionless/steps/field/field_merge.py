@@ -1,13 +1,15 @@
 from __future__ import annotations
-from ...step import Step
-from ...field import Field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Any, Optional
 from petl.compat import next, text_type
+from ...field import Field
+from ...step import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource
 
 
+@dataclass
 class field_merge(Step):
     """Merge fields
 
@@ -31,21 +33,6 @@ class field_merge(Step):
 
     code = "field-merge"
 
-    def __init__(
-        self,
-        *,
-        name: str,
-        from_names: List[str],
-        field_type: Optional[str] = None,
-        separator: Optional[str] = None,
-        preserve: bool = False,
-    ):
-        self.name = name
-        self.from_names = from_names
-        self.field_type = field_type
-        self.separator = separator
-        self.preserve = preserve
-
     # Properties
 
     name: str
@@ -54,13 +41,13 @@ class field_merge(Step):
     from_names: List[str]
     """TODO: add docs"""
 
-    field_type: Optional[str]
+    field_type: Optional[str] = None
     """TODO: add docs"""
 
-    separator: Optional[str]
+    separator: Optional[str] = None
     """TODO: add docs"""
 
-    preserve: bool
+    preserve: bool = False
     """TODO: add docs"""
 
     # Transform

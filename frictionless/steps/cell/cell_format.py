@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Optional
 from ...step import Step
 
@@ -7,26 +8,18 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_format(Step):
     """Format cell"""
 
     code = "cell-format"
-
-    def __init__(
-        self,
-        *,
-        template: str,
-        field_name: Optional[str] = None,
-    ):
-        self.template = template
-        self.field_name = field_name
 
     # Properties
 
     template: str
     """TODO: add docs"""
 
-    field_name: Optional[str]
+    field_name: Optional[str] = None
     """TODO: add docs"""
 
     # Transform

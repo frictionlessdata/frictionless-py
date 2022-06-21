@@ -1,4 +1,5 @@
 from typing import Optional
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -7,41 +8,27 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_slice(Step):
     """Slice rows"""
 
     code = "row-slice"
 
-    def __init__(
-        self,
-        *,
-        start: Optional[int] = None,
-        stop: Optional[int] = None,
-        step: Optional[int] = None,
-        head: Optional[int] = None,
-        tail: Optional[int] = None,
-    ):
-        self.start = start
-        self.stop = stop
-        self.step = step
-        self.head = head
-        self.tail = tail
-
     # Properties
 
-    start: Optional[int]
+    start: Optional[int] = None
     """TODO: add docs"""
 
-    stop: Optional[int]
+    stop: Optional[int] = None
     """TODO: add docs"""
 
-    step: Optional[int]
+    step: Optional[int] = None
     """TODO: add docs"""
 
-    head: Optional[int]
+    head: Optional[int] = None
     """TODO: add docs"""
 
-    tail: Optional[int]
+    tail: Optional[int] = None
     """TODO: add docs"""
 
     # Transform

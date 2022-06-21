@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Optional, Any
 from ...step import Step
 
@@ -7,31 +8,21 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_convert(Step):
     """Convert cell"""
 
     code = "cell-convert"
 
-    def __init__(
-        self,
-        *,
-        value: Optional[Any] = None,
-        function: Optional[Any] = None,
-        field_name: Optional[str] = None,
-    ):
-        self.value = value
-        self.function = function
-        self.field_name = field_name
-
     # Properties
 
-    value: Optional[Any]
+    value: Optional[Any] = None
     """TODO: add docs"""
 
-    function: Optional[Any]
+    function: Optional[Any] = None
     """TODO: add docs"""
 
-    field_name: Optional[str]
+    field_name: Optional[str] = None
     """TODO: add docs"""
 
     # Transform

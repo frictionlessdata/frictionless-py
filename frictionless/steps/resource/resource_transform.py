@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass
 from ...step import Step
 from ...pipeline import Pipeline
 from ...exception import FrictionlessException
@@ -10,19 +11,11 @@ from ... import errors
 # The step updating resource might benefit from having schema_patch argument
 
 
+@dataclass
 class resource_transform(Step):
     """Transform resource"""
 
     code = "resource-transform"
-
-    def __init__(
-        self,
-        *,
-        name: str,
-        steps: List[Step],
-    ):
-        self.name = name
-        self.steps = steps
 
     # Properties
 

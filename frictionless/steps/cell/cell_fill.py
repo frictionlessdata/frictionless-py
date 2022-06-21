@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Optional, Any
 from ...step import Step
 
@@ -7,31 +8,21 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_fill(Step):
     """Fill cell"""
 
     code = "cell-fill"
 
-    def __init__(
-        self,
-        *,
-        value: Optional[Any] = None,
-        field_name: Optional[str] = None,
-        direction: Optional[str] = None,
-    ):
-        self.value = value
-        self.field_name = field_name
-        self.direction = direction
-
     # Properties
 
-    value: Optional[Any]
+    value: Optional[Any] = None
     """TODO: add docs"""
 
-    field_name: Optional[str]
+    field_name: Optional[str] = None
     """TODO: add docs"""
 
-    direction: Optional[str]
+    direction: Optional[str] = None
     """TODO: add docs"""
 
     # Transform
@@ -57,8 +48,8 @@ class cell_fill(Step):
         "required": [],
         "properties": {
             "code": {},
-            "fieldName": {"type": "string"},
             "value": {},
+            "fieldName": {"type": "string"},
             "direction": {
                 "type": "string",
                 "enum": ["down", "right", "left"],

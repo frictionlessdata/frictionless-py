@@ -9,6 +9,7 @@ from ... import helpers
 # Some of the following step use **options - we need to review/fix it
 
 
+# TODO: migrate to dataclass
 class field_update(Step):
     """Update field"""
 

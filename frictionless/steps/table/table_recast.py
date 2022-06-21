@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass, field
 from ...step import Step
 
 
@@ -12,26 +13,18 @@ from ...step import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@dataclass
 class table_recast(Step):
     """Recast table"""
 
     code = "table-recast"
-
-    def __init__(
-        self,
-        *,
-        field_name: str,
-        from_field_names: List[str] = ["variable", "value"],
-    ):
-        self.field_name = field_name
-        self.from_field_names = from_field_names.copy()
 
     # Properties
 
     field_name: str
     """TODO: add docs"""
 
-    from_field_names: List[str]
+    from_field_names: List[str] = field(default_factory=lambda: ["variable", "value"])
     """TODO: add docs"""
 
     # Transform

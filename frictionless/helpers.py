@@ -60,7 +60,7 @@ def get_name(value):
 
 
 def pass_through(iterator):
-    for item in iterator:
+    for _ in iterator:
         pass
 
 

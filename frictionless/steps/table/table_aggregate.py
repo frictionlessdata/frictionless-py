@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from ...step import Step
 from ...field import Field
 
@@ -12,19 +13,11 @@ from ...field import Field
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@dataclass
 class table_aggregate(Step):
     """Aggregate table"""
 
     code = "table-aggregate"
-
-    def __init__(
-        self,
-        *,
-        aggregation: str,
-        group_name: str,
-    ):
-        self.aggregation = aggregation
-        self.group_name = group_name
 
     # Properties
 

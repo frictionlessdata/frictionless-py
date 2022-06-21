@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -6,19 +7,11 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_subset(Step):
     """Subset rows"""
 
     code = "row-subset"
-
-    def __init__(
-        self,
-        *,
-        subset: str,
-        field_name: str,
-    ):
-        self.subset = subset
-        self.field_name = field_name
 
     # Properties
 

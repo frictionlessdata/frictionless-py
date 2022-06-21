@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from ...step import Step
 from ...exception import FrictionlessException
 from ... import errors
@@ -8,17 +9,11 @@ from ... import errors
 # The step updating resource might benefit from having schema_patch argument
 
 
+@dataclass
 class resource_remove(Step):
     """Remove resource"""
 
     code = "resource-remove"
-
-    def __init__(
-        self,
-        *,
-        name: str,
-    ):
-        self.name = name
 
     # Properties
 

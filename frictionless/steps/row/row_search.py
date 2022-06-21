@@ -1,4 +1,5 @@
 import petl
+from dataclasses import dataclass
 from typing import Optional
 from ...step import Step
 
@@ -8,31 +9,21 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_search(Step):
     """Search rows"""
 
     code = "row-search"
-
-    def __init__(
-        self,
-        *,
-        regex: str,
-        field_name: Optional[str] = None,
-        negate: bool = False,
-    ):
-        self.regex = regex
-        self.field_name = field_name
-        self.negate = negate
 
     # Properties
 
     regex: str
     """TODO: add docs"""
 
-    field_name: Optional[str]
+    field_name: Optional[str] = None
     """TODO: add docs"""
 
-    negate: bool
+    negate: bool = False
     """TODO: add docs"""
 
     # Transform

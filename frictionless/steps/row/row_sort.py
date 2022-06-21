@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -7,26 +8,18 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_sort(Step):
     """Sort rows"""
 
     code = "row-sort"
-
-    def __init__(
-        self,
-        *,
-        field_names: List[str],
-        reverse: bool = False,
-    ):
-        self.field_names = field_names
-        self.reverse = reverse
 
     # Properties
 
     field_names: List[str]
     """TODO: add docs"""
 
-    reverse: bool
+    reverse: bool = False
     """TODO: add docs"""
 
     # Transform

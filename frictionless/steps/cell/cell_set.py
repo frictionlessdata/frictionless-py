@@ -1,4 +1,5 @@
 from typing import Any
+from dataclasses import dataclass
 from ...step import Step
 
 
@@ -7,19 +8,11 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_set(Step):
     """Set cell"""
 
     code = "cell-set"
-
-    def __init__(
-        self,
-        *,
-        value: Any,
-        field_name: str,
-    ):
-        self.value = value
-        self.field_name = field_name
 
     # Properties
 
@@ -28,6 +21,8 @@ class cell_set(Step):
 
     field_name: str
     """TODO: add docs"""
+
+    # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
