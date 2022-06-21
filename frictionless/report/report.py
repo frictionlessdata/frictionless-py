@@ -407,6 +407,8 @@ class ReportTask(Metadata):
             str: validation summary
         """
         source = self.resource.path or self.resource.name
+        if source and isinstance(source, list):
+            source = source[0]
         # For zipped resources append file name
         if self.resource.innerpath:
             source = f"{source} => {self.resource.innerpath}"
