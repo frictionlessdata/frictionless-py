@@ -150,14 +150,10 @@ def test_report_task_to_summary_file_not_found():
 
 
 @pytest.mark.skip
-def test_report_task_to_summary_zipped_file():
+def test_report_reporttask_summary_zippedfile():
     report = validate("data/table.csv.zip")
     output = report.tasks[0].to_summary()
-    assert (
-        output.count("File name              | data/table.csv.zip => table.csv")
-        and output.count("File size              | N/A")
-        and output.count("Total Time Taken (sec) |")
-    )
+    assert output.count("data/table.csv.zip => table.csv") and output.count("198")
 
 
 @pytest.mark.skip

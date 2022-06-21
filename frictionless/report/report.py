@@ -1,4 +1,8 @@
 from __future__ import annotations
+import functools
+import textwrap
+from copy import deepcopy
+from importlib import import_module
 from tabulate import tabulate
 from typing import TYPE_CHECKING, Optional, List
 from ..metadata2 import Metadata2
@@ -333,7 +337,6 @@ class ReportTask(Metadata2):
         Returns:
             str: validation summary
         """
-        # Prepare error lists and last row checked(in case of partial validation)
         error_list = {}
         for error in self.errors:
             error_title = f"{error.name} ({error.code})"
