@@ -1,6 +1,6 @@
 from typing import Any
 from dataclasses import dataclass, field
-from ...control import Control
+from ...dialect import Control
 from ...system import system
 from . import settings
 
@@ -8,6 +8,8 @@ from . import settings
 @dataclass
 class RemoteControl(Control):
     """Remote control representation"""
+
+    code = "remote"
 
     # Properties
 

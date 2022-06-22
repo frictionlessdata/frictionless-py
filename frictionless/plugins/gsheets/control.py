@@ -1,15 +1,17 @@
-from typing import Union
+from typing import Optional
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class OdsDialect(Dialect):
-    """Ods dialect representation"""
+class GsheetsControl(Control):
+    """Gsheets control representation"""
+
+    code = "gsheets"
 
     # Properties
 
-    sheet: Union[str, int] = 1
+    credentials: Optional[str] = None
     """TODO: add docs"""
 
     # Metadata
@@ -18,6 +20,6 @@ class OdsDialect(Dialect):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "sheet": {"type": ["number", "string"]},
+            "credentials": {"type": "string"},
         },
     }

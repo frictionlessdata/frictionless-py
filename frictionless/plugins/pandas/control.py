@@ -1,8 +1,10 @@
-from ...dialect import Dialect
+from ...dialect import Control
 
 
-class SpssDialect(Dialect):
-    """Spss dialect representation"""
+class PandasControl(Control):
+    """Pandas dialect representation"""
+
+    code = "pandas"
 
     # Metadata
 

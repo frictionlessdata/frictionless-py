@@ -32,6 +32,16 @@ class Dialect(Metadata2):
     # Metadata
 
     metadata_Error = errors.DialectError
+    metadata_profile = {
+        "type": "object",
+        "required": [],
+        "properties": {
+            "headerRows": {},
+            "headerJoin": {},
+            "headerCase": {},
+            "controls": {},
+        },
+    }
 
 
 class Control(Metadata2):

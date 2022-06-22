@@ -1,10 +1,10 @@
 from ...dialect import Control
 
 
-class BufferControl(Control):
-    """Buffer control representation"""
+class SpssControl(Control):
+    """Spss dialect representation"""
 
-    code = "buffer"
+    code = "spss"
 
     # Metadata
 

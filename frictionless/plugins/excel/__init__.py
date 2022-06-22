@@ -1,3 +1,3 @@
 from .plugin import ExcelPlugin
-from .dialect import ExcelDialect
+from .control import ExcelControl
 from .parser import XlsxParser, XlsParser

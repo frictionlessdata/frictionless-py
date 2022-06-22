@@ -1,11 +1,13 @@
 from typing import Optional, List
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class JsonDialect(Dialect):
-    """Json dialect representation"""
+class JsonControl(Control):
+    """Json control representation"""
+
+    code = "json"
 
     # Properties
 

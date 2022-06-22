@@ -1,8 +1,10 @@
-from ...control import Control
+from ...dialect import Control
 
 
 class LocalControl(Control):
     """Local control representation"""
+
+    code = "local"
 
     # Metadata
 

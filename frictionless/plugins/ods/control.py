@@ -1,14 +1,17 @@
+from typing import Union
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class HtmlDialect(Dialect):
-    """Html dialect representation"""
+class OdsControl(Control):
+    """Ods control representation"""
+
+    code = "ods"
 
     # Properties
 
-    credentials: str = "table"
+    sheet: Union[str, int] = 1
     """TODO: add docs"""
 
     # Metadata
@@ -17,6 +20,6 @@ class HtmlDialect(Dialect):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "selector": {"type": "string"},
+            "sheet": {"type": ["number", "string"]},
         },
     }

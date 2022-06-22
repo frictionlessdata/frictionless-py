@@ -1,12 +1,16 @@
 import csv
 from typing import Optional
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class CsvDialect(Dialect):
+class CsvControl(Control):
     """Csv dialect representation"""
+
+    code = "csv"
+
+    # Properties
 
     delimiter: str = ","
     """TODO: add docs"""

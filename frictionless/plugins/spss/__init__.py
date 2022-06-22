@@ -1,3 +1,3 @@
 from .plugin import SpssPlugin
-from .dialect import SpssDialect
+from .control import SpssControl
 from .parser import SpssParser

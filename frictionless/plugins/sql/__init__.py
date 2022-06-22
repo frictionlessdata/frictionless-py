@@ -1,4 +1,4 @@
 from .plugin import SqlPlugin
-from .dialect import SqlDialect
+from .control import SqlControl
 from .parser import SqlParser
 from .storage import SqlStorage

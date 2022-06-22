@@ -1,3 +1,3 @@
 from .plugin import PandasPlugin
-from .dialect import PandasDialect
+from .control import PandasControl
 from .parser import PandasParser

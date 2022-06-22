@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import Optional, List
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class CkanDialect(Dialect):
-    """Ckan dialect representation"""
+class CkanControl(Control):
+    """Ckan control representation"""
+
+    code = "ckan"
 
     # Properties
 

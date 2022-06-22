@@ -1,3 +1,3 @@
 from .plugin import InlinePlugin
-from .dialect import InlineDialect
+from .control import InlineControl
 from .parser import InlineParser

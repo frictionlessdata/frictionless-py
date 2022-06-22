@@ -1,15 +1,16 @@
-from typing import Optional
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class GsheetsDialect(Dialect):
-    """Gsheets dialect representation"""
+class HtmlControl(Control):
+    """Html control representation"""
+
+    code = "html"
 
     # Properties
 
-    credentials: Optional[str] = None
+    credentials: str = "table"
     """TODO: add docs"""
 
     # Metadata
@@ -18,6 +19,6 @@ class GsheetsDialect(Dialect):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "credentials": {"type": "string"},
+            "selector": {"type": "string"},
         },
     }

@@ -1,11 +1,13 @@
 from typing import Optional, List
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class InlineDialect(Dialect):
-    """Inline dialect representation"""
+class InlineControl(Control):
+    """Inline control representation"""
+
+    code = "inline"
 
     # Properties
 

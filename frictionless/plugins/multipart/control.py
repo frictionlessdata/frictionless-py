@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from ...control import Control
+from ...dialect import Control
 from . import settings
 
 
 @dataclass
 class MultipartControl(Control):
     """Multipart control representation"""
+
+    code = "multipart"
 
     # Properties
 

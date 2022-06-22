@@ -1,20 +1,10 @@
-from ...control import Control
+from ...dialect import Control
 
 
 class StreamControl(Control):
-    """Stream control representation
+    """Stream control representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.stream import StreamControl`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    code = "stream"
 
     # Metadata
 

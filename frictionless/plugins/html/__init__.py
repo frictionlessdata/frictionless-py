@@ -1,3 +1,3 @@
 from .plugin import HtmlPlugin
-from .dialect import HtmlDialect
+from .control import HtmlControl
 from .parser import HtmlParser

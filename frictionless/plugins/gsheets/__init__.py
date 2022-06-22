@@ -1,3 +1,3 @@
 from .plugin import GsheetsPlugin
-from .dialect import GsheetsDialect
+from .control import GsheetsControl
 from .parser import GsheetsParser

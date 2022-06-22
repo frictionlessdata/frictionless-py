@@ -1,30 +1,26 @@
 from typing import Optional
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class SqlDialect(Dialect):
-    """SQL dialect representation"""
+class BigqueryControl(Control):
+    """Bigquery control representation"""
+
+    code = "bigquery"
 
     # Properties
 
     table: str
     """TODO: add docs"""
 
-    prefix: str = ""
+    dataset: Optional[str] = None
     """TODO: add docs"""
 
-    order_by: Optional[str] = None
+    project: Optional[str] = None
     """TODO: add docs"""
 
-    where: Optional[str] = None
-    """TODO: add docs"""
-
-    namespace: Optional[str] = None
-    """TODO: add docs"""
-
-    basepath: Optional[str] = None
+    prefix: Optional[str] = ""
     """TODO: add docs"""
 
     # Metadata
@@ -35,10 +31,8 @@ class SqlDialect(Dialect):
         "additionalProperties": False,
         "properties": {
             "table": {"type": "string"},
+            "dataset": {"type": "string"},
+            "project": {"type": "string"},
             "prefix": {"type": "string"},
-            "order_by": {"type": "string"},
-            "where": {"type": "string"},
-            "namespace": {"type": "string"},
-            "basepath": {"type": "string"},
         },
     }

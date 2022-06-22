@@ -1,3 +1,3 @@
 from .plugin import OdsPlugin
-from .dialect import OdsDialect
+from .control import OdsControl
 from .parser import OdsParser

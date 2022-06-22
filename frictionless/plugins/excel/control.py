@@ -1,11 +1,13 @@
 from typing import Optional, Union, Any
 from dataclasses import dataclass
-from ...dialect import Dialect
+from ...dialect import Control
 
 
 @dataclass
-class ExcelDialect(Dialect):
-    """Excel dialect representation"""
+class ExcelControl(Control):
+    """Excel control representation"""
+
+    code = "excel"
 
     # Properties
 
