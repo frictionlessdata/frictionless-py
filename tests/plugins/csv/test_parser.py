@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Layout, Detector
+from frictionless import Resource, Dialect, Layout, Detector
 from frictionless.plugins.csv import CsvControl
 
 
@@ -48,7 +48,7 @@ def test_csv_parser_excel():
 
 def test_csv_parser_excel_tab():
     source = b"header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
-    dialect = CsvDialect(delimiter="\t")
+    dialect = Dialect(controls=[CsvControl(delimiter="\t")])
     with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
@@ -68,7 +68,7 @@ def test_csv_parser_unix():
 
 
 def test_csv_parser_escaping():
-    dialect = CsvDialect(escape_char="\\")
+    dialect = Dialect(controls=[CsvControl(escape_char="\\")])
     with Resource("data/escaping.csv", dialect=dialect) as resource:
         assert resource.header == ["ID", "Test"]
         assert resource.read_rows() == [
@@ -130,7 +130,7 @@ def test_csv_parser_remote_non_ascii_url():
 
 def test_csv_parser_delimiter():
     source = b'"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
-    dialect = CsvDialect(delimiter=";")
+    dialect = Dialect(controls=[CsvControl(delimiter=";")])
     with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
@@ -141,7 +141,7 @@ def test_csv_parser_delimiter():
 
 def test_csv_parser_escapechar():
     source = b"header1%,header2\nvalue1%,value2\nvalue3%,value4"
-    dialect = CsvDialect(escape_char="%")
+    dialect = Dialect(controls=[CsvControl(escape_char="%")])
     with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1,header2"]
         assert resource.read_rows() == [
@@ -152,7 +152,7 @@ def test_csv_parser_escapechar():
 
 def test_csv_parser_quotechar():
     source = b"%header1,header2%\n%value1,value2%\n%value3,value4%"
-    dialect = CsvDialect(quote_char="%")
+    dialect = Dialect(controls=[CsvControl(escape_char="%")])
     with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1,header2"]
         assert resource.read_rows() == [
@@ -163,7 +163,7 @@ def test_csv_parser_quotechar():
 
 def test_csv_parser_skipinitialspace():
     source = b"header1, header2\nvalue1, value2\nvalue3, value4"
-    dialect = CsvDialect(skip_initial_space=False)
+    dialect = Dialect(controls=[CsvControl(skip_initial_space=False)])
     with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
@@ -215,7 +215,7 @@ def test_csv_parser_detect_delimiter_pipe():
 def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
     source1 = b"a;b;c\n#comment"
     source2 = b"a,b,c\n#comment"
-    dialect = CsvDialect(delimiter=";")
+    dialect = Dialect(controls=[CsvControl(delimiter=";")])
     with Resource(source1, format="csv", dialect=dialect) as resource:
         assert resource.header == ["a", "b", "c"]
     with Resource(source2, format="csv") as resource:
@@ -224,7 +224,7 @@ def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtable
 
 def test_csv_parser_quotechar_is_empty_string():
     source = b'header1,header2",header3\nvalue1,value2",value3'
-    dialect = CsvDialect(quote_char="")
+    dialect = Dialect(controls=[CsvControl(quote_char="")])
     with Resource(source, format="csv", dialect=dialect) as resource:
         resource.header == ["header1", 'header2"', "header3"]
         assert resource.read_rows() == [
@@ -257,7 +257,7 @@ def test_csv_parser_write(tmpdir):
 
 
 def test_csv_parser_write_delimiter(tmpdir):
-    dialect = CsvDialect(delimiter=";")
+    dialect = Dialect(controls=[CsvControl(delimiter=";")])
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
     source.write(target)
@@ -290,7 +290,7 @@ def test_csv_parser_tsv_write(tmpdir):
 
 
 def test_csv_parser_write_newline_lf(tmpdir):
-    dialect = CsvDialect(line_terminator="\n")
+    dialect = Dialect(controls=[CsvControl(line_terminator="\n")])
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
     source.write(target)
@@ -301,7 +301,7 @@ def test_csv_parser_write_newline_lf(tmpdir):
 
 
 def test_csv_parser_write_newline_crlf(tmpdir):
-    dialect = CsvDialect(line_terminator="\r\n")
+    dialect = Dialect(controls=[CsvControl(line_terminator="\r\n")])
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
     source.write(target)
