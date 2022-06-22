@@ -32,14 +32,14 @@ class Dialect(Metadata2):
     # Controls
 
     def get_control(
-        self, code: str, *, default: Optional[Control] = None
+        self, code: str, *, ensure: Optional[Control] = None
     ) -> Optional[Control]:
         for control in self.controls:
             if control.code == code:
                 return control
-        if default:
-            self.controls.append(default)
-            return default
+        if ensure:
+            self.controls.append(ensure)
+            return ensure
 
     # Metadata
 

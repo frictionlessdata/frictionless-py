@@ -19,7 +19,7 @@ class CsvParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        control = self.resource.dialect.get_control("csv", default=CsvControl())
+        control = self.resource.dialect.get_control("csv", ensure=CsvControl())
         sample = self.read_list_stream_infer_control(control)
         source = chain(sample, self.loader.text_stream)
         data = csv.reader(source, dialect=control.to_python())

@@ -1,6 +1,7 @@
 # type: ignore
 import io
 import requests.utils
+from .control import RemoteControl
 from ...loader import Loader
 
 
@@ -19,10 +20,11 @@ class RemoteLoader(Loader):
 
     def read_byte_stream_create(self):
         fullpath = requests.utils.requote_uri(self.resource.fullpath)
-        session = self.resource.control.http_session
-        timeout = self.resource.control.http_timeout
+        control = self.resource.dialect.get_control("remote", ensure=RemoteControl())
+        session = control.http_session
+        timeout = control.http_timeout
         byte_stream = RemoteByteStream(fullpath, session=session, timeout=timeout).open()
-        if self.resource.control.http_preload:
+        if control.http_preload:
             buffer = io.BufferedRandom(io.BytesIO())
             buffer.write(byte_stream.read())
             buffer.seek(0)
