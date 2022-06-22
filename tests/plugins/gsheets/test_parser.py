@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, FrictionlessException
+from frictionless import Resource, Dialect, FrictionlessException
+from frictionless.plugins.gsheets import GsheetsControl
 
 
 # We don't use VCR for this module testing because
@@ -45,8 +46,9 @@ def test_gsheets_parser_bad_url():
 @pytest.mark.ci
 def test_gsheets_parser_write(google_credentials_path):
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"
+    dialect = Dialect(controls=[GsheetsControl(credentials=google_credentials_path)])
     source = Resource("data/table.csv")
-    target = source.write(path, dialect={"credentials": google_credentials_path})
+    target = source.write(path, dialect=dialect)
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [

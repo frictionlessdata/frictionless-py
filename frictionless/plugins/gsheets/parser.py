@@ -1,9 +1,11 @@
 # type: ignore
 import re
+from frictionless.plugins.gsheets.control import GsheetsControl
 from ...parser import Parser
 from ...system import system
 from ...resource import Resource
 from ...exception import FrictionlessException
+from .control import GsheetsControl
 from ... import helpers
 from ... import errors
 
@@ -45,13 +47,14 @@ class GsheetsParser(Parser):
         source = resource
         target = self.resource
         fullpath = target.fullpath
+        control = target.dialect.get_control("gsheets", ensure=GsheetsControl())
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         if not match:
             error = errors.FormatError(note=f"Cannot save {fullpath}")
             raise FrictionlessException(error)
         key = match.group("key")
         gid = match.group("gid")
-        gc = pygsheets.authorize(service_account_file=target.dialect.credentials)
+        gc = pygsheets.authorize(service_account_file=control.credentials)
         sh = gc.open_by_key(key)
         wks = sh.worksheet_by_id(gid) if gid else sh[0]
         data = []
