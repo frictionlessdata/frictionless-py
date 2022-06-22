@@ -40,15 +40,15 @@ class CsvControl(Control):
 
     def to_python(self):
         """Conver to Python's `csv.Dialect`"""
-        dialect = csv.excel()
-        dialect.delimiter = self.delimiter
-        dialect.doublequote = self.double_quote if self.escape_char else True
-        dialect.escapechar = self.escape_char
-        dialect.lineterminator = self.line_terminator
-        dialect.quotechar = self.quote_char
-        dialect.quoting = csv.QUOTE_NONE if self.quote_char == "" else csv.QUOTE_MINIMAL
-        dialect.skipinitialspace = self.skip_initial_space
-        return dialect
+        config = csv.excel()
+        config.delimiter = self.delimiter
+        config.doublequote = self.double_quote if self.escape_char else True
+        config.escapechar = self.escape_char
+        config.lineterminator = self.line_terminator
+        config.quotechar = self.quote_char
+        config.quoting = csv.QUOTE_NONE if self.quote_char == "" else csv.QUOTE_MINIMAL
+        config.skipinitialspace = self.skip_initial_space
+        return config
 
     # Metadata
 

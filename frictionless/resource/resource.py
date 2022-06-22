@@ -13,6 +13,7 @@ from ..detector import Detector
 from ..metadata import Metadata
 from ..checklist import Checklist
 from ..pipeline import Pipeline
+from ..dialect import Dialect
 from ..layout import Layout
 from ..schema import Schema
 from ..header import Header
@@ -104,9 +105,6 @@ class Resource(Metadata):
         compression? (str): Source file compression (zip, ...).
             If not set, it'll be inferred from `source`.
 
-        control? (dict|Control): File control.
-            For more information, please check the Control documentation.
-
         dialect? (dict|Dialect): Table dialect.
             For more information, please check the Dialect documentation.
 
@@ -168,7 +166,6 @@ class Resource(Metadata):
         encoding=None,
         innerpath=None,
         compression=None,
-        control=None,
         dialect=None,
         layout=None,
         schema=None,
@@ -242,7 +239,6 @@ class Resource(Metadata):
         self.setinitial("encoding", encoding)
         self.setinitial("compression", compression)
         self.setinitial("innerpath", innerpath)
-        self.setinitial("control", control)
         self.setinitial("dialect", dialect)
         self.setinitial("layout", layout)
         self.setinitial("schema", schema)
@@ -475,36 +471,12 @@ class Resource(Metadata):
         return self.get("compression", self.__file.compression).lower()
 
     @Metadata.property
-    def control(self):
-        """
-        Returns
-            Control: resource control
-        """
-        control = self.get("control")
-        if control is None:
-            control = system.create_control(self, descriptor=control)
-            control = self.metadata_attach("control", control)
-        elif isinstance(control, str):
-            control = os.path.join(self.basepath, control)
-            control = system.create_control(self, descriptor=control)
-            control = self.metadata_attach("control", control)
-        return control
-
-    @Metadata.property
     def dialect(self):
         """
         Returns
             Dialect: resource dialect
         """
-        dialect = self.get("dialect")
-        if dialect is None:
-            dialect = system.create_dialect(self, descriptor=dialect)
-            dialect = self.metadata_attach("dialect", dialect)
-        elif isinstance(dialect, str):
-            dialect = helpers.join_path(self.basepath, dialect)
-            dialect = system.create_dialect(self, descriptor=dialect)
-            dialect = self.metadata_attach("dialect", dialect)
-        return dialect
+        return self.get("dialect")
 
     @Metadata.property
     def layout(self):
@@ -803,16 +775,15 @@ class Resource(Metadata):
             self["innerpath"] = self.innerpath
         if self.compression:
             self["compression"] = self.compression
-        if self.control:
-            self["control"] = self.control
         if self.dialect:
             self["dialect"] = self.dialect
         self["stats"] = self.stats
 
         # Validate
-        if self.metadata_errors:
-            error = self.metadata_errors[0]
-            raise FrictionlessException(error)
+        # TODO: recover
+        #  if self.metadata_errors:
+        #  error = self.metadata_errors[0]
+        #  raise FrictionlessException(error)
 
         # Open
         try:
@@ -1284,16 +1255,10 @@ class Resource(Metadata):
             basepath=self.__basepath,
         )
 
-        # Control
-        control = self.get("control")
-        if not isinstance(control, (str, type(None))):
-            control = system.create_control(self, descriptor=control)
-            dict.__setitem__(self, "control", control)
-
         # Dialect
         dialect = self.get("dialect")
-        if not isinstance(dialect, (str, type(None))):
-            dialect = system.create_dialect(self, descriptor=dialect)
+        if not isinstance(dialect, Dialect):
+            dialect = Dialect.from_descriptor(dialect) if dialect else Dialect()
             dict.__setitem__(self, "dialect", dialect)
 
         # Layout
@@ -1324,7 +1289,7 @@ class Resource(Metadata):
         # TODO: move safety checks to other places?
         if not self.trusted:
             # TODO: add checklist/pipeline when they support a string form?
-            for name in ["path", "control", "dialect", "schema"]:
+            for name in ["path", "dialect", "schema"]:
                 path = self.get(name)
                 if not isinstance(path, (str, list)):
                     continue
@@ -1347,8 +1312,7 @@ class Resource(Metadata):
 
         yield from super().metadata_validate()
 
-        # Control/Dialect
-        yield from self.control.metadata_errors
+        # Dialect
         yield from self.dialect.metadata_errors
 
         # Layout/Schema

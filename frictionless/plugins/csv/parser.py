@@ -9,13 +9,7 @@ from . import settings
 
 
 class CsvParser(Parser):
-    """CSV parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.csv import CsvPlugins
-
-    """
+    """CSV parser implementation."""
 
     requires_loader = True
     supported_types = [
@@ -25,31 +19,32 @@ class CsvParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        sample = self.read_list_stream_infer_dialect()
+        control = self.resource.dialect.get_control("csv", default=CsvControl())
+        sample = self.read_list_stream_infer_control(control)
         source = chain(sample, self.loader.text_stream)
-        data = csv.reader(source, dialect=self.resource.dialect.to_python())
+        data = csv.reader(source, dialect=control.to_python())
         yield from data
 
-    def read_list_stream_infer_dialect(self):
+    def read_list_stream_infer_control(self, control: CsvControl):
         sample = extract_samle(self.loader.text_stream)
-        delimiter = self.resource.dialect.get("delimiter", ",\t;|")
+        delimiter = control.to_descriptor.get("delimiter", ",\t;|")
         try:
             dialect = csv.Sniffer().sniff("".join(sample), delimiter)
         except csv.Error:
             dialect = csv.excel()
-        for name in INFER_DIALECT_NAMES:
+        for name in INFER_CONTROL_NAMES:
             value = getattr(dialect, name.lower())
             if value is None:
                 continue
-            if value == getattr(self.resource.dialect, stringcase.snakecase(name)):
+            if value == getattr(control, stringcase.snakecase(name)):
                 continue
-            if name in self.resource.dialect:
+            if hasattr(control, name):
                 continue
             # We can't rely on this guess as it's can be confused with embeded JSON
             # https://github.com/frictionlessdata/frictionless-py/issues/493
             if name == "quoteChar" and value == "'":
                 value = '"'
-            self.resource.dialect[name] = value
+            setattr(control, name) = value
         return sample
 
     # Write
@@ -76,8 +71,8 @@ class CsvParser(Parser):
 
 # Internal
 
-INFER_DIALECT_VOLUME = 100
-INFER_DIALECT_NAMES = [
+INFER_CONTROL_VOLUME = 100
+INFER_CONTROL_NAMES = [
     "delimiter",
     "lineTerminator",
     "escapeChar",
@@ -93,7 +88,7 @@ def extract_samle(text_stream):
             sample.append(next(text_stream))
         except StopIteration:
             break
-        if len(sample) >= INFER_DIALECT_VOLUME:
+        if len(sample) >= INFER_CONTROL_VOLUME:
             break
     return sample
 

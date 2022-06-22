@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import Optional, List
 from dataclasses import dataclass, field
 from ..metadata2 import Metadata2
 from .describe import describe
@@ -28,6 +28,18 @@ class Dialect(Metadata2):
 
     controls: List[Control] = field(default_factory=list)
     """TODO: add docs"""
+
+    # Controls
+
+    def get_control(
+        self, code: str, *, default: Optional[Control] = None
+    ) -> Optional[Control]:
+        for control in self.controls:
+            if control.code == code:
+                return control
+        if default:
+            self.controls.append(default)
+            return default
 
     # Metadata
 
