@@ -6,7 +6,7 @@ import datetime
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
 from frictionless import Package, Resource, FrictionlessException
-from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
+from frictionless.plugins.bigquery import BigqueryControl, BigqueryStorage
 
 
 # We don't use VCR for this module testing because

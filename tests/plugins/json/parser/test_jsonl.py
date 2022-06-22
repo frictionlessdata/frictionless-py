@@ -1,5 +1,5 @@
 from frictionless import Resource
-from frictionless.plugins.json import JsonDialect
+from frictionless.plugins.json import JsonControl
 
 
 # General

@@ -1,5 +1,5 @@
 from frictionless import Resource
-from frictionless.plugins.json import JsonDialect
+from frictionless.plugins.json import JsonControl
 
 
 # General
@@ -7,4 +7,4 @@ from frictionless.plugins.json import JsonDialect
 
 def test_json_dialect():
     with Resource(path="data/table.json") as resource:
-        assert isinstance(resource.dialect, JsonDialect)
+        assert isinstance(resource.dialect.get_control("json"), JsonControl)

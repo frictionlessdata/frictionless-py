@@ -2,7 +2,7 @@ import pytest
 import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource, FrictionlessException
-from frictionless.plugins.sql import SqlDialect, SqlStorage
+from frictionless.plugins.sql import SqlControl, SqlStorage
 
 
 # General

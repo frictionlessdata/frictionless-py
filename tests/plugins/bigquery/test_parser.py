@@ -1,7 +1,7 @@
 import pytest
 import datetime
 from frictionless import Resource
-from frictionless.plugins.bigquery import BigqueryDialect
+from frictionless.plugins.bigquery import BigqueryControl
 
 
 # We don't use VCR for this module testing because

@@ -1,7 +1,7 @@
 import pytest
 import datetime
 from frictionless import Resource, Layout, FrictionlessException
-from frictionless.plugins.sql import SqlDialect
+from frictionless.plugins.sql import SqlControl
 
 
 # General

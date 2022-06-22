@@ -1,7 +1,7 @@
 import json
 import pytest
 from frictionless import Resource
-from frictionless.plugins.json import JsonDialect
+from frictionless.plugins.json import JsonControl
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"

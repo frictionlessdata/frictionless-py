@@ -1,6 +1,6 @@
 import datetime
 from frictionless import Resource
-from frictionless.plugins.sql import SqlDialect
+from frictionless.plugins.sql import SqlControl
 
 
 # General
