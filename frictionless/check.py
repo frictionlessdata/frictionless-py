@@ -96,3 +96,4 @@ class Check(Metadata2):
     # Metadata
 
     metadata_Error = errors.CheckError
+    metadata_defined = {"code"}

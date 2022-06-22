@@ -1,10 +1,10 @@
 # type: ignore
 import csv
 import tempfile
-import stringcase
 from itertools import chain
 from ...parser import Parser
 from ...system import system
+from .control import CsvControl
 from . import settings
 
 
@@ -27,24 +27,16 @@ class CsvParser(Parser):
 
     def read_list_stream_infer_control(self, control: CsvControl):
         sample = extract_samle(self.loader.text_stream)
-        delimiter = control.to_descriptor.get("delimiter", ",\t;|")
+        delimiter = control.get_defined("delimiter", default=",\t;|")
         try:
-            dialect = csv.Sniffer().sniff("".join(sample), delimiter)
+            config = csv.Sniffer().sniff("".join(sample), delimiter)
         except csv.Error:
-            dialect = csv.excel()
-        for name in INFER_CONTROL_NAMES:
-            value = getattr(dialect, name.lower())
-            if value is None:
-                continue
-            if value == getattr(control, stringcase.snakecase(name)):
-                continue
-            if hasattr(control, name):
-                continue
-            # We can't rely on this guess as it's can be confused with embeded JSON
-            # https://github.com/frictionlessdata/frictionless-py/issues/493
-            if name == "quoteChar" and value == "'":
-                value = '"'
-            setattr(control, name) = value
+            config = csv.excel()
+        control.set_defined("delimiter", config.delimiter)
+        control.set_defined("line_terminator", config.lineterminator)
+        control.set_defined("escape_char", config.escapechar)
+        control.set_defined("quote_char", config.quotechar)
+        control.set_defined("skip_initial_space", config.skipinitialspace)
         return sample
 
     # Write
@@ -72,13 +64,6 @@ class CsvParser(Parser):
 # Internal
 
 INFER_CONTROL_VOLUME = 100
-INFER_CONTROL_NAMES = [
-    "delimiter",
-    "lineTerminator",
-    "escapeChar",
-    "quoteChar",
-    "skipInitialSpace",
-]
 
 
 def extract_samle(text_stream):

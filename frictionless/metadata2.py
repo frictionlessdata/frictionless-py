@@ -13,7 +13,7 @@ import stringcase
 from pathlib import Path
 from collections.abc import Mapping
 from importlib import import_module
-from typing import TYPE_CHECKING, Iterator, Optional, Union, List, Dict, Any
+from typing import TYPE_CHECKING, Iterator, Optional, Union, List, Dict, Any, Set
 from .exception import FrictionlessException
 from . import helpers
 
@@ -22,11 +22,42 @@ if TYPE_CHECKING:
     from .error import Error
 
 
+class Metaclass(type):
+    def __call__(cls, *args, **kwargs):
+        obj = type.__call__(cls, *args, **kwargs)
+        obj.metadata_defined = obj.metadata_defined.copy()
+        obj.metadata_defined.update(kwargs.keys())
+        obj.metadata_initiated = True
+        return obj
+
+
 # TODO: insert __init__ params docs using instance properties data?
-class Metadata2:
+class Metadata2(metaclass=Metaclass):
+    def __setattr__(self, name, value):
+        if self.metadata_initiated or isinstance(value, (list, dict)):
+            self.metadata_defined.add(name)
+        super().__setattr__(name, value)
+
     def __repr__(self) -> str:
-        """Returns string representation for metadata."""
         return pprint.pformat(self.to_descriptor())
+
+    # Properties
+
+    def list_defined(self):
+        return list(self.metadata_defined)
+
+    def has_defined(self, name: str):
+        return name in self.metadata_defined
+
+    def get_defined(self, name: str, *, default=None):
+        if self.has_defined(name):
+            return getattr(self, name)
+        if default is not None:
+            return default
+
+    def set_defined(self, name: str, value):
+        if not self.has_defined(name):
+            setattr(self, name, value)
 
     # Convert
 
@@ -112,6 +143,8 @@ class Metadata2:
     # TODO: add/improve types
     metadata_Error = None
     metadata_profile = None
+    metadata_defined: Set[str] = set()
+    metadata_initiated: bool = False
 
     @property
     def metadata_valid(self) -> bool:
@@ -171,17 +204,17 @@ class Metadata2:
         for property in self.metadata_properties():
             name = property["name"]
             Type = property.get("type")
-            default = property.get("default")
             value = getattr(self, stringcase.snakecase(name), None)
+            if self.get_defined(stringcase.snakecase(name)):
+                continue
             if value is None:
                 continue
             if Type:
                 if isinstance(value, list):
                     value = [item.metadata_export() for item in value]  # type: ignore
                 else:
-                    value = value.metadata_export()
-            if default is None or value != default:
-                descriptor[name] = value
+                    value = value.metadata_export()  # type: ignore
+            descriptor[name] = value
         return descriptor
 
     @classmethod
@@ -202,6 +235,8 @@ class Metadata2:
                     Type = args[0] if args else type_hint
                     if isinstance(Type, type) and issubclass(Type, Metadata2):
                         property["type"] = Type
+                    if type(None) in args:
+                        property["optional"] = True
                 properties.append(property)
         return properties
 
