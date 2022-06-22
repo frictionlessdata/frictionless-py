@@ -1,5 +1,6 @@
 # type: ignore
 from ...exception import FrictionlessException
+from .control import InlineControl
 from ...parser import Parser
 from ... import errors
 
@@ -33,7 +34,7 @@ class InlineParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        dialect = self.resource.dialect
+        control = self.resource.dialect.get_control("inline", ensure=InlineControl())
 
         # Iter
         data = self.resource.data
@@ -58,8 +59,8 @@ class InlineParser(Parser):
 
         # Keyed
         elif isinstance(item, dict):
-            dialect["keyed"] = True
-            headers = dialect.data_keys or list(item.keys())
+            control.keyed = True
+            headers = control.keys or list(item.keys())
             yield headers
             yield [item.get(header) for header in headers]
             for item in data:
@@ -88,10 +89,11 @@ class InlineParser(Parser):
         data = []
         source = resource
         target = self.resource
+        control = target.dialect.get_control("inline", ensure=InlineControl())
         with source:
             for row in source.row_stream:
-                item = row.to_dict() if target.dialect.keyed else row.to_list()
-                if not target.dialect.keyed and row.row_number == 1:
+                item = row.to_dict() if control.keyed else row.to_list()
+                if not control.keyed and row.row_number == 1:
                     data.append(row.field_names)
                 data.append(item)
         target.data = data

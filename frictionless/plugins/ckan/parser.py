@@ -19,8 +19,9 @@ class CkanParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        storage = CkanStorage(self.resource.fullpath, dialect=self.resource.dialect)
-        resource = storage.read_resource(self.resource.dialect.resource)
+        control = self.resource.dialect.get_control("ckan")
+        storage = CkanStorage(self.resource.fullpath, control=control)
+        resource = storage.read_resource(control.resource)
         self.resource.schema = resource.schema
         with resource:
             yield from resource.list_stream
@@ -31,9 +32,10 @@ class CkanParser(Parser):
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
-        storage = CkanStorage(target.fullpath, dialect=target.dialect)
-        if not target.dialect.resource:
+        control = target.dialect.get_control("ckan")
+        storage = CkanStorage(target.fullpath, control=control)
+        if not control.resource:
             note = 'Please provide "dialect.resource" for writing'
             raise FrictionlessException(note)
-        source.name = target.dialect.resource
+        source.name = control.resource
         storage.write_resource(source, force=True)

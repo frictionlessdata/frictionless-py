@@ -1,9 +1,9 @@
 from collections import OrderedDict
-from frictionless import Resource
-from frictionless.plugins.inline import InlineDialect
+from frictionless import Resource, Dialect
+from frictionless.plugins.inline import InlineControl
 
 
-# General
+# Read
 
 
 def test_inline_parser():
@@ -19,7 +19,7 @@ def test_inline_parser():
 def test_inline_parser_keyed():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with Resource(source, format="inline") as resource:
-        assert resource.dialect.keyed is True
+        assert resource.dialect.get_control("inline").keyed is True
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -30,7 +30,7 @@ def test_inline_parser_keyed():
 def test_inline_parser_keyed_order_is_preserved():
     source = [{"name": "english", "id": "1"}, {"name": "中国人", "id": "2"}]
     with Resource(source, format="inline") as resource:
-        assert resource.dialect.keyed is True
+        assert resource.dialect.get_control("inline").keyed is True
         assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -40,9 +40,9 @@ def test_inline_parser_keyed_order_is_preserved():
 
 def test_inline_parser_keyed_with_keys_provided():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
-    dialect = InlineDialect(keys=["name", "id"])
+    dialect = Dialect(controls=[InlineControl(keys=["name", "id"])])
     with Resource(source, format="inline", dialect=dialect) as resource:
-        assert resource.dialect.keyed is True
+        assert resource.dialect.get_control("inline").keyed is True
         assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -85,10 +85,13 @@ def test_inline_parser_from_ordered_dict():
     ]
     with Resource(source) as resource:
         rows = resource.read_rows()
-        assert resource.dialect.keyed is True
+        assert resource.dialect.get_control("inline").keyed is True
         assert resource.header == ["name", "id"]
         assert rows[0].cells == ["english", "1"]
         assert rows[1].cells == ["中国人", "2"]
+
+
+# Write
 
 
 def test_inline_parser_write(tmpdir):
@@ -102,8 +105,9 @@ def test_inline_parser_write(tmpdir):
 
 
 def test_inline_parser_write_keyed(tmpdir):
+    dialect = Dialect(controls=[InlineControl(keyed=True)])
     source = Resource("data/table.csv")
-    target = source.write(format="inline", dialect=InlineDialect(keyed=True))
+    target = source.write(format="inline", dialect=dialect)
     assert target.data == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

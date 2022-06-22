@@ -580,86 +580,86 @@ class Package(Metadata):
         return path
 
     @staticmethod
-    def from_bigquery(source, *, dialect=None):
+    def from_bigquery(source, *, control=None):
         """Import package from Bigquery
 
         Parameters:
             source (string): BigQuery `Service` object
-            dialect (dict): BigQuery dialect
+            control (dict): BigQuery control
 
         Returns:
             Package: package
         """
-        storage = system.create_storage("bigquery", source, dialect=dialect)
+        storage = system.create_storage("bigquery", source, control=control)
         return storage.read_package()
 
-    def to_bigquery(self, target, *, dialect=None):
+    def to_bigquery(self, target, *, control=None):
         """Export package to Bigquery
 
         Parameters:
             target (string): BigQuery `Service` object
-            dialect (dict): BigQuery dialect
+            control (dict): BigQuery control
 
         Returns:
             BigqueryStorage: storage
         """
-        storage = system.create_storage("bigquery", target, dialect=dialect)
+        storage = system.create_storage("bigquery", target, control=control)
         storage.write_package(self.to_copy(), force=True)
         return storage
 
     @staticmethod
-    def from_ckan(source, *, dialect=None):
+    def from_ckan(source, *, control=None):
         """Import package from CKAN
 
         Parameters:
             source (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dialect (dict): CKAN dialect
+            control (dict): CKAN control
 
         Returns:
             Package: package
         """
-        storage = system.create_storage("ckan", source, dialect=dialect)
+        storage = system.create_storage("ckan", source, control=control)
         return storage.read_package()
 
-    def to_ckan(self, target, *, dialect=None):
+    def to_ckan(self, target, *, control=None):
         """Export package to CKAN
 
         Parameters:
             target (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dialect (dict): CKAN dialect
+            control (dict): CKAN control
 
         Returns:
             CkanStorage: storage
         """
-        storage = system.create_storage("ckan", target, dialect=dialect)
+        storage = system.create_storage("ckan", target, control=control)
         storage.write_package(self.to_copy(), force=True)
         return storage
 
     @staticmethod
-    def from_sql(source, *, dialect=None):
+    def from_sql(source, *, control=None):
         """Import package from SQL
 
         Parameters:
             source (any): SQL connection string of engine
-            dialect (dict): SQL dialect
+            control (dict): SQL control
 
         Returns:
             Package: package
         """
-        storage = system.create_storage("sql", source, dialect=dialect)
+        storage = system.create_storage("sql", source, control=control)
         return storage.read_package()
 
-    def to_sql(self, target, *, dialect=None):
+    def to_sql(self, target, *, control=None):
         """Export package to SQL
 
         Parameters:
             target (any): SQL connection string of engine
-            dialect (dict): SQL dialect
+            control (dict): SQL control
 
         Returns:
             SqlStorage: storage
         """
-        storage = system.create_storage("sql", target, dialect=dialect)
+        storage = system.create_storage("sql", target, control=control)
         storage.write_package(self.to_copy(), force=True)
         return storage
 
