@@ -31,6 +31,9 @@ class Dialect(Metadata2):
 
     # Controls
 
+    def has_control(self, code: str):
+        return bool(self.get_control(code))
+
     def get_control(
         self, code: str, *, ensure: Optional[Control] = None
     ) -> Optional[Control]:

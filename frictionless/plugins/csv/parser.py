@@ -20,13 +20,9 @@ class CsvParser(Parser):
 
     def read_list_stream_create(self):
         control = self.resource.dialect.get_control("csv", ensure=CsvControl())
-        sample = self.read_list_stream_infer_control(control)
-        source = chain(sample, self.loader.text_stream)
-        data = csv.reader(source, dialect=control.to_python())
-        yield from data
-
-    def read_list_stream_infer_control(self, control: CsvControl):
         sample = extract_samle(self.loader.text_stream)
+        if self.resource.format == "tsv":
+            control.delimiter = "\t"
         delimiter = control.get_defined("delimiter", default=",\t;|")
         try:
             config = csv.Sniffer().sniff("".join(sample), delimiter)
@@ -37,7 +33,9 @@ class CsvParser(Parser):
         control.set_defined("escape_char", config.escapechar)
         control.set_defined("quote_char", config.quotechar)
         control.set_defined("skip_initial_space", config.skipinitialspace)
-        return sample
+        source = chain(sample, self.loader.text_stream)
+        data = csv.reader(source, dialect=control.to_python())
+        yield from data
 
     # Write
 
@@ -45,7 +43,8 @@ class CsvParser(Parser):
         options = {}
         source = resource
         target = self.resource
-        for name, value in vars(target.dialect.to_python()).items():
+        control = target.dialect.get_control("csv", ensure=CsvControl())
+        for name, value in vars(control.to_python()).items():
             if not name.startswith("_") and value is not None:
                 options[name] = value
         with tempfile.NamedTemporaryFile(
@@ -63,7 +62,7 @@ class CsvParser(Parser):
 
 # Internal
 
-INFER_CONTROL_VOLUME = 100
+SAMPLE_SIZE = 100
 
 
 def extract_samle(text_stream):
@@ -73,7 +72,7 @@ def extract_samle(text_stream):
             sample.append(next(text_stream))
         except StopIteration:
             break
-        if len(sample) >= INFER_CONTROL_VOLUME:
+        if len(sample) >= SAMPLE_SIZE:
             break
     return sample
 
