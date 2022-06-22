@@ -2,6 +2,7 @@
 import tempfile
 from ...parser import Parser
 from ...system import system
+from .control import HtmlControl
 from ... import helpers
 
 
@@ -26,7 +27,8 @@ class HtmlParser(Parser):
 
         # Get table
         page = pq(self.loader.text_stream.read(), parser="html")
-        tables = page.find(self.resource.dialect.selector)
+        control = self.resource.dialect.get_control("html", ensure=HtmlControl())
+        tables = page.find(control.selector)
         table = pq(tables[0]) if tables else None
         if not table:
             return

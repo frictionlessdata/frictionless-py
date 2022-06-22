@@ -10,7 +10,7 @@ class HtmlControl(Control):
 
     # Properties
 
-    credentials: str = "table"
+    selector: str = "table"
     """TODO: add docs"""
 
     # Metadata

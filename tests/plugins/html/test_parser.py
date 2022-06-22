@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Resource
-from frictionless.plugins.html import HtmlDialect
+from frictionless import Resource, Dialect
+from frictionless.plugins.html import HtmlControl
 
 
 # General
@@ -15,7 +15,7 @@ from frictionless.plugins.html import HtmlDialect
     ],
 )
 def test_html_parser(source, selector):
-    dialect = HtmlDialect(selector=selector)
+    dialect = Dialect(controls=[HtmlControl(selector=selector)])
     with Resource(source, dialect=dialect) as resource:
         assert resource.format == "html"
         assert resource.header == ["id", "name"]
