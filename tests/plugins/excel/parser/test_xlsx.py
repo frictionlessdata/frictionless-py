@@ -1,8 +1,9 @@
 import io
 import pytest
 from decimal import Decimal
-from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
-from frictionless.plugins.excel import ExcelDialect
+from frictionless import Resource, Dialect, Layout, Detector, helpers
+from frictionless import FrictionlessException
+from frictionless.plugins.excel import ExcelControl
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -34,7 +35,7 @@ def test_xlsx_parser_remote():
 
 def test_xlsx_parser_sheet_by_index():
     source = "data/sheet2.xlsx"
-    dialect = ExcelDialect(sheet=2)
+    dialect = Dialect(controls=[ExcelControl(sheet=2)])
     with Resource(source, dialect=dialect) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -45,7 +46,7 @@ def test_xlsx_parser_sheet_by_index():
 
 def test_xlsx_parser_format_error_sheet_by_index_not_existent():
     source = "data/sheet2.xlsx"
-    dialect = ExcelDialect(sheet=3)
+    dialect = Dialect(controls=[ExcelControl(sheet=3)])
     resource = Resource(source, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
@@ -56,7 +57,7 @@ def test_xlsx_parser_format_error_sheet_by_index_not_existent():
 
 def test_xlsx_parser_sheet_by_name():
     source = "data/sheet2.xlsx"
-    dialect = ExcelDialect(sheet="Sheet2")
+    dialect = Dialect(controls=[ExcelControl(sheet="Sheet2")])
     with Resource(source, dialect=dialect) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -67,7 +68,7 @@ def test_xlsx_parser_sheet_by_name():
 
 def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
     source = "data/sheet2.xlsx"
-    dialect = ExcelDialect(sheet="bad")
+    dialect = Dialect(controls=[ExcelControl(sheet="bad")])
     resource = Resource(source, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
@@ -87,7 +88,7 @@ def test_xlsx_parser_merged_cells():
 
 def test_xlsx_parser_merged_cells_fill():
     source = "data/merged-cells.xlsx"
-    dialect = ExcelDialect(fill_merged_cells=True)
+    dialect = Dialect(controls=[ExcelControl(fill_merged_cells=True)])
     layout = Layout(header=False)
     with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
@@ -99,10 +100,14 @@ def test_xlsx_parser_merged_cells_fill():
 
 def test_xlsx_parser_adjust_floating_point_error():
     source = "data/adjust-floating-point-error.xlsx"
-    dialect = ExcelDialect(
-        fill_merged_cells=False,
-        preserve_formatting=True,
-        adjust_floating_point_error=True,
+    dialect = Dialect(
+        controls=[
+            ExcelControl(
+                fill_merged_cells=False,
+                preserve_formatting=True,
+                adjust_floating_point_error=True,
+            )
+        ]
     )
     layout = Layout(skip_fields=["<blank>"])
     with Resource(source, dialect=dialect, layout=layout) as resource:
@@ -111,7 +116,7 @@ def test_xlsx_parser_adjust_floating_point_error():
 
 def test_xlsx_parser_adjust_floating_point_error_default():
     source = "data/adjust-floating-point-error.xlsx"
-    dialect = ExcelDialect(preserve_formatting=True)
+    dialect = Dialect(controls=[ExcelControl(preserve_formatting=True)])
     layout = Layout(skip_fields=["<blank>"])
     with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows()[1].cells[2] == 274.65999999999997
@@ -120,7 +125,7 @@ def test_xlsx_parser_adjust_floating_point_error_default():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
-    dialect = ExcelDialect(preserve_formatting=True)
+    dialect = Dialect(controls=[ExcelControl(preserve_formatting=True)])
     layout = Layout(header_rows=[1])
     detector = Detector(field_type="any")
     with Resource(source, dialect=dialect, layout=layout, detector=detector) as resource:
@@ -146,7 +151,7 @@ def test_xlsx_parser_preserve_formatting():
 
 def test_xlsx_parser_preserve_formatting_percentage():
     source = "data/preserve-formatting-percentage.xlsx"
-    dialect = ExcelDialect(preserve_formatting=True)
+    dialect = Dialect(controls=[ExcelControl(preserve_formatting=True)])
     with Resource(source, dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"col1": 123, "col2": "52.00%"},
@@ -157,7 +162,7 @@ def test_xlsx_parser_preserve_formatting_percentage():
 
 def test_xlsx_parser_preserve_formatting_number_multicode():
     source = "data/number-format-multicode.xlsx"
-    dialect = ExcelDialect(preserve_formatting=True)
+    dialect = Dialect(controls=[ExcelControl(preserve_formatting=True)])
     layout = Layout(skip_fields=["<blank>"])
     with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
@@ -171,9 +176,9 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
 def test_xlsx_parser_workbook_cache():
     source = BASEURL % "data/sheets.xlsx"
     for sheet in ["Sheet1", "Sheet2", "Sheet3"]:
-        dialect = ExcelDialect(sheet=sheet, workbook_cache={})
+        dialect = Dialect(controls=[ExcelControl(sheet=sheet, workbook_cache={})])
         with Resource(source, dialect=dialect) as resource:
-            assert len(dialect.workbook_cache) == 1
+            assert len(dialect.get_control("excel").workbook_cache) == 1
             assert resource.read_rows()
 
 
@@ -190,7 +195,7 @@ def test_xlsx_parser_merged_cells_boolean():
 
 def test_xlsx_parser_merged_cells_fill_boolean():
     source = "data/merged-cells-boolean.xls"
-    dialect = ExcelDialect(fill_merged_cells=True)
+    dialect = Dialect(controls=[ExcelControl(fill_merged_cells=True)])
     layout = Layout(header=False)
     with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
@@ -222,8 +227,9 @@ def test_xlsx_parser_write(tmpdir):
         ]
 
 
+@pytest.mark.skip
 def test_xlsx_parser_write_sheet_name(tmpdir):
-    dialect = ExcelDialect(sheet="sheet")
+    dialect = Dialect(controls=[ExcelControl(sheet="sheet")])
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.xlsx")), dialect=dialect)
     source.write(target)
@@ -240,7 +246,7 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
 
 def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():
     layout = Layout(header_rows=[10, 11, 12])
-    dialect = ExcelDialect(sheet="IPC", fill_merged_cells=True)
+    dialect = Dialect(controls=[ExcelControl(sheet="IPC", fill_merged_cells=True)])
     with Resource("data/issue-1024.xlsx", dialect=dialect, layout=layout) as resource:
         assert resource.header
         assert resource.header[21] == "Current Phase P3+ #"

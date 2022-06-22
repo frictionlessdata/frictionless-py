@@ -2,6 +2,7 @@
 import sys
 import tempfile
 from ....exception import FrictionlessException
+from ..control import ExcelControl
 from ....parser import Parser
 from ....system import system
 from .... import helpers
@@ -33,7 +34,7 @@ class XlsParser(Parser):
 
     def read_list_stream_create(self):
         xlrd = helpers.import_from_plugin("xlrd", plugin="excel")
-        dialect = self.resource.dialect
+        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
 
         # Get book
         bytes = self.loader.byte_stream.read()
@@ -54,14 +55,14 @@ class XlsParser(Parser):
 
         # Get sheet
         try:
-            if isinstance(dialect.sheet, str):
-                sheet = book.sheet_by_name(dialect.sheet)
+            if isinstance(control.sheet, str):
+                sheet = book.sheet_by_name(control.sheet)
             else:
-                sheet = book.sheet_by_index(dialect.sheet - 1)
+                sheet = book.sheet_by_index(control.sheet - 1)
         except (xlrd.XLRDError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
-                note=note % (self.resource.fullpath, dialect.sheet)
+                note=note % (self.resource.fullpath, control.sheet)
             )
             raise FrictionlessException(error)
 
@@ -88,7 +89,7 @@ class XlsParser(Parser):
             cells = []
             for y, value in enumerate(sheet.row_values(x)):
                 value = type_value(sheet.cell(x, y).ctype, value)
-                if dialect.fill_merged_cells:
+                if control.fill_merged_cells:
                     for xlo, xhi, ylo, yhi in sheet.merged_cells:
                         if x in range(xlo, xhi) and y in range(ylo, yhi):
                             value = type_value(
@@ -104,10 +105,11 @@ class XlsParser(Parser):
         xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         source = resource
         target = self.resource
+        control = target.dialect.get_control("excel", ensure=ExcelControl())
         book = xlwt.Workbook()
-        title = target.dialect.sheet
+        title = control.sheet
         if isinstance(title, int):
-            title = f"Sheet {target.dialect.sheet}"
+            title = f"Sheet {control.sheet}"
         sheet = book.add_sheet(title)
         with source:
             for row_index, row in enumerate(source.row_stream):

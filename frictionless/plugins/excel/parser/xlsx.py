@@ -8,6 +8,7 @@ import warnings
 import datetime
 from itertools import chain
 from ....exception import FrictionlessException
+from ..control import ExcelControl
 from ....resource import Resource
 from ....parser import Parser
 from ....system import system
@@ -41,7 +42,7 @@ class XlsxParser(Parser):
 
     def read_loader(self):
         fullpath = self.resource.fullpath
-        dialect = self.resource.dialect
+        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
         loader = system.create_loader(self.resource)
         if not loader.remote:
             return loader.open()
@@ -53,18 +54,18 @@ class XlsxParser(Parser):
         if loader.remote:
 
             # Cached
-            if dialect.workbook_cache is not None and fullpath in dialect.workbook_cache:
+            if control.workbook_cache is not None and fullpath in control.workbook_cache:
                 resource = Resource(path=fullpath, stats=self.resource.stats)
                 loader = system.create_loader(resource)
                 return loader.open()
 
             with loader as loader:
-                delete = dialect.workbook_cache is None
+                delete = control.workbook_cache is None
                 target = tempfile.NamedTemporaryFile(delete=delete)
                 shutil.copyfileobj(loader.byte_stream, target)
                 target.seek(0)
             if not target.delete:
-                dialect.workbook_cache[fullpath] = target.name
+                control.workbook_cache[fullpath] = target.name
                 atexit.register(os.remove, target.name)
             resource = Resource(path=target)
             loader = system.create_loader(resource)
@@ -72,7 +73,7 @@ class XlsxParser(Parser):
 
     def read_list_stream_create(self):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
-        dialect = self.resource.dialect
+        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
 
         # Get book
         # To fill merged cells we can't use read-only because
@@ -81,7 +82,7 @@ class XlsxParser(Parser):
             warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
             book = openpyxl.load_workbook(
                 self.loader.byte_stream,
-                read_only=not dialect.fill_merged_cells,
+                read_only=not control.fill_merged_cells,
                 data_only=True,
             )
         except Exception as exception:
@@ -90,19 +91,19 @@ class XlsxParser(Parser):
 
         # Get sheet
         try:
-            if isinstance(dialect.sheet, str):
-                sheet = book[dialect.sheet]
+            if isinstance(control.sheet, str):
+                sheet = book[control.sheet]
             else:
-                sheet = book.worksheets[dialect.sheet - 1]
+                sheet = book.worksheets[control.sheet - 1]
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
-                note=note % (self.resource.fullpath, dialect.sheet)
+                note=note % (self.resource.fullpath, control.sheet)
             )
             raise FrictionlessException(error)
 
         # Fill merged cells
-        if dialect.fill_merged_cells:
+        if control.fill_merged_cells:
             # NOTE:
             # We can try using an algorithm similiar to what XlsParser has
             # to support mergin cells in the read-only mode (now we need the write mode)
@@ -119,7 +120,9 @@ class XlsxParser(Parser):
         # Stream data
         for cells in sheet.iter_rows():
             yield extract_row_values(
-                cells, dialect.preserve_formatting, dialect.adjust_floating_point_error
+                cells,
+                control.preserve_formatting,
+                control.adjust_floating_point_error,
             )
 
         # Calculate stats
@@ -145,10 +148,11 @@ class XlsxParser(Parser):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         source = resource
         target = self.resource
+        control = target.dialect.get_control("excel", ensure=ExcelControl())
         book = openpyxl.Workbook(write_only=True)
-        title = target.dialect.sheet
+        title = control.sheet
         if isinstance(title, int):
-            title = f"Sheet {target.dialect.sheet}"
+            title = f"Sheet {control.sheet}"
         sheet = book.create_sheet(title)
         with source:
             for row in source.row_stream:
