@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from ...dialect import Control
+from ...control import Control
 from . import settings
 
 

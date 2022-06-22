@@ -1,6 +1,6 @@
 from typing import Optional
 from dataclasses import dataclass
-from ...dialect import Control
+from ...control import Control
 
 
 @dataclass

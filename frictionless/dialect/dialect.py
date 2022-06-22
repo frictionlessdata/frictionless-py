@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from ..metadata2 import Metadata2
 from .describe import describe
 from .validate import validate
+from ..control import Control
 from .. import settings
 from .. import errors
 
@@ -57,14 +58,3 @@ class Dialect(Metadata2):
             "controls": {},
         },
     }
-
-
-class Control(Metadata2):
-    """Control representation"""
-
-    code: str
-
-    # Metadata
-
-    metadata_Error = errors.ControlError
-    metadata_defined = {"code"}

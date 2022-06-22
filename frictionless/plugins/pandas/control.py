@@ -1,4 +1,4 @@
-from ...dialect import Control
+from ...control import Control
 
 
 class PandasControl(Control):
