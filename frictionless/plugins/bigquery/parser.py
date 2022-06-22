@@ -20,8 +20,8 @@ class BigqueryParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        dialect = self.resource.dialect
-        storage = BigqueryStorage(self.resource.data, dialect=dialect)
+        control = self.resource.dialect.get_control("bigquery")
+        storage = BigqueryStorage(self.resource.data, control=control)
         resource = storage.read_resource(dialect.table)
         self.resource.schema = resource.schema
         with resource:
@@ -33,7 +33,8 @@ class BigqueryParser(Parser):
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
-        storage = BigqueryStorage(self.resource.data, dialect=target.dialect)
+        control = target.dialect.get_control("bigquery")
+        storage = BigqueryStorage(self.resource.data, control=control)
         if not target.dialect.table:
             note = 'Please provide "dialect.table" for writing'
             raise FrictionlessException(note)
