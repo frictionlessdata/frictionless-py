@@ -1,22 +1,19 @@
 from ...plugin import Plugin
-from .dialect import SpssDialect
+from .control import SpssControl
 from .parser import SpssParser
 
 
 class SpssPlugin(Plugin):
-    """Plugin for SPSS
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssPlugin`
-    """
+    """Plugin for SPSS"""
 
     code = "spss"
     status = "experimental"
 
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format in ["sav", "zsav"]:
-            return SpssDialect.from_descriptor(descriptor)
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "spss":
+            return SpssControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format in ["sav", "zsav"]:

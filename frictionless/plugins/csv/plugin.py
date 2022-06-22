@@ -1,25 +1,18 @@
 from ...plugin import Plugin
-from .dialect import CsvDialect
+from .control import CsvControl
 from .parser import CsvParser
 
 
 class CsvPlugin(Plugin):
-    """Plugin for Pandas
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.csv import CsvPlugin`
-
-    """
+    """Plugin for Pandas"""
 
     code = "csv"
 
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "csv":
-            return CsvDialect(descriptor)
-        elif resource.format == "tsv":
-            descriptor["delimiter"] = "\t"
-            return CsvDialect.from_descriptor(descriptor)
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "csv":
+            return CsvControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format in ["csv", "tsv"]:

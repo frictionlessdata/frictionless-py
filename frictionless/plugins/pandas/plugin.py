@@ -1,5 +1,5 @@
 from ...plugin import Plugin
-from .dialect import PandasDialect
+from .control import PandasControl
 from .parser import PandasParser
 from ... import helpers
 
@@ -10,16 +10,16 @@ from ... import helpers
 
 
 class PandasPlugin(Plugin):
-    """Plugin for Pandas
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.pandas import PandasPlugin`
-
-    """
+    """Plugin for Pandas"""
 
     code = "pandas"
     status = "experimental"
+
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "pandas":
+            return PandasControl.from_descriptor(descriptor)
 
     def create_file(self, file):
         if not file.scheme and not file.format and file.memory:
@@ -27,10 +27,6 @@ class PandasPlugin(Plugin):
                 file.scheme = ""
                 file.format = "pandas"
                 return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "pandas":
-            return PandasDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "pandas":

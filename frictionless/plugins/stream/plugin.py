@@ -4,15 +4,15 @@ from .loader import StreamLoader
 
 
 class StreamPlugin(Plugin):
-    """Plugin for Local Data
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.stream import StreamPlugin`
-
-    """
+    """Plugin for Local Data"""
 
     code = "stream"
+
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "stream":
+            return StreamControl.from_descriptor(descriptor)
 
     def create_file(self, file):
         if not file.scheme and not file.format:
@@ -20,10 +20,6 @@ class StreamPlugin(Plugin):
                 file.scheme = "stream"
                 file.format = ""
                 return file
-
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme == "stream":
-            return StreamControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "stream":

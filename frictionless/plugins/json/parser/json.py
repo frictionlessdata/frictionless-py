@@ -2,7 +2,8 @@
 import json
 import tempfile
 from ....exception import FrictionlessException
-from ....plugins.inline import InlineDialect
+
+#  from ....plugins.inline import InlineDialect
 from ....resource import Resource
 from ....parser import Parser
 from ....system import system

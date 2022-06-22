@@ -14,8 +14,10 @@ class LocalPlugin(Plugin):
 
     code = "local"
 
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme == "file":
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "local":
             return LocalControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

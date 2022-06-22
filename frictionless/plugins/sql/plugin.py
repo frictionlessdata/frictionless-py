@@ -1,5 +1,5 @@
 from ...plugin import Plugin
-from .dialect import SqlDialect
+from .control import SqlControl
 from .parser import SqlParser
 from .storage import SqlStorage
 from . import settings
@@ -10,16 +10,16 @@ from . import settings
 
 
 class SqlPlugin(Plugin):
-    """Plugin for SQL
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.sql import SqlPlugin`
-
-    """
+    """Plugin for SQL"""
 
     code = "sql"
     status = "experimental"
+
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "sql":
+            return SqlControl.from_descriptor(descriptor)
 
     def create_file(self, file):
         for prefix in settings.SCHEME_PREFIXES:
@@ -27,10 +27,6 @@ class SqlPlugin(Plugin):
                 file.scheme = ""
                 file.format = "sql"
                 return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "sql":
-            return SqlDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "sql":

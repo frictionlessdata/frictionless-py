@@ -7,8 +7,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
-from .control import Control
-from .dialect import Dialect
+from .dialect import Control
 from .file import File
 from . import settings
 from . import errors
@@ -76,7 +75,6 @@ class System:
     hooks = [
         "create_check",
         "create_control",
-        "create_dialect",
         "create_error",
         "create_field_candidates",
         "create_file",
@@ -107,11 +105,10 @@ class System:
         note = f'check "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
-    def create_control(self, resource: Resource, *, descriptor: dict) -> Control:
+    def create_control(self, descriptor: dict) -> Control:
         """Create control
 
         Parameters:
-            resource (Resource): control resource
             descriptor (dict): control descriptor
 
         Returns:
@@ -119,27 +116,10 @@ class System:
         """
         control = None
         for func in self.methods["create_control"].values():
-            control = func(resource, descriptor=descriptor)
+            control = func(descriptor)
             if control is not None:
                 return control
         return Control.from_descriptor(descriptor)
-
-    def create_dialect(self, resource: Resource, *, descriptor: dict) -> Dialect:
-        """Create dialect
-
-        Parameters:
-            resource (Resource): dialect resource
-            descriptor (dict): dialect descriptor
-
-        Returns:
-            Dialect: dialect
-        """
-        dialect = None
-        for func in self.methods["create_dialect"].values():
-            dialect = func(resource, descriptor=descriptor)
-            if dialect is not None:
-                return dialect
-        return Dialect.from_descriptor(descriptor)
 
     def create_error(self, descriptor: dict) -> Error:
         """Create error

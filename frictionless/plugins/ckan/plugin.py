@@ -1,5 +1,5 @@
 from ...plugin import Plugin
-from .dialect import CkanDialect
+from .control import CkanControl
 from .parser import CkanParser
 from .storage import CkanStorage
 
@@ -8,19 +8,16 @@ from .storage import CkanStorage
 
 
 class CkanPlugin(Plugin):
-    """Plugin for CKAN
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ckan import CkanPlugin`
-    """
+    """Plugin for CKAN"""
 
     code = "ckan"
     status = "experimental"
 
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "ckan":
-            return CkanDialect.from_descriptor(descriptor)
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "ckan":
+            return CkanControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "ckan":

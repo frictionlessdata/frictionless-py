@@ -5,7 +5,6 @@ if TYPE_CHECKING:
     from .file import File
     from .check import Check
     from .control import Control
-    from .dialect import Dialect
     from .error import Error
     from .field import Field
     from .loader import Loader
@@ -47,27 +46,14 @@ class Plugin:
         """
         pass
 
-    def create_control(self, file: File, *, descriptor: dict) -> Optional[Control]:
+    def create_control(self, descriptor: dict) -> Optional[Control]:
         """Create control
 
         Parameters:
-            file (File): control file
             descriptor (dict): control descriptor
 
         Returns:
             Control: control
-        """
-        pass
-
-    def create_dialect(self, file: File, *, descriptor: dict) -> Optional[Dialect]:
-        """Create dialect
-
-        Parameters:
-            file (File): dialect file
-            descriptor (dict): dialect descriptor
-
-        Returns:
-            Dialect: dialect
         """
         pass
 

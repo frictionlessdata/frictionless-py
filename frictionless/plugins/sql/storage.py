@@ -8,7 +8,7 @@ from ...storage import Storage
 from ...package import Package
 from ...schema import Schema
 from ...field import Field
-from .dialect import SqlDialect
+from .control import SqlControl
 from ... import helpers
 
 
@@ -27,13 +27,13 @@ class SqlStorage(Storage):
 
     """
 
-    def __init__(self, source, *, dialect=None):
+    def __init__(self, source, *, control=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
 
         # Create engine
-        if dialect and dialect.basepath:
+        if control and control.basepath:
             url = urlsplit(source)
-            basepath = dialect.basepath
+            basepath = control.basepath
             if isinstance(source, str) and source.startswith("sqlite"):
                 # Path for sqlite looks like this 'sqlite:///path' (unix/windows)
                 basepath = f"/{basepath}"
@@ -41,9 +41,9 @@ class SqlStorage(Storage):
         engine = sa.create_engine(source) if isinstance(source, str) else source
 
         # Set attributes
-        dialect = dialect or SqlDialect()
-        self.__prefix = dialect.prefix
-        self.__namespace = dialect.namespace
+        control = control or SqlControl()
+        self.__prefix = control.prefix
+        self.__namespace = control.namespace
         self.__connection = engine.connect()
 
         # Add regex support

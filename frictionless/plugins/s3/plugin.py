@@ -4,19 +4,15 @@ from .loader import S3Loader
 
 
 class S3Plugin(Plugin):
-    """Plugin for S3
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.s3 import S3Plugin`
-
-    """
+    """Plugin for S3"""
 
     code = "s3"
     status = "experimental"
 
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme == "s3":
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "s3":
             return S3Control.from_descriptor(descriptor)
 
     def create_loader(self, resource):

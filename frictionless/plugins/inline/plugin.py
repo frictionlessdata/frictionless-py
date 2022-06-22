@@ -1,19 +1,19 @@
 import typing
 from ...plugin import Plugin
-from .dialect import InlineDialect
+from .control import InlineControl
 from .parser import InlineParser
 
 
 class InlinePlugin(Plugin):
-    """Plugin for Inline
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.inline import InlinePlugin`
-
-    """
+    """Plugin for Inline"""
 
     code = "inline"
+
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "inline":
+            return InlineControl.from_descriptor(descriptor)
 
     def create_file(self, file):
         if not file.scheme and not file.format and file.memory:
@@ -23,10 +23,6 @@ class InlinePlugin(Plugin):
                     file.scheme = ""
                     file.format = "inline"
                     return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "inline":
-            return InlineDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "inline":

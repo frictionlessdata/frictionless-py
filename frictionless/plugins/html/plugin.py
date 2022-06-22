@@ -1,23 +1,19 @@
 from ...plugin import Plugin
-from .dialect import HtmlDialect
+from .control import HtmlControl
 from .parser import HtmlParser
 
 
 class HtmlPlugin(Plugin):
-    """Plugin for HTML
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.html import HtmlPlugin`
-
-    """
+    """Plugin for HTML"""
 
     code = "html"
     status = "experimental"
 
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "html":
-            return HtmlDialect.from_descriptor(descriptor)
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "html":
+            return HtmlControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "html":

@@ -6,18 +6,14 @@ from . import settings
 
 
 class RemotePlugin(Plugin):
-    """Plugin for Remote Data
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.remote import RemotePlugin`
-
-    """
+    """Plugin for Remote Data"""
 
     code = "remote"
 
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme in settings.DEFAULT_SCHEMES:
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "remote":
             return RemoteControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

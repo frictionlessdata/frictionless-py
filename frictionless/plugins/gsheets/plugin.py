@@ -1,19 +1,19 @@
 from ...plugin import Plugin
-from .dialect import GsheetsDialect
+from .control import GsheetsControl
 from .parser import GsheetsParser
 
 
 class GsheetsPlugin(Plugin):
-    """Plugin for Google Sheets
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.gsheets import GsheetsPlugin`
-
-    """
+    """Plugin for Google Sheets"""
 
     code = "gsheet"
     status = "experimental"
+
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "gsheets":
+            return GsheetsControl.from_descriptor(descriptor)
 
     def create_file(self, file):
         if not file.memory:
@@ -25,10 +25,6 @@ class GsheetsPlugin(Plugin):
                     file.scheme = "https"
                     file.format = "csv"
                 return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "gsheets":
-            return GsheetsDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "gsheets":

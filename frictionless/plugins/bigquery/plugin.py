@@ -1,6 +1,6 @@
 from ...plugin import Plugin
 from ... import helpers
-from .dialect import BigqueryDialect
+from .control import BigqueryControl
 from .parser import BigqueryParser
 from .storage import BigqueryStorage
 
@@ -11,15 +11,16 @@ from .storage import BigqueryStorage
 
 
 class BigqueryPlugin(Plugin):
-    """Plugin for BigQuery
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.bigquery import BigqueryPlugin`
-    """
+    """Plugin for BigQuery"""
 
     code = "bigquery"
     status = "experimental"
+
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "bigquery":
+            return BigqueryControl.from_descriptor(descriptor)
 
     def create_file(self, file):
         if not file.scheme and not file.format and file.memory:
@@ -27,10 +28,6 @@ class BigqueryPlugin(Plugin):
                 file.scheme = ""
                 file.format = "bigquery"
                 return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "bigquery":
-            return BigqueryDialect.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "bigquery":

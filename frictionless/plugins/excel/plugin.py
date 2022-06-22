@@ -1,22 +1,18 @@
 from ...plugin import Plugin
-from .dialect import ExcelDialect
+from .control import ExcelControl
 from .parser import XlsxParser, XlsParser
 
 
 class ExcelPlugin(Plugin):
-    """Plugin for Excel
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.excel import ExcelPlugin`
-
-    """
+    """Plugin for Excel"""
 
     code = "excel"
 
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format in ["xlsx", "xls"]:
-            return ExcelDialect.from_descriptor(descriptor)
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "excel":
+            return ExcelControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "xlsx":

@@ -14,16 +14,18 @@ class BufferPlugin(Plugin):
 
     code = "buffer"
 
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "buffer":
+            return BufferControl.from_descriptor(descriptor)
+
     def create_file(self, file):
         if not file.scheme and not file.format:
             if isinstance(file.data, bytes):
                 file.scheme = "buffer"
                 file.format = ""
                 return file
-
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme == "buffer":
-            return BufferControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "buffer":

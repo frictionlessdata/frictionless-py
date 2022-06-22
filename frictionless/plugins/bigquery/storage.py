@@ -13,7 +13,7 @@ from ...storage import Storage
 from ...schema import Schema
 from ...field import Field
 from ... import helpers
-from .dialect import BigqueryDialect
+from .control import BigqueryControl
 from . import settings
 
 
@@ -32,12 +32,12 @@ class BigqueryStorage(Storage):
 
     """
 
-    def __init__(self, source, *, dialect=None):
-        dialect = dialect or BigqueryDialect()
+    def __init__(self, source, *, control=None):
+        control = control or BigqueryControl()
         self.__service = source
-        self.__project = dialect.project
-        self.__dataset = dialect.dataset
-        self.__prefix = dialect.prefix
+        self.__project = control.project
+        self.__dataset = control.dataset
+        self.__prefix = control.prefix
 
     def __iter__(self):
         names = []

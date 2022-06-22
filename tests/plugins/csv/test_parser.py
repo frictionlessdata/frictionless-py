@@ -1,6 +1,6 @@
 import pytest
 from frictionless import Resource, Layout, Detector
-from frictionless.plugins.csv import CsvDialect
+from frictionless.plugins.csv import CsvControl
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"

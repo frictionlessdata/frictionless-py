@@ -9,7 +9,7 @@ from ...storage import Storage
 from ...schema import Schema
 from ...system import system
 from ...field import Field
-from .dialect import CkanDialect
+from .control import CkanControl
 
 
 # General
@@ -29,17 +29,17 @@ class CkanStorage(Storage):
     Public   | `from frictionless.plugins.ckan import CkanStorage`
     """
 
-    def __init__(self, source, *, dialect=None):
-        dialect = dialect or CkanDialect()
+    def __init__(self, source, *, control=None):
+        control = control or CkanControl()
         self.__url = source.rstrip("/")
         self.__endpoint = f"{self.__url}/api/3/action"
-        self.__dataset = dialect.dataset
-        self.__apikey = dialect.apikey
+        self.__dataset = control.dataset
+        self.__apikey = control.apikey
         self.__queryoptions = {
-            "fields": dialect.fields,
-            "limit": dialect.limit,
-            "sort": dialect.sort,
-            "filters": dialect.filters,
+            "fields": control.fields,
+            "limit": control.limit,
+            "sort": control.sort,
+            "filters": control.filters,
         }
 
     def __iter__(self):

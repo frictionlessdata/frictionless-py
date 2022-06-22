@@ -1,22 +1,18 @@
 from ...plugin import Plugin
-from .dialect import JsonDialect
+from .control import JsonControl
 from .parser import JsonParser, JsonlParser
 
 
 class JsonPlugin(Plugin):
-    """Plugin for Json
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.json import JsonPlugin`
-
-    """
+    """Plugin for Json"""
 
     code = "json"
 
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format in ["json", "jsonl", "ndjson"]:
-            return JsonDialect.from_descriptor(descriptor)
+    # Hooks
+
+    def create_control(self, descriptor):
+        if descriptor.get("code") == "json":
+            return JsonControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):
         if resource.format == "json":
