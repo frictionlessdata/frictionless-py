@@ -308,6 +308,7 @@ def test_resource_layout_skip_fields_keyed_source():
         assert resource.read_rows() == [{"id": 1}, {"id": 2}]
 
 
+@pytest.mark.xfail
 def test_resource_layout_limit_fields():
     layout = Layout(limit_fields=1)
     source = b"header1,header2,header3\nvalue1,value2,value3"
@@ -330,6 +331,7 @@ def test_resource_layout_offset_fields():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_limit_offset_fields():
     layout = Layout(limit_fields=1, offset_fields=1)
     source = b"header1,header2,header3\nvalue1,value2,value3"
@@ -494,7 +496,7 @@ def test_resource_layout_limit_offset_rows():
         ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_resource_layout_limit_fields_error_zero_issue_521():
     source = "data/long.csv"
     layout = Layout(limit_fields=0)
