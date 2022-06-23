@@ -1,6 +1,6 @@
-# type: ignore
 import io
 from urllib.parse import urlparse
+from .control import S3Control
 from ...loader import Loader
 from ... import helpers
 
@@ -20,7 +20,7 @@ class S3Loader(Loader):
 
     def read_byte_stream_create(self):
         boto3 = helpers.import_from_plugin("boto3", plugin="s3")
-        control = self.resource.control
+        control = self.resource.dialect.get_control("s3", ensure=S3Control())
         parts = urlparse(self.resource.fullpath, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.endpoint_url)
         object = client.Object(bucket_name=parts.netloc, key=parts.path[1:])
@@ -31,7 +31,7 @@ class S3Loader(Loader):
 
     def write_byte_stream_save(self, byte_stream):
         boto3 = helpers.import_from_plugin("boto3", plugin="s3")
-        control = self.resource.control
+        control = self.resource.dialect.get_control("s3", ensure=S3Control())
         parts = urlparse(self.resource.fullpath, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.endpoint_url)
         object = client.Object(bucket_name=parts.netloc, key=parts.path[1:])
