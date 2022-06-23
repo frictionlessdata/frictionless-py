@@ -1,8 +1,8 @@
-from frictionless import Resource
+from frictionless import Resource, Dialect
 from frictionless.plugins.json import JsonControl
 
 
-# General
+# Read
 
 
 def test_jsonl_parser():
@@ -23,6 +23,9 @@ def test_jsonl_parser_ndjson():
         ]
 
 
+# Write
+
+
 def test_jsonl_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.jsonl")))
@@ -35,7 +38,7 @@ def test_jsonl_parser_write(tmpdir):
 
 
 def test_jsonl_parser_write_keyed(tmpdir):
-    dialect = JsonDialect(keyed=True)
+    dialect = Dialect(controls=[JsonControl(keyed=True)])
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.jsonl")), dialect=dialect)
     with target:

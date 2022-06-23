@@ -9,6 +9,7 @@ from .. import settings
 from .. import errors
 
 
+# TODO: provide helpers properties like `dialect.csv`?
 @dataclass
 class Dialect(Metadata2):
     """Dialect representation"""

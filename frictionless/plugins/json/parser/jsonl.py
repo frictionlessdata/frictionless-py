@@ -1,8 +1,8 @@
-# type: ignore
 import tempfile
-
-#  from ....plugins.inline import InlineDialect
+from ....plugins.inline import InlineControl
 from ....resource import Resource
+from ..control import JsonControl
+from ....dialect import Dialect
 from ....parser import Parser
 from ....system import system
 from .... import helpers
@@ -33,14 +33,15 @@ class JsonlParser(Parser):
 
     def read_list_stream_create(self):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
-        dialect = self.resource.dialect
+        control = self.resource.dialect.get_control("json", ensure=JsonControl())
         source = iter(jsonlines.Reader(self.loader.text_stream))
-        dialect = InlineDialect(keys=dialect.keys)
-        resource = Resource(data=source, dialect=dialect)
+        inline_control = InlineControl(keys=control.keys)
+        resource = Resource(data=source, dialect=Dialect(controls=[control]))
         with system.create_parser(resource) as parser:
             yield next(parser.list_stream)
-            if parser.resource.dialect.keyed:
-                dialect["keyed"] = True
+            parser_control = parser.resource.dialect.get_control("inline")
+            if parser_control.keyed:
+                control.keyed = True
             yield from parser.list_stream
 
     # Write
@@ -49,14 +50,14 @@ class JsonlParser(Parser):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         source = resource
         target = self.resource
-        keyed = target.dialect.keyed
+        control = target.dialect.get_control("json", ensure=JsonControl())
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
             with source:
                 for row in source.row_stream:
                     cells = row.to_list(json=True)
-                    item = dict(zip(row.field_names, cells)) if keyed else cells
-                    if not target.dialect.keyed and row.row_number == 1:
+                    item = dict(zip(row.field_names, cells)) if control.keyed else cells
+                    if not control.keyed and row.row_number == 1:
                         writer.write(row.field_names)
                     writer.write(item)
         loader = system.create_loader(target)
