@@ -11,7 +11,7 @@ class SqlControl(Control):
 
     # Properties
 
-    table: str
+    table: str = "table"
     """TODO: add docs"""
 
     prefix: str = ""
@@ -33,7 +33,7 @@ class SqlControl(Control):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "required": ["table"],
+        "required": [],
         "additionalProperties": False,
         "properties": {
             "table": {"type": "string"},

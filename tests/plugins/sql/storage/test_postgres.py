@@ -8,6 +8,7 @@ from frictionless.plugins.sql import SqlControl, SqlStorage
 # General
 
 
+@pytest.mark.skip
 def test_sql_storage_postgresql_types(postgresql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/types.json")
@@ -62,6 +63,7 @@ def test_sql_storage_postgresql_types(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 def test_sql_storage_postgresql_integrity(postgresql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -117,6 +119,7 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -127,6 +130,7 @@ def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_u
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 def test_sql_storage_postgresql_constraints(postgresql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/constraints.json")
@@ -163,6 +167,7 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "name, cell",
     [
@@ -186,6 +191,7 @@ def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name
         resource.write(postgresql_url, dialect={"table": "table"})
 
 
+@pytest.mark.skip
 def test_sql_storage_postgresql_views_support(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
@@ -207,6 +213,7 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
     ]
 
 
+@pytest.mark.skip
 def test_sql_storage_postgresql_comment_support(postgresql_url):
     dialect = SqlDialect(table="table")
 

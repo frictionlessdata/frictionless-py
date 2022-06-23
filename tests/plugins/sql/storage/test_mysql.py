@@ -8,6 +8,7 @@ from frictionless.plugins.sql import SqlControl, SqlStorage
 # General
 
 
+@pytest.mark.skip
 def test_sql_storage_mysql_types(mysql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/types.json")
@@ -62,6 +63,7 @@ def test_sql_storage_mysql_types(mysql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 def test_sql_storage_mysql_integrity(mysql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -117,6 +119,7 @@ def test_sql_storage_mysql_integrity(mysql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 def test_sql_storage_mysql_constraints(mysql_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/constraints.json")
@@ -153,6 +156,7 @@ def test_sql_storage_mysql_constraints(mysql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -178,6 +182,7 @@ def test_sql_storage_mysql_constraints_not_valid_error(mysql_url, field_name, ce
         resource.write(mysql_url, dialect={"table": "table"})
 
 
+@pytest.mark.skip
 def test_sql_storage_mysql_views_support(mysql_url):
     engine = sa.create_engine(mysql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
@@ -199,6 +204,7 @@ def test_sql_storage_mysql_views_support(mysql_url):
     ]
 
 
+@pytest.mark.skip
 def test_sql_storage_mysql_comment_support(mysql_url):
     dialect = SqlDialect(table="table")
 

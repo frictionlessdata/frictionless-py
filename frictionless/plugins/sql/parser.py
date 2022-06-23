@@ -1,5 +1,5 @@
-# type: ignore
 from ...exception import FrictionlessException
+from .control import SqlControl
 from ...parser import Parser
 from .storage import SqlStorage
 
@@ -26,10 +26,10 @@ class SqlParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        dialect = self.resource.dialect
-        storage = SqlStorage(self.resource.fullpath, dialect=dialect)
+        control = self.resource.dialect.get_control("sql", ensure=SqlControl())
+        storage = SqlStorage(self.resource.fullpath, control=control)
         resource = storage.read_resource(
-            dialect.table, order_by=dialect.order_by, where=dialect.where
+            control.table, order_by=control.order_by, where=control.where
         )
         self.resource.schema = resource.schema
         with resource:
@@ -41,9 +41,10 @@ class SqlParser(Parser):
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
-        if not target.dialect.table:
-            note = 'Please provide "dialect.table" for writing'
+        control = target.dialect.get_control("sql", ensure=SqlControl())
+        if not control.table:
+            note = 'Please provide "control.table" for writing'
             raise FrictionlessException(note)
-        source.name = target.dialect.table
-        storage = SqlStorage(target.fullpath, dialect=target.dialect)
+        source.name = control.table
+        storage = SqlStorage(target.fullpath, control=control)
         storage.write_resource(source, force=True)
