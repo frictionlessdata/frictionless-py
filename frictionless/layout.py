@@ -19,8 +19,6 @@ class Layout(Metadata):
         header_rows? (int[]): row numbers to form header (list all of them not only from/to)
         header_join? (str): a string to be used as a joiner for multiline header
         header_case? (bool): whether to respect header case (default: True)
-        pick_fields? ((str|int)[]): what fields to pick
-        skip_fields? ((str|int)[]): what fields to skip
         limit_fields? (int): amount of fields
         offset_fields? (int): from what field to start
         pick_rows? ((str|int)[]): what rows to pick
@@ -37,8 +35,6 @@ class Layout(Metadata):
         header_rows=None,
         header_join=None,
         header_case=None,
-        pick_fields=None,
-        skip_fields=None,
         limit_fields=None,
         offset_fields=None,
         pick_rows=None,
@@ -50,8 +46,6 @@ class Layout(Metadata):
         self.setinitial("headerRows", header_rows)
         self.setinitial("headerJoin", header_join)
         self.setinitial("headerCase", header_case)
-        self.setinitial("pickFields", pick_fields)
-        self.setinitial("skipFields", skip_fields)
         self.setinitial("limitFields", limit_fields)
         self.setinitial("offsetFields", offset_fields)
         self.setinitial("pickRows", pick_rows)
@@ -93,22 +87,6 @@ class Layout(Metadata):
             str: header case sensitive
         """
         return self.get("headerCase", settings.DEFAULT_HEADER_CASE)
-
-    @Metadata.property
-    def pick_fields(self):
-        """
-        Returns:
-            (str|int)[]?: pick fields
-        """
-        return self.get("pickFields")
-
-    @Metadata.property
-    def skip_fields(self):
-        """
-        Returns:
-            (str|int)[]?: skip fields
-        """
-        return self.get("skipFields")
 
     @Metadata.property
     def limit_fields(self):
@@ -164,28 +142,7 @@ class Layout(Metadata):
         Returns:
             bool: whether there is a field filtering
         """
-        return (
-            self.pick_fields is not None
-            or self.skip_fields is not None
-            or self.limit_fields is not None
-            or self.offset_fields is not None
-        )
-
-    @Metadata.property(write=False)
-    def pick_fields_compiled(self):
-        """
-        Returns:
-            re?: compiled pick fields
-        """
-        return helpers.compile_regex(self.pick_fields)
-
-    @Metadata.property(write=False)
-    def skip_fields_compiled(self):
-        """
-        Returns:
-            re?: compiled skip fields
-        """
-        return helpers.compile_regex(self.skip_fields)
+        return self.limit_fields is not None or self.offset_fields is not None
 
     @Metadata.property(write=False)
     def pick_rows_compiled(self):
@@ -250,14 +207,13 @@ class Layout(Metadata):
         limit = self.limit_fields
         offset = self.offset_fields or 0
         for field_position, label in enumerate(raw_labels, start=1):
-            if self.read_filter_fields(label, field_position=field_position):
-                if offset:
-                    offset -= 1
-                    continue
-                labels.append(label)
-                field_positions.append(field_position)
-                if limit and limit <= len(labels):
-                    break
+            if offset:
+                offset -= 1
+                continue
+            labels.append(label)
+            field_positions.append(field_position)
+            if limit and limit <= len(labels):
+                break
 
         return labels, field_positions
 
@@ -280,27 +236,6 @@ class Layout(Metadata):
                 fragment.append(cells)
 
         return fragment, fragment_positions
-
-    def read_filter_fields(self, label, *, field_position):
-        match = True
-        for name in ["pick", "skip"]:
-            if name == "pick":
-                items = self.pick_fields_compiled
-            else:
-                items = self.skip_fields_compiled
-            if not items:
-                continue
-            match = match and name == "skip"
-            for item in items:
-                if item == "<blank>" and label == "":
-                    match = not match
-                elif isinstance(item, str) and item == label:
-                    match = not match
-                elif isinstance(item, int) and item == field_position:
-                    match = not match
-                elif isinstance(item, typing.Pattern) and item.match(label):
-                    match = not match
-        return match
 
     def read_filter_rows(self, cells, *, row_position):
         match = True
@@ -347,7 +282,6 @@ class Layout(Metadata):
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
             "headerCase": {"type": "boolean"},
-            "pickFields": {"type": "array"},
             "skipFields": {"type": "array"},
             "limitFields": {"type": "number", "minimum": 1},
             "offsetFields": {"type": "number", "minimum": 1},
