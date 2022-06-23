@@ -36,7 +36,8 @@ class RemoteLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.fullpath.replace(file, "")
-        response = self.resource.control.http_session.post(url, files={file: byte_stream})
+        control = self.resource.dialect.get_control("remote", ensure=RemoteControl())
+        response = control.http_session.post(url, files={file: byte_stream})
         response.raise_for_status()
         return response
 
