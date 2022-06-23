@@ -1,4 +1,7 @@
+import pytest
 from frictionless import Layout, Resource
+
+pytestmark = pytest.mark.skip
 
 
 # General

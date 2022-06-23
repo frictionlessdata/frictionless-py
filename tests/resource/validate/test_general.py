@@ -2,6 +2,7 @@ import pytest
 import pathlib
 from frictionless import Resource, Detector, Layout, Check, Checklist, errors
 
+pytestmark = pytest.mark.skip
 
 # General
 

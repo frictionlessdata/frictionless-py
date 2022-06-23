@@ -74,6 +74,7 @@ def test_resource_schema_source_remote():
     ]
 
 
+@pytest.mark.skip
 def test_resource_schema_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
     assert resource == {
@@ -87,6 +88,7 @@ def test_resource_schema_from_path():
     }
 
 
+@pytest.mark.skip
 def test_resource_schema_from_path_with_basepath():
     descriptor = {"name": "name", "path": "table.csv", "schema": "schema.json"}
     resource = Resource(descriptor, basepath="data")
@@ -96,6 +98,7 @@ def test_resource_schema_from_path_with_basepath():
     }
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_schema_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
@@ -110,6 +113,7 @@ def test_resource_schema_from_path_remote():
     }
 
 
+@pytest.mark.skip
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:

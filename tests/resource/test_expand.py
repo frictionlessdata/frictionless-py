@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource
 
 
 # General
 
 
+@pytest.mark.skip
 def test_resource_expand():
     resource = Resource({"name": "name", "path": "data/table.csv"})
     resource.expand()
@@ -36,6 +38,7 @@ def test_resource_expand():
     }
 
 
+@pytest.mark.skip
 def test_resource_expand_with_dialect():
     dialect = {"delimiter": "custom"}
     resource = Resource({"name": "name", "path": "data/table.csv", "dialect": dialect})
@@ -68,6 +71,7 @@ def test_resource_expand_with_dialect():
     }
 
 
+@pytest.mark.skip
 def test_resource_expand_with_schema():
     schema = {
         "fields": [

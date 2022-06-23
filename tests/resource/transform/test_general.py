@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_resource_transform():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -30,6 +32,7 @@ def test_resource_transform():
     ]
 
 
+@pytest.mark.skip
 def test_resource_transform_cell_set():
     source = Resource("data/transform.csv")
     pipeline = Pipeline.from_descriptor(

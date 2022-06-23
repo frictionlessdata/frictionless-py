@@ -1,18 +1,21 @@
 import os
 import json
 import yaml
+import pytest
 from frictionless import Resource
 
 
 # General
 
 
+@pytest.mark.skip
 def test_resource_to_copy():
     source = Resource.describe("data/table.csv")
     target = source.to_copy()
     assert source == target
 
 
+@pytest.mark.skip
 def test_resource_to_json(tmpdir):
     target = os.path.join(tmpdir, "resource.json")
     resource = Resource("data/resource.json")
@@ -21,6 +24,7 @@ def test_resource_to_json(tmpdir):
         assert resource == json.load(file)
 
 
+@pytest.mark.skip
 def test_resource_to_yaml(tmpdir):
     target = os.path.join(tmpdir, "resource.yaml")
     resource = Resource("data/resource.json")
@@ -29,6 +33,7 @@ def test_resource_to_yaml(tmpdir):
         assert resource == yaml.safe_load(file)
 
 
+@pytest.mark.skip
 def test_to_json_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
@@ -36,6 +41,7 @@ def test_to_json_with_resource_data_is_not_a_list_issue_693():
     assert text == "{}"
 
 
+@pytest.mark.skip
 def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
@@ -43,6 +49,7 @@ def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     assert text == "{}\n"
 
 
+@pytest.mark.skip
 def test_to_yaml_allow_unicode_issue_844():
     resource = Resource("data/issue-844.csv", encoding="utf-8")
     resource.infer()
@@ -50,11 +57,13 @@ def test_to_yaml_allow_unicode_issue_844():
     assert "età" in text
 
 
+@pytest.mark.skip
 def test_resource_to_view():
     resource = Resource("data/table.csv")
     assert resource.to_view()
 
 
+@pytest.mark.skip
 def test_resource_to_markdown_path_schema_837():
     descriptor = {
         "name": "main",
@@ -83,6 +92,7 @@ def test_resource_to_markdown_path_schema_837():
     assert resource.to_markdown().strip() == expected
 
 
+@pytest.mark.skip
 def test_resource_to_markdown_path_schema_table_837():
     descriptor = {
         "name": "main",
@@ -111,6 +121,7 @@ def test_resource_to_markdown_path_schema_table_837():
     assert resource.to_markdown(table=True).strip() == expected
 
 
+@pytest.mark.skip
 def test_resource_to_markdown_file_837(tmpdir):
     descriptor = descriptor = {
         "name": "main",
