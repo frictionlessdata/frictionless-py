@@ -1,7 +1,8 @@
+import pytest
 from frictionless import Resource, validate
 
 
-# General
+# Read
 
 
 def test_stream_loader():
@@ -33,6 +34,9 @@ def test_stream_loader_without_open():
         ]
 
 
+# Write
+
+
 def test_stream_loader_write():
     source = Resource("data/table.csv")
     target = source.write(scheme="stream", format="csv")
@@ -43,12 +47,17 @@ def test_stream_loader_write():
         ]
 
 
+# Problems
+
+
+@pytest.mark.skip
 def test_stream_loader_validate_issue_740():
     with open("data/table.csv", mode="rb") as file:
         report = validate(file, format="csv")
         assert report.valid
 
 
+@pytest.mark.skip
 def test_stream_loader_validate_text_stream_issue_740():
     with open("data/table.csv") as file:
         report = validate(file, format="csv")
