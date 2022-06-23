@@ -1034,8 +1034,6 @@ class Resource(Metadata):
         header = Header(
             self.__labels,
             fields=self.schema.fields,
-            # TODO: remove this
-            field_positions=list(range(1, len(self.__labels) + 1)),
             row_positions=self.layout.header_rows,
             ignore_case=not self.layout.header_case,
         )

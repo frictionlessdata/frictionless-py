@@ -320,7 +320,6 @@ class Row(dict):
                         cell=str(source),
                         field_name=field.name,
                         field_number=field_number,
-                        field_position=field_position,
                     )
                 )
 
@@ -341,7 +340,6 @@ class Row(dict):
                                 cell=str(source),
                                 field_name=field.name,
                                 field_number=field_number,
-                                field_position=field_position,
                             )
                         )
 
@@ -364,7 +362,6 @@ class Row(dict):
                         cell=str(cell),
                         field_name="",
                         field_number=len(fields) + field_position - start,
-                        field_position=field_position,
                     )
                 )
 
@@ -383,8 +380,6 @@ class Row(dict):
                             cell="",
                             field_name=field.name,
                             field_number=field_number,
-                            field_position=field_position
-                            or max(field_positions) + field_number - start + 1,
                         )
                     )
 

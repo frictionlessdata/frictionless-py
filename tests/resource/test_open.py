@@ -35,7 +35,7 @@ def test_resource_open_read_rows():
         headers = resource.header
         row1, row2 = resource.read_rows()
         assert headers == ["id", "name"]
-        assert headers.field_positions == [1, 2]
+        assert headers.field_numbers == [1, 2]
         assert headers.errors == []
         assert headers.valid is True
         assert row1.to_dict() == {"id": 1, "name": "english"}

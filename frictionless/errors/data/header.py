@@ -11,7 +11,6 @@ class HeaderError(TableError):
         label (str): an errored label
         field_name (str): field name
         field_number (int): field number
-        field_position (int): field position
 
     Raises:
         FrictionlessException: raise any error that occurs during the process

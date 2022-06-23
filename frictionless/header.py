@@ -1,6 +1,5 @@
 # type: ignore
 from __future__ import annotations
-from itertools import zip_longest
 from importlib import import_module
 from .helpers import cached_property
 from . import helpers
@@ -8,7 +7,6 @@ from . import errors
 
 
 # TODO: add types
-# TODO: remove field_positions
 class Header(list):
     """Header representation
 
@@ -21,7 +19,6 @@ class Header(list):
     Parameters:
         labels (any[]): header row labels
         fields (Field[]): table fields
-        field_positions (int[]): field positions
         row_positions (int[]): row positions
         ignore_case (bool): ignore case
 
@@ -32,14 +29,12 @@ class Header(list):
         labels,
         *,
         fields,
-        field_positions,
         row_positions,
         ignore_case=False,
     ):
         super().__init__(field.name for field in fields)
         self.__fields = [field.to_copy() for field in fields]
         self.__field_names = self.copy()
-        self.__field_positions = field_positions
         self.__row_positions = row_positions
         self.__ignore_case = ignore_case
         self.__labels = labels
@@ -71,12 +66,12 @@ class Header(list):
         return self.__field_names
 
     @cached_property
-    def field_positions(self):
+    def field_numbers(self):
         """
         Returns:
-            int[]: table field positions
+            str[]: list of field numbers
         """
-        return self.__field_positions
+        return list(range(1, len(self.__field_names) + 1))
 
     @cached_property
     def row_positions(self):
@@ -137,13 +132,12 @@ class Header(list):
         # Prepare context
         labels = self.__labels
         fields = self.__fields
-        field_positions = self.__field_positions
 
         # Extra label
         if len(fields) < len(labels):
+            start = len(fields) + 1
             iterator = labels[len(fields) :]
-            start = max(field_positions[: len(fields)]) + 1
-            for field_position, label in enumerate(iterator, start=start):
+            for field_number, label in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraLabelError(
                         note="",
@@ -151,16 +145,15 @@ class Header(list):
                         row_positions=self.__row_positions,
                         label="",
                         field_name="",
-                        field_number=len(fields) + field_position - start,
-                        field_position=field_position,
+                        field_number=field_number,
                     )
                 )
 
         # Missing label
         if len(fields) > len(labels):
             start = len(labels) + 1
-            iterator = zip_longest(field_positions[len(labels) :], fields[len(labels) :])
-            for field_number, (field_position, field) in enumerate(iterator, start=start):
+            iterator = fields[len(labels) :]
+            for field_number, field in enumerate(iterator, start=start):
                 if field is not None:
                     self.__errors.append(
                         errors.MissingLabelError(
@@ -170,14 +163,12 @@ class Header(list):
                             label="",
                             field_name=field.name,
                             field_number=field_number,
-                            field_position=field_position
-                            or max(field_positions, default=0) + field_number - start + 1,
                         )
                     )
 
         # Iterate items
         field_number = 0
-        for field_position, field, label in zip(field_positions, fields, labels):
+        for field, label in zip(fields, labels):
             field_number += 1
 
             # Blank label
@@ -190,22 +181,20 @@ class Header(list):
                         label="",
                         field_name=field.name,
                         field_number=field_number,
-                        field_position=field_position,
                     )
                 )
 
             # Duplicated label
             if label:
-                duplicate_field_positions = []
+                duplicate_field_numbers = []
                 seen_cells = labels[0 : field_number - 1]
-                seen_field_positions = field_positions[0 : field_number - 1]
-                for seen_position, seen_cell in zip(seen_field_positions, seen_cells):
+                for seen_number, seen_cell in enumerate(seen_cells, start=1):
                     if label == seen_cell:
-                        duplicate_field_positions.append(seen_position)
-                if duplicate_field_positions:
+                        duplicate_field_numbers.append(seen_number)
+                if duplicate_field_numbers:
                     label = None
                     note = 'at position "%s"'
-                    note = note % ", ".join(map(str, duplicate_field_positions))
+                    note = note % ", ".join(map(str, duplicate_field_numbers))
                     self.__errors.append(
                         errors.DuplicateLabelError(
                             note=note,
@@ -214,7 +203,6 @@ class Header(list):
                             label=str(labels[field_number - 1]),
                             field_name=field.name,
                             field_number=field_number,
-                            field_position=field_position,
                         )
                     )
 
@@ -232,7 +220,6 @@ class Header(list):
                             label=str(label),
                             field_name=field.name,
                             field_number=field_number,
-                            field_position=field_position,
                         )
                     )
 

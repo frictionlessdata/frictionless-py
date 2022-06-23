@@ -14,7 +14,6 @@ class CellError(RowError):
         cell (str): errored cell
         field_name (str): field name
         field_number (int): field number
-        field_position (int): field position
 
     Raises
         FrictionlessException: raise any error that occurs during the process
@@ -38,12 +37,10 @@ class CellError(RowError):
         cell,
         field_name,
         field_number,
-        field_position,
     ):
         self.setinitial("cell", cell)
         self.setinitial("fieldName", field_name)
         self.setinitial("fieldNumber", field_number)
-        self.setinitial("fieldPosition", field_position)
         super().__init__(
             descriptor,
             note=note,
@@ -71,7 +68,6 @@ class CellError(RowError):
         for field_number, name in enumerate(row.field_names, start=1):
             if field_name == name:
                 cell = row[field_name]
-                field_position = row.field_positions[field_number - 1]
                 to_str = lambda v: str(v) if v is not None else ""
                 return cls(
                     note=note,
@@ -81,7 +77,6 @@ class CellError(RowError):
                     cell=str(cell),
                     field_name=field_name,
                     field_number=field_number,
-                    field_position=field_position,
                 )
         raise FrictionlessException(f"Field {field_name} is not in the row")
 

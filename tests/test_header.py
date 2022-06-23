@@ -9,7 +9,7 @@ def test_basic():
         header = resource.header
         assert header == ["field1", "field2", "field3"]
         assert header.labels == ["field1", "field2", "field3"]
-        assert header.field_positions == [1, 2, 3]
+        assert header.field_numbers == [1, 2, 3]
         assert header.row_positions == [1]
         assert header.errors == []
         assert header == ["field1", "field2", "field3"]
