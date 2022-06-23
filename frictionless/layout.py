@@ -19,7 +19,6 @@ class Layout(Metadata):
         header_rows? (int[]): row numbers to form header (list all of them not only from/to)
         header_join? (str): a string to be used as a joiner for multiline header
         header_case? (bool): whether to respect header case (default: True)
-        offset_fields? (int): from what field to start
         pick_rows? ((str|int)[]): what rows to pick
         skip_rows? ((str|int)[]): what rows to skip
         limit_rows? (int): amount of rows
@@ -34,7 +33,6 @@ class Layout(Metadata):
         header_rows=None,
         header_join=None,
         header_case=None,
-        offset_fields=None,
         pick_rows=None,
         skip_rows=None,
         limit_rows=None,
@@ -44,7 +42,6 @@ class Layout(Metadata):
         self.setinitial("headerRows", header_rows)
         self.setinitial("headerJoin", header_join)
         self.setinitial("headerCase", header_case)
-        self.setinitial("offsetFields", offset_fields)
         self.setinitial("pickRows", pick_rows)
         self.setinitial("skipRows", skip_rows)
         self.setinitial("limitRows", limit_rows)
@@ -86,14 +83,6 @@ class Layout(Metadata):
         return self.get("headerCase", settings.DEFAULT_HEADER_CASE)
 
     @Metadata.property
-    def offset_fields(self):
-        """
-        Returns:
-            int?: offset fields
-        """
-        return self.get("offsetFields")
-
-    @Metadata.property
     def pick_rows(self):
         """
         Returns:
@@ -124,14 +113,6 @@ class Layout(Metadata):
             int?: offset rows
         """
         return self.get("offsetRows")
-
-    @Metadata.property(write=False)
-    def is_field_filtering(self):
-        """
-        Returns:
-            bool: whether there is a field filtering
-        """
-        return self.offset_fields is not None
 
     @Metadata.property(write=False)
     def pick_rows_compiled(self):
@@ -193,11 +174,7 @@ class Layout(Metadata):
         # Filter labels
         labels = []
         field_positions = []
-        offset = self.offset_fields or 0
         for field_position, label in enumerate(raw_labels, start=1):
-            if offset:
-                offset -= 1
-                continue
             labels.append(label)
             field_positions.append(field_position)
 
@@ -217,7 +194,6 @@ class Layout(Metadata):
                     continue
                 if row_number in self.header_rows:
                     continue
-                cells = self.read_filter_cells(cells, field_positions=field_positions)
                 fragment_positions.append(row_position)
                 fragment.append(cells)
 
@@ -248,15 +224,6 @@ class Layout(Metadata):
                     match = not match
         return match
 
-    def read_filter_cells(self, cells, *, field_positions):
-        if self.is_field_filtering:
-            result = []
-            for field_position, cell in enumerate(cells, start=1):
-                if field_position in field_positions:
-                    result.append(cell)
-            return result
-        return cells
-
     # Metadata
 
     metadata_Error = errors.LayoutError
@@ -270,7 +237,6 @@ class Layout(Metadata):
             "headerCase": {"type": "boolean"},
             "skipFields": {"type": "array"},
             "limitFields": {"type": "number", "minimum": 1},
-            "offsetFields": {"type": "number", "minimum": 1},
             "pickRows": {"type": "array"},
             "skipRows": {"type": "array"},
             "limitRows": {"type": "number", "minimum": 1},

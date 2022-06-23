@@ -1067,9 +1067,7 @@ class Resource(Metadata):
         # Stream with filtering
         for row_position, cells in iterator:
             if self.layout.read_filter_rows(cells, row_position=row_position):
-                yield row_position, self.layout.read_filter_cells(
-                    cells, field_positions=self.__field_positions
-                )
+                yield row_position, cells
 
     def __read_detect_layout(self):
         sample = self.__parser.sample
