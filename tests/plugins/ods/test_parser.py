@@ -1,12 +1,12 @@
 import pytest
 from datetime import datetime
-from frictionless import Resource, Layout, FrictionlessException
+from frictionless import Resource, Dialect, Layout, FrictionlessException
 from frictionless.plugins.ods import OdsControl
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# General
+# Read
 
 
 def test_ods_parser():
@@ -31,7 +31,7 @@ def test_ods_parser_remote():
 
 
 def test_ods_parser_sheet_by_index():
-    dialect = OdsDialect(sheet=1)
+    dialect = Dialect(controls=[OdsControl(sheet=1)])
     with Resource("data/table.ods", dialect=dialect) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -41,7 +41,7 @@ def test_ods_parser_sheet_by_index():
 
 
 def test_ods_parser_sheet_by_index_not_existent():
-    dialect = OdsDialect(sheet=3)
+    dialect = Dialect(controls=[OdsControl(sheet=3)])
     resource = Resource("data/table.ods", dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
@@ -51,7 +51,7 @@ def test_ods_parser_sheet_by_index_not_existent():
 
 
 def test_ods_parser_sheet_by_name():
-    dialect = OdsDialect(sheet="Лист1")
+    dialect = Dialect(controls=[OdsControl(sheet="Лист1")])
     with Resource("data/table.ods", dialect=dialect) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -61,7 +61,7 @@ def test_ods_parser_sheet_by_name():
 
 
 def test_ods_parser_sheet_by_name_not_existent():
-    dialect = OdsDialect(sheet="bad")
+    dialect = Dialect(controls=[OdsControl(sheet="bad")])
     table = Resource("data/table.ods", dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         table.open()
@@ -90,6 +90,9 @@ def test_ods_parser_with_ints_floats_dates():
             [1997, 5.6, datetime(2009, 9, 20).date(), datetime(2009, 9, 20, 15, 30, 0)],
             [1969, 11.7, datetime(2012, 8, 23).date(), datetime(2012, 8, 23, 20, 40, 59)],
         ]
+
+
+# Write
 
 
 def test_ods_parser_write(tmpdir):

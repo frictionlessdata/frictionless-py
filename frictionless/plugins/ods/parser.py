@@ -1,8 +1,8 @@
-# type: ignore
 import io
 import tempfile
 from datetime import datetime
 from ...exception import FrictionlessException
+from .control import OdsControl
 from ...parser import Parser
 from ...system import system
 from ... import helpers
@@ -34,20 +34,20 @@ class OdsParser(Parser):
 
     def read_list_stream_create(self):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
-        dialect = self.resource.dialect
+        control = self.resource.dialect.get_control("ods", ensure=OdsControl())
 
         # Get book
         book = ezodf.opendoc(io.BytesIO(self.loader.byte_stream.read()))
 
         # Get sheet
         try:
-            if isinstance(dialect.sheet, str):
-                sheet = book.sheets[dialect.sheet]
+            if isinstance(control.sheet, str):
+                sheet = book.sheets[control.sheet]
             else:
-                sheet = book.sheets[dialect.sheet - 1]
+                sheet = book.sheets[control.sheet - 1]
         except (KeyError, IndexError):
             note = 'OpenOffice document "%s" does not have a sheet "%s"'
-            note = note % (self.resource.fullpath, dialect.sheet)
+            note = note % (self.resource.fullpath, control.sheet)
             raise FrictionlessException(errors.FormatError(note=note))
 
         # Type cells
@@ -81,10 +81,11 @@ class OdsParser(Parser):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
         source = resource
         target = self.resource
+        control = target.dialect.get_control("ods", ensure=OdsControl())
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()
         book = ezodf.newdoc(doctype="ods", filename=file.name)
-        title = f"Sheet {target.dialect.sheet}"
+        title = f"Sheet {control.sheet}"
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]
         with source:

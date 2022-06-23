@@ -4,7 +4,7 @@ from .parser import CsvParser
 
 
 class CsvPlugin(Plugin):
-    """Plugin for Pandas"""
+    """Plugin for CSV"""
 
     code = "csv"
 
