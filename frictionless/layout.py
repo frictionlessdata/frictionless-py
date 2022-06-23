@@ -156,29 +156,22 @@ class Layout(Metadata):
 
         # No header
         if not self.header:
-            return [], list(range(1, len(sample[0]) + 1))
+            return []
 
         # Get labels
-        raw_labels = []
+        labels = []
         prev_cells = {}
         for cells in lists:
             for index, cell in enumerate(cells):
                 if prev_cells.get(index) == cell:
                     continue
                 prev_cells[index] = cell
-                if len(raw_labels) <= index:
-                    raw_labels.append(cell)
+                if len(labels) <= index:
+                    labels.append(cell)
                     continue
-                raw_labels[index] = self.header_join.join([raw_labels[index], cell])
+                labels[index] = self.header_join.join([labels[index], cell])
 
-        # Filter labels
-        labels = []
-        field_positions = []
-        for field_position, label in enumerate(raw_labels, start=1):
-            labels.append(label)
-            field_positions.append(field_position)
-
-        return labels, field_positions
+        return labels
 
     def read_fragment(self, sample):
 
@@ -186,7 +179,6 @@ class Layout(Metadata):
         fragment = []
         row_number = 0
         fragment_positions = []
-        field_positions = self.read_labels(sample)[1]
         for row_position, cells in enumerate(sample, start=1):
             if self.read_filter_rows(cells, row_position=row_position):
                 row_number += 1

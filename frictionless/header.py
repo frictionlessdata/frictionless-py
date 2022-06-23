@@ -8,6 +8,7 @@ from . import errors
 
 
 # TODO: add types
+# TODO: remove field_positions
 class Header(list):
     """Header representation
 

@@ -213,7 +213,6 @@ class Resource(Metadata):
         self.__row_stream = None
         self.__row_number = None
         self.__row_position = None
-        self.__field_positions = None
         self.__fragment_positions = None
 
         # Store extra
@@ -902,7 +901,7 @@ class Resource(Metadata):
         # Create field info
         field_number = 0
         field_info = {"names": [], "objects": [], "positions": [], "mapping": {}}
-        iterator = zip_longest(self.schema.fields, self.__field_positions)
+        iterator = zip_longest(self.schema.fields, list(range(1, len(self.labels) + 1)))
         for field, field_position in iterator:
             if field is None:
                 break
@@ -1035,7 +1034,8 @@ class Resource(Metadata):
         header = Header(
             self.__labels,
             fields=self.schema.fields,
-            field_positions=self.__field_positions,
+            # TODO: remove this
+            field_positions=list(range(1, len(self.__labels) + 1)),
             row_positions=self.layout.header_rows,
             ignore_case=not self.layout.header_case,
         )
@@ -1077,14 +1077,13 @@ class Resource(Metadata):
         self.__sample = sample
 
     def __read_detect_schema(self):
-        labels, field_positions = self.layout.read_labels(self.sample)
+        labels = self.layout.read_labels(self.sample)
         fragment, fragment_positions = self.layout.read_fragment(self.sample)
         schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
         if schema:
             self.schema = schema
         self.__labels = labels
         self.__fragment = fragment
-        self.__field_positions = field_positions
         self.__fragment_positions = fragment_positions
         self.stats["fields"] = len(schema.fields)
         # NOTE: review whether it's a proper place for this fallback to data resource
