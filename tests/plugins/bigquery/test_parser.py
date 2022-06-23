@@ -12,6 +12,7 @@ from frictionless.plugins.bigquery import BigqueryControl
 # General
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_parser_write(options):
     prefix = options.pop("prefix")
@@ -28,6 +29,7 @@ def test_bigquery_parser_write(options):
 
 
 # TODO: add timezone support or document if it's not possible
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")

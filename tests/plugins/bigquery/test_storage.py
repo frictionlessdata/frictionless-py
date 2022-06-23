@@ -17,6 +17,7 @@ from frictionless.plugins.bigquery import BigqueryControl, BigqueryStorage
 # General
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_types(options):
     prefix = options.pop("prefix")
@@ -75,6 +76,7 @@ def test_bigquery_storage_types(options):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_integrity(options):
     prefix = options.pop("prefix")
@@ -123,6 +125,7 @@ def test_bigquery_storage_integrity(options):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_constraints(options):
     prefix = options.pop("prefix")
@@ -162,6 +165,7 @@ def test_bigquery_storage_constraints(options):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_read_resource_not_existent_error(options):
     service = options.pop("service")
@@ -174,6 +178,7 @@ def test_bigquery_storage_read_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_write_resource_existent_error(options):
     service = options.pop("service")
@@ -190,6 +195,7 @@ def test_bigquery_storage_write_resource_existent_error(options):
     storage.delete_package(list(storage))
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_delete_resource_not_existent_error(options):
     service = options.pop("service")
@@ -202,6 +208,7 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_storage_big_file(options):
     service = options.pop("service")
