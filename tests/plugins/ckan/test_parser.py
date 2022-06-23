@@ -7,6 +7,7 @@ from frictionless.plugins.ckan import CkanControl
 # General
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_ckan_parser(options):
     url = options.pop("url")
@@ -22,6 +23,7 @@ def test_ckan_parser(options):
 
 
 # TODO: add timezone support or document if it's not possible
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_ckan_parser_timezone(options):
     url = options.pop("url")

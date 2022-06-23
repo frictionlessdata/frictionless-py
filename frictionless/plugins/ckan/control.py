@@ -11,10 +11,10 @@ class CkanControl(Control):
 
     # Properties
 
-    resource: str
+    dataset: str
     """TODO: add docs"""
 
-    dataset: str
+    resource: Optional[str] = None
     """TODO: add docs"""
 
     apikey: Optional[str] = None
@@ -36,7 +36,7 @@ class CkanControl(Control):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "required": ["resource", "dataset"],
+        "required": ["dataset"],
         "additionalProperties": False,
         "properties": {
             "resource": {"type": "string"},
