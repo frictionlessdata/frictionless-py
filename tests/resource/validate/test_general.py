@@ -7,13 +7,13 @@ pytestmark = pytest.mark.skip
 # General
 
 
-def test_validate():
+def test_resource_validate():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_invalid_resource():
+def test_resource_validate_invalid_resource():
     resource = Resource({"path": "data/table.csv", "schema": "bad"})
     report = resource.validate()
     assert report.stats["errors"] == 1
@@ -22,7 +22,7 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
-def test_validate_invalid_resource_original():
+def test_resource_validate_invalid_resource_original():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate(original=True)
     assert report.flatten(["code", "note"]) == [
@@ -33,7 +33,7 @@ def test_validate_invalid_resource_original():
     ]
 
 
-def test_validate_invalid_table():
+def test_resource_validate_invalid_table():
     resource = Resource({"path": "data/invalid.csv"})
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -48,19 +48,19 @@ def test_validate_invalid_table():
     ]
 
 
-def test_validate_resource_with_schema_as_string():
+def test_resource_validate_resource_with_schema_as_string():
     resource = Resource({"path": "data/table.csv", "schema": "data/schema.json"})
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_from_path():
+def test_resource_validate_from_path():
     resource = Resource("data/table.csv")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_invalid():
+def test_resource_validate_invalid():
     resource = Resource("data/invalid.csv")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -75,7 +75,7 @@ def test_validate_invalid():
     ]
 
 
-def test_validate_blank_headers():
+def test_resource_validate_blank_headers():
     resource = Resource("data/blank-headers.csv")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -83,7 +83,7 @@ def test_validate_blank_headers():
     ]
 
 
-def test_validate_duplicate_headers():
+def test_resource_validate_duplicate_headers():
     resource = Resource("data/duplicate-headers.csv")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -92,7 +92,7 @@ def test_validate_duplicate_headers():
     ]
 
 
-def test_validate_defective_rows():
+def test_resource_validate_defective_rows():
     resource = Resource("data/defective-rows.csv")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -101,7 +101,7 @@ def test_validate_defective_rows():
     ]
 
 
-def test_validate_blank_rows():
+def test_resource_validate_blank_rows():
     resource = Resource("data/blank-rows.csv")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -109,7 +109,7 @@ def test_validate_blank_rows():
     ]
 
 
-def test_validate_blank_rows_multiple():
+def test_resource_validate_blank_rows_multiple():
     resource = Resource("data/blank-rows-multiple.csv")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -127,13 +127,13 @@ def test_validate_blank_rows_multiple():
     ]
 
 
-def test_validate_blank_cell_not_required():
+def test_resource_validate_blank_cell_not_required():
     resource = Resource("data/blank-cells.csv")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_no_data():
+def test_resource_validate_no_data():
     resource = Resource("data/empty.csv")
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
@@ -141,19 +141,19 @@ def test_validate_no_data():
     ]
 
 
-def test_validate_no_rows():
+def test_resource_validate_no_rows():
     resource = Resource("data/without-rows.csv")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_no_rows_with_compression():
+def test_resource_validate_no_rows_with_compression():
     resource = Resource("data/without-rows.csv.zip")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_source_invalid():
+def test_resource_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
     resource = Resource([["h"], [1], "bad"], detector=detector)
@@ -163,7 +163,7 @@ def test_validate_source_invalid():
     ]
 
 
-def test_validate_source_invalid_many_rows():
+def test_resource_validate_source_invalid_many_rows():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
     resource = Resource([["h"], [1], "bad", "bad"], detector=detector)
@@ -173,13 +173,13 @@ def test_validate_source_invalid_many_rows():
     ]
 
 
-def test_validate_source_pathlib_path_table():
+def test_resource_validate_source_pathlib_path_table():
     resource = Resource(pathlib.Path("data/table.csv"))
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_pick_errors():
+def test_resource_validate_pick_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["blank-label", "blank-row"])
     report = resource.validate(checklist)
@@ -190,7 +190,7 @@ def test_validate_pick_errors():
     ]
 
 
-def test_validate_pick_errors_tags():
+def test_resource_validate_pick_errors_tags():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["#header"])
     report = resource.validate(checklist)
@@ -208,7 +208,7 @@ def test_validate_pick_errors_tags():
     ]
 
 
-def test_validate_skip_errors():
+def test_resource_validate_skip_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(skip_errors=["blank-label", "blank-row"])
     report = resource.validate(checklist)
@@ -222,7 +222,7 @@ def test_validate_skip_errors():
     ]
 
 
-def test_validate_skip_errors_tags():
+def test_resource_validate_skip_errors_tags():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(skip_errors=["#header"])
     report = resource.validate(checklist)
@@ -236,7 +236,7 @@ def test_validate_skip_errors_tags():
     ]
 
 
-def test_validate_invalid_limit_errors():
+def test_resource_validate_invalid_limit_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(limit_errors=3)
     report = resource.validate(checklist)
@@ -248,7 +248,7 @@ def test_validate_invalid_limit_errors():
     ]
 
 
-def test_validate_structure_errors_with_limit_errors():
+def test_resource_validate_structure_errors_with_limit_errors():
     resource = Resource("data/structure-errors.csv")
     checklist = Checklist(limit_errors=3)
     report = resource.validate(checklist)
@@ -262,7 +262,7 @@ def test_validate_structure_errors_with_limit_errors():
 
 @pytest.mark.ci
 @pytest.mark.skip
-def test_validate_limit_memory():
+def test_resource_validate_limit_memory():
     source = lambda: ([integer] for integer in range(1, 100000000))
     schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
     layout = Layout(header=False)
@@ -276,7 +276,7 @@ def test_validate_limit_memory():
 
 @pytest.mark.ci
 @pytest.mark.skip
-def test_validate_limit_memory_small():
+def test_resource_validate_limit_memory_small():
     source = lambda: ([integer] for integer in range(1, 100000000))
     schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
     layout = Layout(header=False)
@@ -288,7 +288,7 @@ def test_validate_limit_memory_small():
     ]
 
 
-def test_validate_custom_check():
+def test_resource_validate_custom_check():
 
     # Create check
     class custom(Check):
@@ -310,7 +310,7 @@ def test_validate_custom_check():
     ]
 
 
-def test_validate_custom_check_with_arguments():
+def test_resource_validate_custom_check_with_arguments():
 
     # Create check
     class custom(Check):
@@ -338,7 +338,7 @@ def test_validate_custom_check_with_arguments():
 # Problems
 
 
-def test_validate_infer_fields_issue_223():
+def test_resource_validate_infer_fields_issue_223():
     source = [["name1", "name2"], ["123", "abc"], ["456", "def"], ["789", "ghi"]]
     detector = Detector(schema_patch={"fields": {"name": {"type": "string"}}})
     resource = Resource(source, detector=detector)
@@ -346,7 +346,7 @@ def test_validate_infer_fields_issue_223():
     assert report.valid
 
 
-def test_validate_infer_fields_issue_225():
+def test_resource_validate_infer_fields_issue_225():
     source = [["name1", "name2"], ["123", None], ["456", None], ["789"]]
     detector = Detector(schema_patch={"fields": {"name": {"type": "string"}}})
     resource = Resource(source, detector=detector)
@@ -356,14 +356,14 @@ def test_validate_infer_fields_issue_225():
     ]
 
 
-def test_validate_fails_with_wrong_encoding_issue_274():
+def test_resource_validate_fails_with_wrong_encoding_issue_274():
     # For now, by default encoding is detected incorectly by chardet
     resource = Resource("data/encoding-issue-274.csv", encoding="utf-8")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_wide_table_with_order_fields_issue_277():
+def test_resource_validate_wide_table_with_order_fields_issue_277():
     source = "data/issue-277.csv"
     schema = "data/issue-277.json"
     detector = Detector(schema_sync=True)
@@ -376,7 +376,7 @@ def test_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
-def test_validate_invalid_table_schema_issue_304():
+def test_resource_validate_invalid_table_schema_issue_304():
     source = [["name", "age"], ["Alex", "33"]]
     schema = {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
     resource = Resource(source, schema=schema)
@@ -389,7 +389,7 @@ def test_validate_invalid_table_schema_issue_304():
     ]
 
 
-def test_validate_table_is_invalid_issue_312():
+def test_resource_validate_table_is_invalid_issue_312():
     resource = Resource("data/issue-312.xlsx")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -400,7 +400,7 @@ def test_validate_table_is_invalid_issue_312():
     ]
 
 
-def test_validate_order_fields_issue_313():
+def test_resource_validate_order_fields_issue_313():
     source = "data/issue-313.xlsx"
     layout = Layout(pick_fields=[1, 2, 3, 4, 5])
     schema = {
@@ -418,7 +418,7 @@ def test_validate_order_fields_issue_313():
     assert report.valid
 
 
-def test_validate_missing_local_file_raises_scheme_error_issue_315():
+def test_resource_validate_missing_local_file_raises_scheme_error_issue_315():
     resource = Resource("bad-path.csv")
     report = resource.validate()
     assert report.stats["errors"] == 1
@@ -427,38 +427,38 @@ def test_validate_missing_local_file_raises_scheme_error_issue_315():
     assert note.count("[Errno 2]") and note.count("bad-path.csv")
 
 
-def test_validate_inline_not_a_binary_issue_349():
+def test_resource_validate_inline_not_a_binary_issue_349():
     with open("data/table.csv") as source:
         resource = Resource(source)
         report = resource.validate()
         assert report.valid
 
 
-def test_validate_newline_inside_label_issue_811():
+def test_resource_validate_newline_inside_label_issue_811():
     resource = Resource("data/issue-811.csv")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_resource_from_json_format_issue_827():
+def test_resource_validate_resource_from_json_format_issue_827():
     resource = Resource(path="data/table.json")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_resource_none_is_not_iterable_enum_constraint_issue_833():
+def test_resource_validate_resource_none_is_not_iterable_enum_constraint_issue_833():
     resource = Resource("data/issue-833.csv", schema="data/issue-833.json")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_resource_header_row_has_first_number_issue_870():
+def test_resource_validate_resource_header_row_has_first_number_issue_870():
     resource = Resource("data/issue-870.xlsx", layout={"limitRows": 5})
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_resource_array_path_issue_991():
+def test_resource_validate_resource_array_path_issue_991():
     resource = Resource("data/issue-991.resource.json")
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
@@ -470,7 +470,7 @@ def test_validate_resource_array_path_issue_991():
 
 
 # TODO: review if the error type is correct
-def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
+def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     resource = Resource(
         "data/duplicate-column.csv",
@@ -486,7 +486,7 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     ]
 
 
-def test_validate_resource_metadata_errors_with_missing_values_993():
+def test_resource_validate_resource_metadata_errors_with_missing_values_993():
     resource = Resource("data/resource-with-missingvalues-993.json")
     assert resource.metadata_errors[0].code == "resource-error"
     assert (
@@ -495,7 +495,7 @@ def test_validate_resource_metadata_errors_with_missing_values_993():
     )
 
 
-def test_validate_resource_metadata_errors_with_fields_993():
+def test_resource_validate_resource_metadata_errors_with_fields_993():
     resource = Resource("data/resource-with-fields-993.json")
     assert resource.metadata_errors[0].code == "resource-error"
     assert (
@@ -504,7 +504,7 @@ def test_validate_resource_metadata_errors_with_fields_993():
     )
 
 
-def test_validate_resource_errors_with_missing_values_993():
+def test_resource_validate_resource_errors_with_missing_values_993():
     resource = Resource("data/resource-with-missingvalues-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
@@ -515,7 +515,7 @@ def test_validate_resource_errors_with_missing_values_993():
     ]
 
 
-def test_validate_resource_errors_with_fields_993():
+def test_resource_validate_resource_errors_with_fields_993():
     resource = Resource("data/resource-with-fields-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [

@@ -7,7 +7,7 @@ pytestmark = pytest.mark.skip
 # General
 
 
-def test_validate_detector_sync_schema():
+def test_resource_validate_detector_sync_schema():
     schema = {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -26,7 +26,7 @@ def test_validate_detector_sync_schema():
     }
 
 
-def test_validate_detector_sync_schema_invalid():
+def test_resource_validate_detector_sync_schema_invalid():
     source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
     schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
     detector = Detector(schema_sync=True)
@@ -35,7 +35,7 @@ def test_validate_detector_sync_schema_invalid():
     assert report.valid
 
 
-def test_validate_detector_headers_errors():
+def test_resource_validate_detector_headers_errors():
     source = [
         ["id", "last_name", "first_name", "language"],
         [1, "Alex", "John", "English"],
@@ -57,7 +57,7 @@ def test_validate_detector_headers_errors():
     ]
 
 
-def test_validate_detector_patch_schema():
+def test_resource_validate_detector_patch_schema():
     detector = Detector(schema_patch={"missingValues": ["-"]})
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
@@ -71,7 +71,7 @@ def test_validate_detector_patch_schema():
     }
 
 
-def test_validate_detector_patch_schema_fields():
+def test_resource_validate_detector_patch_schema_fields():
     detector = Detector(
         schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
     )
@@ -84,7 +84,7 @@ def test_validate_detector_patch_schema_fields():
     }
 
 
-def test_validate_detector_infer_type_string():
+def test_resource_validate_detector_infer_type_string():
     detector = Detector(field_type="string")
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
@@ -94,7 +94,7 @@ def test_validate_detector_infer_type_string():
     }
 
 
-def test_validate_detector_infer_type_any():
+def test_resource_validate_detector_infer_type_any():
     detector = Detector(field_type="any")
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
@@ -104,7 +104,7 @@ def test_validate_detector_infer_type_any():
     }
 
 
-def test_validate_detector_infer_names():
+def test_resource_validate_detector_infer_names():
     detector = Detector(field_names=["id", "name"])
     resource = Resource(
         "data/without-headers.csv",

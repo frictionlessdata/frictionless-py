@@ -7,7 +7,7 @@ pytestmark = pytest.mark.skip
 # General
 
 
-def test_validate_schema_invalid():
+def test_resource_validate_schema_invalid():
     source = [["name", "age"], ["Alex", "33"]]
     schema = {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
     resource = Resource(source, schema=schema)
@@ -20,7 +20,7 @@ def test_validate_schema_invalid():
     ]
 
 
-def test_validate_schema_invalid_json():
+def test_resource_validate_schema_invalid_json():
     resource = Resource("data/table.csv", schema="data/invalid.json")
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -28,7 +28,7 @@ def test_validate_schema_invalid_json():
     ]
 
 
-def test_validate_schema_extra_headers_and_cells():
+def test_resource_validate_schema_extra_headers_and_cells():
     schema = {"fields": [{"name": "id", "type": "integer"}]}
     resource = Resource("data/table.csv", schema=schema)
     report = resource.validate()
@@ -39,7 +39,7 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
-def test_validate_schema_multiple_errors():
+def test_resource_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
     resource = Resource(source, schema=schema)
@@ -53,7 +53,7 @@ def test_validate_schema_multiple_errors():
     ]
 
 
-def test_validate_schema_min_length_constraint():
+def test_resource_validate_schema_min_length_constraint():
     source = [["row", "word"], [2, "a"], [3, "ab"], [4, "abc"], [5, "abcd"], [6]]
     schema = {
         "fields": [
@@ -69,7 +69,7 @@ def test_validate_schema_min_length_constraint():
     ]
 
 
-def test_validate_schema_max_length_constraint():
+def test_resource_validate_schema_max_length_constraint():
     source = [["row", "word"], [2, "a"], [3, "ab"], [4, "abc"], [5, "abcd"], [6]]
     schema = {
         "fields": [
@@ -86,7 +86,7 @@ def test_validate_schema_max_length_constraint():
     ]
 
 
-def test_validate_schema_minimum_constraint():
+def test_resource_validate_schema_minimum_constraint():
     source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
     schema = {
         "fields": [
@@ -102,7 +102,7 @@ def test_validate_schema_minimum_constraint():
     ]
 
 
-def test_validate_schema_maximum_constraint():
+def test_resource_validate_schema_maximum_constraint():
     source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
     schema = {
         "fields": [
@@ -119,7 +119,7 @@ def test_validate_schema_maximum_constraint():
     ]
 
 
-def test_validate_schema_foreign_key_error_self_referencing():
+def test_resource_validate_schema_foreign_key_error_self_referencing():
     source = {
         "path": "data/nested.csv",
         "schema": {
@@ -138,7 +138,7 @@ def test_validate_schema_foreign_key_error_self_referencing():
     assert report.valid
 
 
-def test_validate_schema_foreign_key_error_self_referencing_invalid():
+def test_resource_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
         "path": "data/nested-invalid.csv",
         "schema": {
@@ -159,7 +159,7 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
     ]
 
 
-def test_validate_schema_unique_error():
+def test_resource_validate_schema_unique_error():
     resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
     checklist = Checklist(pick_errors=["unique-error"])
     report = resource.validate(checklist)
@@ -168,7 +168,7 @@ def test_validate_schema_unique_error():
     ]
 
 
-def test_validate_schema_unique_error_and_type_error():
+def test_resource_validate_schema_unique_error_and_type_error():
     source = [
         ["id", "unique_number"],
         ["a1", 100],
@@ -192,7 +192,7 @@ def test_validate_schema_unique_error_and_type_error():
     ]
 
 
-def test_validate_schema_primary_key_error():
+def test_resource_validate_schema_primary_key_error():
     resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
     checklist = Checklist(pick_errors=["primary-key"])
     report = resource.validate(checklist)
@@ -201,7 +201,7 @@ def test_validate_schema_primary_key_error():
     ]
 
 
-def test_validate_schema_primary_key_and_unique_error():
+def test_resource_validate_schema_primary_key_and_unique_error():
     resource = Resource(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -213,7 +213,7 @@ def test_validate_schema_primary_key_and_unique_error():
     ]
 
 
-def test_validate_schema_primary_key_error_composite():
+def test_resource_validate_schema_primary_key_error_composite():
     source = [
         ["id", "name"],
         [1, "Alex"],
