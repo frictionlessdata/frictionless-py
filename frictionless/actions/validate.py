@@ -1,13 +1,15 @@
 from typing import Optional, List, Any
+from ..system import system
 from ..check import Check
 from ..schema import Schema
 from ..report import Report
+from ..dialect import Dialect
+from ..inquiry import Inquiry
 from ..package import Package
 from ..pipeline import Pipeline
 from ..resource import Resource
+from ..detector import Detector
 from ..checklist import Checklist
-from ..inquiry import Inquiry
-from ..system import system
 from ..exception import FrictionlessException
 from .. import settings
 
@@ -71,6 +73,20 @@ def validate(
             checklist = Checklist.from_descriptor(checklist)  # type: ignore
         return checklist.validate()
 
+    # Validate detector
+    elif type == "detector":
+        detector = source
+        if not isinstance(detector, Detector):
+            detector = Detector.from_descriptor(detector)  # type: ignore
+        return detector.validate()  # type: ignore
+
+    # Validate dialect
+    elif type == "dialect":
+        dialect = source
+        if not isinstance(dialect, Dialect):
+            dialect = Dialect.from_descriptor(dialect)  # type: ignore
+        return dialect.validate()  # type: ignore
+
     # Validate inquiry
     elif type == "inquiry":
         inquiry = source
@@ -99,7 +115,7 @@ def validate(
     # Validate report
     elif type == "report":
         report = source
-        if not isinstance(report, Inquiry):
+        if not isinstance(report, Report):
             # TODO: fix it
             report = Report.from_descriptor(report)  # type: ignore
         return report.validate()

@@ -23,7 +23,7 @@ class Dialect(Metadata2):
     header: bool = settings.DEFAULT_HEADER
     """TODO: add docs"""
 
-    header_rows: List[int] = field(default_factory=lambda: settings.DEFAULT_HEADER_ROWS)
+    header_rows: List[int] = field(default_factory=settings.DEFAULT_HEADER_ROWS.copy)
     """TODO: add docs"""
 
     header_join: str = settings.DEFAULT_HEADER_JOIN

@@ -2,6 +2,7 @@ from __future__ import annotations
 import codecs
 import chardet
 from copy import copy, deepcopy
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
 from ..metadata2 import Metadata2
 from ..exception import FrictionlessException
@@ -18,79 +19,49 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-# TODO: convert to dataclass?
+@dataclass
 class Detector(Metadata2):
     """Detector representation"""
 
     validate = validate
 
-    def __init__(
-        self,
-        buffer_size: int = settings.DEFAULT_BUFFER_SIZE,
-        sample_size: int = settings.DEFAULT_SAMPLE_SIZE,
-        encoding_function: Optional[EncodingFunction] = None,
-        encoding_confidence: float = settings.DEFAULT_ENCODING_CONFIDENCE,
-        field_type: Optional[str] = None,
-        field_names: Optional[List[str]] = None,
-        field_confidence: float = settings.DEFAULT_FIELD_CONFIDENCE,
-        field_float_numbers: bool = settings.DEFAULT_FLOAT_NUMBERS,
-        field_missing_values: List[str] = settings.DEFAULT_MISSING_VALUES,
-        field_true_values: List[str] = settings.DEFAULT_TRUE_VALUES,
-        field_false_values: List[str] = settings.DEFAULT_FALSE_VALUES,
-        schema_sync: bool = False,
-        schema_patch: Optional[dict] = None,
-    ):
-        self.buffer_size = buffer_size
-        self.sample_size = sample_size
-        self.encoding_function = encoding_function
-        self.encoding_confidence = encoding_confidence
-        self.field_type = field_type
-        self.field_names = field_names
-        self.field_confidence = field_confidence
-        self.field_float_numbers = field_float_numbers
-        self.field_missing_values = field_missing_values
-        self.field_true_values = field_true_values
-        self.field_false_values = field_false_values
-        self.schema_sync = schema_sync
-        self.schema_patch = schema_patch
-
     # Properties
 
-    buffer_size: int
+    buffer_size: int = settings.DEFAULT_BUFFER_SIZE
     """
     The amount of bytes to be extracted as a buffer.
     It defaults to 10000
     """
 
-    sample_size: int
+    sample_size: int = settings.DEFAULT_SAMPLE_SIZE
     """
     The amount of rows to be extracted as a sample.
     It defaults to 100
     """
 
-    encoding_function: Optional[EncodingFunction]
+    encoding_function: Optional[EncodingFunction] = None
     """
     A custom encoding function for the file.
     """
 
-    encoding_confidence: float
+    encoding_confidence: float = settings.DEFAULT_ENCODING_CONFIDENCE
     """
     Confidence value for encoding function.
     """
 
-    field_type: Optional[str]
+    field_type: Optional[str] = None
     """
     Enforce all the inferred types to be this type.
     For more information, please check "Describing  Data" guide.
     """
 
-    field_names: Optional[List[str]]
+    field_names: Optional[List[str]] = None
     """
     Enforce all the inferred fields to have provided names.
     For more information, please check "Describing  Data" guide.
     """
 
-    field_confidence: float
+    field_confidence: float = settings.DEFAULT_FIELD_CONFIDENCE
     """
     A number from 0 to 1 setting the infer confidence.
     If  1 the data is guaranteed to be valid against the inferred schema.
@@ -98,7 +69,7 @@ class Detector(Metadata2):
     It defaults to 0.9
     """
 
-    field_float_numbers: bool
+    field_float_numbers: bool = settings.DEFAULT_FLOAT_NUMBERS
     """
     Flag to indicate desired number type.
     By default numbers will be `Decimal`; if `True` - `float`.
@@ -106,28 +77,34 @@ class Detector(Metadata2):
     It defaults to `False`
     """
 
-    field_missing_values: List[str]
+    field_missing_values: List[str] = field(
+        default_factory=settings.DEFAULT_MISSING_VALUES.copy
+    )
     """
     String to be considered as missing values.
     For more information, please check "Describing  Data" guide.
     It defaults to `['']`
     """
 
-    field_true_values: List[str]
+    field_true_values: List[str] = field(
+        default_factory=settings.DEFAULT_TRUE_VALUES.copy
+    )
     """
     String to be considered as true values.
     For more information, please check "Describing  Data" guide.
     It defaults to `["true", "True", "TRUE", "1"]`
     """
 
-    field_false_values: List[str]
+    field_false_values: List[str] = field(
+        default_factory=settings.DEFAULT_FALSE_VALUES.copy
+    )
     """
     String to be considered as false values.
     For more information, please check "Describing  Data" guide.
     It defaults to `["false", "False", "FALSE", "0"]`
     """
 
-    schema_sync: bool
+    schema_sync: bool = False
     """
     Whether to sync the schema.
     If it sets to `True` the provided schema will be mapped to
@@ -136,7 +113,7 @@ class Detector(Metadata2):
     fields or the provided schema can have different order of fields.
     """
 
-    schema_patch: Optional[dict]
+    schema_patch: Optional[dict] = None
     """
     A dictionary to be used as an inferred schema patch.
     The form of this dictionary should follow the Schema descriptor form
@@ -362,6 +339,14 @@ class Detector(Metadata2):
         return schema
 
     def detect_lookup(self, resource: Resource):
+        """Detect lookup from resource
+
+        Parameters:
+            resource (Resource): tabular resource
+
+        Returns:
+            dict: lookup
+        """
         lookup = {}
         for fk in resource.schema.foreign_keys:
 

@@ -1,1 +1,1 @@
-from .dialect import Dialect, Control
+from .dialect import Dialect
