@@ -496,7 +496,7 @@ class Package(Metadata):
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
 
-    # Import/Export
+    # Convert
 
     def to_copy(self):
         """Create a copy of the package"""

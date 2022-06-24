@@ -104,7 +104,7 @@ class Header(list):
         """
         return not self.__errors
 
-    # Import/Export
+    # Convert
 
     def to_str(self):
         """

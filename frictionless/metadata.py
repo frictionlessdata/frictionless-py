@@ -103,7 +103,7 @@ class Metadata(helpers.ControlledDict):
     def infer(self):
         pass
 
-    # Import/Export
+    # Convert
 
     @classmethod
     def from_descriptor(cls, descriptor):

@@ -192,7 +192,7 @@ class Row(dict):
         self.__process()
         return not self.__errors
 
-    # Import/Export
+    # Convert
 
     def to_str(self):
         """
