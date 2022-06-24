@@ -1,0 +1,11 @@
+{
+  "profile": "tabular-data-package",
+  "resources": [
+    {
+      "name": "measurements",
+      "path": ["chunk1.csv.zip", "chunk2.csv.zip"],
+      "profile": "tabular-data-resource",
+      "schema": "resource-schema.json"
+    }
+  ]
+}
