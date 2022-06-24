@@ -935,14 +935,8 @@ class Resource(Metadata):
         def row_stream():
             self.__row_number = 0
             limit = self.layout.limit_rows
-            offset = self.layout.offset_rows or 0
             for row_position, cells in iterator:
                 self.__row_position = row_position
-
-                # Offset/offset rows
-                if offset:
-                    offset -= 1
-                    continue
                 if limit and limit <= self.__row_number:
                     break
 

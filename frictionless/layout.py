@@ -22,7 +22,6 @@ class Layout(Metadata):
         pick_rows? ((str|int)[]): what rows to pick
         skip_rows? ((str|int)[]): what rows to skip
         limit_rows? (int): amount of rows
-        offset_rows? (int): from what row to start
     """
 
     def __init__(
@@ -36,7 +35,6 @@ class Layout(Metadata):
         pick_rows=None,
         skip_rows=None,
         limit_rows=None,
-        offset_rows=None,
     ):
         self.setinitial("header", header)
         self.setinitial("headerRows", header_rows)
@@ -45,7 +43,6 @@ class Layout(Metadata):
         self.setinitial("pickRows", pick_rows)
         self.setinitial("skipRows", skip_rows)
         self.setinitial("limitRows", limit_rows)
-        self.setinitial("offsetRows", offset_rows)
         super().__init__(descriptor)
 
     @Metadata.property
@@ -105,14 +102,6 @@ class Layout(Metadata):
             int?: limit rows
         """
         return self.get("limitRows")
-
-    @Metadata.property
-    def offset_rows(self):
-        """
-        Returns:
-            int?: offset rows
-        """
-        return self.get("offsetRows")
 
     @Metadata.property(write=False)
     def pick_rows_compiled(self):
@@ -232,6 +221,5 @@ class Layout(Metadata):
             "pickRows": {"type": "array"},
             "skipRows": {"type": "array"},
             "limitRows": {"type": "number", "minimum": 1},
-            "offsetRows": {"type": "number", "minimum": 1},
         },
     }

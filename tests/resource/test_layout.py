@@ -476,6 +476,7 @@ def test_resource_layout_limit_rows():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_offset_rows():
     source = "data/long.csv"
     layout = Layout(offset_rows=5)
@@ -486,6 +487,7 @@ def test_resource_layout_offset_rows():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_limit_offset_rows():
     source = "data/long.csv"
     layout = Layout(limit_rows=2, offset_rows=2)
