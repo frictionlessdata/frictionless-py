@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, Dialect, FrictionlessException, helpers
 
 
 # General
@@ -38,7 +38,8 @@ def test_resource_encoding_explicit_latin1():
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     source = "en,English\nja,日本語".encode("utf-16")
-    with Resource(source, format="csv", layout={"header": False}) as resource:
+    dialect = Dialect(header=False)
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.encoding == "utf-16"
         assert resource.read_rows() == [
             {"field1": "en", "field2": "English"},

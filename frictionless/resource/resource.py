@@ -1049,8 +1049,8 @@ class Resource(Metadata):
         self.__sample = sample
 
     def __read_detect_schema(self):
-        labels = self.layout.read_labels(self.sample)
-        fragment, fragment_positions = self.layout.read_fragment(self.sample)
+        labels = self.dialect.read_labels(self.sample)
+        fragment, fragment_positions = self.dialect.read_fragment(self.sample)
         schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
         if schema:
             self.schema = schema
