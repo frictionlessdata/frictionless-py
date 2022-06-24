@@ -33,6 +33,7 @@ class Metaclass(type):
 
 # TODO: insert __init__ params docs using instance properties data?
 class Metadata2(metaclass=Metaclass):
+    # TODO: fix for arguments like dialect.header_rows!!!
     def __setattr__(self, name, value):
         if self.metadata_initiated or isinstance(value, (list, dict)):
             self.metadata_defined.add(name)

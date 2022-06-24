@@ -178,6 +178,7 @@ class Detector(Metadata2):
             Dialect: dialect
         """
         dialect = dialect or Dialect()
+        comment_filter = dialect.create_comment_filter()
 
         # Infer header
         widths = [len(cells) for cells in sample]
@@ -192,13 +193,14 @@ class Detector(Metadata2):
             # We use it to eleminate initial rows that are comments/etc
 
             # Get header rows
-            row_number = 0
             header_rows = settings.DEFAULT_HEADER_ROWS
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
-            for cells in sample:
-                row_number += 1
+            for row_number, cells in enumerate(sample, start=1):
+                if comment_filter:
+                    if not comment_filter(row_number, cells):
+                        continue
                 if len(cells) in match:
                     header_rows = [row_number]
                     break
