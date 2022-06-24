@@ -344,6 +344,7 @@ def test_resource_layout_limit_offset_fields():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_pick_rows():
     source = "data/skip-rows.csv"
     layout = Layout(header=False, pick_rows=["1", "2"])
@@ -354,6 +355,7 @@ def test_resource_layout_pick_rows():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_pick_rows_number():
     source = "data/skip-rows.csv"
     layout = Layout(header=False, pick_rows=[3, 5])
@@ -364,6 +366,7 @@ def test_resource_layout_pick_rows_number():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_pick_rows_regex():
     source = [
         ["# comment"],

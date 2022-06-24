@@ -19,7 +19,6 @@ class Layout(Metadata):
         header_rows? (int[]): row numbers to form header (list all of them not only from/to)
         header_join? (str): a string to be used as a joiner for multiline header
         header_case? (bool): whether to respect header case (default: True)
-        pick_rows? ((str|int)[]): what rows to pick
         skip_rows? ((str|int)[]): what rows to skip
     """
 
@@ -31,14 +30,12 @@ class Layout(Metadata):
         header_rows=None,
         header_join=None,
         header_case=None,
-        pick_rows=None,
         skip_rows=None,
     ):
         self.setinitial("header", header)
         self.setinitial("headerRows", header_rows)
         self.setinitial("headerJoin", header_join)
         self.setinitial("headerCase", header_case)
-        self.setinitial("pickRows", pick_rows)
         self.setinitial("skipRows", skip_rows)
         super().__init__(descriptor)
 
@@ -77,28 +74,12 @@ class Layout(Metadata):
         return self.get("headerCase", settings.DEFAULT_HEADER_CASE)
 
     @Metadata.property
-    def pick_rows(self):
-        """
-        Returns:
-            (str|int)[]?: pick rows
-        """
-        return self.get("pickRows")
-
-    @Metadata.property
     def skip_rows(self):
         """
         Returns:
             (str|int)[]?: skip rows
         """
         return self.get("skipRows")
-
-    @Metadata.property(write=False)
-    def pick_rows_compiled(self):
-        """
-        Returns:
-            re?: compiled pick rows
-        """
-        return helpers.compile_regex(self.pick_rows)
 
     @Metadata.property(write=False)
     def skip_rows_compiled(self):
@@ -173,10 +154,8 @@ class Layout(Metadata):
         match = True
         cell = cells[0] if cells else None
         cell = "" if cell is None else str(cell)
-        for name in ["pick", "skip"]:
-            if name == "pick":
-                items = self.pick_rows_compiled
-            else:
+        for name in ["skip"]:
+            if name == "skip":
                 items = self.skip_rows_compiled
             if not items:
                 continue
