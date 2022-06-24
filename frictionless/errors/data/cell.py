@@ -10,7 +10,6 @@ class CellError(RowError):
         note (str): an error note
         cells (str[]): row cells
         row_number (int): row number
-        row_position (int): row position
         cell (str): errored cell
         field_name (str): field name
         field_number (int): field number
@@ -33,7 +32,6 @@ class CellError(RowError):
         note,
         cells,
         row_number,
-        row_position,
         cell,
         field_name,
         field_number,
@@ -46,7 +44,6 @@ class CellError(RowError):
             note=note,
             cells=cells,
             row_number=row_number,
-            row_position=row_position,
         )
 
     # Create
@@ -73,7 +70,6 @@ class CellError(RowError):
                     note=note,
                     cells=list(map(to_str, row.cells)),
                     row_number=row.row_number,
-                    row_position=row.row_position,
                     cell=str(cell),
                     field_name=field_name,
                     field_number=field_number,

@@ -181,7 +181,7 @@ def test_resource_schema_unique_error():
     )
     with Resource(source, detector=detector) as resource:
         for row in resource:
-            if row.row_number == 3:
+            if row.row_number == 4:
                 assert row.valid is False
                 assert row.errors[0].code == "unique-error"
                 continue
@@ -201,7 +201,7 @@ def test_resource_schema_primary_key_error():
     detector = Detector(schema_patch={"primaryKey": ["name"]})
     with Resource(source, detector=detector) as resource:
         for row in resource:
-            if row.row_number == 3:
+            if row.row_number == 4:
                 assert row.valid is False
                 assert row.errors[0].code == "primary-key"
                 continue

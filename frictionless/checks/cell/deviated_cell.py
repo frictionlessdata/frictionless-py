@@ -45,7 +45,7 @@ class deviated_cell(Check):
             if cell and field.type == "string":
                 if field_idx not in self.__cell_sizes:
                     self.__cell_sizes[field_idx] = {}
-                self.__cell_sizes[field_idx][row.row_position] = len(cell) if cell else 0
+                self.__cell_sizes[field_idx][row.row_number] = len(cell) if cell else 0
                 self.__fields[field_idx] = field.name
         yield from []
 
@@ -61,10 +61,10 @@ class deviated_cell(Check):
                 maximum = average + stdev * self.interval
                 # Use threshold or maximum value whichever is higher
                 threshold = threshold if threshold > maximum else maximum
-                for row_position, cell in col_cell_sizes.items():
+                for row_number, cell in col_cell_sizes.items():
                     if cell > threshold:
                         note = 'cell at row "%s" and field "%s" has deviated size'
-                        note = note % (row_position, self.__fields[field_idx])
+                        note = note % (row_number, self.__fields[field_idx])
                         yield errors.DeviatedCellError(note=note)
             except Exception as exception:
                 note = 'calculation issue "%s"' % exception

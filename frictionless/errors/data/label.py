@@ -30,7 +30,7 @@ class LabelError(HeaderError):
         note,
         labels,
         label,
-        row_positions,
+        row_numbers,
         field_name,
         field_number,
     ):
@@ -41,7 +41,7 @@ class LabelError(HeaderError):
             descriptor,
             note=note,
             labels=labels,
-            row_positions=row_positions,
+            row_numbers=row_numbers,
         )
 
 

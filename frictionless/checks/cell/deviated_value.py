@@ -36,7 +36,7 @@ class deviated_value(Check):
     def connect(self, resource):
         super().connect(resource)
         self.__cells = []
-        self.__row_positions = []
+        self.__row_numbers = []
         self.__average_function = AVERAGE_FUNCTIONS.get(self.average)
 
     # Validate
@@ -58,7 +58,7 @@ class deviated_value(Check):
         cell = row[self.field_name]
         if cell is not None:
             self.__cells.append(cell)
-            self.__row_positions.append(row.row_position)
+            self.__row_numbers.append(row.row_number)
         yield from []
 
     def validate_end(self):
@@ -77,10 +77,10 @@ class deviated_value(Check):
             return
 
         # Check values
-        for row_position, cell in zip(self.__row_positions, self.__cells):
+        for row_number, cell in zip(self.__row_numbers, self.__cells):
             if not (minimum <= cell <= maximum):
                 note = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
-                note = note % (cell, row_position, self.field_name, minimum, maximum)
+                note = note % (cell, row_number, self.field_name, minimum, maximum)
                 yield errors.DeviatedValueError(note=note)
 
     # Metadata

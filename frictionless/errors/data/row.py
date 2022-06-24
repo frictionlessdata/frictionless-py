@@ -8,7 +8,6 @@ class RowError(ContentError):
         descriptor? (str|dict): error descriptor
         note (str): an error note
         row_number (int): row number
-        row_position (int): row position
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -21,10 +20,9 @@ class RowError(ContentError):
     template = "Row Error"
     description = "Row Error"
 
-    def __init__(self, descriptor=None, *, note, cells, row_number, row_position):
+    def __init__(self, descriptor=None, *, note, cells, row_number):
         self.setinitial("cells", cells)
         self.setinitial("rowNumber", row_number)
-        self.setinitial("rowPosition", row_position)
         super().__init__(descriptor, note=note)
 
     # Create
@@ -45,7 +43,6 @@ class RowError(ContentError):
             note=note,
             cells=list(map(to_str, row.cells)),
             row_number=row.row_number,
-            row_position=row.row_position,
         )
 
 

@@ -32,7 +32,6 @@ class Row(dict):
     Parameters:
         cells (any[]): array of cells
         field_info (dict): special field info structure
-        row_position (int): row position from 1
         row_number (int): row number from 1
     """
 
@@ -41,12 +40,10 @@ class Row(dict):
         cells,
         *,
         field_info,
-        row_position,
         row_number,
     ):
         self.__cells = cells
         self.__field_info = field_info
-        self.__row_position = row_position
         self.__row_number = row_number
         self.__processed = False
         self.__blank_cells = {}
@@ -137,14 +134,6 @@ class Row(dict):
             str[]: field numbers
         """
         return list(range(1, len(self.__field_info["names"]) + 1))
-
-    @cached_property
-    def row_position(self):
-        """
-        Returns:
-            int: row position from 1
-        """
-        return self.__row_position
 
     @cached_property
     def row_number(self):
@@ -315,7 +304,6 @@ class Row(dict):
                         note=type_note,
                         cells=list(map(to_str, cells)),
                         row_number=self.__row_number,
-                        row_position=self.__row_position,
                         cell=str(source),
                         field_name=field.name,
                         field_number=field_number,
@@ -330,7 +318,6 @@ class Row(dict):
                             note=note,
                             cells=list(map(to_str, cells)),
                             row_number=self.__row_number,
-                            row_position=self.__row_position,
                             cell=str(source),
                             field_name=field.name,
                             field_number=field_number,
@@ -352,7 +339,6 @@ class Row(dict):
                         note="",
                         cells=list(map(to_str, cells)),
                         row_number=self.__row_number,
-                        row_position=self.__row_position,
                         cell=str(cell),
                         field_name="",
                         field_number=field_number,
@@ -370,7 +356,6 @@ class Row(dict):
                             note="",
                             cells=list(map(to_str, cells)),
                             row_number=self.__row_number,
-                            row_position=self.__row_position,
                             cell="",
                             field_name=field.name,
                             field_number=field_number,
@@ -384,7 +369,6 @@ class Row(dict):
                     note="",
                     cells=list(map(to_str, cells)),
                     row_number=self.__row_number,
-                    row_position=self.__row_position,
                 )
             ]
 

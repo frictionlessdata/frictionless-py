@@ -201,8 +201,6 @@ class Resource(Metadata):
         self.__header = None
         self.__lookup = None
         self.__row_stream = None
-        self.__row_number = None
-        self.__row_position = None
 
         # Store extra
         self.__basepath = basepath or helpers.parse_basepath(descriptor)
@@ -892,17 +890,15 @@ class Resource(Metadata):
 
         # Create row stream
         def row_stream():
-            self.__row_number = 0
-            for row_position, cells in enumerated_content_stream:
-                self.__row_position = row_position
+            row_count = 0
+            for row_number, cells in enumerated_content_stream:
+                row_count += 1
 
                 # Create row
-                self.__row_number += 1
                 row = Row(
                     cells,
                     field_info=field_info,
-                    row_position=self.__row_position,
-                    row_number=self.__row_number,
+                    row_number=row_number,
                 )
 
                 # Unique Error
@@ -911,7 +907,7 @@ class Resource(Metadata):
                         cell = row[field_name]
                         if cell is not None:
                             match = memory_unique[field_name].get(cell)
-                            memory_unique[field_name][cell] = row.row_position
+                            memory_unique[field_name][cell] = row.row_number
                             if match:
                                 func = errors.UniqueError.from_row
                                 note = "the same as in the row at position %s" % match
@@ -927,7 +923,7 @@ class Resource(Metadata):
                         row.errors.append(error)
                     else:
                         match = memory_primary.get(cells)
-                        memory_primary[cells] = row.row_position
+                        memory_primary[cells] = row.row_number
                         if match:
                             if match:
                                 note = "the same as in the row at position %s" % match
@@ -968,7 +964,7 @@ class Resource(Metadata):
                 yield row
 
             # Update stats
-            self.stats["rows"] = self.__row_number
+            self.stats["rows"] = row_count
 
         # Return row stream
         return row_stream()
@@ -979,7 +975,7 @@ class Resource(Metadata):
         header = Header(
             self.__labels,
             fields=self.schema.fields,
-            row_positions=self.dialect.header_rows,
+            row_numbers=self.dialect.header_rows,
             ignore_case=not self.dialect.header_case,
         )
 
@@ -1015,7 +1011,8 @@ class Resource(Metadata):
 
     def __read_detect_lookup(self):
         lookup = self.detector.detect_lookup(self)
-        self.__lookup = lookup
+        if lookup:
+            self.__lookup = lookup
 
     # Write
 

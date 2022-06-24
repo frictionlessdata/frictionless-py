@@ -34,7 +34,7 @@ class duplicate_row(Check):
         if match:
             note = 'the same as row at position "%s"' % match
             yield errors.DuplicateRowError.from_row(row, note=note)
-        self.__memory[hash] = row.row_position
+        self.__memory[hash] = row.row_number
 
     # Metadata
 

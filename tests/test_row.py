@@ -11,8 +11,7 @@ def test_basic():
     row = resource.read_rows()[0]
     assert row == {"field1": 1, "field2": 2, "field3": 3}
     assert row.field_numbers == [1, 2, 3]
-    assert row.row_position == 2
-    assert row.row_number == 1
+    assert row.row_number == 2
     assert row.blank_cells == {}
     assert row.error_cells == {}
     assert row.errors == []

@@ -18,7 +18,7 @@ class Header(list):
     Parameters:
         labels (any[]): header row labels
         fields (Field[]): table fields
-        row_positions (int[]): row positions
+        row_numbers (int[]): row numbers
         ignore_case (bool): ignore case
 
     """
@@ -28,13 +28,13 @@ class Header(list):
         labels,
         *,
         fields,
-        row_positions,
+        row_numbers,
         ignore_case=False,
     ):
         super().__init__(field.name for field in fields)
         self.__fields = [field.to_copy() for field in fields]
         self.__field_names = self.copy()
-        self.__row_positions = row_positions
+        self.__row_numbers = row_numbers
         self.__ignore_case = ignore_case
         self.__labels = labels
         self.__errors: List[errors.HeaderError] = []
@@ -73,12 +73,12 @@ class Header(list):
         return list(range(1, len(self.__field_names) + 1))
 
     @cached_property
-    def row_positions(self):
+    def row_numbers(self):
         """
         Returns:
             int[]: table row positions
         """
-        return self.__row_positions
+        return self.__row_numbers
 
     @cached_property
     def missing(self):
@@ -140,7 +140,7 @@ class Header(list):
                     errors.ExtraLabelError(
                         note="",
                         labels=list(map(str, labels)),
-                        row_positions=self.__row_positions,
+                        row_numbers=self.__row_numbers,
                         label="",
                         field_name="",
                         field_number=field_number,
@@ -157,7 +157,7 @@ class Header(list):
                         errors.MissingLabelError(
                             note="",
                             labels=list(map(str, labels)),
-                            row_positions=self.__row_positions,
+                            row_numbers=self.__row_numbers,
                             label="",
                             field_name=field.name,
                             field_number=field_number,
@@ -175,7 +175,7 @@ class Header(list):
                     errors.BlankLabelError(
                         note="",
                         labels=list(map(str, labels)),
-                        row_positions=self.__row_positions,
+                        row_numbers=self.__row_numbers,
                         label="",
                         field_name=field.name,
                         field_number=field_number,
@@ -197,7 +197,7 @@ class Header(list):
                         errors.DuplicateLabelError(
                             note=note,
                             labels=list(map(str, labels)),
-                            row_positions=self.__row_positions,
+                            row_numbers=self.__row_numbers,
                             label=str(labels[field_number - 1]),
                             field_name=field.name,
                             field_number=field_number,
@@ -214,7 +214,7 @@ class Header(list):
                         errors.IncorrectLabelError(
                             note="",
                             labels=list(map(str, labels)),
-                            row_positions=self.__row_positions,
+                            row_numbers=self.__row_numbers,
                             label=str(label),
                             field_name=field.name,
                             field_number=field_number,
@@ -227,6 +227,6 @@ class Header(list):
                 errors.BlankHeaderError(
                     note="",
                     labels=list(map(str, labels)),
-                    row_positions=self.__row_positions,
+                    row_numbers=self.__row_numbers,
                 )
             ]

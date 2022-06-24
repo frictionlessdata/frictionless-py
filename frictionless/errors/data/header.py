@@ -29,10 +29,10 @@ class HeaderError(TableError):
         *,
         note,
         labels,
-        row_positions,
+        row_numbers,
     ):
         self.setinitial("labels", labels)
-        self.setinitial("rowPositions", row_positions)
+        self.setinitial("rowNumbers", row_numbers)
         super().__init__(descriptor, note=note)
 
 

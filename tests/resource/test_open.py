@@ -17,7 +17,7 @@ def test_resource_open():
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
-        assert resource.header.row_positions == [1]
+        assert resource.header.row_numbers == [1]
         assert resource.schema == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -40,14 +40,12 @@ def test_resource_open_read_rows():
         assert headers.valid is True
         assert row1.to_dict() == {"id": 1, "name": "english"}
         assert row1.field_numbers == [1, 2]
-        assert row1.row_position == 2
-        assert row1.row_number == 1
+        assert row1.row_number == 2
         assert row1.errors == []
         assert row1.valid is True
         assert row2.to_dict() == {"id": 2, "name": "中国人"}
         assert row2.field_numbers == [1, 2]
-        assert row2.row_position == 3
-        assert row2.row_number == 2
+        assert row2.row_number == 3
         assert row2.errors == []
         assert row2.valid is True
 
@@ -67,10 +65,10 @@ def test_resource_open_row_stream_iterate():
         assert resource.header == ["id", "name"]
         for row in resource.row_stream:
             assert len(row) == 2
-            assert row.row_number in [1, 2]
-            if row.row_number == 1:
-                assert row.to_dict() == {"id": 1, "name": "english"}
+            assert row.row_number in [2, 3]
             if row.row_number == 2:
+                assert row.to_dict() == {"id": 1, "name": "english"}
+            if row.row_number == 3:
                 assert row.to_dict() == {"id": 2, "name": "中国人"}
 
 

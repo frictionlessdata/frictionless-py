@@ -1053,7 +1053,6 @@ def test_validate_custom_check():
                 note="",
                 cells=list(map(str, row.values())),
                 row_number=row.row_number,
-                row_position=row.row_position,
             )
 
     # Validate resource
@@ -1068,19 +1067,18 @@ def test_validate_custom_check_with_arguments():
 
     # Create check
     class custom(Check):
-        def __init__(self, row_position=None):
-            self.row_position = row_position
+        def __init__(self, row_number=None):
+            self.row_number = row_number
 
         def validate_row(self, row):
             yield errors.BlankRowError(
                 note="",
                 cells=list(map(str, row.values())),
-                row_number=row.row_number,
-                row_position=self.row_position or row.row_position,
+                row_number=self.row_number or row.row_number,
             )
 
     # Validate resource
-    report = validate("data/table.csv", checks=[custom(row_position=1)])
+    report = validate("data/table.csv", checks=[custom(row_number=1)])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
