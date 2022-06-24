@@ -6,6 +6,9 @@ cleanup:
   - rm transform.csv
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
 Transforming data in Frictionless means modifying data and metadata from state A to state B. For example, it could be transforming a messy Excel file to a cleaned CSV file, or transforming a folder of data files to a data package we can publish more easily. To read more about the concepts behind Frictionless Transform, please check out the [Transform Principles](#transform-principles) sections belows.
@@ -48,8 +51,27 @@ The main difference between these is that resource and package transforms are im
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as". You might need to change the file extension from .txt to .csv).
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat transform.csv
+```
+```csv title="Data: transform.csv"
+id,name,population
+1,germany,83
+2,france,66
+3,spain,47
+```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('transform.csv') as file:
+    print(file.read())
 ```
 ```csv title="transform.csv"
 id,name,population
@@ -57,6 +79,9 @@ id,name,population
 2,france,66
 3,spain,47
 ```
+
+</TabItem>
+</Tabs>
 
 The high-level interface to transform data is a set of `transform` functions:
 - `transform`: detects the source type and transforms data accordingly
