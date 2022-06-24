@@ -900,17 +900,12 @@ class Resource(Metadata):
 
         # Create field info
         field_number = 0
-        field_info = {"names": [], "objects": [], "positions": [], "mapping": {}}
-        iterator = zip_longest(self.schema.fields, list(range(1, len(self.labels) + 1)))
-        for field, field_position in iterator:
-            if field is None:
-                break
+        field_info = {"names": [], "objects": [], "mapping": {}}
+        for field in self.schema.fields:
             field_number += 1
             field_info["names"].append(field.name)
             field_info["objects"].append(field.to_copy())
-            field_info["mapping"][field.name] = (field, field_number, field_position)
-            if field_position is not None:
-                field_info["positions"].append(field_position)
+            field_info["mapping"][field.name] = (field, field_number)
 
         # Create state
         memory_unique = {}

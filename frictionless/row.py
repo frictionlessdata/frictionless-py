@@ -67,7 +67,7 @@ class Row(dict):
 
     def __setitem__(self, key, value):
         try:
-            field, field_number, field_position = self.__field_info["mapping"][key]
+            _, field_number = self.__field_info["mapping"][key]
         except KeyError:
             raise KeyError(f"Row does not have a field {key}")
         if len(self.__cells) < field_number:
@@ -87,7 +87,7 @@ class Row(dict):
     def __contains__(self, key):
         return key in self.__field_info["mapping"]
 
-    def __reversed__(self, key):
+    def __reversed__(self):
         return reversed(self.__field_info["names"])
 
     def keys(self):
@@ -126,17 +126,17 @@ class Row(dict):
     def field_names(self):
         """
         Returns:
-            Schema: table schema
+            str[]: field names
         """
         return self.__field_info["names"]
 
     @cached_property
-    def field_positions(self):
+    def field_numbers(self):
         """
         Returns:
-            int[]: table field positions
+            str[]: field numbers
         """
-        return self.__field_info["positions"]
+        return list(range(1, len(self.__field_info["names"]) + 1))
 
     @cached_property
     def row_position(self):
@@ -230,7 +230,7 @@ class Row(dict):
                 if json is True and field.type == "number" and field.float_number:
                     continue
                 cell = result[index]
-                cell, notes = field.write_cell(cell, ignore_missing=True)
+                cell, _ = field.write_cell(cell, ignore_missing=True)
                 result[index] = cell
 
         # Return
@@ -254,11 +254,11 @@ class Row(dict):
 
         # Covert
         if types is not None:
-            for index, field in enumerate(self.__field_info["objects"]):
+            for field in self.__field_info["objects"]:
                 # Here we can optimize performance if we use a types mapping
                 if field.type not in types:
                     cell = result[field.name]
-                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                    cell, _ = field.write_cell(cell, ignore_missing=True)
                     result[field.name] = cell
 
         # Return
@@ -281,16 +281,15 @@ class Row(dict):
         to_str = lambda v: str(v) if v is not None else ""
         fields = self.__field_info["objects"]
         field_mapping = self.__field_info["mapping"]
-        field_positions = self.__field_info["positions"]
         iterator = zip_longest(field_mapping.values(), cells)
         is_empty = not bool(super().__len__())
         if key:
             try:
-                field, field_number, field_position = self.__field_info["mapping"][key]
+                field, field_number = self.__field_info["mapping"][key]
             except KeyError:
                 raise KeyError(f"Row does not have a field {key}")
             cell = cells[field_number - 1] if len(cells) >= field_number else None
-            iterator = zip([(field, field_number, field_position)], [cell])
+            iterator = zip([(field, field_number)], [cell])
 
         # Iterate cells
         for field_mapping, source in iterator:
@@ -298,7 +297,7 @@ class Row(dict):
             # Prepare context
             if field_mapping is None:
                 break
-            field, field_number, field_position = field_mapping
+            field, field_number = field_mapping
             if not is_empty and super().__contains__(field.name):
                 continue
 
@@ -323,25 +322,20 @@ class Row(dict):
                     )
                 )
 
-            # NOTE: review this logic (why we can't skip reading also?)
-            # Check constriants if there is an existent cell
-            # Otherwise we emit only "missing-cell" which is enough
-            if field_position:
-
-                # Constraint errors
-                if notes:
-                    for note in notes.values():
-                        self.__errors.append(
-                            errors.ConstraintError(
-                                note=note,
-                                cells=list(map(to_str, cells)),
-                                row_number=self.__row_number,
-                                row_position=self.__row_position,
-                                cell=str(source),
-                                field_name=field.name,
-                                field_number=field_number,
-                            )
+            # Constraint errors
+            if notes:
+                for note in notes.values():
+                    self.__errors.append(
+                        errors.ConstraintError(
+                            note=note,
+                            cells=list(map(to_str, cells)),
+                            row_number=self.__row_number,
+                            row_position=self.__row_position,
+                            cell=str(source),
+                            field_name=field.name,
+                            field_number=field_number,
                         )
+                    )
 
             # Set/return value
             super().__setitem__(field.name, target)
@@ -350,9 +344,9 @@ class Row(dict):
 
         # Extra cells
         if len(fields) < len(cells):
+            start = len(fields) + 1
             iterator = cells[len(fields) :]
-            start = max(field_positions[: len(fields)]) + 1
-            for field_position, cell in enumerate(iterator, start=start):
+            for field_number, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
@@ -361,15 +355,15 @@ class Row(dict):
                         row_position=self.__row_position,
                         cell=str(cell),
                         field_name="",
-                        field_number=len(fields) + field_position - start,
+                        field_number=field_number,
                     )
                 )
 
         # Missing cells
         if len(fields) > len(cells):
             start = len(cells) + 1
-            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
-            for field_number, (field_position, field) in enumerate(iterator, start=start):
+            iterator = fields[len(cells) :]
+            for field_number, field in enumerate(iterator, start=start):
                 if field is not None:
                     self.__errors.append(
                         errors.MissingCellError(

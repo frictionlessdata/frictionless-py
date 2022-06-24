@@ -1,6 +1,5 @@
-# type: ignore
 from __future__ import annotations
-from importlib import import_module
+from typing import List
 from .helpers import cached_property
 from . import helpers
 from . import errors
@@ -38,7 +37,7 @@ class Header(list):
         self.__row_positions = row_positions
         self.__ignore_case = ignore_case
         self.__labels = labels
-        self.__errors = []
+        self.__errors: List[errors.HeaderError] = []
         self.__process()
 
     @cached_property
@@ -113,8 +112,7 @@ class Header(list):
             str: a row as a CSV string
         """
 
-        plugin = import_module("frictionless.plugins.csv")
-        cells = self.to_list(types=plugin.CsvParser.supported_types)
+        cells = self.to_list()
         return helpers.stringify_csv_string(cells)
 
     def to_list(self):

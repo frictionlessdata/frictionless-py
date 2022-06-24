@@ -39,13 +39,13 @@ def test_resource_open_read_rows():
         assert headers.errors == []
         assert headers.valid is True
         assert row1.to_dict() == {"id": 1, "name": "english"}
-        assert row1.field_positions == [1, 2]
+        assert row1.field_numbers == [1, 2]
         assert row1.row_position == 2
         assert row1.row_number == 1
         assert row1.errors == []
         assert row1.valid is True
         assert row2.to_dict() == {"id": 2, "name": "中国人"}
-        assert row2.field_positions == [1, 2]
+        assert row2.field_numbers == [1, 2]
         assert row2.row_position == 3
         assert row2.row_number == 2
         assert row2.errors == []
