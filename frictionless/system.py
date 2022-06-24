@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
-from .dialect import Control
+from .control import Control
 from .file import File
 from . import settings
 from . import errors

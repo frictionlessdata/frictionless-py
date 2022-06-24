@@ -111,6 +111,20 @@ class Dialect(Metadata2):
 
         return fragment, fragment_positions
 
+    # Filter
+
+    # TODO: implement
+    def create_list_stream_filter(self):
+        if not self.comment_char:
+            return None
+
+        # Create filter
+        def list_stream_filter(list_stream):
+            for cell in list_stream:
+                pass
+
+        return list_stream_filter
+
     # Metadata
 
     metadata_Error = errors.DialectError
