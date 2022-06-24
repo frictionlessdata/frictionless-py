@@ -7,7 +7,6 @@ from ..actions import validate
 from ..detector import Detector
 from ..checklist import Checklist
 from ..dialect import Dialect
-from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common

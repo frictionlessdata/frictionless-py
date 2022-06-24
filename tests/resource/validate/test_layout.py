@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Layout, Resource
+from frictionless import Resource
 
 pytestmark = pytest.mark.skip
 

@@ -7,7 +7,6 @@ import yaml as pyyaml
 from typing import List
 from ..detector import Detector
 from ..actions import extract
-from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common

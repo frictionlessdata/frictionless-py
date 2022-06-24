@@ -5,10 +5,10 @@ from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Optional, List
 from ..metadata2 import Metadata2
 from ..exception import FrictionlessException
-from ..system import system
-from ..layout import Layout
+from ..dialect import Dialect
 from ..schema import Schema
 from ..field import Field
+from ..system import system
 from .validate import validate
 from .. import settings
 from .. import errors
@@ -188,21 +188,25 @@ class Detector(Metadata2):
 
         return encoding
 
-    def detect_layout(self, sample, *, layout=None):
-        """Detect layout from sample
+    def detect_dialect(self, sample, *, dialect: Optional[Dialect] = None) -> Dialect:
+        """Detect dialect from sample
 
         Parameters:
             sample (any[][]): data sample
-            layout? (Layout): data layout
+            dialect? (Dialect): file dialect
 
         Returns:
-            Layout: layout
+            Dialect: dialect
         """
-        layout = layout or Layout()
+        dialect = dialect or Dialect()
 
         # Infer header
         widths = [len(cells) for cells in sample]
-        if layout.get("header") is None and layout.get("headerRows") is None and widths:
+        if (
+            widths
+            and not dialect.has_defined("header")
+            and not dialect.has_defined("header_rows")
+        ):
 
             # This algorithm tries to find a header row
             # that is close to average sample width or use default one
@@ -214,7 +218,7 @@ class Detector(Metadata2):
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
-            for row_position, cells in enumerate(sample, start=1):
+            for cells in sample:
                 row_number += 1
                 if len(cells) in match:
                     header_rows = [row_number]
@@ -222,11 +226,11 @@ class Detector(Metadata2):
 
             # Set header rows
             if not header_rows:
-                layout["header"] = False
+                dialect.header = False
             elif header_rows != settings.DEFAULT_HEADER_ROWS:
-                layout["headerRows"] = header_rows
+                dialect.header_rows = header_rows
 
-        return layout
+        return dialect
 
     def detect_schema(self, fragment, *, labels=None, schema=None):
         """Detect schema from fragment

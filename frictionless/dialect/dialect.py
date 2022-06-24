@@ -101,10 +101,11 @@ class Dialect(Metadata2):
         fragment_positions = []
         for row_position, cells in enumerate(sample, start=1):
             row_number += 1
-            if self.header_rows and row_number < self.header_rows[0]:
-                continue
-            if row_number in self.header_rows:
-                continue
+            if self.header:
+                if self.header_rows and row_number < self.header_rows[0]:
+                    continue
+                if row_number in self.header_rows:
+                    continue
             fragment_positions.append(row_position)
             fragment.append(cells)
 

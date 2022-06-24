@@ -10,7 +10,6 @@ from .field import Field
 from .file import File
 from .header import Header
 from .inquiry import Inquiry, InquiryTask
-from .layout import Layout
 from .loader import Loader
 from .metadata import Metadata
 from .package import Package

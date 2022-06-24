@@ -1,7 +1,7 @@
 import os
 import sys
 import pytest
-from frictionless import Package, Resource, Schema, Field, Layout, Detector, helpers
+from frictionless import Package, Resource, Schema, Field, Detector, helpers
 from frictionless import Dialect, FrictionlessException
 from frictionless.plugins.excel import ExcelControl
 
@@ -595,6 +595,7 @@ def test_resource_summary_valid_resource():
     )
 
 
+@pytest.mark.skip
 def test_resource_summary_invalid_resource():
     resource = Resource("data/countries.csv")
     output = resource.to_view()

@@ -14,7 +14,6 @@ from ..metadata import Metadata
 from ..checklist import Checklist
 from ..pipeline import Pipeline
 from ..dialect import Dialect
-from ..layout import Layout
 from ..schema import Schema
 from ..header import Header
 from ..system import system
@@ -108,9 +107,6 @@ class Resource(Metadata):
         dialect? (dict|Dialect): Table dialect.
             For more information, please check the Dialect documentation.
 
-        layout? (dict|Layout): Table layout.
-            For more information, please check the Layout documentation.
-
         schema? (dict|Schema): Table schema.
             For more information, please check the Schema documentation.
 
@@ -167,7 +163,6 @@ class Resource(Metadata):
         innerpath=None,
         compression=None,
         dialect=None,
-        layout=None,
         schema=None,
         checklist=None,
         pipeline=None,
@@ -207,9 +202,6 @@ class Resource(Metadata):
         self.__fragment = None
         self.__header = None
         self.__lookup = None
-        self.__byte_stream = None
-        self.__text_stream = None
-        self.__list_stream = None
         self.__row_stream = None
         self.__row_number = None
         self.__row_position = None
@@ -239,21 +231,11 @@ class Resource(Metadata):
         self.setinitial("compression", compression)
         self.setinitial("innerpath", innerpath)
         self.setinitial("dialect", dialect)
-        self.setinitial("layout", layout)
         self.setinitial("schema", schema)
         self.setinitial("checklist", checklist)
         self.setinitial("pipeline", pipeline)
         self.setinitial("stats", stats)
         super().__init__(descriptor)
-
-        # NOTE: it will not work if dialect is a path
-        # Handle official dialect.header
-        dialect = self.get("dialect")
-        if isinstance(dialect, dict):
-            header = dialect.pop("header", None)
-            if header is False:
-                self.setdefault("layout", {})
-                self["layout"]["header"] = False
 
         # Handle official hash/bytes/rows
         for name in ["hash", "bytes", "rows"]:
@@ -476,21 +458,6 @@ class Resource(Metadata):
             Dialect: resource dialect
         """
         return self.get("dialect")
-
-    @Metadata.property
-    def layout(self):
-        """
-        Returns:
-            Layout: table layout
-        """
-        layout = self.get("layout")
-        if layout is None:
-            layout = Layout()
-            layout = self.metadata_attach("layout", layout)
-        elif isinstance(layout, str):
-            layout = Layout(os.path.join(self.basepath, layout))
-            layout = self.metadata_attach("layout", layout)
-        return layout
 
     @Metadata.property
     def schema(self):
@@ -730,9 +697,7 @@ class Resource(Metadata):
         self.control.expand()
         self.dialect.expand()
         if self.tabular:
-            self.setdefault("layout", self.layout)
             self.setdefault("schema", self.schema)
-            self.layout.expand()
             self.schema.expand()
 
     # Infer
@@ -791,7 +756,7 @@ class Resource(Metadata):
             if self.tabular:
                 self.__parser = system.create_parser(self)
                 self.__parser.open()
-                self.__read_detect_layout()
+                self.__read_detect_dialect()
                 self.__read_detect_schema()
                 self.__read_detect_lookup()
                 self.__header = self.__read_header()
@@ -1020,8 +985,8 @@ class Resource(Metadata):
         header = Header(
             self.__labels,
             fields=self.schema.fields,
-            row_positions=self.layout.header_rows,
-            ignore_case=not self.layout.header_case,
+            row_positions=self.dialect.header_rows,
+            ignore_case=not self.dialect.header_case,
         )
 
         # Handle errors
@@ -1041,11 +1006,11 @@ class Resource(Metadata):
             if position > len(self.__parser.sample)
         )
 
-    def __read_detect_layout(self):
+    def __read_detect_dialect(self):
         sample = self.__parser.sample
-        layout = self.detector.detect_layout(sample, layout=self.layout)
-        if layout:
-            self.layout = layout
+        dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
+        if dialect:
+            self.dialect = dialect
         self.__sample = sample
 
     def __read_detect_schema(self):
@@ -1212,7 +1177,6 @@ class Resource(Metadata):
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
     metadata_profile["properties"]["control"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["layout"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
 
     def metadata_process(self):
@@ -1229,12 +1193,6 @@ class Resource(Metadata):
         if not isinstance(dialect, Dialect):
             dialect = Dialect.from_descriptor(dialect) if dialect else Dialect()
             dict.__setitem__(self, "dialect", dialect)
-
-        # Layout
-        layout = self.get("layout")
-        if not isinstance(layout, (str, type(None), Layout)):
-            layout = Layout(layout)
-            dict.__setitem__(self, "layout", layout)
 
         # Schema
         schema = self.get("schema")
@@ -1282,11 +1240,10 @@ class Resource(Metadata):
         yield from super().metadata_validate()
 
         # Dialect
-        yield from self.dialect.metadata_errors
+        if self.dialect:
+            yield from self.dialect.metadata_errors
 
-        # Layout/Schema
-        if self.layout:
-            yield from self.layout.metadata_errors
+        # Schema
         if self.schema:
             yield from self.schema.metadata_errors
 

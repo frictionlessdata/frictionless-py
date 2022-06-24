@@ -4,7 +4,6 @@ import typer
 from typing import List
 from ..actions import describe
 from ..detector import Detector
-from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common
