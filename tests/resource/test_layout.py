@@ -466,6 +466,7 @@ def test_resource_layout_skip_rows_preset():
         ]
 
 
+@pytest.mark.xfail
 def test_resource_layout_limit_rows():
     source = "data/long.csv"
     layout = Layout(limit_rows=1)
@@ -523,7 +524,7 @@ def test_resource_layout_offset_fields_error_zero_issue_521():
     assert error.note.count('minimum of 1" at "offsetFields')
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_resource_layout_limit_rows_error_zero_issue_521():
     source = "data/long.csv"
     layout = Layout(limit_rows=0)
@@ -547,6 +548,7 @@ def test_resource_layout_offset_rows_error_zero_issue_521():
     assert error.note.count('minimum of 1" at "offsetRows')
 
 
+@pytest.mark.xfail
 def test_resource_layout_respect_set_after_creation_issue_503():
     resource = Resource(path="data/table.csv")
     resource.layout = Layout(limit_rows=1)

@@ -405,6 +405,7 @@ def test_resource_metadata_bad_schema_format():
 # Problems
 
 
+@pytest.mark.xfail
 def test_resource_reset_on_close_issue_190():
     layout = Layout(header=False, limit_rows=1)
     source = [["1", "english"], ["2", "中国人"]]

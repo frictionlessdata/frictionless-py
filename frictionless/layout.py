@@ -21,7 +21,6 @@ class Layout(Metadata):
         header_case? (bool): whether to respect header case (default: True)
         pick_rows? ((str|int)[]): what rows to pick
         skip_rows? ((str|int)[]): what rows to skip
-        limit_rows? (int): amount of rows
     """
 
     def __init__(
@@ -34,7 +33,6 @@ class Layout(Metadata):
         header_case=None,
         pick_rows=None,
         skip_rows=None,
-        limit_rows=None,
     ):
         self.setinitial("header", header)
         self.setinitial("headerRows", header_rows)
@@ -42,7 +40,6 @@ class Layout(Metadata):
         self.setinitial("headerCase", header_case)
         self.setinitial("pickRows", pick_rows)
         self.setinitial("skipRows", skip_rows)
-        self.setinitial("limitRows", limit_rows)
         super().__init__(descriptor)
 
     @Metadata.property
@@ -94,14 +91,6 @@ class Layout(Metadata):
             (str|int)[]?: skip rows
         """
         return self.get("skipRows")
-
-    @Metadata.property
-    def limit_rows(self):
-        """
-        Returns:
-            int?: limit rows
-        """
-        return self.get("limitRows")
 
     @Metadata.property(write=False)
     def pick_rows_compiled(self):

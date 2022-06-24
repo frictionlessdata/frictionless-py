@@ -934,11 +934,8 @@ class Resource(Metadata):
         # Create row stream
         def row_stream():
             self.__row_number = 0
-            limit = self.layout.limit_rows
             for row_position, cells in iterator:
                 self.__row_position = row_position
-                if limit and limit <= self.__row_number:
-                    break
 
                 # Create row
                 self.__row_number += 1
