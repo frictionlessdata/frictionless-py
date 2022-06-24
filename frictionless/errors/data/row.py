@@ -1,7 +1,7 @@
-from .table import TableError
+from .content import ContentError
 
 
-class RowError(TableError):
+class RowError(ContentError):
     """Row error representation
 
     Parameters:
@@ -17,7 +17,7 @@ class RowError(TableError):
 
     code = "row-error"
     name = "Row Error"
-    tags = ["#data", "#table", "#row"]
+    tags = ["#data", "#table", "content", "#row"]
     template = "Row Error"
     description = "Row Error"
 

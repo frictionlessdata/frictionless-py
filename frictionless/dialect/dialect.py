@@ -44,6 +44,12 @@ class Dialect(Metadata2):
     controls: List[Control] = field(default_factory=list)
     """TODO: add docs"""
 
+    @property
+    def first_content_row(self):
+        if self.header and self.header_rows:
+            return self.header_rows[-1] + 1
+        return 1
+
     # Controls
 
     def has_control(self, code: str):
@@ -97,33 +103,25 @@ class Dialect(Metadata2):
 
         # Collect fragment
         fragment = []
-        row_number = 0
-        fragment_positions = []
-        for row_position, cells in enumerate(sample, start=1):
-            row_number += 1
-            if self.header:
-                if self.header_rows and row_number < self.header_rows[0]:
-                    continue
-                if row_number in self.header_rows:
-                    continue
-            fragment_positions.append(row_position)
+        for _, cells in self.read_enumerated_content_stream(sample):
             fragment.append(cells)
 
-        return fragment, fragment_positions
+        return fragment
 
-    # Filter
+    def read_enumerated_content_stream(self, list_stream):
+        first_content_row = self.first_content_row
 
-    # TODO: implement
-    def create_list_stream_filter(self):
-        if not self.comment_char:
-            return None
-
-        # Create filter
-        def list_stream_filter(list_stream):
-            for cell in list_stream:
-                pass
-
-        return list_stream_filter
+        # Emit content stream
+        for row_number, cells in enumerate(list_stream, start=1):
+            if row_number < first_content_row:
+                continue
+            if self.comment_char:
+                if cells and str(cells[0]).startswith(self.comment_char):
+                    continue
+            if self.comment_rows:
+                if row_number in self.comment_rows:
+                    continue
+            yield (row_number, cells)
 
     # Metadata
 

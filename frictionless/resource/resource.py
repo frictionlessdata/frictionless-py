@@ -5,7 +5,6 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from typing import Optional
-from itertools import chain
 from ..exception import FrictionlessException
 from ..helpers import cached_property
 from ..detector import Detector
@@ -204,7 +203,6 @@ class Resource(Metadata):
         self.__row_stream = None
         self.__row_number = None
         self.__row_position = None
-        self.__fragment_positions = None
 
         # Store extra
         self.__basepath = basepath or helpers.parse_basepath(descriptor)
@@ -887,16 +885,15 @@ class Resource(Metadata):
                 foreign_groups.append(group)
                 is_integrity = True
 
-        # Create iterator
-        iterator = chain(
-            zip(self.__fragment_positions, self.__fragment),
-            self.__read_list_stream(),
+        # Create content stream
+        enumerated_content_stream = self.dialect.read_enumerated_content_stream(
+            self.__parser.list_stream
         )
 
         # Create row stream
         def row_stream():
             self.__row_number = 0
-            for row_position, cells in iterator:
+            for row_position, cells in enumerated_content_stream:
                 self.__row_position = row_position
 
                 # Create row
@@ -996,13 +993,6 @@ class Resource(Metadata):
 
         return header
 
-    def __read_list_stream(self):
-        yield from (
-            (position, cells)
-            for position, cells in enumerate(self.__parser.list_stream, start=1)
-            if position > len(self.__parser.sample)
-        )
-
     def __read_detect_dialect(self):
         sample = self.__parser.sample
         dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
@@ -1012,13 +1002,12 @@ class Resource(Metadata):
 
     def __read_detect_schema(self):
         labels = self.dialect.read_labels(self.sample)
-        fragment, fragment_positions = self.dialect.read_fragment(self.sample)
+        fragment = self.dialect.read_fragment(self.sample)
         schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
         if schema:
             self.schema = schema
         self.__labels = labels
         self.__fragment = fragment
-        self.__fragment_positions = fragment_positions
         self.stats["fields"] = len(schema.fields)
         # NOTE: review whether it's a proper place for this fallback to data resource
         if not schema:
