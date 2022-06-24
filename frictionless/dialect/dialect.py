@@ -118,9 +118,13 @@ class Dialect(Metadata2):
         "type": "object",
         "required": [],
         "properties": {
+            "header": {},
             "headerRows": {},
             "headerJoin": {},
             "headerCase": {},
+            "commentChar": {},
+            "commentRows": {},
+            "nullSequence": {},
             "controls": {},
         },
     }

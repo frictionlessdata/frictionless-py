@@ -41,7 +41,7 @@ def test_remote_loader_big_file():
 
 
 @pytest.mark.vcr
-def test_resource_control_http_preload():
+def test_remote_loader_http_preload():
     dialect = Dialect(controls=[RemoteControl(http_preload=True)])
     with Resource(BASEURL % "data/table.csv", dialect=dialect) as resource:
         assert resource.dialect.get_control("remote").http_preload is True
