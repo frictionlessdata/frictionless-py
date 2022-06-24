@@ -44,12 +44,6 @@ class Dialect(Metadata2):
     controls: List[Control] = field(default_factory=list)
     """TODO: add docs"""
 
-    @property
-    def first_content_row(self):
-        if self.header and self.header_rows:
-            return self.header_rows[-1] + 1
-        return 1
-
     # Controls
 
     def has_control(self, code: str):
@@ -69,20 +63,20 @@ class Dialect(Metadata2):
     # Read
 
     def read_labels(self, sample):
+        first_content_row = self.create_first_content_row()
+        comment_filter = self.create_comment_filter()
 
         # Collect lists
         lists = []
-        row_number = 0
-        for cells in sample:
-            row_number += 1
-            if row_number in self.header_rows:
-                lists.append(helpers.stringify_label(cells))
-            if row_number >= max(self.header_rows, default=0):
+        for row_number, cells in enumerate(sample, start=1):
+            if comment_filter:
+                if not comment_filter(row_number, cells):
+                    continue
+            if self.header:
+                if row_number in self.header_rows:
+                    lists.append(helpers.stringify_label(cells))
+            if row_number >= first_content_row:
                 break
-
-        # No header
-        if not self.header:
-            return []
 
         # Get labels
         labels = []
@@ -109,19 +103,40 @@ class Dialect(Metadata2):
         return fragment
 
     def read_enumerated_content_stream(self, list_stream):
-        first_content_row = self.first_content_row
+        first_content_row = self.create_first_content_row()
+        comment_filter = self.create_comment_filter()
 
         # Emit content stream
         for row_number, cells in enumerate(list_stream, start=1):
             if row_number < first_content_row:
                 continue
-            if self.comment_char:
-                if cells and str(cells[0]).startswith(self.comment_char):
-                    continue
-            if self.comment_rows:
-                if row_number in self.comment_rows:
+            if comment_filter:
+                if not comment_filter(row_number, cells):
                     continue
             yield (row_number, cells)
+
+    # Filter
+
+    def create_first_content_row(self):
+        if self.header and self.header_rows:
+            return self.header_rows[-1] + 1
+        return 1
+
+    def create_comment_filter(self):
+        if not self.comment_char or not self.comment_rows:
+            return None
+
+        # Create filter
+        def comment_filter(row_number, cells):
+            if self.comment_char:
+                if cells and str(cells[0]).startswith(self.comment_char):
+                    return False
+            if self.comment_rows:
+                if row_number in self.comment_rows:
+                    return False
+            return True
+
+        return comment_filter
 
     # Metadata
 

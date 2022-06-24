@@ -173,6 +173,7 @@ def test_resource_layout_header_case_is_false():
         assert resource.header.valid is True
 
 
+# TODO: fix header_rows detection/usage
 @pytest.mark.xfail
 def test_resource_dialect_skip_rows():
     source = "data/skip-rows.csv"

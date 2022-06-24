@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Dialect
+from frictionless import Resource, Dialect, FrictionlessException
 
 
 # General
