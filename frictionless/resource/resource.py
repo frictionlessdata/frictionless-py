@@ -1,12 +1,11 @@
 # type: ignore
-import os
 import json
 import petl
 import warnings
 from pathlib import Path
 from copy import deepcopy
-from itertools import zip_longest, chain
 from typing import Optional
+from itertools import chain
 from ..exception import FrictionlessException
 from ..helpers import cached_property
 from ..detector import Detector
@@ -692,9 +691,7 @@ class Resource(Metadata):
         self.setdefault("encoding", self.encoding)
         self.setdefault("innerpath", self.innerpath)
         self.setdefault("compression", self.compression)
-        self.setdefault("control", self.control)
         self.setdefault("dialect", self.dialect)
-        self.control.expand()
         self.dialect.expand()
         if self.tabular:
             self.setdefault("schema", self.schema)
@@ -1175,7 +1172,6 @@ class Resource(Metadata):
     metadata_duplicate = True
     metadata_Error = errors.ResourceError
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
-    metadata_profile["properties"]["control"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
 
