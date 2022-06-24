@@ -4,6 +4,15 @@ from frictionless import Resource, Detector
 # General
 
 
+def test_resource_detector_encoding_function():
+    detector = Detector(encoding_function=lambda buffer: "utf-8")
+    with Resource("data/table.csv", detector=detector) as resource:
+        assert resource.encoding == "utf-8"
+        assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+        assert resource.fragment == [["1", "english"], ["2", "中国人"]]
+        assert resource.header == ["id", "name"]
+
+
 def test_resource_detector_field_type():
     detector = Detector(field_type="string")
     resource = Resource(path="data/table.csv", detector=detector)
