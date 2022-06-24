@@ -29,7 +29,7 @@ values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 ```bash script
 cat capital-invalid.csv
 ```
-```csv title="Data: capital-valid.csv"
+```csv title="Data: capital-invalid.csv"
 id,name,name
 1,London,Britain
 2,Berlin,Germany
@@ -48,10 +48,10 @@ x,Tokio,Japan,review
 <TabItem value="python">
 
 ```python script
-with open('country-3.csv') as file:
+with open('capital-invalid.csv') as file:
     print(file.read())
 ```
-```csv title="Data: capital-valid.csv"
+```csv title="Data: capital-invalid.csv"
 id,name,name
 1,London,Britain
 2,Berlin,Germany

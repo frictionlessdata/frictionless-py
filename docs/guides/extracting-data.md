@@ -520,9 +520,28 @@ with Resource('country-3.csv') as resource:
 
 The Package class provides functions to read the contents of a package. First of all, let's create a package descriptor:
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless describe *-3.csv --json > country.package.json
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import describe
+
+package = describe('*-3.csv')
+package.to_json('country.package.json')
+```
+
+</TabItem>
+</Tabs>
+
 Note that --json is used here to output the descriptor in JSON format. Without this, the default output is in YAML format as we saw above.
 
 We can create a package from data files (using their paths) and then read the package's resources:

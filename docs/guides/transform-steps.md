@@ -41,7 +41,7 @@ id,name,population
 with open('transform.csv') as file:
     print(file.read())
 ```
-```csv title="transform.csv"
+```csv title="Data: transform.csv"
 id,name,population
 1,germany,83
 2,france,66
@@ -751,10 +751,15 @@ target = transform(
 )
 ```
 
-```bash title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat tmp/transform.json
 ```
-```json title="tmp/transform.json"
+```json title="Data: tmp/transform.json"
 [
   [
     "id",
@@ -778,6 +783,41 @@ cat tmp/transform.json
   ]
 ]
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('tmp/transform.json') as file:
+    print(file.read())
+```
+```json title="Data: tmp/transform.json"
+[
+  [
+    "id",
+    "name",
+    "population"
+  ],
+  [
+    1,
+    "germany",
+    83
+  ],
+  [
+    2,
+    "france",
+    66
+  ],
+  [
+    3,
+    "spain",
+    47
+  ]
+]
+```
+
+</TabItem>
+</Tabs>
 
 ## Field Steps
 

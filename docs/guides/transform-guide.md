@@ -288,7 +288,7 @@ print(target.to_view())
 +-----------+------------+
 ```
 
-As you can see you can implement any custom steps within a Pyhton script. To make it work within a declarative pipeline you need to implement a plugin. Learn more about [Custom Steps](extension/step-guide.md) and [Plugins](extension/plugin-guide.md).
+As you can see you can implement any custom steps within a Python script. To make it work within a declarative pipeline you need to implement a plugin. Learn more about [Custom Steps](extension/step-guide.md) and [Plugins](extension/plugin-guide.md).
 
 ## Transform Utils
 

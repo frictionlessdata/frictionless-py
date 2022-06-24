@@ -374,8 +374,6 @@ id;neighbor_id;name;population
 </TabItem>
 </Tabs>
 
-Let's describe it this time using the command-line interface:
-
 Let's describe it:
 
 <Tabs
@@ -617,10 +615,15 @@ id,capital_id,name,population
 
 > Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat capital-3.csv
 ```
-```csv title="capital-3.csv"
+```csv title="Data: capital-3.csv"
 id,name
 1,London
 2,Berlin
@@ -629,7 +632,26 @@ id,name
 5,Rome
 ```
 
-First of all, let's describe our package using the command-line interface. We did it before for a resource but now we're going to use a glob pattern to indicate that there are multiple files:
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('capital-3.csv') as file:
+    print(file.read())
+```
+```csv title="Data: capital-3.csv"
+id,name
+1,London
+2,Berlin
+3,Paris
+4,Madrid
+5,Rome
+```
+
+</TabItem>
+</Tabs>
+
+First of all, let's describe our package now. We did it before for a resource but now we're going to use a glob pattern to indicate that there are multiple files:
 
 <Tabs
 defaultValue="cli"
@@ -1009,7 +1031,7 @@ values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 ```bash script
 frictionless extract country.resource.yaml
 ```
-```csv title="country.resource.yaml"
+```csv title="Data: country.resource.yaml"
 ==  ===========  =======  ==========
 id  neighbor_id  name     population
 ==  ===========  =======  ==========
@@ -1031,7 +1053,7 @@ from tabulate import tabulate
 data = extract("country.resource.yaml")
 print(tabulate(data, headers="keys", tablefmt="rst"))
 ```
-```csv title="country.resource.yaml"
+```csv title="Data: country.resource.yaml"
 ====  =============  =======  ============
   id    neighbor_id  name       population
 ====  =============  =======  ============
