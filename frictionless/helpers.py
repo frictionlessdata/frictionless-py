@@ -114,14 +114,6 @@ def copy_merge(source, patch={}, **kwargs):
     return source
 
 
-def filter_cells(cells, field_positions):
-    result = []
-    for field_position, cell in enumerate(cells, start=1):
-        if field_position in field_positions:
-            result.append(cell)
-    return result
-
-
 def compile_regex(items):
     if items is not None:
         result = []
