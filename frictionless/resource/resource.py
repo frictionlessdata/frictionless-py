@@ -894,7 +894,7 @@ class Resource(Metadata):
 
     def __read_row_stream(self):
 
-        # During row streaming we crate a field inf structure
+        # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
 
@@ -1035,23 +1035,11 @@ class Resource(Metadata):
         return header
 
     def __read_list_stream(self):
-
-        # Prepare iterator
-        iterator = (
+        yield from (
             (position, cells)
             for position, cells in enumerate(self.__parser.list_stream, start=1)
             if position > len(self.__parser.sample)
         )
-
-        # Stream without filtering
-        if not self.layout:
-            yield from iterator
-            return
-
-        # Stream with filtering
-        for row_position, cells in iterator:
-            if self.layout.read_filter_rows(cells, row_position=row_position):
-                yield row_position, cells
 
     def __read_detect_layout(self):
         sample = self.__parser.sample

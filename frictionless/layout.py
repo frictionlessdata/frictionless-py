@@ -19,7 +19,6 @@ class Layout(Metadata):
         header_rows? (int[]): row numbers to form header (list all of them not only from/to)
         header_join? (str): a string to be used as a joiner for multiline header
         header_case? (bool): whether to respect header case (default: True)
-        skip_rows? ((str|int)[]): what rows to skip
     """
 
     def __init__(
@@ -30,13 +29,11 @@ class Layout(Metadata):
         header_rows=None,
         header_join=None,
         header_case=None,
-        skip_rows=None,
     ):
         self.setinitial("header", header)
         self.setinitial("headerRows", header_rows)
         self.setinitial("headerJoin", header_join)
         self.setinitial("headerCase", header_case)
-        self.setinitial("skipRows", skip_rows)
         super().__init__(descriptor)
 
     @Metadata.property
@@ -73,22 +70,6 @@ class Layout(Metadata):
         """
         return self.get("headerCase", settings.DEFAULT_HEADER_CASE)
 
-    @Metadata.property
-    def skip_rows(self):
-        """
-        Returns:
-            (str|int)[]?: skip rows
-        """
-        return self.get("skipRows")
-
-    @Metadata.property(write=False)
-    def skip_rows_compiled(self):
-        """
-        Returns:
-            re?: compiled skip fields
-        """
-        return helpers.compile_regex(self.skip_rows)
-
     # Expand
 
     def expand(self):
@@ -106,12 +87,11 @@ class Layout(Metadata):
         lists = []
         row_number = 0
         for row_position, cells in enumerate(sample, start=1):
-            if self.read_filter_rows(cells, row_position=row_position):
-                row_number += 1
-                if row_number in self.header_rows:
-                    lists.append(helpers.stringify_label(cells))
-                if row_number >= max(self.header_rows, default=0):
-                    break
+            row_number += 1
+            if row_number in self.header_rows:
+                lists.append(helpers.stringify_label(cells))
+            if row_number >= max(self.header_rows, default=0):
+                break
 
         # No header
         if not self.header:
@@ -139,39 +119,15 @@ class Layout(Metadata):
         row_number = 0
         fragment_positions = []
         for row_position, cells in enumerate(sample, start=1):
-            if self.read_filter_rows(cells, row_position=row_position):
-                row_number += 1
-                if self.header_rows and row_number < self.header_rows[0]:
-                    continue
-                if row_number in self.header_rows:
-                    continue
-                fragment_positions.append(row_position)
-                fragment.append(cells)
+            row_number += 1
+            if self.header_rows and row_number < self.header_rows[0]:
+                continue
+            if row_number in self.header_rows:
+                continue
+            fragment_positions.append(row_position)
+            fragment.append(cells)
 
         return fragment, fragment_positions
-
-    def read_filter_rows(self, cells, *, row_position):
-        match = True
-        cell = cells[0] if cells else None
-        cell = "" if cell is None else str(cell)
-        for name in ["skip"]:
-            if name == "skip":
-                items = self.skip_rows_compiled
-            if not items:
-                continue
-            match = match and name == "skip"
-            for item in items:
-                if item == "<blank>":
-                    if not any(cell for cell in cells if cell not in ["", None]):
-                        match = not match
-                elif isinstance(item, str):
-                    if item == cell or (item and cell.startswith(item)):
-                        match = not match
-                elif isinstance(item, int) and item == row_position:
-                    match = not match
-                elif isinstance(item, typing.Pattern) and item.match(cell):
-                    match = not match
-        return match
 
     # Metadata
 
@@ -184,10 +140,6 @@ class Layout(Metadata):
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
             "headerCase": {"type": "boolean"},
-            "skipFields": {"type": "array"},
-            "limitFields": {"type": "number", "minimum": 1},
-            "pickRows": {"type": "array"},
             "skipRows": {"type": "array"},
-            "limitRows": {"type": "number", "minimum": 1},
         },
     }

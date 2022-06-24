@@ -215,11 +215,10 @@ class Detector(Metadata2):
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
             for row_position, cells in enumerate(sample, start=1):
-                if layout.read_filter_rows(cells, row_position=row_position):
-                    row_number += 1
-                    if len(cells) in match:
-                        header_rows = [row_number]
-                        break
+                row_number += 1
+                if len(cells) in match:
+                    header_rows = [row_number]
+                    break
 
             # Set header rows
             if not header_rows:

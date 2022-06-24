@@ -36,6 +36,7 @@ class Dialect(Metadata2):
     def has_control(self, code: str):
         return bool(self.get_control(code))
 
+    # TODO: rebase on create=True instead of ensure
     def get_control(
         self, code: str, *, ensure: Optional[Control] = None
     ) -> Optional[Control]:
