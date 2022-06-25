@@ -18,6 +18,7 @@ class Field(Metadata2):
 
     type: str
     builtin = False
+    supported_constraints: List[str] = field(default_factory=list)
 
     # Properties
 
@@ -78,6 +79,16 @@ class Field(Metadata2):
 
     def create_cell_writer(self):
         pass
+
+    # Convert
+
+    # TODO: review
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        if cls is Field2:
+            descriptor = cls.metadata_normalize(descriptor)
+            return system.create_field(descriptor)  # type: ignore
+        return super().from_descriptor(descriptor)
 
     # Metadata
 

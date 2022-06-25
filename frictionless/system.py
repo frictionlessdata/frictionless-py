@@ -141,6 +141,26 @@ class System:
         note = f'error "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(note)
 
+    def create_field(self, descriptor: dict) -> Field:
+        """Create field
+
+        Parameters:
+            descriptor (dict): field descriptor
+
+        Returns:
+            Field: field
+        """
+        type = descriptor.get("type", "")
+        for func in self.methods["create_field"].values():
+            field = func(descriptor)
+            if field is not None:
+                return field
+        for Class in vars(import_module("frictionless.fields")).values():
+            if getattr(Class, "type", None) == type:
+                return Class.from_descriptor(descriptor)
+        note = f'field "{type}" is not supported. Try installing "frictionless-{type}"'
+        raise FrictionlessException(errors.CheckError(note=note))
+
     def create_field_candidates(self) -> List[dict]:
         """Create candidates
 
