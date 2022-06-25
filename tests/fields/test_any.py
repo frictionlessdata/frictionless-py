@@ -1,0 +1,21 @@
+import pytest
+from frictionless import Field2
+
+
+# General
+
+
+@pytest.mark.parametrize(
+    "format, source, target",
+    [
+        ("default", 1, 1),
+        ("default", "1", "1"),
+        ("default", "3.14", "3.14"),
+        ("default", True, True),
+        ("default", "", None),
+    ],
+)
+def test_any_read_cell(format, source, target):
+    field = Field2.from_descriptor({"name": "name", "type": "any", "format": format})
+    cell, _ = field.read_cell(source)
+    assert cell == target

@@ -7,6 +7,7 @@ from .dialect import Dialect
 from .error import Error
 from .exception import FrictionlessException
 from .field import Field
+from .field2 import Field2
 from .file import File
 from .header import Header
 from .inquiry import Inquiry, InquiryTask
@@ -27,7 +28,8 @@ from .step import Step
 from .storage import Storage
 from .system import system
 from .type import Type
-from . import errors
 from . import checks
+from . import errors
+from . import fields
 from . import steps
 from . import types
