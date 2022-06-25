@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Field
+from frictionless import Field2
 
 
 # General
@@ -28,6 +28,6 @@ from frictionless import Field
     ],
 )
 def test_string_read_cell(format, source, target):
-    field = Field({"name": "name", "type": "string", "format": format})
-    cell, notes = field.read_cell(source)
+    field = Field2.from_descriptor({"name": "name", "type": "string", "format": format})
+    cell, _ = field.read_cell(source)
     assert cell == target

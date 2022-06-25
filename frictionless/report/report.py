@@ -1,8 +1,4 @@
 from __future__ import annotations
-import functools
-import textwrap
-from copy import deepcopy
-from importlib import import_module
 from tabulate import tabulate
 from typing import TYPE_CHECKING, Optional, List
 from ..metadata2 import Metadata2
@@ -235,6 +231,10 @@ class Report(Metadata2):
             "warnings": {},
         }
     }
+
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(tasks=ReportTask)
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

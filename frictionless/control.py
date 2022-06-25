@@ -22,4 +22,4 @@ class Control(Metadata2):
     # Metadata
 
     metadata_Error = errors.ControlError
-    metadata_defined = {"code"}
+    metadata_assigned = {"code"}

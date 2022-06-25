@@ -42,6 +42,10 @@ class Pipeline(Metadata2):
         }
     }
 
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(steps=Step)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 

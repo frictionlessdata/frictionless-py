@@ -34,10 +34,12 @@ class Inquiry(Metadata2):
         }
     }
 
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(tasks=InquiryTask)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
-
-        # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
 

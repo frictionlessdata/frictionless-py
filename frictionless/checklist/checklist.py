@@ -104,6 +104,10 @@ class Checklist(Metadata2):
         }
     }
 
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(checks=Check)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 

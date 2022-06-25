@@ -15,7 +15,7 @@ from . import errors
 if TYPE_CHECKING:
     from .check import Check
     from .error import Error
-    from .field import Field
+    from .field2 import Field2
     from .loader import Loader
     from .parser import Parser
     from .plugin import Plugin
@@ -142,7 +142,7 @@ class System:
         note = f'error "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(note)
 
-    def create_field(self, descriptor: dict) -> Field:
+    def create_field(self, descriptor: dict) -> Field2:
         """Create field
 
         Parameters:

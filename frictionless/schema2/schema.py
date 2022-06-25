@@ -193,6 +193,10 @@ class Schema(Metadata2):
     metadata_profile = deepcopy(settings.SCHEMA_PROFILE)
     metadata_profile["properties"]["fields"] = {"type": "array"}
 
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(fields=Field2)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 

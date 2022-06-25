@@ -70,7 +70,7 @@ class Field2(Metadata2):
     """TODO: add docs"""
 
     # TODO: recover
-    #  schema: Optional[Schema] = None
+    schema: Optional[Schema] = None
     """TODO: add docs"""
 
     # Read
@@ -102,18 +102,16 @@ class Field2(Metadata2):
 
         # Create reader
         def cell_reader(cell):
-            notes = None
+            notes = {}
             if cell in self.missing_values:
                 cell = None
             if cell is not None:
                 cell = value_reader(cell)
                 if cell is None:
-                    notes = notes or {}
                     notes["type"] = f'type is "{self.type}/{self.format}"'
             if not notes and checks:
                 for name, check in checks.items():
                     if not check(cell):
-                        notes = notes or {}
                         constraint = self.constraints[name]
                         notes[name] = f'constraint "{name}" is "{constraint}"'
             return cell, notes
@@ -143,13 +141,12 @@ class Field2(Metadata2):
 
         # Create writer
         def cell_writer(cell, *, ignore_missing=False):
-            notes = None
+            notes = {}
             if cell is None:
                 cell = cell if ignore_missing else missing_value
                 return cell, notes
             cell = value_writer(cell)
             if cell is None:
-                notes = notes or {}
                 notes["type"] = f'type is "{self.type}/{self.format}"'
             return cell, notes
 
@@ -172,6 +169,15 @@ class Field2(Metadata2):
 
     metadata_Error = errors.FieldError
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]
+
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # Constraints
+        for name in self.constraints.keys():
+            if name not in self.supported_constraints + ["unique"]:
+                note = f'constraint "{name}" is not supported by type "{self.type}"'
+                yield errors.FieldError(note=note)
 
 
 # Internal

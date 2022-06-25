@@ -171,6 +171,15 @@ class Metadata2(metaclass=Metaclass):
         """List of metadata errors"""
         return list(self.metadata_validate())
 
+    @classmethod
+    def metadata_properties(cls, **Types):
+        """Extract metadata properties"""
+        properties = {}
+        if cls.metadata_profile:
+            for name in cls.metadata_profile.get("properties", []):
+                properties[name] = Types.get(name)
+        return properties
+
     # TODO: automate metadata_validate of the children using metadata_properties!!!
     def metadata_validate(self) -> Iterator[Error]:
         """Validate metadata and emit validation errors"""
@@ -197,11 +206,10 @@ class Metadata2(metaclass=Metaclass):
         """Import metadata from a descriptor source"""
         target = {}
         source = cls.metadata_normalize(descriptor)
-        for property in cls.metadata_properties():
-            name = property["name"]
-            Type = property.get("type")
+        for name, Type in cls.metadata_properties().items():
             value = source.get(name)
-            if name == "code":
+            # TODO: rebase on "type" only?
+            if name in ["code", "type"]:
                 continue
             if value is None:
                 continue
@@ -216,9 +224,7 @@ class Metadata2(metaclass=Metaclass):
     def metadata_export(self) -> IPlainDescriptor:
         """Export metadata as a descriptor"""
         descriptor = {}
-        for property in self.metadata_properties():
-            name = property["name"]
-            Type = property.get("type")
+        for name, Type in self.metadata_properties().items():
             value = getattr(self, stringcase.snakecase(name), None)
             if self.get_defined(stringcase.snakecase(name)):
                 continue
@@ -231,23 +237,6 @@ class Metadata2(metaclass=Metaclass):
                     value = value.metadata_export()  # type: ignore
             descriptor[name] = value
         return descriptor
-
-    @classmethod
-    def metadata_properties(cls):
-        """Extract metadata properties"""
-        properties = []
-        if cls.metadata_profile:
-            type_hints = typing.get_type_hints(cls.__init__)
-            for name in cls.metadata_profile.get("properties", []):
-                property = {"name": name}
-                type_hint = type_hints.get(stringcase.snakecase(name))
-                if type_hint:
-                    args = typing.get_args(type_hint)
-                    Type = args[0] if args else type_hint
-                    if isinstance(Type, type) and issubclass(Type, Metadata2):
-                        property["type"] = Type
-                properties.append(property)
-        return properties
 
     # TODO: return plain descriptor?
     @classmethod
