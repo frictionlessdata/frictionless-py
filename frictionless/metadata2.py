@@ -7,7 +7,6 @@ import yaml
 import jinja2
 import pprint
 import typing
-import inspect
 import jsonschema
 import stringcase
 from pathlib import Path
@@ -22,21 +21,31 @@ if TYPE_CHECKING:
     from .error import Error
 
 
+# NOTE: review and clean this class
+# NOTE: can we generate metadata_profile from dataclasses?
+# NOTE: insert __init__ params docs using instance properties data?
+
+
 class Metaclass(type):
     def __call__(cls, *args, **kwargs):
         obj = type.__call__(cls, *args, **kwargs)
-        obj.metadata_defined = obj.metadata_defined.copy()
-        obj.metadata_defined.update(kwargs.keys())
+        obj.metadata_assigned.update(kwargs.keys())
         obj.metadata_initiated = True
         return obj
 
 
-# TODO: insert __init__ params docs using instance properties data?
 class Metadata2(metaclass=Metaclass):
-    # TODO: fix for arguments like dialect.header_rows!!!
+    def __new__(cls, *args, **kwargs):
+        obj = super().__new__(cls)
+        obj.metadata_assigned = cls.metadata_assigned.copy()
+        obj.metadata_defaults = cls.metadata_defaults.copy()
+        return obj
+
     def __setattr__(self, name, value):
-        if self.metadata_initiated or isinstance(value, (list, dict)):
-            self.metadata_defined.add(name)
+        if self.metadata_initiated:
+            self.metadata_assigned.add(name)
+        elif isinstance(value, (list, dict)):
+            self.metadata_defaults[name] = value.copy()
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
@@ -45,10 +54,14 @@ class Metadata2(metaclass=Metaclass):
     # Properties
 
     def list_defined(self):
-        return list(self.metadata_defined)
+        defined = list(self.metadata_assigned)
+        for name, default in self.metadata_defaults.items():
+            if getattr(self, name, None) != default:
+                defined.append(name)
+        return defined
 
     def has_defined(self, name: str):
-        return name in self.metadata_defined
+        return name in self.list_defined()
 
     def get_defined(self, name: str, *, default=None):
         if self.has_defined(name):
@@ -144,7 +157,8 @@ class Metadata2(metaclass=Metaclass):
     # TODO: add/improve types
     metadata_Error = None
     metadata_profile = None
-    metadata_defined: Set[str] = set()
+    metadata_assigned: Set[str] = set()
+    metadata_defaults: Dict[str, Union[list, dict]] = {}
     metadata_initiated: bool = False
 
     @property
@@ -223,21 +237,15 @@ class Metadata2(metaclass=Metaclass):
         """Extract metadata properties"""
         properties = []
         if cls.metadata_profile:
-            signature = inspect.signature(cls.__init__)
             type_hints = typing.get_type_hints(cls.__init__)
             for name in cls.metadata_profile.get("properties", []):
                 property = {"name": name}
-                parameter = signature.parameters.get(stringcase.snakecase(name))
-                if parameter and parameter.default is not parameter.empty:
-                    property["default"] = parameter.default
                 type_hint = type_hints.get(stringcase.snakecase(name))
                 if type_hint:
                     args = typing.get_args(type_hint)
                     Type = args[0] if args else type_hint
                     if isinstance(Type, type) and issubclass(Type, Metadata2):
                         property["type"] = Type
-                    if type(None) in args:
-                        property["optional"] = True
                 properties.append(property)
         return properties
 
