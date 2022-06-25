@@ -1,9 +1,10 @@
-# type: ignore
-from copy import copy, deepcopy
+from typing import List
+from copy import deepcopy
 from tabulate import tabulate
+from dataclasses import dataclass, field
 from ..exception import FrictionlessException
-from ..metadata import Metadata
-from ..field import Field
+from ..metadata2 import Metadata2
+from ..field2 import Field2
 from .describe import describe
 from .validate import validate
 from .. import settings
@@ -11,12 +12,9 @@ from .. import helpers
 from .. import errors
 
 
-class Schema(Metadata):
+@dataclass
+class Schema(Metadata2):
     """Schema representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Schema`
 
     This class is one of the cornerstones of of Frictionless framework.
     It allow to work with Table Schema and its fields.
@@ -25,170 +23,58 @@ class Schema(Metadata):
     schema = Schema('schema.json')
     schema.add_fied(Field(name='name', type='string'))
     ```
-
-    Parameters:
-        descriptor? (str|dict): schema descriptor
-        fields? (dict[]): list of field descriptors
-        missing_values? (str[]): missing values
-        primary_key? (str[]): primary key
-        foreign_keys? (dict[]): foreign keys
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
     """
 
     describe = staticmethod(describe)
     validate = validate
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        # Spec
-        fields=None,
-        missing_values=None,
-        primary_key=None,
-        foreign_keys=None,
-    ):
-        self.setinitial("fields", fields)
-        self.setinitial("missingValues", missing_values)
-        self.setinitial("primaryKey", primary_key)
-        self.setinitial("foreignKeys", foreign_keys)
-        super().__init__(descriptor)
+    # Properties
 
-    @Metadata.property
-    def missing_values(self):
-        """
-        Returns:
-            str[]: missing values
-        """
-        missing_values = self.get("missingValues", copy(settings.DEFAULT_MISSING_VALUES))
-        return self.metadata_attach("missingValues", missing_values)
+    fields: List[Field2] = field(default_factory=list)
+    """TODO: add docs"""
 
-    @Metadata.property
-    def primary_key(self):
-        """
-        Returns:
-            str[]: primary key field names
-        """
-        primary_key = self.get("primaryKey", [])
-        if not isinstance(primary_key, list):
-            primary_key = [primary_key]
-        return self.metadata_attach("primaryKey", primary_key)
+    @property
+    def field_names(self):
+        """List of field names"""
+        return [field.name for field in self.fields]
 
-    @Metadata.property
-    def foreign_keys(self):
-        """
-        Returns:
-            dict[]: foreign keys
-        """
-        foreign_keys = deepcopy(self.get("foreignKeys", []))
-        for index, fk in enumerate(foreign_keys):
-            if not isinstance(fk, dict):
-                continue
-            fk.setdefault("fields", [])
-            fk.setdefault("reference", {})
-            fk["reference"].setdefault("resource", "")
-            fk["reference"].setdefault("fields", [])
-            if not isinstance(fk["fields"], list):
-                fk["fields"] = [fk["fields"]]
-            if not isinstance(fk["reference"]["fields"], list):
-                fk["reference"]["fields"] = [fk["reference"]["fields"]]
-        return self.metadata_attach("foreignKeys", foreign_keys)
+    missing_values: List[str] = field(
+        default_factory=settings.DEFAULT_MISSING_VALUES.copy
+    )
+    """TODO: add docs"""
+
+    primary_key: List[str] = field(default_factory=list)
+    """TODO: add docs"""
+
+    foreign_keys: List[dict] = field(default_factory=list)
+    """TODO: add docs"""
 
     # Fields
 
-    @Metadata.property
-    def fields(self):
-        """
-        Returns:
-            Field[]: an array of field instances
-        """
-        fields = self.get("fields", [])
-        return self.metadata_attach("fields", fields)
+    def has_field(self, name: str) -> bool:
+        """Check if a field is present"""
+        for field in self.fields:
+            if field.name == name:
+                return True
+        return False
 
-    @Metadata.property(cache=False, write=False)
-    def field_names(self):
-        """
-        Returns:
-            str[]: an array of field names
-        """
-        return [field.name for field in self.fields]
+    def add_field(self, field: Field2) -> None:
+        """Add new field to the schema"""
+        self.fields.append(field)
 
-    def add_field(self, source=None, **options):
-        """Add new field to the package.
-
-        Parameters:
-            source (dict|str): a field source
-            **options (dict): options of the Field class
-
-        Returns:
-            Resource/None: added `Resource` instance or `None` if not added
-        """
-        native = isinstance(source, Field)
-        field = source if native else Field(source, **options)
-        self.setdefault("fields", [])
-        self["fields"].append(field)
-        return self.fields[-1]
-
-    def get_field(self, name):
-        """Get schema's field by name.
-
-        Parameters:
-            name (str): schema field name
-
-        Raises:
-            FrictionlessException: if field is not found
-
-        Returns:
-           Field: `Field` instance or `None` if not found
-        """
+    def get_field(self, name: str) -> Field2:
+        """Get field by name"""
         for field in self.fields:
             if field.name == name:
                 return field
         error = errors.SchemaError(note=f'field "{name}" does not exist')
         raise FrictionlessException(error)
 
-    def has_field(self, name):
-        """Check if a field is present
-
-        Parameters:
-            name (str): schema field name
-
-        Returns:
-           bool: whether there is the field
-        """
-        for field in self.fields:
-            if field.name == name:
-                return True
-        return False
-
-    def remove_field(self, name):
-        """Remove field by name.
-
-        The schema descriptor will be validated after field descriptor removal.
-
-        Parameters:
-            name (str): schema field name
-
-        Raises:
-            FrictionlessException: if field is not found
-
-        Returns:
-            Field/None: removed `Field` instances or `None` if not found
-        """
+    def remove_field(self, name: str) -> Field2:
+        """Remove field by name"""
         field = self.get_field(name)
         self.fields.remove(field)
         return field
-
-    # Expand
-
-    def expand(self):
-        """Expand the schema"""
-        self.setdefault("fields", self.fields)
-        self.setdefault("missingValues", self.missing_values)
-        for field in self.fields:
-            field.expand()
 
     # Read
 
@@ -245,25 +131,25 @@ class Schema(Metadata):
             Schema: schema instance
         """
         schema = Schema()
-        profile = Metadata(profile).to_dict()
+        profile = Metadata2(profile).to_dict()
         required = profile.get("required", [])
         assert isinstance(required, list)
         properties = profile.get("properties", {})
         assert isinstance(properties, dict)
         for name, prop in properties.items():
 
+            # Type
+            type = prop.get("type", "any")
+            assert isinstance(type, str)
+            if type not in ["string", "integer", "number", "boolean", "object", "array"]:
+                type = "any"
+
             # Field
             assert isinstance(name, str)
             assert isinstance(prop, dict)
-            field = Field(name=name)
+            field = Field2.from_descriptor({"type": type})
+            field.name = name
             schema.add_field(field)
-
-            # Type
-            type = prop.get("type")
-            if type:
-                assert isinstance(type, str)
-                if type in ["string", "integer", "number", "boolean", "object", "array"]:
-                    field.type = type
 
             # Description
             description = prop.get("description")
@@ -273,11 +159,11 @@ class Schema(Metadata):
 
             # Required
             if name in required:
-                field.constraints["required"] = True
+                field.required = True
 
         return schema
 
-    def to_excel_template(self, path: str) -> any:
+    def to_excel_template(self, path: str):
         """Export schema as an excel template
 
         Parameters:
@@ -293,13 +179,8 @@ class Schema(Metadata):
 
     # Summary
 
-    def to_summary(self):
-        """Summary of the schema in table format
-
-        Returns:
-            str: schema summary
-        """
-
+    def to_summary(self) -> str:
+        """Summary of the schema in table format"""
         content = [
             [field.name, field.type, True if field.required else ""]
             for field in self.fields
@@ -308,27 +189,9 @@ class Schema(Metadata):
 
     # Metadata
 
-    metadata_duplicate = True
     metadata_Error = errors.SchemaError  # type: ignore
     metadata_profile = deepcopy(settings.SCHEMA_PROFILE)
     metadata_profile["properties"]["fields"] = {"type": "array"}
-
-    def metadata_process(self):
-
-        # Fields
-        fields = self.get("fields")
-        if isinstance(fields, list):
-            for index, field in enumerate(fields):
-                if not isinstance(field, Field):
-                    if not isinstance(field, dict):
-                        field = {"name": f"field{index+1}", "type": "any"}
-                    field = Field(field)
-                    list.__setitem__(fields, index, field)
-                field.schema = self
-            if not isinstance(fields, helpers.ControlledList):
-                fields = helpers.ControlledList(fields)
-                fields.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "fields", fields)
 
     def metadata_validate(self):
         yield from super().metadata_validate()
@@ -339,7 +202,7 @@ class Schema(Metadata):
                 yield from field.metadata_errors
 
         # Examples
-        for field in [f for f in self.fields if "example" in field]:
+        for field in [field for field in self.fields if field.example]:
             _, notes = field.read_cell(field.example)
             if notes is not None:
                 note = 'example value for field "%s" is not valid' % field.name
@@ -363,24 +226,3 @@ class Schema(Metadata):
                 note = 'foreign key fields "%s" does not match the reference fields "%s"'
                 note = note % (fk["fields"], fk["reference"]["fields"])
                 yield errors.SchemaError(note=note)
-
-
-# Internal
-
-# TODO: move to settings
-INFER_TYPES = [
-    "yearmonth",
-    "geopoint",
-    "duration",
-    "geojson",
-    "object",
-    "array",
-    "datetime",
-    "time",
-    "date",
-    "integer",
-    "number",
-    "boolean",
-    "year",
-    "string",
-]

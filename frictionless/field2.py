@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Field(Metadata2):
+class Field2(Metadata2):
     """Field representation"""
 
     type: str
