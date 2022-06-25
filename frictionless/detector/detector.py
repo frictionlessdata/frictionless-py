@@ -193,10 +193,10 @@ class Detector(Metadata2):
             # We use it to eleminate initial rows that are comments/etc
 
             # Get header rows
-            header_rows = settings.DEFAULT_HEADER_ROWS
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
+            header_rows = settings.DEFAULT_HEADER_ROWS.copy()
             for row_number, cells in enumerate(sample, start=1):
                 if comment_filter:
                     if not comment_filter(row_number, cells):
@@ -210,7 +210,6 @@ class Detector(Metadata2):
                 dialect.header = False
             elif header_rows != settings.DEFAULT_HEADER_ROWS:
                 dialect.header_rows = header_rows
-
         return dialect
 
     def detect_schema(self, fragment, *, labels=None, schema=None):

@@ -176,7 +176,6 @@ def test_resource_layout_header_case_is_false():
 def test_resource_dialect_skip_rows():
     source = "data/skip-rows.csv"
     dialect = Dialect(comment_char="#", comment_rows=[5])
-    print(dialect.list_defined())
     with Resource(source, dialect=dialect) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -184,19 +183,6 @@ def test_resource_dialect_skip_rows():
         ]
 
 
-# TODO: figure out behaviour
-@pytest.mark.xfail
-def test_resource_dialect_skip_rows_excel_empty_column():
-    source = "data/skip-rows.xlsx"
-    dialect = Dialect(skip_rows=[""])
-    with Resource(source, dialect=dialect) as resource:
-        assert resource.read_rows() == [
-            {"Table 1": "A", "field2": "B"},
-            {"Table 1": 8, "field2": 9},
-        ]
-
-
-@pytest.mark.xfail
 def test_resource_dialect_skip_rows_with_headers():
     source = "data/skip-rows.csv"
     dialect = Dialect(comment_char="#")
@@ -208,7 +194,6 @@ def test_resource_dialect_skip_rows_with_headers():
         ]
 
 
-@pytest.mark.xfail
 def test_resource_layout_skip_rows_with_headers_example_from_readme():
     dialect = Dialect(comment_char="#")
     source = [["#comment"], ["name", "order"], ["John", 1], ["Alex", 2]]

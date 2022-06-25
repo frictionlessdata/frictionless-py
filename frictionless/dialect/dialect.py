@@ -123,7 +123,7 @@ class Dialect(Metadata2):
         return 1
 
     def create_comment_filter(self):
-        if not self.comment_char or not self.comment_rows:
+        if not self.comment_char and not self.comment_rows:
             return None
 
         # Create filter
