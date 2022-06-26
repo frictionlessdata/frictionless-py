@@ -13,7 +13,7 @@ from .. import errors
 
 
 @dataclass
-class Schema(Metadata2):
+class Schema2(Metadata2):
     """Schema representation
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -130,7 +130,7 @@ class Schema(Metadata2):
         Returns:
             Schema: schema instance
         """
-        schema = Schema()
+        schema = Schema2()
         profile = Metadata2(profile).to_dict()
         required = profile.get("required", [])
         assert isinstance(required, list)
@@ -230,3 +230,27 @@ class Schema(Metadata2):
                 note = 'foreign key fields "%s" does not match the reference fields "%s"'
                 note = note % (fk["fields"], fk["reference"]["fields"])
                 yield errors.SchemaError(note=note)
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        field = super().metadata_import(descriptor)
+
+        # Normalize primary key
+        if field.primary_key and not isinstance(field.primary_key, list):
+            field.primary_key = [field.primary_key]
+
+        # Normalize foreign keys
+        if field.foreign_keys:
+            for fk in field.foreign_keys:
+                if not isinstance(fk, dict):
+                    continue
+                fk.setdefault("fields", [])
+                fk.setdefault("reference", {})
+                fk["reference"].setdefault("resource", "")
+                fk["reference"].setdefault("fields", [])
+                if not isinstance(fk["fields"], list):
+                    fk["fields"] = [fk["fields"]]
+                if not isinstance(fk["reference"]["fields"], list):
+                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
+
+        return field

@@ -1,1 +1,1 @@
-from .schema import Schema
+from .schema import Schema2
