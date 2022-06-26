@@ -20,7 +20,7 @@ class Field2(Metadata2):
 
     type: str = field(init=False)
     builtin: bool = field(init=False, default=False)
-    supported_constraints: List[str] = field(init=False, default_factory=list)
+    supported_constraints: List[str] = field(init=False)
 
     # Properties
 

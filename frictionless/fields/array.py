@@ -23,6 +23,31 @@ class ArrayField(Field2):
 
     # Read
 
+    def create_cell_reader(self):
+        default_reader = super().create_cell_reader()
+
+        # Create field
+        field_reader = None
+        if self.array_item:
+            descriptor = self.array_item.copy()
+            descriptor.pop("arrayItem", None)
+            descriptor.setdefault("type", "any")
+            field = Field2.from_descriptor(descriptor)
+            field_reader = field.create_cell_reader()
+
+        # Create reader
+        def cell_reader(cell):
+            cell, notes = default_reader(cell)
+            if cell is not None and not notes and field_reader:
+                for index, item in enumerate(cell):
+                    item_cell, item_notes = field_reader(item)
+                    for name, note in item_notes.items():
+                        notes[name] = f"array item {note}"
+                    cell[index] = item_cell
+            return cell, notes
+
+        return cell_reader
+
     def create_value_reader(self):
 
         # Create reader

@@ -1,8 +1,5 @@
 import pytest
-from frictionless import Field
-
-
-pytestmark = pytest.mark.skip
+from frictionless import Field2, fields
 
 
 # General
@@ -17,8 +14,6 @@ pytestmark = pytest.mark.skip
         ("default", ["val1", "val2"], ["val1", "val2"], {}),
         ("default", ("val1", "val2"), ["val1", "val2"], {}),
         ("default", '["val1", "val2"]', ["val1", "val2"], {}),
-        ("default", '["1", "2"]', [1, 2], {"arrayItem": {"type": "integer"}}),
-        ("default", '["val1", "val2"]', [None, None], {"arrayItem": {"type": "integer"}}),
         ("default", {"key": "value"}, None, {}),
         ("default", '{"key": "value"}', None, {}),
         ("default", "string", None, {}),
@@ -28,35 +23,39 @@ pytestmark = pytest.mark.skip
     ],
 )
 def test_array_read_cell(format, source, target, options):
-    field = Field(name="name", type="array", format=format)
-    field.update(options)
+    descriptor = {"name": "name", "type": "array", "format": format}
+    descriptor.update(options)
+    field = Field2.from_descriptor(descriptor)
     cell, notes = field.read_cell(source)
     assert cell == target
 
 
+# Array Item
+
+
 def test_array_read_cell_array_item():
-    field = Field(type="array", array_item={"type": "integer"})
+    field = fields.ArrayField(array_item={"type": "integer"})
     cell, notes = field.read_cell('["1", "2", "3"]')
     assert cell == [1, 2, 3]
-    assert notes is None
+    assert notes == {}
 
 
 def test_array_read_cell_array_item_type_error():
-    field = Field(type="array", array_item={"type": "integer"})
+    field = fields.ArrayField(array_item={"type": "integer"})
     cell, notes = field.read_cell('["1", "2", "bad"]')
     assert cell == [1, 2, None]
     assert notes == {"type": 'array item type is "integer/default"'}
 
 
 def test_array_read_cell_array_item_with_constraint():
-    field = Field(type="array", array_item={"constraints": {"enum": ["val1", "val2"]}})
+    field = fields.ArrayField(array_item={"constraints": {"enum": ["val1", "val2"]}})
     cell, notes = field.read_cell('["val1", "val2"]')
     assert cell == ["val1", "val2"]
-    assert notes is None
+    assert notes == {}
 
 
 def test_array_read_cell_array_item_with_constraint_error():
-    field = Field(type="array", array_item={"constraints": {"enum": ["val1"]}})
+    field = fields.ArrayField(array_item={"constraints": {"enum": ["val1"]}})
     cell, notes = field.read_cell('["val1", "val2"]')
     assert cell == ["val1", "val2"]
     assert notes == {"enum": 'array item constraint "enum" is "[\'val1\']"'}
