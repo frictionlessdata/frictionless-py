@@ -87,14 +87,18 @@ class Schema2(Metadata2):
         Returns:
             any[]: list of processed cells
         """
-        result_cells = []
-        result_notes = []
-        for index, field in enumerate(self.fields):
-            cell = cells[index] if len(cells) > index else None
-            cell, notes = field.read_cell(cell)
-            result_cells.append(cell)
-            result_notes.append(notes)
-        return result_cells, result_notes
+        readers = self.create_cell_readers()
+        return zip(*(reader(cells[idx]) for idx, reader in enumerate(readers.values())))
+
+    def read_values(self, cells):
+        readers = self.create_value_readers()
+        return [reader(cells[index]) for index, reader in enumerate(readers.values())]
+
+    def create_cell_readers(self):
+        return {field.name: field.create_cell_reader() for field in self.fields}
+
+    def create_value_readers(self):
+        return {field.name: field.create_value_reader() for field in self.fields}
 
     # Write
 
@@ -107,16 +111,18 @@ class Schema2(Metadata2):
         Returns:
             any[]: list of processed cells
         """
-        result_cells = []
-        result_notes = []
-        for index, field in enumerate(self.fields):
-            notes = None
-            cell = cells[index] if len(cells) > index else None
-            if field.type not in types:
-                cell, notes = field.write_cell(cell)
-            result_cells.append(cell)
-            result_notes.append(notes)
-        return result_cells, result_notes
+        writers = self.create_cell_writers()
+        return zip(*(writer(cells[idx]) for idx, writer in enumerate(writers.values())))
+
+    def write_values(self, cells):
+        writers = self.create_value_writers()
+        return zip(writer(cells[index]) for index, writer in enumerate(writers.values()))
+
+    def create_cell_writers(self):
+        return {field.name: field.create_cell_reader() for field in self.fields}
+
+    def create_value_writers(self):
+        return {field.name: field.create_value_writer() for field in self.fields}
 
     # Convert
 

@@ -151,6 +151,8 @@ class System:
         Returns:
             Field: field
         """
+        # TODO: move to a proper place
+        descriptor.setdefault("type", "any")
         type = descriptor.get("type", "")
         for func in self.methods["create_field"].values():
             field = func(descriptor)
@@ -160,7 +162,7 @@ class System:
             if getattr(Class, "type", None) == type:
                 return Class.from_descriptor(descriptor)
         note = f'field "{type}" is not supported. Try installing "frictionless-{type}"'
-        raise FrictionlessException(errors.CheckError(note=note))
+        raise FrictionlessException(errors.FieldError(note=note))
 
     def create_field_candidates(self) -> List[dict]:
         """Create candidates

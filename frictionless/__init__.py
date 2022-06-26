@@ -22,6 +22,7 @@ from .report import Report, ReportTask
 from .resource import Resource
 from .row import Row
 from .schema import Schema
+from .schema2 import Schema2
 from .server import server
 from .settings import VERSION as __version__
 from .step import Step
