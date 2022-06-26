@@ -208,10 +208,10 @@ class Metadata2(metaclass=Metaclass):
         source = cls.metadata_normalize(descriptor)
         for name, Type in cls.metadata_properties().items():
             value = source.get(name)
+            if value is None:
+                continue
             # TODO: rebase on "type" only?
             if name in ["code", "type"]:
-                continue
-            if value is None:
                 continue
             if Type:
                 if isinstance(value, list):
@@ -226,10 +226,12 @@ class Metadata2(metaclass=Metaclass):
         descriptor = {}
         for name, Type in self.metadata_properties().items():
             value = getattr(self, stringcase.snakecase(name), None)
-            if self.get_defined(stringcase.snakecase(name)):
-                continue
             if value is None:
                 continue
+            # TODO: rebase on "type" only?
+            if name not in ["code", "type"]:
+                if not self.has_defined(stringcase.snakecase(name)):
+                    continue
             if Type:
                 if isinstance(value, list):
                     value = [item.metadata_export() for item in value]  # type: ignore

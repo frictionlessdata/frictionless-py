@@ -61,4 +61,3 @@ class Step(Metadata2):
     # Metadata
 
     metadata_Error = errors.StepError
-    metadata_assigned = {"code"}

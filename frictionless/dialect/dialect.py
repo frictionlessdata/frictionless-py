@@ -155,3 +155,7 @@ class Dialect(Metadata2):
             "controls": {},
         },
     }
+
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(controls=Control)
