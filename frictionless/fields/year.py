@@ -4,11 +4,13 @@ from .. import settings
 
 
 @dataclass
-class AnyField(Field2):
-    type = "any"
+class YearField(Field2):
+    type = "year"
     builtin = True
     supported_constraints = [
         "required",
+        "minimum",
+        "maximum",
         "enum",
     ]
 
@@ -18,6 +20,17 @@ class AnyField(Field2):
 
         # Create reader
         def value_reader(cell):
+            if not isinstance(cell, int):
+                if not isinstance(cell, str):
+                    return None
+                if len(cell) != 4:
+                    return None
+                try:
+                    cell = int(cell)
+                except Exception:
+                    return None
+            if cell < 0 or cell > 9999:
+                return None
             return cell
 
         return value_reader
@@ -36,5 +49,5 @@ class AnyField(Field2):
 
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        14
+        6
     ]

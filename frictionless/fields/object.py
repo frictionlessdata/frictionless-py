@@ -1,14 +1,17 @@
+import json
 from dataclasses import dataclass
 from ..field2 import Field2
 from .. import settings
 
 
 @dataclass
-class AnyField(Field2):
-    type = "any"
+class ObjectField(Field2):
+    type = "object"
     builtin = True
     supported_constraints = [
         "required",
+        "minLength",
+        "maxLength",
         "enum",
     ]
 
@@ -18,6 +21,15 @@ class AnyField(Field2):
 
         # Create reader
         def value_reader(cell):
+            if not isinstance(cell, dict):
+                if not isinstance(cell, str):
+                    return None
+                try:
+                    cell = json.loads(cell)
+                except Exception:
+                    return None
+                if not isinstance(cell, dict):
+                    return None
             return cell
 
         return value_reader
@@ -28,7 +40,7 @@ class AnyField(Field2):
 
         # Create writer
         def value_writer(cell):
-            return str(cell)
+            return json.dumps(cell)
 
         return value_writer
 
@@ -36,5 +48,5 @@ class AnyField(Field2):
 
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        14
+        9
     ]

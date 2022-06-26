@@ -6,7 +6,7 @@ from .. import settings
 
 
 @dataclass
-class IntegerFied(Field2):
+class IntegerField(Field2):
     type = "integer"
     builtin = True
     supported_constraints = [
@@ -18,7 +18,7 @@ class IntegerFied(Field2):
 
     # Properties
 
-    bare_number: bool = True
+    bare_number: bool = settings.DEFAULT_BARE_NUMBER
     """TODO: add docs"""
 
     # Read
@@ -55,7 +55,7 @@ class IntegerFied(Field2):
 
     def create_value_writer(self):
 
-        # Create reader
+        # Create writer
         def value_writer(cell):
             return str(cell)
 

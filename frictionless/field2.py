@@ -179,6 +179,16 @@ class Field2(Metadata2):
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
                 yield errors.FieldError(note=note)
 
+    @classmethod
+    def metadata_import(cls, descriptor):
+        field = super().metadata_import(descriptor)
+
+        # Legacy format
+        if field.format.startswith("fmt:"):
+            field.format = field.format.replace("fmt:", "")
+
+        return field
+
 
 # Internal
 

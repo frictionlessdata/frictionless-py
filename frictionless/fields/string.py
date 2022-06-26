@@ -7,7 +7,7 @@ from .. import settings
 
 
 @dataclass
-class StringFied(Field2):
+class StringField(Field2):
     type = "string"
     builtin = True
     supported_constraints = [
@@ -53,7 +53,7 @@ class StringFied(Field2):
 
     def create_value_writer(self):
 
-        # Create reader
+        # Create writer
         def value_writer(cell):
             return str(cell)
 

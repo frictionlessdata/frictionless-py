@@ -1,11 +1,13 @@
+import isodate
+import datetime
 from dataclasses import dataclass
 from ..field2 import Field2
 from .. import settings
 
 
 @dataclass
-class AnyField(Field2):
-    type = "any"
+class DurationField(Field2):
+    type = "duration"
     builtin = True
     supported_constraints = [
         "required",
@@ -18,6 +20,13 @@ class AnyField(Field2):
 
         # Create reader
         def value_reader(cell):
+            if not isinstance(cell, (isodate.Duration, datetime.timedelta)):
+                if not isinstance(cell, str):
+                    return None
+                try:
+                    cell = isodate.parse_duration(cell)
+                except Exception:
+                    return None
             return cell
 
         return value_reader
@@ -28,7 +37,7 @@ class AnyField(Field2):
 
         # Create writer
         def value_writer(cell):
-            return str(cell)
+            return isodate.duration_isoformat(cell)
 
         return value_writer
 
@@ -36,5 +45,5 @@ class AnyField(Field2):
 
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        14
+        13
     ]

@@ -17,5 +17,5 @@ from frictionless import Field2
 )
 def test_any_read_cell(format, source, target):
     field = Field2.from_descriptor({"name": "name", "type": "any", "format": format})
-    cell, _ = field.read_cell(source)
+    cell, notes = field.read_cell(source)
     assert cell == target

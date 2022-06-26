@@ -29,5 +29,5 @@ def test_integer_read_cell(format, source, target, options):
     descriptor = {"name": "name", "type": "integer", "format": format}
     descriptor.update(options)
     field = Field2.from_descriptor(descriptor)
-    cell, _ = field.read_cell(source)
+    cell, notes = field.read_cell(source)
     assert cell == target
