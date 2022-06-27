@@ -52,17 +52,17 @@ class Schema2(Metadata2):
 
     # Fields
 
+    def add_field(self, field: Field2) -> None:
+        """Add new field to the schema"""
+        self.fields.append(field)
+        field.schema = self
+
     def has_field(self, name: str) -> bool:
         """Check if a field is present"""
         for field in self.fields:
             if field.name == name:
                 return True
         return False
-
-    def add_field(self, field: Field2) -> None:
-        """Add new field to the schema"""
-        field.schema = self
-        self.fields.append(field)
 
     def get_field(self, name: str) -> Field2:
         """Get field by name"""
@@ -77,6 +77,23 @@ class Schema2(Metadata2):
         field = self.get_field(name)
         self.fields.remove(field)
         return field
+
+    def set_field(self, name: str, field: Field2) -> Field2:
+        """Set field by name"""
+        prev_field = self.get_field(name)
+        index = self.fields.index(prev_field)
+        self.fields[index] = field
+        field.schema = self
+        return prev_field
+
+    def set_field_type(self, name: str, type: str) -> Field2:
+        """Set field type"""
+        prev_field = self.get_field(name)
+        descriptor = prev_field.to_descriptor()
+        descriptor.update({"type": type})
+        next_field = Field2.from_descriptor(descriptor)
+        self.set_field(name, next_field)
+        return prev_field
 
     # Read
 
