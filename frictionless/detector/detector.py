@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Optional, List
 from ..metadata2 import Metadata2
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
+from ..fields import AnyField
 from ..dialect import Dialect
 from ..system import system
 from .. import settings
@@ -304,7 +305,7 @@ class Detector(Metadata2):
             # For not inferred fields we use the "any" type field as a default
             for index, name in enumerate(names):
                 if fields[index] is None:
-                    fields[index] = Field(name=name, type="any", schema=schema)  # type: ignore
+                    fields[index] = AnyField(name=name, schema=schema)  # type: ignore
             schema.fields = fields  # type: ignore
 
         # Sync schema
