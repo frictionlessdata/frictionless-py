@@ -1,29 +1,67 @@
 from __future__ import annotations
-from typing import Optional, List
+from typing import TYPE_CHECKING, List
+from importlib import import_module
+from multiprocessing import Pool
+from dataclasses import dataclass, field
 from ..metadata2 import Metadata2
 from ..errors import InquiryError
-from .validate import validate
-from ..checklist import Checklist
-from ..dialect import Dialect
-from ..schema import Schema
-from ..file import File
-from .. import errors
+from .task import InquiryTask
+from ..report import Report
+from .. import helpers
+
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
 
+@dataclass
 class Inquiry(Metadata2):
     """Inquiry representation."""
 
-    validate = validate
-
-    def __init__(self, *, tasks: List[InquiryTask]):
-        self.tasks = tasks
-
     # Properties
 
-    tasks: List[InquiryTask]
+    tasks: List[InquiryTask] = field(default_factory=list)
     """List of underlaying tasks"""
 
-    # Convert
+    # Validate
+
+    def validate(self, *, parallel=False):
+        """Validate inquiry
+
+        Parameters:
+            parallel? (bool): enable multiprocessing
+
+        Returns:
+            Report: validation report
+        """
+
+        # Create state
+        timer = helpers.Timer()
+        reports: List[Report] = []
+
+        # Validate inquiry
+        if self.metadata_errors:
+            errors = self.metadata_errors
+            return Report.from_validation(time=timer.time, errors=errors)
+
+        # Validate sequential
+        if not parallel:
+            for task in self.tasks:
+                report = task.validate(metadata=False)
+                reports.append(report)
+
+        # Validate parallel
+        else:
+            with Pool() as pool:
+                task_descriptors = [task.to_descriptor() for task in self.tasks]
+                report_descriptors = pool.map(validate_parallel, task_descriptors)
+                for report_descriptor in report_descriptors:
+                    reports.append(Report.from_descriptor(report_descriptor))
+
+        # Return report
+        return Report.from_validation_reports(
+            time=timer.time,
+            reports=reports,
+        )
 
     # Metadata
 
@@ -44,134 +82,11 @@ class Inquiry(Metadata2):
             yield from task.metadata_errors
 
 
-class InquiryTask(Metadata2):
-    """Inquiry task representation.
+# Internal
 
-    Parameters:
-        descriptor? (str|dict): descriptor
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(
-        self,
-        *,
-        descriptor: Optional[str] = None,
-        type: Optional[str] = None,
-        path: Optional[str] = None,
-        name: Optional[str] = None,
-        scheme: Optional[str] = None,
-        format: Optional[str] = None,
-        hashing: Optional[str] = None,
-        encoding: Optional[str] = None,
-        innerpath: Optional[str] = None,
-        compression: Optional[str] = None,
-        dialect: Optional[Dialect] = None,
-        schema: Optional[Schema] = None,
-        checklist: Optional[Checklist] = None,
-    ):
-        self.descriptor = descriptor
-        self.__type = type
-        self.path = path
-        self.name = name
-        self.scheme = scheme
-        self.format = format
-        self.hashing = hashing
-        self.encoding = encoding
-        self.innerpath = innerpath
-        self.compression = compression
-        self.dialect = dialect
-        self.schema = schema
-        self.checklist = checklist
-
-    # Properties
-
-    descriptor: Optional[str]
-    """# TODO: add docs"""
-
-    # TODO: review
-    @property
-    def type(self) -> str:
-        """
-        Returns:
-            any: type
-        """
-        type = self.__type
-        if not type:
-            type = "resource"
-            if self.descriptor:
-                file = File(self.descriptor)
-                type = "package" if file.type == "package" else "resource"
-        return type
-
-    @type.setter
-    def type(self, value: str):
-        self.__type = value
-
-    path: Optional[str]
-    """# TODO: add docs"""
-
-    name: Optional[str]
-    """# TODO: add docs"""
-
-    scheme: Optional[str]
-    """# TODO: add docs"""
-
-    format: Optional[str]
-    """# TODO: add docs"""
-
-    hashing: Optional[str]
-    """# TODO: add docs"""
-
-    encoding: Optional[str]
-    """# TODO: add docs"""
-
-    innerpath: Optional[str]
-    """# TODO: add docs"""
-
-    compression: Optional[str]
-    """# TODO: add docs"""
-
-    dialect: Optional[Dialect]
-    """# TODO: add docs"""
-
-    schema: Optional[Schema]
-    """# TODO: add docs"""
-
-    checklist: Optional[Checklist]
-    """# TODO: add docs"""
-
-    # Convert
-
-    # Metadata
-
-    metadata_Error = errors.InquiryError
-    metadata_profile = {
-        "properties": {
-            "descriptor": {},
-            "type": {},
-            "path": {},
-            "name": {},
-            "scheme": {},
-            "format": {},
-            "hashing": {},
-            "encoding": {},
-            "innerpath": {},
-            "compression": {},
-            "dialect": {},
-            "schema": {},
-            "checklist": {},
-        }
-    }
-
-    # TODO: validate type/descriptor
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-    def metadata_export(self):
-        descriptor = super().metadata_export()
-        if not self.__type:
-            descriptor.pop("type")
-        return descriptor
+def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
+    InquiryTask = import_module("frictionless").InquiryTask
+    task = InquiryTask.from_descriptor(descriptor)
+    report = task.validate(metadata=False)
+    return report.to_descriptor()

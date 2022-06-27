@@ -2,7 +2,7 @@ import pytest
 from frictionless import Inquiry
 
 
-# General
+# Sequential
 
 
 def test_inquiry_validate():
@@ -138,8 +138,13 @@ def test_inquiry_validate_with_multiple_packages():
 @pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_parallel_multiple():
-    inquiry = Inquiry(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/matrix.csv"}]},
+    inquiry = Inquiry.from_descriptor(
+        {
+            "tasks": [
+                {"source": "data/table.csv"},
+                {"source": "data/matrix.csv"},
+            ]
+        },
     )
     report = inquiry.validate(parallel=True)
     assert report.valid
@@ -148,8 +153,13 @@ def test_inquiry_validate_parallel_multiple():
 @pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_parallel_multiple_invalid():
-    inquiry = Inquiry(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]},
+    inquiry = Inquiry.from_descriptor(
+        {
+            "tasks": [
+                {"source": "data/table.csv"},
+                {"source": "data/invalid.csv"},
+            ]
+        },
     )
     report = inquiry.validate(parallel=True)
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
@@ -167,7 +177,7 @@ def test_inquiry_validate_parallel_multiple_invalid():
 @pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_with_multiple_packages_with_parallel():
-    inquiry = Inquiry(
+    inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
                 {"source": "data/package/datapackage.json"},

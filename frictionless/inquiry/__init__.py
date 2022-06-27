@@ -1,1 +1,2 @@
-from .inquiry import Inquiry, InquiryTask
+from .inquiry import Inquiry
+from .task import InquiryTask
