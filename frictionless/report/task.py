@@ -1,35 +1,16 @@
 from __future__ import annotations
+from typing import List
 from tabulate import tabulate
-from typing import Optional, List
+from dataclasses import dataclass, field
 from ..metadata2 import Metadata2
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .. import helpers
 
 
+@dataclass
 class ReportTask(Metadata2):
     """Report task representation."""
-
-    def __init__(
-        self,
-        *,
-        valid: bool,
-        name: str,
-        place: str,
-        tabular: bool,
-        stats: dict,
-        scope: Optional[List[str]] = None,
-        warnings: Optional[List[str]] = None,
-        errors: Optional[List[Error]] = None,
-    ):
-        self.valid = valid
-        self.name = name
-        self.place = place
-        self.tabular = tabular
-        self.stats = stats
-        self.scope = scope or []
-        self.warnings = warnings or []
-        self.errors = errors or []
 
     # Properties
 
@@ -48,13 +29,13 @@ class ReportTask(Metadata2):
     stats: dict
     """# TODO: add docs"""
 
-    scope: List[str]
+    scope: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
-    warnings: List[str]
+    warnings: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
-    errors: List[Error]
+    errors: List[Error] = field(default_factory=list)
     """# TODO: add docs"""
 
     @property

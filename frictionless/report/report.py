@@ -1,6 +1,7 @@
 from __future__ import annotations
 from tabulate import tabulate
 from typing import TYPE_CHECKING, List
+from dataclasses import dataclass, field
 from ..metadata2 import Metadata2
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
@@ -12,25 +13,9 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
+@dataclass
 class Report(Metadata2):
     """Report representation."""
-
-    def __init__(
-        self,
-        *,
-        version: str,
-        valid: bool,
-        stats: dict,
-        tasks: List[ReportTask] = [],
-        errors: List[Error] = [],
-        warnings: List[str] = [],
-    ):
-        self.version = version
-        self.valid = valid
-        self.stats = stats
-        self.tasks = tasks.copy()
-        self.errors = errors.copy()
-        self.warnings = warnings.copy()
 
     # Properties
 
@@ -43,13 +28,13 @@ class Report(Metadata2):
     stats: dict
     """# TODO: add docs"""
 
-    tasks: List[ReportTask]
+    tasks: List[ReportTask] = field(default_factory=list)
     """# TODO: add docs"""
 
-    errors: List[Error]
+    errors: List[Error] = field(default_factory=list)
     """# TODO: add docs"""
 
-    warnings: List[str]
+    warnings: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
     @property
