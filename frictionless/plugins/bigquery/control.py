@@ -11,7 +11,7 @@ class BigqueryControl(Control):
 
     # Properties
 
-    table: str
+    table: Optional[str] = None
     """TODO: add docs"""
 
     dataset: Optional[str] = None

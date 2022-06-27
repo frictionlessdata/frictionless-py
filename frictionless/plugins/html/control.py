@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from ...dialect import Control
+from . import settings
 
 
 @dataclass
@@ -10,7 +11,7 @@ class HtmlControl(Control):
 
     # Properties
 
-    selector: str = "table"
+    selector: str = settings.DEFAULT_SELECTOR
     """TODO: add docs"""
 
     # Metadata

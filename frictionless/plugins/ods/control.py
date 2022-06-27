@@ -1,6 +1,7 @@
 from typing import Union
 from dataclasses import dataclass
 from ...dialect import Control
+from . import settings
 
 
 @dataclass
@@ -11,7 +12,7 @@ class OdsControl(Control):
 
     # Properties
 
-    sheet: Union[str, int] = 1
+    sheet: Union[str, int] = settings.DEFAULT_SHEET
     """TODO: add docs"""
 
     # Metadata

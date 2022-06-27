@@ -2,6 +2,7 @@ import csv
 from typing import Optional
 from dataclasses import dataclass
 from ...dialect import Control
+from . import settings
 
 
 @dataclass
@@ -12,16 +13,16 @@ class CsvControl(Control):
 
     # Properties
 
-    delimiter: str = ","
+    delimiter: str = settings.DEFAULT_DELIMITER
     """TODO: add docs"""
 
-    line_terminator: str = "\r\n"
+    line_terminator: str = settings.DEFAULT_LINE_TERMINATOR
     """TODO: add docs"""
 
-    quote_char: str = '"'
+    quote_char: str = settings.DEFAULT_QUOTE_CHAR
     """TODO: add docs"""
 
-    double_quote: bool = True
+    double_quote: bool = False
     """TODO: add docs"""
 
     escape_char: Optional[str] = None

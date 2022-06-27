@@ -1,6 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
 from ...dialect import Control
+from . import settings
 
 
 @dataclass
@@ -11,10 +12,10 @@ class SqlControl(Control):
 
     # Properties
 
-    table: str = "table"
+    table: str = settings.DEFAULT_TABLE
     """TODO: add docs"""
 
-    prefix: str = ""
+    prefix: str = settings.DEFAULT_PREFIX
     """TODO: add docs"""
 
     order_by: Optional[str] = None
