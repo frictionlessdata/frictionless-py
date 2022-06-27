@@ -74,6 +74,42 @@ def test_pandas_nan_in_integer_csv_column():
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
 
 
+def test_pandas_nan_with_field_type_information_1143():
+    descriptor = {
+        "dialect": {"delimiter": ","},
+        "name": "issue-1109",
+        "path": "data/issue-1109.csv",
+        "schema": {
+            "fields": [
+                {"name": "int", "type": "integer"},
+                {"name": "number", "type": "number"},
+                {"name": "string", "type": "string"},
+            ]
+        },
+    }
+    res = Resource(descriptor)
+    df = res.to_pandas()
+    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
+
+
+def test_pandas_nan_without_field_type_information_1143():
+    descriptor = {
+        "dialect": {"delimiter": ","},
+        "name": "issue-1109",
+        "path": "data/issue-1109.csv",
+        "schema": {
+            "fields": [
+                {"name": "int"},
+                {"name": "number"},
+                {"name": "string"},
+            ]
+        },
+    }
+    res = Resource(descriptor)
+    df = res.to_pandas()
+    assert all(df.dtypes.values == pd.array([object, object, object]))
+
+
 def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")

@@ -176,11 +176,11 @@ class PandasParser(Parser):
         # Bug: #1109
         for field in source.schema.fields:
             if (
-                field["type"] == "integer"
-                and field["name"] in dataframe.columns
-                and str(dataframe.dtypes[field["name"]]) != "int64"
+                field.type == "integer"
+                and field.name in dataframe.columns
+                and str(dataframe.dtypes[field.name]) != "int64"
             ):
-                dataframe[field["name"]] = dataframe[field["name"]].astype("Int64")
+                dataframe[field.name] = dataframe[field.name].astype("Int64")
 
         target.data = dataframe
 
