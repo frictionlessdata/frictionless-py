@@ -2,8 +2,10 @@ from __future__ import annotations
 import re
 import decimal
 from functools import partial
+from importlib import import_module
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
+from .exception import FrictionlessException
 from .metadata2 import Metadata2
 from .system import system
 from . import settings
@@ -11,7 +13,7 @@ from . import helpers
 from . import errors
 
 if TYPE_CHECKING:
-    from .schema import Schema
+    from .schema2 import Schema2
 
 
 @dataclass
@@ -70,7 +72,7 @@ class Field2(Metadata2):
     """TODO: add docs"""
 
     # TODO: recover
-    schema: Optional[Schema] = None
+    schema: Optional[Schema2] = None
     """TODO: add docs"""
 
     # Read
@@ -79,12 +81,13 @@ class Field2(Metadata2):
         cell_reader = self.create_cell_reader()
         return cell_reader(cell)
 
-    def read_value(self, cell):
-        value_reader = self.create_value_reader()
-        return value_reader(cell)
-
     def create_cell_reader(self):
         value_reader = self.create_value_reader()
+
+        # Create missing values
+        missing_values = self.missing_values
+        if not self.has_defined("missing_values") and self.schema:
+            missing_values = self.schema.missing_values
 
         # TODO: review where we need to cast constraints
         # Create checks
@@ -103,7 +106,7 @@ class Field2(Metadata2):
         # Create reader
         def cell_reader(cell):
             notes = {}
-            if cell in self.missing_values:
+            if cell in missing_values:
                 cell = None
             if cell is not None:
                 cell = value_reader(cell)
@@ -127,17 +130,16 @@ class Field2(Metadata2):
         cell_writer = self.create_cell_writer()
         return cell_writer(cell)
 
-    def write_value(self, cell):
-        value_writer = self.create_value_writer()
-        return value_writer(cell)
-
     def create_cell_writer(self):
         value_writer = self.create_value_writer()
 
         # Create missing value
-        missing_value = settings.DEFAULT_MISSING_VALUES[0]
-        if self.missing_values:
+        try:
             missing_value = self.missing_values[0]
+            if not self.has_defined("missing_values") and self.schema:
+                missing_value = self.schema.missing_values[0]
+        except IndexError:
+            missing_value = settings.DEFAULT_MISSING_VALUES[0]
 
         # Create writer
         def cell_writer(cell, *, ignore_missing=False):
@@ -162,7 +164,11 @@ class Field2(Metadata2):
     def from_descriptor(cls, descriptor):
         if cls is Field2:
             descriptor = cls.metadata_normalize(descriptor)
-            return system.create_field(descriptor)  # type: ignore
+            try:
+                return system.create_field(descriptor)  # type: ignore
+            except FrictionlessException:
+                fields = import_module("frictionless").fields
+                return fields.AnyField.from_descriptor(descriptor)
         return super().from_descriptor(descriptor)
 
     # Metadata

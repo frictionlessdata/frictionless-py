@@ -1,3 +1,4 @@
+from itertools import zip_longest
 from typing import List
 from copy import deepcopy
 from tabulate import tabulate
@@ -60,6 +61,7 @@ class Schema2(Metadata2):
 
     def add_field(self, field: Field2) -> None:
         """Add new field to the schema"""
+        field.schema = self
         self.fields.append(field)
 
     def get_field(self, name: str) -> Field2:
@@ -87,21 +89,19 @@ class Schema2(Metadata2):
         Returns:
             any[]: list of processed cells
         """
+        results = []
         readers = self.create_cell_readers()
-        return zip(*(reader(cells[idx]) for idx, reader in enumerate(readers.values())))
-
-    def read_values(self, cells):
-        readers = self.create_value_readers()
-        return [reader(cells[index]) for index, reader in enumerate(readers.values())]
+        for index, reader in enumerate(readers.values()):
+            cell = cells[index] if len(cells) > index else None
+            results.append(reader(cell))
+        return list(map(list, zip(*results)))
 
     def create_cell_readers(self):
         return {field.name: field.create_cell_reader() for field in self.fields}
 
-    def create_value_readers(self):
-        return {field.name: field.create_value_reader() for field in self.fields}
-
     # Write
 
+    # TODO: support types?
     def write_cells(self, cells, *, types=[]):
         """Write a list of cells (normalize/uncast)
 
@@ -111,18 +111,15 @@ class Schema2(Metadata2):
         Returns:
             any[]: list of processed cells
         """
+        results = []
         writers = self.create_cell_writers()
-        return zip(*(writer(cells[idx]) for idx, writer in enumerate(writers.values())))
-
-    def write_values(self, cells):
-        writers = self.create_value_writers()
-        return zip(writer(cells[index]) for index, writer in enumerate(writers.values()))
+        for index, writer in enumerate(writers.values()):
+            cell = cells[index] if len(cells) > index else None
+            results.append(writer(cell))
+        return list(map(list, zip(*results)))
 
     def create_cell_writers(self):
         return {field.name: field.create_cell_reader() for field in self.fields}
-
-    def create_value_writers(self):
-        return {field.name: field.create_value_writer() for field in self.fields}
 
     # Convert
 
@@ -239,15 +236,19 @@ class Schema2(Metadata2):
 
     @classmethod
     def metadata_import(cls, descriptor):
-        field = super().metadata_import(descriptor)
+        schema = super().metadata_import(descriptor)
+
+        # Normalize fields
+        for field in schema.fields:
+            field.schema = schema
 
         # Normalize primary key
-        if field.primary_key and not isinstance(field.primary_key, list):
-            field.primary_key = [field.primary_key]
+        if schema.primary_key and not isinstance(schema.primary_key, list):
+            schema.primary_key = [schema.primary_key]
 
         # Normalize foreign keys
-        if field.foreign_keys:
-            for fk in field.foreign_keys:
+        if schema.foreign_keys:
+            for fk in schema.foreign_keys:
                 if not isinstance(fk, dict):
                     continue
                 fk.setdefault("fields", [])
@@ -259,4 +260,4 @@ class Schema2(Metadata2):
                 if not isinstance(fk["reference"]["fields"], list):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
-        return field
+        return schema

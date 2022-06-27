@@ -37,37 +37,38 @@ def test_schema():
 
 def test_schema_extract_metadata_error():
     with pytest.raises(FrictionlessException):
-        Schema2.from_descriptor([])
+        Schema2.from_descriptor([])  # type: ignore
 
 
+@pytest.mark.skip
 def test_schema_metadata_invalid():
     schema = Schema2.from_descriptor("data/schema-invalid-multiple-errors.json")
     assert len(schema.metadata_errors) == 5
 
 
 def test_schema_descriptor():
-    assert Schema(DESCRIPTOR_MIN) == DESCRIPTOR_MIN
-    assert Schema(DESCRIPTOR_MAX) == DESCRIPTOR_MAX
+    assert Schema2.from_descriptor(DESCRIPTOR_MIN).to_descriptor() == DESCRIPTOR_MIN
+    assert Schema2.from_descriptor(DESCRIPTOR_MAX).to_descriptor() == DESCRIPTOR_MAX
 
 
 def test_schema_descriptor_path():
     path = "data/schema-valid-simple.json"
-    actual = Schema(path)
+    schema = Schema2.from_descriptor(path)
     with io.open(path, encoding="utf-8") as file:
-        expect = json.load(file)
-    assert actual == expect
+        descriptor = json.load(file)
+    assert schema.to_descriptor() == descriptor
 
 
 @pytest.mark.vcr
 def test_schema_descriptor_url():
     url = BASEURL % "data/schema.json"
-    actual = Schema(url)
-    expect = requests.get(url).json()
-    assert actual == expect
+    schema = Schema2.from_descriptor(url)
+    descriptor = requests.get(url).json()
+    assert schema.to_descriptor() == descriptor
 
 
 def test_schema_read_cells():
-    schema = Schema(DESCRIPTOR_MAX)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string", "string"]
     target = ["string", Decimal(10.0), 1, "string", "string"]
     cells, notes = schema.read_cells(source)
@@ -75,7 +76,7 @@ def test_schema_read_cells():
 
 
 def test_schema_read_cells_null_values():
-    schema = Schema(DESCRIPTOR_MAX)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MAX)
     source = ["string", "", "-", "string", "null"]
     target = ["string", None, None, "string", None]
     cells, notes = schema.read_cells(source)
@@ -83,7 +84,7 @@ def test_schema_read_cells_null_values():
 
 
 def test_schema_read_cells_too_short():
-    schema = Schema(DESCRIPTOR_MAX)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string"]
     target = ["string", Decimal(10.0), 1, "string", None]
     cells, notes = schema.read_cells(source)
@@ -91,7 +92,7 @@ def test_schema_read_cells_too_short():
 
 
 def test_schema_read_cells_too_long():
-    schema = Schema(DESCRIPTOR_MAX)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string", "string", "string"]
     target = ["string", Decimal(10.0), 1, "string", "string"]
     cells, notes = schema.read_cells(source)
@@ -99,7 +100,7 @@ def test_schema_read_cells_too_long():
 
 
 def test_schema_read_cells_wrong_type():
-    schema = Schema(DESCRIPTOR_MAX)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MAX)
     source = ["string", "notdecimal", "10.6", "string", "string"]
     target = ["string", None, None, "string", "string"]
     cells, notes = schema.read_cells(source)
@@ -109,24 +110,24 @@ def test_schema_read_cells_wrong_type():
 
 
 def test_schema_missing_values():
-    assert Schema(DESCRIPTOR_MIN).missing_values == [""]
-    assert Schema(DESCRIPTOR_MAX).missing_values == ["", "-", "null"]
+    assert Schema2.from_descriptor(DESCRIPTOR_MIN).missing_values == [""]
+    assert Schema2.from_descriptor(DESCRIPTOR_MAX).missing_values == ["", "-", "null"]
 
 
 def test_schema_fields():
     expect = ["id", "height"]
-    actual = [field.name for field in Schema(DESCRIPTOR_MIN).fields]
+    actual = [field.name for field in Schema2.from_descriptor(DESCRIPTOR_MIN).fields]
     assert expect == actual
 
 
 def test_schema_get_field():
-    schema = Schema(DESCRIPTOR_MIN)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MIN)
     assert schema.get_field("id").name == "id"
     assert schema.get_field("height").name == "height"
 
 
 def test_schema_get_field_error_not_found():
-    schema = Schema(DESCRIPTOR_MIN)
+    schema = Schema2.from_descriptor(DESCRIPTOR_MIN)
     with pytest.raises(FrictionlessException) as excinfo:
         schema.get_field("bad")
     error = excinfo.value.error
