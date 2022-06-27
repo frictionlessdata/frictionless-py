@@ -2,12 +2,12 @@ import base64
 import rfc3986
 import validators
 from dataclasses import dataclass
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class StringField(Field2):
+class StringField(Field):
     type = "string"
     builtin = True
     supported_constraints = [
@@ -64,7 +64,8 @@ class StringField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         0
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
 
 
 # Internal

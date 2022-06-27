@@ -7,11 +7,10 @@ import time
 from slugify import slugify
 from functools import partial
 from ...exception import FrictionlessException
+from ...schema import Schema, Field
 from ...resource import Resource
 from ...package import Package
 from ...storage import Storage
-from ...schema import Schema
-from ...field import Field
 from ... import helpers
 from .control import BigqueryControl
 from . import settings

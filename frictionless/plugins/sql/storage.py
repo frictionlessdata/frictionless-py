@@ -3,11 +3,10 @@ import re
 from functools import partial
 from urllib.parse import urlsplit, urlunsplit
 from ...exception import FrictionlessException
+from ...schema import Schema, Field
 from ...resource import Resource
 from ...storage import Storage
 from ...package import Package
-from ...schema import Schema
-from ...field import Field
 from .control import SqlControl
 from ... import helpers
 

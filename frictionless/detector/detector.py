@@ -6,11 +6,9 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
 from ..metadata2 import Metadata2
 from ..exception import FrictionlessException
+from ..schema import Schema, Field
 from ..dialect import Dialect
-from ..schema import Schema
-from ..field import Field
 from ..system import system
-from .validate import validate
 from .. import settings
 from .. import errors
 
@@ -22,8 +20,6 @@ if TYPE_CHECKING:
 @dataclass
 class Detector(Metadata2):
     """Detector representation"""
-
-    validate = validate
 
     # Properties
 
@@ -263,7 +259,7 @@ class Detector(Metadata2):
             runners = []
             runner_fields = []  # we use shared fields
             for candidate in system.create_field_candidates():
-                field = Field(candidate)
+                field = Field.from_descriptor(candidate)
                 if field.type == "number" and self.field_float_numbers:
                     field.float_number = True  # type: ignore
                 elif field.type == "boolean":
@@ -373,7 +369,7 @@ class Detector(Metadata2):
             if not source_res:
                 continue
             with source_res:
-                for row in source_res.row_stream:
+                for row in source_res.row_stream:  # type: ignore
                     cells = tuple(row.get(field_name) for field_name in source_key)
                     if set(cells) == {None}:
                         continue

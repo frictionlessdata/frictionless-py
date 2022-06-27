@@ -2,8 +2,7 @@
 import re
 import warnings
 from ...parser import Parser
-from ...schema import Schema
-from ...field import Field
+from ...schema import Schema, Field
 from ... import helpers
 from . import settings
 

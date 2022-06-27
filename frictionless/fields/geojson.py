@@ -1,12 +1,12 @@
 import json
 from dataclasses import dataclass
 from jsonschema.validators import validator_for
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class GeojsonField(Field2):
+class GeojsonField(Field):
     type = "geojson"
     builtin = True
     supported_constraints = [
@@ -51,7 +51,8 @@ class GeojsonField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         11
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
 
 
 # Internal

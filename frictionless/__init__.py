@@ -6,8 +6,6 @@ from .detector import Detector
 from .dialect import Dialect
 from .error import Error
 from .exception import FrictionlessException
-from .field import Field
-from .field2 import Field2
 from .file import File
 from .header import Header
 from .inquiry import Inquiry, InquiryTask
@@ -21,16 +19,13 @@ from .program import program
 from .report import Report, ReportTask
 from .resource import Resource
 from .row import Row
-from .schema import Schema
-from .schema2 import Schema2
+from .schema import Schema, Field
 from .server import server
 from .settings import VERSION as __version__
 from .step import Step
 from .storage import Storage
 from .system import system
-from .type import Type
 from . import checks
 from . import errors
 from . import fields
 from . import steps
-from . import types

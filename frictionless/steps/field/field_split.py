@@ -2,7 +2,7 @@ import petl
 from dataclasses import dataclass
 from typing import Optional, List
 from ...step import Step
-from ...field import Field
+from ...schema import Field
 
 
 # NOTE:

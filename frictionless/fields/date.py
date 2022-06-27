@@ -1,12 +1,12 @@
 from datetime import datetime, date
 from dateutil.parser import parse
 from dataclasses import dataclass
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class DateField(Field2):
+class DateField(Field):
     type = "date"
     builtin = True
     supported_constraints = [
@@ -69,4 +69,5 @@ class DateField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         3
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}

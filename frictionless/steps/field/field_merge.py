@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Any, Optional
 from petl.compat import next, text_type
-from ...field import Field
+from ...schema import Field
 from ...step import Step
 
 if TYPE_CHECKING:

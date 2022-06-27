@@ -1,12 +1,12 @@
 import re
 from decimal import Decimal
 from dataclasses import dataclass
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class NumberField(Field2):
+class NumberField(Field):
     type = "number"
     builtin = True
     supported_constraints = [
@@ -103,4 +103,5 @@ class NumberField(Field2):
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         1
     ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
     metadata_profile["properties"]["floatNumber"] = {}

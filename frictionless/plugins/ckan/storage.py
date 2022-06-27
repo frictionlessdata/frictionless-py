@@ -2,13 +2,12 @@
 import os
 import json
 from functools import partial
+from ...schema import Schema, Field
 from ...exception import FrictionlessException
 from ...resource import Resource
 from ...package import Package
 from ...storage import Storage
-from ...schema import Schema
 from ...system import system
-from ...field import Field
 from .control import CkanControl
 
 

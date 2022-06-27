@@ -7,15 +7,14 @@ from copy import deepcopy
 from typing import Optional
 from ..exception import FrictionlessException
 from ..helpers import cached_property
+from ..schema import Schema, Field
 from ..detector import Detector
 from ..metadata import Metadata
 from ..checklist import Checklist
 from ..pipeline import Pipeline
 from ..dialect import Dialect
-from ..schema import Schema
 from ..header import Header
 from ..system import system
-from ..field import Field
 from ..row import Row
 from .describe import describe
 from .extract import extract

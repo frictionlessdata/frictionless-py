@@ -1,12 +1,12 @@
 import json
 from typing import Optional
 from dataclasses import dataclass, field
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class ArrayField(Field2):
+class ArrayField(Field):
     type = "array"
     builtin = True
     supported_constraints = [
@@ -32,7 +32,7 @@ class ArrayField(Field2):
             descriptor = self.array_item.copy()
             descriptor.pop("arrayItem", None)
             descriptor.setdefault("type", "any")
-            field = Field2.from_descriptor(descriptor)
+            field = Field.from_descriptor(descriptor)
             field_reader = field.create_cell_reader()
 
         # Create reader
@@ -83,4 +83,5 @@ class ArrayField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         12
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}

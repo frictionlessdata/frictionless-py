@@ -1,11 +1,11 @@
 from collections import namedtuple
 from dataclasses import dataclass
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class YearmonthField(Field2):
+class YearmonthField(Field):
     type = "yearmonth"
     builtin = True
     supported_constraints = [
@@ -56,7 +56,8 @@ class YearmonthField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         7
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
 
 
 # Internal

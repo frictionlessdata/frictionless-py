@@ -5,19 +5,19 @@ from functools import partial
 from importlib import import_module
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
-from .exception import FrictionlessException
-from .metadata2 import Metadata2
-from .system import system
-from . import settings
-from . import helpers
-from . import errors
+from ..exception import FrictionlessException
+from ..metadata2 import Metadata2
+from ..system import system
+from .. import settings
+from .. import helpers
+from .. import errors
 
 if TYPE_CHECKING:
-    from .schema2 import Schema2
+    from .schema import Schema
 
 
 @dataclass
-class Field2(Metadata2):
+class Field(Metadata2):
     """Field representation"""
 
     type: str = field(init=False)
@@ -72,7 +72,7 @@ class Field2(Metadata2):
     """TODO: add docs"""
 
     # TODO: recover
-    schema: Optional[Schema2] = None
+    schema: Optional[Schema] = None
     """TODO: add docs"""
 
     # Read
@@ -105,16 +105,18 @@ class Field2(Metadata2):
 
         # Create reader
         def cell_reader(cell):
-            notes = {}
+            notes = None
             if cell in missing_values:
                 cell = None
             if cell is not None:
                 cell = value_reader(cell)
                 if cell is None:
+                    notes = notes or {}
                     notes["type"] = f'type is "{self.type}/{self.format}"'
             if not notes and checks:
                 for name, check in checks.items():
                     if not check(cell):
+                        notes = notes or {}
                         constraint = self.constraints[name]
                         notes[name] = f'constraint "{name}" is "{constraint}"'
             return cell, notes
@@ -143,12 +145,13 @@ class Field2(Metadata2):
 
         # Create writer
         def cell_writer(cell, *, ignore_missing=False):
-            notes = {}
+            notes = None
             if cell is None:
                 cell = cell if ignore_missing else missing_value
                 return cell, notes
             cell = value_writer(cell)
             if cell is None:
+                notes = notes or {}
                 notes["type"] = f'type is "{self.type}/{self.format}"'
             return cell, notes
 
@@ -162,7 +165,7 @@ class Field2(Metadata2):
     # TODO: review
     @classmethod
     def from_descriptor(cls, descriptor):
-        if cls is Field2:
+        if cls is Field:
             descriptor = cls.metadata_normalize(descriptor)
             try:
                 return system.create_field(descriptor)  # type: ignore

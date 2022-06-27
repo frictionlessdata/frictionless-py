@@ -1,7 +1,7 @@
 from typing import Optional, List
 from dataclasses import dataclass, field
 from ...step import Step
-from ...field import Field
+from ...schema import Field
 
 
 # NOTE:

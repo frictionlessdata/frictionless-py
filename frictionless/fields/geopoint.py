@@ -2,12 +2,12 @@ import json
 from collections import namedtuple
 from decimal import Decimal
 from dataclasses import dataclass
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class GeopointField(Field2):
+class GeopointField(Field):
     type = "geopoint"
     builtin = True
     supported_constraints = [
@@ -75,7 +75,8 @@ class GeopointField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         10
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
 
 
 # Internal

@@ -1,121 +1,8 @@
 import pytest
-from frictionless import Schema, Field, helpers
+from frictionless import Field
 
 
 # General
-
-
-DESCRIPTOR = {
-    "name": "id",
-    "type": "integer",
-    "format": "default",
-    "missingValues": ["-"],
-    "constraints": {"required": True},
-}
-
-
-def test_field():
-    field = Field(DESCRIPTOR)
-    assert field.name == "id"
-    assert field.type == "integer"
-    assert field.format == "default"
-    assert field.missing_values == ["-"]
-    assert field.constraints == {"required": True}
-    assert field.required is True
-
-
-def test_field_defaults():
-    field = Field({"name": "id"})
-    assert field.name == "id"
-    assert field.type == "any"
-    assert field.format == "default"
-    assert field.missing_values == [""]
-    assert field.constraints == {}
-    assert field.required is False
-
-
-def test_field_read_cell():
-    field = Field(DESCRIPTOR)
-    assert field.read_cell("1") == (1, None)
-    assert field.read_cell("string") == (
-        None,
-        {"type": 'type is "integer/default"'},
-    )
-    assert field.read_cell("-") == (None, {"required": 'constraint "required" is "True"'})
-
-
-def test_field_read_cell_string_missing_values():
-    field = Field({"name": "name", "type": "string", "missingValues": ["", "NA", "N/A"]})
-    assert field.read_cell("") == (None, None)
-    assert field.read_cell("NA") == (None, None)
-    assert field.read_cell("N/A") == (None, None)
-
-
-def test_field_read_cell_number_missingValues():
-    field = Field({"name": "name", "type": "number", "missingValues": ["", "NA", "N/A"]})
-    assert field.read_cell("") == (None, None)
-    assert field.read_cell("NA") == (None, None)
-    assert field.read_cell("N/A") == (None, None)
-
-
-@pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
-def test_field_standard_specs_properties(create_descriptor):
-    options = dict(
-        name="name",
-        title="title",
-        description="description",
-        type="string",
-        format="format",
-        missing_values="missing",
-        constraints={},
-        rdf_type="rdf",
-    )
-    field = (
-        Field(**options)
-        if not create_descriptor
-        else Field(helpers.create_descriptor(**options))
-    )
-    assert field.name == "name"
-    assert field.title == "title"
-    assert field.description == "description"
-    assert field.type == "string"
-    assert field.format == "format"
-    assert field.missing_values == "missing"
-    assert field.constraints == {}
-    assert field.rdf_type == "rdf"
-
-
-def test_field_description_html():
-    field = Field(description="**test**")
-    assert field.description == "**test**"
-    assert field.description_html == "<p><strong>test</strong></p>"
-
-
-def test_field_description_html_multiline():
-    field = Field(description="**test**\n\nline")
-    assert field.description == "**test**\n\nline"
-    assert field.description_html == "<p><strong>test</strong></p><p>line</p>"
-
-
-def test_field_description_html_not_set():
-    field = Field()
-    assert field.description == ""
-    assert field.description_html == ""
-
-
-def test_field_description_text():
-    field = Field(description="**test**\n\nline")
-    assert field.description == "**test**\n\nline"
-    assert field.description_text == "test line"
-
-
-def test_field_description_text_plain():
-    field = Field(description="It's just a plain text. Another sentence")
-    assert field.description == "It's just a plain text. Another sentence"
-    assert field.description_text == "It's just a plain text. Another sentence"
-
-
-# Constraints
 
 
 @pytest.mark.parametrize(
@@ -204,12 +91,18 @@ def test_field_description_text_plain():
     ],
 )
 def test_field_constraint_field_type(constraints, type, valid):
-    field = Field({"name": "field", "constraints": constraints, "type": type})
+    field = Field.from_descriptor(
+        {
+            "name": "field",
+            "constraints": constraints,
+            "type": type,
+        }
+    )
     assert field.metadata_valid == valid
 
 
 def test_field_read_cell_required():
-    field = Field(
+    field = Field.from_descriptor(
         {
             "name": "name",
             "type": "string",
@@ -231,7 +124,13 @@ def test_field_read_cell_required():
 
 
 def test_field_read_cell_minLength():
-    field = Field({"name": "name", "type": "string", "constraints": {"minLength": 2}})
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "string",
+            "constraints": {"minLength": 2},
+        }
+    )
     read = field.read_cell
     assert read("abc") == ("abc", None)
     assert read("ab") == ("ab", None)
@@ -241,7 +140,13 @@ def test_field_read_cell_minLength():
 
 
 def test_field_read_cell_maxLength():
-    field = Field({"name": "name", "type": "string", "constraints": {"maxLength": 2}})
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "string",
+            "constraints": {"maxLength": 2},
+        }
+    )
     read = field.read_cell
     assert read("abc") == ("abc", {"maxLength": 'constraint "maxLength" is "2"'})
     assert read("ab") == ("ab", None)
@@ -251,7 +156,13 @@ def test_field_read_cell_maxLength():
 
 
 def test_field_read_cell_minimum():
-    field = Field({"name": "name", "type": "integer", "constraints": {"minimum": 2}})
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "integer",
+            "constraints": {"minimum": 2},
+        }
+    )
     read = field.read_cell
     assert read("3") == (3, None)
     assert read(3) == (3, None)
@@ -264,7 +175,13 @@ def test_field_read_cell_minimum():
 
 
 def test_field_read_cell_maximum():
-    field = Field({"name": "name", "type": "integer", "constraints": {"maximum": 2}})
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "integer",
+            "constraints": {"maximum": 2},
+        }
+    )
     read = field.read_cell
     assert read("3") == (3, {"maximum": 'constraint "maximum" is "2"'})
     assert read(3) == (3, {"maximum": 'constraint "maximum" is "2"'})
@@ -277,7 +194,13 @@ def test_field_read_cell_maximum():
 
 
 def test_field_read_cell_pattern():
-    field = Field({"name": "name", "type": "string", "constraints": {"pattern": "a|b"}})
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "string",
+            "constraints": {"pattern": "a|b"},
+        }
+    )
     read = field.read_cell
     assert read("a") == ("a", None)
     assert read("b") == ("b", None)
@@ -287,8 +210,12 @@ def test_field_read_cell_pattern():
 
 
 def test_field_read_cell_enum():
-    field = Field(
-        {"name": "name", "type": "integer", "constraints": {"enum": ["1", "2", "3"]}}
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "integer",
+            "constraints": {"enum": ["1", "2", "3"]},
+        }
     )
     read = field.read_cell
     assert read("1") == (1, None)
@@ -300,7 +227,7 @@ def test_field_read_cell_enum():
 
 
 def test_field_read_cell_multiple_constraints():
-    field = Field(
+    field = Field.from_descriptor(
         {
             "name": "name",
             "type": "string",
@@ -321,48 +248,14 @@ def test_field_read_cell_multiple_constraints():
     assert read("") == (None, None)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("example_value", [(None), (42), ("foo")])
 def test_field_with_example_set(example_value):
-    field = Field({"name": "name", "type": "string", "example": example_value})
-    assert field.example == example_value
-
-
-# Import/Export
-
-
-def test_field_to_copy():
-    source = Field(type="integer")
-    target = source.to_copy()
-    assert source is not target
-    assert source == target
-
-
-def test_field_set_schema():
-    test_schema_init = Schema(
-        fields=[
-            Field(
-                name="name",
-                type="boolean",
-                format={"trueValues": "Yes", "falseValues": "No"},
-            )
-        ]
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "string",
+            "example": example_value,
+        }
     )
-    field = Field(schema=test_schema_init)
-    assert field.schema == test_schema_init
-    test_schema_property = Schema({"fields": [{"name": "name", "type": "other"}]})
-    field.schema = test_schema_property
-    assert field.schema == test_schema_property
-
-
-def test_field_set_type():
-    field = Field(type="int")
-    assert field.type == "int"
-
-
-# Problems
-
-
-def test_field_pprint_1029():
-    field = Field({"name": "name", "type": "string", "constraints": {"maxLength": 2}})
-    expected = """{'constraints': {'maxLength': 2}, 'name': 'name', 'type': 'string'}"""
-    assert repr(field) == expected
+    assert field.example == example_value

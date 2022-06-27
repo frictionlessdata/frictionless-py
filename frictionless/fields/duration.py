@@ -1,12 +1,12 @@
 import isodate
 import datetime
 from dataclasses import dataclass
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class DurationField(Field2):
+class DurationField(Field):
     type = "duration"
     builtin = True
     supported_constraints = [
@@ -46,4 +46,5 @@ class DurationField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         13
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}

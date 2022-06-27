@@ -6,7 +6,6 @@ import json
 import yaml
 import jinja2
 import pprint
-import typing
 import jsonschema
 import stringcase
 from pathlib import Path
@@ -45,7 +44,8 @@ class Metadata2(metaclass=Metaclass):
         if self.metadata_initiated:
             self.metadata_assigned.add(name)
         elif isinstance(value, (list, dict)):
-            self.metadata_defaults[name] = value.copy()
+            if not name.startswith("metadata_"):
+                self.metadata_defaults[name] = value.copy()
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:

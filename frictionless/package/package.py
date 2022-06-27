@@ -10,7 +10,7 @@ from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..detector import Detector
 from ..resource import Resource
-from ..field import Field
+from ..schema import Field
 from ..system import system
 from .describe import describe
 from .extract import extract

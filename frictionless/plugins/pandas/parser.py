@@ -2,9 +2,8 @@
 import isodate
 import datetime
 import decimal
+from ...schema import Schema, Field
 from ...parser import Parser
-from ...schema import Schema
-from ...field import Field
 from ... import helpers
 
 

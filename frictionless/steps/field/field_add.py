@@ -1,7 +1,7 @@
 import simpleeval
 from typing import Optional, Any
 from ...step import Step
-from ...field import Field
+from ...schema import Field
 from ... import helpers
 
 

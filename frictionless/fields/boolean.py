@@ -1,11 +1,11 @@
 from typing import List
 from dataclasses import dataclass, field
-from ..field2 import Field2
+from ..schema import Field
 from .. import settings
 
 
 @dataclass
-class BooleanField(Field2):
+class BooleanField(Field):
     type = "boolean"
     builtin = True
     supported_constraints = [
@@ -55,4 +55,5 @@ class BooleanField(Field2):
     # TODO: use search/settings
     metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
         8
-    ]
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
