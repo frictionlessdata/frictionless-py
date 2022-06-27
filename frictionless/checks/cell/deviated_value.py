@@ -1,6 +1,6 @@
 import statistics
 from dataclasses import dataclass
-from ...check import Check
+from ...checklist import Check
 from ... import errors
 
 

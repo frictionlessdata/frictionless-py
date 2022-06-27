@@ -1,6 +1,5 @@
 from .actions import describe, extract, transform, validate
-from .check import Check
-from .checklist import Checklist
+from .checklist import Checklist, Check
 from .detector import Detector
 from .dialect import Dialect, Control
 from .error import Error

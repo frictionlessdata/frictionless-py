@@ -1,4 +1,4 @@
-from ..check import Check
+from ..checklist import Check
 from .. import errors
 
 

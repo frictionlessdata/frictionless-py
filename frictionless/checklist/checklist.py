@@ -1,9 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, List
 from ..metadata2 import Metadata2
-from .validate import validate
 from ..checks import baseline
-from ..check import Check
+from .check import Check
 from .. import settings
 from .. import errors
 
@@ -13,8 +12,6 @@ if TYPE_CHECKING:
 
 # TODO: raise an exception if we try export a checklist with function based checks
 class Checklist(Metadata2):
-    validate = validate
-
     def __init__(
         self,
         *,

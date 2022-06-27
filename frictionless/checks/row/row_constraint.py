@@ -1,7 +1,7 @@
 import simpleeval
 from dataclasses import dataclass
+from ...checklist import Check
 from ... import errors
-from ...check import Check
 
 
 @dataclass

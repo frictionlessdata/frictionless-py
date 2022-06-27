@@ -1,5 +1,5 @@
+from ...checklist import Check
 from ... import errors
-from ...check import Check
 
 
 TRUNCATED_STRING_LENGTHS = [255]

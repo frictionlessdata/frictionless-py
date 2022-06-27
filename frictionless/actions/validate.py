@@ -1,6 +1,5 @@
 from typing import Optional, List, Any
 from ..system import system
-from ..check import Check
 from ..schema import Schema
 from ..report import Report
 from ..dialect import Dialect
@@ -9,7 +8,7 @@ from ..package import Package
 from ..pipeline import Pipeline
 from ..resource import Resource
 from ..detector import Detector
-from ..checklist import Checklist
+from ..checklist import Checklist, Check
 from ..exception import FrictionlessException
 from .. import settings
 

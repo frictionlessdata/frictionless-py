@@ -2,7 +2,7 @@ from __future__ import annotations
 import statistics
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Iterable
-from ...check import Check
+from ...checklist import Check
 from ... import errors
 
 if TYPE_CHECKING:

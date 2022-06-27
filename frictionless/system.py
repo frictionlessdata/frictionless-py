@@ -13,7 +13,7 @@ from . import settings
 from . import errors
 
 if TYPE_CHECKING:
-    from .check import Check
+    from .checklist import Check
     from .error import Error
     from .schema import Field
     from .loader import Loader

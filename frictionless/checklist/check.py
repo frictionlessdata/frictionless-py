@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, Type
-from .metadata2 import Metadata2
-from .system import system
-from . import errors
+from ..metadata2 import Metadata2
+from ..system import system
+from .. import errors
 
 if TYPE_CHECKING:
-    from .row import Row
-    from .error import Error
-    from .resource import Resource
+    from ..row import Row
+    from ..error import Error
+    from ..resource import Resource
 
 
 # TODO: add support for validate_package/etc?
