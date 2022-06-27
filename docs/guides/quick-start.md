@@ -41,18 +41,33 @@ The framework can be used:
 
 For instance, all the examples below do the same thing:
 
-```python title="Python"
-from frictionless import extract
-rows = extract('data/table.csv')
-```
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}, { label: 'API', value: 'api'}]}>
+<TabItem value="cli">
 
-```bash title="CLI"
+```bash script
 frictionless extract data/table.csv
 ```
 
-```text title="API"
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import extract
+
+rows = extract('data/table.csv')
+```
+
+</TabItem>
+<TabItem value="api">
+
+```plaintext
 [POST] /extract {"source': 'data/table.csv"}
 ```
+
+</TabItem>
+</Tabs>
 
 All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time. You can find the API reference [here](../references/api-reference.md).
 

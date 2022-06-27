@@ -12,16 +12,24 @@ cleanup:
   - rm capital.inquiry.yaml
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
 Tabular data validation is a process of identifying problems that have occured in your data so you can correct them. Let's explore how Frictionless helps to achieve this task using an invalid data table example:
 
 > Download [`capital-invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-invalid.csv) to reproduce the examples (right-click and "Save link as")..
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat capital-invalid.csv
 ```
-```csv title="capital-valid.csv"
+```csv title="Data: capital-invalid.csv"
 id,name,name
 1,London,Britain
 2,Berlin,Germany
@@ -36,26 +44,152 @@ id,name,name
 x,Tokio,Japan,review
 ```
 
-We can validate this file by using the command-line interface. Frictionless provides comprehensive error details so that errors can be understood by the user. Continue reading to learn the validation process in detail.
+</TabItem>
+<TabItem value="python">
 
-```bash script title="CLI"
+```python script
+with open('capital-invalid.csv') as file:
+    print(file.read())
+```
+```csv title="Data: capital-invalid.csv"
+id,name,name
+1,London,Britain
+2,Berlin,Germany
+3,Paris,France
+4,Madrid,Spain
+5,Rome,Italy
+6,Zagreb,Croatia
+7,Athens,Greece
+8,Vienna,Austria
+8,Warsaw
+
+x,Tokio,Japan,review
+```
+
+</TabItem>
+</Tabs>
+
+We can validate this file by using both command-line interface and high-level functions. Frictionless provides comprehensive error details so that errors can be understood by the user. Continue reading to learn the validation process in detail.
+
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless validate capital-invalid.csv
 ```
-```
+```text title="Validation Report: capital-valid.csv"
 # -------
-# invalid: capital-invalid.csv
+# invalid: capital-invalid.csv 
 # -------
 
-===  =====  ===============  ================================================================================================
-row  field  code             message
-===  =====  ===============  ================================================================================================
-         3  duplicate-label  Label "name" in the header at position "3" is duplicated to a label: at position "2"
- 10      3  missing-cell     Row at position "10" has a missing cell in field "name2" at position "3"
- 11         blank-row        Row at position "11" is completely blank
- 12      1  type-error       Type error in the cell "x" in row "12" and field "id" at position "1": type is "integer/default"
- 12      4  extra-cell       Row at position "12" has an extra value in field at position "4"
-===  =====  ===============  ================================================================================================
+## Summary 
+
++-----------------------------------+-------------------------+
+| Description                       | Size/Name/Count         |
++===================================+=========================+
+| File name                         | capital-invalid.csv |
++-----------------------------------+-------------------------+
+| File size (bytes)                 | 171                     |
++-----------------------------------+-------------------------+
+| Total Time Taken (sec)            | 0.007                   |
++-----------------------------------+-------------------------+
+| Total Errors                      | 5                       |
++-----------------------------------+-------------------------+
+| Duplicate Label (duplicate-label) | 1                       |
++-----------------------------------+-------------------------+
+| Missing Cell (missing-cell)       | 1                       |
++-----------------------------------+-------------------------+
+| Blank Row (blank-row)             | 1                       |
++-----------------------------------+-------------------------+
+| Type Error (type-error)           | 1                       |
++-----------------------------------+-------------------------+
+| Extra Cell (extra-cell)           | 1                       |
++-----------------------------------+-------------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import validate
+
+report = validate('capital-invalid.csv')
+print(report.to_summary())
+```
+```text title="Validation Report: capital-valid.csv"
+# -------
+# invalid: capital-invalid.csv 
+# -------
+
+## Summary 
+
++-----------------------------------+-------------------------+
+| Description                       | Size/Name/Count         |
++===================================+=========================+
+| File name                         | capital-invalid.csv |
++-----------------------------------+-------------------------+
+| File size (bytes)                 | 171                     |
++-----------------------------------+-------------------------+
+| Total Time Taken (sec)            | 0.007                   |
++-----------------------------------+-------------------------+
+| Total Errors                      | 5                       |
++-----------------------------------+-------------------------+
+| Duplicate Label (duplicate-label) | 1                       |
++-----------------------------------+-------------------------+
+| Missing Cell (missing-cell)       | 1                       |
++-----------------------------------+-------------------------+
+| Blank Row (blank-row)             | 1                       |
++-----------------------------------+-------------------------+
+| Type Error (type-error)           | 1                       |
++-----------------------------------+-------------------------+
+| Extra Cell (extra-cell)           | 1                       |
++-----------------------------------+-------------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+```
+
+</TabItem>
+</Tabs>
 
 ## Validate Functions
 
@@ -90,21 +224,47 @@ schema.fields = {} # must be a list
 schema.to_yaml('capital.schema.yaml')
 ```
 
-And let's validate this schema using the command-line interface:
+And let's validate this schema:
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless validate capital.schema.yaml
 ```
-```
+```text title="Validation Report: capital.schema.yaml"
 # -------
 # invalid: capital.schema.yaml
 # -------
-============  ===================================================================================================================
 code          message
-============  ===================================================================================================================
+------------  -------------------------------------------------------------------------------------------------------------------
 schema-error  Schema is not valid: "{} is not of type 'array'" at "fields" in metadata and at "properties/fields/type" in profile
-============  ===================================================================================================================
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import validate
+from tabulate import tabulate
+
+report = validate('capital.schema.yaml')
+errors = report.flatten(['code','message'])
+print(tabulate(errors, headers = ['code', 'message']))
+```
+```text title="Validation Report: capital.schema.yaml"
+# -------
+# invalid: capital.schema.yaml
+# -------
+code          message
+------------  -------------------------------------------------------------------------------------------------------------------
+schema-error  Schema is not valid: "{} is not of type 'array'" at "fields" in metadata and at "properties/fields/type" in profile
+```
+
+</TabItem>
+</Tabs>
 
 We see that the schema is invalid and the error is displayed. Schema validation can be very useful when you work with different classes of tables and create schemas for them. Using this function will ensure that the metadata is valid.
 
@@ -112,32 +272,151 @@ We see that the schema is invalid and the error is displayed. Schema validation 
 
 As was shown in the ["Describing Data" guide](https://framework.frictionlessdata.io/docs/guides/describing-data), a resource is a container having both metadata and data. We need to create a resource descriptor and then we can validate it:
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless describe capital-invalid.csv > capital.resource.yaml
 ```
 
-Note: this example uses JSON for the resource descriptor format, but Frictionless also supports YAML format as shown in examples below.
+</TabItem>
+<TabItem value="python">
 
-Let's now use the command-line interface to ensure that we are getting the same result that we got without using a resource:
+```python script
+from frictionless import describe
 
-```bash script title="CLI"
+resource = describe('capital-invalid.csv')
+resource.to_yaml('capital.resource.yaml')
+```
+
+</TabItem>
+</Tabs>
+
+Note: this example uses YAML for the resource descriptor format, but Frictionless also supports JSON format also.
+
+Let's now validate to ensure that we are getting the same result that we got without using a resource:
+
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless validate capital.resource.yaml
 ```
-```
+```text title="Validation Report: capital.resource.yaml"
 # -------
-# invalid: capital-invalid.csv
+# invalid: capital-invalid.csv 
 # -------
 
-===  =====  ===============  ================================================================================================
-row  field  code             message
-===  =====  ===============  ================================================================================================
-         3  duplicate-label  Label "name" in the header at position "3" is duplicated to a label: at position "2"
- 10      3  missing-cell     Row at position "10" has a missing cell in field "name2" at position "3"
- 11         blank-row        Row at position "11" is completely blank
- 12      1  type-error       Type error in the cell "x" in row "12" and field "id" at position "1": type is "integer/default"
- 12      4  extra-cell       Row at position "12" has an extra value in field at position "4"
-===  =====  ===============  ================================================================================================
+## Summary 
+
++-----------------------------------+---------------------+
+| Description                       | Size/Name/Count     |
++===================================+=====================+
+| File name                         | capital-invalid.csv |
++-----------------------------------+---------------------+
+| File size (bytes)                 | 171                 |
++-----------------------------------+---------------------+
+| Total Time Taken (sec)            | 0.007               |
++-----------------------------------+---------------------+
+| Total Errors                      | 5                   |
++-----------------------------------+---------------------+
+| Duplicate Label (duplicate-label) | 1                   |
++-----------------------------------+---------------------+
+| Missing Cell (missing-cell)       | 1                   |
++-----------------------------------+---------------------+
+| Blank Row (blank-row)             | 1                   |
++-----------------------------------+---------------------+
+| Type Error (type-error)           | 1                   |
++-----------------------------------+---------------------+
+| Extra Cell (extra-cell)           | 1                   |
++-----------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import validate
+
+report = validate('capital.resource.yaml')
+print(report.to_summary())
+```
+```text title="Validation Report: capital.resource.yaml"
+# -------
+# invalid: capital-invalid.csv 
+# -------
+
+## Summary 
+
++-----------------------------------+---------------------+
+| Description                       | Size/Name/Count     |
++===================================+=====================+
+| File name                         | capital-invalid.csv |
++-----------------------------------+---------------------+
+| File size (bytes)                 | 171                 |
++-----------------------------------+---------------------+
+| Total Time Taken (sec)            | 0.007               |
++-----------------------------------+---------------------+
+| Total Errors                      | 5                   |
++-----------------------------------+---------------------+
+| Duplicate Label (duplicate-label) | 1                   |
++-----------------------------------+---------------------+
+| Missing Cell (missing-cell)       | 1                   |
++-----------------------------------+---------------------+
+| Blank Row (blank-row)             | 1                   |
++-----------------------------------+---------------------+
+| Type Error (type-error)           | 1                   |
++-----------------------------------+---------------------+
+| Extra Cell (extra-cell)           | 1                   |
++-----------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+```
+
+</TabItem>
+</Tabs>
 
 Okay, why do we need to use a resource descriptor if the result is the same? The reason is metadata + data packaging. Let's extend our resource descriptor to show how you can edit and validate metadata:
 
@@ -152,26 +431,151 @@ resource.to_yaml('capital.resource.yaml')
 
 We have added a few incorrect, made up attributes to our resource descriptor as an example. Now, the validation below reports these errors in addition to all the errors we had before. This example shows how concepts like Data Resource can be extremely useful when working with data.
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless validate capital.resource.yaml
 ```
-```
+```text title="Validation Report: capital.resource.yaml"
 # -------
-# invalid: capital-invalid.csv
+# invalid: capital-invalid.csv 
 # -------
 
-===  =====  ================  ===========================================================================================================================================================
-row  field  code              message
-===  =====  ================  ===========================================================================================================================================================
-         3  duplicate-label   Label "name" in the header at position "3" is duplicated to a label: at position "2"
- 10      3  missing-cell      Row at position "10" has a missing cell in field "name2" at position "3"
- 11         blank-row         Row at position "11" is completely blank
- 12      1  type-error        Type error in the cell "x" in row "12" and field "id" at position "1": type is "integer/default"
- 12      4  extra-cell        Row at position "12" has an extra value in field at position "4"
-            hash-count-error  The data source does not match the expected hash count: expected md5 is "ae23c74693ca2d3f0e38b9ba3570775b" and actual is "dcdeae358cfd50860c18d953e021f836"
-            byte-count-error  The data source does not match the expected byte count: expected is "100" and actual is "171"
-===  =====  ================  ===========================================================================================================================================================
+## Summary 
+
++-------------------------------------+---------------------+
+| Description                         | Size/Name/Count     |
++=====================================+=====================+
+| File name                           | capital-invalid.csv |
++-------------------------------------+---------------------+
+| File size (bytes)                   | 171                 |
++-------------------------------------+---------------------+
+| Total Time Taken (sec)              | 0.008               |
++-------------------------------------+---------------------+
+| Total Errors                        | 7                   |
++-------------------------------------+---------------------+
+| Duplicate Label (duplicate-label)   | 1                   |
++-------------------------------------+---------------------+
+| Missing Cell (missing-cell)         | 1                   |
++-------------------------------------+---------------------+
+| Blank Row (blank-row)               | 1                   |
++-------------------------------------+---------------------+
+| Type Error (type-error)             | 1                   |
++-------------------------------------+---------------------+
+| Extra Cell (extra-cell)             | 1                   |
++-------------------------------------+---------------------+
+| Hash Count Error (hash-count-error) | 1                   |
++-------------------------------------+---------------------+
+| Byte Count Error (byte-count-error) | 1                   |
++-------------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+|       |         | hash-      | The data source does not match the expected hash |
+|       |         | count-     | count: expected md5 is                           |
+|       |         | error      | "ae23c74693ca2d3f0e38b9ba3570775b" and actual is |
+|       |         |            | "dcdeae358cfd50860c18d953e021f836"               |
++-------+---------+------------+--------------------------------------------------+
+|       |         | byte-      | The data source does not match the expected byte |
+|       |         | count-     | count: expected is "100" and actual is "171"     |
+|       |         | error      |                                                  |
++-------+---------+------------+--------------------------------------------------+
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import validate
+
+report = validate('capital.resource.yaml')
+print(report.to_summary())
+```
+```text title="Validation Report: capital.resource.yaml"
+# -------
+# invalid: capital-invalid.csv 
+# -------
+
+## Summary 
+
++-------------------------------------+---------------------+
+| Description                         | Size/Name/Count     |
++=====================================+=====================+
+| File name                           | capital-invalid.csv |
++-------------------------------------+---------------------+
+| File size (bytes)                   | 171                 |
++-------------------------------------+---------------------+
+| Total Time Taken (sec)              | 0.011               |
++-------------------------------------+---------------------+
+| Total Errors                        | 7                   |
++-------------------------------------+---------------------+
+| Duplicate Label (duplicate-label)   | 1                   |
++-------------------------------------+---------------------+
+| Missing Cell (missing-cell)         | 1                   |
++-------------------------------------+---------------------+
+| Blank Row (blank-row)               | 1                   |
++-------------------------------------+---------------------+
+| Type Error (type-error)             | 1                   |
++-------------------------------------+---------------------+
+| Extra Cell (extra-cell)             | 1                   |
++-------------------------------------+---------------------+
+| Hash Count Error (hash-count-error) | 1                   |
++-------------------------------------+---------------------+
+| Byte Count Error (byte-count-error) | 1                   |
++-------------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+|       |         | hash-      | The data source does not match the expected hash |
+|       |         | count-     | count: expected md5 is                           |
+|       |         | error      | "ae23c74693ca2d3f0e38b9ba3570775b" and actual is |
+|       |         |            | "dcdeae358cfd50860c18d953e021f836"               |
++-------+---------+------------+--------------------------------------------------+
+|       |         | byte-      | The data source does not match the expected byte |
+|       |         | count-     | count: expected is "100" and actual is "171"     |
+|       |         | error      |                                                  |
++-------+---------+------------+--------------------------------------------------+
+```
+
+</TabItem>
+</Tabs>
 
 ## Validating a Package
 
@@ -179,10 +583,15 @@ A package is a set of resources + additional metadata. To showcase a package val
 
 > Download [`capital-valid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-valid.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat capital-valid.csv
 ```
-```csv title="capital-valid.csv"
+```text title="Data: capital-valid.csv"
 id,name
 1,London
 2,Berlin
@@ -191,32 +600,185 @@ id,name
 5,Rome
 ```
 
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('capital-valid.csv') as file:
+    print(file.read())
+```
+```text title="Data: capital-valid.csv"
+id,name
+1,London
+2,Berlin
+3,Paris
+4,Madrid
+5,Rome
+```
+
+</TabItem>
+</Tabs>
+
 Now let's describe and validate a package which contains the data files we have seen so far:
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless describe capital-*id.csv > capital.package.yaml
 frictionless validate capital.package.yaml
 ```
-```
+```text title="Validation Report: capital.package.yaml"
 # -------
-# invalid: capital-invalid.csv
+# invalid: capital-invalid.csv 
 # -------
 
-===  =====  ===============  ================================================================================================
-row  field  code             message
-===  =====  ===============  ================================================================================================
-         3  duplicate-label  Label "name" in the header at position "3" is duplicated to a label: at position "2"
- 10      3  missing-cell     Row at position "10" has a missing cell in field "name2" at position "3"
- 11         blank-row        Row at position "11" is completely blank
- 12      1  type-error       Type error in the cell "x" in row "12" and field "id" at position "1": type is "integer/default"
- 12      4  extra-cell       Row at position "12" has an extra value in field at position "4"
-===  =====  ===============  ================================================================================================
+## Summary 
+
++-----------------------------------+---------------------+
+| Description                       | Size/Name/Count     |
++===================================+=====================+
+| File name                         | capital-invalid.csv |
++-----------------------------------+---------------------+
+| File size (bytes)                 | 171                 |
++-----------------------------------+---------------------+
+| Total Time Taken (sec)            | 0.005               |
++-----------------------------------+---------------------+
+| Total Errors                      | 5                   |
++-----------------------------------+---------------------+
+| Duplicate Label (duplicate-label) | 1                   |
++-----------------------------------+---------------------+
+| Missing Cell (missing-cell)       | 1                   |
++-----------------------------------+---------------------+
+| Blank Row (blank-row)             | 1                   |
++-----------------------------------+---------------------+
+| Type Error (type-error)           | 1                   |
++-----------------------------------+---------------------+
+| Extra Cell (extra-cell)           | 1                   |
++-----------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
 
 
 # -----
-# valid: capital-valid.csv
+# valid: capital-valid.csv 
 # -----
+
+## Summary 
+
++------------------------+-------------------+
+| Description            | Size/Name/Count   |
++========================+===================+
+| File name              | capital-valid.csv |
++------------------------+-------------------+
+| File size (bytes)      | 50                |
++------------------------+-------------------+
+| Total Time Taken (sec) | 0.004             |
++------------------------+-------------------+
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import describe, validate
+
+# create package descriptor
+package = describe("capital-*id.csv")
+package.to_yaml("capital.package.yaml")
+# validate
+report = validate("capital.package.yaml")
+print(report.to_summary())
+```
+```text title="Validation Report: capital.package.yaml"
+# -------
+# invalid: capital-invalid.csv 
+# -------
+
+## Summary 
+
++-----------------------------------+---------------------+
+| Description                       | Size/Name/Count     |
++===================================+=====================+
+| File name                         | capital-invalid.csv |
++-----------------------------------+---------------------+
+| File size (bytes)                 | 171                 |
++-----------------------------------+---------------------+
+| Total Time Taken (sec)            | 0.005               |
++-----------------------------------+---------------------+
+| Total Errors                      | 5                   |
++-----------------------------------+---------------------+
+| Duplicate Label (duplicate-label) | 1                   |
++-----------------------------------+---------------------+
+| Missing Cell (missing-cell)       | 1                   |
++-----------------------------------+---------------------+
+| Blank Row (blank-row)             | 1                   |
++-----------------------------------+---------------------+
+| Type Error (type-error)           | 1                   |
++-----------------------------------+---------------------+
+| Extra Cell (extra-cell)           | 1                   |
++-----------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+
+
+# -----
+# valid: capital-valid.csv 
+# -----
+
+## Summary 
+
++------------------------+-------------------+
+| Description            | Size/Name/Count   |
++========================+===================+
+| File name              | capital-valid.csv |
++------------------------+-------------------+
+| File size (bytes)      | 50                |
++------------------------+-------------------+
+| Total Time Taken (sec) | 0.004             |
++------------------------+-------------------+
+```
+
+</TabItem>
+</Tabs>
 
 As we can see, the result is in a similar format to what we have already seen, and shows errors as we expected: we have one invalid resource and one valid resource.
 
@@ -239,29 +801,202 @@ inquiry.to_yaml('capital.inquiry.yaml')
 ```
 As usual, let's run validation:
 
-```bash script title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 frictionless validate capital.inquiry.yaml
 ```
-```
+```text title="Validation Report: capital.inquiry.yaml"
 # -----
-# valid: capital-valid.csv
+# valid: capital-valid.csv 
 # -----
+
+## Summary 
+
++------------------------+-----------------------+
+| Description            | Size/Name/Count       |
++========================+=======================+
+| File name              | capital-valid.csv |
++------------------------+-----------------------+
+| File size (bytes)      | 50                    |
++------------------------+-----------------------+
+| Total Time Taken (sec) | 0.006                 |
++------------------------+-----------------------+
+
+
 # -------
-# invalid: capital-invalid.csv
+# invalid: capital-invalid.csv 
 # -------
 
-===  =====  ================  ===========================================================================================================================================================
-row  field  code              message
-===  =====  ================  ===========================================================================================================================================================
-         3  duplicate-label   Label "name" in the header at position "3" is duplicated to a label: at position "2"
- 10      3  missing-cell      Row at position "10" has a missing cell in field "name2" at position "3"
- 11         blank-row         Row at position "11" is completely blank
- 12      1  type-error        Type error in the cell "x" in row "12" and field "id" at position "1": type is "integer/default"
- 12      4  extra-cell        Row at position "12" has an extra value in field at position "4"
-            hash-count-error  The data source does not match the expected hash count: expected md5 is "ae23c74693ca2d3f0e38b9ba3570775b" and actual is "dcdeae358cfd50860c18d953e021f836"
-            byte-count-error  The data source does not match the expected byte count: expected is "100" and actual is "171"
-===  =====  ================  ===========================================================================================================================================================
+## Summary 
+
++-------------------------------------+---------------------+
+| Description                         | Size/Name/Count     |
++=====================================+=====================+
+| File name                           | capital-invalid.csv |
++-------------------------------------+---------------------+
+| File size (bytes)                   | 171                 |
++-------------------------------------+---------------------+
+| Total Time Taken (sec)              | 0.006               |
++-------------------------------------+---------------------+
+| Total Errors                        | 7                   |
++-------------------------------------+---------------------+
+| Duplicate Label (duplicate-label)   | 1                   |
++-------------------------------------+---------------------+
+| Missing Cell (missing-cell)         | 1                   |
++-------------------------------------+---------------------+
+| Blank Row (blank-row)               | 1                   |
++-------------------------------------+---------------------+
+| Type Error (type-error)             | 1                   |
++-------------------------------------+---------------------+
+| Extra Cell (extra-cell)             | 1                   |
++-------------------------------------+---------------------+
+| Hash Count Error (hash-count-error) | 1                   |
++-------------------------------------+---------------------+
+| Byte Count Error (byte-count-error) | 1                   |
++-------------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+|       |         | hash-      | The data source does not match the expected hash |
+|       |         | count-     | count: expected md5 is                           |
+|       |         | error      | "ae23c74693ca2d3f0e38b9ba3570775b" and actual is |
+|       |         |            | "dcdeae358cfd50860c18d953e021f836"               |
++-------+---------+------------+--------------------------------------------------+
+|       |         | byte-      | The data source does not match the expected byte |
+|       |         | count-     | count: expected is "100" and actual is "171"     |
+|       |         | error      |                                                  |
++-------+---------+------------+--------------------------------------------------+
+
+
+# -----
+# valid: capital-valid.csv 
+# -----
+
+## Summary 
+
++------------------------+-------------------+
+| Description            | Size/Name/Count   |
++========================+===================+
+| File name              | capital-valid.csv |
++------------------------+-------------------+
+| File size (bytes)      | 50                |
++------------------------+-------------------+
+| Total Time Taken (sec) | 0.004             |
++------------------------+-------------------+
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+from frictionless import validate
+
+report = validate("capital.inquiry.yaml")
+print(report.to_summary())
+```
+```text title="Validation Report: capital.inquiry.yaml"
+# -----
+# valid: capital-valid.csv 
+# -----
+
+## Summary 
+
++------------------------+-----------------------+
+| Description            | Size/Name/Count       |
++========================+=======================+
+| File name              | capital-valid.csv |
++------------------------+-----------------------+
+| File size (bytes)      | 50                    |
++------------------------+-----------------------+
+| Total Time Taken (sec) | 0.007                 |
++------------------------+-----------------------+
+
+
+# -------
+# invalid: capital-invalid.csv 
+# -------
+
+## Summary 
+
++-------------------------------------+---------------------+
+| Description                         | Size/Name/Count     |
++=====================================+=====================+
+| File name                           | capital-invalid.csv |
++-------------------------------------+---------------------+
+| File size (bytes)                   | 171                 |
++-------------------------------------+---------------------+
+| Total Time Taken (sec)              | 0.007               |
++-------------------------------------+---------------------+
+| Total Errors                        | 7                   |
++-------------------------------------+---------------------+
+| Duplicate Label (duplicate-label)   | 1                   |
++-------------------------------------+---------------------+
+| Missing Cell (missing-cell)         | 1                   |
++-------------------------------------+---------------------+
+| Blank Row (blank-row)               | 1                   |
++-------------------------------------+---------------------+
+| Type Error (type-error)             | 1                   |
++-------------------------------------+---------------------+
+| Extra Cell (extra-cell)             | 1                   |
++-------------------------------------+---------------------+
+| Hash Count Error (hash-count-error) | 1                   |
++-------------------------------------+---------------------+
+| Byte Count Error (byte-count-error) | 1                   |
++-------------------------------------+---------------------+
+
+## Errors 
+
++-------+---------+------------+--------------------------------------------------+
+| row   | field   | code       | message                                          |
++=======+=========+============+==================================================+
+|       | 3       | duplicate- | Label "name" in the header at position "3" is    |
+|       |         | label      | duplicated to a label: at position "2"           |
++-------+---------+------------+--------------------------------------------------+
+| 10    | 3       | missing-   | Row at position "10" has a missing cell in field |
+|       |         | cell       | "name2" at position "3"                          |
++-------+---------+------------+--------------------------------------------------+
+| 11    |         | blank-row  | Row at position "11" is completely blank         |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 1       | type-error | Type error in the cell "x" in row "12" and field |
+|       |         |            | "id" at position "1": type is "integer/default"  |
++-------+---------+------------+--------------------------------------------------+
+| 12    | 4       | extra-cell | Row at position "12" has an extra value in field |
+|       |         |            | at position "4"                                  |
++-------+---------+------------+--------------------------------------------------+
+|       |         | hash-      | The data source does not match the expected hash |
+|       |         | count-     | count: expected md5 is                           |
+|       |         | error      | "ae23c74693ca2d3f0e38b9ba3570775b" and actual is |
+|       |         |            | "dcdeae358cfd50860c18d953e021f836"               |
++-------+---------+------------+--------------------------------------------------+
+|       |         | byte-      | The data source does not match the expected byte |
+|       |         | count-     | count: expected is "100" and actual is "171"     |
+|       |         | error      |                                                  |
++-------+---------+------------+--------------------------------------------------+
+```
+
+</TabItem>
+</Tabs>
 
 At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power.
 
