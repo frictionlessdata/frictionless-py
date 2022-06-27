@@ -1,11 +1,11 @@
 from typing import List
 from copy import deepcopy
 from tabulate import tabulate
+from importlib import import_module
 from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata2 import Metadata2
 from ..field2 import Field2
-from .describe import describe
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -23,8 +23,6 @@ class Schema2(Metadata2):
     schema.add_fied(Field(name='name', type='string'))
     ```
     """
-
-    describe = staticmethod(describe)
 
     # Properties
 
@@ -46,6 +44,24 @@ class Schema2(Metadata2):
 
     foreign_keys: List[dict] = field(default_factory=list)
     """TODO: add docs"""
+
+    # Describe
+
+    @staticmethod
+    def describe(source, **options):
+        """Describe the given source as a schema
+
+        Parameters:
+            source (any): data source
+            **options (dict): describe resource options
+
+        Returns:
+            Schema: table schema
+        """
+        Resource = import_module("frictionless").Resource
+        resource = Resource.describe(source, **options)
+        schema = resource.schema
+        return schema
 
     # Fields
 
@@ -69,12 +85,6 @@ class Schema2(Metadata2):
         error = errors.SchemaError(note=f'field "{name}" does not exist')
         raise FrictionlessException(error)
 
-    def remove_field(self, name: str) -> Field2:
-        """Remove field by name"""
-        field = self.get_field(name)
-        self.fields.remove(field)
-        return field
-
     def set_field(self, name: str, field: Field2) -> Field2:
         """Set field by name"""
         prev_field = self.get_field(name)
@@ -91,6 +101,12 @@ class Schema2(Metadata2):
         next_field = Field2.from_descriptor(descriptor)
         self.set_field(name, next_field)
         return prev_field
+
+    def remove_field(self, name: str) -> Field2:
+        """Remove field by name"""
+        field = self.get_field(name)
+        self.fields.remove(field)
+        return field
 
     # Read
 
@@ -194,8 +210,6 @@ class Schema2(Metadata2):
         )
         return tableschema_to_template.create_xlsx(self, path)
 
-    # Summary
-
     def to_summary(self) -> str:
         """Summary of the schema in table format"""
         content = [
@@ -248,6 +262,7 @@ class Schema2(Metadata2):
                 note = note % (fk["fields"], fk["reference"]["fields"])
                 yield errors.SchemaError(note=note)
 
+    # TODO: handle edge cases like wrong descriptor's prop types
     @classmethod
     def metadata_import(cls, descriptor):
         schema = super().metadata_import(descriptor)
