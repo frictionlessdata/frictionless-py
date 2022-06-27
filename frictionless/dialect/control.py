@@ -1,6 +1,6 @@
 from importlib import import_module
-from .metadata2 import Metadata2
-from . import errors
+from ..metadata2 import Metadata2
+from .. import errors
 
 
 class Control(Metadata2):

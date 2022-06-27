@@ -1,9 +1,8 @@
 from .actions import describe, extract, transform, validate
 from .check import Check
 from .checklist import Checklist
-from .control import Control
 from .detector import Detector
-from .dialect import Dialect
+from .dialect import Dialect, Control
 from .error import Error
 from .exception import FrictionlessException
 from .file import File

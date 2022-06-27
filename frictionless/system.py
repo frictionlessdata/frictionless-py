@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
-from .control import Control
+from .dialect import Control
 from .file import File
 from . import settings
 from . import errors
@@ -15,14 +15,13 @@ from . import errors
 if TYPE_CHECKING:
     from .check import Check
     from .error import Error
-    from .field2 import Field2
+    from .schema import Field
     from .loader import Loader
     from .parser import Parser
     from .plugin import Plugin
     from .resource import Resource
     from .step import Step
     from .storage import Storage
-    from .type import Type
 
 
 # NOTE:
@@ -83,7 +82,6 @@ class System:
         "create_parser",
         "create_step",
         "create_storage",
-        "create_type",
     ]
 
     def create_check(self, descriptor: dict) -> Check:
@@ -142,7 +140,7 @@ class System:
         note = f'error "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(note)
 
-    def create_field(self, descriptor: dict) -> Field2:
+    def create_field(self, descriptor: dict) -> Field:
         """Create field
 
         Parameters:
@@ -264,26 +262,6 @@ class System:
                 return storage
         note = f'storage "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(note)
-
-    def create_type(self, field: Field) -> Type:
-        """Create type
-
-        Parameters:
-            field (Field): corresponding field
-
-        Returns:
-            Type: type
-        """
-        code = field.type
-        for func in self.methods["create_type"].values():
-            type = func(field)
-            if type is not None:
-                return type
-        for Class in vars(import_module("frictionless.types")).values():
-            if getattr(Class, "code", None) == code:
-                return Class(field)
-        note = f'type "{code}" is not supported. Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.FieldError(note=note))
 
     # Requests
 

@@ -1,4 +1,4 @@
-from ...control import Control
+from ...dialect import Control
 
 
 class StreamControl(Control):

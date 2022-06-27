@@ -1,6 +1,6 @@
 from typing import Any
 from dataclasses import dataclass, field
-from ...control import Control
+from ...dialect import Control
 from ...system import system
 from . import settings
 

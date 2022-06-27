@@ -1,5 +1,5 @@
 import os
-from ...control import Control
+from ...dialect import Control
 from . import settings
 
 

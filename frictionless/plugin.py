@@ -4,14 +4,13 @@ from typing import TYPE_CHECKING, Optional, List, Any
 if TYPE_CHECKING:
     from .file import File
     from .check import Check
-    from .control import Control
+    from .dialect import Control
     from .error import Error
-    from .field import Field
+    from .schema import Field
     from .loader import Loader
     from .parser import Parser
     from .step import Step
     from .storage import Storage
-    from .type import Type
 
 
 # NOTE: implement create_resource so plugins can validate it (see #991)?
@@ -141,16 +140,5 @@ class Plugin:
 
         Returns:
             Storage: storage
-        """
-        pass
-
-    def create_type(self, field: Field) -> Optional[Type]:
-        """Create type
-
-        Parameters:
-            field (Field): corresponding field
-
-        Returns:
-            Type: type
         """
         pass

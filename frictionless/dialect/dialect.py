@@ -4,7 +4,7 @@ from importlib import import_module
 from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata2 import Metadata2
-from ..control import Control
+from .control import Control
 from .. import settings
 from .. import helpers
 from .. import errors
