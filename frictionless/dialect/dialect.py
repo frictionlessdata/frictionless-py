@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Optional, List
+from importlib import import_module
 from dataclasses import dataclass, field
+from ..exception import FrictionlessException
 from ..metadata2 import Metadata2
-from .describe import describe
-from .validate import validate
 from ..control import Control
 from .. import settings
 from .. import helpers
@@ -14,9 +14,6 @@ from .. import errors
 @dataclass
 class Dialect(Metadata2):
     """Dialect representation"""
-
-    describe = describe
-    validate = validate
 
     # Properties
 
@@ -44,21 +41,52 @@ class Dialect(Metadata2):
     controls: List[Control] = field(default_factory=list)
     """TODO: add docs"""
 
+    # Describe
+
+    @staticmethod
+    def describe(source, **options):
+        """Describe the given source as a dialect
+
+        Parameters:
+            source (any): data source
+            **options (dict): describe resource options
+
+        Returns:
+            Dialect: file dialect
+        """
+        Resource = import_module("frictionless").Resource
+        resource = Resource.describe(source, **options)
+        dialect = resource.dialect
+        return dialect
+
     # Controls
+
+    def add_control(self, control: Control) -> None:
+        """Add new control to the schema"""
+        self.controls.append(control)
+        control.schema = self
 
     def has_control(self, code: str):
         return bool(self.get_control(code))
 
-    # TODO: rebase on create=True instead of ensure
-    def get_control(
-        self, code: str, *, ensure: Optional[Control] = None
-    ) -> Optional[Control]:
+    # TODO: rebase on create=True instead of ensure?
+    def get_control(self, code: str, *, ensure: Optional[Control] = None) -> Control:
         for control in self.controls:
             if control.code == code:
                 return control
         if ensure:
             self.controls.append(ensure)
             return ensure
+        error = errors.SchemaError(note=f'control "{code}" does not exist')
+        raise FrictionlessException(error)
+
+    def set_control(self, code: str, control: Control) -> Control:
+        """Set control by code"""
+        prev_control = self.get_control(code)
+        index = self.controls.index(prev_control)
+        self.controls[index] = control
+        control.schema = self
+        return prev_control
 
     # Read
 
