@@ -1,7 +1,6 @@
 from typing import List
 from dataclasses import dataclass
-from ...step import Step
-from ...pipeline import Pipeline
+from ...pipeline import Pipeline, Step
 from ...exception import FrictionlessException
 from ... import errors
 

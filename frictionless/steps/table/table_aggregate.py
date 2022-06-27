@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from ...step import Step
+from ...pipeline import Step
 from ...schema import Field
 
 

@@ -1,4 +1,4 @@
-from ...step import Step
+from ...pipeline import Step
 from ...resource import Resource
 from ... import helpers
 

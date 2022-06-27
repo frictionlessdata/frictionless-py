@@ -32,6 +32,10 @@ class Checklist(Metadata2):
     checks: List[Check]
     """# TODO: add docs"""
 
+    @property
+    def check_codes(self) -> List[str]:
+        return [check.code for check in self.checks]
+
     pick_errors: List[str]
     """# TODO: add docs"""
 
@@ -43,10 +47,6 @@ class Checklist(Metadata2):
 
     limit_memory: int
     """# TODO: add docs"""
-
-    @property
-    def check_codes(self) -> List[str]:
-        return [check.code for check in self.checks]
 
     @property
     def scope(self) -> List[str]:

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from .parser import Parser
     from .plugin import Plugin
     from .resource import Resource
-    from .step import Step
+    from .pipeline import Step
     from .storage import Storage
 
 

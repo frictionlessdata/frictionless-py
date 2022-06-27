@@ -1,9 +1,8 @@
 from typing import Optional, List, Any
-from ..step import Step
 from ..system import system
 from ..package import Package
 from ..resource import Resource
-from ..pipeline import Pipeline
+from ..pipeline import Pipeline, Step
 from ..exception import FrictionlessException
 
 

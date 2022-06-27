@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from .metadata2 import Metadata2
-from .system import system
-from . import errors
+from ..metadata2 import Metadata2
+from ..system import system
+from .. import errors
 
 if TYPE_CHECKING:
-    from .package import Package
-    from .resource import Resource
+    from ..package import Package
+    from ..resource import Resource
 
 
 # NOTE:

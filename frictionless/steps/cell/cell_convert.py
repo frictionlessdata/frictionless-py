@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Any
-from ...step import Step
+from ...pipeline import Step
 
 
 # NOTE:

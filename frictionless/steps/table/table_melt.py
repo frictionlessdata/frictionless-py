@@ -1,6 +1,6 @@
 from typing import Optional, List
 from dataclasses import dataclass, field
-from ...step import Step
+from ...pipeline import Step
 from ...schema import Field
 
 

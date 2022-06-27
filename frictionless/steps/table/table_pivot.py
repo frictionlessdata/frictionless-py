@@ -1,5 +1,5 @@
 # type: ignore
-from ...step import Step
+from ...pipeline import Step
 
 
 # NOTE:

@@ -1,6 +1,6 @@
 # type: ignore
 import petl
-from ...step import Step
+from ...pipeline import Step
 from ...resource import Resource
 
 

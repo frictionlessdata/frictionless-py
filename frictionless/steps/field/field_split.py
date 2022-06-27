@@ -1,7 +1,7 @@
 import petl
 from dataclasses import dataclass
 from typing import Optional, List
-from ...step import Step
+from ...pipeline import Step
 from ...schema import Field
 
 

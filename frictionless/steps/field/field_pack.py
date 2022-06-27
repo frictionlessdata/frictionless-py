@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, List, Iterator, Optional
 from petl.compat import next, text_type
 from ...schema import Field
-from ...step import Step
+from ...pipeline import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource

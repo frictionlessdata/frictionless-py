@@ -1,6 +1,6 @@
 import simpleeval
 from typing import Optional, Any
-from ...step import Step
+from ...pipeline import Step
 from ...schema import Field
 from ... import helpers
 

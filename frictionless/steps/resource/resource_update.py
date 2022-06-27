@@ -1,5 +1,5 @@
 from typing import Optional
-from ...step import Step
+from ...pipeline import Step
 from ... import helpers
 
 
