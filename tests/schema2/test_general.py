@@ -321,6 +321,22 @@ def test_schema_standard_specs_properties(create_descriptor):
     assert schema.foreign_keys == []
 
 
+@pytest.mark.skip
+def test_schema_pprint():
+    descriptor = {
+        "fields": [
+            {"name": "test_1", "type": "string", "format": "default"},
+            {"name": "test_2", "type": "string", "format": "default"},
+            {"name": "test_3", "type": "string", "format": "default"},
+        ]
+    }
+    schema = Schema2.from_descriptor(descriptor)
+    expected = """{'fields': [{'format': 'default', 'name': 'test_1', 'type': 'string'},
+            {'format': 'default', 'name': 'test_2', 'type': 'string'},
+            {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
+    assert repr(schema) == expected
+
+
 # Problems
 
 
