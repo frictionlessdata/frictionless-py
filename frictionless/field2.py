@@ -190,7 +190,7 @@ class Field2(Metadata2):
         field = super().metadata_import(descriptor)
 
         # Legacy format
-        if field.format.startswith("fmt:"):
+        if isinstance(field.format, str) and field.format.startswith("fmt:"):
             field.format = field.format.replace("fmt:", "")
 
         return field

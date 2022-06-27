@@ -3,7 +3,7 @@ import json
 import pytest
 import requests
 from decimal import Decimal
-from frictionless import Schema2, Field2, helpers
+from frictionless import Schema2, Field2, fields, helpers
 from frictionless import FrictionlessException
 
 
@@ -267,6 +267,22 @@ def test_schema_metadata_error_message():
     assert "is not valid" in note
     assert "{'name': 'name', 'type': 'other'}" in note
     assert "is not valid under any of the given schema" in note
+
+
+def test_schema_metadata_error_bad_schema_format():
+    schema = Schema2(
+        fields=[
+            Field2.from_descriptor(
+                {
+                    "name": "name",
+                    "type": "boolean",
+                    "format": {"trueValues": "Yes", "falseValues": "No"},
+                }
+            )
+        ]
+    )
+    assert schema.metadata_valid is False
+    assert schema.metadata_errors[0].code == "field-error"
 
 
 @pytest.mark.skip

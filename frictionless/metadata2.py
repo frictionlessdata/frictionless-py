@@ -73,6 +73,14 @@ class Metadata2(metaclass=Metaclass):
         if not self.has_defined(name):
             setattr(self, name, value)
 
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
+
     # Convert
 
     @classmethod

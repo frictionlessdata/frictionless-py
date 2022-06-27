@@ -1,4 +1,3 @@
-from itertools import zip_longest
 from typing import List
 from copy import deepcopy
 from tabulate import tabulate
@@ -7,7 +6,6 @@ from ..exception import FrictionlessException
 from ..metadata2 import Metadata2
 from ..field2 import Field2
 from .describe import describe
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -27,7 +25,6 @@ class Schema2(Metadata2):
     """
 
     describe = staticmethod(describe)
-    validate = validate
 
     # Properties
 
