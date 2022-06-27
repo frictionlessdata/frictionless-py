@@ -2,8 +2,10 @@
 title: Validation Checks
 prepare:
   - cp data/capital-invalid.csv capital-invalid.csv
+  - cp data/issue-1066.csv issue-1066.csv
 cleanup:
   - rm capital-invalid.csv
+  - rm issue-1066.csv
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -89,6 +91,8 @@ print(report.flatten(["code", "message"]))
 ### Deviated Cell
 
 This check identifies deviated cells from the normal ones. To flag the deviated cell, the check compares the length of the characters in each cell with a threshold value. The threshold value is either 5000 or value calculated using Python's built-in `statistics` module which is average plus(+) three standard deviation. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/main/frictionless/checks/cell/deviated_value.py). For example:
+
+> Download [`issue-1066.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/issue-1066.csv) to reproduce the examples (right-click and "Save link as")..
 
 ```python script title="Python"
 from pprint import pprint

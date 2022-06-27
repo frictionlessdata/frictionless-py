@@ -10,26 +10,73 @@ cleanup:
   - rm transform-pivot.csv
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
 Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.  Let's prepare the data that we need to show how the checks below work:
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat transform.csv
 ```
-```csv title="transform.csv"
+```csv title="Data: transform.csv"
 id,name,population
 1,germany,83
 2,france,66
 3,spain,47
 ```
 
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('transform.csv') as file:
+    print(file.read())
+```
+```csv title="Data: transform.csv"
+id,name,population
+1,germany,83
+2,france,66
+3,spain,47
+```
+
+</TabItem>
+</Tabs>
+
 > Download [`transform-groups.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-groups.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat transform-groups.csv
+```
+```csv title="Data: transform-groups.csv"
+id,name,population,year
+1,germany,83,2020
+2,germany,77,1920
+3,france,66,2020
+4,france,54,1920
+5,spain,47,2020
+6,spain,33,1920
+```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('transform-groups.csv') as file:
+    print(file.read())
 ```
 ```csv title="transform-groups.csv"
 id,name,population,year
@@ -41,10 +88,41 @@ id,name,population,year
 6,spain,33,1920
 ```
 
+</TabItem>
+</Tabs>
+
 > Download [`transform-pivot.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-pivot.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat transform-pivot.csv
+```
+```csv title="Data: transform-pivot.csv"
+region,gender,style,units
+east,boy,tee,12
+east,boy,golf,14
+east,boy,fancy,7
+east,girl,tee,3
+east,girl,golf,8
+east,girl,fancy,18
+west,boy,tee,12
+west,boy,golf,15
+west,boy,fancy,8
+west,girl,tee,6
+west,girl,golf,16
+west,girl,fancy,1
+```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('transform-pivot.csv') as file:
+    print(file.read())
 ```
 ```csv title="transform-pivot.csv"
 region,gender,style,units
@@ -61,6 +139,9 @@ west,girl,tee,6
 west,girl,golf,16
 west,girl,fancy,1
 ```
+
+</TabItem>
+</Tabs>
 
 ## Resource Steps
 
@@ -670,10 +751,15 @@ target = transform(
 )
 ```
 
-```bash title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash script
 cat tmp/transform.json
 ```
-```json title="tmp/transform.json"
+```json title="Data: tmp/transform.json"
 [
   [
     "id",
@@ -697,6 +783,41 @@ cat tmp/transform.json
   ]
 ]
 ```
+
+</TabItem>
+<TabItem value="python">
+
+```python script
+with open('tmp/transform.json') as file:
+    print(file.read())
+```
+```json title="Data: tmp/transform.json"
+[
+  [
+    "id",
+    "name",
+    "population"
+  ],
+  [
+    1,
+    "germany",
+    83
+  ],
+  [
+    2,
+    "france",
+    66
+  ],
+  [
+    3,
+    "spain",
+    47
+  ]
+]
+```
+
+</TabItem>
+</Tabs>
 
 ## Field Steps
 

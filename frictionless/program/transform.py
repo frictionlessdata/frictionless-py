@@ -20,7 +20,7 @@ def program_transform(
     """Transform data using a provided pipeline.
 
     Please read more about Transform pipelines to write a pipeline
-    that can be accepted by this funtion.
+    that can be accepted by this function.
     """
 
     # Support stdin
