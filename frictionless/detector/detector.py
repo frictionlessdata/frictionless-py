@@ -1,6 +1,9 @@
 from __future__ import annotations
+import os
+import glob
 import codecs
 import chardet
+from collections import Mapping
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
@@ -11,6 +14,7 @@ from ..fields import AnyField
 from ..dialect import Dialect
 from ..system import system
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -121,7 +125,131 @@ class Detector(Metadata2):
 
     # Detect
 
-    def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None):
+    # TODO: review this logic (originally from File in v4)
+    def detect_resource(self, resource: Resource) -> None:
+        """Detect resource's file details
+
+        It works in-place updating a provided resource.
+        """
+        source = resource.source
+
+        # Detect path/data
+        path = None
+        data = source
+        if isinstance(source, str):
+            path = source
+            data = None
+        elif isinstance(source, list) and source and isinstance(source[0], str):
+            path = source
+            data = None
+
+        # Detect memory/remote/expandable/multipart
+        memory = path is None
+        remote = helpers.is_remote_path(resource.basepath or path)
+        expandable = not memory and helpers.is_expandable_path(path, resource.basepath)
+        multipart = not memory and (isinstance(path, list) or expandable)
+
+        # Detect fullpath
+        normpath = path
+        fullpath = path
+        if not memory:
+            if expandable:
+                normpath = []
+                fullpath = []
+                pattern = os.path.join(resource.basepath, path)
+                pattern = f"{pattern}/*" if os.path.isdir(pattern) else pattern
+                options = {"recursive": True} if "**" in pattern else {}
+                for part in sorted(glob.glob(pattern, **options)):
+                    normpath.append(os.path.relpath(part, resource.basepath))
+                    fullpath.append(os.path.relpath(part, ""))
+                if not fullpath:
+                    expandable = False
+                    multipart = False
+                    fullpath = path
+            elif multipart:
+                fullpath = []
+                for part in path:
+                    part = helpers.join_path(resource.basepath, part)
+                    fullpath.append(part)
+            else:  # string path
+                fullpath = helpers.join_path(resource.basepath, path)
+
+        # Detect name
+        name = "memory"
+        if not memory:
+            names = []
+            for part in fullpath if multipart else [fullpath]:
+                name = os.path.splitext(os.path.basename(part))[0]
+                names.append(name)
+            name = os.path.commonprefix(names)
+            name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
+            name = name or "name"
+
+        # Detect type
+        type = "table"
+        if not multipart:
+            if memory and isinstance(data, Mapping):
+                type = "resource"
+                if data.get("fields") is not None:
+                    type = "schema"
+                elif data.get("resources") is not None:
+                    type = "package"
+                elif data.get("tasks") is not None:
+                    type = "inquiry"
+                elif data.get("steps") is not None:
+                    type = "pipeline"
+                elif data.get("checks") is not None:
+                    type = "checklist"
+            elif not memory and path.endswith((".json", ".yaml", ".yml")):
+                type = "resource"
+                if path.endswith(("schema.json", "schema.yaml", "schema.yml")):
+                    type = "schema"
+                elif path.endswith(("package.json", "package.yaml", "package.yml")):
+                    type = "package"
+                elif path.endswith(("inquiry.json", "inquiry.yaml", "inquiry.yml")):
+                    type = "inquiry"
+                elif path.endswith(("pipeline.json", "pipeline.yaml", "pipeline.yml")):
+                    type = "pipeline"
+                elif path.endswith(("checklist.json", "checklist.yaml", "checklist.yml")):
+                    type = "checklist"
+                elif path.endswith(("report.json", "report.yaml", "report.yml")):
+                    type = "report"
+
+        # Detect scheme/format/innerpath/compression
+        scheme = ""
+        format = ""
+        compression = ""
+        innerpath = ""
+        detection_path = fullpath[0] if multipart else fullpath
+        if not memory:
+            scheme, format = helpers.parse_scheme_and_format(detection_path)
+            if format in settings.COMPRESSION_FORMATS:
+                if not multipart:
+                    compression = format
+                detection_path = detection_path[: -len(format) - 1]
+                if self.__innerpath:
+                    detection_path = os.path.join(detection_path, self.__innerpath)
+                scheme, format = helpers.parse_scheme_and_format(detection_path)
+                if format:
+                    name = os.path.splitext(name)[0]
+
+        # Set attributes
+        resource.path = path
+        resource.data = data
+        resource.name = name
+        resource.type = type
+        resource.scheme = scheme
+        resource.format = format
+        resource.innerpath = innerpath
+        resource.compression = compression
+        #  resource.memory = memory
+        #  resource.remote = remote
+        #  resource.multipart = multipart
+        resource.expandable = expandable
+        resource.normpath = normpath
+        #  resource.fullpath = fullpath
+
+    def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
 
         Parameters:
@@ -207,9 +335,10 @@ class Detector(Metadata2):
                 dialect.header = False
             elif header_rows != settings.DEFAULT_HEADER_ROWS:
                 dialect.header_rows = header_rows
+
         return dialect
 
-    def detect_schema(self, fragment, *, labels=None, schema=None):
+    def detect_schema(self, fragment, *, labels=None, schema=None) -> Schema:
         """Detect schema from fragment
 
         Parameters:
@@ -336,7 +465,8 @@ class Detector(Metadata2):
 
         return schema
 
-    def detect_lookup(self, resource: Resource):
+    # TODO: add lookup to interfaces
+    def detect_lookup(self, resource: Resource) -> dict:
         """Detect lookup from resource
 
         Parameters:

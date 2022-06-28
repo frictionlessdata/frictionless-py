@@ -118,6 +118,9 @@ class Resource(Metadata2):
         self.__lookup = None
         self.__row_stream = None
 
+        # Detect resource
+        self.detector.detect_resource(self)
+
     def __new__(cls, *args, **kwargs):
         # TODO: support source being a descriptor
         descriptor = kwargs.pop("descriptor", None)
