@@ -1,9 +1,10 @@
+from __future__ import annotations
 import json
 import petl
 import warnings
 from pathlib import Path
 from copy import deepcopy
-from typing import TYPE_CHECKING, Optional, Literal, Union, List
+from typing import TYPE_CHECKING, Optional, Literal, Union, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..detector import Detector
@@ -14,10 +15,6 @@ from ..dialect import Dialect
 from ..header import Header
 from ..system import system
 from ..row import Row
-from .describe import describe
-from .extract import extract
-from .transform import transform
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -49,43 +46,38 @@ class Resource(Metadata2):
 
     """
 
-    describe = staticmethod(describe)
-    extract = extract
-    transform = transform
-    validate = validate
-
     def __init__(
         self,
-        source=None,
+        source: Optional[Any] = None,
         *,
-        descriptor=None,
+        descriptor: Optional[Any] = None,
         # Spec
-        name=None,
-        title=None,
-        description=None,
-        mediatype=None,
-        licenses=None,
-        sources=None,
-        profile=None,
-        path=None,
-        data=None,
-        scheme=None,
-        format=None,
-        hashing=None,
-        encoding=None,
-        innerpath=None,
-        compression=None,
-        dialect=None,
-        schema=None,
-        checklist=None,
-        pipeline=None,
-        stats=None,
+        name: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        mediatype: Optional[str] = None,
+        licenses: Optional[List[dict]] = None,
+        sources: Optional[List[dict]] = None,
+        profile: Optional[str] = None,
+        path: Optional[str] = None,
+        data: Optional[List[Union[list, dict]]] = None,
+        scheme: Optional[str] = None,
+        format: Optional[str] = None,
+        hashing: Optional[str] = None,
+        encoding: Optional[str] = None,
+        innerpath: Optional[str] = None,
+        compression: Optional[str] = None,
+        dialect: Optional[Union[Dialect, str]] = None,
+        schema: Optional[Union[Schema, str]] = None,
+        checklist: Optional[Union[Checklist, str]] = None,
+        pipeline: Optional[Union[Pipeline, str]] = None,
+        stats: Optional[dict] = None,
         # Extra
-        basepath="",
-        detector=None,
-        onerror="ignore",
-        trusted=False,
-        package=None,
+        basepath: Optional[str] = None,
+        onerror: Literal["ignore", "warn", "raise"] = settings.DEFAULT_ONERROR,
+        trusted: bool = settings.DEFAULT_TRUSTED,
+        detector: Optional[Detector] = None,
+        package: Optional[Package] = None,
     ):
 
         # Handle source
@@ -99,15 +91,40 @@ class Resource(Metadata2):
             elif descriptor is None:
                 descriptor = source
 
-        # Handle pathlib
+        # Handle descriptor
         if isinstance(descriptor, Path):
             descriptor = str(descriptor)
-
-        # Handle trusted
         if descriptor is None:
             trusted = True
 
         # Store state
+        self.name = name
+        self.title = title
+        self.description = description
+        self.mediatype = mediatype
+        self.licenses = licenses or []
+        self.sources = sources or []
+        self.profile = profile
+        self.path = path
+        self.data = data
+        self.scheme = scheme
+        self.format = format
+        self.hashing = hashing
+        self.encoding = encoding
+        self.compression = compression
+        self.innerpath = innerpath
+        self.dialect = dialect
+        self.schema = schema
+        self.checklist = checklist
+        self.pipeline = pipeline
+        self.stats = stats
+        self.basepath = basepath or helpers.parse_basepath(descriptor)
+        self.onerror = onerror
+        self.trusted = trusted
+        self.detector = detector or Detector()
+        self.package = package
+
+        # Store internal state
         self.__loader = None
         self.__parser = None
         self.__sample = None
@@ -116,77 +133,6 @@ class Resource(Metadata2):
         self.__header = None
         self.__lookup = None
         self.__row_stream = None
-
-        # Store extra
-        self.__basepath = basepath or helpers.parse_basepath(descriptor)
-        self.__detector = detector or Detector()
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__package = package
-
-        # Store specs
-        self.setinitial("name", name)
-        self.setinitial("title", title)
-        self.setinitial("description", description)
-        self.setinitial("mediatype", mediatype)
-        self.setinitial("licenses", licenses)
-        self.setinitial("sources", sources)
-        self.setinitial("profile", profile)
-        self.setinitial("path", path)
-        self.setinitial("data", data)
-        self.setinitial("scheme", scheme)
-        self.setinitial("format", format)
-        self.setinitial("hashing", hashing)
-        self.setinitial("encoding", encoding)
-        self.setinitial("compression", compression)
-        self.setinitial("innerpath", innerpath)
-        self.setinitial("dialect", dialect)
-        self.setinitial("schema", schema)
-        self.setinitial("checklist", checklist)
-        self.setinitial("pipeline", pipeline)
-        self.setinitial("stats", stats)
-        super().__init__(descriptor)
-
-        # Handle official hash/bytes/rows
-        for name in ["hash", "bytes", "rows"]:
-            value = self.pop(name, None)
-            if value:
-                if name == "hash":
-                    hashing, value = helpers.parse_resource_hash(value)
-                    if hashing != settings.DEFAULT_HASHING:
-                        self["hashing"] = hashing
-                self.setdefault("stats", {})
-                self["stats"][name] = value
-
-        # Handle deprecated url
-        url = self.get("url")
-        path = self.get("path")
-        if url and not path:
-            message = 'Property "url" is deprecated. Please use "path" instead.'
-            warnings.warn(message, UserWarning)
-            self["path"] = self.pop("url")
-
-        # Handle deprecated compression
-        compression = self.get("compression")
-        if compression == "no":
-            message = 'Compression "no" is deprecated. Please use "" compression.'
-            warnings.warn(message, UserWarning)
-            self["compression"] = ""
-
-    def __setattr__(self, name, value):
-        if name == "basepath":
-            self.__basepath = value
-        elif name == "detector":
-            self.__detector = value
-        elif name == "onerror":
-            self.__onerror = value
-        elif name == "trusted":
-            self.__trusted = value
-        elif name == "package":
-            self.__package = value
-        else:
-            return super().__setattr__(name, value)
-        self.metadata_process()
 
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -200,6 +146,7 @@ class Resource(Metadata2):
     def __iter__(self):
         with helpers.ensure_open(self):
             # TODO: rebase on Inferred/OpenResource?
+            # (here and in other places like this)
             assert self.__row_stream
             yield from self.__row_stream
 
@@ -326,13 +273,14 @@ class Resource(Metadata2):
     A dict with the following possible properties: hash, bytes, fields, rows.
     """
 
-    basepath: Optional[str]
+    basepath: str
     """
     A basepath of the resource
     The fullpath of the resource is joined `basepath` and /path`
     """
 
-    onerror: Literal["ignore", "warn", "error"]
+    # TODO: move type to interfaces
+    onerror: Literal["ignore", "warn", "raise"]
     """
     Behaviour if there is an error.
     It defaults to 'ignore'. The default mode will ignore all errors
@@ -348,16 +296,16 @@ class Resource(Metadata2):
     A path provided as `source` or `path` is alway trusted.
     """
 
+    detector: Detector
+    """
+    Resource detector.
+    For more information, please check the Detector documentation.
+    """
+
     package: Optional[Package]
     """
     Parental to this resource package.
     For more information, please check the Package documentation.
-    """
-
-    detector: Optional[Detector]
-    """
-    Resource detector.
-    For more information, please check the Detector documentation.
     """
 
     # Props
@@ -955,53 +903,8 @@ class Resource(Metadata2):
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
-
-    def metadata_process(self):
-
-        # File
-        self.__file = system.create_file(
-            self.get("data", self.get("path", [])),
-            innerpath=self.get("innerpath"),
-            basepath=self.__basepath,
-        )
-
-        # Dialect
-        dialect = self.get("dialect")
-        if not isinstance(dialect, Dialect):
-            dialect = Dialect.from_descriptor(dialect) if dialect else Dialect()
-            dict.__setitem__(self, "dialect", dialect)
-
-        # Schema
-        schema = self.get("schema")
-        if not isinstance(schema, (str, type(None), Schema)):
-            schema = Schema(schema)
-            dict.__setitem__(self, "schema", schema)
-
-        # Checklist
-        checklist = self.get("checklist")
-        if not isinstance(checklist, (str, type(None), Checklist)):
-            checklist = Checklist.from_descriptor(checklist)
-            dict.__setitem__(self, "checklist", schema)
-
-        # Pipeline
-        pipeline = self.get("pipeline")
-        if not isinstance(pipeline, (str, type(None), Pipeline)):
-            pipeline = Pipeline.from_descriptor(pipeline)
-            dict.__setitem__(self, "pipeline", pipeline)
-
-        # Security
-        # TODO: move safety checks to other places?
-        if not self.trusted:
-            # TODO: add checklist/pipeline when they support a string form?
-            for name in ["path", "dialect", "schema"]:
-                path = self.get(name)
-                if not isinstance(path, (str, list)):
-                    continue
-                path = path if isinstance(path, list) else [path]
-                if not all(helpers.is_safe_path(chunk) for chunk in path):
-                    note = f'path "{path}" is not safe'
-                    error = errors.ResourceError(note=note)
-                    raise FrictionlessException(error)
+    metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}
+    metadata_profile["properties"]["pipeline"] = {"type": ["string", "object"]}
 
     def metadata_validate(self):
         # Check invalid properties
