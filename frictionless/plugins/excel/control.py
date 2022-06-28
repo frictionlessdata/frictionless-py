@@ -10,7 +10,7 @@ class ExcelControl(Control):
 
     code = "excel"
 
-    # Properties
+    # State
 
     sheet: Union[str, int] = settings.DEFAULT_SHEET
     """TODO: add docs"""

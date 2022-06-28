@@ -9,7 +9,7 @@ class CkanControl(Control):
 
     code = "ckan"
 
-    # Properties
+    # State
 
     dataset: str
     """TODO: add docs"""

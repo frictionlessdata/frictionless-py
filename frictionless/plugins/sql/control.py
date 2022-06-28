@@ -10,7 +10,7 @@ class SqlControl(Control):
 
     code = "sql"
 
-    # Properties
+    # State
 
     table: str = settings.DEFAULT_TABLE
     """TODO: add docs"""

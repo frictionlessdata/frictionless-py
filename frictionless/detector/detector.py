@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class Detector(Metadata2):
     """Detector representation"""
 
-    # Properties
+    # Props
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
     """

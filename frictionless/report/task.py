@@ -12,7 +12,7 @@ from .. import helpers
 class ReportTask(Metadata2):
     """Report task representation."""
 
-    # Properties
+    # State
 
     valid: bool
     """# TODO: add docs"""
@@ -38,15 +38,11 @@ class ReportTask(Metadata2):
     errors: List[Error] = field(default_factory=list)
     """# TODO: add docs"""
 
+    # Props
+
     @property
     def error(self):
-        """
-        Returns:
-            Error: validation error if there is only one
-
-        Raises:
-            FrictionlessException: if more than one errors
-        """
+        """Validation error if there is only one"""
         if len(self.errors) != 1:
             error = Error(note='The "task.error" is available for single error tasks')
             raise FrictionlessException(error)

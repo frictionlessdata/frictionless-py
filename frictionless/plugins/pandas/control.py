@@ -6,7 +6,7 @@ class PandasControl(Control):
 
     code = "pandas"
 
-    # Metadata
+    # State
 
     metadata_profile = {  # type: ignore
         "type": "object",

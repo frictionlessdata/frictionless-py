@@ -17,7 +17,7 @@ from .. import errors
 class InquiryTask(Metadata2):
     """Inquiry task representation."""
 
-    # Properties
+    # State
 
     descriptor: Optional[str] = None
     """# TODO: add docs"""

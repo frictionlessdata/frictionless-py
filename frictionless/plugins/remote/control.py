@@ -11,7 +11,7 @@ class RemoteControl(Control):
 
     code = "remote"
 
-    # Properties
+    # State
 
     http_session: Any = field(default_factory=system.get_http_session)
     """TODO: add docs"""

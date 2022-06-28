@@ -11,7 +11,7 @@ class CsvControl(Control):
 
     code = "csv"
 
-    # Properties
+    # State
 
     delimiter: str = settings.DEFAULT_DELIMITER
     """TODO: add docs"""

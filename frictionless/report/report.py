@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class Report(Metadata2):
     """Report representation."""
 
-    # Properties
+    # State
 
     version: str
     """# TODO: add docs"""
@@ -37,15 +37,11 @@ class Report(Metadata2):
     warnings: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
+    # Props
+
     @property
     def task(self):
-        """
-        Returns:
-            ReportTask: validation task (if there is only one)
-
-        Raises:
-            FrictionlessException: if there are more that 1 task
-        """
+        """Validation task (if there is only one)"""
         if len(self.tasks) != 1:
             error = Error(note='The "report.task" is available for single task reports')
             raise FrictionlessException(error)

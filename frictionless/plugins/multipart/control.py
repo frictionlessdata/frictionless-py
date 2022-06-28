@@ -9,7 +9,7 @@ class MultipartControl(Control):
 
     code = "multipart"
 
-    # Properties
+    # State
 
     chunk_size: int = settings.DEFAULT_CHUNK_SIZE
     """TODO: add docs"""

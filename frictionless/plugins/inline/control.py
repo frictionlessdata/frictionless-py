@@ -9,7 +9,7 @@ class InlineControl(Control):
 
     code = "inline"
 
-    # Properties
+    # State
 
     keys: Optional[List[str]] = None
     """TODO: add docs"""

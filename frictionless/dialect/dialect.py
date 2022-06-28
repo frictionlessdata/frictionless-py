@@ -15,7 +15,7 @@ from .. import errors
 class Dialect(Metadata2):
     """Dialect representation"""
 
-    # Properties
+    # State
 
     header: bool = settings.DEFAULT_HEADER
     """TODO: add docs"""

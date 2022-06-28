@@ -10,7 +10,7 @@ class OdsControl(Control):
 
     code = "ods"
 
-    # Properties
+    # State
 
     sheet: Union[str, int] = settings.DEFAULT_SHEET
     """TODO: add docs"""

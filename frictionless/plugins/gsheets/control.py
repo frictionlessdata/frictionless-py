@@ -9,7 +9,7 @@ class GsheetsControl(Control):
 
     code = "gsheets"
 
-    # Properties
+    # State
 
     credentials: Optional[str] = None
     """TODO: add docs"""

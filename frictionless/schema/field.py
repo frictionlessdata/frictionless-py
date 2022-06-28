@@ -24,7 +24,7 @@ class Field(Metadata2):
     builtin: bool = field(init=False, default=False)
     supported_constraints: List[str] = field(init=False)
 
-    # Properties
+    # State
 
     format: str = settings.DEFAULT_FIELD_FORMAT
     """TODO: add docs"""
@@ -38,16 +38,6 @@ class Field(Metadata2):
     description: Optional[str] = None
     """TODO: add docs"""
 
-    @property
-    def description_html(self):
-        """TODO: add docs"""
-        return helpers.md_to_html(self.description)
-
-    @property
-    def description_text(self):
-        """TODO: add docs"""
-        return helpers.html_to_text(self.description_html)
-
     example: Optional[str] = None
     """TODO: add docs"""
 
@@ -59,6 +49,25 @@ class Field(Metadata2):
     constraints: dict = field(default_factory=dict)
     """TODO: add docs"""
 
+    rdf_type: Optional[str] = None
+    """TODO: add docs"""
+
+    # TODO: recover
+    schema: Optional[Schema] = None
+    """TODO: add docs"""
+
+    # Props
+
+    @property
+    def description_html(self):
+        """TODO: add docs"""
+        return helpers.md_to_html(self.description)
+
+    @property
+    def description_text(self):
+        """TODO: add docs"""
+        return helpers.html_to_text(self.description_html)
+
     @property
     def required(self):
         """TODO: add docs"""
@@ -67,13 +76,6 @@ class Field(Metadata2):
     @required.setter
     def required(self, value: bool):
         self.constraints["requied"] = value
-
-    rdf_type: Optional[str] = None
-    """TODO: add docs"""
-
-    # TODO: recover
-    schema: Optional[Schema] = None
-    """TODO: add docs"""
 
     # Read
 

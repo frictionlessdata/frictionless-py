@@ -20,17 +20,19 @@ class Pipeline(Metadata2):
         self.steps = steps.copy()
         self.limit_memory = limit_memory
 
-    # Properties
+    # State
 
     steps: List[Step]
     """List of transform steps"""
 
+    limit_memory: int
+    """TODO: add docs"""
+
+    # Props
+
     @property
     def step_codes(self) -> List[str]:
         return [step.code for step in self.steps]
-
-    limit_memory: int
-    """TODO: add docs"""
 
     # Steps
 

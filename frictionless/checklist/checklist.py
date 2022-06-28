@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 # TODO: raise an exception if we try export a checklist with function based checks
 class Checklist(Metadata2):
+    """Checklist representation"""
+
     def __init__(
         self,
         *,
@@ -27,14 +29,10 @@ class Checklist(Metadata2):
         self.limit_errors = limit_errors
         self.limit_memory = limit_memory
 
-    # Properties
+    # State
 
     checks: List[Check]
     """# TODO: add docs"""
-
-    @property
-    def check_codes(self) -> List[str]:
-        return [check.code for check in self.checks]
 
     pick_errors: List[str]
     """# TODO: add docs"""
@@ -47,6 +45,12 @@ class Checklist(Metadata2):
 
     limit_memory: int
     """# TODO: add docs"""
+
+    # Props
+
+    @property
+    def check_codes(self) -> List[str]:
+        return [check.code for check in self.checks]
 
     @property
     def scope(self) -> List[str]:

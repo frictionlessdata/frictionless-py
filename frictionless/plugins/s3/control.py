@@ -8,7 +8,7 @@ class S3Control(Control):
 
     code = "s3"
 
-    # Properties
+    # State
 
     endpoint_url: str = os.environ.get("S3_ENDPOINT_URL") or settings.DEFAULT_ENDPOINT_URL
 

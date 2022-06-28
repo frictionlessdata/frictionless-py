@@ -9,7 +9,7 @@ class BigqueryControl(Control):
 
     code = "bigquery"
 
-    # Properties
+    # State
 
     table: Optional[str] = None
     """TODO: add docs"""

@@ -14,27 +14,13 @@ if TYPE_CHECKING:
 # TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
 class Check(Metadata2):
-    """Check representation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Checks`
-
-    It's an interface for writing Frictionless checks.
-
-    Parameters:
-        descriptor? (str|dict): schema descriptor
-
-    Raises:
-        FrictionlessException: raise if metadata is invalid
-
-    """
+    """Check representation."""
 
     code: str = "check"
     # TODO: can it be just codes not objects?
     Errors: List[Type[Error]] = []
 
-    # Properties
+    # Props
 
     @property
     def resource(self) -> Resource:

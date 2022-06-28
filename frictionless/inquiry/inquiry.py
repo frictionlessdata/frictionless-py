@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class Inquiry(Metadata2):
     """Inquiry representation."""
 
-    # Properties
+    # State
 
     tasks: List[InquiryTask] = field(default_factory=list)
     """List of underlaying tasks"""

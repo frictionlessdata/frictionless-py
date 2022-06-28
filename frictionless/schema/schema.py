@@ -24,15 +24,10 @@ class Schema(Metadata2):
     ```
     """
 
-    # Properties
+    # State
 
     fields: List[Field] = field(default_factory=list)
     """TODO: add docs"""
-
-    @property
-    def field_names(self):
-        """List of field names"""
-        return [field.name for field in self.fields]
 
     missing_values: List[str] = field(
         default_factory=settings.DEFAULT_MISSING_VALUES.copy
@@ -44,6 +39,13 @@ class Schema(Metadata2):
 
     foreign_keys: List[dict] = field(default_factory=list)
     """TODO: add docs"""
+
+    # Props
+
+    @property
+    def field_names(self):
+        """List of field names"""
+        return [field.name for field in self.fields]
 
     # Describe
 

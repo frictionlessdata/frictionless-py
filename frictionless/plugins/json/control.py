@@ -9,7 +9,7 @@ class JsonControl(Control):
 
     code = "json"
 
-    # Properties
+    # State
 
     keys: Optional[List[str]] = None
     """TODO: add docs"""

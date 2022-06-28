@@ -9,7 +9,7 @@ class HtmlControl(Control):
 
     code = "html"
 
-    # Properties
+    # State
 
     selector: str = settings.DEFAULT_SELECTOR
     """TODO: add docs"""

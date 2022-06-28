@@ -1,15 +1,13 @@
-# type: ignore
 import json
 import petl
 import warnings
 from pathlib import Path
 from copy import deepcopy
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, Literal, Union, List
 from ..exception import FrictionlessException
-from ..helpers import cached_property
 from ..schema import Schema, Field
 from ..detector import Detector
-from ..metadata import Metadata
+from ..metadata2 import Metadata2
 from ..checklist import Checklist
 from ..pipeline import Pipeline
 from ..dialect import Dialect
@@ -25,16 +23,16 @@ from .. import helpers
 from .. import errors
 
 
+if TYPE_CHECKING:
+    from ..package import Package
+
+
 # NOTE:
 # Review the situation with describe function removing stats (move to infer?)
 
 
-class Resource(Metadata):
+class Resource(Metadata2):
     """Resource representation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Resource`
 
     This class is one of the cornerstones of of Frictionless framework.
     It loads a data source, and allows you to stream its parsed contents.
@@ -49,88 +47,6 @@ class Resource(Metadata):
         ]
     ```
 
-    Parameters:
-
-        source (any): Source of the resource; can be in various forms.
-            Usually, it's a string as `<scheme>://path/to/file.<format>`.
-            It also can be, for example, an array of data arrays/dictionaries.
-            Or it can be a resource descriptor dict or path.
-
-        descriptor (dict|str): A resource descriptor provided explicitly.
-            Keyword arguments will patch this descriptor if provided.
-
-        name? (str): A Resource name according to the specs.
-            It should be a slugified name of the resource.
-
-        title? (str): A Resource title according to the specs
-           It should a human-oriented title of the resource.
-
-        description? (str): A Resource description according to the specs
-           It should a human-oriented description of the resource.
-
-        mediatype? (str): A mediatype/mimetype of the resource e.g. “text/csv”,
-            or “application/vnd.ms-excel”.  Mediatypes are maintained by the
-            Internet Assigned Numbers Authority (IANA) in a media type registry.
-
-        licenses? (dict[]): The license(s) under which the resource is provided.
-            If omitted it's considered the same as the package's licenses.
-
-        sources? (dict[]): The raw sources for this data resource.
-            It MUST be an array of Source objects.
-            Each Source object MUST have a title and
-            MAY have path and/or email properties.
-
-        profile? (str): A string identifying the profile of this descriptor.
-            For example, `tabular-data-resource`.
-
-        scheme? (str): Scheme for loading the file (file, http, ...).
-            If not set, it'll be inferred from `source`.
-
-        format? (str): File source's format (csv, xls, ...).
-            If not set, it'll be inferred from `source`.
-
-        hashing? (str): An algorithm to hash data.
-            It defaults to 'md5'.
-
-        encoding? (str): Source encoding.
-            If not set, it'll be inferred from `source`.
-
-        innerpath? (str): A path within the compressed file.
-            It defaults to the first file in the archive.
-
-        compression? (str): Source file compression (zip, ...).
-            If not set, it'll be inferred from `source`.
-
-        dialect? (dict|Dialect): Table dialect.
-            For more information, please check the Dialect documentation.
-
-        schema? (dict|Schema): Table schema.
-            For more information, please check the Schema documentation.
-
-        stats? (dict): File/table stats.
-            A dict with the following possible properties: hash, bytes, fields, rows.
-
-        basepath? (str): A basepath of the resource
-            The fullpath of the resource is joined `basepath` and /path`
-
-        detector? (Detector): File/table detector.
-            For more information, please check the Detector documentation.
-
-        onerror? (ignore|warn|raise): Behaviour if there is an error.
-            It defaults to 'ignore'. The default mode will ignore all errors
-            on resource level and they should be handled by the user
-            being available in Header and Row objects.
-
-        trusted? (bool): Don't raise an exception on unsafe paths.
-            A path provided as a part of the descriptor considered unsafe
-            if there are path traversing or the path is absolute.
-            A path provided as `source` or `path` is alway trusted.
-
-        package? (Package): A owning this resource package.
-            It's actual if the resource is part of some data package.
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
     """
 
     describe = staticmethod(describe)
@@ -283,223 +199,222 @@ class Resource(Metadata):
 
     def __iter__(self):
         with helpers.ensure_open(self):
+            # TODO: rebase on Inferred/OpenResource?
+            assert self.__row_stream
             yield from self.__row_stream
 
-    @Metadata.property
-    def name(self):
-        """
-        Returns
-            str: resource name
-        """
-        return self.get("name", self.__file.name)
+    # State
 
-    @Metadata.property
-    def title(self):
-        """
-        Returns
-            str: resource title
-        """
-        return self.get("title", "")
+    name: Optional[str]
+    """
+    Resource name according to the specs.
+    It should be a slugified name of the resource.
+    """
 
-    @Metadata.property
-    def description(self):
-        """
-        Returns
-            str: resource description
-        """
-        return self.get("description", "")
+    title: Optional[str]
+    """
+    Resource title according to the specs
+    It should a human-oriented title of the resource.
+    """
 
-    @Metadata.property(cache=False, write=False)
+    description: Optional[str]
+    """
+    Resource description according to the specs
+    It should a human-oriented description of the resource.
+    """
+
+    mediatype: Optional[str]
+    """
+    Mediatype/mimetype of the resource e.g. “text/csv”,
+    or “application/vnd.ms-excel”.  Mediatypes are maintained by the
+    Internet Assigned Numbers Authority (IANA) in a media type registry.
+    """
+
+    licenses: List[dict]
+    """
+    The license(s) under which the resource is provided.
+    If omitted it's considered the same as the package's licenses.
+    """
+
+    sources: List[dict]
+    """
+    The raw sources for this data resource.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
+
+    profile: Optional[str]
+    """
+    String identifying the profile of this descriptor.
+    For example, `tabular-data-resource`.
+    """
+
+    path: Optional[str]
+    """
+    Path to data source
+    """
+
+    data: Optional[List[Union[list, dict]]]
+    """
+    Inline data source
+    """
+
+    scheme: str
+    """
+    Scheme for loading the file (file, http, ...).
+    If not set, it'll be inferred from `source`.
+    """
+
+    format: str
+    """
+    File source's format (csv, xls, ...).
+    If not set, it'll be inferred from `source`.
+    """
+
+    hashing: str
+    """
+    An algorithm to hash data.
+    It defaults to 'md5'.
+    """
+
+    encoding: str
+    """
+    Source encoding.
+    If not set, it'll be inferred from `source`.
+    """
+
+    innerpath: Optional[str]
+    """
+    Path within the compressed file.
+    It defaults to the first file in the archive (if the source is an archive).
+    """
+
+    compression: Optional[str]
+    """
+    Source file compression (zip, ...).
+    If not set, it'll be inferred from `source`.
+    """
+
+    dialect: Optional[Dialect]
+    """
+    File dialect object.
+    For more information, please check the Dialect documentation.
+    """
+
+    schema: Optional[Schema]
+    """
+    Table schema object.
+    For more information, please check the Schema documentation.
+    """
+
+    checklist: Optional[Checklist]
+    """
+    Checklist object.
+    For more information, please check the Checklist documentation.
+    """
+
+    pipeline: Optional[Pipeline]
+    """
+    Pipeline object.
+    For more information, please check the Pipeline documentation.
+    """
+
+    stats: Optional[dict]
+    """
+    Stats dictionary.
+    A dict with the following possible properties: hash, bytes, fields, rows.
+    """
+
+    basepath: Optional[str]
+    """
+    A basepath of the resource
+    The fullpath of the resource is joined `basepath` and /path`
+    """
+
+    onerror: Literal["ignore", "warn", "error"]
+    """
+    Behaviour if there is an error.
+    It defaults to 'ignore'. The default mode will ignore all errors
+    on resource level and they should be handled by the user
+    being available in Header and Row objects.
+    """
+
+    trusted: bool
+    """
+    Don't raise an exception on unsafe paths.
+    A path provided as a part of the descriptor considered unsafe
+    if there are path traversing or the path is absolute.
+    A path provided as `source` or `path` is alway trusted.
+    """
+
+    package: Optional[Package]
+    """
+    Parental to this resource package.
+    For more information, please check the Package documentation.
+    """
+
+    detector: Optional[Detector]
+    """
+    Resource detector.
+    For more information, please check the Detector documentation.
+    """
+
+    # Props
+
+    @property
     def description_html(self):
-        """
-        Returns:
-            str?: resource description
-        """
-        return helpers.md_to_html(self.description)
+        """Description in HTML"""
+        return helpers.md_to_html(self.description or "")
 
-    @Metadata.property
+    @property
     def description_text(self):
-        """
-        Returns:
-            str: resource description
-        """
-        return helpers.html_to_text(self.description_html)
+        """Description in Text"""
+        return helpers.html_to_text(self.description_html or "")
 
-    @Metadata.property
-    def mediatype(self):
+    @property
+    def fullpath(self):
         """
         Returns
-            str: resource mediatype
+            str: resource fullpath
         """
-        return self.get("mediatype", "")
-
-    @Metadata.property
-    def licenses(self):
-        """
-        Returns
-            dict[]: resource licenses
-        """
-        licenses = self.get("licenses", [])
-        return self.metadata_attach("licenses", licenses)
-
-    @Metadata.property
-    def sources(self):
-        """
-        Returns
-            dict[]: resource sources
-        """
-        sources = self.get("sources", [])
-        return self.metadata_attach("sources", sources)
-
-    @Metadata.property
-    def profile(self):
-        """
-        Returns
-            str: resource profile
-        """
-        default = settings.DEFAULT_RESOURCE_PROFILE
-        if self.tabular:
-            default = settings.DEFAULT_TABULAR_RESOURCE_PROFILE
-        return self.get("profile", default)
+        return self.__file.fullpath
 
     # TODO: add asteriks for user/pass in url
-    @cached_property
+    @property
     def place(self):
-        """
-        Returns
-            str: resource place
-        """
+        """Stringified resource location/source"""
         if self.memory:
             return "<memory>"
         if self.innerpath:
             return f"{self.path}:{self.innerpath}"
         return self.path
 
-    @Metadata.property
-    def path(self):
-        """
-        Returns
-            str: resource path
-        """
-        return self.get("path", self.__file.path)
-
-    @Metadata.property
-    def data(self):
-        """
-        Returns
-            any[][]?: resource data
-        """
-        return self.get("data", self.__file.data)
-
-    @Metadata.property
-    def scheme(self):
-        """
-        Returns
-            str: resource scheme
-        """
-        scheme = self.get("scheme", self.__file.scheme).lower()
-        # NOTE: review this approach (see #991)
-        # NOTE: move to plugins.multipart when plugin.priority/create_resource is implemented
-        if self.multipart and scheme != "multipart":
-            note = f'Multipart resource requires "multipart" scheme but "{scheme}" is set'
-            raise FrictionlessException(errors.SchemeError(note=note))
-        return scheme
-
-    @Metadata.property
-    def format(self):
-        """
-        Returns
-            str: resource format
-        """
-        return self.get("format", self.__file.format).lower()
-
-    @Metadata.property
-    def hashing(self):
-        """
-        Returns
-            str: resource hashing
-        """
-        return self.get("hashing", settings.DEFAULT_HASHING).lower()
-
-    @Metadata.property
-    def encoding(self):
-        """
-        Returns
-            str: resource encoding
-        """
-        return self.get("encoding", settings.DEFAULT_ENCODING).lower()
-
-    @Metadata.property
-    def innerpath(self) -> Optional[str]:
-        """
-        Returns
-            str: resource compression path
-        """
-        return self.get("innerpath", self.__file.innerpath)
-
-    @Metadata.property
-    def compression(self):
-        """
-        Returns
-            str: resource compression
-        """
-        return self.get("compression", self.__file.compression).lower()
-
-    @Metadata.property
-    def dialect(self):
-        """
-        Returns
-            Dialect: resource dialect
-        """
-        return self.get("dialect")
-
-    @Metadata.property
-    def schema(self):
-        """
-        Returns
-            Schema: resource schema
-        """
-        schema = self.get("schema")
-        if schema is None:
-            schema = Schema()
-            schema = self.metadata_attach("schema", schema)
-        elif isinstance(schema, str):
-            schema = Schema(helpers.join_path(self.basepath, schema))
-            schema = self.metadata_attach("schema", schema)
-        return schema
+    @property
+    def memory(self):
+        return self.__file.memory
 
     @property
-    def checklist(self) -> Checklist:
-        """
-        Returns
-            Checklist: resource checklist
-        """
-        return self.get("checklist")
+    def remote(self):
+        return self.__file.remote
 
     @property
-    def pipeline(self) -> Pipeline:
-        """
-        Returns
-            Pipeline: resource pipeline
-        """
-        return self.get("pipeline")
+    def multipart(self):
+        return self.__file.multipart
 
-    # NOTE: updating this Metadata.propertyc reates a huge overheader
-    # Once it's fixed we might return to stats updating during reading
-    # See: https://github.com/frictionlessdata/frictionless-py/issues/879
-    @Metadata.property
-    def stats(self):
+    @property
+    def tabular(self):
         """
         Returns
-            dict: resource stats
+            bool: if resource is tabular
         """
-        stats = self.get("stats")
-        if stats is None:
-            stats = {"hash": "", "bytes": 0}
-            if self.tabular:
-                stats.update({"fields": 0, "rows": 0})
-            stats = self.metadata_attach("stats", stats)
-        return stats
+        if not self.closed:
+            return bool(self.__parser)
+        try:
+            system.create_parser(self)
+            return True
+        except Exception:
+            return False
 
     @property
     def buffer(self):
@@ -507,9 +422,6 @@ class Resource(Metadata):
 
         These buffer bytes are used to infer characteristics of the
         source file (e.g. encoding, ...).
-
-        Returns:
-            bytes?: file buffer
         """
         if self.__parser and self.__parser.loader:
             return self.__parser.loader.buffer
@@ -556,80 +468,6 @@ class Resource(Metadata):
         """
         return self.__header
 
-    @Metadata.property(cache=False, write=False)
-    def basepath(self):
-        """
-        Returns
-            str: resource basepath
-        """
-        return self.__file.basepath
-
-    @Metadata.property(cache=False, write=False)
-    def fullpath(self):
-        """
-        Returns
-            str: resource fullpath
-        """
-        return self.__file.fullpath
-
-    @Metadata.property(cache=False, write=False)
-    def detector(self):
-        """
-        Returns
-            str: resource detector
-        """
-        return self.__detector
-
-    @Metadata.property(cache=False, write=False)
-    def onerror(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        return self.__onerror
-
-    @Metadata.property(cache=False, write=False)
-    def trusted(self):
-        """
-        Returns:
-            bool: don't raise an exception on unsafe paths
-        """
-        return self.__trusted
-
-    @Metadata.property(cache=False, write=False)
-    def package(self):
-        """
-        Returns:
-            Package?: parent package
-        """
-        return self.__package
-
-    @Metadata.property(write=False)
-    def memory(self):
-        return self.__file.memory
-
-    @Metadata.property(write=False)
-    def remote(self):
-        return self.__file.remote
-
-    @Metadata.property(write=False)
-    def multipart(self):
-        return self.__file.multipart
-
-    @Metadata.property(write=False)
-    def tabular(self):
-        """
-        Returns
-            bool: if resource is tabular
-        """
-        if not self.closed:
-            return bool(self.__parser)
-        try:
-            system.create_parser(self)
-            return True
-        except Exception:
-            return False
-
     @property
     def byte_stream(self):
         """Byte stream in form of a generator
@@ -674,23 +512,6 @@ class Resource(Metadata):
             gen<Row[]>?: row stream
         """
         return self.__row_stream
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("profile", self.profile)
-        self.setdefault("scheme", self.scheme)
-        self.setdefault("format", self.format)
-        self.setdefault("hashing", self.hashing)
-        self.setdefault("encoding", self.encoding)
-        self.setdefault("innerpath", self.innerpath)
-        self.setdefault("compression", self.compression)
-        self.setdefault("dialect", self.dialect)
-        self.dialect.expand()
-        if self.tabular:
-            self.setdefault("schema", self.schema)
-            self.schema.expand()
 
     # Infer
 
