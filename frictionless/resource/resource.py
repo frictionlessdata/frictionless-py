@@ -2,7 +2,6 @@ from __future__ import annotations
 import json
 import petl
 import warnings
-from pathlib import Path
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Literal, Union, List, Any
 from ..exception import FrictionlessException
@@ -56,15 +55,15 @@ class Resource(Metadata2):
         title: Optional[str] = None,
         description: Optional[str] = None,
         mediatype: Optional[str] = None,
-        licenses: Optional[List[dict]] = None,
-        sources: Optional[List[dict]] = None,
+        licenses: List[dict] = [],
+        sources: List[dict] = [],
         profile: Optional[str] = None,
         path: Optional[str] = None,
         data: Optional[List[Union[list, dict]]] = None,
-        scheme: Optional[str] = None,
-        format: Optional[str] = None,
-        hashing: Optional[str] = None,
-        encoding: Optional[str] = None,
+        scheme: str = settings.DEFAULT_SCHEME,
+        format: str = settings.DEFAULT_FORMAT,
+        hashing: str = settings.DEFAULT_HASHING,
+        encoding: str = settings.DEFAULT_ENCODING,
         innerpath: Optional[str] = None,
         compression: Optional[str] = None,
         dialect: Optional[Union[Dialect, str]] = None,
@@ -80,30 +79,14 @@ class Resource(Metadata2):
         package: Optional[Package] = None,
     ):
 
-        # Handle source
-        if source is not None:
-            file = system.create_file(source, basepath=basepath)
-            if file.type == "table":
-                if path is None:
-                    path = file.path
-                if data is None:
-                    data = file.data
-            elif descriptor is None:
-                descriptor = source
-
-        # Handle descriptor
-        if isinstance(descriptor, Path):
-            descriptor = str(descriptor)
-        if descriptor is None:
-            trusted = True
-
         # Store state
+        self.source = source
         self.name = name
         self.title = title
         self.description = description
         self.mediatype = mediatype
-        self.licenses = licenses or []
-        self.sources = sources or []
+        self.licenses = licenses.copy()
+        self.sources = sources.copy()
         self.profile = profile
         self.path = path
         self.data = data
@@ -113,10 +96,11 @@ class Resource(Metadata2):
         self.encoding = encoding
         self.compression = compression
         self.innerpath = innerpath
-        self.dialect = dialect
-        self.schema = schema
-        self.checklist = checklist
-        self.pipeline = pipeline
+        # TODO: support dereferencing
+        self.dialect = dialect  # type: ignore
+        self.schema = schema  # type: ignore
+        self.checklist = checklist  # type: ignore
+        self.pipeline = pipeline  # type: ignore
         self.stats = stats
         self.basepath = basepath or helpers.parse_basepath(descriptor)
         self.onerror = onerror
@@ -134,6 +118,13 @@ class Resource(Metadata2):
         self.__lookup = None
         self.__row_stream = None
 
+    def __new__(cls, *args, **kwargs):
+        # TODO: support source being a descriptor
+        descriptor = kwargs.pop("descriptor", None)
+        if descriptor:
+            return Resource.from_descriptor(descriptor)
+        return super().__new__(cls)
+
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
         if self.closed:
@@ -143,6 +134,7 @@ class Resource(Metadata2):
     def __exit__(self, type, value, traceback):
         self.close()
 
+    # TODO: iter cell stream to be PETL-compatible?
     def __iter__(self):
         with helpers.ensure_open(self):
             # TODO: rebase on Inferred/OpenResource?
@@ -151,6 +143,11 @@ class Resource(Metadata2):
             yield from self.__row_stream
 
     # State
+
+    source: Any
+    """
+    Data source
+    """
 
     name: Optional[str]
     """
