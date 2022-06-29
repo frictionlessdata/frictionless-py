@@ -33,6 +33,7 @@ class ExcelControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "sheet": {"type": ["number", "string"]},
             "workbookCache": {"type": "object"},
             "fillMergedCells": {"type": "boolean"},

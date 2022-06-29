@@ -20,6 +20,7 @@ class GsheetsControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "credentials": {"type": "string"},
         },
     }

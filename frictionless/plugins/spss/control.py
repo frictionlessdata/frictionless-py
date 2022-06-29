@@ -11,4 +11,7 @@ class SpssControl(Control):
     metadata_profile = {  # type: ignore
         "type": "object",
         "additionalProperties": False,
+        "properties": {
+            "code": {},
+        },
     }

@@ -18,6 +18,7 @@ class S3Control(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "endpointUrl": {"type": "string"},
         },
     }

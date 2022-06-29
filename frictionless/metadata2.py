@@ -52,17 +52,22 @@ class Metadata2(metaclass=Metaclass):
                 self.metadata_assigned.add(name)
             elif isinstance(value, (list, dict)):
                 self.metadata_defaults[name] = value.copy()
+            elif isinstance(value, Metadata2):
+                self.metadata_defaults[name] = value.to_descriptor()
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
-        return pprint.pformat(self.to_descriptor())
+        return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
     # Properties
 
     def list_defined(self):
         defined = list(self.metadata_assigned)
         for name, default in self.metadata_defaults.items():
-            if getattr(self, name, None) != default:
+            value = getattr(self, name, None)
+            if isinstance(value, Metadata2):
+                value = value.to_descriptor()
+            if value != default:
                 defined.append(name)
         return defined
 

@@ -24,12 +24,9 @@ if TYPE_CHECKING:
 # Although, we need to reviw how we collect buffer - cab it be less IO operations?
 
 
+# TODO: migrate to dataclass?
 class Loader:
     """Loader representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Loader`
 
     Parameters:
         resource (Resource): resource
@@ -51,6 +48,8 @@ class Loader:
 
     def __exit__(self, type, value, traceback):
         self.close()
+
+    # Props
 
     @property
     def resource(self):
@@ -243,10 +242,9 @@ class Loader:
         Parameters:
             buffer (bytes): byte buffer
         """
-        # We don't need a default encoding
-        encoding = self.resource.get("encoding")
-        encoding = self.resource.detector.detect_encoding(buffer, encoding=encoding)
-        self.resource.encoding = encoding
+        self.resource.encoding = self.resource.detector.detect_encoding(
+            buffer, encoding=self.resource.get_defined("encoding")
+        )
 
     def read_text_stream(self):
         """Read text stream

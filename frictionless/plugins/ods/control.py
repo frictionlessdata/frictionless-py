@@ -21,6 +21,7 @@ class OdsControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "sheet": {"type": ["number", "string"]},
         },
     }

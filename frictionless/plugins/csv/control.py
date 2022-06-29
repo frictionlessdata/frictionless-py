@@ -57,6 +57,7 @@ class CsvControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "delimiter": {"type": "string"},
             "lineTerminator": {"type": "string"},
             "quoteChar": {"type": "string"},

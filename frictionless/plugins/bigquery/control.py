@@ -30,6 +30,7 @@ class BigqueryControl(Control):
         "required": ["table"],
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "table": {"type": "string"},
             "dataset": {"type": "string"},
             "project": {"type": "string"},

@@ -20,6 +20,7 @@ class MultipartControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "chunkSize": {"type": "number"},
         },
     }

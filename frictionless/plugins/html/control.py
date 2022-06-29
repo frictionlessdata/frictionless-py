@@ -20,6 +20,7 @@ class HtmlControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "selector": {"type": "string"},
         },
     }

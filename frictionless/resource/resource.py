@@ -70,7 +70,7 @@ class Resource(Metadata2):
         schema: Optional[Union[Schema, str]] = None,
         checklist: Optional[Union[Checklist, str]] = None,
         pipeline: Optional[Union[Pipeline, str]] = None,
-        stats: Optional[dict] = None,
+        stats: dict = {},
         # Extra
         basepath: str = "",
         onerror: Literal["ignore", "warn", "raise"] = settings.DEFAULT_ONERROR,
@@ -98,11 +98,11 @@ class Resource(Metadata2):
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         # TODO: support dereferencing
-        self.dialect = dialect  # type: ignore
+        self.dialect = dialect or Dialect()  # type: ignore
         self.schema = schema  # type: ignore
         self.checklist = checklist  # type: ignore
         self.pipeline = pipeline  # type: ignore
-        self.stats = stats
+        self.stats = stats.copy()
         self.basepath = basepath
         self.onerror = onerror
         self.trusted = trusted
@@ -253,7 +253,7 @@ class Resource(Metadata2):
     It defaults to the first file in the archive (if the source is an archive).
     """
 
-    dialect: Optional[Dialect]
+    dialect: Dialect
     """
     File dialect object.
     For more information, please check the Dialect documentation.
@@ -277,7 +277,7 @@ class Resource(Metadata2):
     For more information, please check the Pipeline documentation.
     """
 
-    stats: Optional[dict]
+    stats: dict
     """
     Stats dictionary.
     A dict with the following possible properties: hash, bytes, fields, rows.
@@ -471,54 +471,11 @@ class Resource(Metadata2):
         """
         return self.__row_stream
 
-    # Infer
-
-    def infer(self, *, stats=False):
-        """Infer metadata
-
-        Parameters:
-            stats? (bool): stream file completely and infer stats
-        """
-        if not self.closed:
-            note = "Resource.infer canot be used on a open resource"
-            raise FrictionlessException(errors.ResourceError(note=note))
-        with self:
-            if not stats:
-                self.pop("stats", None)
-                return
-            stream = self.row_stream or self.byte_stream
-            helpers.pass_through(stream)
-
     # Open/Close
 
     def open(self):
-        """Open the resource as "io.open" does
-
-        Raises:
-            FrictionlessException: any exception that occurs
-        """
+        """Open the resource as "io.open" does"""
         self.close()
-
-        # Infer
-        self.pop("stats", None)
-        self["name"] = self.name
-        self["profile"] = self.profile
-        self["scheme"] = self.scheme
-        self["format"] = self.format
-        self["hashing"] = self.hashing
-        if self.innerpath:
-            self["innerpath"] = self.innerpath
-        if self.compression:
-            self["compression"] = self.compression
-        if self.dialect:
-            self["dialect"] = self.dialect
-        self["stats"] = self.stats
-
-        # Validate
-        # TODO: recover
-        #  if self.metadata_errors:
-        #  error = self.metadata_errors[0]
-        #  raise FrictionlessException(error)
 
         # Open
         try:
@@ -562,6 +519,24 @@ class Resource(Metadata2):
             bool: if closed
         """
         return self.__parser is None and self.__loader is None
+
+    # Infer
+
+    def infer(self, *, stats=False):
+        """Infer metadata
+
+        Parameters:
+            stats? (bool): stream file completely and infer stats
+        """
+        if not self.closed:
+            note = "Resource.infer canot be used on a open resource"
+            raise FrictionlessException(errors.ResourceError(note=note))
+        with self:
+            if not stats:
+                self.pop("stats", None)
+                return
+            stream = self.row_stream or self.byte_stream
+            helpers.pass_through(stream)
 
     # Read
 
@@ -910,6 +885,7 @@ class Resource(Metadata2):
 
     metadata_Error = errors.ResourceError
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
+    metadata_profile["properties"].pop("schema")
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}

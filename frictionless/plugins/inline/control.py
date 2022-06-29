@@ -23,6 +23,7 @@ class InlineControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "code": {},
             "keys": {"type": "array"},
             "keyed": {"type": "boolean"},
         },
