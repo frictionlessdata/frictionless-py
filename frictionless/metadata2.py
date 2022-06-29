@@ -69,8 +69,8 @@ class Metadata2(metaclass=Metaclass):
         if default is not None:
             return default
 
-    def set_defined(self, name: str, value):
-        if not self.has_defined(name):
+    def set_not_defined(self, name: str, value):
+        if not self.has_defined(name) and value is not None:
             setattr(self, name, value)
 
     # Validate

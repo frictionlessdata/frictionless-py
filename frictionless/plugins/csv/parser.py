@@ -28,11 +28,11 @@ class CsvParser(Parser):
             config = csv.Sniffer().sniff("".join(sample), delimiter)
         except csv.Error:
             config = csv.excel()
-        control.set_defined("delimiter", config.delimiter)
-        control.set_defined("line_terminator", config.lineterminator)
-        control.set_defined("escape_char", config.escapechar)
-        control.set_defined("quote_char", config.quotechar)
-        control.set_defined("skip_initial_space", config.skipinitialspace)
+        control.set_not_defined("delimiter", config.delimiter)
+        control.set_not_defined("line_terminator", config.lineterminator)
+        control.set_not_defined("escape_char", config.escapechar)
+        control.set_not_defined("quote_char", config.quotechar)
+        control.set_not_defined("skip_initial_space", config.skipinitialspace)
         source = chain(sample, self.loader.text_stream)
         data = csv.reader(source, dialect=control.to_python())
         yield from data

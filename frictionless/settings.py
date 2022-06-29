@@ -84,6 +84,18 @@ DEFAULT_FIELD_CANDIDATES = [
     {"type": "string"},
 ]
 
+# Entities
+
+ENTITY_TRAITS = {
+    "package": "resources",
+    "dialect": "controls",
+    "schema": "fields",
+    "checklist": "checks",
+    "pipeline": "steps",
+    "report": "erorrs",
+    "inquiry": "tasks",
+    "detector": "sampleSize",
+}
 
 # Backports
 

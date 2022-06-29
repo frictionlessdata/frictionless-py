@@ -64,16 +64,16 @@ class Resource(Metadata2):
         format: str = settings.DEFAULT_FORMAT,
         hashing: str = settings.DEFAULT_HASHING,
         encoding: str = settings.DEFAULT_ENCODING,
-        extrapaths: List[str] = [],
-        compression: Optional[str] = None,
         innerpath: Optional[str] = None,
+        compression: Optional[str] = None,
+        extrapaths: List[str] = [],
         dialect: Optional[Union[Dialect, str]] = None,
         schema: Optional[Union[Schema, str]] = None,
         checklist: Optional[Union[Checklist, str]] = None,
         pipeline: Optional[Union[Pipeline, str]] = None,
         stats: Optional[dict] = None,
         # Extra
-        basepath: Optional[str] = None,
+        basepath: str = "",
         onerror: Literal["ignore", "warn", "raise"] = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
@@ -95,16 +95,16 @@ class Resource(Metadata2):
         self.format = format
         self.hashing = hashing
         self.encoding = encoding
-        self.extrapaths = extrapaths.copy()
-        self.compression = compression
         self.innerpath = innerpath
+        self.compression = compression
+        self.extrapaths = extrapaths.copy()
         # TODO: support dereferencing
         self.dialect = dialect  # type: ignore
         self.schema = schema  # type: ignore
         self.checklist = checklist  # type: ignore
         self.pipeline = pipeline  # type: ignore
         self.stats = stats
-        self.basepath = basepath or helpers.parse_basepath(descriptor)
+        self.basepath = basepath
         self.onerror = onerror
         self.trusted = trusted
         self.detector = detector or Detector()
@@ -121,13 +121,17 @@ class Resource(Metadata2):
         self.__row_stream = None
 
         # Detect resource
+        self.metadata_initiated = True
         self.detector.detect_resource(self)
 
     def __new__(cls, *args, **kwargs):
         # TODO: support source being a descriptor
         descriptor = kwargs.pop("descriptor", None)
         if descriptor:
-            return Resource.from_descriptor(descriptor)
+            resource = Resource.from_descriptor(descriptor)
+            if isinstance(descriptor, str):
+                resource.basepath = helpers.parse_basepath(descriptor)
+            return resource
         return super().__new__(cls)
 
     # TODO: maybe it's possible to do type narrowing here?
@@ -331,20 +335,34 @@ class Resource(Metadata2):
     @property
     def fullpath(self) -> Optional[str]:
         """Full path of the resource"""
-        if not self.memory:
+        if self.path:
             return helpers.join_path(self.basepath, self.path)
 
     # TODO: add asteriks for user/pass in url
     @property
     def place(self) -> str:
         """Stringified resource location"""
-        if self.memory:
+        if self.data:
             return "<memory>"
         elif self.innerpath:
             return f"{self.path}:{self.innerpath}"
         elif self.path:
             return self.path
         return ""
+
+    # TODO: support loading descriptor for intersection (with caching?)
+    @property
+    def entity(self) -> str:
+        """Return an entity name such as 'table' or 'package'"""
+        entity = "table"
+        for name, trait in settings.ENTITY_TRAITS:
+            if self.data and isinstance(self.data, dict):
+                if self.data.get(trait):
+                    entity = name
+            elif self.path:
+                if self.path.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
+                    entity = name
+        return entity
 
     @property
     def memory(self) -> bool:
