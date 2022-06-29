@@ -64,8 +64,9 @@ class Resource(Metadata2):
         format: str = settings.DEFAULT_FORMAT,
         hashing: str = settings.DEFAULT_HASHING,
         encoding: str = settings.DEFAULT_ENCODING,
-        innerpath: Optional[str] = None,
+        extrapaths: List[str] = [],
         compression: Optional[str] = None,
+        innerpath: Optional[str] = None,
         dialect: Optional[Union[Dialect, str]] = None,
         schema: Optional[Union[Schema, str]] = None,
         checklist: Optional[Union[Checklist, str]] = None,
@@ -94,6 +95,7 @@ class Resource(Metadata2):
         self.format = format
         self.hashing = hashing
         self.encoding = encoding
+        self.extrapaths = extrapaths.copy()
         self.compression = compression
         self.innerpath = innerpath
         # TODO: support dereferencing
@@ -231,16 +233,22 @@ class Resource(Metadata2):
     If not set, it'll be inferred from `source`.
     """
 
-    innerpath: Optional[str]
+    extrapaths: List[str]
     """
-    Path within the compressed file.
-    It defaults to the first file in the archive (if the source is an archive).
+    List of paths to concatenate to the main path.
+    It's used for multipart resources.
     """
 
     compression: Optional[str]
     """
     Source file compression (zip, ...).
     If not set, it'll be inferred from `source`.
+    """
+
+    innerpath: Optional[str]
+    """
+    Path within the compressed file.
+    It defaults to the first file in the archive (if the source is an archive).
     """
 
     dialect: Optional[Dialect]
@@ -311,51 +319,51 @@ class Resource(Metadata2):
     # Props
 
     @property
-    def description_html(self):
+    def description_html(self) -> str:
         """Description in HTML"""
         return helpers.md_to_html(self.description or "")
 
     @property
-    def description_text(self):
+    def description_text(self) -> str:
         """Description in Text"""
         return helpers.html_to_text(self.description_html or "")
 
     @property
-    def fullpath(self):
-        """
-        Returns
-            str: resource fullpath
-        """
-        return self.__file.fullpath
+    def fullpath(self) -> Optional[str]:
+        """Full path of the resource"""
+        if not self.memory:
+            return helpers.join_path(self.basepath, self.path)
 
     # TODO: add asteriks for user/pass in url
     @property
-    def place(self):
-        """Stringified resource location/source"""
+    def place(self) -> str:
+        """Stringified resource location"""
         if self.memory:
             return "<memory>"
-        if self.innerpath:
+        elif self.innerpath:
             return f"{self.path}:{self.innerpath}"
-        return self.path
+        elif self.path:
+            return self.path
+        return ""
 
     @property
-    def memory(self):
-        return self.__file.memory
+    def memory(self) -> bool:
+        """Whether resource is not path based"""
+        return bool(self.data)
 
     @property
-    def remote(self):
-        return self.__file.remote
+    def remote(self) -> bool:
+        """Whether resource is remote"""
+        return helpers.is_remote_path(self.basepath or self.path)
 
     @property
-    def multipart(self):
-        return self.__file.multipart
+    def multipart(self) -> bool:
+        """Whether resource is multipart"""
+        return not self.memory and bool(self.extrapaths)
 
     @property
-    def tabular(self):
-        """
-        Returns
-            bool: if resource is tabular
-        """
+    def tabular(self) -> bool:
+        """Whether resource is tabular"""
         if not self.closed:
             return bool(self.__parser)
         try:
