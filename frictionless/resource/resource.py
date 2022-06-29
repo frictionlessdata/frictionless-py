@@ -471,6 +471,24 @@ class Resource(Metadata2):
         """
         return self.__row_stream
 
+    # Infer
+
+    def infer(self, *, stats=False):
+        """Infer metadata
+
+        Parameters:
+            stats? (bool): stream file completely and infer stats
+        """
+        if not self.closed:
+            note = "Resource.infer canot be used on a open resource"
+            raise FrictionlessException(errors.ResourceError(note=note))
+        with self:
+            if not stats:
+                self.stats = {}
+                return
+            stream = self.row_stream or self.byte_stream
+            helpers.pass_through(stream)
+
     # Open/Close
 
     def open(self):
@@ -484,9 +502,7 @@ class Resource(Metadata2):
             if self.tabular:
                 self.__parser = system.create_parser(self)
                 self.__parser.open()
-                self.__read_detect_dialect()
-                self.__read_detect_schema()
-                self.__read_detect_lookup()
+                self.__read_details()
                 self.__header = self.__read_header()
                 self.__row_stream = self.__read_row_stream()
                 return self
@@ -519,24 +535,6 @@ class Resource(Metadata2):
             bool: if closed
         """
         return self.__parser is None and self.__loader is None
-
-    # Infer
-
-    def infer(self, *, stats=False):
-        """Infer metadata
-
-        Parameters:
-            stats? (bool): stream file completely and infer stats
-        """
-        if not self.closed:
-            note = "Resource.infer canot be used on a open resource"
-            raise FrictionlessException(errors.ResourceError(note=note))
-        with self:
-            if not stats:
-                self.pop("stats", None)
-                return
-            stream = self.row_stream or self.byte_stream
-            helpers.pass_through(stream)
 
     # Read
 
@@ -602,6 +600,54 @@ class Resource(Metadata2):
                 if size and len(rows) >= size:
                     break
             return rows
+
+    # TODO: review how to name / where to place this method
+    def __read_details(self):
+
+        # Sample
+        sample = self.__parser.sample  # type: ignore
+        dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
+        if dialect:
+            self.dialect = dialect
+        self.__sample = sample
+
+        # Schema
+        labels = self.dialect.read_labels(self.sample)
+        fragment = self.dialect.read_fragment(self.sample)
+        schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
+        if schema:
+            self.schema = schema
+        self.__labels = labels
+        self.__fragment = fragment
+        self.stats["fields"] = len(schema.fields)
+        # NOTE: review whether it's a proper place for this fallback to data resource
+        if not schema:
+            self.profile = "data-resource"
+
+        # Lookup
+        lookup = self.detector.detect_lookup(self)
+        if lookup:
+            self.__lookup = lookup
+
+    def __read_header(self):
+
+        # Create header
+        header = Header(
+            self.__labels,
+            fields=self.schema.fields,
+            row_numbers=self.dialect.header_rows,
+            ignore_case=not self.dialect.header_case,
+        )
+
+        # Handle errors
+        if not header.valid:
+            error = header.errors[0]
+            if self.onerror == "warn":
+                warnings.warn(error.message, UserWarning)
+            elif self.onerror == "raise":
+                raise FrictionlessException(error)
+
+        return header
 
     def __read_row_stream(self):
 
@@ -721,51 +767,6 @@ class Resource(Metadata2):
 
         # Return row stream
         return row_stream()
-
-    def __read_header(self):
-
-        # Create header
-        header = Header(
-            self.__labels,
-            fields=self.schema.fields,
-            row_numbers=self.dialect.header_rows,
-            ignore_case=not self.dialect.header_case,
-        )
-
-        # Handle errors
-        if not header.valid:
-            error = header.errors[0]
-            if self.onerror == "warn":
-                warnings.warn(error.message, UserWarning)
-            elif self.onerror == "raise":
-                raise FrictionlessException(error)
-
-        return header
-
-    def __read_detect_dialect(self):
-        sample = self.__parser.sample
-        dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
-        if dialect:
-            self.dialect = dialect
-        self.__sample = sample
-
-    def __read_detect_schema(self):
-        labels = self.dialect.read_labels(self.sample)
-        fragment = self.dialect.read_fragment(self.sample)
-        schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
-        if schema:
-            self.schema = schema
-        self.__labels = labels
-        self.__fragment = fragment
-        self.stats["fields"] = len(schema.fields)
-        # NOTE: review whether it's a proper place for this fallback to data resource
-        if not schema:
-            self.profile = "data-resource"
-
-    def __read_detect_lookup(self):
-        lookup = self.detector.detect_lookup(self)
-        if lookup:
-            self.__lookup = lookup
 
     # Write
 

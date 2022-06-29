@@ -29,6 +29,7 @@ class CsvParser(Parser):
             config = csv.Sniffer().sniff("".join(sample), delimiter)
         except csv.Error:
             config = csv.excel()
+        # TODO: set only if it differs from default?
         control.set_not_defined("delimiter", config.delimiter)
         control.set_not_defined("line_terminator", config.lineterminator)
         control.set_not_defined("escape_char", config.escapechar)
