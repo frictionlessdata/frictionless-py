@@ -34,7 +34,6 @@ class Metaclass(type):
             obj = cls.__create__(*args, **kwargs)  # type: ignore
         if obj == None:
             obj = type.__call__(cls, *args, **kwargs)
-        obj.metadata_assigned.update(kwargs.keys())
         obj.metadata_initiated = True
         return obj
 
@@ -42,8 +41,9 @@ class Metaclass(type):
 class Metadata2(metaclass=Metaclass):
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
-        obj.metadata_assigned = cls.metadata_assigned.copy()
         obj.metadata_defaults = cls.metadata_defaults.copy()
+        obj.metadata_assigned = cls.metadata_assigned.copy()
+        obj.metadata_assigned.update(kwargs.keys())
         return obj
 
     def __setattr__(self, name, value):
@@ -95,9 +95,9 @@ class Metadata2(metaclass=Metaclass):
     # Convert
 
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptor):
+    def from_descriptor(cls, descriptor: IDescriptor, **options):
         """Import metadata from a descriptor"""
-        return cls.metadata_import(descriptor)
+        return cls.metadata_import(descriptor, **options)
 
     def to_descriptor(self) -> IPlainDescriptor:
         """Export metadata as a plain descriptor"""
@@ -235,9 +235,8 @@ class Metadata2(metaclass=Metaclass):
         yield from []
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor):
+    def metadata_import(cls, descriptor: IDescriptor, **options):
         """Import metadata from a descriptor source"""
-        target = {}
         source = cls.metadata_normalize(descriptor)
         for name, Type in cls.metadata_properties().items():
             value = source.get(name)
@@ -251,8 +250,8 @@ class Metadata2(metaclass=Metaclass):
                     value = [Type.from_descriptor(item) for item in value]
                 else:
                     value = Type.from_descriptor(value)
-            target[stringcase.snakecase(name)] = value
-        return cls(**target)  # type: ignore
+            options[stringcase.snakecase(name)] = value
+        return cls(**options)  # type: ignore
 
     def metadata_export(self) -> IPlainDescriptor:
         """Export metadata as a descriptor"""

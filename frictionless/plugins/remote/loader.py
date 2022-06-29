@@ -6,13 +6,7 @@ from ...loader import Loader
 
 
 class RemoteLoader(Loader):
-    """Remote loader implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.remote import RemoteLoader`
-
-    """
+    """Remote loader implementation."""
 
     remote = True
 

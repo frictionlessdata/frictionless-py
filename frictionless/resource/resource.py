@@ -124,13 +124,10 @@ class Resource(Metadata2):
         self.detector.detect_resource(self)
 
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, *args, **kwargs):
+    def __create__(cls, source: Optional[Any] = None, **options):
         entity = cls.metadata_detect(source)
         if entity == "resource":
-            resource = Resource.from_descriptor(source)  # type: ignore
-            if isinstance(source, str):
-                resource.basepath = helpers.parse_basepath(source)
-            return resource
+            return Resource.from_descriptor(source, **options)  # type: ignore
 
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -784,6 +781,12 @@ class Resource(Metadata2):
         return target
 
     # Convert
+
+    @classmethod
+    def from_descriptor(cls, descriptor, **options):
+        if isinstance(descriptor, str):
+            options["basepath"] = helpers.parse_basepath(descriptor)
+        return super().from_descriptor(descriptor, **options)
 
     def to_dict(self):
         """Create a dict from the resource

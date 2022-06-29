@@ -124,7 +124,7 @@ class Detector(Metadata2):
 
     # Detect
 
-    # TODO: review this logic (originally from File in v4)
+    # TODO: added plugin hooks into the loop
     def detect_resource(self, resource: Resource) -> None:
         """Detect resource's file details
 
@@ -152,15 +152,15 @@ class Detector(Metadata2):
         format = None
         innerpath = None
         compression = None
-        if resource.path:
-            path = resource.path
-            scheme, format = helpers.parse_scheme_and_format(path)
+        if resource.fullpath:
+            fullpath = resource.fullpath
+            scheme, format = helpers.parse_scheme_and_format(fullpath)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
-                path = path[: -len(format) - 1]
+                fullpath = fullpath[: -len(format) - 1]
                 if resource.innerpath:
-                    path = os.path.join(path, resource.innerpath)
-                scheme, format = helpers.parse_scheme_and_format(path)
+                    fullpath = os.path.join(fullpath, resource.innerpath)
+                scheme, format = helpers.parse_scheme_and_format(fullpath)
                 if format:
                     name = os.path.splitext(name)[0]
 
@@ -214,6 +214,7 @@ class Detector(Metadata2):
 
         return encoding
 
+    # TODO: added plugin hooks into the loop
     def detect_dialect(self, sample, *, dialect: Optional[Dialect] = None) -> Dialect:
         """Detect dialect from sample
 

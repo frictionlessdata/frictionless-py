@@ -220,6 +220,16 @@
         "{\n  \"licenses\": [\n    {\n      \"name\": \"odc-pddl-1.0\",\n      \"path\": \"http://opendatacommons.org/licenses/pddl/\",\n      \"title\": \"Open Data Commons Public Domain Dedication and License v1.0\"\n    }\n  ]\n}\n"
       ]
     },
+    "scheme": {
+      "propertyOrder": 75,
+      "title": "Scheme",
+      "description": "The file scheme of this resource.",
+      "context": "`file`, `http` are examples of common formats.",
+      "type": "string",
+      "examples": [
+        "{\n  \"scheme\": \"http\"\n}\n"
+      ]
+    },
     "format": {
       "propertyOrder": 80,
       "title": "Format",
