@@ -13,6 +13,7 @@ from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING, Iterator, Optional, Union, List, Dict, Any, Set
 from .exception import FrictionlessException
+from . import settings
 from . import helpers
 
 if TYPE_CHECKING:
@@ -187,6 +188,20 @@ class Metadata2(metaclass=Metaclass):
             for name in cls.metadata_profile.get("properties", []):
                 properties[name] = Types.get(name)
         return properties
+
+    # TODO: support loading descriptor for detection
+    @staticmethod
+    def metadata_detect(source) -> Optional[str]:
+        """Return an entity name such as 'resource' or 'package'"""
+        entity = None
+        for name, trait in settings.ENTITY_TRAITS.items():
+            if isinstance(source, dict):
+                if set(trait).intersection(source.keys()):
+                    entity = name
+            elif isinstance(source, str):
+                if source.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
+                    entity = name
+        return entity
 
     # TODO: automate metadata_validate of the children using metadata_properties!!!
     def metadata_validate(self) -> Iterator[Error]:

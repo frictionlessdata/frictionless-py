@@ -87,19 +87,20 @@ DEFAULT_FIELD_CANDIDATES = [
 # Entities
 
 ENTITY_TRAITS = {
-    "package": "resources",
-    "dialect": "controls",
-    "schema": "fields",
-    "checklist": "checks",
-    "pipeline": "steps",
-    "report": "erorrs",
-    "inquiry": "tasks",
-    "detector": "sampleSize",
+    "package": ["resources"],
+    "resource": ["path", "data"],
+    "dialect": ["controls"],
+    "schema": ["fields"],
+    "checklist": ["checks"],
+    "pipeline": ["steps"],
+    "report": ["erorrs"],
+    "inquiry": ["tasks"],
+    "detector": ["bufferSize", "sampleSize"],
 }
 
 # Backports
 
-
+# TODO: drop for v5
 # It can be removed after dropping support for Python 3.6 and Python 3.7
 COMPRESSION_EXCEPTIONS = (
     (zipfile.BadZipFile, gzip.BadGzipFile)

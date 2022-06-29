@@ -49,7 +49,6 @@ class Resource(Metadata2):
         self,
         source: Optional[Any] = None,
         *,
-        descriptor: Optional[Any] = None,
         # Spec
         name: Optional[str] = None,
         title: Optional[str] = None,
@@ -124,13 +123,12 @@ class Resource(Metadata2):
         self.metadata_initiated = True
         self.detector.detect_resource(self)
 
-    def __new__(cls, *args, **kwargs):
-        # TODO: support source being a descriptor
-        descriptor = kwargs.pop("descriptor", None)
-        if descriptor:
-            resource = Resource.from_descriptor(descriptor)
-            if isinstance(descriptor, str):
-                resource.basepath = helpers.parse_basepath(descriptor)
+    def __new__(cls, source: Optional[Any] = None, *args, **kwargs):
+        entity = cls.metadata_detect(source)
+        if entity == "resource":
+            resource = Resource.from_descriptor(source)  # type: ignore
+            if isinstance(source, str):
+                resource.basepath = helpers.parse_basepath(source)
             return resource
         return super().__new__(cls)
 
@@ -349,20 +347,6 @@ class Resource(Metadata2):
         elif self.path:
             return self.path
         return ""
-
-    # TODO: support loading descriptor for intersection (with caching?)
-    @property
-    def entity(self) -> str:
-        """Return an entity name such as 'table' or 'package'"""
-        entity = "table"
-        for name, trait in settings.ENTITY_TRAITS:
-            if self.data and isinstance(self.data, dict):
-                if self.data.get(trait):
-                    entity = name
-            elif self.path:
-                if self.path.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
-                    entity = name
-        return entity
 
     @property
     def memory(self) -> bool:
