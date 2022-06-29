@@ -123,14 +123,14 @@ class Resource(Metadata2):
         self.metadata_initiated = True
         self.detector.detect_resource(self)
 
-    def __new__(cls, source: Optional[Any] = None, *args, **kwargs):
+    @classmethod
+    def __create__(cls, source: Optional[Any] = None, *args, **kwargs):
         entity = cls.metadata_detect(source)
         if entity == "resource":
             resource = Resource.from_descriptor(source)  # type: ignore
             if isinstance(source, str):
                 resource.basepath = helpers.parse_basepath(source)
             return resource
-        return super().__new__(cls)
 
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -908,13 +908,21 @@ class Resource(Metadata2):
 
     # Metadata
 
-    metadata_duplicate = True
     metadata_Error = errors.ResourceError
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["pipeline"] = {"type": ["string", "object"]}
+
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(
+            dialect=Dialect,
+            schema=Schema,
+            checklist=Checklist,
+            pipeline=Pipeline,
+        )
 
     def metadata_validate(self):
         # Check invalid properties

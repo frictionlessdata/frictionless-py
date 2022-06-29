@@ -24,11 +24,16 @@ if TYPE_CHECKING:
 # NOTE: review and clean this class
 # NOTE: can we generate metadata_profile from dataclasses?
 # NOTE: insert __init__ params docs using instance properties data?
+# TODO: can we call __post__init__ automatically? (post-init general hook)
 
 
 class Metaclass(type):
     def __call__(cls, *args, **kwargs):
-        obj = type.__call__(cls, *args, **kwargs)
+        obj = None
+        if hasattr(cls, "__create__"):
+            obj = cls.__create__(*args, **kwargs)  # type: ignore
+        if obj == None:
+            obj = type.__call__(cls, *args, **kwargs)
         obj.metadata_assigned.update(kwargs.keys())
         obj.metadata_initiated = True
         return obj
@@ -42,10 +47,10 @@ class Metadata2(metaclass=Metaclass):
         return obj
 
     def __setattr__(self, name, value):
-        if self.metadata_initiated:
-            self.metadata_assigned.add(name)
-        elif isinstance(value, (list, dict)):
-            if not name.startswith("metadata_"):
+        if not name.startswith("metadata_"):
+            if self.metadata_initiated:
+                self.metadata_assigned.add(name)
+            elif isinstance(value, (list, dict)):
                 self.metadata_defaults[name] = value.copy()
         super().__setattr__(name, value)
 
@@ -166,9 +171,9 @@ class Metadata2(metaclass=Metaclass):
     # TODO: add/improve types
     metadata_Error = None
     metadata_profile = None
+    metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
-    metadata_initiated: bool = False
 
     @property
     def metadata_valid(self) -> bool:
