@@ -811,11 +811,11 @@ class Resource(Metadata2):
         return Resource(
             descriptor,
             data=self.data,
-            basepath=self.__basepath,
-            detector=self.__detector,
-            onerror=self.__onerror,
-            trusted=self.__trusted,
-            package=self.__package,
+            basepath=self.basepath,
+            onerror=self.onerror,
+            trusted=self.trusted,
+            detector=self.detector,
+            package=self.package,
             **options,
         )
 

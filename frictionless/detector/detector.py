@@ -132,7 +132,11 @@ class Detector(Metadata2):
         """
 
         # Handle source
-        # TODO: implement
+        if resource.source is not None:
+            if isinstance(resource.source, str):
+                resource.path = resource.source
+            else:
+                resource.data = resource.source
         if not resource.path and not resource.data:
             return
 
@@ -148,8 +152,8 @@ class Detector(Metadata2):
             name = name or "name"
 
         # Detect details
-        scheme = None
-        format = None
+        scheme = ""
+        format = ""
         innerpath = None
         compression = None
         if resource.fullpath:
@@ -164,7 +168,7 @@ class Detector(Metadata2):
                 if format:
                     name = os.path.splitext(name)[0]
 
-        # Set detected
+        # Apply detected
         resource.set_not_defined("name", name)
         resource.set_not_defined("scheme", scheme)
         resource.set_not_defined("format", format)
