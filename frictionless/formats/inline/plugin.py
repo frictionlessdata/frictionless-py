@@ -15,15 +15,14 @@ class InlinePlugin(Plugin):
         if descriptor.get("code") == "inline":
             return InlineControl.from_descriptor(descriptor)
 
-    def create_file(self, file):
-        if not file.scheme and not file.format and file.memory:
-            if not hasattr(file.data, "read"):
-                types = (list, typing.Iterator, typing.Generator)
-                if callable(file.data) or isinstance(file.data, types):
-                    file.scheme = ""
-                    file.format = "inline"
-                    return file
-
     def create_parser(self, resource):
         if resource.format == "inline":
             return InlineParser(resource)
+
+    def detect_resource(self, resource):
+        if not resource.scheme and not resource.format and resource.memory:
+            if not hasattr(resource.data, "read"):
+                types = (list, typing.Iterator, typing.Generator)
+                if callable(resource.data) or isinstance(resource.data, types):
+                    resource.scheme = ""
+                    resource.format = "inline"

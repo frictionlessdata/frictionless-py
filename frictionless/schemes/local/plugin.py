@@ -4,13 +4,7 @@ from .loader import LocalLoader
 
 
 class LocalPlugin(Plugin):
-    """Plugin for Local Data
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.local import LocalPlugin`
-
-    """
+    """Plugin for Local Data"""
 
     code = "local"
 

@@ -4,6 +4,7 @@ import io
 import re
 import json
 import yaml
+import glob
 import jinja2
 import pprint
 import jsonschema
@@ -212,6 +213,8 @@ class Metadata(metaclass=Metaclass):
             elif isinstance(source, str):
                 if source.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
                     entity = name
+        if helpers.is_expandable_path(source):
+            entity = "package"
         return entity
 
     # TODO: automate metadata_validate of the children using metadata_properties!!!

@@ -14,20 +14,12 @@ class BigqueryPlugin(Plugin):
     """Plugin for BigQuery"""
 
     code = "bigquery"
-    status = "experimental"
 
     # Hooks
 
     def create_control(self, descriptor):
         if descriptor.get("code") == "bigquery":
             return BigqueryControl.from_descriptor(descriptor)
-
-    def create_file(self, file):
-        if not file.scheme and not file.format and file.memory:
-            if helpers.is_type(file.data, "Resource"):
-                file.scheme = ""
-                file.format = "bigquery"
-                return file
 
     def create_parser(self, resource):
         if resource.format == "bigquery":
@@ -36,3 +28,9 @@ class BigqueryPlugin(Plugin):
     def create_storage(self, name, source, **options):
         if name == "bigquery":
             return BigqueryStorage(source, **options)
+
+    def detect_resource(self, resource):
+        if not resource.scheme and not resource.format and resource.memory:
+            if helpers.is_type(resource.data, "Resource"):
+                resource.scheme = ""
+                resource.format = "bigquery"

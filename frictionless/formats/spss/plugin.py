@@ -7,7 +7,6 @@ class SpssPlugin(Plugin):
     """Plugin for SPSS"""
 
     code = "spss"
-    status = "experimental"
 
     # Hooks
 

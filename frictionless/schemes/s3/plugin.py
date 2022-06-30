@@ -7,7 +7,6 @@ class S3Plugin(Plugin):
     """Plugin for S3"""
 
     code = "s3"
-    status = "experimental"
 
     # Hooks
 

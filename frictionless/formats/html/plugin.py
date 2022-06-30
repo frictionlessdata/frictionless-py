@@ -7,7 +7,6 @@ class HtmlPlugin(Plugin):
     """Plugin for HTML"""
 
     code = "html"
-    status = "experimental"
 
     # Hooks
 

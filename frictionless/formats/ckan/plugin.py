@@ -11,7 +11,6 @@ class CkanPlugin(Plugin):
     """Plugin for CKAN"""
 
     code = "ckan"
-    status = "experimental"
 
     # Hooks
 

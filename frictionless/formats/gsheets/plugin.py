@@ -7,7 +7,6 @@ class GsheetsPlugin(Plugin):
     """Plugin for Google Sheets"""
 
     code = "gsheet"
-    status = "experimental"
 
     # Hooks
 
@@ -15,17 +14,16 @@ class GsheetsPlugin(Plugin):
         if descriptor.get("code") == "gsheets":
             return GsheetsControl.from_descriptor(descriptor)
 
-    def create_file(self, file):
-        if not file.memory:
-            if "docs.google.com/spreadsheets" in file.path:
-                if "export" not in file.path and "pub" not in file.path:
-                    file.scheme = ""
-                    file.format = "gsheets"
-                elif "csv" in file.path:
-                    file.scheme = "https"
-                    file.format = "csv"
-                return file
-
     def create_parser(self, resource):
         if resource.format == "gsheets":
             return GsheetsParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.path:
+            if "docs.google.com/spreadsheets" in resource.path:
+                if "export" not in resource.path and "pub" not in resource.path:
+                    resource.scheme = ""
+                    resource.format = "gsheets"
+                elif "csv" in resource.path:
+                    resource.scheme = "https"
+                    resource.format = "csv"

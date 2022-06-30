@@ -14,13 +14,12 @@ class StreamPlugin(Plugin):
         if descriptor.get("code") == "stream":
             return StreamControl.from_descriptor(descriptor)
 
-    def create_file(self, file):
-        if not file.scheme and not file.format:
-            if hasattr(file.data, "read"):
-                file.scheme = "stream"
-                file.format = ""
-                return file
-
     def create_loader(self, resource):
         if resource.scheme == "stream":
             return StreamLoader(resource)
+
+    def detect_resource(self, resource):
+        if not resource.scheme and not resource.format:
+            if hasattr(resource.data, "read"):
+                resource.scheme = "stream"
+                resource.format = ""

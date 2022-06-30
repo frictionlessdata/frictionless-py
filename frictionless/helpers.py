@@ -225,13 +225,12 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
-def is_expandable_path(path, basepath):
-    if not isinstance(path, str):
+def is_expandable_path(source):
+    if not isinstance(source, str):
         return False
-    if is_remote_path(path):
+    if is_remote_path(source):
         return False
-    fullpath = os.path.join(basepath, path)
-    return glob.has_magic(fullpath) or os.path.isdir(fullpath)
+    return glob.has_magic(source) or os.path.isdir(source)
 
 
 def is_zip_descriptor(descriptor):

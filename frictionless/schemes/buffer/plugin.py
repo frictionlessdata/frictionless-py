@@ -4,13 +4,7 @@ from .loader import BufferLoader
 
 
 class BufferPlugin(Plugin):
-    """Plugin for Buffer Data
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.local import BufferPlugin`
-
-    """
+    """Plugin for Buffer Data"""
 
     code = "buffer"
 
@@ -20,13 +14,12 @@ class BufferPlugin(Plugin):
         if descriptor.get("code") == "buffer":
             return BufferControl.from_descriptor(descriptor)
 
-    def create_file(self, file):
-        if not file.scheme and not file.format:
-            if isinstance(file.data, bytes):
-                file.scheme = "buffer"
-                file.format = ""
-                return file
-
     def create_loader(self, resource):
         if resource.scheme == "buffer":
             return BufferLoader(resource)
+
+    def detect_resource(self, resource):
+        if not resource.scheme and not resource.format:
+            if isinstance(resource.data, bytes):
+                resource.scheme = "buffer"
+                resource.format = ""

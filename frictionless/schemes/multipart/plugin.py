@@ -7,7 +7,6 @@ class MultipartPlugin(Plugin):
     """Plugin for Multipart Data"""
 
     code = "multipart"
-    status = "experimental"
 
     # Hooks
 
@@ -15,11 +14,10 @@ class MultipartPlugin(Plugin):
         if descriptor.get("code") == "multipart":
             return MultipartControl.from_descriptor(descriptor)
 
-    def create_file(self, file):
-        if file.multipart:
-            file.scheme = "multipart"
-            return file
-
     def create_loader(self, resource):
         if resource.scheme == "multipart":
             return MultipartLoader(resource)
+
+    def detect_resource(self, resource):
+        if resource.multipart:
+            resource.scheme = "multipart"

@@ -13,20 +13,12 @@ class SqlPlugin(Plugin):
     """Plugin for SQL"""
 
     code = "sql"
-    status = "experimental"
 
     # Hooks
 
     def create_control(self, descriptor):
         if descriptor.get("code") == "sql":
             return SqlControl.from_descriptor(descriptor)
-
-    def create_file(self, file):
-        for prefix in settings.SCHEME_PREFIXES:
-            if file.scheme.startswith(prefix):
-                file.scheme = ""
-                file.format = "sql"
-                return file
 
     def create_parser(self, resource):
         if resource.format == "sql":
@@ -35,3 +27,9 @@ class SqlPlugin(Plugin):
     def create_storage(self, name, source, **options):
         if name == "sql":
             return SqlStorage(source, **options)
+
+    def detect_resource(self, resource):
+        for prefix in settings.SCHEME_PREFIXES:
+            if resource.scheme.startswith(prefix):
+                resource.scheme = ""
+                resource.format = "sql"

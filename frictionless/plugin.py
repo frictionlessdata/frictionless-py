@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any
 
 if TYPE_CHECKING:
-    from .resource import Loader, Parser
+    from .resource import Resource, Loader, Parser
     from .package import Storage
     from .checklist import Check
     from .dialect import Control
@@ -23,7 +23,6 @@ class Plugin:
     """
 
     code = "plugin"
-    status = "stable"
 
     # Hooks
 
@@ -122,5 +121,14 @@ class Plugin:
 
         Returns:
             Storage: storage
+        """
+        pass
+
+    def detect_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
         """
         pass

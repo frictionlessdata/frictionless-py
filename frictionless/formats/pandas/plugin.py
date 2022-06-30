@@ -13,7 +13,6 @@ class PandasPlugin(Plugin):
     """Plugin for Pandas"""
 
     code = "pandas"
-    status = "experimental"
 
     # Hooks
 
@@ -21,13 +20,12 @@ class PandasPlugin(Plugin):
         if descriptor.get("code") == "pandas":
             return PandasControl.from_descriptor(descriptor)
 
-    def create_file(self, file):
-        if not file.scheme and not file.format and file.memory:
-            if helpers.is_type(file.data, "DataFrame"):
-                file.scheme = ""
-                file.format = "pandas"
-                return file
-
     def create_parser(self, resource):
         if resource.format == "pandas":
             return PandasParser(resource)
+
+    def detect_resource(self, resource):
+        if not resource.scheme and not resource.format and resource.memory:
+            if helpers.is_type(resource.data, "DataFrame"):
+                resource.scheme = ""
+                resource.format = "pandas"

@@ -35,9 +35,59 @@ class System:
 
     """
 
+    supported_hooks = [
+        "create_check",
+        "create_control",
+        "create_error",
+        "create_field",
+        "create_field_candidates",
+        "create_loader",
+        "create_parser",
+        "create_step",
+        "create_storage",
+        "detect_resource",
+    ]
+
     def __init__(self):
         self.__dynamic_plugins = OrderedDict()
         self.__http_session = None
+
+    # Props
+
+    @cached_property
+    def methods(self) -> Dict[str, Any]:
+        methods = {}
+        for action in self.supported_hooks:
+            methods[action] = OrderedDict()
+            for name, plugin in self.plugins.items():
+                if action in vars(type(plugin)):
+                    func = getattr(plugin, action, None)
+                    methods[action][name] = func
+        return methods
+
+    @cached_property
+    def plugins(self) -> OrderedDict[str, Plugin]:
+        modules = OrderedDict()
+        for item in pkgutil.iter_modules():
+            if item.name.startswith("frictionless_"):
+                module = import_module(item.name)
+                modules[item.name.replace("frictionless_", "")] = module
+        for group in ["schemes", "formats"]:
+            module = import_module(f"frictionless.{group}")
+            if module.__file__:
+                path = os.path.dirname(module.__file__)
+                for _, name, _ in pkgutil.iter_modules([path]):
+                    module = import_module(f"frictionless.{group}.{name}")
+                    modules[name] = module
+        plugins = OrderedDict(self.__dynamic_plugins)
+        for name, module in modules.items():
+            Plugin = getattr(module, f"{name.capitalize()}Plugin", None)
+            if Plugin:
+                plugin = Plugin()
+                plugins[name] = plugin
+        return plugins
+
+    # Register/Deregister
 
     def register(self, name, plugin):
         """Register a plugin
@@ -63,19 +113,6 @@ class System:
             del self.__dict__["methods"]
 
     # Hooks
-
-    hooks = [
-        "create_check",
-        "create_control",
-        "create_error",
-        "create_field",
-        "create_field_candidates",
-        "create_file",
-        "create_loader",
-        "create_parser",
-        "create_step",
-        "create_storage",
-    ]
 
     def create_check(self, descriptor: dict) -> Check:
         """Create check
@@ -239,6 +276,18 @@ class System:
         note = f'storage "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(note)
 
+    # TODO: consider adding more detection hooks
+
+    def detect_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        for func in self.methods["detect_resource"].values():
+            func(resource)
+
     # Requests
 
     def get_http_session(self):
@@ -274,43 +323,6 @@ class System:
         self.__http_session = http_session or self.get_http_session()
         yield self.__http_session
         self.__http_session = None
-
-    # Methods
-
-    @cached_property
-    def methods(self) -> Dict[str, Any]:
-        methods = {}
-        for action in self.hooks:
-            methods[action] = OrderedDict()
-            for name, plugin in self.plugins.items():
-                if action in vars(type(plugin)):
-                    func = getattr(plugin, action, None)
-                    methods[action][name] = func
-        return methods
-
-    # Plugins
-
-    @cached_property
-    def plugins(self) -> OrderedDict[str, Plugin]:
-        modules = OrderedDict()
-        for item in pkgutil.iter_modules():
-            if item.name.startswith("frictionless_"):
-                module = import_module(item.name)
-                modules[item.name.replace("frictionless_", "")] = module
-        for group in ["schemes", "formats"]:
-            module = import_module(f"frictionless.{group}")
-            if module.__file__:
-                path = os.path.dirname(module.__file__)
-                for _, name, _ in pkgutil.iter_modules([path]):
-                    module = import_module(f"frictionless.{group}.{name}")
-                    modules[name] = module
-        plugins = OrderedDict(self.__dynamic_plugins)
-        for name, module in modules.items():
-            Plugin = getattr(module, f"{name.capitalize()}Plugin", None)
-            if Plugin:
-                plugin = Plugin()
-                plugins[name] = plugin
-        return plugins
 
 
 system = System()
