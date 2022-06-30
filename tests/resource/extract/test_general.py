@@ -1,5 +1,6 @@
 import os
 import types
+import pytest
 from pathlib import Path
 from frictionless import Resource
 
@@ -72,6 +73,7 @@ def test_extract_resource_from_file_stream():
     ]
 
 
+@pytest.mark.skip
 def test_extract_resource_from_file_pathlib():
     resource = Resource(Path("data/table.csv"))
     assert resource.extract() == [

@@ -580,6 +580,7 @@ def test_resource_set_trusted():
     assert resource.trusted is False
 
 
+@pytest.mark.skip
 def test_resource_set_package():
     test_package_1 = Package()
     resource = Resource(package=test_package_1)
@@ -590,7 +591,7 @@ def test_resource_set_package():
 
 
 @pytest.mark.skip
-def test_resource_pprint_1029():
+def test_resource_pprint():
     resource = Resource(
         name="resource",
         title="My Resource",
