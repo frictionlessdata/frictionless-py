@@ -52,8 +52,8 @@ def test_resource_compression_local_csv_zip_multiple_open():
 
 def test_resource_compression_local_csv_gz():
     with Resource("data/table.csv.gz") as resource:
-        assert resource.innerpath == ""
         assert resource.compression == "gz"
+        assert resource.innerpath == None
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

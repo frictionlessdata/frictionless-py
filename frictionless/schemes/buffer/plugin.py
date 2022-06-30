@@ -19,7 +19,5 @@ class BufferPlugin(Plugin):
             return BufferLoader(resource)
 
     def detect_resource(self, resource):
-        if not resource.scheme and not resource.format:
-            if isinstance(resource.data, bytes):
-                resource.scheme = "buffer"
-                resource.format = ""
+        if isinstance(resource.data, bytes):
+            resource.scheme = "buffer"

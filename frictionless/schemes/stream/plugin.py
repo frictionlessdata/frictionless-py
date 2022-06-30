@@ -4,7 +4,7 @@ from .loader import StreamLoader
 
 
 class StreamPlugin(Plugin):
-    """Plugin for Local Data"""
+    """Plugin for Stream Data"""
 
     code = "stream"
 
@@ -19,7 +19,5 @@ class StreamPlugin(Plugin):
             return StreamLoader(resource)
 
     def detect_resource(self, resource):
-        if not resource.scheme and not resource.format:
-            if hasattr(resource.data, "read"):
-                resource.scheme = "stream"
-                resource.format = ""
+        if hasattr(resource.data, "read"):
+            resource.scheme = "stream"
