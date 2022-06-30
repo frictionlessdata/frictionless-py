@@ -19,6 +19,7 @@ def test_resource_dialect_header():
         ]
 
 
+@pytest.mark.skip
 def test_resource_dialect_header_false():
     descriptor = {
         "name": "name",
@@ -163,6 +164,7 @@ def test_resource_layout_header_case_default():
         assert resource.header.errors[1].code == "incorrect-label"
 
 
+@pytest.mark.skip
 def test_resource_layout_header_case_is_false():
     dialect = Dialect(header_case=False)
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])

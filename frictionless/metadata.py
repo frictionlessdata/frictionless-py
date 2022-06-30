@@ -60,7 +60,7 @@ class Metadata(metaclass=Metaclass):
     def __repr__(self) -> str:
         return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
-    # Properties
+    # Defined
 
     def list_defined(self):
         defined = list(self.metadata_assigned)
@@ -95,15 +95,6 @@ class Metadata(metaclass=Metaclass):
 
     # Convert
 
-    @classmethod
-    def from_descriptor(cls, descriptor: IDescriptor, **options):
-        """Import metadata from a descriptor"""
-        return cls.metadata_import(descriptor, **options)
-
-    def to_descriptor(self) -> IPlainDescriptor:
-        """Export metadata as a plain descriptor"""
-        return self.metadata_export()
-
     # TODO: review
     def to_copy(self):
         """Create a copy of the metadata"""
@@ -112,6 +103,17 @@ class Metadata(metaclass=Metaclass):
     def to_dict(self) -> Dict[str, Any]:
         """Convert metadata to a plain dict"""
         return self.metadata_export()
+
+    # TODO: merge with metadata_import?
+    @classmethod
+    def from_descriptor(cls, descriptor: IDescriptor, **options):
+        """Import metadata from a descriptor"""
+        return cls.metadata_import(descriptor, **options)
+
+    # TODO: merge with metadata_export?
+    def to_descriptor(self, *, exclude: List[str] = []) -> IPlainDescriptor:
+        """Export metadata as a plain descriptor"""
+        return self.metadata_export(exclude=exclude)
 
     def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
@@ -256,12 +258,14 @@ class Metadata(metaclass=Metaclass):
             options[stringcase.snakecase(name)] = value
         return cls(**options)  # type: ignore
 
-    def metadata_export(self) -> IPlainDescriptor:
+    def metadata_export(self, *, exclude: List[str] = []) -> IPlainDescriptor:
         """Export metadata as a descriptor"""
         descriptor = {}
         for name, Type in self.metadata_properties().items():
             value = getattr(self, stringcase.snakecase(name), None)
             if value is None:
+                continue
+            if name in exclude:
                 continue
             # TODO: rebase on "type" only?
             if name not in ["code", "type"]:

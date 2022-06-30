@@ -22,17 +22,17 @@ class Error(Metadata):
     template: str = field(init=False, default="{note}")
     description: str = field(init=False, default="Error")
 
+    def __post_init__(self):
+        descriptor = self.to_descriptor(exclude=["message"])
+        self.message = helpers.safe_format(self.template, descriptor)
+
     # State
 
     note: str
     """TODO: add docs"""
 
-    # Props
-
-    @property
-    def message(self) -> str:
-        """Error message"""
-        return helpers.safe_format(self.template, self)
+    message: str = field(init=False)
+    """TODO: add docs"""
 
     # Convert
 
