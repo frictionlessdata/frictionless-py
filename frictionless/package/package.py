@@ -21,6 +21,7 @@ from .. import helpers
 from .. import errors
 
 
+# TODO: add create_package hook
 class Package(Metadata):
     """Package representation
 

@@ -175,9 +175,6 @@ class Detector(Metadata):
         resource.set_not_defined("innerpath", innerpath)
         resource.set_not_defined("compression", compression)
 
-        # Apply hooks
-        system.detect_resource(resource)
-
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
 

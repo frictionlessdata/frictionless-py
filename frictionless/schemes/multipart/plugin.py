@@ -18,6 +18,6 @@ class MultipartPlugin(Plugin):
         if resource.scheme == "multipart":
             return MultipartLoader(resource)
 
-    def detect_resource(self, resource):
+    def create_resource(self, resource):
         if resource.multipart:
             resource.scheme = "multipart"

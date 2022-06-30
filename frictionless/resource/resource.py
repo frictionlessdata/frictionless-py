@@ -123,9 +123,10 @@ class Resource(Metadata):
         self.__lookup = None
         self.__row_stream = None
 
-        # Detect resource
+        # Finalize resource
         self.metadata_initiated = True
         self.detector.detect_resource(self)
+        system.create_resource(self)
 
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):

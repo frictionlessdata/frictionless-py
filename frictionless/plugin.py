@@ -90,6 +90,15 @@ class Plugin:
         """
         pass
 
+    def create_package(self, package: Resource) -> None:
+        """Hook into package creation
+
+        Parameters:
+            package (Package): package
+
+        """
+        pass
+
     def create_parser(self, file: File) -> Optional[Parser]:
         """Create parser
 
@@ -98,6 +107,15 @@ class Plugin:
 
         Returns:
             Parser: parser
+        """
+        pass
+
+    def create_resource(self, resource: Resource) -> None:
+        """Hook into resource creation
+
+        Parameters:
+            resource (Resource): resource
+
         """
         pass
 
@@ -121,14 +139,5 @@ class Plugin:
 
         Returns:
             Storage: storage
-        """
-        pass
-
-    def detect_resource(self, resource: Resource) -> None:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
         """
         pass

@@ -42,10 +42,11 @@ class System:
         "create_field",
         "create_field_candidates",
         "create_loader",
+        "create_package",
         "create_parser",
+        "create_resource",
         "create_step",
         "create_storage",
-        "detect_resource",
     ]
 
     def __init__(self):
@@ -222,6 +223,16 @@ class System:
         note = f'scheme "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.SchemeError(note=note))
 
+    def create_package(self, package: Package) -> None:
+        """Hook into resource creation
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        for func in self.methods["create_package"].values():
+            func(package)
+
     def create_parser(self, resource: Resource) -> Parser:
         """Create parser
 
@@ -239,6 +250,16 @@ class System:
                 return parser
         note = f'format "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.FormatError(note=note))
+
+    def create_resource(self, resource: Resource) -> None:
+        """Hook into resource creation
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        for func in self.methods["create_resource"].values():
+            func(resource)
 
     def create_step(self, descriptor: dict) -> Step:
         """Create step
@@ -276,18 +297,6 @@ class System:
                 return storage
         note = f'storage "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(note)
-
-    # TODO: consider adding more detection hooks
-
-    def detect_resource(self, resource: Resource) -> None:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
-        """
-        for func in self.methods["detect_resource"].values():
-            func(resource)
 
     # Requests
 
