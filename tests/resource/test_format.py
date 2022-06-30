@@ -30,6 +30,7 @@ def test_resource_format_xlsx():
         assert resource.format == "xlsx"
 
 
+@pytest.mark.skip
 def test_resource_format_error_non_matching_format():
     resource = Resource("data/table.csv", format="xlsx")
     with pytest.raises(FrictionlessException) as excinfo:
