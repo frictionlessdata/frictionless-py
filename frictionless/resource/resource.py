@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import petl
+import builtins
 import warnings
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Literal, Union, List, Any
@@ -21,6 +22,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from ..package import Package
+    from ..interfaces import FilterFunction, ProcessFunction
 
 
 # NOTE:
@@ -486,6 +488,32 @@ class Resource(Metadata2):
         resource = Resource(source, **options)
         resource.infer(stats=stats)
         return resource
+
+    # Extract
+
+    # TODO: accept an overriding schema (the same as checklist/pipeline)?
+    def extract(
+        self,
+        *,
+        filter: Optional[FilterFunction] = None,
+        process: Optional[ProcessFunction] = None,
+        stream: bool = False,
+    ):
+        """Extract resource rows
+
+        Parameters:
+            filter? (bool): a row filter function
+            process? (func): a row processor function
+            stream? (bool): whether to stream data
+
+        Returns:
+            Row[]: an array/stream of rows
+
+        """
+        data = read_row_stream(self)
+        data = builtins.filter(filter, data) if filter else data
+        data = (process(row) for row in data) if process else data
+        return data if stream else list(data)
 
     # Infer
 
@@ -959,3 +987,12 @@ class Resource(Metadata2):
                     if not cell:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
+
+
+# Internal
+
+
+def read_row_stream(resource):
+    with resource:
+        for row in resource.row_stream:
+            yield row
