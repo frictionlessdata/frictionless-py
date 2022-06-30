@@ -11,7 +11,6 @@ from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..fields import AnyField
 from ..dialect import Dialect
-from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -218,8 +217,12 @@ class Detector(Metadata):
 
         return encoding
 
-    # TODO: added plugin hooks into the loop
-    def detect_dialect(self, sample, *, dialect: Optional[Dialect] = None) -> Dialect:
+    def detect_dialect(
+        self,
+        sample: List[list],
+        *,
+        dialect: Optional[Dialect] = None,
+    ) -> Dialect:
         """Detect dialect from sample
 
         Parameters:
@@ -265,7 +268,14 @@ class Detector(Metadata):
 
         return dialect
 
-    def detect_schema(self, fragment, *, labels=None, schema=None) -> Schema:
+    def detect_schema(
+        self,
+        fragment: List[list],
+        *,
+        labels: Optional[List[str]] = None,
+        schema: Optional[Schema] = None,
+        field_candidates=settings.DEFAULT_FIELD_CANDIDATES,
+    ) -> Schema:
         """Detect schema from fragment
 
         Parameters:
@@ -315,7 +325,7 @@ class Detector(Metadata):
             # Prepare runners
             runners = []
             runner_fields = []  # we use shared fields
-            for candidate in system.create_field_candidates():
+            for candidate in field_candidates:
                 field = Field.from_descriptor(candidate)
                 if field.type == "number" and self.field_float_numbers:
                     field.float_number = True  # type: ignore

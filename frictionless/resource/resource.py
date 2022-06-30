@@ -825,7 +825,13 @@ class Resource(Metadata):
         # Schema
         labels = self.dialect.read_labels(self.sample)
         fragment = self.dialect.read_fragment(self.sample)
-        schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
+        field_candidates = system.create_field_candidates()
+        schema = self.detector.detect_schema(
+            fragment,
+            labels=labels,
+            schema=self.schema,
+            field_candidates=field_candidates,
+        )
         if schema:
             self.schema = schema
         self.__labels = labels
