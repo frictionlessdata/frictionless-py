@@ -1,21 +1,11 @@
+from typing import List
+from dataclasses import dataclass
 from .table import TableError
 
 
+@dataclass
 class HeaderError(TableError):
-    """Header error representation
-
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        labels (str[]): header labels
-        label (str): an errored label
-        field_name (str): field name
-        field_number (int): field number
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    """Header error representation"""
 
     code = "header-error"
     name = "Header Error"
@@ -23,17 +13,13 @@ class HeaderError(TableError):
     template = "Cell Error"
     description = "Cell Error"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        note,
-        labels,
-        row_numbers,
-    ):
-        self.setinitial("labels", labels)
-        self.setinitial("rowNumbers", row_numbers)
-        super().__init__(descriptor, note=note)
+    # State
+
+    labels: List[str]
+    """TODO: add docs"""
+
+    row_numbers: List[int]
+    """TODO: add docs"""
 
 
 class BlankHeaderError(HeaderError):

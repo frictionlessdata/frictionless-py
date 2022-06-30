@@ -1,21 +1,10 @@
+from dataclasses import dataclass
 from .header import HeaderError
 
 
+@dataclass
 class LabelError(HeaderError):
-    """Label error representation
-
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        labels (str[]): header labels
-        label (str): an errored label
-        field_name (str): field name
-        field_number (int): field number
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    """Label error representation"""
 
     code = "label-error"
     name = "Label Error"
@@ -23,26 +12,16 @@ class LabelError(HeaderError):
     template = "Label Error"
     description = "Label Error"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        note,
-        labels,
-        label,
-        row_numbers,
-        field_name,
-        field_number,
-    ):
-        self.setinitial("label", label)
-        self.setinitial("fieldName", field_name)
-        self.setinitial("fieldNumber", field_number)
-        super().__init__(
-            descriptor,
-            note=note,
-            labels=labels,
-            row_numbers=row_numbers,
-        )
+    # State
+
+    label: str
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
+
+    field_number: int
+    """TODO: add docs"""
 
 
 class ExtraLabelError(LabelError):

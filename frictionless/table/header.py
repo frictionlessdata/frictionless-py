@@ -9,10 +9,6 @@ from .. import errors
 class Header(list):
     """Header representation
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Header`
-
     > Constructor of this object is not Public API
 
     Parameters:

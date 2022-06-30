@@ -16,22 +16,13 @@ from . import helpers
 class Error(Metadata):
     """Error representation"""
 
-    # State
-
     code: str = field(init=False, default="error")
-    """TODO: add docs"""
-
     name: str = field(init=False, default="Error")
-    """TODO: add docs"""
-
     tags: List[str] = field(init=False, default_factory=list)
-    """TODO: add docs"""
-
     template: str = field(init=False, default="{note}")
-    """TODO: add docs"""
-
     description: str = field(init=False, default="Error")
-    """TODO: add docs"""
+
+    # State
 
     note: str
     """TODO: add docs"""
@@ -58,10 +49,10 @@ class Error(Metadata):
         "required": ["note"],
         "properties": {
             "code": {},
-            "note": {},
             "name": {},
             "tags": {},
-            "message": {},
             "description": {},
+            "message": {},
+            "note": {},
         },
     }

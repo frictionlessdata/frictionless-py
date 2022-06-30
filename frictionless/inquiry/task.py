@@ -96,15 +96,14 @@ class InquiryTask(Metadata):
                 # TODO: pass checklist here
             )
             if not self.descriptor
-            # TODO: rebase on Resource.from_descriptor
-            else Resource(descriptor=self.descriptor)
+            else Resource.from_descriptor(self.descriptor)
         )
         report = resource.validate(self.checklist)
         return report
 
     # Metadata
 
-    metadata_Error = errors.InquiryError
+    metadata_Error = errors.InquiryTaskError
     metadata_profile = {
         "properties": {
             "descriptor": {},

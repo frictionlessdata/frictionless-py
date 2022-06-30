@@ -1,23 +1,11 @@
+from dataclasses import dataclass
 from ...exception import FrictionlessException
 from .row import RowError
 
 
+@dataclass
 class CellError(RowError):
-    """Cell error representation
-
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        cells (str[]): row cells
-        row_number (int): row number
-        cell (str): errored cell
-        field_name (str): field name
-        field_number (int): field number
-
-    Raises
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    """Cell error representation"""
 
     code = "cell-error"
     name = "Cell Error"
@@ -25,28 +13,18 @@ class CellError(RowError):
     template = "Cell Error"
     description = "Cell Error"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        note,
-        cells,
-        row_number,
-        cell,
-        field_name,
-        field_number,
-    ):
-        self.setinitial("cell", cell)
-        self.setinitial("fieldName", field_name)
-        self.setinitial("fieldNumber", field_number)
-        super().__init__(
-            descriptor,
-            note=note,
-            cells=cells,
-            row_number=row_number,
-        )
+    # State
 
-    # Create
+    cell: str
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
+
+    field_number: int
+    """TODO: add docs"""
+
+    # Convert
 
     @classmethod
     def from_row(cls, row, *, note, field_name):

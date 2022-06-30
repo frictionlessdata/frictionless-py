@@ -1,18 +1,11 @@
+from typing import List
+from dataclasses import dataclass
 from .content import ContentError
 
 
+@dataclass
 class RowError(ContentError):
-    """Row error representation
-
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        row_number (int): row number
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    """Row error representation"""
 
     code = "row-error"
     name = "Row Error"
@@ -20,12 +13,15 @@ class RowError(ContentError):
     template = "Row Error"
     description = "Row Error"
 
-    def __init__(self, descriptor=None, *, note, cells, row_number):
-        self.setinitial("cells", cells)
-        self.setinitial("rowNumber", row_number)
-        super().__init__(descriptor, note=note)
+    # State
 
-    # Create
+    cells: List[str]
+    """TODO: add docs"""
+
+    row_number: int
+    """TODO: add docs"""
+
+    # Convert
 
     @classmethod
     def from_row(cls, row, *, note):

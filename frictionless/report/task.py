@@ -3,8 +3,8 @@ from typing import List
 from tabulate import tabulate
 from dataclasses import dataclass, field
 from ..metadata import Metadata
-from ..errors import Error, ReportError
 from ..exception import FrictionlessException
+from ..errors import Error, ReportTaskError
 from .. import helpers
 
 
@@ -98,7 +98,7 @@ class ReportTask(Metadata):
 
     # Metadata
 
-    metadata_Error = ReportError
+    metadata_Error = ReportTaskError
     metadata_profile = {
         "properties": {
             "valid": {},
