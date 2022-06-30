@@ -468,6 +468,25 @@ class Resource(Metadata2):
         """
         return self.__row_stream
 
+    # Describe
+
+    @staticmethod
+    def describe(source=None, *, stats=False, **options):
+        """Describe the given source as a resource
+
+        Parameters:
+            source (any): data source
+            stats? (bool): if `True` infer resource's stats
+            **options (dict): Resource constructor options
+
+        Returns:
+            Resource: data resource
+
+        """
+        resource = Resource(source, **options)
+        resource.infer(stats=stats)
+        return resource
+
     # Infer
 
     def infer(self, *, stats=False):
