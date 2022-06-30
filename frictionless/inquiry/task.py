@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from dataclasses import dataclass
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..schema import Schema
@@ -9,12 +9,11 @@ from ..resource import Resource
 from ..package import Package
 from ..report import Report
 from .. import helpers
-from ..file import File
 from .. import errors
 
 
 @dataclass
-class InquiryTask(Metadata2):
+class InquiryTask(Metadata):
     """Inquiry task representation."""
 
     # State

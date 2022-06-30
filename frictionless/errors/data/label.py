@@ -19,7 +19,7 @@ class LabelError(HeaderError):
 
     code = "label-error"
     name = "Label Error"
-    tags = ["#data", "#table", "#header", "#label"]
+    tags = ["#table", "#header", "#label"]
     template = "Label Error"
     description = "Label Error"
 

@@ -8,20 +8,17 @@ from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .dialect import Control
-from .file import File
 from . import settings
 from . import errors
 
 if TYPE_CHECKING:
+    from .resource import Resource, Loader, Parser
+    from .package import Storage
+    from .plugin import Plugin
     from .checklist import Check
     from .error import Error
     from .schema import Field
-    from .loader import Loader
-    from .parser import Parser
-    from .plugin import Plugin
-    from .resource import Resource
     from .pipeline import Step
-    from .storage import Storage
 
 
 # NOTE:
@@ -32,10 +29,6 @@ if TYPE_CHECKING:
 # TODO: finish typing
 class System:
     """System representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import system`
 
     This class provides an ability to make system Frictionless calls.
     It's available as `frictionless.system` singletone.
@@ -173,23 +166,6 @@ class System:
             func(candidates)
         return candidates
 
-    def create_file(self, source: Any, **options) -> File:
-        """Create file
-
-        Parameters:
-            source (any): file source
-            options (dict): file options
-
-        Returns:
-            File: file
-        """
-        file = File(source, **options)
-        for func in self.methods["create_file"].values():
-            plugin_file = func(file)
-            if plugin_file is not None:
-                return plugin_file
-        return file
-
     def create_loader(self, resource: Resource) -> Loader:
         """Create loader
 
@@ -321,11 +297,13 @@ class System:
             if item.name.startswith("frictionless_"):
                 module = import_module(item.name)
                 modules[item.name.replace("frictionless_", "")] = module
-        module = import_module("frictionless.plugins")
-        if module.__file__:
-            for _, name, _ in pkgutil.iter_modules([os.path.dirname(module.__file__)]):
-                module = import_module(f"frictionless.plugins.{name}")
-                modules[name] = module
+        for group in ["schemes", "formats"]:
+            module = import_module(f"frictionless.{group}")
+            if module.__file__:
+                path = os.path.dirname(module.__file__)
+                for _, name, _ in pkgutil.iter_modules([path]):
+                    module = import_module(f"frictionless.{group}.{name}")
+                    modules[name] = module
         plugins = OrderedDict(self.__dynamic_plugins)
         for name, module in modules.items():
             Plugin = getattr(module, f"{name.capitalize()}Plugin", None)

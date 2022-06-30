@@ -6,7 +6,7 @@ from importlib import import_module
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
 from ..exception import FrictionlessException
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..system import system
 from .. import settings
 from .. import helpers
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Field(Metadata2):
+class Field(Metadata):
     """Field representation"""
 
     type: str = field(init=False)

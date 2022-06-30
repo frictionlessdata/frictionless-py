@@ -19,7 +19,7 @@ class HeaderError(TableError):
 
     code = "header-error"
     name = "Header Error"
-    tags = ["#data", "#table", "#header"]
+    tags = ["#table", "#header"]
     template = "Cell Error"
     description = "Cell Error"
 

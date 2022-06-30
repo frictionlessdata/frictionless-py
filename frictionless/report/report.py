@@ -2,7 +2,7 @@ from __future__ import annotations
 from tabulate import tabulate
 from typing import TYPE_CHECKING, List
 from dataclasses import dataclass, field
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .task import ReportTask
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Report(Metadata2):
+class Report(Metadata):
     """Report representation."""
 
     # State

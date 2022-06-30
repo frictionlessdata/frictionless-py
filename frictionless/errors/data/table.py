@@ -4,7 +4,7 @@ from .data import DataError
 class TableError(DataError):
     code = "table-error"
     name = "Table Error"
-    tags = ["#data", "#table"]
+    tags = ["#table"]
     template = "General table error: {note}"
     description = "There is a table error."
 

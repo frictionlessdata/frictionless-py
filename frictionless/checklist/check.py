@@ -1,11 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, Type
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..system import system
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..row import Row
+    from ..table import Row
     from ..error import Error
     from ..resource import Resource
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 # TODO: add support for validate_package/etc?
 # TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
-class Check(Metadata2):
+class Check(Metadata):
     """Check representation."""
 
     code: str = "check"

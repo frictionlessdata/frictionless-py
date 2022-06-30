@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import List
 from tabulate import tabulate
 from dataclasses import dataclass, field
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .. import helpers
 
 
 @dataclass
-class ReportTask(Metadata2):
+class ReportTask(Metadata):
     """Report task representation."""
 
     # State

@@ -2,15 +2,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any
 
 if TYPE_CHECKING:
-    from .file import File
-    from .check import Check
+    from .resource import Loader, Parser
+    from .package import Storage
+    from .checklist import Check
     from .dialect import Control
     from .error import Error
     from .schema import Field
-    from .loader import Loader
-    from .parser import Parser
-    from .step import Step
-    from .storage import Storage
+    from .pipeline import Step
 
 
 # NOTE: implement create_resource so plugins can validate it (see #991)?
@@ -18,10 +16,6 @@ if TYPE_CHECKING:
 
 class Plugin:
     """Plugin representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Plugin`
 
     It's an interface for writing Frictionless plugins.
     You can implement one or more methods to hook into Frictionless system.
@@ -83,18 +77,6 @@ class Plugin:
 
         Returns:
             dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
-
-    def create_file(self, source: Any, **options) -> Optional[File]:
-        """Create file
-
-        Parameters:
-            source (any): file source
-            options (dict): file options
-
-        Returns:
-            File: file
         """
         pass
 

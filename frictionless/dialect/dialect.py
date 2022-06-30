@@ -3,7 +3,7 @@ from typing import Optional, List
 from importlib import import_module
 from dataclasses import dataclass, field
 from ..exception import FrictionlessException
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from .control import Control
 from .. import settings
 from .. import helpers
@@ -12,7 +12,7 @@ from .. import errors
 
 # TODO: provide helpers properties like `dialect.csv`?
 @dataclass
-class Dialect(Metadata2):
+class Dialect(Metadata):
     """Dialect representation"""
 
     # State

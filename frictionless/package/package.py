@@ -222,7 +222,8 @@ class Package(Metadata):
             return super().__setattr__(name, value)
         self.metadata_process()
 
-    @Metadata.property
+    property
+
     def name(self):
         """
         Returns:
@@ -230,7 +231,8 @@ class Package(Metadata):
         """
         return self.get("name", "")
 
-    @Metadata.property
+    property
+
     def id(self):
         """
         Returns:
@@ -238,7 +240,8 @@ class Package(Metadata):
         """
         return self.get("id", "")
 
-    @Metadata.property
+    property
+
     def licenses(self):
         """
         Returns:
@@ -247,7 +250,8 @@ class Package(Metadata):
         licenses = self.get("licenses", [])
         return self.metadata_attach("licenses", licenses)
 
-    @Metadata.property
+    property
+
     def profile(self):
         """
         Returns:
@@ -255,7 +259,8 @@ class Package(Metadata):
         """
         return self.get("profile", settings.DEFAULT_PACKAGE_PROFILE)
 
-    @Metadata.property
+    property
+
     def title(self):
         """
         Returns:
@@ -263,7 +268,8 @@ class Package(Metadata):
         """
         return self.get("title", "")
 
-    @Metadata.property
+    property
+
     def description(self):
         """
         Returns:
@@ -271,7 +277,8 @@ class Package(Metadata):
         """
         return self.get("description", "")
 
-    @Metadata.property(cache=False, write=False)
+    property
+
     def description_html(self):
         """
         Returns:
@@ -279,7 +286,8 @@ class Package(Metadata):
         """
         return helpers.md_to_html(self.description)
 
-    @Metadata.property
+    property
+
     def description_text(self):
         """
         Returns:
@@ -287,7 +295,8 @@ class Package(Metadata):
         """
         return helpers.html_to_text(self.description_html)
 
-    @Metadata.property
+    property
+
     def homepage(self):
         """
         Returns:
@@ -295,7 +304,8 @@ class Package(Metadata):
         """
         return self.get("homepage", "")
 
-    @Metadata.property
+    property
+
     def version(self):
         """
         Returns:
@@ -303,7 +313,8 @@ class Package(Metadata):
         """
         return self.get("version", "")
 
-    @Metadata.property
+    property
+
     def sources(self):
         """
         Returns:
@@ -312,7 +323,8 @@ class Package(Metadata):
         sources = self.get("sources", [])
         return self.metadata_attach("sources", sources)
 
-    @Metadata.property
+    property
+
     def contributors(self):
         """
         Returns:
@@ -321,7 +333,8 @@ class Package(Metadata):
         contributors = self.get("contributors", [])
         return self.metadata_attach("contributors", contributors)
 
-    @Metadata.property
+    property
+
     def keywords(self):
         """
         Returns:
@@ -330,7 +343,8 @@ class Package(Metadata):
         keywords = self.get("keywords", [])
         return self.metadata_attach("keywords", keywords)
 
-    @Metadata.property
+    property
+
     def image(self):
         """
         Returns:
@@ -338,7 +352,8 @@ class Package(Metadata):
         """
         return self.get("image", "")
 
-    @Metadata.property
+    property
+
     def created(self):
         """
         Returns:
@@ -346,7 +361,8 @@ class Package(Metadata):
         """
         return self.get("created", "")
 
-    @Metadata.property(cache=False, write=False)
+    property
+
     def hashing(self):
         """
         Returns:
@@ -354,7 +370,8 @@ class Package(Metadata):
         """
         return self.__hashing or settings.DEFAULT_HASHING
 
-    @Metadata.property(cache=False, write=False)
+    property
+
     def basepath(self):
         """
         Returns:
@@ -362,7 +379,8 @@ class Package(Metadata):
         """
         return self.__basepath
 
-    @Metadata.property(cache=False, write=False)
+    property
+
     def onerror(self):
         """
         Returns:
@@ -370,7 +388,8 @@ class Package(Metadata):
         """
         return self.__onerror
 
-    @Metadata.property(cache=False, write=False)
+    property
+
     def trusted(self):
         """
         Returns:
@@ -380,7 +399,8 @@ class Package(Metadata):
 
     # Resources
 
-    @Metadata.property
+    property
+
     def resources(self):
         """
         Returns:
@@ -389,7 +409,8 @@ class Package(Metadata):
         resources = self.get("resources", [])
         return self.metadata_attach("resources", resources)
 
-    @Metadata.property(cache=False, write=False)
+    property
+
     def resource_names(self):
         """
         Returns:

@@ -6,17 +6,16 @@ import warnings
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Literal, Union, List, Any
 from ..exception import FrictionlessException
+from ..table import Header, Row
 from ..schema import Schema, Field
 from ..helpers import get_name
 from ..detector import Detector
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..checklist import Checklist
 from ..pipeline import Pipeline
 from ..dialect import Dialect
 from ..report import Report
-from ..header import Header
 from ..system import system
-from ..row import Row
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -32,7 +31,7 @@ if TYPE_CHECKING:
 # Review the situation with describe function removing stats (move to infer?)
 
 
-class Resource(Metadata2):
+class Resource(Metadata):
     """Resource representation.
 
     This class is one of the cornerstones of of Frictionless framework.

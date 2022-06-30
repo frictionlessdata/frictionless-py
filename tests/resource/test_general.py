@@ -1,9 +1,8 @@
 import os
 import sys
 import pytest
-from frictionless import Package, Resource, Schema, Field, Detector, helpers
+from frictionless import Package, Resource, Control, Schema, Field, Detector, helpers
 from frictionless import Dialect, FrictionlessException
-from frictionless.plugins.excel import ExcelControl
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -485,7 +484,7 @@ def test_resource_skip_rows_non_string_cell_issue_320():
     source = "data/issue-320.xlsx"
     dialect = Dialect(
         header_rows=[10, 11, 12],
-        controls=[ExcelControl(fill_merged_cells=True)],
+        controls=[Control.from_descriptor({"code": "excel", "fillMergedCells": True})],
     )
     with Resource(source, dialect=dialect) as resource:
         assert resource.header[7] == "Current Population Analysed % of total county Pop"

@@ -21,7 +21,7 @@ class CellError(RowError):
 
     code = "cell-error"
     name = "Cell Error"
-    tags = ["#data", "#table", "#content", "#row", "#cell"]
+    tags = ["#table", "#content", "#row", "#cell"]
     template = "Cell Error"
     description = "Cell Error"
 

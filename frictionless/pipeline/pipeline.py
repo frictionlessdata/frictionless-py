@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import List
 from ..exception import FrictionlessException
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from .step import Step
 from .. import settings
 from .. import errors
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
-class Pipeline(Metadata2):
+class Pipeline(Metadata):
     """Pipeline representation"""
 
     def __init__(

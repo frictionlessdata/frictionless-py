@@ -14,7 +14,7 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from .row import Row
+    from .table import Row
     from .error import Error
     from .package import Package
     from .resource import Resource

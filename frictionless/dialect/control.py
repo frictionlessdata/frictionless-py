@@ -1,9 +1,9 @@
 from importlib import import_module
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from .. import errors
 
 
-class Control(Metadata2):
+class Control(Metadata):
     """Control representation"""
 
     code: str

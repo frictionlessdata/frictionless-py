@@ -6,7 +6,7 @@ import chardet
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..fields import AnyField
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Detector(Metadata2):
+class Detector(Metadata):
     """Detector representation"""
 
     # Props

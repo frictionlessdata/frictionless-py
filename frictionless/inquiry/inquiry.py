@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, List
 from importlib import import_module
 from multiprocessing import Pool
 from dataclasses import dataclass, field
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..errors import InquiryError
 from .task import InquiryTask
 from ..report import Report
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Inquiry(Metadata2):
+class Inquiry(Metadata):
     """Inquiry representation."""
 
     # State

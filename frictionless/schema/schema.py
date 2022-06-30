@@ -4,7 +4,7 @@ from tabulate import tabulate
 from importlib import import_module
 from dataclasses import dataclass, field
 from ..exception import FrictionlessException
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from .field import Field
 from .. import settings
 from .. import helpers
@@ -12,7 +12,7 @@ from .. import errors
 
 
 @dataclass
-class Schema(Metadata2):
+class Schema(Metadata):
     """Schema representation
 
     This class is one of the cornerstones of of Frictionless framework.

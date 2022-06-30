@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..metadata2 import Metadata2
+from ..metadata import Metadata
 from ..system import system
 from .. import errors
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 # TODO: support something like "step.transform_resource_row"
-class Step(Metadata2):
+class Step(Metadata):
     """Step representation"""
 
     code: str = "step"
