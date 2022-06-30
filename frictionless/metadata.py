@@ -4,7 +4,6 @@ import io
 import re
 import json
 import yaml
-import glob
 import jinja2
 import pprint
 import jsonschema

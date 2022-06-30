@@ -188,7 +188,7 @@ class Row(dict):
         Returns:
             str: a row as a CSV string
         """
-        plugin = import_module("frictionless.plugins.csv")
+        plugin = import_module("frictionless.formats.csv")
         cells = self.to_list(types=plugin.CsvParser.supported_types)
         return helpers.stringify_csv_string(cells)
 
@@ -204,7 +204,7 @@ class Row(dict):
 
         # Prepare
         self.__process()
-        plugin = import_module("frictionless.plugins.json")
+        plugin = import_module("frictionless.formats.json")
         result = [self[name] for name in self.__field_info["names"]]
         if types is None and json:
             types = plugin.JsonParser.supported_types
@@ -236,7 +236,7 @@ class Row(dict):
 
         # Prepare
         self.__process()
-        plugin = import_module("frictionless.plugins.json")
+        plugin = import_module("frictionless.formats.json")
         result = {name: self[name] for name in self.__field_info["names"]}
         if types is None and json:
             types = plugin.JsonParser.supported_types
