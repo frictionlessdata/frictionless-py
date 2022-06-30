@@ -14,6 +14,7 @@ from ..header import Header
 from ..system import system
 from ..field import Field
 from ..row import Row
+from .analyze import analyze
 from .describe import describe
 from .extract import extract
 from .transform import transform
@@ -141,6 +142,7 @@ class Resource(Metadata):
     extract = extract
     transform = transform
     validate = validate
+    analyze = analyze
 
     def __init__(
         self,
