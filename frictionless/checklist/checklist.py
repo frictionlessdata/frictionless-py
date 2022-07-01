@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checks import baseline
 from .check import Check
@@ -70,6 +71,36 @@ class Checklist(Metadata):
                         continue
                 scope.append(Error.code)
         return scope
+
+    # Checks
+
+    def add_check(self, check: Check) -> None:
+        """Add new check to the schema"""
+        self.checks.append(check)
+
+    def has_check(self, code: str) -> bool:
+        """Check if a check is present"""
+        for check in self.checks:
+            if check.code == code:
+                return True
+        return False
+
+    def get_check(self, code: str) -> Check:
+        """Get check by code"""
+        for check in self.checks:
+            if check.code == code:
+                return check
+        error = errors.ChecklistError(note=f'check "{code}" does not exist')
+        raise FrictionlessException(error)
+
+    def set_check(self, check: Check) -> Optional[Check]:
+        """Set check by code"""
+        if self.has_check(check.code):
+            prev_check = self.get_check(check.code)
+            index = self.checks.index(prev_check)
+            self.checks[index] = check
+            return prev_check
+        self.add_check(check)
 
     # Connect
 

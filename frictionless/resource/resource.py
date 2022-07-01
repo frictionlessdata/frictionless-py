@@ -14,7 +14,7 @@ from ..detector import Detector
 from ..metadata import Metadata
 from ..checklist import Checklist
 from ..pipeline import Pipeline
-from ..dialect import Dialect
+from ..dialect import Dialect, Control
 from ..report import Report
 from ..system import system
 from .. import settings
@@ -82,6 +82,7 @@ class Resource(Metadata):
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
+        control: Optional[Control] = None,
     ):
 
         # Store state
@@ -114,6 +115,10 @@ class Resource(Metadata):
         self.schema = schema
         self.checklist = checklist
         self.pipeline = pipeline
+
+        # Store shortcuts
+        if control:
+            self.dialect.set_control(control)
 
         # Store internal state
         self.__loader = None
@@ -301,7 +306,7 @@ class Resource(Metadata):
     # Props
 
     @property
-    def dialect(self) -> Optional[Dialect]:
+    def dialect(self) -> Dialect:
         """
         File Dialect object.
         For more information, please check the Dialect documentation.

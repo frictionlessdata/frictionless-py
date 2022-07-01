@@ -67,26 +67,33 @@ class Dialect(Metadata):
         control.schema = self
 
     def has_control(self, code: str):
-        return bool(self.get_control(code))
+        """Check if control is present"""
+        for control in self.controls:
+            if control.code == code:
+                return True
+        return False
 
     # TODO: rebase on create=True instead of ensure?
     def get_control(self, code: str, *, ensure: Optional[Control] = None) -> Control:
+        """Get control by code"""
         for control in self.controls:
             if control.code == code:
                 return control
         if ensure:
             self.controls.append(ensure)
             return ensure
-        error = errors.SchemaError(note=f'control "{code}" does not exist')
+        error = errors.DialectError(note=f'control "{code}" does not exist')
         raise FrictionlessException(error)
 
-    def set_control(self, code: str, control: Control) -> Control:
+    def set_control(self, control: Control) -> Optional[Control]:
         """Set control by code"""
-        prev_control = self.get_control(code)
-        index = self.controls.index(prev_control)
-        self.controls[index] = control
-        control.schema = self
-        return prev_control
+        if self.has_control(control.code):
+            prev_control = self.get_control(control.code)
+            index = self.controls.index(prev_control)
+            self.controls[index] = control
+            control.schema = self
+            return prev_control
+        self.add_control(control)
 
     # Read
 

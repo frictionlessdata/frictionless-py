@@ -1,6 +1,6 @@
-from typing import List
 from copy import deepcopy
 from tabulate import tabulate
+from typing import Optional, List
 from importlib import import_module
 from dataclasses import dataclass, field
 from ..exception import FrictionlessException
@@ -87,13 +87,16 @@ class Schema(Metadata):
         error = errors.SchemaError(note=f'field "{name}" does not exist')
         raise FrictionlessException(error)
 
-    def set_field(self, name: str, field: Field) -> Field:
+    def set_field(self, field: Field) -> Optional[Field]:
         """Set field by name"""
-        prev_field = self.get_field(name)
-        index = self.fields.index(prev_field)
-        self.fields[index] = field
-        field.schema = self
-        return prev_field
+        assert field.name
+        if self.has_field(field.name):
+            prev_field = self.get_field(field.name)
+            index = self.fields.index(prev_field)
+            self.fields[index] = field
+            field.schema = self
+            return prev_field
+        self.add_field(field)
 
     def set_field_type(self, name: str, type: str) -> Field:
         """Set field type"""
@@ -101,7 +104,7 @@ class Schema(Metadata):
         descriptor = prev_field.to_descriptor()
         descriptor.update({"type": type})
         next_field = Field.from_descriptor(descriptor)
-        self.set_field(name, next_field)
+        self.set_field(next_field)
         return prev_field
 
     def remove_field(self, name: str) -> Field:

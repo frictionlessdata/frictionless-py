@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import Optional, List
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
@@ -52,15 +52,17 @@ class Pipeline(Metadata):
         for step in self.steps:
             if step.code == code:
                 return step
-        error = errors.SchemaError(note=f'step "{code}" does not exist')
+        error = errors.PipelineError(note=f'step "{code}" does not exist')
         raise FrictionlessException(error)
 
-    def set_step(self, code: str, step: Step) -> Step:
+    def set_step(self, step: Step) -> Optional[Step]:
         """Set step by code"""
-        prev_step = self.get_step(code)
-        index = self.steps.index(prev_step)
-        self.steps[index] = step
-        return prev_step
+        if self.has_step(step.code):
+            prev_step = self.get_step(step.code)
+            index = self.steps.index(prev_step)
+            self.steps[index] = step
+            return prev_step
+        self.add_step(step)
 
     # Metadata
 
