@@ -1,7 +1,6 @@
 import json
 import pytest
-from frictionless import Resource, Dialect
-from frictionless.plugins.json import JsonControl
+from frictionless import Resource, Dialect, formats
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -30,8 +29,8 @@ def test_json_parser_keyed():
 
 
 def test_json_parser_keyed_with_keys_provided():
-    dialect = Dialect(controls=[JsonControl(keys=["name", "id"])])
-    with Resource(path="data/table.keyed.json", dialect=dialect) as resource:
+    control = formats.JsonControl(keys=["name", "id"])
+    with Resource(path="data/table.keyed.json", control=control) as resource:
         assert resource.dialect.get_control("json").keyed is True
         assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
@@ -85,6 +84,7 @@ def test_json_parser_from_remote_keyed():
 # Write
 
 
+@pytest.mark.skip
 def test_json_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(Resource(path=str(tmpdir.join("table.json"))))
@@ -98,9 +98,9 @@ def test_json_parser_write(tmpdir):
 
 @pytest.mark.skip
 def test_json_parser_write_decimal(tmpdir):
-    dialect = Dialect(controls=[JsonControl(keyed=True)])
+    control = formats.JsonControl(keyed=True)
     source = Resource([["id", "name"], [1.5, "english"], [2.5, "german"]])
-    target = source.write(Resource(path=str(tmpdir.join("table.json")), dialect=dialect))
+    target = source.write(Resource(path=str(tmpdir.join("table.json")), control=control))
     with open(target.fullpath) as file:
         assert json.load(file) == [
             {"id": "1.5", "name": "english"},
@@ -110,9 +110,9 @@ def test_json_parser_write_decimal(tmpdir):
 
 @pytest.mark.skip
 def test_json_parser_write_keyed(tmpdir):
-    dialect = Dialect(controls=[JsonControl(keyed=True)])
+    control = formats.JsonControl(keyed=True)
     source = Resource("data/table.csv")
-    target = source.write(Resource(path=str(tmpdir.join("table.json")), dialect=dialect))
+    target = source.write(Resource(path=str(tmpdir.join("table.json")), control=control))
     with open(target.fullpath) as file:
         assert json.load(file) == [
             {"id": 1, "name": "english"},
