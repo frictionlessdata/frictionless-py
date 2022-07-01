@@ -1,5 +1,4 @@
-from frictionless import Resource
-from frictionless.plugins.excel import ExcelControl
+from frictionless import Resource, formats
 
 
 # General
@@ -7,4 +6,4 @@ from frictionless.plugins.excel import ExcelControl
 
 def test_excel_dialect():
     with Resource("data/table.xlsx") as resource:
-        assert isinstance(resource.dialect.get_control("excel"), ExcelControl)
+        assert isinstance(resource.dialect.get_control("excel"), formats.ExcelControl)
