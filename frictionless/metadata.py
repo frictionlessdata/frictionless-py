@@ -96,24 +96,55 @@ class Metadata(metaclass=Metaclass):
     # Convert
 
     # TODO: review
-    def to_copy(self):
+    def to_copy(self, **options):
         """Create a copy of the metadata"""
-        return type(self).from_descriptor(self.metadata_export())
+        return type(self).from_descriptor(self.to_descriptor(), **options)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert metadata to a plain dict"""
-        return self.metadata_export()
+        return self.to_descriptor()
 
-    # TODO: merge with metadata_import?
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptor, **options):
-        """Import metadata from a descriptor"""
-        return cls.metadata_import(descriptor, **options)
+        """Import metadata from a descriptor source"""
+        target = {}
+        source = cls.metadata_normalize(descriptor)
+        for name, Type in cls.metadata_properties().items():
+            value = source.get(name)
+            if value is None:
+                continue
+            # TODO: rebase on "type" only?
+            if name in ["code", "type"]:
+                continue
+            if Type:
+                if isinstance(value, list):
+                    value = [Type.from_descriptor(item) for item in value]
+                else:
+                    value = Type.from_descriptor(value)
+            target[stringcase.snakecase(name)] = value
+        target.update(options)
+        return cls(**target)
 
-    # TODO: merge with metadata_export?
     def to_descriptor(self, *, exclude: List[str] = []) -> IPlainDescriptor:
-        """Export metadata as a plain descriptor"""
-        return self.metadata_export(exclude=exclude)
+        """Export metadata as a descriptor"""
+        descriptor = {}
+        for name, Type in self.metadata_properties().items():
+            value = getattr(self, stringcase.snakecase(name), None)
+            if value is None:
+                continue
+            if name in exclude:
+                continue
+            # TODO: rebase on "type" only?
+            if name not in ["code", "type"]:
+                if not self.has_defined(stringcase.snakecase(name)):
+                    continue
+            if Type:
+                if isinstance(value, list):
+                    value = [item.to_descriptor() for item in value]
+                else:
+                    value = value.to_descriptor()
+            descriptor[name] = value
+        return descriptor
 
     def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
@@ -218,67 +249,6 @@ class Metadata(metaclass=Metaclass):
             entity = "package"
         return entity
 
-    # TODO: automate metadata_validate of the children using metadata_properties!!!
-    def metadata_validate(self) -> Iterator[Error]:
-        """Validate metadata and emit validation errors"""
-        if self.metadata_profile:
-            frictionless = import_module("frictionless")
-            Error = self.metadata_Error or frictionless.errors.MetadataError
-            validator_class = jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
-            validator = validator_class(self.metadata_profile)
-            for error in validator.iter_errors(self.to_descriptor()):
-                # Withouth this resource with both path/data is invalid
-                if "is valid under each of" in error.message:
-                    continue
-                metadata_path = "/".join(map(str, error.path))
-                profile_path = "/".join(map(str, error.schema_path))
-                # We need it because of the metadata.__repr__ overriding
-                message = re.sub(r"\s+", " ", error.message)
-                note = '"%s" at "%s" in metadata and at "%s" in profile'
-                note = note % (message, metadata_path, profile_path)
-                yield Error(note=note)
-        yield from []
-
-    @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
-        """Import metadata from a descriptor source"""
-        source = cls.metadata_normalize(descriptor)
-        for name, Type in cls.metadata_properties().items():
-            value = source.get(name)
-            if value is None:
-                continue
-            # TODO: rebase on "type" only?
-            if name in ["code", "type"]:
-                continue
-            if Type:
-                if isinstance(value, list):
-                    value = [Type.from_descriptor(item) for item in value]
-                else:
-                    value = Type.from_descriptor(value)
-            options[stringcase.snakecase(name)] = value
-        return cls(**options)  # type: ignore
-
-    def metadata_export(self, *, exclude: List[str] = []) -> IPlainDescriptor:
-        """Export metadata as a descriptor"""
-        descriptor = {}
-        for name, Type in self.metadata_properties().items():
-            value = getattr(self, stringcase.snakecase(name), None)
-            if value is None:
-                continue
-            if name in exclude:
-                continue
-            # TODO: rebase on "type" only?
-            if name not in ["code", "type"]:
-                if not self.has_defined(stringcase.snakecase(name)):
-                    continue
-            if Type:
-                if isinstance(value, list):
-                    value = [item.metadata_export() for item in value]  # type: ignore
-                else:
-                    value = value.metadata_export()  # type: ignore
-            descriptor[name] = value
-        return descriptor
-
     # TODO: return plain descriptor?
     @classmethod
     def metadata_normalize(cls, descriptor: IDescriptor) -> Mapping:
@@ -310,6 +280,27 @@ class Metadata(metaclass=Metaclass):
             Error = cls.metadata_Error or frictionless.errors.MetadataError
             note = f'cannot normalize metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
+
+    # TODO: automate metadata_validate of the children using metadata_properties!!!
+    def metadata_validate(self) -> Iterator[Error]:
+        """Validate metadata and emit validation errors"""
+        if self.metadata_profile:
+            frictionless = import_module("frictionless")
+            Error = self.metadata_Error or frictionless.errors.MetadataError
+            validator_class = jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
+            validator = validator_class(self.metadata_profile)
+            for error in validator.iter_errors(self.to_descriptor()):
+                # Withouth this resource with both path/data is invalid
+                if "is valid under each of" in error.message:
+                    continue
+                metadata_path = "/".join(map(str, error.path))
+                profile_path = "/".join(map(str, error.schema_path))
+                # We need it because of the metadata.__repr__ overriding
+                message = re.sub(r"\s+", " ", error.message)
+                note = '"%s" at "%s" in metadata and at "%s" in profile'
+                note = note % (message, metadata_path, profile_path)
+                yield Error(note=note)
+        yield from []
 
 
 # Internal
