@@ -101,11 +101,10 @@ class Resource(Metadata):
         self.innerpath = innerpath
         self.compression = compression
         self.extrapaths = extrapaths.copy()
-        # TODO: support dereferencing
-        self.dialect = dialect or Dialect()  # type: ignore
-        self.schema = schema  # type: ignore
-        self.checklist = checklist  # type: ignore
-        self.pipeline = pipeline  # type: ignore
+        self.dialect = dialect or Dialect()
+        self.schema = schema
+        self.checklist = checklist
+        self.pipeline = pipeline
         self.stats = stats.copy()
         self.basepath = basepath
         self.onerror = onerror
@@ -255,30 +254,6 @@ class Resource(Metadata):
     It defaults to the first file in the archive (if the source is an archive).
     """
 
-    dialect: Dialect
-    """
-    File dialect object.
-    For more information, please check the Dialect documentation.
-    """
-
-    schema: Optional[Schema]
-    """
-    Table schema object.
-    For more information, please check the Schema documentation.
-    """
-
-    checklist: Optional[Checklist]
-    """
-    Checklist object.
-    For more information, please check the Checklist documentation.
-    """
-
-    pipeline: Optional[Pipeline]
-    """
-    Pipeline object.
-    For more information, please check the Pipeline documentation.
-    """
-
     stats: dict
     """
     Stats dictionary.
@@ -321,6 +296,74 @@ class Resource(Metadata):
     """
 
     # Props
+
+    @property
+    def dialect(self) -> Optional[Dialect]:
+        """
+        File Dialect object.
+        For more information, please check the Dialect documentation.
+        """
+        return self.__dialect
+
+    @dialect.setter
+    def dialect(self, value: Union[Dialect, str]):
+        if isinstance(value, str):
+            self.__dialect = Dialect.from_descriptor(value)
+            self.__dialect_desc = self.__dialect.to_descriptor()
+            self.__dialect_path = value
+            return
+        self.__dialect = value
+
+    @property
+    def schema(self) -> Optional[Schema]:
+        """
+        Table Schema object.
+        For more information, please check the Schema documentation.
+        """
+        return self.__schema
+
+    @schema.setter
+    def schema(self, value: Optional[Union[Schema, str]]):
+        if isinstance(value, str):
+            self.__schema = Schema.from_descriptor(value)
+            self.__schema_desc = self.__schema.to_descriptor()
+            self.__schema_path = value
+            return
+        self.__schema = value
+
+    @property
+    def checklist(self) -> Optional[Checklist]:
+        """
+        Checklist object.
+        For more information, please check the Checklist documentation.
+        """
+        return self.__checklist
+
+    @checklist.setter
+    def checklist(self, value: Optional[Union[Checklist, str]]):
+        if isinstance(value, str):
+            self.__checklist = Checklist.from_descriptor(value)
+            self.__checklist_desc = self.__checklist.to_descriptor()
+            self.__checklist_path = value
+            return
+        self.__checklist = value
+
+    @property
+    def pipeline(self) -> Optional[Pipeline]:
+        """
+        Pipeline object.
+        For more information, please check the Pipeline documentation.
+        """
+        return self.__pipeline
+
+    @pipeline.setter
+    def pipeline(self, value: Optional[Union[Pipeline, str]]):
+        if isinstance(value, str):
+            self.__pipeline = Pipeline.from_descriptor(value)
+            self.__pipeline_desc = self.__pipeline.to_descriptor()
+            self.__pipeline_path = value
+            return
+        self.__pipeline = value
 
     @property
     def description_html(self) -> str:
