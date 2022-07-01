@@ -299,9 +299,9 @@ def test_csv_parser_tsv_write(tmpdir):
 
 @pytest.mark.skip
 def test_csv_parser_write_newline_lf(tmpdir):
-    dialect = Dialect(controls=[CsvControl(line_terminator="\n")])
+    control = formats.CsvControl(line_terminator="\n")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
+    target = Resource(str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
         assert target.dialect == {"lineTerminator": "\n"}
@@ -311,9 +311,9 @@ def test_csv_parser_write_newline_lf(tmpdir):
 
 @pytest.mark.skip
 def test_csv_parser_write_newline_crlf(tmpdir):
-    dialect = Dialect(controls=[CsvControl(line_terminator="\r\n")])
+    control = formats.CsvControl(line_terminator="\r\n")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
+    target = Resource(str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
         assert target.dialect == {"lineTerminator": "\r\n"}
