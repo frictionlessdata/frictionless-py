@@ -54,7 +54,7 @@ class Resource(Metadata):
         self,
         source: Optional[Any] = None,
         *,
-        # Spec
+        # Standard
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
@@ -76,7 +76,7 @@ class Resource(Metadata):
         checklist: Optional[Union[Checklist, str]] = None,
         pipeline: Optional[Union[Pipeline, str]] = None,
         stats: dict = {},
-        # Extra
+        # Software
         basepath: str = settings.DEFAULT_BASEPATH,
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
