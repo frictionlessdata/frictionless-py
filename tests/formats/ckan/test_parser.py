@@ -1,7 +1,6 @@
 import pytest
 import datetime
-from frictionless import Resource, Dialect
-from frictionless.plugins.ckan import CkanControl
+from frictionless import Resource, formats
 
 
 # General
@@ -11,9 +10,9 @@ from frictionless.plugins.ckan import CkanControl
 @pytest.mark.vcr
 def test_ckan_parser(options):
     url = options.pop("url")
-    dialect = Dialect(controls=[CkanControl(resource="table", **options)])
+    control = formats.CkanControl(resource="table", **options)
     source = Resource("data/table.csv")
-    target = source.write(url, format="ckan", dialect=dialect)
+    target = source.write(url, format="ckan", control=control)
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -27,9 +26,9 @@ def test_ckan_parser(options):
 @pytest.mark.vcr
 def test_ckan_parser_timezone(options):
     url = options.pop("url")
-    dialect = Dialect(controls=[CkanControl(resource="timezone", **options)])
+    control = formats.CkanControl(resource="timezone", **options)
     source = Resource("data/timezone.csv")
-    target = source.write(url, format="ckan", dialect=dialect)
+    target = source.write(url, format="ckan", control=control)
     with target:
         assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

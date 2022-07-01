@@ -1,7 +1,7 @@
 import pytest
 import datetime
-from frictionless import Package, Resource, FrictionlessException
-from frictionless.plugins.ckan import CkanStorage, CkanControl
+from frictionless import Package, Resource, formats
+from frictionless import FrictionlessException
 
 
 # General
@@ -11,7 +11,7 @@ from frictionless.plugins.ckan import CkanStorage, CkanControl
 @pytest.mark.vcr
 def test_ckan_storage_types(options):
     url = options.pop("url")
-    control = CkanControl(**options)
+    control = formats.CkanControl(**options)
     source = Package("data/storage/types.json")
     storage = source.to_ckan(url, control=control)
     target = Package.from_ckan(url, control=control)
@@ -68,7 +68,7 @@ def test_ckan_storage_types(options):
 @pytest.mark.vcr
 def test_ckan_storage_integrity(options):
     url = options.pop("url")
-    control = CkanControl(**options)
+    control = formats.CkanControl(**options)
     source = Package("data/storage/integrity.json")
     storage = source.to_ckan(url, control=control)
     target = Package.from_ckan(url, control=control)
@@ -115,7 +115,7 @@ def test_ckan_storage_integrity(options):
 @pytest.mark.vcr
 def test_ckan_storage_constraints(options):
     url = options.pop("url")
-    control = CkanControl(**options)
+    control = formats.CkanControl(**options)
     source = Package("data/storage/constraints.json")
     storage = source.to_ckan(url, control=control)
     target = Package.from_ckan(url, control=control)
@@ -154,8 +154,8 @@ def test_ckan_storage_constraints(options):
 @pytest.mark.vcr
 def test_ckan_storage_not_existent_error(options):
     url = options.pop("url")
-    control = CkanControl(**options)
-    storage = CkanStorage(url, control=control)
+    control = formats.CkanControl(**options)
+    storage = formats.CkanStorage(url, control=control)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
@@ -167,8 +167,8 @@ def test_ckan_storage_not_existent_error(options):
 @pytest.mark.vcr
 def test_ckan_storage_write_resource_existent_error(options):
     url = options.pop("url")
-    control = CkanControl(**options)
-    storage = CkanStorage(url, control=control)
+    control = formats.CkanControl(**options)
+    storage = formats.CkanStorage(url, control=control)
     resource = Resource(path="data/table.csv")
     storage.write_resource(resource, force=True)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -184,8 +184,8 @@ def test_ckan_storage_write_resource_existent_error(options):
 @pytest.mark.vcr
 def test_ckan_storage_delete_resource_not_existent_error(options):
     url = options.pop("url")
-    control = CkanControl(**options)
-    storage = CkanStorage(url, control=control)
+    control = formats.CkanControl(**options)
+    storage = formats.CkanStorage(url, control=control)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
