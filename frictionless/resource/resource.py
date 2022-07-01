@@ -1085,7 +1085,7 @@ class Resource(Metadata):
 
     def to_descriptor(self, *, exclude=[]):
         descriptor = super().to_descriptor(exclude=exclude)
-        if not isinstance(descriptor.get("data", []), list):
+        if not isinstance(descriptor.get("data", []), (list, dict)):
             descriptor.pop("data", None)
         if self.__dialect_path and self.__dialect_desc == descriptor.get("dialect"):
             descriptor["dialect"] = self.__dialect_path
