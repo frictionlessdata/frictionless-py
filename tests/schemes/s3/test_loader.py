@@ -3,10 +3,10 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Resource, Layout, validate, helpers
+from frictionless import Resource, Dialect, validate, helpers
 
 
-# General
+# Read
 
 
 @mock_s3
@@ -22,6 +22,28 @@ def test_s3_loader(bucket_name):
         ContentType="text/csv",
         Key="table.csv",
     )
+
+    # Read
+    with Resource("s3://%s/table.csv" % bucket_name) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+# Write
+
+
+@pytest.mark.skip
+@mock_s3
+def test_s3_loader_write(bucket_name):
+    client = boto3.resource("s3", region_name="us-east-1")
+    client.create_bucket(Bucket=bucket_name, ACL="public-read")
+
+    # Write
+    with Resource("data/table.csv") as resource:
+        resource.write(Resource("s3://%s/table.csv" % bucket_name))
 
     # Read
     with Resource("s3://%s/table.csv" % bucket_name) as resource:
@@ -49,8 +71,8 @@ def test_s3_loader_big_file(bucket_name):
     )
 
     # Read
-    layout = Layout(header=False)
-    with Resource("s3://%s/table1.csv" % bucket_name, layout=layout) as resource:
+    dialect = Dialect(header=False)
+    with Resource("s3://%s/table1.csv" % bucket_name, dialect=dialect) as resource:
         assert resource.read_rows()
         assert resource.stats == {
             "hash": "78ea269458be04a0e02816c56fc684ef",
@@ -58,6 +80,9 @@ def test_s3_loader_big_file(bucket_name):
             "fields": 10,
             "rows": 10000,
         }
+
+
+# Problems
 
 
 @pytest.mark.skip
@@ -104,24 +129,6 @@ def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
 
     # Read
     with Resource("s3://%s/table with space.csv" % bucket_name) as resource:
-        assert resource.header == ["id", "name"]
-        assert resource.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
-
-
-@mock_s3
-def test_s3_loader_write(bucket_name):
-    client = boto3.resource("s3", region_name="us-east-1")
-    client.create_bucket(Bucket=bucket_name, ACL="public-read")
-
-    # Write
-    with Resource("data/table.csv") as resource:
-        resource.write(Resource("s3://%s/table.csv" % bucket_name))
-
-    # Read
-    with Resource("s3://%s/table.csv" % bucket_name) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

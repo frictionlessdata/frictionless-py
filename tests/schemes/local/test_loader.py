@@ -1,8 +1,9 @@
+import pytest
 from frictionless import Resource
 from importlib import import_module
 
 
-# General
+# Read
 
 
 def test_local_loader():
@@ -14,6 +15,7 @@ def test_local_loader():
         ]
 
 
+@pytest.mark.skip
 def test_local_loader_pathlib_path():
     pathlib = import_module("pathlib")
     with Resource(pathlib.Path("data/table.csv")) as resource:

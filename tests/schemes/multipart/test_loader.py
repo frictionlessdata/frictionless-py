@@ -1,8 +1,10 @@
 import os
 import json
 import pytest
-from frictionless import Resource, Dialect, FrictionlessException, validate, helpers
-from frictionless.plugins.multipart import MultipartControl
+from frictionless import Resource, validate, schemes, helpers
+from frictionless import FrictionlessException
+
+pytestmark = pytest.mark.skip
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -154,9 +156,9 @@ def test_multipart_loader_resource_write_file(tmpdir):
     target2 = str(tmpdir.join("table2.json"))
 
     # Write
-    dialect = Dialect(controls=[MultipartControl(chunk_size=80)])
+    control = schemes.MultipartControl(chunk_size=80)
     resource = Resource(data=[["id", "name"], [1, "english"], [2, "german"]])
-    resource.write(path=target, scheme="multipart", dialect=dialect)
+    resource.write(path=target, scheme="multipart", control=control)
 
     # Read
     text = ""

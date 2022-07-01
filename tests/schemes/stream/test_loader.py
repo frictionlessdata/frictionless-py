@@ -37,6 +37,7 @@ def test_stream_loader_without_open():
 # Write
 
 
+@pytest.mark.skip
 def test_stream_loader_write():
     source = Resource("data/table.csv")
     target = source.write(scheme="stream", format="csv")
