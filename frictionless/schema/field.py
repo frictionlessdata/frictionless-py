@@ -167,6 +167,8 @@ class Field(Metadata):
     # TODO: review
     @classmethod
     def from_descriptor(cls, descriptor):
+
+        # Factory
         if cls is Field:
             descriptor = cls.metadata_normalize(descriptor)
             try:
@@ -174,7 +176,13 @@ class Field(Metadata):
             except FrictionlessException:
                 fields = import_module("frictionless").fields
                 return fields.AnyField.from_descriptor(descriptor)
-        return super().from_descriptor(descriptor)
+        field = super().from_descriptor(descriptor)
+
+        # Legacy format
+        if isinstance(field.format, str) and field.format.startswith("fmt:"):
+            field.format = field.format.replace("fmt:", "")
+
+        return field
 
     # Metadata
 
@@ -189,16 +197,6 @@ class Field(Metadata):
             if name not in self.supported_constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
                 yield errors.FieldError(note=note)
-
-    @classmethod
-    def metadata_import(cls, descriptor):
-        field = super().metadata_import(descriptor)
-
-        # Legacy format
-        if isinstance(field.format, str) and field.format.startswith("fmt:"):
-            field.format = field.format.replace("fmt:", "")
-
-        return field
 
 
 # Internal

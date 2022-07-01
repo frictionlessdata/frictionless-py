@@ -23,9 +23,8 @@ if TYPE_CHECKING:
 # General
 
 
-# TODO: rename to IDescriptor, IDescriptorSource
-IDescriptor = Union[str, Path, Mapping]
-IPlainDescriptor = Dict[str, Any]
+IDescriptor = Dict[str, Any]
+IDescriptorSource = Union[str, Path, Mapping]
 IByteStream = BinaryIO
 ITextStream = TextIO
 IListStream = Iterable[List[Any]]

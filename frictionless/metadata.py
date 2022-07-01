@@ -17,7 +17,7 @@ from . import settings
 from . import helpers
 
 if TYPE_CHECKING:
-    from .interfaces import IDescriptor, IPlainDescriptor
+    from .interfaces import IDescriptor, IDescriptorSource
     from .error import Error
 
 
@@ -110,7 +110,7 @@ class Metadata(metaclass=Metaclass):
         return self.to_descriptor()
 
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptor, **options):
+    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         """Import metadata from a descriptor source"""
         target = {}
         source = cls.metadata_normalize(descriptor)
@@ -128,9 +128,13 @@ class Metadata(metaclass=Metaclass):
                     value = Type.from_descriptor(value)
             target[stringcase.snakecase(name)] = value
         target.update(options)
-        return cls(**target)
+        metadata = cls(**target)
+        if isinstance(descriptor, str):
+            metadata.metadata_descriptor_path = descriptor
+            metadata.metadata_descriptor_initial = source
+        return metadata
 
-    def to_descriptor(self, *, exclude: List[str] = []) -> IPlainDescriptor:
+    def to_descriptor(self, *, exclude: List[str] = []) -> IDescriptor:
         """Export metadata as a descriptor"""
         descriptor = {}
         for name, Type in self.metadata_properties().items():
@@ -145,10 +149,17 @@ class Metadata(metaclass=Metaclass):
                     continue
             if Type:
                 if isinstance(value, list):
-                    value = [item.to_descriptor() for item in value]
+                    value = [item.to_descriptor_source() for item in value]
                 else:
-                    value = value.to_descriptor()
+                    value = value.to_descriptor_source()
             descriptor[name] = value
+        return descriptor
+
+    def to_descriptor_source(self, *, exclude: List[str] = []) -> IDescriptorSource:
+        descriptor = self.to_descriptor(exclude=exclude)
+        if self.metadata_descriptor_path:
+            if self.metadata_descriptor_initial == descriptor:
+                return self.metadata_descriptor_path
         return descriptor
 
     def to_json(self, path=None, encoder_class=None):
@@ -218,6 +229,8 @@ class Metadata(metaclass=Metaclass):
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
+    metadata_descriptor_path = None
+    metadata_descriptor_initial = None
 
     @property
     def metadata_valid(self) -> bool:
@@ -256,11 +269,11 @@ class Metadata(metaclass=Metaclass):
 
     # TODO: return plain descriptor?
     @classmethod
-    def metadata_normalize(cls, descriptor: IDescriptor) -> Mapping:
+    def metadata_normalize(cls, descriptor: IDescriptorSource) -> IDescriptor:
         """Extract metadata"""
         try:
             if isinstance(descriptor, Mapping):
-                return descriptor
+                return dict(descriptor)
             if isinstance(descriptor, (str, Path)):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
