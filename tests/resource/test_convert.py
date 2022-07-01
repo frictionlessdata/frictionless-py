@@ -169,3 +169,32 @@ def test_resource_to_markdown_file_837(tmpdir):
     with open(target, encoding="utf-8") as file:
         output = file.read()
     assert expected == output
+
+
+# Problems
+
+
+def test_resource_to_descriptor_infer_dereferencing_issue_904():
+    resource = Resource(path="data/table.csv", schema="data/schema.json")
+    resource.infer(stats=True)
+    assert resource.to_descriptor() == {
+        "name": "table",
+        "path": "data/table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "dialect": {
+            "controls": [
+                {"code": "local"},
+                {"code": "csv"},
+            ]
+        },
+        "schema": "data/schema.json",
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
+    }

@@ -213,7 +213,6 @@ class System:
         Returns:
             Loader: loader
         """
-        print(resource)
         loader = None
         name = resource.scheme
         for func in self.methods["create_loader"].values():

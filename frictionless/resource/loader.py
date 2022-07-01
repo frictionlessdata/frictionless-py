@@ -242,6 +242,7 @@ class Loader:
         Parameters:
             buffer (bytes): byte buffer
         """
+        self.resource.add_defined("hashing")
         self.resource.encoding = self.resource.detector.detect_encoding(
             buffer, encoding=self.resource.get_defined("encoding")
         )
@@ -332,7 +333,7 @@ class ByteStreamWithStatsHandling:
             self.__hasher.update(chunk)
         # End of file
         if size == -1 or not chunk:
-            self.__resource.stats["bytes"] = self.__counter
             if self.__hasher:
                 self.__resource.stats["hash"] = self.__hasher.hexdigest()
+            self.__resource.stats["bytes"] = self.__counter
         return chunk

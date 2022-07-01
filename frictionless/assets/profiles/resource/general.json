@@ -250,6 +250,16 @@
         "{\n  \"mediatype\": \"text/csv\"\n}\n"
       ]
     },
+    "hashing": {
+      "propertyOrder": 95,
+      "title": "Hashing",
+      "description": "The file hashing algorithm of this resource.",
+      "type": "string",
+      "default": "utf-8",
+      "examples": [
+        "{\n  \"hashing\": \"sha256\"\n}\n"
+      ]
+    },
     "encoding": {
       "propertyOrder": 100,
       "title": "Encoding",

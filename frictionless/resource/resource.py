@@ -102,16 +102,18 @@ class Resource(Metadata):
         self.innerpath = innerpath
         self.compression = compression
         self.extrapaths = extrapaths.copy()
-        self.dialect = dialect or Dialect()
-        self.schema = schema
-        self.checklist = checklist
-        self.pipeline = pipeline
         self.stats = stats.copy()
         self.basepath = basepath
         self.onerror = onerror
         self.trusted = trusted
         self.detector = detector or Detector()
         self.package = package
+
+        # Store dereferenced state
+        self.dialect = dialect or Dialect()
+        self.schema = schema
+        self.checklist = checklist
+        self.pipeline = pipeline
 
         # Store internal state
         self.__loader = None
@@ -868,6 +870,7 @@ class Resource(Metadata):
                     break
             return rows
 
+    # TODO: rework this method
     # TODO: review how to name / where to place this method
     def __read_details(self):
 
@@ -889,7 +892,8 @@ class Resource(Metadata):
             field_candidates=field_candidates,
         )
         if schema:
-            self.schema = schema
+            if not self.schema or self.schema.to_descriptor() != schema.to_descriptor():
+                self.schema = schema
         self.__labels = labels
         self.__fragment = fragment
         self.stats["fields"] = len(schema.fields)
@@ -1168,6 +1172,7 @@ class Resource(Metadata):
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["pipeline"] = {"type": ["string", "object"]}
+    metadata_profile["properties"]["stats"] = {"type": "object"}
 
     @classmethod
     def metadata_properties(cls):

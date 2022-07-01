@@ -30,11 +30,13 @@ class CsvParser(Parser):
         except csv.Error:
             config = csv.excel()
         # TODO: set only if it differs from default?
-        control.set_not_defined("delimiter", config.delimiter)
-        control.set_not_defined("line_terminator", config.lineterminator)
-        control.set_not_defined("escape_char", config.escapechar)
-        control.set_not_defined("quote_char", config.quotechar)
-        control.set_not_defined("skip_initial_space", config.skipinitialspace)
+        control.set_not_defined("delimiter", config.delimiter, distinct=True)
+        control.set_not_defined("line_terminator", config.lineterminator, distinct=True)
+        control.set_not_defined("escape_char", config.escapechar, distinct=True)
+        control.set_not_defined("quote_char", config.quotechar, distinct=True)
+        control.set_not_defined(
+            "skip_initial_space", config.skipinitialspace, distinct=True
+        )
         source = chain(sample, self.loader.text_stream)
         data = csv.reader(source, dialect=control.to_python())
         yield from data

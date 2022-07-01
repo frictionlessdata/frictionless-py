@@ -72,6 +72,9 @@ class Metadata(metaclass=Metaclass):
                 defined.append(name)
         return defined
 
+    def add_defined(self, name: str):
+        return self.metadata_assigned.add(name)
+
     def has_defined(self, name: str):
         return name in self.list_defined()
 
@@ -81,8 +84,10 @@ class Metadata(metaclass=Metaclass):
         if default is not None:
             return default
 
-    def set_not_defined(self, name: str, value):
+    def set_not_defined(self, name: str, value, *, distinct=False):
         if not self.has_defined(name) and value is not None:
+            if distinct and getattr(self, name, None) == value:
+                return
             setattr(self, name, value)
 
     # Validate
