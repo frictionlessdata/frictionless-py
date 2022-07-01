@@ -1,8 +1,9 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource
-from frictionless.plugins.sql import SqlControl, SqlStorage
+from frictionless import Package, Resource, formats
+
+pytestmark = pytest.mark.skip
 
 
 # General
@@ -10,10 +11,10 @@ from frictionless.plugins.sql import SqlControl, SqlStorage
 
 @pytest.mark.skip
 def test_sql_storage_postgresql_types(postgresql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
-    storage = source.to_sql(postgresql_url, dialect=dialect)
-    target = Package.from_sql(postgresql_url, dialect=dialect)
+    storage = source.to_sql(postgresql_url, control=control)
+    target = Package.from_sql(postgresql_url, control=control)
 
     # Assert metadata
     assert target.get_resource("types").schema == {
@@ -65,10 +66,10 @@ def test_sql_storage_postgresql_types(postgresql_url):
 
 @pytest.mark.skip
 def test_sql_storage_postgresql_integrity(postgresql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
-    storage = source.to_sql(postgresql_url, dialect=dialect)
-    target = Package.from_sql(postgresql_url, dialect=dialect)
+    storage = source.to_sql(postgresql_url, control=control)
+    target = Package.from_sql(postgresql_url, control=control)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema == {
@@ -121,21 +122,21 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
 
 @pytest.mark.skip
 def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
     source.add_resource(source.remove_resource("integrity_main"))
-    storage = source.to_sql(postgresql_url, dialect=dialect)
-    target = Package.from_sql(postgresql_url, dialect=dialect)
+    storage = source.to_sql(postgresql_url, control=control)
+    target = Package.from_sql(postgresql_url, control=control)
     assert len(target.resources) == 2
     storage.delete_package(target.resource_names)
 
 
 @pytest.mark.skip
 def test_sql_storage_postgresql_constraints(postgresql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
-    storage = source.to_sql(postgresql_url, dialect=dialect)
-    target = Package.from_sql(postgresql_url, dialect=dialect)
+    storage = source.to_sql(postgresql_url, control=control)
+    target = Package.from_sql(postgresql_url, control=control)
 
     # Assert metadata
     assert target.get_resource("constraints").schema == {
@@ -188,7 +189,7 @@ def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name
         if field.name == name:
             resource.data[1][index] = cell
     with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
-        resource.write(postgresql_url, dialect={"table": "table"})
+        resource.write(postgresql_url, control={"table": "table"})
 
 
 @pytest.mark.skip
@@ -215,17 +216,17 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
 
 @pytest.mark.skip
 def test_sql_storage_postgresql_comment_support(postgresql_url):
-    dialect = SqlDialect(table="table")
+    control = formats.SqlControl(table="table")
 
     # Write
     source = Resource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
-    source.write(postgresql_url, dialect=dialect)
+    source.write(postgresql_url, control=control)
 
     # Read
-    target = Resource(postgresql_url, dialect=dialect)
+    target = Resource(postgresql_url, control=control)
     with target:
         assert target.schema == {
             "fields": [

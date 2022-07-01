@@ -1,8 +1,9 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource
-from frictionless.plugins.sql import SqlControl, SqlStorage
+from frictionless import Package, Resource, formats
+
+pytestmark = pytest.mark.skip
 
 
 # General
@@ -10,10 +11,10 @@ from frictionless.plugins.sql import SqlControl, SqlStorage
 
 @pytest.mark.skip
 def test_sql_storage_mysql_types(mysql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
-    storage = source.to_sql(mysql_url, dialect=dialect)
-    target = Package.from_sql(mysql_url, dialect=dialect)
+    storage = source.to_sql(mysql_url, control=control)
+    target = Package.from_sql(mysql_url, control=control)
 
     # Assert metadata
     assert target.get_resource("types").schema == {
@@ -65,10 +66,10 @@ def test_sql_storage_mysql_types(mysql_url):
 
 @pytest.mark.skip
 def test_sql_storage_mysql_integrity(mysql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
-    storage = source.to_sql(mysql_url, dialect=dialect)
-    target = Package.from_sql(mysql_url, dialect=dialect)
+    storage = source.to_sql(mysql_url, control=control)
+    target = Package.from_sql(mysql_url, control=control)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema == {
@@ -121,10 +122,10 @@ def test_sql_storage_mysql_integrity(mysql_url):
 
 @pytest.mark.skip
 def test_sql_storage_mysql_constraints(mysql_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
-    storage = source.to_sql(mysql_url, dialect=dialect)
-    target = Package.from_sql(mysql_url, dialect=dialect)
+    storage = source.to_sql(mysql_url, control=control)
+    target = Package.from_sql(mysql_url, control=control)
 
     # Assert metadata
     assert target.get_resource("constraints").schema == {
@@ -206,17 +207,17 @@ def test_sql_storage_mysql_views_support(mysql_url):
 
 @pytest.mark.skip
 def test_sql_storage_mysql_comment_support(mysql_url):
-    dialect = SqlDialect(table="table")
+    control = formats.SqlControl(table="table")
 
     # Write
     source = Resource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
-    source.write(mysql_url, dialect=dialect)
+    source.write(mysql_url, control=control)
 
     # Read
-    target = Resource(mysql_url, dialect=dialect)
+    target = Resource(mysql_url, control=control)
     with target:
         assert target.schema == {
             "fields": [

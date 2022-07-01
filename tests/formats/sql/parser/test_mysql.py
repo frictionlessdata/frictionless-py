@@ -1,6 +1,8 @@
+import pytest
 import datetime
-from frictionless import Resource, Dialect
-from frictionless.plugins.sql import SqlControl
+from frictionless import Resource, formats
+
+pytestmark = pytest.mark.skip
 
 
 # General
@@ -9,8 +11,8 @@ from frictionless.plugins.sql import SqlControl
 # TODO: add timezone support or document if it's not possible
 def test_sql_parser_write_timezone_mysql(mysql_url):
     source = Resource("data/timezone.csv")
-    dialect = Dialect(controls=[SqlControl(table="timezone")])
-    target = source.write(mysql_url, dialect=dialect)
+    control = formats.SqlControl(table="timezone")
+    target = source.write(mysql_url, control=control)
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
@@ -26,8 +28,8 @@ def test_sql_parser_write_string_pk_issue_777_mysql(mysql_url):
     source.infer()
     source.schema.primary_key = ["name"]
     source.schema.get_field("name").constraints["maxLength"] = 100
-    dialect = Dialect(controls=[SqlControl(table="name")])
-    target = source.write(mysql_url, dialect=dialect)
+    control = formats.SqlControl(table="name")
+    target = source.write(mysql_url, control=control)
     with target:
         assert target.schema.primary_key == ["name"]
         assert target.header == ["id", "name"]

@@ -1,8 +1,10 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, FrictionlessException
-from frictionless.plugins.sql import SqlControl, SqlStorage
+from frictionless import Package, Resource, formats
+from frictionless import FrictionlessException
+
+pytestmark = pytest.mark.skip
 
 
 # General
@@ -10,10 +12,10 @@ from frictionless.plugins.sql import SqlControl, SqlStorage
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_types(sqlite_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
-    storage = source.to_sql(sqlite_url, dialect=dialect)
-    target = Package.from_sql(sqlite_url, dialect=dialect)
+    storage = source.to_sql(sqlite_url, control=control)
+    target = Package.from_sql(sqlite_url, control=control)
 
     # Assert metadata
     assert target.get_resource("types").schema == {
@@ -65,10 +67,10 @@ def test_sql_storage_sqlite_types(sqlite_url):
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_integrity(sqlite_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
-    storage = source.to_sql(sqlite_url, dialect=dialect)
-    target = Package.from_sql(sqlite_url, dialect=dialect)
+    storage = source.to_sql(sqlite_url, control=control)
+    target = Package.from_sql(sqlite_url, control=control)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema == {
@@ -119,10 +121,10 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_constraints(sqlite_url):
-    dialect = SqlDialect(prefix="prefix_")
+    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
-    storage = source.to_sql(sqlite_url, dialect=dialect)
-    target = Package.from_sql(sqlite_url, dialect=dialect)
+    storage = source.to_sql(sqlite_url, control=control)
+    target = Package.from_sql(sqlite_url, control=control)
 
     # Assert metadata
     assert target.get_resource("constraints").schema == {
@@ -177,7 +179,7 @@ def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, 
             resource.data[1][index] = cell
     # NOTE: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):
-        resource.write(sqlite_url, dialect={"table": "table"})
+        resource.write(sqlite_url, control={"table": "table"})
 
 
 @pytest.mark.skip
@@ -237,7 +239,7 @@ def test_sql_storage_sqlite_views_support(sqlite_url):
 @pytest.mark.skip
 def test_sql_storage_sqlite_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
-    target = source.write(sqlite_url, dialect={"table": "table"})
+    target = source.write(sqlite_url, control={"table": "table"})
     with target:
         assert target.schema == {
             "fields": [
@@ -270,11 +272,11 @@ def test_sql_storage_sqlite_package_url_argument(sqlite_url):
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_integer_enum_issue_776(sqlite_url):
-    dialect = SqlDialect(table="table")
+    control = formats.SqlControl(table="table")
     source = Resource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").constraints["enum"] = [1, 2]
-    target = source.write(sqlite_url, dialect=dialect)
+    target = source.write(sqlite_url, control=control)
     assert target.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -283,8 +285,8 @@ def test_sql_storage_sqlite_integer_enum_issue_776(sqlite_url):
 
 @pytest.mark.skip
 def test_sql_storage_dialect_basepath_issue_964(sqlite_url):
-    dialect = SqlDialect(table="test_table", basepath="data")
-    with Resource(path="sqlite:///sqlite.db", dialect=dialect) as resource:
+    control = formats.SqlControl(table="test_table", basepath="data")
+    with Resource(path="sqlite:///sqlite.db", control=control) as resource:
         assert resource.read_rows() == [
             {"id": 1, "name": "foo"},
             {"id": 2, "name": "bar"},
