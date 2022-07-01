@@ -3,6 +3,8 @@ import pytest
 import datetime
 from frictionless import Package, Resource, helpers
 
+pytestmark = pytest.mark.skip
+
 
 IS_MACOS = helpers.is_platform("macos")
 

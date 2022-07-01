@@ -1,7 +1,6 @@
 import pytest
 import datetime
-from frictionless import Resource
-from frictionless.plugins.bigquery import BigqueryControl
+from frictionless import Resource, formats
 
 
 # We don't use VCR for this module testing because
@@ -17,9 +16,9 @@ from frictionless.plugins.bigquery import BigqueryControl
 def test_bigquery_parser_write(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    control = formats.BigqueryControl(table=prefix, **options)
     source = Resource("data/table.csv")
-    target = source.write(service, dialect=dialect)
+    target = source.write(service, control=control)
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -34,9 +33,9 @@ def test_bigquery_parser_write(options):
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    control = formats.BigqueryControl(table=prefix, **options)
     source = Resource("data/timezone.csv")
-    target = source.write(service, dialect=dialect)
+    target = source.write(service, control=control)
     with target:
         assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

@@ -5,8 +5,8 @@ import pytest
 import datetime
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Package, Resource, FrictionlessException
-from frictionless.plugins.bigquery import BigqueryControl, BigqueryStorage
+from frictionless import Package, Resource, formats
+from frictionless import FrictionlessException
 
 
 # We don't use VCR for this module testing because
@@ -22,10 +22,10 @@ from frictionless.plugins.bigquery import BigqueryControl, BigqueryStorage
 def test_bigquery_storage_types(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    control = formats.BigqueryControl(table=prefix, **options)
     source = Package("data/storage/types.json")
-    storage = source.to_bigquery(service, dialect=dialect)
-    target = Package.from_bigquery(service, dialect=dialect)
+    storage = source.to_bigquery(service, control=control)
+    target = Package.from_bigquery(service, control=control)
 
     # Assert metadata
     assert target.get_resource("types").schema == {
@@ -81,10 +81,10 @@ def test_bigquery_storage_types(options):
 def test_bigquery_storage_integrity(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    control = formats.BigqueryControl(table=prefix, **options)
     source = Package("data/storage/integrity.json")
-    storage = source.to_bigquery(service, dialect=dialect)
-    target = Package.from_bigquery(service, dialect=dialect)
+    storage = source.to_bigquery(service, control=control)
+    target = Package.from_bigquery(service, control=control)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema == {
@@ -130,10 +130,10 @@ def test_bigquery_storage_integrity(options):
 def test_bigquery_storage_constraints(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    control = formats.BigqueryControl(table=prefix, **options)
     source = Package("data/storage/constraints.json")
-    storage = source.to_bigquery(service, dialect=dialect)
-    target = Package.from_bigquery(service, dialect=dialect)
+    storage = source.to_bigquery(service, control=control)
+    target = Package.from_bigquery(service, control=control)
 
     # Assert metadata
     assert target.get_resource("constraints").schema == {
@@ -169,8 +169,8 @@ def test_bigquery_storage_constraints(options):
 @pytest.mark.ci
 def test_bigquery_storage_read_resource_not_existent_error(options):
     service = options.pop("service")
-    dialect = BigqueryDialect(**options)
-    storage = BigqueryStorage(service, dialect=dialect)
+    control = formats.BigqueryControl(**options)
+    storage = formats.BigqueryStorage(service, control=control)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
@@ -182,8 +182,8 @@ def test_bigquery_storage_read_resource_not_existent_error(options):
 @pytest.mark.ci
 def test_bigquery_storage_write_resource_existent_error(options):
     service = options.pop("service")
-    dialect = BigqueryDialect(**options)
-    storage = BigqueryStorage(service, dialect=dialect)
+    control = formats.BigqueryControl(**options)
+    storage = formats.BigqueryStorage(service, control=control)
     resource = Resource(path="data/table.csv")
     storage.write_resource(resource, force=True)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -199,8 +199,8 @@ def test_bigquery_storage_write_resource_existent_error(options):
 @pytest.mark.ci
 def test_bigquery_storage_delete_resource_not_existent_error(options):
     service = options.pop("service")
-    dialect = BigqueryDialect(**options)
-    storage = BigqueryStorage(service, dialect=dialect)
+    control = formats.BigqueryControl(**options)
+    storage = formats.BigqueryStorage(service, control=control)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
@@ -212,8 +212,8 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
 @pytest.mark.ci
 def test_storage_big_file(options):
     service = options.pop("service")
-    dialect = BigqueryDialect(**options)
-    storage = BigqueryStorage(service, dialect=dialect)
+    control = formats.BigqueryControl(**options)
+    storage = formats.BigqueryStorage(service, control=control)
     resource = Resource(name="table", data=[[1]] * 1500)
     storage.write_resource(resource, force=True)
     target = storage.read_resource("table")

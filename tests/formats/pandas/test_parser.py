@@ -1,4 +1,5 @@
 import pytz
+import pytest
 import isodate
 import datetime
 from dateutil.tz import tzutc
@@ -6,6 +7,8 @@ from dateutil.tz import tzoffset
 import pandas as pd
 from decimal import Decimal
 from frictionless import Package, Resource
+
+pytestmark = pytest.mark.skip
 
 
 # Read
