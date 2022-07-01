@@ -5,7 +5,7 @@ import petl
 import builtins
 import warnings
 from copy import deepcopy
-from typing import TYPE_CHECKING, Optional, Literal, Union, List, Any
+from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
 from ..table import Header, Row
 from ..schema import Schema, Field
@@ -25,7 +25,7 @@ from .. import errors
 if TYPE_CHECKING:
     from ..error import Error
     from ..package import Package
-    from ..interfaces import FilterFunction, ProcessFunction
+    from ..interfaces import FilterFunction, ProcessFunction, IOnerror
 
 
 # NOTE:
@@ -77,8 +77,8 @@ class Resource(Metadata):
         pipeline: Optional[Union[Pipeline, str]] = None,
         stats: dict = {},
         # Extra
-        basepath: str = "",
-        onerror: Literal["ignore", "warn", "raise"] = settings.DEFAULT_ONERROR,
+        basepath: str = settings.DEFAULT_BASEPATH,
+        onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
@@ -274,8 +274,7 @@ class Resource(Metadata):
     The fullpath of the resource is joined `basepath` and /path`
     """
 
-    # TODO: move type to interfaces
-    onerror: Literal["ignore", "warn", "raise"]
+    onerror: IOnerror
     """
     Behaviour if there is an error.
     It defaults to 'ignore'. The default mode will ignore all errors
@@ -316,14 +315,8 @@ class Resource(Metadata):
     @dialect.setter
     def dialect(self, value: Union[Dialect, str]):
         if isinstance(value, str):
-            path = os.path.join(self.basepath, value)
-            self.__dialect = Dialect.from_descriptor(path)
-            self.__dialect_desc = self.__dialect.to_descriptor()
-            self.__dialect_path = value
-            return
+            value = Dialect.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__dialect = value
-        self.__dialect_desc = None
-        self.__dialect_path = None
 
     @property
     def schema(self) -> Optional[Schema]:
@@ -336,14 +329,8 @@ class Resource(Metadata):
     @schema.setter
     def schema(self, value: Optional[Union[Schema, str]]):
         if isinstance(value, str):
-            path = os.path.join(self.basepath, value)
-            self.__schema = Schema.from_descriptor(path)
-            self.__schema_desc = self.__schema.to_descriptor()
-            self.__schema_path = value
-            return
+            value = Schema.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__schema = value
-        self.__schema_desc = None
-        self.__schema_path = None
 
     @property
     def checklist(self) -> Optional[Checklist]:
@@ -356,14 +343,8 @@ class Resource(Metadata):
     @checklist.setter
     def checklist(self, value: Optional[Union[Checklist, str]]):
         if isinstance(value, str):
-            path = os.path.join(self.basepath, value)
-            self.__checklist = Checklist.from_descriptor(path)
-            self.__checklist_desc = self.__checklist.to_descriptor()
-            self.__checklist_path = value
-            return
+            value = Checklist.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__checklist = value
-        self.__checklist_desc = None
-        self.__checklist_path = None
 
     @property
     def pipeline(self) -> Optional[Pipeline]:
@@ -376,14 +357,8 @@ class Resource(Metadata):
     @pipeline.setter
     def pipeline(self, value: Optional[Union[Pipeline, str]]):
         if isinstance(value, str):
-            path = os.path.join(self.basepath, value)
-            self.__pipeline = Pipeline.from_descriptor(path)
-            self.__pipeline_desc = self.__pipeline.to_descriptor()
-            self.__pipeline_path = value
-            return
+            value = Pipeline.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__pipeline = value
-        self.__pipeline_desc = None
-        self.__pipeline_path = None
 
     @property
     def description_html(self) -> str:
@@ -1092,14 +1067,6 @@ class Resource(Metadata):
         descriptor = super().to_descriptor(exclude=exclude)
         if not isinstance(descriptor.get("data", []), (list, dict)):
             descriptor.pop("data", None)
-        if self.__dialect_path and self.__dialect_desc == descriptor.get("dialect"):
-            descriptor["dialect"] = self.__dialect_path
-        if self.__schema_path and self.__schema_desc == descriptor.get("schema"):
-            descriptor["schema"] = self.__schema_path
-        if self.__checklist_path and self.__checklist_desc == descriptor.get("checklist"):
-            descriptor["checklist"] = self.__checklist_path
-        if self.__pipeline_path and self.__pipeline_desc == descriptor.get("pipeline"):
-            descriptor["pipeline"] = self.__pipeline_path
         return descriptor
 
     def to_view(self, type="look", **options):

@@ -1,17 +1,8 @@
 from __future__ import annotations
 from pathlib import Path
 from collections.abc import Mapping
-from typing import (
-    TYPE_CHECKING,
-    Protocol,
-    BinaryIO,
-    TextIO,
-    Iterable,
-    List,
-    Dict,
-    Any,
-    Union,
-)
+from typing import TYPE_CHECKING
+from typing import Protocol, BinaryIO, TextIO, Iterable, List, Dict, Any, Union, Literal
 
 if TYPE_CHECKING:
     from .table import Row
@@ -30,9 +21,13 @@ ITextStream = TextIO
 IListStream = Iterable[List[Any]]
 IBuffer = bytes
 ISample = List[List[Any]]
+IOnerror = Literal["ignore", "warn", "raise"]
 
 
 # Functions
+
+
+# TODO: add "I" prefix
 
 
 class CheckFunction(Protocol):

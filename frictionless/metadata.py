@@ -110,10 +110,19 @@ class Metadata(metaclass=Metaclass):
         return self.to_descriptor()
 
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
+    def from_descriptor(
+        cls,
+        descriptor: IDescriptorSource,
+        *,
+        descriptor_basepath: str = settings.DEFAULT_BASEPATH,
+        **options,
+    ):
         """Import metadata from a descriptor source"""
         target = {}
-        source = cls.metadata_normalize(descriptor)
+        source = cls.metadata_normalize(
+            descriptor,
+            descriptor_basepath=descriptor_basepath,
+        )
         for name, Type in cls.metadata_properties().items():
             value = source.get(name)
             if value is None:
@@ -156,6 +165,7 @@ class Metadata(metaclass=Metaclass):
         return descriptor
 
     def to_descriptor_source(self, *, exclude: List[str] = []) -> IDescriptorSource:
+        """Export metadata as a descriptor or a path to the descriptor"""
         descriptor = self.to_descriptor(exclude=exclude)
         if self.metadata_descriptor_path:
             if self.metadata_descriptor_initial == descriptor:
@@ -269,7 +279,12 @@ class Metadata(metaclass=Metaclass):
 
     # TODO: return plain descriptor?
     @classmethod
-    def metadata_normalize(cls, descriptor: IDescriptorSource) -> IDescriptor:
+    def metadata_normalize(
+        cls,
+        descriptor: IDescriptorSource,
+        *,
+        descriptor_basepath: str = settings.DEFAULT_BASEPATH,
+    ) -> IDescriptor:
         """Extract metadata"""
         try:
             if isinstance(descriptor, Mapping):
@@ -277,6 +292,7 @@ class Metadata(metaclass=Metaclass):
             if isinstance(descriptor, (str, Path)):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
+                descriptor = os.path.join(descriptor_basepath, descriptor)
                 if helpers.is_remote_path(descriptor):
                     system = import_module("frictionless.system").system
                     http_session = system.get_http_session()
