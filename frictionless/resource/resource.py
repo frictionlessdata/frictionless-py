@@ -838,7 +838,7 @@ class Resource(Metadata):
         if self.data:
             return self.data
         with helpers.ensure_open(self):
-            text = self.read_text()
+            text = self.read_text(size=size)
             data = json.loads(text)
             return data
 
