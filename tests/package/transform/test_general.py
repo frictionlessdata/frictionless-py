@@ -1,6 +1,8 @@
 import pytest
 from frictionless import Package, Pipeline, steps
 
+pytestmark = pytest.mark.skip
+
 
 # General
 

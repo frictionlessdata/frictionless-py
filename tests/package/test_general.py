@@ -153,6 +153,7 @@ def test_package_from_invalid_descriptor_type():
     assert error.note.count("51")
 
 
+@pytest.mark.skip
 def test_package_from_zip():
     package = Package("data/package.zip")
     assert package.name == "testing"
@@ -164,6 +165,7 @@ def test_package_from_zip():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_package_from_zip_remote():
     package = Package(BASEURL % "data/package.zip")
@@ -176,6 +178,7 @@ def test_package_from_zip_remote():
     ]
 
 
+@pytest.mark.skip
 def test_package_from_zip_no_descriptor(tmpdir):
     descriptor = str(tmpdir.join("package.zip"))
     with zipfile.ZipFile(descriptor, "w") as zip:
@@ -187,6 +190,7 @@ def test_package_from_zip_no_descriptor(tmpdir):
     assert error.note.count("datapackage.json")
 
 
+@pytest.mark.skip
 def test_package_from_zip_innerpath():
     package = Package("data/innerpath.package.zip", innerpath="datapackage.yaml")
     assert package.name == "emissions"
@@ -199,13 +203,13 @@ def test_package_standard_specs_properties(create_descriptor):
         resources=[],
         name="name",
         id="id",
+        profiles=["profile"],
         licenses=[],
-        profile="profile",
+        sources=[],
         title="title",
         description="description",
         homepage="homepage",
         version="version",
-        sources=[],
         contributors=[],
         keywords=["keyword"],
         image="image",
@@ -219,13 +223,13 @@ def test_package_standard_specs_properties(create_descriptor):
     assert package.resources == []
     assert package.name == "name"
     assert package.id == "id"
+    assert package.profiles == ["profile"]
     assert package.licenses == []
-    assert package.profile == "profile"
+    assert package.sources == []
     assert package.title == "title"
     assert package.description == "description"
     assert package.homepage == "homepage"
     assert package.version == "version"
-    assert package.sources == []
     assert package.contributors == []
     assert package.keywords == ["keyword"]
     assert package.image == "image"
@@ -259,6 +263,7 @@ def test_package_description_text_plain():
 # Problems
 
 
+@pytest.mark.skip
 def test_package_dialect_no_header_issue_167():
     package = Package("data/package-dialect-no-header.json")
     resource = package.get_resource("people")
@@ -267,6 +272,7 @@ def test_package_dialect_no_header_issue_167():
     assert rows[1]["score"] == 1
 
 
+@pytest.mark.skip
 def test_package_validation_is_not_strict_enough_issue_869():
     package = Package("data/issue-869.json")
     errors = package.metadata_errors
@@ -275,6 +281,7 @@ def test_package_validation_is_not_strict_enough_issue_869():
     assert errors[1].note == 'property "contributors[].email" is not valid "email"'
 
 
+@pytest.mark.skip
 def test_package_validation_duplicate_resource_names_issue_942():
     package = Package(
         resources=[
@@ -315,50 +322,10 @@ def test_package_set_trusted():
     assert package.trusted is False
 
 
-def test_package_pprint_1029():
+@pytest.mark.skip
+def test_package_pprint():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})
     expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
                 'name': 'name'}]}"""
     assert repr(package) == expected
-
-
-def test_package_to_erd_1118(tmpdir):
-    package = Package("data/package-storage.json")
-    output_file = os.path.join(tmpdir, "output.dot")
-    with open("data/fixtures/dot-files/package.dot") as file:
-        expected = file.read()
-    package.to_er_diagram(output_file)
-    with open(output_file) as file:
-        output = file.read()
-    assert expected.strip() == output.strip()
-
-
-def test_package_to_erd_table_names_with_dash_1118(tmpdir):
-    # graphviz shows error if the table/field name has "-" so need to
-    # wrap names with quotes ""
-    package = Package("data/datapackage.json")
-    output_file = os.path.join(tmpdir, "output.dot")
-    with open(
-        "data/fixtures/dot-files/package-resource-names-including-dash.dot"
-    ) as file:
-        expected = file.read()
-    package.to_er_diagram(output_file)
-    with open(output_file) as file:
-        output = file.read()
-    assert expected.strip() == output.strip()
-    assert output.count('"number-two"')
-
-
-def test_package_to_erd_without_table_relationships_1118(tmpdir):
-    package = Package("data/datapackage.json")
-    output_file = os.path.join(tmpdir, "output.dot")
-    with open(
-        "data/fixtures/dot-files/package-resource-names-including-dash.dot"
-    ) as file:
-        expected = file.read()
-    package.to_er_diagram(output_file)
-    with open(output_file) as file:
-        output = file.read()
-    assert expected.strip() == output.strip()
-    assert output.count("->") == 0

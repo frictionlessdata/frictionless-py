@@ -105,6 +105,7 @@ class Package(Metadata):
         # Handled by __create__
         assert source is None
 
+    # TODO: support list of paths
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
         if source:
@@ -126,9 +127,9 @@ class Package(Metadata):
             elif isinstance(source, str) and helpers.is_expandable_path(source):
                 options["resources"] = []
                 pattern = f"{source}/*" if os.path.isdir(source) else source
-                options = {"recursive": True} if "**" in pattern else {}
-                for path in sorted(glob.glob(pattern, **options)):
-                    options["resources"].append({"path": path})  # type: ignore
+                configs = {"recursive": True} if "**" in pattern else {}
+                for path in sorted(glob.glob(pattern, **configs)):
+                    options["resources"].append({"path": path})
 
             # Descriptor
             options.setdefault("trusted", False)
@@ -285,6 +286,7 @@ class Package(Metadata):
         """Package description in Text"""
         return helpers.html_to_text(self.description_html)
 
+    @property
     def resource_names(self):
         """Return names of resources"""
         return [resource.name for resource in self.resources]
