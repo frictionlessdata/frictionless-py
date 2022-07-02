@@ -8,6 +8,8 @@ from copy import deepcopy
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
+from ..helpers import get_name
+from ..pipeline import Pipeline
 from ..checklist import Checklist
 from ..metadata import Metadata
 from ..detector import Detector
@@ -382,6 +384,40 @@ class Package(Metadata):
             time=timer.time,
             reports=reports,
         )
+
+    # Transform
+
+    # TODO: save transform info into package.stats?
+    def transform(self, pipeline: Pipeline):
+        """Transform package
+
+        Parameters:
+            source (any): data source
+            steps (Step[]): transform steps
+            **options (dict): Package constructor options
+
+        Returns:
+            Package: the transform result
+        """
+
+        # Prepare package
+        self.infer()
+
+        # Prepare pipeline
+        if not pipeline.metadata_valid:
+            raise FrictionlessException(pipeline.metadata_errors[0])
+
+        # Run transforms
+        for step in pipeline.steps:
+
+            # Transform
+            try:
+                step.transform_package(self)
+            except Exception as exception:
+                error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
+                raise FrictionlessException(error) from exception
+
+        return self
 
     # Resources
 
