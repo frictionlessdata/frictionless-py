@@ -263,6 +263,25 @@ class Package(Metadata):
         """Return names of resources"""
         return [resource.name for resource in self.resources]
 
+    # Describe
+
+    @staticmethod
+    def describe(source=None, *, stats=False, **options):
+        """Describe the given source as a package
+
+        Parameters:
+            source (any): data source
+            stats? (bool): if `True` infer resource's stats
+            **options (dict): Package constructor options
+
+        Returns:
+            Package: data package
+
+        """
+        package = Package(source, **options)
+        package.infer(stats=stats)
+        return package
+
     # Resources
 
     def add_resource(self, source=None, **options):
