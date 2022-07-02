@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import json
 import petl
 import builtins
@@ -88,13 +89,6 @@ class Resource(Metadata):
         control: Optional[Control] = None,
     ):
 
-        # Store inherited state
-        self.__basepath = basepath
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__detector = detector
-        self.__hashing = hashing
-
         # Store state
         self.name = name
         self.title = title
@@ -112,12 +106,21 @@ class Resource(Metadata):
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
-        self.dialect = dialect or Dialect()
-        self.schema = schema
-        self.checklist = checklist
-        self.pipeline = pipeline
         self.stats = stats.copy()
         self.package = package
+
+        # Store dereferenced state
+        self.__dialect = dialect
+        self.__schema = schema
+        self.__checklist = checklist
+        self.__pipeline = pipeline
+
+        # Store inherited state
+        self.__basepath = basepath
+        self.__onerror = onerror
+        self.__trusted = trusted
+        self.__detector = detector
+        self.__hashing = hashing
 
         # Store internal state
         self.__loader = None
@@ -351,12 +354,17 @@ class Resource(Metadata):
         File Dialect object.
         For more information, please check the Dialect documentation.
         """
+        if self.__dialect is None:
+            self.__dialect = Dialect()
+            if self.package and self.package.dialect:
+                self.__dialect = self.package.dialect.to_copy()
+        elif isinstance(self.__dialect, str):
+            path = os.path.join(self.basepath, self.__dialect)
+            self.__dialect = Dialect.from_descriptor(path)
         return self.__dialect
 
     @dialect.setter
     def dialect(self, value: Union[Dialect, str]):
-        if isinstance(value, str):
-            value = Dialect.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__dialect = value
 
     @property
@@ -365,12 +373,13 @@ class Resource(Metadata):
         Table Schema object.
         For more information, please check the Schema documentation.
         """
+        if isinstance(self.__schema, str):
+            path = os.path.join(self.basepath, self.__schema)
+            self.__schema = Schema.from_descriptor(path)
         return self.__schema
 
     @schema.setter
     def schema(self, value: Optional[Union[Schema, str]]):
-        if isinstance(value, str):
-            value = Schema.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__schema = value
 
     @property
@@ -379,12 +388,13 @@ class Resource(Metadata):
         Checklist object.
         For more information, please check the Checklist documentation.
         """
+        if isinstance(self.__checklist, str):
+            path = os.path.join(self.basepath, self.__checklist)
+            self.__checklist = Checklist.from_descriptor(path)
         return self.__checklist
 
     @checklist.setter
     def checklist(self, value: Optional[Union[Checklist, str]]):
-        if isinstance(value, str):
-            value = Checklist.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__checklist = value
 
     @property
@@ -393,12 +403,13 @@ class Resource(Metadata):
         Pipeline object.
         For more information, please check the Pipeline documentation.
         """
+        if isinstance(self.__pipeline, str):
+            path = os.path.join(self.basepath, self.__pipeline)
+            self.__pipeline = Pipeline.from_descriptor(path)
         return self.__pipeline
 
     @pipeline.setter
     def pipeline(self, value: Optional[Union[Pipeline, str]]):
-        if isinstance(value, str):
-            value = Pipeline.from_descriptor(value, descriptor_basepath=self.basepath)
         self.__pipeline = value
 
     @property
@@ -459,11 +470,10 @@ class Resource(Metadata):
         Resource detector.
         For more information, please check the Detector documentation.
         """
-        if self.__detector is not None:
-            return self.__detector
-        elif self.package:
-            return self.package.detector
-        self.__detector = Detector()
+        if self.__detector is None:
+            self.__detector = Detector()
+            if self.package and self.package.detector:
+                self.__detector = self.package.detector.to_copy()
         return self.__detector
 
     @detector.setter

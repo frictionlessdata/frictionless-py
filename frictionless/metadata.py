@@ -110,19 +110,10 @@ class Metadata(metaclass=Metaclass):
         return self.to_descriptor()
 
     @classmethod
-    def from_descriptor(
-        cls,
-        descriptor: IDescriptorSource,
-        *,
-        descriptor_basepath: str = settings.DEFAULT_BASEPATH,
-        **options,
-    ):
+    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         """Import metadata from a descriptor source"""
         target = {}
-        source = cls.metadata_normalize(
-            descriptor,
-            descriptor_basepath=descriptor_basepath,
-        )
+        source = cls.metadata_normalize(descriptor)
         for name, Type in cls.metadata_properties().items():
             value = source.get(name)
             if value is None:

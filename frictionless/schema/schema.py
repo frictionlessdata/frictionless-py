@@ -24,6 +24,10 @@ class Schema(Metadata):
     ```
     """
 
+    def __post_init__(self):
+        for field in self.fields:
+            field.schema = self
+
     # State
 
     fields: List[Field] = field(default_factory=list)
@@ -162,10 +166,6 @@ class Schema(Metadata):
     @classmethod
     def from_descriptor(cls, descriptor, **options):
         schema = super().from_descriptor(descriptor, **options)
-
-        # Normalize fields
-        for field in schema.fields:
-            field.schema = schema
 
         # Normalize primary key
         if schema.primary_key and not isinstance(schema.primary_key, list):

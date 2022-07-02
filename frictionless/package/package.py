@@ -78,7 +78,6 @@ class Package(Metadata):
     ):
 
         # Store state
-        self.resources = resources.copy()
         self.id = id
         self.name = name
         self.title = title
@@ -96,9 +95,13 @@ class Package(Metadata):
         self.basepath = basepath
         self.onerror = onerror
         self.trusted = trusted
-        self.detector = detector or Detector()
+        self.detector = detector
         self.dialect = dialect
         self.hashing = hashing
+
+        # Store resources
+        for resource in resources:
+            self.add_resource(resource)
 
         # Handled by __create__
         assert source is None
@@ -254,7 +257,7 @@ class Package(Metadata):
     A path provided as `source` or `path` is alway trusted.
     """
 
-    detector: Detector
+    detector: Optional[Detector]
     """
     File/table detector.
     For more information, please check the Detector documentation.
@@ -516,13 +519,7 @@ class Package(Metadata):
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         if isinstance(descriptor, str):
             options["basepath"] = helpers.parse_basepath(descriptor)
-        package = super().from_descriptor(descriptor, **options)
-
-        # Normalize resources
-        for resource in package.resources:
-            resource.package = package
-
-        return package
+        return super().from_descriptor(descriptor, **options)
 
     # TODO: if path is not provided return as a string
     def to_er_diagram(self, path=None) -> str:
