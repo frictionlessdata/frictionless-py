@@ -129,7 +129,10 @@ class Metadata(metaclass=Metaclass):
                 continue
             # TODO: rebase on "type" only?
             if name in ["code", "type"]:
-                continue
+                if getattr(cls, "code", None):
+                    continue
+                if getattr(cls, "type", None):
+                    continue
             if Type:
                 if isinstance(value, list):
                     value = [Type.from_descriptor(item) for item in value]

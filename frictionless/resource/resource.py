@@ -730,7 +730,9 @@ class Resource(Metadata):
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
+                # TODO: rework in v6
                 self.stats = {}
+                self.metadata_assigned.remove("stats")
                 return
             stream = self.row_stream or self.byte_stream
             helpers.pass_through(stream)
