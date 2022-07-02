@@ -184,7 +184,7 @@ def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, 
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
-    storage = SqlStorage(sqlite_url)
+    storage = formats.SqlStorage(sqlite_url)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
@@ -194,7 +194,7 @@ def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_write_resource_existent_error(sqlite_url):
-    storage = SqlStorage(sqlite_url)
+    storage = formats.SqlStorage(sqlite_url)
     resource = Resource(path="data/table.csv")
     storage.write_resource(resource)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -208,7 +208,7 @@ def test_sql_storage_sqlite_write_resource_existent_error(sqlite_url):
 
 @pytest.mark.skip
 def test_sql_storage_sqlite_delete_resource_not_existent_error(sqlite_url):
-    storage = SqlStorage(sqlite_url)
+    storage = formats.SqlStorage(sqlite_url)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
@@ -222,7 +222,7 @@ def test_sql_storage_sqlite_views_support(sqlite_url):
     engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
     engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
     engine.execute("CREATE VIEW 'table_view' AS SELECT * FROM 'table'")
-    storage = SqlStorage(engine)
+    storage = formats.SqlStorage(engine)
     resource = storage.read_resource("table_view")
     assert resource.schema == {
         "fields": [

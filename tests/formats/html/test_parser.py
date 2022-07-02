@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, formats
+from frictionless import Resource, formats
 
 
 # General

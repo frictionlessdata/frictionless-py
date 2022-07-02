@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, FrictionlessException, formats
+from frictionless import Resource, FrictionlessException, formats
 
 
 # We don't use VCR for this module testing because

@@ -200,7 +200,7 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
     engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
     engine.execute("INSERT INTO data VALUES (1, 'english'), (2, '中国人')")
     engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
-    storage = SqlStorage(engine)
+    storage = formats.SqlStorage(engine)
     resource = storage.read_resource("data_view")
     assert resource.schema == {
         "fields": [
