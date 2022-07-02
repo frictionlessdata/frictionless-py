@@ -25,12 +25,12 @@ class BigqueryPlugin(Plugin):
         if resource.format == "bigquery":
             return BigqueryParser(resource)
 
-    def create_resource(self, resource):
+    def create_storage(self, name, source, **options):
+        if name == "bigquery":
+            return BigqueryStorage(source, **options)
+
+    def detect_resource(self, resource):
         if not resource.scheme and not resource.format and resource.memory:
             if helpers.is_type(resource.data, "Resource"):
                 resource.scheme = ""
                 resource.format = "bigquery"
-
-    def create_storage(self, name, source, **options):
-        if name == "bigquery":
-            return BigqueryStorage(source, **options)

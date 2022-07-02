@@ -20,12 +20,12 @@ class PandasPlugin(Plugin):
         if descriptor.get("code") == "pandas":
             return PandasControl.from_descriptor(descriptor)
 
-    def create_resource(self, resource):
+    def create_parser(self, resource):
+        if resource.format == "pandas":
+            return PandasParser(resource)
+
+    def detect_resource(self, resource):
         if resource.data:
             if helpers.is_type(resource.data, "DataFrame"):
                 resource.scheme = ""
                 resource.format = "pandas"
-
-    def create_parser(self, resource):
-        if resource.format == "pandas":
-            return PandasParser(resource)

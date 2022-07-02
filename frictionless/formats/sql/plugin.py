@@ -24,13 +24,13 @@ class SqlPlugin(Plugin):
         if resource.format == "sql":
             return SqlParser(resource)
 
-    def create_resource(self, resource):
+    def create_storage(self, name, source, **options):
+        if name == "sql":
+            return SqlStorage(source, **options)
+
+    def detect_resource(self, resource):
         if resource.scheme:
             for prefix in settings.SCHEME_PREFIXES:
                 if resource.scheme.startswith(prefix):
                     resource.scheme = ""
                     resource.format = "sql"
-
-    def create_storage(self, name, source, **options):
-        if name == "sql":
-            return SqlStorage(source, **options)

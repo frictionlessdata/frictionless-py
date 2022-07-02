@@ -11,9 +11,6 @@ if TYPE_CHECKING:
     from .pipeline import Step
 
 
-# NOTE: implement create_resource so plugins can validate it (see #991)?
-
-
 class Plugin:
     """Plugin representation
 
@@ -110,15 +107,6 @@ class Plugin:
         """
         pass
 
-    def create_resource(self, resource: Resource) -> None:
-        """Hook into resource creation
-
-        Parameters:
-            resource (Resource): resource
-
-        """
-        pass
-
     def create_step(self, descriptor: dict) -> Optional[Step]:
         """Create step
 
@@ -139,5 +127,14 @@ class Plugin:
 
         Returns:
             Storage: storage
+        """
+        pass
+
+    def detection_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
         """
         pass

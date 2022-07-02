@@ -750,8 +750,7 @@ class Resource(Metadata):
 
             # Detect
             self.detector.detect_resource(self)
-            # TODO: rename to detect / remove create_package
-            system.create_resource(self)
+            system.detect_resource(self)
 
             # Table
             if self.tabular:
