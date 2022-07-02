@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Optional
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -12,39 +13,25 @@ if TYPE_CHECKING:
 
 
 # TODO: raise an exception if we try export a checklist with function based checks
+@dataclass
 class Checklist(Metadata):
     """Checklist representation"""
 
-    def __init__(
-        self,
-        *,
-        checks: List[Check] = [],
-        pick_errors: List[str] = [],
-        skip_errors: List[str] = [],
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_memory: int = settings.DEFAULT_LIMIT_ERRORS,
-    ):
-        self.checks = checks.copy()
-        self.pick_errors = pick_errors.copy()
-        self.skip_errors = skip_errors.copy()
-        self.limit_errors = limit_errors
-        self.limit_memory = limit_memory
-
     # State
 
-    checks: List[Check]
+    checks: List[Check] = field(default_factory=list)
     """# TODO: add docs"""
 
-    pick_errors: List[str]
+    pick_errors: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
-    skip_errors: List[str]
+    skip_errors: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
-    limit_errors: int
+    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS
     """# TODO: add docs"""
 
-    limit_memory: int
+    limit_memory: int = settings.DEFAULT_LIMIT_MEMORY
     """# TODO: add docs"""
 
     # Props
