@@ -1,4 +1,4 @@
-import pytest
+import textwrap
 from frictionless import Pipeline, steps
 
 
@@ -23,7 +23,6 @@ def test_pipeline_from_descriptor():
     assert isinstance(pipeline.steps[0], steps.table_normalize)
 
 
-@pytest.mark.skip
 def test_pipeline_pprint():
     pipeline = Pipeline.from_descriptor(
         {
@@ -33,6 +32,8 @@ def test_pipeline_pprint():
             ],
         }
     )
-    expected = """{'steps': [{'code': 'table-normalize'},
-           {'code': 'table-melt', 'fieldName': 'name'}]}"""
-    assert repr(pipeline) == expected
+    expected = """
+    {'steps': [{'code': 'table-normalize'},
+               {'code': 'table-melt', 'fieldName': 'name'}]}
+    """
+    assert repr(pipeline) == textwrap.dedent(expected).strip()
