@@ -1,7 +1,7 @@
 # type: ignore
 import pytest
 import pathlib
-from frictionless import validate, Resource, Detector, Layout, Check, errors, helpers
+from frictionless import validate, Resource, Detector, Dialect, Check, errors, helpers
 
 
 # General

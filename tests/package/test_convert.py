@@ -2,8 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Package, Resource, helpers
-from frictionless.plugins.sql import SqlDialect
+from frictionless import Package, Resource, formats, helpers
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -111,8 +110,8 @@ def test_package_to_zip_resource_memory_function(tmpdir):
 
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
-    dialect = SqlDialect(table="table")
-    source = Package(resources=[Resource(database_url, name="table", dialect=dialect)])
+    control = formats.SqlControl(table="table")
+    source = Package(resources=[Resource(database_url, name="table", control=control)])
     source.to_zip(path)
     target = Package.from_zip(path)
     assert target.get_resource("table").path == database_url

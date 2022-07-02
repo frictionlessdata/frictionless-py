@@ -1,6 +1,5 @@
 import pytest
-from frictionless import describe, Resource, Package, helpers
-from frictionless.plugins.csv import CsvDialect
+from frictionless import describe, Resource, Package, formats, helpers
 
 
 # General
@@ -100,8 +99,8 @@ def test_describe_whitespace_cells_issue_7():
 
 def test_describe_whitespace_cells_with_skip_initial_space_issue_7():
     source = b"header1,header2\n1, \n2, \n3, \n"
-    dialect = CsvDialect(skip_initial_space=True)
-    resource = describe(source, format="csv", dialect=dialect)
+    control = formats.CsvControl(skip_initial_space=True)
+    resource = describe(source, format="csv", control=control)
     assert resource.schema == {
         "fields": [
             {"name": "header1", "type": "integer"},

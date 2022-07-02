@@ -1,5 +1,5 @@
 import pytest
-from frictionless import system, Plugin, Type, Resource, Schema, Field, describe
+from frictionless import system, Plugin, Resource, Schema, Field, describe
 
 
 # General

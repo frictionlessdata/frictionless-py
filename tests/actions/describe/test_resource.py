@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Detector, Layout, describe, helpers
+from frictionless import Detector, Dialect, describe, helpers
 
 
 # General
@@ -123,9 +123,9 @@ def test_describe_resource_schema_with_missing_values_using_the_argument():
 
 
 def test_describe_resource_schema_check_type_boolean_string_tie():
-    layout = Layout(header=False)
+    dialect = Dialect(header=False)
     detector = Detector(field_names=["field"])
-    resource = describe([["f"], ["stringish"]], layout=layout, detector=detector)
+    resource = describe([["f"], ["stringish"]], dialect=dialect, detector=detector)
     assert resource.schema.get_field("field").type == "string"
 
 
