@@ -78,6 +78,7 @@ class Package(Metadata):
     ):
 
         # Store state
+        self.resources = resources.copy()
         self.id = id
         self.name = name
         self.title = title
@@ -99,9 +100,9 @@ class Package(Metadata):
         self.dialect = dialect
         self.hashing = hashing
 
-        # Store resources
-        for resource in resources:
-            self.add_resource(resource)
+        # Connect resources
+        for resource in self.resources:
+            resource.package = self
 
         # Handled by __create__
         assert source is None
