@@ -160,8 +160,8 @@ class Schema(Metadata):
 
     # TODO: handle edge cases like wrong descriptor's prop types
     @classmethod
-    def from_descriptor(cls, descriptor):
-        schema = super().from_descriptor(descriptor)
+    def from_descriptor(cls, descriptor, **options):
+        schema = super().from_descriptor(descriptor, **options)
 
         # Normalize fields
         for field in schema.fields:

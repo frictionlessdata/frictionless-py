@@ -60,18 +60,19 @@ class Resource(Metadata):
         title: Optional[str] = None,
         description: Optional[str] = None,
         mediatype: Optional[str] = None,
+        profiles: List[str] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
-        profile: Optional[str] = None,
         path: Optional[str] = None,
         data: Optional[List[Union[list, dict]]] = None,
+        type: Optional[str] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
         hashing: Optional[str] = None,
         encoding: Optional[str] = None,
-        innerpath: Optional[str] = None,
         compression: Optional[str] = None,
         extrapaths: List[str] = [],
+        innerpath: Optional[str] = None,
         dialect: Optional[Union[Dialect, str]] = None,
         schema: Optional[Union[Schema, str]] = None,
         checklist: Optional[Union[Checklist, str]] = None,
@@ -91,18 +92,19 @@ class Resource(Metadata):
         self.title = title
         self.description = description
         self.mediatype = mediatype
+        self.profiles = profiles.copy()
         self.licenses = licenses.copy()
         self.sources = sources.copy()
-        self.profile = profile
+        self.type = type
         self.path = path
         self.data = data
         self.scheme = scheme
         self.format = format
         self.hashing = hashing
         self.encoding = encoding
-        self.innerpath = innerpath
         self.compression = compression
         self.extrapaths = extrapaths.copy()
+        self.innerpath = innerpath
         self.stats = stats.copy()
         self.basepath = basepath
         self.onerror = onerror
@@ -191,6 +193,12 @@ class Resource(Metadata):
     Internet Assigned Numbers Authority (IANA) in a media type registry.
     """
 
+    profiles: List[str]
+    """
+    Strings identifying the profile of this descriptor.
+    For example, `tabular-data-resource`.
+    """
+
     licenses: List[dict]
     """
     The license(s) under which the resource is provided.
@@ -205,10 +213,9 @@ class Resource(Metadata):
     MAY have path and/or email properties.
     """
 
-    profile: Optional[str]
+    type: Optional[str]
     """
-    String identifying the profile of this descriptor.
-    For example, `tabular-data-resource`.
+    Type of the data e.g. "table"
     """
 
     path: Optional[str]
@@ -245,16 +252,16 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
-    extrapaths: List[str]
-    """
-    List of paths to concatenate to the main path.
-    It's used for multipart resources.
-    """
-
     compression: Optional[str]
     """
     Source file compression (zip, ...).
     If not set, it'll be inferred from `source`.
+    """
+
+    extrapaths: List[str]
+    """
+    List of paths to concatenate to the main path.
+    It's used for multipart resources.
     """
 
     innerpath: Optional[str]
@@ -403,18 +410,6 @@ class Resource(Metadata):
     def multipart(self) -> bool:
         """Whether resource is multipart"""
         return not self.memory and bool(self.extrapaths)
-
-    # TODO: True if profile is tabular as a shortcut?
-    @property
-    def tabular(self) -> bool:
-        """Whether resource is tabular"""
-        if not self.closed:
-            return bool(self.__parser)
-        try:
-            system.create_parser(self)
-            return True
-        except Exception:
-            return False
 
     @property
     def buffer(self):
@@ -753,9 +748,16 @@ class Resource(Metadata):
             self.detector.detect_resource(self)
             system.detect_resource(self)
 
+            # Parser
+            if self.type != "file":
+                try:
+                    self.__parser = system.create_parser(self)
+                    self.type = "table"
+                except Exception:
+                    self.type = "file"
+
             # Table
-            if self.tabular:
-                self.__parser = system.create_parser(self)
+            if self.__parser:
                 self.__parser.open()
                 self.__read_details()
                 self.__header = self.__read_header()
@@ -1146,6 +1148,10 @@ class Resource(Metadata):
     metadata_Error = errors.ResourceError
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
     metadata_profile["properties"].pop("schema")
+    # TODO: move to assets?
+    metadata_profile["properties"]["compression"] = {}
+    metadata_profile["properties"]["extrapaths"] = {}
+    metadata_profile["properties"]["innerpath"] = {}
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}

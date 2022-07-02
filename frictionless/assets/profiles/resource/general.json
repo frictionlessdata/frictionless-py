@@ -87,6 +87,11 @@
       "title": "Data",
       "description": "Inline data for this resource."
     },
+    "type": {
+      "propertyOrder": 25,
+      "title": "Type",
+      "description": "Type of the data e.g. 'table'"
+    },
     "schema": {
       "propertyOrder": 40,
       "title": "Schema",
@@ -121,6 +126,16 @@
       "examples": [
         "{\n  \"homepage\": \"http://example.com/\"\n}\n"
       ]
+    },
+    "profiles": {
+      "propertyOrder": 75,
+      "title": "Profiles",
+      "description": "A list of profiels.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
     },
     "sources": {
       "propertyOrder": 140,

@@ -92,9 +92,9 @@ def test_resource_source_non_tabular():
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
+        assert resource.type == "file"
         assert resource.basepath == ""
         assert resource.memory is False
-        assert resource.tabular is False
         assert resource.multipart is False
         assert resource.fullpath == path
         if not helpers.is_platform("windows"):
@@ -111,8 +111,8 @@ def test_resource_source_non_tabular_remote():
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
+        assert resource.type == "file"
         assert resource.memory is False
-        assert resource.tabular is False
         assert resource.multipart is False
         assert resource.basepath == ""
         assert resource.fullpath == path
@@ -140,8 +140,8 @@ def test_resource_source_path():
     resource.infer()
     assert resource.path == path
     assert resource.data is None
+    assert resource.type == "table"
     assert resource.memory is False
-    assert resource.tabular is True
     assert resource.multipart is False
     assert resource.basepath == ""
     assert resource.fullpath == path
@@ -296,9 +296,9 @@ def test_resource_standard_specs_properties(create_descriptor):
     options = dict(
         path="path",
         name="name",
-        profile="profile",
         title="title",
         description="description",
+        profiles=["profile"],
         licenses=[],
         sources=[],
     )
@@ -309,9 +309,9 @@ def test_resource_standard_specs_properties(create_descriptor):
     )
     assert resource.path == "path"
     assert resource.name == "name"
-    assert resource.profile == "profile"
     assert resource.title == "title"
     assert resource.description == "description"
+    assert resource.profiles == ["profile"]
     assert resource.licenses == []
     assert resource.sources == []
 

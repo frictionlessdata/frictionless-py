@@ -55,9 +55,9 @@ class Package(Metadata):
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
+        profiles: List[str] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
-        profile: str = settings.DEFAULT_PACKAGE_PROFILE,
         homepage: Optional[str] = None,
         version: Optional[str] = None,
         contributors: List[dict] = [],
@@ -81,9 +81,9 @@ class Package(Metadata):
         self.name = name
         self.title = title
         self.description = description
+        self.profiles = profiles.copy()
         self.licenses = licenses.copy()
         self.sources = sources.copy()
-        self.profile = profile
         self.homepage = homepage
         self.version = version
         self.contributors = contributors.copy()
@@ -97,11 +97,6 @@ class Package(Metadata):
         self.detector = detector or Detector()
         self.dialect = dialect
         self.hashing = hashing
-
-        # Finalize creation
-        self.metadata_initiated = True
-        self.detector.detect_package(self)
-        system.create_package(self)
 
     @classmethod
     def __create__(
@@ -151,6 +146,12 @@ class Package(Metadata):
     It should a human-oriented description of the resource.
     """
 
+    profiles: List[str]
+    """
+    A strings identifying the profiles of this descriptor.
+    For example, `fiscal-data-package`.
+    """
+
     licenses: List[dict]
     """
     The license(s) under which the package is provided.
@@ -162,11 +163,6 @@ class Package(Metadata):
     It MUST be an array of Source objects.
     Each Source object MUST have a title and
     MAY have path and/or email properties.
-    """
-    profile: str
-    """
-    A string identifying the profile of this descriptor.
-    For example, `fiscal-data-package`.
     """
 
     homepage: Optional[str]

@@ -146,9 +146,9 @@ class Detector(Metadata):
         # Detect details
         scheme = ""
         format = ""
-        innerpath = None
-        compression = None
         hashing = settings.DEFAULT_HASHING
+        compression = None
+        innerpath = None
         if resource.fullpath:
             fullpath = resource.fullpath
             scheme, format = helpers.parse_scheme_and_format(fullpath)
@@ -166,8 +166,8 @@ class Detector(Metadata):
         resource.set_not_defined("scheme", scheme)
         resource.set_not_defined("format", format)
         resource.set_not_defined("hashing", hashing)
-        resource.set_not_defined("innerpath", innerpath)
         resource.set_not_defined("compression", compression)
+        resource.set_not_defined("innerpath", innerpath)
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
