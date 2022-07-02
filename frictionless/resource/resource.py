@@ -88,6 +88,13 @@ class Resource(Metadata):
         control: Optional[Control] = None,
     ):
 
+        # Store inherited state
+        self.__basepath = basepath
+        self.__onerror = onerror
+        self.__trusted = trusted
+        self.__detector = detector
+        self.__hashing = hashing
+
         # Store state
         self.name = name
         self.title = title
@@ -101,25 +108,16 @@ class Resource(Metadata):
         self.data = data
         self.scheme = scheme
         self.format = format
-        self.hashing = hashing
         self.encoding = encoding
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
-        self.stats = stats.copy()
-        self.package = package
-
-        # Store dereferenced state
         self.dialect = dialect or Dialect()
         self.schema = schema
         self.checklist = checklist
         self.pipeline = pipeline
-
-        # Store inherited state
-        self.__basepath = basepath
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__detector = detector
+        self.stats = stats.copy()
+        self.package = package
 
         # Store internal state
         self.__loader = None
@@ -251,12 +249,6 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
-    hashing: Optional[str]
-    """
-    An algorithm to hash data.
-    It defaults to 'md5'.
-    """
-
     encoding: Optional[str]
     """
     Source encoding.
@@ -337,6 +329,21 @@ class Resource(Metadata):
     def multipart(self) -> bool:
         """Whether resource is multipart"""
         return not self.memory and bool(self.extrapaths)
+
+    @property
+    def hashing(self) -> Optional[str]:
+        """
+        An algorithm to hash data.
+        It defaults to 'md5'.
+        """
+        if self.__hashing is not None:
+            return self.__hashing
+        elif self.package:
+            return self.package.hashing
+
+    @hashing.setter
+    def hashing(self, value: str):
+        self.__hashing = value
 
     @property
     def dialect(self) -> Dialect:

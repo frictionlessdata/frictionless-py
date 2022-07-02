@@ -73,9 +73,7 @@ class Package(Metadata):
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
-        # TODO: support inheritance in resource
         dialect: Optional[Dialect] = None,
-        # TODO: support inheritance in resource
         hashing: Optional[str] = None,
     ):
 
