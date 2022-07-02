@@ -485,19 +485,14 @@ class Package(Metadata):
 
     def to_copy(self):
         """Create a copy of the package"""
-        descriptor = self.to_dict()
-        # Resource's data can be not serializable (generators/functions)
-        descriptor.pop("resources", None)
-        resources = []
-        for resource in self.resources:
-            resources.append(resource.to_copy())
-        return Package(
-            descriptor,
-            resources=resources,
-            basepath=self.__basepath,
-            detector=self.__detector,
-            onerror=self.__onerror,
-            trusted=self.__trusted,
+        return super().to_copy(
+            resources=[resource.to_copy() for resource in self.resources],
+            basepath=self.basepath,
+            onerror=self.onerror,
+            trusted=self.trusted,
+            detector=self.detector,
+            dialect=self.dialect,
+            hashing=self.hashing,
         )
 
     # TODO: if path is not provided return as a string
