@@ -1,132 +1,51 @@
 from __future__ import annotations
-import textwrap
-from copy import deepcopy
 from tabulate import tabulate
-from importlib import import_module
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, List
+from dataclasses import dataclass, field
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .validate import validate
 from .task import ReportTask
 from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
     from ..resource import Resource
 
 
-# NOTE:
-# We can allow some Report/ReportTask constructor kwargs be None
-# We need to review how we validate Report/ReportTask (strict mode is disabled)
-
-
+@dataclass
 class Report(Metadata):
-    """Report representation.
+    """Report representation."""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Report`
+    # State
 
-    Parameters:
-        descriptor? (str|dict): report descriptor
-        time (float): validation time
-        errors (Error[]): validation errors
-        tasks (ReportTask[]): validation tasks
+    version: str
+    """# TODO: add docs"""
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
+    valid: bool
+    """# TODO: add docs"""
 
-    """
+    stats: dict
+    """# TODO: add docs"""
 
-    validate = validate
+    tasks: List[ReportTask] = field(default_factory=list)
+    """# TODO: add docs"""
 
-    def __init__(
-        self,
-        version: str,
-        valid: bool,
-        stats: dict,
-        tasks: Optional[List[ReportTask]] = None,
-        errors: Optional[List[Error]] = None,
-        warnings: Optional[List[str]] = None,
-    ):
-        self.setinitial("version", version)
-        self.setinitial("valid", valid)
-        self.setinitial("stats", stats)
-        self.setinitial("tasks", tasks)
-        self.setinitial("errors", errors)
-        self.setinitial("warnings", warnings)
-        super().__init__()
+    errors: List[Error] = field(default_factory=list)
+    """# TODO: add docs"""
 
-    @property
-    def version(self):
-        """
-        Returns:
-            str: frictionless version
-        """
-        return self.get("version")
+    warnings: List[str] = field(default_factory=list)
+    """# TODO: add docs"""
 
-    @property
-    def valid(self):
-        """
-        Returns:
-            bool: validation result
-        """
-        return self.get("valid")
-
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: validation stats
-        """
-        return self.get("stats", {})
-
-    @property
-    def warnings(self):
-        """
-        Returns:
-            str[]: validation warnings
-        """
-        return self.get("warnings", [])
-
-    @property
-    def errors(self):
-        """
-        Returns:
-            Error[]: validation errors
-        """
-        return self.get("errors", [])
-
-    @property
-    def tasks(self):
-        """
-        Returns:
-            ReportTask[]: validation tasks
-        """
-        return self.get("tasks", [])
+    # Props
 
     @property
     def task(self):
-        """
-        Returns:
-            ReportTask: validation task (if there is only one)
-
-        Raises:
-            FrictionlessException: if there are more that 1 task
-        """
+        """Validation task (if there is only one)"""
         if len(self.tasks) != 1:
             error = Error(note='The "report.task" is available for single task reports')
             raise FrictionlessException(error)
         return self.tasks[0]
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        for task in self.tasks:
-            task.expand()
 
     # Flatten
 
@@ -151,34 +70,20 @@ class Report(Metadata):
                 result.append([context.get(prop) for prop in spec])
         return result
 
-    # Import/Export
-
-    @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
-        metadata = Metadata(descriptor)
-        system = import_module("frictionless").system
-        errors = [system.create_error(error) for error in metadata.get("errors", [])]
-        tasks = [ReportTask.from_descriptor(task) for task in metadata.get("tasks", [])]
-        return Report(
-            version=metadata.get("version"),  # type: ignore
-            valid=metadata.get("valid"),  # type: ignore
-            stats=metadata.get("stats"),  # type: ignore
-            scope=metadata.get("scope"),  # type: ignore
-            warnings=metadata.get("warnings"),  # type: ignore
-            errors=errors,
-            tasks=tasks,
-        )
+    # Convert
 
     @staticmethod
     def from_validation(
+        *,
         time: float,
-        tasks: Optional[List[ReportTask]] = None,
-        errors: Optional[List[Error]] = None,
-        warnings: Optional[List[str]] = None,
+        tasks: List[ReportTask] = [],
+        errors: List[Error] = [],
+        warnings: List[str] = [],
     ):
         """Create a report from a validation"""
-        tasks = tasks or []
-        errors = errors or []
+        tasks = tasks.copy()
+        errors = errors.copy()
+        warnings = warnings.copy()
         error_count = len(errors) + sum(task.stats["errors"] for task in tasks)
         stats = {"time": time, "tasks": len(tasks), "errors": error_count}
         return Report(
@@ -195,13 +100,14 @@ class Report(Metadata):
         resource: Resource,
         *,
         time: float,
-        scope: Optional[List[str]] = None,
-        errors: Optional[List[Error]] = None,
-        warnings: Optional[List[str]] = None,
+        scope: List[str] = [],
+        errors: List[Error] = [],
+        warnings: List[str] = [],
     ):
         """Create a report from a validation task"""
-        scope = scope or []
-        errors = errors or []
+        scope = scope.copy()
+        errors = errors.copy()
+        warnings = warnings.copy()
         task_stats = helpers.copy_merge(resource.stats, time=time, errors=len(errors))
         report_stats = {"time": time, "tasks": 1, "errors": len(errors)}
         return Report(
@@ -224,7 +130,11 @@ class Report(Metadata):
         )
 
     @staticmethod
-    def from_validation_reports(time: float, reports: List[Report]):
+    def from_validation_reports(
+        *,
+        time: float,
+        reports: List[Report],
+    ):
         """Create a report from a set of validation reports"""
         tasks = []
         errors = []
@@ -240,6 +150,7 @@ class Report(Metadata):
             warnings=warnings,
         )
 
+    # TODO: move to ReportTask
     def to_summary(self):
         """Summary of the report
 
@@ -251,12 +162,8 @@ class Report(Metadata):
         for task in self.tasks:
             prefix = "valid" if task.valid else "invalid"
             suffix = "" if task.tabular else "(non-tabular)"
-            source = task.path or task.name
-            # for zipped resources append file name
-            if task.innerpath:
-                source = f"{source} => {task.resource.innerpath}"
             validation_content += f"\n# {'-'*len(prefix)}"
-            validation_content += f"\n# {prefix}: {source} {suffix}"
+            validation_content += f"\n# {prefix}: {task.place} {suffix}"
             validation_content += f"\n# {'-'*len(prefix)}"
             error_content = []
             if task.errors:
@@ -270,7 +177,7 @@ class Report(Metadata):
                         ]
                     )
             # Validate
-            error_content = wrap_text_to_colwidths(error_content)
+            error_content = helpers.wrap_text_to_colwidths(error_content)
             validation_content += "\n\n"
             validation_content += "## Summary "
             validation_content += "\n\n"
@@ -293,41 +200,27 @@ class Report(Metadata):
     # Metadata
 
     metadata_Error = ReportError
-    metadata_profile = deepcopy(settings.REPORT_PROFILE)
-    metadata_profile["properties"]["tasks"] = {"type": "array"}
+    metadata_profile = {
+        "properties": {
+            "version": {},
+            "valid": {},
+            "stats": {},
+            "tasks": {},
+            "errors": {},
+            "warnings": {},
+        }
+    }
 
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(tasks=ReportTask)
+
+    # TODO: validate valid/errors count
+    # TODO: validate stats when the class is added
+    # TODO: validate errors when metadata is reworked
     def metadata_validate(self):
         yield from super().metadata_validate()
-
-        # Stats
-        # TODO: validate valid/errors count
-        # TODO: validate stats when the class is added
 
         # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
-
-        # Errors
-        # TODO: validate errors when metadata is reworked
-
-
-# TODO: Temporary function to use with tabulate  tabulate 0.8.9 does not support text wrap
-def wrap_text_to_colwidths(list_of_lists: List, colwidths: List = [5, 5, 10, 50]) -> List:
-    """Create new list with wrapped text with different column width.
-    Args:
-        list_of_lists (List): List of lines
-        colwidths (List): width for each column
-
-    Returns:
-        List: list of lines with wrapped text
-
-    """
-    result = []
-    for row in list_of_lists:
-        new_row = []
-        for cell, width in zip(row, colwidths):
-            cell = str(cell)
-            wrapped = textwrap.wrap(cell, width=width)
-            new_row.append("\n".join(wrapped))
-        result.append(new_row)
-    return result

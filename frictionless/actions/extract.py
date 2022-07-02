@@ -45,11 +45,13 @@ def extract(
         if type == "table":
             type = "resource"
 
-    # Extract source
+    # Extract package
     if type == "package":
         if not isinstance(source, Package):
             source = Package(source, **options)
         return source.extract(filter=filter, process=process, stream=stream)
+
+    # Extract resource
     elif type == "resource":
         if not isinstance(source, Resource):
             source = Resource(source, **options)

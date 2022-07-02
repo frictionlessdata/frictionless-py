@@ -1,133 +1,48 @@
 from __future__ import annotations
+from typing import List
 from tabulate import tabulate
-from importlib import import_module
-from typing import TYPE_CHECKING, Optional, List
+from dataclasses import dataclass, field
 from ..metadata import Metadata
-from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .. import settings
+from ..errors import Error, ReportTaskError
 from .. import helpers
 
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
 
-
+@dataclass
 class ReportTask(Metadata):
-    """Report task representation.
+    """Report task representation."""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import ReportTask`
+    # State
 
-    Parameters:
-        descriptor? (str|dict): schema descriptor
-        resource? (Resource): resource
-        time (float): validation time
-        scope (str[]): validation scope
-        errors (Error[]): validation errors
-        warning (str): validation warning
+    valid: bool
+    """# TODO: add docs"""
 
-    # Raises
-        FrictionlessException: raise any error that occurs during the process
+    name: str
+    """# TODO: add docs"""
 
-    """
+    place: str
+    """# TODO: add docs"""
 
-    def __init__(
-        self,
-        valid: bool,
-        name: str,
-        place: str,
-        tabular: bool,
-        stats: dict,
-        scope: Optional[List[str]] = None,
-        warnings: Optional[List[str]] = None,
-        errors: Optional[List[Error]] = None,
-    ):
-        scope = scope or []
-        errors = errors or []
-        self.setinitial("valid", valid)
-        self.setinitial("name", name)
-        self.setinitial("place", place)
-        self.setinitial("tabular", tabular)
-        self.setinitial("stats", stats)
-        self.setinitial("scope", scope)
-        self.setinitial("warnings", warnings)
-        self.setinitial("errors", errors)
-        super().__init__()
+    tabular: bool
+    """# TODO: add docs"""
 
-    @property
-    def valid(self) -> bool:
-        """
-        Returns:
-            bool: validation result
-        """
-        return self.get("valid")  # type: ignore
+    stats: dict
+    """# TODO: add docs"""
 
-    @property
-    def name(self):
-        """
-        Returns:
-            str: name
-        """
-        return self.get("name")
+    scope: List[str] = field(default_factory=list)
+    """# TODO: add docs"""
 
-    @property
-    def place(self):
-        """
-        Returns:
-            str: place
-        """
-        return self.get("place")
+    warnings: List[str] = field(default_factory=list)
+    """# TODO: add docs"""
 
-    @property
-    def tabular(self):
-        """
-        Returns:
-            bool: tabular
-        """
-        return self.get("tabular")
+    errors: List[Error] = field(default_factory=list)
+    """# TODO: add docs"""
 
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: validation stats
-        """
-        return self.get("stats", {})
-
-    @property
-    def scope(self):
-        """
-        Returns:
-            str[]: validation scope
-        """
-        return self.get("scope", [])
-
-    @property
-    def warnings(self):
-        """
-        Returns:
-            bool: if validation warning
-        """
-        return self.get("warnings", [])
-
-    @property
-    def errors(self):
-        """
-        Returns:
-            Error[]: validation errors
-        """
-        return self.get("errors", [])
+    # Props
 
     @property
     def error(self):
-        """
-        Returns:
-            Error: validation error if there is only one
-
-        Raises:
-            FrictionlessException: if more than one errors
-        """
+        """Validation error if there is only one"""
         if len(self.errors) != 1:
             error = Error(note='The "task.error" is available for single error tasks')
             raise FrictionlessException(error)
@@ -151,23 +66,7 @@ class ReportTask(Metadata):
             result.append([context.get(prop) for prop in spec])
         return result
 
-    # Import/Export
-
-    @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
-        metadata = Metadata(descriptor)
-        system = import_module("frictionless").system
-        errors = [system.create_error(error) for error in metadata.get("errors", [])]
-        return ReportTask(
-            valid=metadata.get("valid"),  # type: ignore
-            name=metadata.get("name"),  # type: ignore
-            place=metadata.get("place"),  # type: ignore
-            tabular=metadata.get("tabular"),  # type: ignore
-            stats=metadata.get("stats"),  # type: ignore
-            scope=metadata.get("scope"),  # type: ignore
-            warning=metadata.get("warning"),  # type: ignore
-            errors=errors,
-        )
+    # Convert
 
     def to_summary(self) -> str:
         """Generate summary for validation task"
@@ -175,7 +74,6 @@ class ReportTask(Metadata):
         Returns:
             str: validation summary
         """
-        # Prepare error lists and last row checked(in case of partial validation)
         error_list = {}
         for error in self.errors:
             error_title = f"{error.name} ({error.code})"
@@ -200,15 +98,22 @@ class ReportTask(Metadata):
 
     # Metadata
 
-    metadata_Error = ReportError
-    metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
+    metadata_Error = ReportTaskError
+    metadata_profile = {
+        "properties": {
+            "valid": {},
+            "name": {},
+            "place": {},
+            "tabular": {},
+            "stats": {},
+            "scope": {},
+            "warnings": {},
+            "errors": {},
+        }
+    }
 
+    # TODO: validate valid/errors count
+    # TODO: validate stats when the class is added
+    # TODO: validate errors when metadata is reworked
     def metadata_validate(self):
         yield from super().metadata_validate()
-
-        # Stats
-        # TODO: validate valid/errors count
-        # TODO: validate stats when the class is added
-
-        # Errors
-        # TODO: validate errors when metadata is reworked

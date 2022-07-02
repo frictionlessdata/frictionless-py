@@ -5,6 +5,7 @@ from frictionless import Resource, helpers
 # General
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
@@ -33,6 +34,7 @@ def test_resource_infer():
     }
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
@@ -53,6 +55,7 @@ def test_resource_infer_source_non_tabular():
     }
 
 
+@pytest.mark.skip
 def test_resource_infer_from_path():
     resource = Resource("data/table.csv")
     resource.infer(stats=True)
@@ -60,6 +63,7 @@ def test_resource_infer_from_path():
     assert resource.path == "data/table.csv"
 
 
+@pytest.mark.skip
 def test_resource_infer_not_slugified_name_issue_531():
     resource = Resource("data/Table With Data.csv")
     resource.infer(stats=True)

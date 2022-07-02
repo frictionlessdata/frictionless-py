@@ -7,7 +7,6 @@ import yaml as pyyaml
 from typing import List
 from ..detector import Detector
 from ..actions import extract
-from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common
@@ -38,14 +37,9 @@ def program_extract(
     # Layout
     header_rows: str = common.header_rows,
     header_join: str = common.header_join,
-    pick_fields: str = common.pick_fields,
-    skip_fields: str = common.skip_fields,
-    limit_fields: int = common.limit_fields,
-    offset_fields: int = common.offset_fields,
     pick_rows: str = common.pick_rows,
     skip_rows: str = common.skip_rows,
     limit_rows: int = common.limit_rows,
-    offset_rows: int = common.offset_rows,
     # Schema
     schema: str = common.schema,
     # Detector
@@ -119,14 +113,9 @@ def program_extract(
         Layout(
             header_rows=header_rows,
             header_join=header_join,
-            pick_fields=pick_fields,
-            skip_fields=skip_fields,
-            limit_fields=limit_fields,
-            offset_fields=offset_fields,
             pick_rows=pick_rows,
             skip_rows=skip_rows,
             limit_rows=limit_rows,
-            offset_rows=offset_rows,
         )
         or None
     )

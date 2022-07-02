@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Inquiry, InquiryTask
 
 
@@ -28,6 +29,7 @@ def test_inquiry_with_task_class():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_inquiry_pprint_1029():
     inquiry = Inquiry.from_descriptor(
         {

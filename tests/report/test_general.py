@@ -3,6 +3,9 @@ import pprint
 from frictionless import validate, helpers
 
 
+pytestmark = pytest.mark.skip
+
+
 # General
 
 
@@ -56,13 +59,6 @@ def test_report():
     ]
     assert report.warnings == []
     assert report.errors == []
-
-
-# TODO: do we need report.expand?
-@pytest.mark.skip
-def test_report_expand():
-    report = validate("data/table.csv")
-    report.expand()
 
 
 def test_report_pprint_1029():

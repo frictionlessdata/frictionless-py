@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import List
+from importlib import import_module
+from dataclasses import dataclass, field
 from .metadata import Metadata
 from . import helpers
 
@@ -8,53 +10,49 @@ from . import helpers
 # Consider other approaches for report/errors as dict is not really
 # effective as it can be very memory consumig. As an option we can store
 # raw data without rendering an error template to an error messsage.
-# Also, validation is disabled for performance reasons at the moment.
-# Allow creating from a descriptor (note needs to be optional)
 
 
+@dataclass
 class Error(Metadata):
-    """Error representation
+    """Error representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import errors`
+    code: str = field(init=False, default="error")
+    name: str = field(init=False, default="Error")
+    tags: List[str] = field(init=False, default_factory=list)
+    template: str = field(init=False, default="{note}")
+    description: str = field(init=False, default="Error")
 
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
+    def __post_init__(self):
+        descriptor = self.to_descriptor(exclude=["message"])
+        self.message = helpers.safe_format(self.template, descriptor)
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
+    # State
 
-    """
+    note: str
+    """TODO: add docs"""
 
-    code: str = "error"
-    name: str = "Error"
-    tags: List[str] = []
-    template: str = "{note}"
-    description: str = "Error"
+    message: str = field(init=False)
+    """TODO: add docs"""
 
-    def __init__(self, descriptor=None, *, note: str):
-        super().__init__(descriptor)
-        self.setinitial("code", self.code)
-        self.setinitial("name", self.name)
-        self.setinitial("tags", self.tags)
-        self.setinitial("note", note)
-        self.setinitial("message", helpers.safe_format(self.template, self))
-        self.setinitial("description", self.description)
+    # Convert
 
-    @property
-    def note(self) -> str:
-        """
-        Returns:
-            str: note
-        """
-        return self["note"]
+    # TODO: review
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        system = import_module("frictionless").system
+        return system.create_error(descriptor)
 
-    @property
-    def message(self) -> str:
-        """
-        Returns:
-            str: message
-        """
-        return self["message"]
+    # Metadata
+
+    metadata_profile = {
+        "type": "object",
+        "required": ["note"],
+        "properties": {
+            "code": {},
+            "name": {},
+            "tags": {},
+            "description": {},
+            "message": {},
+            "note": {},
+        },
+    }

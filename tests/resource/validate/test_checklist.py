@@ -1,4 +1,8 @@
+import pytest
 from frictionless import Resource, Checklist
+
+
+pytestmark = pytest.mark.skip
 
 
 def test_resource_validate_bound_checklist():

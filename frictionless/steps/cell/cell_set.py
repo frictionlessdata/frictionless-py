@@ -1,4 +1,6 @@
-from ...step import Step
+from typing import Any
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,21 +8,25 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_set(Step):
     """Set cell"""
 
     code = "cell-set"
 
-    def __init__(self, descriptor=None, *, value=None, field_name=None):
-        self.setinitial("value", value)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # Properties
+
+    value: Any
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
+
+    # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        value = self.get("value")
-        field_name = self.get("fieldName")
-        resource.data = table.update(field_name, value)  # type: ignore
+        resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata
 
@@ -28,6 +34,7 @@ class cell_set(Step):
         "type": "object",
         "required": [],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "value": {},
         },

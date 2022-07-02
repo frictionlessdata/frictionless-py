@@ -1,13 +1,14 @@
 from typing import Optional, List, Any
-from ..check import Check
+from ..system import system
 from ..schema import Schema
 from ..report import Report
+from ..dialect import Dialect
+from ..inquiry import Inquiry
 from ..package import Package
 from ..pipeline import Pipeline
 from ..resource import Resource
-from ..checklist import Checklist
-from ..inquiry import Inquiry
-from ..system import system
+from ..detector import Detector
+from ..checklist import Checklist, Check
 from ..exception import FrictionlessException
 from .. import settings
 
@@ -19,9 +20,9 @@ def validate(
     type: Optional[str] = None,
     # Checklist
     checklist: Optional[Checklist] = None,
-    checks: Optional[List[Check]] = None,
-    pick_errors: Optional[List[str]] = None,
-    skip_errors: Optional[List[str]] = None,
+    checks: List[Check] = [],
+    pick_errors: List[str] = [],
+    skip_errors: List[str] = [],
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
     # Validate
@@ -68,8 +69,22 @@ def validate(
     if type == "checklist":
         checklist = source
         if not isinstance(checklist, Checklist):
-            checklist = Checklist(checklist, **options)
+            checklist = Checklist.from_descriptor(checklist)  # type: ignore
         return checklist.validate()
+
+    # Validate detector
+    elif type == "detector":
+        detector = source
+        if not isinstance(detector, Detector):
+            detector = Detector.from_descriptor(detector)  # type: ignore
+        return detector.validate()  # type: ignore
+
+    # Validate dialect
+    elif type == "dialect":
+        dialect = source
+        if not isinstance(dialect, Dialect):
+            dialect = Dialect.from_descriptor(dialect)  # type: ignore
+        return dialect.validate()  # type: ignore
 
     # Validate inquiry
     elif type == "inquiry":
@@ -93,13 +108,13 @@ def validate(
     elif type == "pipeline":
         pipeline = source
         if not isinstance(pipeline, Pipeline):
-            pipeline = Pipeline(pipeline, **options)
+            pipeline = Pipeline.from_descriptor(pipeline)  # type: ignore
         return pipeline.validate()
 
     # Validate report
     elif type == "report":
         report = source
-        if not isinstance(report, Inquiry):
+        if not isinstance(report, Report):
             # TODO: fix it
             report = Report.from_descriptor(report)  # type: ignore
         return report.validate()

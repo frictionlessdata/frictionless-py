@@ -1,4 +1,6 @@
-from ...step import Step
+from dataclasses import dataclass
+from typing import Optional
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,26 +8,28 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_interpolate(Step):
     """Interpolate cell"""
 
     code = "cell-interpolate"
 
-    def __init__(self, descriptor=None, *, template=None, field_name=None):
-        self.setinitial("template", template)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # Properties
+
+    template: str
+    """TODO: add docs"""
+
+    field_name: Optional[str] = None
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
-        template = self.get("template")
-        field_name = self.get("fieldName")
         table = resource.to_petl()
-        if not field_name:
-            resource.data = table.interpolateall(template)  # type: ignore
+        if not self.field_name:
+            resource.data = table.interpolateall(self.template)  # type: ignore
         else:
-            resource.data = table.interpolate(field_name, template)  # type: ignore
+            resource.data = table.interpolate(self.field_name, self.template)  # type: ignore
 
     # Metadata
 
@@ -33,6 +37,7 @@ class cell_interpolate(Step):
         "type": "object",
         "required": ["template"],
         "properties": {
+            "code": {},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },

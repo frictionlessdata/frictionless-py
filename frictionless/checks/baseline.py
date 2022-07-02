@@ -1,4 +1,4 @@
-from ..check import Check
+from ..checklist import Check
 from .. import errors
 
 
@@ -42,12 +42,11 @@ class baseline(Check):
         errors.UniqueError,
     ]
 
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
+    # Connect
 
     def connect(self, resource):
-        self.__stats = resource.stats.copy()
         super().connect(resource)
+        self.__stats = resource.stats.copy()
 
     # Validate
 
@@ -100,5 +99,7 @@ class baseline(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }

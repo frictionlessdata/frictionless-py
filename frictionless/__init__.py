@@ -1,34 +1,25 @@
+from .settings import VERSION as __version__
 from .actions import describe, extract, transform, validate
-from .check import Check
-from .checklist import Checklist
-from .control import Control
+from .checklist import Checklist, Check
 from .detector import Detector
-from .dialect import Dialect
+from .dialect import Dialect, Control
 from .error import Error
 from .exception import FrictionlessException
-from .field import Field
-from .file import File
-from .header import Header
 from .inquiry import Inquiry, InquiryTask
-from .layout import Layout
-from .loader import Loader
 from .metadata import Metadata
-from .package import Package
+from .package import Package, Storage
 from .plugin import Plugin
-from .parser import Parser
-from .pipeline import Pipeline
+from .pipeline import Pipeline, Step
 from .program import program
 from .report import Report, ReportTask
-from .resource import Resource
-from .row import Row
-from .schema import Schema
+from .resource import Resource, Loader, Parser
+from .schema import Schema, Field
 from .server import server
-from .settings import VERSION as __version__
-from .step import Step
-from .storage import Storage
 from .system import system
-from .type import Type
-from . import errors
+from .table import Header, Row
 from . import checks
+from . import errors
+from . import fields
+from . import formats
+from . import schemes
 from . import steps
-from . import types

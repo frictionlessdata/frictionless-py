@@ -1,4 +1,6 @@
-from ...step import Step
+from typing import List
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,23 +8,25 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_sort(Step):
     """Sort rows"""
 
     code = "row-sort"
 
-    def __init__(self, descriptor=None, *, field_names=None, reverse=None):
-        self.setinitial("fieldNames", field_names)
-        self.setinitial("reverse", reverse)
-        super().__init__(descriptor)
+    # Properties
+
+    field_names: List[str]
+    """TODO: add docs"""
+
+    reverse: bool = False
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_names = self.get("fieldNames")
-        reverse = self.get("reverse", False)
-        resource.data = table.sort(field_names, reverse=reverse)  # type: ignore
+        resource.data = table.sort(self.field_names, reverse=self.reverse)  # type: ignore
 
     # Metadata
 
@@ -30,6 +34,7 @@ class row_sort(Step):
         "type": "object",
         "required": ["fieldNames"],
         "properties": {
+            "code": {},
             "fieldNames": {"type": "array"},
             "reverse": {},
         },

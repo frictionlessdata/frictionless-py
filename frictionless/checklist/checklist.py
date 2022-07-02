@@ -1,13 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
-from ..helpers import cached_property
+from typing import TYPE_CHECKING, List, Optional
+from ..exception import FrictionlessException
 from ..metadata import Metadata
-from .validate import validate
 from ..checks import baseline
-from ..system import system
-from ..check import Check
+from .check import Check
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -16,50 +13,47 @@ if TYPE_CHECKING:
 
 # TODO: raise an exception if we try export a checklist with function based checks
 class Checklist(Metadata):
-    validate = validate
+    """Checklist representation"""
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
         *,
-        checks: Optional[List[Check]] = None,
-        pick_errors: Optional[List[str]] = None,
-        skip_errors: Optional[List[str]] = None,
-        limit_errors: Optional[int] = None,
-        limit_memory: Optional[int] = None,
+        checks: List[Check] = [],
+        pick_errors: List[str] = [],
+        skip_errors: List[str] = [],
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+        limit_memory: int = settings.DEFAULT_LIMIT_ERRORS,
     ):
-        self.setinitial("checks", checks)
-        self.setinitial("pickErrors", pick_errors)
-        self.setinitial("skipErrors", skip_errors)
-        self.setinitial("limitErrors", limit_errors)
-        self.setinitial("limitMemory", limit_memory)
-        super().__init__(descriptor)
+        self.checks = checks.copy()
+        self.pick_errors = pick_errors.copy()
+        self.skip_errors = skip_errors.copy()
+        self.limit_errors = limit_errors
+        self.limit_memory = limit_memory
 
-    @property
-    def checks(self) -> List[Check]:
-        return self.get("checks", [])
+    # State
+
+    checks: List[Check]
+    """# TODO: add docs"""
+
+    pick_errors: List[str]
+    """# TODO: add docs"""
+
+    skip_errors: List[str]
+    """# TODO: add docs"""
+
+    limit_errors: int
+    """# TODO: add docs"""
+
+    limit_memory: int
+    """# TODO: add docs"""
+
+    # Props
 
     @property
     def check_codes(self) -> List[str]:
         return [check.code for check in self.checks]
 
     @property
-    def pick_errors(self) -> List[str]:
-        return self.get("pickErrors", [])
-
-    @property
-    def skip_errors(self) -> List[str]:
-        return self.get("skipErrors", [])
-
-    @property
-    def limit_errors(self) -> int:
-        return self.get("limitErrors", settings.DEFAULT_LIMIT_ERRORS)
-
-    @property
-    def limit_memory(self) -> int:
-        return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
-
-    @cached_property
     def scope(self) -> List[str]:
         scope = []
         basics: List[Check] = [baseline()]
@@ -78,6 +72,36 @@ class Checklist(Metadata):
                 scope.append(Error.code)
         return scope
 
+    # Checks
+
+    def add_check(self, check: Check) -> None:
+        """Add new check to the schema"""
+        self.checks.append(check)
+
+    def has_check(self, code: str) -> bool:
+        """Check if a check is present"""
+        for check in self.checks:
+            if check.code == code:
+                return True
+        return False
+
+    def get_check(self, code: str) -> Check:
+        """Get check by code"""
+        for check in self.checks:
+            if check.code == code:
+                return check
+        error = errors.ChecklistError(note=f'check "{code}" does not exist')
+        raise FrictionlessException(error)
+
+    def set_check(self, check: Check) -> Optional[Check]:
+        """Set check by code"""
+        if self.has_check(check.code):
+            prev_check = self.get_check(check.code)
+            index = self.checks.index(prev_check)
+            self.checks[index] = check
+            return prev_check
+        self.add_check(check)
+
     # Connect
 
     def connect(self, resource: Resource) -> List[Check]:
@@ -85,7 +109,8 @@ class Checklist(Metadata):
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
             if check.metadata_valid:
-                check = check.to_copy()
+                # TODO: review
+                #  check = check.to_copy()
                 check.connect(resource)
                 checks.append(check)
         return checks
@@ -101,21 +126,19 @@ class Checklist(Metadata):
     # Metadata
 
     metadata_Error = errors.ChecklistError
-    metadata_profile = settings.CHECKLIST_PROFILE
+    metadata_profile = {
+        "properties": {
+            "checks": {},
+            "skipErrors": {},
+            "pickErrors": {},
+            "limitErrors": {},
+            "limitMemory": {},
+        }
+    }
 
-    def metadata_process(self):
-
-        # Checks
-        checks = self.get("checks")
-        if isinstance(checks, list):
-            for index, check in enumerate(checks):
-                if not isinstance(check, Check):
-                    check = system.create_check(check)
-                    list.__setitem__(checks, index, check)
-            if not isinstance(checks, helpers.ControlledList):
-                checks = helpers.ControlledList(checks)
-                checks.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "checks", checks)
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(checks=Check)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

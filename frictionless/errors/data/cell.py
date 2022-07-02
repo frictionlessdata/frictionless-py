@@ -1,58 +1,30 @@
+from dataclasses import dataclass
 from ...exception import FrictionlessException
 from .row import RowError
 
 
+@dataclass
 class CellError(RowError):
-    """Cell error representation
-
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        cells (str[]): row cells
-        row_number (int): row number
-        row_position (int): row position
-        cell (str): errored cell
-        field_name (str): field name
-        field_number (int): field number
-        field_position (int): field position
-
-    Raises
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    """Cell error representation"""
 
     code = "cell-error"
     name = "Cell Error"
-    tags = ["#data", "#table", "#row", "#cell"]
+    tags = ["#table", "#content", "#row", "#cell"]
     template = "Cell Error"
     description = "Cell Error"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        note,
-        cells,
-        row_number,
-        row_position,
-        cell,
-        field_name,
-        field_number,
-        field_position,
-    ):
-        self.setinitial("cell", cell)
-        self.setinitial("fieldName", field_name)
-        self.setinitial("fieldNumber", field_number)
-        self.setinitial("fieldPosition", field_position)
-        super().__init__(
-            descriptor,
-            note=note,
-            cells=cells,
-            row_number=row_number,
-            row_position=row_position,
-        )
+    # State
 
-    # Create
+    cell: str
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
+
+    field_number: int
+    """TODO: add docs"""
+
+    # Convert
 
     @classmethod
     def from_row(cls, row, *, note, field_name):
@@ -71,17 +43,14 @@ class CellError(RowError):
         for field_number, name in enumerate(row.field_names, start=1):
             if field_name == name:
                 cell = row[field_name]
-                field_position = row.field_positions[field_number - 1]
                 to_str = lambda v: str(v) if v is not None else ""
                 return cls(
                     note=note,
                     cells=list(map(to_str, row.cells)),
                     row_number=row.row_number,
-                    row_position=row.row_position,
                     cell=str(cell),
                     field_name=field_name,
                     field_number=field_number,
-                    field_position=field_position,
                 )
         raise FrictionlessException(f"Field {field_name} is not in the row")
 

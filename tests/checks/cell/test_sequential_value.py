@@ -36,7 +36,7 @@ def test_validate_sequential_value_non_existent_field():
         [3, "Brad"],
     ]
     resource = Resource(source)
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {
             "checks": [
                 {"code": "sequential-value", "fieldName": "row"},

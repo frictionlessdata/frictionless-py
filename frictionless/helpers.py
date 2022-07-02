@@ -5,7 +5,6 @@ import os
 import csv
 import json
 import glob
-import jinja2
 import marko
 import math
 import atexit
@@ -17,7 +16,7 @@ import platform
 import textwrap
 import functools
 import stringcase
-from typing import List, Union
+from typing import List
 from inspect import signature
 from html.parser import HTMLParser
 from importlib import import_module
@@ -47,6 +46,11 @@ def create_descriptor(**options):
     return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
+def remove_default(descriptor, key, default):
+    if descriptor.get(key) == default:
+        descriptor.pop(key)
+
+
 def stringify_label(cells):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
@@ -56,7 +60,7 @@ def get_name(value):
 
 
 def pass_through(iterator):
-    for item in iterator:
+    for _ in iterator:
         pass
 
 
@@ -108,14 +112,6 @@ def copy_merge(source, patch={}, **kwargs):
     source.update(patch)
     source.update(kwargs)
     return source
-
-
-def filter_cells(cells, field_positions):
-    result = []
-    for field_position, cell in enumerate(cells, start=1):
-        if field_position in field_positions:
-            result.append(cell)
-    return result
 
 
 def compile_regex(items):
@@ -229,13 +225,12 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
-def is_expandable_path(path, basepath):
-    if not isinstance(path, str):
+def is_expandable_path(source):
+    if not isinstance(source, str):
         return False
-    if is_remote_path(path):
+    if is_remote_path(source):
         return False
-    fullpath = os.path.join(basepath, path)
-    return glob.has_magic(fullpath) or os.path.isdir(fullpath)
+    return glob.has_magic(source) or os.path.isdir(source)
 
 
 def is_zip_descriptor(descriptor):
@@ -342,7 +337,42 @@ def html_to_text(html):
     return parser.text.strip()
 
 
-# Measurements
+def format_bytes(size: int) -> str:
+    """Format bytes to larger units"""
+    units = ["bytes", "KB", "MB", "GB", "TB"]
+    index = math.floor(math.log2(size) / 10)
+    if index > len(units):
+        index = len(units) - 1
+    return units[index]
+
+
+def slugify(text, **options):
+    """There is a conflict between python-slugify and awesome-slugify
+    So we import from a proper module manually
+    """
+
+    # Import
+    from slugify.slugify import slugify
+
+    # Slugify
+    slug = slugify(text, **options)
+    return slug
+
+
+def get_current_memory_usage():
+    """Current memory usage of the current process in MB
+    This will only work on systems with a /proc file system (like Linux)
+    https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
+    """
+    try:
+        with open("/proc/self/status") as status:
+            for line in status:
+                parts = line.split()
+                key = parts[0][2:-1].lower()
+                if key == "rss":
+                    return int(parts[1]) / 1000
+    except Exception:
+        pass
 
 
 class Timer:
@@ -357,25 +387,29 @@ class Timer:
         return round((self.__stop - self.__start).total_seconds(), 3)
 
 
-def get_current_memory_usage():
-    # Current memory usage of the current process in MB
-    # This will only work on systems with a /proc file system (like Linux)
-    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
-    try:
-        with open("/proc/self/status") as status:
-            for line in status:
-                parts = line.split()
-                key = parts[0][2:-1].lower()
-                if key == "rss":
-                    return int(parts[1]) / 1000
-    except Exception:
-        pass
+# TODO: Temporary function to use with tabulate  tabulate 0.8.9 does not support text wrap
+def wrap_text_to_colwidths(list_of_lists: List, colwidths: List = [5, 5, 10, 50]) -> List:
+    """Create new list with wrapped text with different column width.
+
+    Args:
+        list_of_lists (List): List of lines
+        colwidths (List): width for each column
+
+    Returns:
+        List: list of lines with wrapped text
+    """
+    result = []
+    for row in list_of_lists:
+        new_row = []
+        for cell, width in zip(row, colwidths):
+            cell = str(cell)
+            wrapped = textwrap.wrap(cell, width=width)
+            new_row.append("\n".join(wrapped))
+        result.append(new_row)
+    return result
 
 
-# Collections
-
-
-# NOTE: we might need to move ControlledList/Dict to Metadata to incapsulate its behaviour
+# TODO: remove below for v5
 
 
 class ControlledDict(dict):
@@ -473,21 +507,6 @@ class ControlledList(list):
         return result
 
 
-# Backports
-
-
-def slugify(text, **options):
-    # There is a conflict between python-slugify and awesome-slugify
-    # So we import from a proper module manually
-
-    # Import
-    from slugify.slugify import slugify
-
-    # Slugify
-    slug = slugify(text, **options)
-    return slug
-
-
 class cached_property_backport:
     # It can be removed after dropping support for Python 3.6 and Python 3.7
 
@@ -543,107 +562,3 @@ try:
     cached_property = functools.cached_property
 except Exception:
     cached_property = cached_property_backport
-
-
-# Markdown
-
-
-def render_markdown(path: str, data: dict) -> str:
-    """Render any JSON-like object as Markdown, using jinja2 template"""
-
-    template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
-    environ = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(template_dir), lstrip_blocks=True, trim_blocks=True
-    )
-    environ.filters["filter_dict"] = filter_dict
-    environ.filters["dict_to_markdown"] = json_to_markdown
-    environ.filters["tabulate"] = dicts_to_markdown_table
-    template = environ.get_template(path)
-    return template.render(**data)
-
-
-def filter_dict(
-    x: dict, include: list = None, exclude: list = None, order: list = None
-) -> dict:
-    """Filter and order dictionary by key names"""
-
-    if include:
-        x = {key: x[key] for key in x if key in include}
-    if exclude:
-        x = {key: x[key] for key in x if key not in exclude}
-    if order:
-        index = [
-            (order.index(key) if key in order else len(order), i)
-            for i, key in enumerate(x)
-        ]
-        sorted_keys = [key for _, key in sorted(zip(index, x.keys()))]
-        x = {key: x[key] for key in sorted_keys}
-    return x
-
-
-def json_to_markdown(
-    x: Union[dict, list, int, float, str, bool],
-    level: int = 0,
-    tab: int = 2,
-    flatten_scalar_lists: bool = True,
-) -> str:
-    """Render any JSON-like object as Markdown, using nested bulleted lists"""
-
-    def _scalar_list(x) -> bool:
-        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
-
-    def _iter(x: Union[dict, list, int, float, str, bool], level: int = 0) -> str:
-        if isinstance(x, (dict, list)):
-            if isinstance(x, dict):
-                labels = [f"- `{key}`" for key in x]
-            elif isinstance(x, list):
-                labels = [f"- [{i + 1}]" for i in range(len(x))]
-            values = x if isinstance(x, list) else list(x.values())
-            if isinstance(x, list) and flatten_scalar_lists:
-                scalar = [not isinstance(value, (dict, list)) for value in values]
-                if all(scalar):
-                    values = [f"{values}"]
-            lines = []
-            for label, value in zip(labels, values):
-                if isinstance(value, (dict, list)) and (
-                    not flatten_scalar_lists or not _scalar_list(value)
-                ):
-                    lines.append(f"{label}\n{_iter(value, level=level + 1)}")
-                else:
-                    if isinstance(value, str):
-                        # Indent to align following lines with '- '
-                        value = jinja2.filters.do_indent(value, width=2, first=False)
-                    lines.append(f"{label} {value}")
-            txt = "\n".join(lines)
-        else:
-            txt = str(x)
-        if level > 0:
-            txt = jinja2.filters.do_indent(txt, width=tab, first=True, blank=False)
-        return txt
-
-    return jinja2.filters.do_indent(
-        _iter(x, level=0), width=tab * level, first=True, blank=False
-    )
-
-
-def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
-    """Tabulate dictionaries and render as a Markdown table"""
-
-    if kwargs:
-        dicts = [filter_dict(x, **kwargs) for x in dicts]
-    try:
-        pandas = import_module("pandas")
-        df = pandas.DataFrame(dicts)
-    except ImportError:
-        module = import_module("frictionless.exception")
-        raise module.FrictionlessException("Please install `pandas` package")
-    return df.where(df.notnull(), None).to_markdown(index=False)
-
-
-def format_bytes(size: int) -> str:
-    """Format bytes to larger units"""
-    units = ["bytes", "KB", "MB", "GB", "TB"]
-    index = math.floor(math.log2(size) / 10)
-    if index > len(units):
-        index = len(units) - 1
-    return units[index]

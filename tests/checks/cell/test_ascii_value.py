@@ -15,7 +15,7 @@ def test_validate_ascii_value_845():
 
 def test_validate_ascii_value_descriptor_845():
     resource = Resource("data/ascii.csv")
-    checklist = Checklist({"checks": [{"code": "ascii-value"}]})
+    checklist = Checklist.from_descriptor({"checks": [{"code": "ascii-value"}]})
     report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []
 

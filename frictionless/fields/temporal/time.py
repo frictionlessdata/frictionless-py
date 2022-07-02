@@ -1,0 +1,67 @@
+from dateutil import parser
+from datetime import datetime, time
+from dataclasses import dataclass
+from ...schema import Field
+from ... import settings
+
+
+@dataclass
+class TimeField(Field):
+    type = "time"
+    builtin = True
+    supported_constraints = [
+        "required",
+        "minimum",
+        "maximum",
+        "enum",
+    ]
+
+    # Read
+
+    def create_value_reader(self):
+
+        # Create reader
+        def value_reader(cell):
+            if not isinstance(cell, time):
+                if not isinstance(cell, str):
+                    return None
+                try:
+                    if self.format == "default":
+                        # Guard against shorter formats supported by dateutil
+                        assert cell[5] == ":"
+                        assert len(cell) >= 8
+                        cell = parser.isoparse(f"2000-01-01T{cell}").timetz()
+                    elif self.format == "any":
+                        cell = parser.parse(cell).timetz()
+                    else:
+                        cell = datetime.strptime(cell, self.format).timetz()
+                except Exception:
+                    return None
+            return cell
+
+        return value_reader
+
+    # Write
+
+    def create_value_writer(self):
+
+        # Create format
+        format = self.format
+        if format == settings.DEFAULT_FIELD_FORMAT:
+            format = settings.DEFAULT_TIME_PATTERN
+
+        # Create writer
+        def value_writer(cell):
+            cell = cell.strftime(format)
+            cell = cell.replace("+0000", "Z")
+            return cell
+
+        return value_writer
+
+    # Metadata
+
+    # TODO: use search/settings
+    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
+        4
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}

@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
@@ -100,6 +101,7 @@ def test_step_field_add_with_function():
     ]
 
 
+@pytest.mark.skip
 def test_step_field_add_with_incremental():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

@@ -37,13 +37,19 @@ def describe(
         file = system.create_file(source, basepath=options.get("basepath", ""))
         type = "package" if file.multipart else "resource"
 
-    # Describe metadata
+    # Describe dialect
     if type == "dialect":
         return Dialect.describe(source, expand=expand, **options)
+
+    # Describe package
     elif type == "package":
         return Package.describe(source, expand=expand, stats=stats, **options)
+
+    # Describe resource
     elif type == "resource":
         return Resource.describe(source, expand=expand, stats=stats, **options)
+
+    # Describe schema
     elif type == "schema":
         return Schema.describe(source, expand=expand, **options)
 

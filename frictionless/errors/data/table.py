@@ -4,7 +4,7 @@ from .data import DataError
 class TableError(DataError):
     code = "table-error"
     name = "Table Error"
-    tags = ["#data", "#table"]
+    tags = ["#table"]
     template = "General table error: {note}"
     description = "There is a table error."
 
@@ -28,10 +28,6 @@ class TableDimensionsError(TableError):
     name = "Table dimensions error"
     template = "The data source does not have the required dimensions: {note}"
     description = "This error can happen if the data is corrupted."
-
-    def __init__(self, note, limits):
-        self.setinitial("limits", limits)
-        super().__init__(note=note)
 
 
 class DeviatedValueError(TableError):

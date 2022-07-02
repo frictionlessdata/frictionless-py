@@ -1,4 +1,5 @@
-from ...step import Step
+# type: ignore
+from ...pipeline import Step
 from ...resource import Resource
 
 
@@ -12,6 +13,7 @@ from ...resource import Resource
 # We need to review how we use "target.schema.fields.clear()"
 
 
+# TODO: migrate
 class table_write(Step):
     """Write table"""
 

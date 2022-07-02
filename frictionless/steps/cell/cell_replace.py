@@ -1,5 +1,7 @@
 import petl
-from ...step import Step
+from dataclasses import dataclass
+from typing import Optional
+from ...pipeline import Step
 
 
 # NOTE:
@@ -7,33 +9,36 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_replace(Step):
     """Replace cell"""
 
     code = "cell-replace"
 
-    def __init__(self, descriptor=None, *, pattern=None, replace=None, field_name=None):
-        self.setinitial("pattern", pattern)
-        self.setinitial("replace", replace)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # Properties
+
+    pattern: str
+    """TODO: add docs"""
+
+    replace: str
+    """TODO: add docs"""
+
+    field_name: Optional[str] = None
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        pattern = self.get("pattern")
-        replace = self.get("replace")
-        field_name = self.get("fieldName")
-        if not field_name:
-            resource.data = table.replaceall(pattern, replace)  # type: ignore
+        if not self.field_name:
+            resource.data = table.replaceall(self.pattern, self.replace)  # type: ignore
         else:
-            pattern = pattern
+            pattern = self.pattern
             function = petl.replace
             if pattern.startswith("<regex>"):  # type: ignore
                 pattern = pattern.replace("<regex>", "")  # type: ignore
                 function = petl.sub
-            resource.data = function(table, field_name, pattern, replace)  # type: ignore
+            resource.data = function(table, self.field_name, pattern, self.replace)  # type: ignore
 
     # Metadata
 
@@ -41,6 +46,7 @@ class cell_replace(Step):
         "type": "object",
         "required": ["pattern"],
         "properties": {
+            "code": {},
             "pattern": {"type": "string"},
             "replace": {"type": "string"},
             "fieldName": {"type": "string"},

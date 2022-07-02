@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_cell_fill():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -27,6 +29,7 @@ def test_step_cell_fill():
     ]
 
 
+@pytest.mark.skip
 def test_step_cell_fill_direction_down():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -50,6 +53,7 @@ def test_step_cell_fill_direction_down():
     ]
 
 
+@pytest.mark.skip
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -75,6 +79,7 @@ def test_step_cell_fill_direction_right():
     ]
 
 
+@pytest.mark.skip
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

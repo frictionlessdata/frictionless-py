@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_attach():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -27,6 +29,7 @@ def test_step_table_attach():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_attach_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

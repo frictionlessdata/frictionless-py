@@ -27,7 +27,7 @@ def test_validate_forbidden_value_many_rules():
         [6],
     ]
     resource = Resource(source)
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {
             "checks": [
                 {"code": "forbidden-value", "fieldName": "row", "values": [10]},
@@ -51,7 +51,7 @@ def test_validate_forbidden_value_many_rules_with_non_existent_field():
         [2, "Alex"],
     ]
     resource = Resource(source)
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {
             "checks": [
                 {"code": "forbidden-value", "fieldName": "row", "values": [10]},

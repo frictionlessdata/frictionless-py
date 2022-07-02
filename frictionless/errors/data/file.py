@@ -4,7 +4,7 @@ from .data import DataError
 class FileError(DataError):
     code = "file-error"
     name = "File Error"
-    tags = ["#data", "#file"]
+    tags = ["#file"]
     template = "General file error: {note}"
     description = "There is a file error."
 

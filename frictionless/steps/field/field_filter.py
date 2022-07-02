@@ -1,4 +1,6 @@
-from ...step import Step
+from typing import List
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,24 +8,25 @@ from ...step import Step
 # Some of the following step use **options - we need to review/fix it
 
 
+@dataclass
 class field_filter(Step):
     """Filter fields"""
 
     code = "field-filter"
 
-    def __init__(self, descriptor=None, *, names=None):
-        self.setinitial("names", names)
-        super().__init__(descriptor)
+    # Properties
+
+    names: List[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names")
         for name in resource.schema.field_names:
-            if name not in names:
+            if name not in self.names:
                 resource.schema.remove_field(name)
-        resource.data = table.cut(*names)  # type: ignore
+        resource.data = table.cut(*self.names)  # type: ignore
 
     # Metadata
 
@@ -31,6 +34,7 @@ class field_filter(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
+            "code": {},
             "names": {"type": "array"},
         },
     }

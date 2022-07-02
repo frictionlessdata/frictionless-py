@@ -1,5 +1,7 @@
 import simpleeval
-from ...step import Step
+from dataclasses import dataclass
+from typing import Optional, Any
+from ...pipeline import Step
 
 
 # NOTE:
@@ -7,26 +9,29 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_filter(Step):
     """Filter rows"""
 
     code = "row-filter"
 
-    def __init__(self, descriptor=None, *, formula=None, function=None):
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        super().__init__(descriptor)
+    # Properties
+
+    formula: Optional[Any] = None
+    """TODO: add docs"""
+
+    function: Optional[Any] = None
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        function = self.function
         table = resource.to_petl()
-        formula = self.get("formula")
-        function = self.get("function")
-        if formula:
+        if self.formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
-            function = lambda row: evalclass(names=row).eval(formula)
+            function = lambda row: evalclass(names=row).eval(self.formula)
         resource.data = table.select(function)  # type: ignore
 
     # Metadata
@@ -35,6 +40,7 @@ class row_filter(Step):
         "type": "object",
         "required": [],
         "properties": {
+            "code": {},
             "formula": {type: "string"},
             "function": {},
         },

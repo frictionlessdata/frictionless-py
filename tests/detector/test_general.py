@@ -1,5 +1,5 @@
-from frictionless import Detector, Resource
 import pytest
+from frictionless import Detector, Resource
 
 
 # General
@@ -15,7 +15,7 @@ def test_schema_from_sample():
     ]
     detector = Detector()
     schema = detector.detect_schema(sample, labels=labels)
-    assert schema == {
+    assert schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "age", "type": "string"},
@@ -34,7 +34,7 @@ def test_schema_from_sample_confidence_less():
     ]
     detector = Detector(field_confidence=0.75)
     schema = detector.detect_schema(sample, labels=labels)
-    assert schema == {
+    assert schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "age", "type": "integer"},
@@ -53,7 +53,7 @@ def test_schema_from_sample_confidence_full():
     ]
     detector = Detector(field_confidence=1)
     schema = detector.detect_schema(sample, labels=labels)
-    assert schema == {
+    assert schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "age", "type": "string"},
@@ -72,7 +72,7 @@ def test_schema_from_sparse_sample():
     ]
     detector = Detector(field_confidence=1)
     schema = detector.detect_schema(sample, labels=labels)
-    assert schema == {
+    assert schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "age", "type": "integer"},
@@ -102,7 +102,6 @@ def test_schema_from_synthetic_sparse_sample(confidence):
     def generate_rows(num_rows=100, columns=[]):
         rows = []
         num_per_type = [num_rows * c["conf"] for c in columns]
-
         for i in range(num_rows):
             row = []
             for ci, col in enumerate(columns):
@@ -110,16 +109,14 @@ def test_schema_from_synthetic_sparse_sample(confidence):
                     row.append(type_sample[col["type"]]["is"])
                 else:
                     row.append(type_sample[col["type"]]["not"])
-
             rows.append(row)
-
         return rows
 
-    sample = generate_rows(columns=columns)
+    fragment = generate_rows(columns=columns)
     detector = Detector(field_confidence=confidence)
     labels = [f"field{i}" for i in range(1, 4)]
-    schema = detector.detect_schema(sample, labels=labels)
-    assert schema == {
+    schema = detector.detect_schema(fragment, labels=labels)
+    assert schema.to_descriptor() == {
         "fields": [
             {
                 "name": f"field{i + 1}",
@@ -134,7 +131,7 @@ def test_schema_infer_no_names():
     sample = [[1], [2], [3]]
     detector = Detector()
     schema = detector.detect_schema(sample)
-    assert schema == {
+    assert schema.to_descriptor() == {
         "fields": [{"name": "field1", "type": "integer"}],
     }
 

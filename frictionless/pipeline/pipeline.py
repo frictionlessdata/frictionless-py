@@ -1,60 +1,82 @@
 from __future__ import annotations
-from typing import Optional, List, Any
+from typing import Optional, List
+from ..exception import FrictionlessException
 from ..metadata import Metadata
-from .validate import validate
-from ..system import system
-from ..step import Step
+from .step import Step
 from .. import settings
-from .. import helpers
 from .. import errors
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
 class Pipeline(Metadata):
-    validate = validate
+    """Pipeline representation"""
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
         *,
-        steps: Optional[List[Step]] = None,
-        # TODO: implement
-        limit_memory: Optional[int] = None,
+        steps: List[Step] = [],
+        limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
     ):
-        self.setinitial("steps", steps)
-        self.setinitial("limitMemory", limit_memory)
-        super().__init__(descriptor)
+        self.steps = steps.copy()
+        self.limit_memory = limit_memory
 
-    @property
-    def steps(self) -> List[Step]:
-        return self.get("steps", [])
+    # State
+
+    steps: List[Step]
+    """List of transform steps"""
+
+    limit_memory: int
+    """TODO: add docs"""
+
+    # Props
 
     @property
     def step_codes(self) -> List[str]:
         return [step.code for step in self.steps]
 
-    @property
-    def limit_memory(self) -> bool:
-        return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
+    # Steps
+
+    def add_step(self, step: Step) -> None:
+        """Add new step to the schema"""
+        self.steps.append(step)
+
+    def has_step(self, code: str) -> bool:
+        """Check if a step is present"""
+        for step in self.steps:
+            if step.code == code:
+                return True
+        return False
+
+    def get_step(self, code: str) -> Step:
+        """Get step by code"""
+        for step in self.steps:
+            if step.code == code:
+                return step
+        error = errors.PipelineError(note=f'step "{code}" does not exist')
+        raise FrictionlessException(error)
+
+    def set_step(self, step: Step) -> Optional[Step]:
+        """Set step by code"""
+        if self.has_step(step.code):
+            prev_step = self.get_step(step.code)
+            index = self.steps.index(prev_step)
+            self.steps[index] = step
+            return prev_step
+        self.add_step(step)
 
     # Metadata
 
     metadata_Error = errors.PipelineError
-    metadata_profile = settings.PIPELINE_PROFILE
+    metadata_profile = {
+        "properties": {
+            "steps": {},
+            "limitMemory": {},
+        }
+    }
 
-    def metadata_process(self):
-
-        # Steps
-        steps = self.get("steps")
-        if isinstance(steps, list):
-            for index, step in enumerate(steps):
-                if not isinstance(step, Step):
-                    step = system.create_step(step)
-                    list.__setitem__(steps, index, step)
-            if not isinstance(steps, helpers.ControlledList):
-                steps = helpers.ControlledList(steps)
-                steps.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "steps", steps)
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(steps=Step)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

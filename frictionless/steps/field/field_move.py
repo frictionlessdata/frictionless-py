@@ -1,4 +1,5 @@
-from ...step import Step
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,25 +7,27 @@ from ...step import Step
 # Some of the following step use **options - we need to review/fix it
 
 
+@dataclass
 class field_move(Step):
     """Move field"""
 
     code = "field-move"
 
-    def __init__(self, descriptor=None, *, name=None, position=None):
-        self.setinitial("name", name)
-        self.setinitial("position", position)
-        super().__init__(descriptor)
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    position: int
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        position = self.get("position")
-        field = resource.schema.remove_field(name)
-        resource.schema.fields.insert(position - 1, field)  # type: ignore
-        resource.data = table.movefield(name, position - 1)  # type: ignore
+        field = resource.schema.remove_field(self.name)
+        resource.schema.fields.insert(self.position - 1, field)  # type: ignore
+        resource.data = table.movefield(self.name, self.position - 1)  # type: ignore
 
     # Metadata
 
@@ -32,6 +35,7 @@ class field_move(Step):
         "type": "object",
         "required": ["name", "position"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "position": {"type": "number"},
         },

@@ -1,5 +1,7 @@
 import petl
-from ...step import Step
+from dataclasses import dataclass
+from typing import Optional
+from ...pipeline import Step
 
 
 # NOTE:
@@ -7,34 +9,30 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_ungroup(Step):
     """Ungroup rows"""
 
     code = "row-ungroup"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        selection=None,
-        group_name=None,
-        value_name=None,
-    ):
-        self.setinitial("selection", selection)
-        self.setinitial("groupName", group_name)
-        self.setinitial("valueName", value_name)
-        super().__init__(descriptor)
+    # Properties
+
+    selection: str
+    """TODO: add docs"""
+
+    group_name: str
+    """TODO: add docs"""
+
+    value_name: Optional[str] = None
+    """TODO: add docs"""
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        selection = self.get("selection")
-        group_name = self.get("groupName")
-        value_name = self.get("valueName")
-        function = getattr(petl, f"groupselect{selection}")
-        if selection in ["first", "last"]:
-            resource.data = function(table, group_name)
+        function = getattr(petl, f"groupselect{self.selection}")
+        if self.selection in ["first", "last"]:
+            resource.data = function(table, self.group_name)
         else:
-            resource.data = function(table, group_name, value_name)
+            resource.data = function(table, self.group_name, self.value_name)
 
     # Metadata
 
@@ -42,6 +40,7 @@ class row_ungroup(Step):
         "type": "object",
         "required": ["groupName", "selection"],
         "properties": {
+            "code": {},
             "selection": {
                 "type": "string",
                 "enum": ["first", "last", "min", "max"],

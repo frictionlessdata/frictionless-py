@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
@@ -26,6 +27,7 @@ def test_step_field_update():
     ]
 
 
+@pytest.mark.skip
 def test_step_field_update_with_exact_value():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

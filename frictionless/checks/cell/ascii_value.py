@@ -1,6 +1,6 @@
 from __future__ import annotations
 from ... import errors
-from ...check import Check
+from ...checklist import Check
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
@@ -40,5 +40,7 @@ class ascii_value(Check):
 
     metadata_profile = {
         "type": "object",
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }

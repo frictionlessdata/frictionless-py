@@ -12,7 +12,7 @@ from .. import settings
 # https://github.com/tiangolo/typer/issues/18
 class Program(typer.Typer):
     def __call__(self, *args, **kwargs):
-        if sys.argv[1].count("."):
+        if len(sys.argv) >= 2 and sys.argv[1].count("."):
             sys.argv = [sys.argv[0], "summary", sys.argv[1]]
         return super().__call__(*args, **kwargs)
 

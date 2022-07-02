@@ -15,6 +15,6 @@ def test_validate_duplicate_row():
 
 def test_validate_duplicate_row_valid():
     resource = Resource("data/table.csv")
-    checklist = Checklist({"checks": [{"code": "duplicate-row"}]})
+    checklist = Checklist.from_descriptor({"checks": [{"code": "duplicate-row"}]})
     report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []

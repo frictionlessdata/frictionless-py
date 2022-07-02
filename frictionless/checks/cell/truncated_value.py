@@ -1,5 +1,21 @@
+from ...checklist import Check
 from ... import errors
-from ...check import Check
+
+
+TRUNCATED_STRING_LENGTHS = [255]
+TRUNCATED_INTEGER_VALUES = [
+    # BigInt
+    18446744073709551616,
+    9223372036854775807,
+    # Int
+    4294967295,
+    2147483647,
+    # SummedInt
+    2097152,
+    # SmallInt
+    65535,
+    32767,
+]
 
 
 class truncated_value(Check):
@@ -17,6 +33,8 @@ class truncated_value(Check):
 
     code = "truncated-value"
     Errors = [errors.TruncatedValueError]
+
+    # Validate
 
     def validate_row(self, row):
         for field_name, cell in row.items():
@@ -45,27 +63,7 @@ class truncated_value(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }
-
-
-# Internal
-
-
-# TODO: move to root settings?
-TRUNCATED_STRING_LENGTHS = [
-    255,
-]
-TRUNCATED_INTEGER_VALUES = [
-    # BigInt
-    18446744073709551616,
-    9223372036854775807,
-    # Int
-    4294967295,
-    2147483647,
-    # SummedInt
-    2097152,
-    # SmallInt
-    65535,
-    32767,
-]

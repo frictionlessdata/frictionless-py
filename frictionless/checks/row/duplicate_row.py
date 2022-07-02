@@ -1,6 +1,6 @@
 import hashlib
+from ...checklist import Check
 from ... import errors
-from ...check import Check
 
 
 class duplicate_row(Check):
@@ -19,9 +19,13 @@ class duplicate_row(Check):
     code = "duplicate-row"
     Errors = [errors.DuplicateRowError]
 
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
+    # Connect
+
+    def connect(self, resource):
+        super().connect(resource)
         self.__memory = {}
+
+    # Validate
 
     def validate_row(self, row):
         text = ",".join(map(str, row.values()))
@@ -30,11 +34,13 @@ class duplicate_row(Check):
         if match:
             note = 'the same as row at position "%s"' % match
             yield errors.DuplicateRowError.from_row(row, note=note)
-        self.__memory[hash] = row.row_position
+        self.__memory[hash] = row.row_number
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile = {
         "type": "object",
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }

@@ -1,4 +1,6 @@
-from ...step import Step
+from typing import List
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,23 +8,24 @@ from ...step import Step
 # Some of the following step use **options - we need to review/fix it
 
 
+@dataclass
 class field_remove(Step):
     """Remove field"""
 
     code = "field-remove"
 
-    def __init__(self, descriptor=None, *, names=None):
-        self.setinitial("names", names)
-        super().__init__(descriptor)
+    # Properties
+
+    names: List[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names")
-        for name in names:  # type: ignore
+        for name in self.names:  # type: ignore
             resource.schema.remove_field(name)
-        resource.data = table.cutout(*names)  # type: ignore
+        resource.data = table.cutout(*self.names)  # type: ignore
 
     # Metadata
 
@@ -30,6 +33,7 @@ class field_remove(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
+            "code": {},
             "names": {"type": "array"},
         },
     }

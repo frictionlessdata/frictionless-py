@@ -1,5 +1,7 @@
-from ...step import Step
-from ...field import Field
+from typing import Optional, List
+from dataclasses import dataclass, field
+from ...pipeline import Step
+from ...schema import Field
 
 
 # NOTE:
@@ -12,41 +14,37 @@ from ...field import Field
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@dataclass
 class table_melt(Step):
     """Melt tables"""
 
     code = "table-melt"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        variables=None,
-        field_name=None,
-        to_field_names=None,
-    ):
-        self.setinitial("variables", variables)
-        self.setinitial("fieldName", field_name)
-        self.setinitial("toFieldNames", to_field_names)
-        super().__init__(descriptor)
+    # Properties
+
+    field_name: str
+    """TODO: add docs"""
+
+    variables: Optional[str] = None
+    """TODO: add docs"""
+
+    to_field_names: List[str] = field(default_factory=lambda: ["variable", "value"])
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        variables = self.get("variables")
-        field_name = self.get("fieldName")
-        to_field_names = self.get("toFieldNames", ["variable", "value"])
-        field = resource.schema.get_field(field_name)
+        field = resource.schema.get_field(self.field_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)
-        for name in to_field_names:
+        for name in self.to_field_names:
             resource.schema.add_field(Field(name=name))
         resource.data = table.melt(  # type: ignore
-            key=field_name,
-            variables=variables,
-            variablefield=to_field_names[0],
-            valuefield=to_field_names[1],
+            key=self.field_name,
+            variables=self.variables,
+            variablefield=self.to_field_names[0],
+            valuefield=self.to_field_names[1],
         )
 
     # Metadata
@@ -55,6 +53,7 @@ class table_melt(Step):
         "type": "object",
         "required": ["fieldName"],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "variables": {"type": "array"},
             "toFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},

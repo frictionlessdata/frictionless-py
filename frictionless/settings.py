@@ -20,16 +20,9 @@ def read_asset(*paths, encoding="utf-8"):
 UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
-INQUIRY_PROFILE = json.loads(read_asset("profiles", "inquiry.json"))
-CHECKLIST_PROFILE = json.loads(read_asset("profiles", "checklist.json"))
-PIPELINE_PROFILE = json.loads(read_asset("profiles", "pipeline.json"))
-REPORT_PROFILE = json.loads(read_asset("profiles", "report.json"))
+PACKAGE_PROFILE = json.loads(read_asset("profiles", "package.json"))
+RESOURCE_PROFILE = json.loads(read_asset("profiles", "resource.json"))
 SCHEMA_PROFILE = json.loads(read_asset("profiles", "schema.json"))
-RESOURCE_PROFILE = json.loads(read_asset("profiles", "resource", "general.json"))
-TABULAR_RESOURCE_PROFILE = json.loads(read_asset("profiles", "resource", "tabular.json"))
-PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "general.json"))
-FISCAL_PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "fiscal.json"))
-TABULAR_PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "tabular.json"))
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "general.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json"))
 
@@ -40,10 +33,13 @@ TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json")
 DEFAULT_SCHEME = "file"
 DEFAULT_FORMAT = "csv"
 DEFAULT_HASHING = "md5"
-DEFAULT_ONERROR = "ignore"
 DEFAULT_ENCODING = "utf-8"
 DEFAULT_INNERPATH = ""
+DEFAULT_PACKAGE_INNERPATH = "datapackage.json"
 DEFAULT_COMPRESSION = ""
+DEFAULT_BASEPATH = ""
+DEFAULT_TRUSTED = True
+DEFAULT_ONERROR = "ignore"
 DEFAULT_HEADER = True
 DEFAULT_HEADER_ROWS = [1]
 DEFAULT_HEADER_JOIN = " "
@@ -59,6 +55,7 @@ DEFAULT_FIELD_CONFIDENCE = 0.9
 DEFAULT_PACKAGE_PROFILE = "data-package"
 DEFAULT_RESOURCE_PROFILE = "data-resource"
 DEFAULT_TABULAR_RESOURCE_PROFILE = "tabular-data-resource"
+DEFAULT_FIELD_FORMAT = "default"
 DEFAULT_TRUE_VALUES = ["true", "True", "TRUE", "1"]
 DEFAULT_FALSE_VALUES = ["false", "False", "FALSE", "0"]
 DEFAULT_DATETIME_PATTERN = "%Y-%m-%dT%H:%M:%S%z"
@@ -86,10 +83,23 @@ DEFAULT_FIELD_CANDIDATES = [
     {"type": "string"},
 ]
 
+# Entities
+
+ENTITY_TRAITS = {
+    "package": ["resources"],
+    "resource": ["path", "data"],
+    "dialect": ["controls"],
+    "schema": ["fields"],
+    "checklist": ["checks"],
+    "pipeline": ["steps"],
+    "report": ["erorrs"],
+    "inquiry": ["tasks"],
+    "detector": ["bufferSize", "sampleSize"],
+}
 
 # Backports
 
-
+# TODO: drop for v5
 # It can be removed after dropping support for Python 3.6 and Python 3.7
 COMPRESSION_EXCEPTIONS = (
     (zipfile.BadZipFile, gzip.BadGzipFile)

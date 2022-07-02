@@ -15,7 +15,9 @@ def test_validate_table_dimensions_num_rows():
 
 def test_validate_table_dimensions_num_rows_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions", "numRows": 42}]})
+    checklist = Checklist.from_descriptor(
+        {"checks": [{"code": "table-dimensions", "numRows": 42}]}
+    )
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == [
         [{"requiredNumRows": 42, "numberRows": 3}, "table-dimensions"]
@@ -33,7 +35,9 @@ def test_validate_table_dimensions_min_rows():
 
 def test_validate_table_dimensions_min_rows_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions", "minRows": 42}]})
+    checklist = Checklist.from_descriptor(
+        {"checks": [{"code": "table-dimensions", "minRows": 42}]}
+    )
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == [
         [{"minRows": 42, "numberRows": 3}, "table-dimensions"]
@@ -51,7 +55,9 @@ def test_validate_table_dimensions_max_rows():
 
 def test_validate_table_dimensions_max_rows_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions", "maxRows": 2}]})
+    checklist = Checklist.from_descriptor(
+        {"checks": [{"code": "table-dimensions", "maxRows": 2}]}
+    )
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == [
         [{"maxRows": 2, "numberRows": 3}, "table-dimensions"]
@@ -69,7 +75,9 @@ def test_validate_table_dimensions_num_fields():
 
 def test_validate_table_dimensions_num_fields_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions", "numFields": 42}]})
+    checklist = Checklist.from_descriptor(
+        {"checks": [{"code": "table-dimensions", "numFields": 42}]}
+    )
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == [
         [{"requiredNumFields": 42, "numberFields": 4}, "table-dimensions"]
@@ -87,7 +95,9 @@ def test_validate_table_dimensions_min_fields():
 
 def test_validate_table_dimensions_min_fields_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions", "minFields": 42}]})
+    checklist = Checklist.from_descriptor(
+        {"checks": [{"code": "table-dimensions", "minFields": 42}]}
+    )
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == [
         [{"minFields": 42, "numberFields": 4}, "table-dimensions"]
@@ -105,7 +115,9 @@ def test_validate_table_dimensions_max_fields():
 
 def test_validate_table_dimensions_max_fields_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions", "maxFields": 2}]})
+    checklist = Checklist.from_descriptor(
+        {"checks": [{"code": "table-dimensions", "maxFields": 2}]}
+    )
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == [
         [{"maxFields": 2, "numberFields": 4}, "table-dimensions"]
@@ -121,7 +133,7 @@ def test_validate_table_dimensions_no_limits():
 
 def test_validate_table_dimensions_no_limits_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist({"checks": [{"code": "table-dimensions"}]})
+    checklist = Checklist.from_descriptor({"checks": [{"code": "table-dimensions"}]})
     report = resource.validate(checklist)
     assert report.flatten(["limits", "code"]) == []
 
@@ -138,7 +150,7 @@ def test_validate_table_dimensions_num_fields_num_rows_wrong():
 
 def test_validate_table_dimensions_num_fields_num_rows_wrong_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {"checks": [{"code": "table-dimensions", "numFields": 3, "numRows": 2}]}
     )
     report = resource.validate(checklist)
@@ -157,7 +169,7 @@ def test_validate_table_dimensions_num_fields_num_rows_correct():
 
 def test_validate_table_dimensions_num_fields_num_rows_correct_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {"checks": [{"code": "table-dimensions", "numFields": 4, "numRows": 3}]}
     )
     report = resource.validate(checklist)
@@ -176,7 +188,7 @@ def test_validate_table_dimensions_min_fields_max_rows_wrong():
 
 def test_validate_table_dimensions_min_fields_max_rows_wrong_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {"checks": [{"code": "table-dimensions", "minFields": 5, "maxRows": 2}]}
     )
     report = resource.validate(checklist)
@@ -195,7 +207,7 @@ def test_validate_table_dimensions_min_fields_max_rows_correct():
 
 def test_validate_table_dimensions_min_fields_max_rows_correct_declarative():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {"checks": [{"code": "table-dimensions", "minFields": 4, "maxRows": 3}]}
     )
     report = resource.validate(checklist)

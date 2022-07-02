@@ -1,4 +1,6 @@
-from ...step import Step
+from dataclasses import dataclass
+from typing import Optional, Any
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,39 +8,44 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class cell_convert(Step):
     """Convert cell"""
 
     code = "cell-convert"
 
-    def __init__(self, descriptor=None, *, value=None, function=None, field_name=None):
-        self.setinitial("value", value)
-        self.setinitial("function", function)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # Properties
+
+    value: Optional[Any] = None
+    """TODO: add docs"""
+
+    function: Optional[Any] = None
+    """TODO: add docs"""
+
+    field_name: Optional[str] = None
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_name = self.get("fieldName")
-        function = self.get("function")
-        value = self.get("value")
-        if not field_name:
+        function = self.function
+        if not self.field_name:
             if not function:
-                function = lambda input: value
+                function = lambda _: self.value
             resource.data = table.convertall(function)  # type: ignore
-        elif function:
-            resource.data = table.convert(field_name, function)  # type: ignore
+        elif self.function:
+            resource.data = table.convert(self.field_name, function)  # type: ignore
         else:
-            resource.data = table.update(field_name, value)  # type: ignore
+            resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile = {
         "type": "object",
         "required": [],
         "properties": {
+            "code": {},
             "value": {},
             "fieldName": {"type": "string"},
         },

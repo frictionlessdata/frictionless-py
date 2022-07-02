@@ -1,6 +1,8 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
+@pytest.mark.skip
 def test_resource_transform_bound_pipeline():
     pipeline = Pipeline(steps=[steps.cell_set(field_name="population", value=100)])
     source = Resource("data/transform.csv", pipeline=pipeline)

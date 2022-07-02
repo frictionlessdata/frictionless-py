@@ -101,26 +101,6 @@ header_join = Option(
     help="Multiline header joiner [default: inferred]",
 )
 
-pick_fields = Option(
-    default=None,
-    help='Comma-separated fields to pick e.g. "1,name1"',
-)
-
-skip_fields = Option(
-    default=None,
-    help='Comma-separated fields to skip e.g. "2,name2"',
-)
-
-limit_fields = Option(
-    default=None,
-    help='Limit fields by this integer e.g. "10"',
-)
-
-offset_fields = Option(
-    default=None,
-    help='Offset fields by this integer e.g "5"',
-)
-
 pick_rows = Option(
     default=None,
     help='Comma-separated rows to pick e.g. "1,<blank>"',
@@ -134,11 +114,6 @@ skip_rows = Option(
 limit_rows = Option(
     default=None,
     help='Limit rows by this integer e.g "100"',
-)
-
-offset_rows = Option(
-    default=None,
-    help='Offset rows by this integer e.g. "50"',
 )
 
 # Schema

@@ -1,4 +1,6 @@
-from ...step import Step
+from typing import Any
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -11,26 +13,27 @@ from ...step import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@dataclass
 class table_debug(Step):
     """Debug table"""
 
     code = "table-debug"
 
-    def __init__(self, descriptor=None, *, function=None):
-        self.setinitial("function", function)
-        super().__init__(descriptor)
+    # Properties
+
+    function: Any
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         current = resource.to_copy()
-        function = self.get("function")
 
         # Data
         def data():
             with current:
                 for row in current.row_stream:  # type: ignore
-                    function(row)  # type: ignore
+                    self.function(row)  # type: ignore
                     yield row
 
         # Meta
@@ -42,6 +45,7 @@ class table_debug(Step):
         "type": "object",
         "required": ["function"],
         "properties": {
+            "code": {},
             "function": {},
         },
     }

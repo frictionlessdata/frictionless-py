@@ -2,28 +2,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any
 
 if TYPE_CHECKING:
-    from .file import File
-    from .check import Check
-    from .control import Control
-    from .dialect import Dialect
+    from .resource import Resource, Loader, Parser
+    from .package import Storage
+    from .checklist import Check
+    from .dialect import Control
     from .error import Error
-    from .field import Field
-    from .loader import Loader
-    from .parser import Parser
-    from .step import Step
-    from .storage import Storage
-    from .type import Type
-
-
-# NOTE: implement create_resource so plugins can validate it (see #991)?
+    from .schema import Field
+    from .pipeline import Step
 
 
 class Plugin:
     """Plugin representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Plugin`
 
     It's an interface for writing Frictionless plugins.
     You can implement one or more methods to hook into Frictionless system.
@@ -31,7 +20,6 @@ class Plugin:
     """
 
     code = "plugin"
-    status = "stable"
 
     # Hooks
 
@@ -47,27 +35,14 @@ class Plugin:
         """
         pass
 
-    def create_control(self, file: File, *, descriptor: dict) -> Optional[Control]:
+    def create_control(self, descriptor: dict) -> Optional[Control]:
         """Create control
 
         Parameters:
-            file (File): control file
             descriptor (dict): control descriptor
 
         Returns:
             Control: control
-        """
-        pass
-
-    def create_dialect(self, file: File, *, descriptor: dict) -> Optional[Dialect]:
-        """Create dialect
-
-        Parameters:
-            file (File): dialect file
-            descriptor (dict): dialect descriptor
-
-        Returns:
-            Dialect: dialect
         """
         pass
 
@@ -82,23 +57,22 @@ class Plugin:
         """
         pass
 
+    def create_field(self, descriptor: dict) -> Optional[Field]:
+        """Create field
+
+        Parameters:
+            descriptor (dict): field descriptor
+
+        Returns:
+            Field: field
+        """
+        pass
+
     def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
         """Create candidates
 
         Returns:
             dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
-
-    def create_file(self, source: Any, **options) -> Optional[File]:
-        """Create file
-
-        Parameters:
-            source (any): file source
-            options (dict): file options
-
-        Returns:
-            File: file
         """
         pass
 
@@ -110,6 +84,15 @@ class Plugin:
 
         Returns:
             Loader: loader
+        """
+        pass
+
+    def create_package(self, package: Resource) -> None:
+        """Hook into package creation
+
+        Parameters:
+            package (Package): package
+
         """
         pass
 
@@ -147,13 +130,11 @@ class Plugin:
         """
         pass
 
-    def create_type(self, field: Field) -> Optional[Type]:
-        """Create type
+    def detection_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
 
         Parameters:
-            field (Field): corresponding field
+            resource (Resource): resource
 
-        Returns:
-            Type: type
         """
         pass

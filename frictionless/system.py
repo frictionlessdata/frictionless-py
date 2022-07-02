@@ -7,23 +7,18 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
-from .control import Control
-from .dialect import Dialect
-from .file import File
+from .dialect import Control
 from . import settings
 from . import errors
 
 if TYPE_CHECKING:
-    from .check import Check
-    from .error import Error
-    from .field import Field
-    from .loader import Loader
-    from .parser import Parser
+    from .resource import Resource, Loader, Parser
+    from .package import Storage
     from .plugin import Plugin
-    from .resource import Resource
-    from .step import Step
-    from .storage import Storage
-    from .type import Type
+    from .checklist import Check
+    from .error import Error
+    from .schema import Field
+    from .pipeline import Step
 
 
 # NOTE:
@@ -35,18 +30,64 @@ if TYPE_CHECKING:
 class System:
     """System representation
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import system`
-
     This class provides an ability to make system Frictionless calls.
     It's available as `frictionless.system` singletone.
 
     """
 
+    supported_hooks = [
+        "create_check",
+        "create_control",
+        "create_error",
+        "create_field",
+        "create_field_candidates",
+        "create_loader",
+        "create_parser",
+        "create_step",
+        "create_storage",
+        "detect_resource",
+    ]
+
     def __init__(self):
         self.__dynamic_plugins = OrderedDict()
         self.__http_session = None
+
+    # Props
+
+    @cached_property
+    def methods(self) -> Dict[str, Any]:
+        methods = {}
+        for action in self.supported_hooks:
+            methods[action] = OrderedDict()
+            for name, plugin in self.plugins.items():
+                if action in vars(type(plugin)):
+                    func = getattr(plugin, action, None)
+                    methods[action][name] = func
+        return methods
+
+    @cached_property
+    def plugins(self) -> OrderedDict[str, Plugin]:
+        modules = OrderedDict()
+        for item in pkgutil.iter_modules():
+            if item.name.startswith("frictionless_"):
+                module = import_module(item.name)
+                modules[item.name.replace("frictionless_", "")] = module
+        for group in ["schemes", "formats"]:
+            module = import_module(f"frictionless.{group}")
+            if module.__file__:
+                path = os.path.dirname(module.__file__)
+                for _, name, _ in pkgutil.iter_modules([path]):
+                    module = import_module(f"frictionless.{group}.{name}")
+                    modules[name] = module
+        plugins = OrderedDict(self.__dynamic_plugins)
+        for name, module in modules.items():
+            Plugin = getattr(module, f"{name.capitalize()}Plugin", None)
+            if Plugin:
+                plugin = Plugin()
+                plugins[name] = plugin
+        return plugins
+
+    # Register/Deregister
 
     def register(self, name, plugin):
         """Register a plugin
@@ -73,20 +114,6 @@ class System:
 
     # Hooks
 
-    hooks = [
-        "create_check",
-        "create_control",
-        "create_dialect",
-        "create_error",
-        "create_field_candidates",
-        "create_file",
-        "create_loader",
-        "create_parser",
-        "create_step",
-        "create_storage",
-        "create_type",
-    ]
-
     def create_check(self, descriptor: dict) -> Check:
         """Create check
 
@@ -103,15 +130,14 @@ class System:
                 return check
         for Class in vars(import_module("frictionless.checks")).values():
             if getattr(Class, "code", None) == code:
-                return Class(descriptor)
+                return Class.from_descriptor(descriptor)
         note = f'check "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
-    def create_control(self, resource: Resource, *, descriptor: dict) -> Control:
+    def create_control(self, descriptor: dict) -> Control:
         """Create control
 
         Parameters:
-            resource (Resource): control resource
             descriptor (dict): control descriptor
 
         Returns:
@@ -119,27 +145,10 @@ class System:
         """
         control = None
         for func in self.methods["create_control"].values():
-            control = func(resource, descriptor=descriptor)
+            control = func(descriptor)
             if control is not None:
                 return control
-        return Control(descriptor)
-
-    def create_dialect(self, resource: Resource, *, descriptor: dict) -> Dialect:
-        """Create dialect
-
-        Parameters:
-            resource (Resource): dialect resource
-            descriptor (dict): dialect descriptor
-
-        Returns:
-            Dialect: dialect
-        """
-        dialect = None
-        for func in self.methods["create_dialect"].values():
-            dialect = func(resource, descriptor=descriptor)
-            if dialect is not None:
-                return dialect
-        return Dialect(descriptor)
+        return Control.from_descriptor(descriptor)
 
     def create_error(self, descriptor: dict) -> Error:
         """Create error
@@ -161,6 +170,28 @@ class System:
         note = f'error "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(note)
 
+    def create_field(self, descriptor: dict) -> Field:
+        """Create field
+
+        Parameters:
+            descriptor (dict): field descriptor
+
+        Returns:
+            Field: field
+        """
+        # TODO: move to a proper place
+        descriptor.setdefault("type", "any")
+        type = descriptor.get("type", "")
+        for func in self.methods["create_field"].values():
+            field = func(descriptor)
+            if field is not None:
+                return field
+        for Class in vars(import_module("frictionless.fields")).values():
+            if getattr(Class, "type", None) == type:
+                return Class.from_descriptor(descriptor)
+        note = f'field "{type}" is not supported. Try installing "frictionless-{type}"'
+        raise FrictionlessException(errors.FieldError(note=note))
+
     def create_field_candidates(self) -> List[dict]:
         """Create candidates
 
@@ -171,23 +202,6 @@ class System:
         for func in self.methods["create_field_candidates"].values():
             func(candidates)
         return candidates
-
-    def create_file(self, source: Any, **options) -> File:
-        """Create file
-
-        Parameters:
-            source (any): file source
-            options (dict): file options
-
-        Returns:
-            File: file
-        """
-        file = File(source, **options)
-        for func in self.methods["create_file"].values():
-            plugin_file = func(file)
-            if plugin_file is not None:
-                return plugin_file
-        return file
 
     def create_loader(self, resource: Resource) -> Loader:
         """Create loader
@@ -241,7 +255,7 @@ class System:
                 return step
         for Class in vars(import_module("frictionless.steps")).values():
             if getattr(Class, "code", None) == code:
-                return Class(descriptor)
+                return Class.from_descriptor(descriptor)
         note = f'step "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 
@@ -262,25 +276,15 @@ class System:
         note = f'storage "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(note)
 
-    def create_type(self, field: Field) -> Type:
-        """Create type
+    def detect_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
 
         Parameters:
-            field (Field): corresponding field
+            resource (Resource): resource
 
-        Returns:
-            Type: type
         """
-        code = field.type
-        for func in self.methods["create_type"].values():
-            type = func(field)
-            if type is not None:
-                return type
-        for Class in vars(import_module("frictionless.types")).values():
-            if getattr(Class, "code", None) == code:
-                return Class(field)
-        note = f'type "{code}" is not supported. Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.FieldError(note=note))
+        for func in self.methods["detect_resource"].values():
+            func(resource)
 
     # Requests
 
@@ -317,41 +321,6 @@ class System:
         self.__http_session = http_session or self.get_http_session()
         yield self.__http_session
         self.__http_session = None
-
-    # Methods
-
-    @cached_property
-    def methods(self) -> Dict[str, Any]:
-        methods = {}
-        for action in self.hooks:
-            methods[action] = OrderedDict()
-            for name, plugin in self.plugins.items():
-                if action in vars(type(plugin)):
-                    func = getattr(plugin, action, None)
-                    methods[action][name] = func
-        return methods
-
-    # Plugins
-
-    @cached_property
-    def plugins(self) -> OrderedDict[str, Plugin]:
-        modules = OrderedDict()
-        for item in pkgutil.iter_modules():
-            if item.name.startswith("frictionless_"):
-                module = import_module(item.name)
-                modules[item.name.replace("frictionless_", "")] = module
-        module = import_module("frictionless.plugins")
-        if module.__file__:
-            for _, name, _ in pkgutil.iter_modules([os.path.dirname(module.__file__)]):
-                module = import_module(f"frictionless.plugins.{name}")
-                modules[name] = module
-        plugins = OrderedDict(self.__dynamic_plugins)
-        for name, module in modules.items():
-            Plugin = getattr(module, f"{name.capitalize()}Plugin", None)
-            if Plugin:
-                plugin = Plugin()
-                plugins[name] = plugin
-        return plugins
 
 
 system = System()

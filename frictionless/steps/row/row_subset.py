@@ -1,4 +1,5 @@
-from ...step import Step
+from dataclasses import dataclass
+from ...pipeline import Step
 
 
 # NOTE:
@@ -6,30 +7,32 @@ from ...step import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
+@dataclass
 class row_subset(Step):
     """Subset rows"""
 
     code = "row-subset"
 
-    def __init__(self, descriptor=None, *, subset=None, field_name=None):
-        self.setinitial("subset", subset)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # Properties
+
+    subset: str
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        subset = self.get("subset")
-        field_name = self.get("fieldName")
-        if subset == "conflicts":
-            resource.data = table.conflicts(field_name)  # type: ignore
-        elif subset == "distinct":
-            resource.data = table.distinct(field_name)  # type: ignore
-        elif subset == "duplicates":
-            resource.data = table.duplicates(field_name)  # type: ignore
-        elif subset == "unique":
-            resource.data = table.unique(field_name)  # type: ignore
+        if self.subset == "conflicts":
+            resource.data = table.conflicts(self.field_name)  # type: ignore
+        elif self.subset == "distinct":
+            resource.data = table.distinct(self.field_name)  # type: ignore
+        elif self.subset == "duplicates":
+            resource.data = table.duplicates(self.field_name)  # type: ignore
+        elif self.subset == "unique":
+            resource.data = table.unique(self.field_name)  # type: ignore
 
     # Metadata
 
@@ -37,6 +40,7 @@ class row_subset(Step):
         "type": "object",
         "required": ["subset"],
         "properties": {
+            "code": {},
             "subset": {
                 "type": "string",
                 "enum": ["conflicts", "distinct", "duplicates", "unique"],

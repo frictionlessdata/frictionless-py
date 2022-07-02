@@ -30,7 +30,7 @@ def test_validate_row_constraint_incorrect_constraint():
         [2, "Alex"],
     ]
     resource = Resource(source)
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {
             "checks": [
                 {"code": "row-constraint", "formula": "vars()"},
