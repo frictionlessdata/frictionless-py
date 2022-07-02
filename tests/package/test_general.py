@@ -86,7 +86,7 @@ def test_package_from_path_error_bad_path():
 
 def test_package_from_path_error_non_json():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(descriptor="data/table.csv")
+        Package.from_descriptor("data/table.csv")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("table.csv")
@@ -112,7 +112,7 @@ def test_package_from_path_error_bad_json_not_dict():
 def test_package_from_path_remote():
     package = Package(BASEURL % "data/package.json")
     assert package.basepath == BASEURL % "data"
-    assert package == {
+    assert package.to_descriptor() == {
         "name": "name",
         "resources": [{"name": "name", "path": "table.csv"}],
     }
@@ -147,7 +147,7 @@ def test_package_from_path_remote_error_bad_json_not_dict():
 
 def test_package_from_invalid_descriptor_type():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(descriptor=51)
+        Package.from_descriptor(51)
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("51")
