@@ -421,61 +421,39 @@ class Package(Metadata):
 
     # Resources
 
-    def add_resource(self, source=None, **options):
-        """Add new resource to the package.
+    def add_resource(self, resource: Resource) -> None:
+        """Add new resource to the package"""
+        self.resources.append(resource)
+        resource.package = self
 
-        Parameters:
-            source (dict|str): a data source
-            **options (dict): options of the Resource class
-
-        Returns:
-            Resource/None: added `Resource` instance or `None` if not added
-        """
-        native = isinstance(source, Resource)
-        resource = source if native else Resource(source, **options)
-        self.setdefault("resources", [])
-        self["resources"].append(resource)
-        return self.resources[-1]
-
-    def get_resource(self, name):
-        """Get resource by name.
-
-        Parameters:
-            name (str): resource name
-
-        Returns:
-           Resource: `Resource` instance
-
-        """
-        for resource in self.resources:
-            if resource.name == name:
-                return resource
-        error = errors.PackageError(note=f'resource "{name}" does not exist')
-        raise FrictionlessException(error)
-
-    def has_resource(self, name):
-        """Check if a resource is present
-
-        Parameters:
-            name (str): schema resource name
-
-        Returns:
-           bool: whether there is the resource
-        """
+    def has_resource(self, name: str) -> bool:
+        """Check if a resource is present"""
         for resource in self.resources:
             if resource.name == name:
                 return True
         return False
 
-    def remove_resource(self, name):
-        """Remove resource by name.
+    def get_resource(self, name: str) -> Resource:
+        """Get resource by name"""
+        for resource in self.resources:
+            if resource.name == name:
+                return resource
+        error = errors.SchemaError(note=f'resource "{name}" does not exist')
+        raise FrictionlessException(error)
 
-        Parameters:
-            name (str): resource name
+    def set_resource(self, resource: Resource) -> Optional[Resource]:
+        """Set resource by name"""
+        assert resource.name
+        if self.has_resource(resource.name):
+            prev_resource = self.get_resource(resource.name)
+            index = self.resources.index(prev_resource)
+            self.resources[index] = resource
+            resource.package = self
+            return prev_resource
+        self.add_resource(resource)
 
-        Returns:
-            Resource/None: removed `Resource` instances or `None` if not found
-        """
+    def remove_resource(self, name: str) -> Resource:
+        """Remove resource by name"""
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
