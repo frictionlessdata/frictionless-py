@@ -10,6 +10,7 @@ def test_resource_format_csv():
         assert resource.format == "csv"
 
 
+@pytest.mark.skip
 def test_resource_format_ndjson():
     with Resource("data/table.ndjson") as resource:
         assert resource.format == "ndjson"

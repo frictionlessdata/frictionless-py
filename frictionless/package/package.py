@@ -6,7 +6,6 @@ import zipfile
 import tempfile
 import builtins
 from copy import deepcopy
-from collections import Mapping
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException

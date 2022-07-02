@@ -67,6 +67,7 @@ def test_resource_dialect_header_inline():
         ]
 
 
+@pytest.mark.skip
 def test_resource_dialect_header_json_keyed():
     source = "[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
     source = source.encode("utf-8")

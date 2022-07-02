@@ -30,6 +30,7 @@ def test_resource_write_to_path(tmpdir):
         ]
 
 
+@pytest.mark.skip
 def test_resource_write_format_error_bad_format(tmpdir):
     source = Resource("data/resource.csv")
     target = Resource(str(tmpdir.join("resource.bad")))

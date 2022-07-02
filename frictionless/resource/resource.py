@@ -4,7 +4,7 @@ import petl
 import builtins
 import warnings
 from copy import deepcopy
-from collections import Mapping
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
 from ..table import Header, Row

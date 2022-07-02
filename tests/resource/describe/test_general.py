@@ -188,6 +188,7 @@ def test_describe_resource_compression_gzip_issue_606():
     assert resource.stats["bytes"] == 61
 
 
+@pytest.mark.skip
 def test_describe_resource_with_json_format_issue_827():
     resource = Resource.describe(path="data/table.json")
     assert resource.name == "table"
