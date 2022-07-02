@@ -117,10 +117,6 @@ class Resource(Metadata):
         self.checklist = checklist
         self.pipeline = pipeline
 
-        # Store shortcuts
-        if control:
-            self.dialect.set_control(control)
-
         # Store internal state
         self.__loader = None
         self.__parser = None
@@ -131,10 +127,9 @@ class Resource(Metadata):
         self.__lookup = None
         self.__row_stream = None
 
-        # Finalize creation
-        self.metadata_initiated = True
-        self.detector.detect_resource(self)
-        system.create_resource(self)
+        # Store shortcuts
+        if control:
+            self.dialect.set_control(control)
 
     @classmethod
     def __create__(cls, source: Optional[Any] = None, trusted: bool = False, **options):
@@ -752,6 +747,11 @@ class Resource(Metadata):
 
         # Open
         try:
+
+            # Detect
+            self.detector.detect_resource(self)
+            # TODO: rename to detect / remove create_package
+            system.create_resource(self)
 
             # Table
             if self.tabular:
