@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 import json
+import glob
 import jinja2
 import zipfile
 import tempfile
@@ -98,19 +99,25 @@ class Package(Metadata):
         self.hashing = hashing
 
     @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        innerpath: str = settings.DEFAULT_PACKAGE_INNERPATH,
-        trusted: bool = False,
-        **options,
-    ):
+    def __create__(cls, source: Optional[Any] = None, **options):
         if source:
+
+            # Compressed
             if helpers.is_zip_descriptor(source):
+                innerpath = options.get("innerpath", settings.DEFAULT_PACKAGE_INNERPATH)
                 source = helpers.unzip_descriptor(source, innerpath)
-            return Package.from_descriptor(
-                source, innerpath=innerpath, trusted=trusted, **options  # type: ignore
-            )
+
+            # Expandable
+            elif isinstance(source, str) and helpers.is_expandable_path(source):
+                options["resources"] = []
+                pattern = f"{source}/*" if os.path.isdir(source) else source
+                options = {"recursive": True} if "**" in pattern else {}
+                for path in sorted(glob.glob(pattern, **options)):
+                    options["resources"].append({"path": path})  # type: ignore
+
+            # Descriptor
+            options.setdefault("trusted", False)
+            return Package.from_descriptor(source, **options)
 
     # State
 

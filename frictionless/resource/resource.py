@@ -142,7 +142,7 @@ class Resource(Metadata):
             # Descriptor
             entity = cls.metadata_detect(source)
             if isinstance(source, Mapping) or entity == "resource":
-                options["trusted"] = False
+                options.setdefault("trusted", False)
                 return Resource.from_descriptor(source, **options)
 
             # Path/data
