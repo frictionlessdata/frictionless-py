@@ -136,14 +136,12 @@ class Resource(Metadata):
         system.create_resource(self)
 
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, **options):
+    def __create__(cls, source: Optional[Any] = None, trusted: bool = False, **options):
         entity = cls.metadata_detect(source)
         if entity == "resource":
             return Resource.from_descriptor(
-                source,
-                trusted=False,
-                **options,
-            )  # type: ignore
+                source, trusted=trusted, **options  # type: ignore
+            )
 
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
