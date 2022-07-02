@@ -123,9 +123,27 @@ class Detector(Metadata):
 
     # Detect
 
+    def detect_package(self, package: Package) -> None:
+        """Detect package's metadata
+
+        It works in-place updating a provided resource.
+        """
+        # Handle source
+        if source is not None:
+            if descriptor is None:
+                descriptor = source
+                file = system.create_file(source, basepath=basepath)
+                if file.multipart:
+                    descriptor = {"resources": []}
+                    for part in file.normpath:
+                        descriptor["resources"].append({"path": part})
+                elif file.type == "table" and not file.compression:
+                    descriptor = {"resources": [{"path": file.normpath}]}
+
+    # TODO detect profile here?
     # TODO: added plugin hooks into the loop
     def detect_resource(self, resource: Resource) -> None:
-        """Detect resource's file details
+        """Detect resource's metadata
 
         It works in-place updating a provided resource.
         """

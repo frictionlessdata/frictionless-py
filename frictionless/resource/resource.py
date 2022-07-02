@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 import json
 import petl
 import builtins
@@ -32,6 +31,7 @@ if TYPE_CHECKING:
 # Review the situation with describe function removing stats (move to infer?)
 
 
+# TODO: handle setting profile
 class Resource(Metadata):
     """Resource representation.
 
@@ -130,7 +130,7 @@ class Resource(Metadata):
         self.__lookup = None
         self.__row_stream = None
 
-        # Finalize resource
+        # Finalize creation
         self.metadata_initiated = True
         self.detector.detect_resource(self)
         system.create_resource(self)
@@ -139,7 +139,11 @@ class Resource(Metadata):
     def __create__(cls, source: Optional[Any] = None, **options):
         entity = cls.metadata_detect(source)
         if entity == "resource":
-            return Resource.from_descriptor(source, **options)  # type: ignore
+            return Resource.from_descriptor(
+                source,
+                trusted=False,
+                **options,
+            )  # type: ignore
 
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -403,6 +407,7 @@ class Resource(Metadata):
         """Whether resource is multipart"""
         return not self.memory and bool(self.extrapaths)
 
+    # TODO: True if profile is tabular as a shortcut?
     @property
     def tabular(self) -> bool:
         """Whether resource is tabular"""

@@ -1,33 +1,28 @@
-# type: ignore
 import os
 import json
 import jinja2
 import zipfile
 import tempfile
-from pathlib import Path
 from copy import deepcopy
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..detector import Detector
 from ..resource import Resource
+from ..dialect import Dialect
 from ..schema import Field
 from ..system import system
-from .describe import describe
-from .extract import extract
-from .transform import transform
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
+
+if TYPE_CHECKING:
+    from ..interfaces import IOnerror
 
 
 # TODO: add create_package hook
 class Package(Metadata):
     """Package representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Package`
 
     This class is one of the cornerstones of of Frictionless framework.
     It manages underlaying resource and provides an ability to describe a package.
@@ -40,384 +35,235 @@ class Package(Metadata):
     ]
     ```
 
-    Parameters:
-
-        source (any): Source of the package; can be in various forms.
-            Usually, it's a package descriptor in a form of dict or path
-            Also, it can be a glob pattern or a resource path
-
-        descriptor (dict|str): A resource descriptor provided explicitly.
-            Keyword arguments will patch this descriptor if provided.
-
-        resources? (dict|Resource[]): A list of resource descriptors.
-            It can be dicts or Resource instances.
-
-        id? (str): A property reserved for globally unique identifiers.
-            Examples of identifiers that are unique include UUIDs and DOIs.
-
-        name? (str): A short url-usable (and preferably human-readable) name.
-            This MUST be lower-case and contain only alphanumeric characters
-            along with “.”, “_” or “-” characters.
-
-        title? (str): A Package title according to the specs
-           It should a human-oriented title of the resource.
-
-        description? (str): A Package description according to the specs
-           It should a human-oriented description of the resource.
-
-        licenses? (dict[]): The license(s) under which the package is provided.
-            If omitted it's considered the same as the package's licenses.
-
-        sources? (dict[]): The raw sources for this data package.
-            It MUST be an array of Source objects.
-            Each Source object MUST have a title and
-            MAY have path and/or email properties.
-
-        profile? (str): A string identifying the profile of this descriptor.
-            For example, `fiscal-data-package`.
-
-        homepage? (str): A URL for the home on the web that is related to this package.
-            For example, github repository or ckan dataset address.
-
-        version? (str): A version string identifying the version of the package.
-            It should conform to the Semantic Versioning requirements and
-            should follow the Data Package Version pattern.
-
-        contributors? (dict[]): The people or organizations who contributed to this package.
-            It MUST be an array. Each entry is a Contributor and MUST be an object.
-            A Contributor MUST have a title property and MAY contain
-            path, email, role and organization properties.
-
-        keywords? (str[]): An Array of string keywords to assist users searching.
-            For example, ['data', 'fiscal']
-
-        image? (str): An image to use for this data package.
-            For example, when showing the package in a listing.
-
-        created? (str): The datetime on which this was created.
-            The datetime must conform to the string formats for RFC3339 datetime,
-
-        innerpath? (str): A ZIP datapackage descriptor inner path.
-            Path to the package descriptor inside the ZIP datapackage.
-            Example: some/folder/datapackage.yaml
-            Default: datapackage.json
-
-        basepath? (str): A basepath of the resource
-            The fullpath of the resource is joined `basepath` and /path`
-
-        detector? (Detector): File/table detector.
-            For more information, please check the Detector documentation.
-
-        onerror? (ignore|warn|raise): Behaviour if there is an error.
-            It defaults to 'ignore'. The default mode will ignore all errors
-            on resource level and they should be handled by the user
-            being available in Header and Row objects.
-
-        trusted? (bool): Don't raise an exception on unsafe paths.
-            A path provided as a part of the descriptor considered unsafe
-            if there are path traversing or the path is absolute.
-            A path provided as `source` or `path` is alway trusted.
-
-        hashing? (str): a hashing algorithm for resources
-            It defaults to 'md5'.
-
-        dialect? (dict|Dialect): Table dialect.
-            For more information, please check the Dialect documentation.
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
     """
-
-    describe = staticmethod(describe)
-    extract = extract
-    transform = transform
-    validate = validate
 
     def __init__(
         self,
-        source=None,
+        source: Optional[Any] = None,
         *,
-        descriptor=None,
-        # Spec
-        resources=None,
-        id=None,
-        name=None,
-        title=None,
-        description=None,
-        licenses=None,
-        sources=None,
-        profile=None,
-        homepage=None,
-        version=None,
-        contributors=None,
-        keywords=None,
-        image=None,
-        created=None,
-        # Extra
-        innerpath="datapackage.json",
-        basepath="",
-        detector=None,
-        onerror="ignore",
-        trusted=False,
-        hashing=None,
-        dialect=None,
+        # Standard
+        resources: List[Resource] = [],
+        id: Optional[str] = None,
+        name: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        licenses: List[dict] = [],
+        sources: List[dict] = [],
+        profile: Optional[str] = None,
+        homepage: Optional[str] = None,
+        version: Optional[str] = None,
+        contributors: List[dict] = [],
+        keywords: List[str] = [],
+        image: Optional[str] = None,
+        created: Optional[str] = None,
+        # Software
+        innerpath: str = settings.DEFAULT_PACKAGE_INNERPATH,
+        basepath: str = settings.DEFAULT_BASEPATH,
+        onerror: IOnerror = settings.DEFAULT_ONERROR,
+        trusted: bool = settings.DEFAULT_TRUSTED,
+        detector: Optional[Detector] = None,
+        dialect: Optional[Dialect] = None,
+        hashing: Optional[str] = None,
     ):
 
-        # Handle source
-        if source is not None:
-            if descriptor is None:
-                descriptor = source
-                file = system.create_file(source, basepath=basepath)
-                if file.multipart:
-                    descriptor = {"resources": []}
-                    for part in file.normpath:
-                        descriptor["resources"].append({"path": part})
-                elif file.type == "table" and not file.compression:
-                    descriptor = {"resources": [{"path": file.normpath}]}
+        # Store state
+        self.source = source
+        self.resources = resources.copy()
+        self.id = id
+        self.name = name
+        self.title = title
+        self.description = description
+        self.licenses = licenses.copy()
+        self.sources = sources.copy()
+        self.profile = profile
+        self.homepage = homepage
+        self.version = version
+        self.contributors = contributors.copy()
+        self.keywords = keywords.copy()
+        self.image = image
+        self.created = created
+        self.innerpath = innerpath
+        self.basepath = basepath
+        self.onerror = onerror
+        self.trusted = trusted
+        self.detector = detector or Detector()
+        self.dialect = dialect
+        self.hashing = hashing
 
-        # Handle pathlib
-        if isinstance(descriptor, Path):
-            descriptor = str(descriptor)
+        # Finalize creation
+        self.metadata_initiated = True
+        self.detector.detect_package(self)
+        system.create_package(self)
 
-        # Handle trusted
-        if descriptor is None:
-            trusted = True
+    @classmethod
+    def __create__(
+        cls,
+        source: Optional[Any] = None,
+        innerpath: str = settings.DEFAULT_PACKAGE_INNERPATH,
+        **options,
+    ):
+        entity = cls.metadata_detect(source)
+        if helpers.is_zip_descriptor(source):
+            source = helpers.unzip_descriptor(source, innerpath)
+            entity = "package"
+        if entity == "package":
+            return Package.from_descriptor(source, innerpath=innerpath, trusted=False, **options)  # type: ignore
 
-        # Handle zip
-        if helpers.is_zip_descriptor(descriptor):
-            descriptor = helpers.unzip_descriptor(descriptor, innerpath)
+    # State
 
-        # Set attributes
-        self.setinitial("resources", resources)
-        self.setinitial("name", name)
-        self.setinitial("id", id)
-        self.setinitial("licenses", licenses)
-        self.setinitial("profile", profile)
-        self.setinitial("title", title)
-        self.setinitial("description", description)
-        self.setinitial("homepage", homepage)
-        self.setinitial("version", version)
-        self.setinitial("sources", sources)
-        self.setinitial("contributors", contributors)
-        self.setinitial("keywords", keywords)
-        self.setinitial("image", image)
-        self.setinitial("created", created)
-        self.__basepath = basepath or helpers.parse_basepath(descriptor)
-        self.__detector = detector or Detector()
-        self.__dialect = dialect
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__hashing = hashing
-        super().__init__(descriptor)
+    resources: List[Resource]
+    """
+    A list of resource descriptors.
+    It can be dicts or Resource instances
+    """
 
-    def __setattr__(self, name, value):
-        if name == "hashing":
-            self.__hashing = value
-        elif name == "basepath":
-            self.__basepath = value
-        elif name == "onerror":
-            self.__onerror = value
-        elif name == "trusted":
-            self.__trusted = value
-        else:
-            return super().__setattr__(name, value)
-        self.metadata_process()
+    id: Optional[str]
+    """
+    A property reserved for globally unique identifiers.
+    Examples of identifiers that are unique include UUIDs and DOIs.
+    """
 
-    property
+    name: Optional[str]
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
 
-    def name(self):
-        """
-        Returns:
-            str: package name
-        """
-        return self.get("name", "")
+    title: Optional[str]
+    """
+    A Package title according to the specs
+    It should a human-oriented title of the resource.
+    """
 
-    property
+    description: Optional[str]
+    """
+    A Package description according to the specs
+    It should a human-oriented description of the resource.
+    """
 
-    def id(self):
-        """
-        Returns:
-            str: package id
-        """
-        return self.get("id", "")
+    licenses: List[dict]
+    """
+    The license(s) under which the package is provided.
+    """
 
-    property
+    sources: List[dict]
+    """
+    The raw sources for this data package.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
+    profile: Optional[str]
+    """
+    A string identifying the profile of this descriptor.
+    For example, `fiscal-data-package`.
+    """
 
-    def licenses(self):
-        """
-        Returns:
-            dict[]: package licenses
-        """
-        licenses = self.get("licenses", [])
-        return self.metadata_attach("licenses", licenses)
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
 
-    property
+    version: Optional[str]
+    """
+    A version string identifying the version of the package.
+    It should conform to the Semantic Versioning requirements and
+    should follow the Data Package Version pattern.
+    """
 
-    def profile(self):
-        """
-        Returns:
-            str: package profile
-        """
-        return self.get("profile", settings.DEFAULT_PACKAGE_PROFILE)
+    contributors: List[dict]
+    """
+    The people or organizations who contributed to this package.
+    It MUST be an array. Each entry is a Contributor and MUST be an object.
+    A Contributor MUST have a title property and MAY contain
+    path, email, role and organization properties.
+    """
 
-    property
+    keywords: List[str]
+    """
+    An Array of string keywords to assist users searching.
+    For example, ['data', 'fiscal']
+    """
 
-    def title(self):
-        """
-        Returns:
-            str: package title
-        """
-        return self.get("title", "")
+    image: Optional[str]
+    """
+    An image to use for this data package.
+    For example, when showing the package in a listing.
+    """
 
-    property
+    created: Optional[str]
+    """
+    The datetime on which this was created.
+    The datetime must conform to the string formats for RFC3339 datetime,
+    """
 
-    def description(self):
-        """
-        Returns:
-            str: package description
-        """
-        return self.get("description", "")
+    innerpath: str
+    """
+    A ZIP datapackage descriptor inner path.
+    Path to the package descriptor inside the ZIP datapackage.
+    Example: some/folder/datapackage.yaml
+    Default: datapackage.json
+    """
 
-    property
+    basepath: str
+    """
+    A basepath of the resource
+    The fullpath of the resource is joined `basepath` and /path`
+    """
 
+    onerror: IOnerror
+    """
+    Behaviour if there is an error.
+    It defaults to 'ignore'. The default mode will ignore all errors
+    on resource level and they should be handled by the user
+    being available in Header and Row objects.
+    """
+
+    trusted: bool
+    """
+    Don't raise an exception on unsafe paths.
+    A path provided as a part of the descriptor considered unsafe
+    if there are path traversing or the path is absolute.
+    A path provided as `source` or `path` is alway trusted.
+    """
+
+    detector: Detector
+    """
+    File/table detector.
+    For more information, please check the Detector documentation.
+    """
+
+    dialect: Optional[Dialect]
+    """
+    Table dialect.
+    For more information, please check the Dialect documentation.
+    """
+
+    hashing: Optional[str]
+    """
+    A hashing algorithm for resources
+    It defaults to 'md5'.
+    """
+
+    # Props
+
+    @property
     def description_html(self):
-        """
-        Returns:
-            str: package description
-        """
+        """Package description in HTML"""
         return helpers.md_to_html(self.description)
 
-    property
-
+    @property
     def description_text(self):
-        """
-        Returns:
-            str: package description
-        """
+        """Package description in Text"""
         return helpers.html_to_text(self.description_html)
 
-    property
-
-    def homepage(self):
-        """
-        Returns:
-            str: package homepage
-        """
-        return self.get("homepage", "")
-
-    property
-
-    def version(self):
-        """
-        Returns:
-            str: package version
-        """
-        return self.get("version", "")
-
-    property
-
-    def sources(self):
-        """
-        Returns:
-            dict[]: package sources
-        """
-        sources = self.get("sources", [])
-        return self.metadata_attach("sources", sources)
-
-    property
-
-    def contributors(self):
-        """
-        Returns:
-            dict[]: package contributors
-        """
-        contributors = self.get("contributors", [])
-        return self.metadata_attach("contributors", contributors)
-
-    property
-
-    def keywords(self):
-        """
-        Returns:
-            str[]: package keywords
-        """
-        keywords = self.get("keywords", [])
-        return self.metadata_attach("keywords", keywords)
-
-    property
-
-    def image(self):
-        """
-        Returns:
-            str: package image
-        """
-        return self.get("image", "")
-
-    property
-
-    def created(self):
-        """
-        Returns:
-            str: package created
-        """
-        return self.get("created", "")
-
-    property
-
-    def hashing(self):
-        """
-        Returns:
-            str: package hashing
-        """
-        return self.__hashing or settings.DEFAULT_HASHING
-
-    property
-
-    def basepath(self):
-        """
-        Returns:
-            str: package basepath
-        """
-        return self.__basepath
-
-    property
-
-    def onerror(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        return self.__onerror
-
-    property
-
-    def trusted(self):
-        """
-        Returns:
-            str: package trusted
-        """
-        return self.__trusted
+    def resource_names(self):
+        """Return names of resources"""
+        return [resource.name for resource in self.resources]
 
     # Resources
-
-    property
-
-    def resources(self):
-        """
-        Returns:
-            Resources[]: package resource
-        """
-        resources = self.get("resources", [])
-        return self.metadata_attach("resources", resources)
-
-    property
-
-    def resource_names(self):
-        """
-        Returns:
-            str[]: package resource names
-        """
-        return [resource.name for resource in self.resources]
 
     def add_resource(self, source=None, **options):
         """Add new resource to the package.
@@ -441,11 +287,9 @@ class Package(Metadata):
         Parameters:
             name (str): resource name
 
-        Raises:
-            FrictionlessException: if resource is not found
-
         Returns:
-           Resource/None: `Resource` instance or `None` if not found
+           Resource: `Resource` instance
+
         """
         for resource in self.resources:
             if resource.name == name:
@@ -473,27 +317,12 @@ class Package(Metadata):
         Parameters:
             name (str): resource name
 
-        Raises:
-            FrictionlessException: if resource is not found
-
         Returns:
             Resource/None: removed `Resource` instances or `None` if not found
         """
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata
-
-        It will add default values to the package.
-        """
-        self.setdefault("resources", self.resources)
-        self.setdefault("profile", self.profile)
-        for resource in self.resources:
-            resource.expand()
 
     # Infer
 
@@ -551,8 +380,6 @@ class Package(Metadata):
         Returns:
             path(str): location of the .dot file
 
-        Raises:
-            FrictionlessException: on any error
         """
 
         # Render diagram
