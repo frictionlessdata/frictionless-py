@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional, List
+from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
@@ -8,24 +9,16 @@ from .. import errors
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
+@dataclass
 class Pipeline(Metadata):
     """Pipeline representation"""
 
-    def __init__(
-        self,
-        *,
-        steps: List[Step] = [],
-        limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
-    ):
-        self.steps = steps.copy()
-        self.limit_memory = limit_memory
-
     # State
 
-    steps: List[Step]
+    steps: List[Step] = field(default_factory=list)
     """List of transform steps"""
 
-    limit_memory: int
+    limit_memory: int = settings.DEFAULT_LIMIT_MEMORY
     """TODO: add docs"""
 
     # Props
