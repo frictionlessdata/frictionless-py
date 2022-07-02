@@ -3,6 +3,7 @@ import json
 import jinja2
 import zipfile
 import tempfile
+import builtins
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
@@ -17,7 +18,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IOnerror
+    from ..interfaces import IOnerror, FilterFunction, ProcessFunction
 
 
 # TODO: add create_package hook
@@ -281,6 +282,35 @@ class Package(Metadata):
         package = Package(source, **options)
         package.infer(stats=stats)
         return package
+
+    # Extract
+
+    def extract(
+        self,
+        *,
+        filter: Optional[FilterFunction] = None,
+        process: Optional[ProcessFunction] = None,
+        stream: bool = False,
+    ):
+        """Extract package rows
+
+        Parameters:
+            filter? (bool): a row filter function
+            process? (func): a row processor function
+            stream? (bool): return a row streams instead of loading into memory
+
+        Returns:
+            {path: Row[]}: a dictionary of arrays/streams of rows
+
+        """
+        result = {}
+        for number, resource in enumerate(package.resources, start=1):  # type: ignore
+            key = resource.fullpath if not resource.memory else f"memory{number}"
+            data = read_row_stream(resource)
+            data = builtins.filter(filter, data) if filter else data
+            data = (process(row) for row in data) if process else data
+            result[key] = data if stream else list(data)
+        return result
 
     # Resources
 
@@ -694,3 +724,12 @@ class Package(Metadata):
                     if not cell:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
+
+
+# Internal
+
+
+def read_row_stream(resource):
+    with resource:
+        for row in resource.row_stream:
+            yield row
