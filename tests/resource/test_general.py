@@ -13,7 +13,6 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 def test_resource():
     resource = Resource("data/resource.json")
-    print(resource)
     assert resource.name == "name"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
@@ -32,12 +31,7 @@ def test_resource():
 
 def test_resource_from_dict():
     resource = Resource({"name": "name", "path": "data/table.csv"})
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "data/table.csv",
-        "scheme": "file",
-        "format": "csv",
-    }
+    assert resource.to_descriptor() == {"name": "name", "path": "data/table.csv"}
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -46,12 +40,7 @@ def test_resource_from_dict():
 
 def test_resource_from_path_json():
     resource = Resource("data/resource.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "scheme": "file",
-        "format": "csv",
-    }
+    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -61,12 +50,7 @@ def test_resource_from_path_json():
 
 def test_resource_from_path_yaml():
     resource = Resource("data/resource.yaml")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "scheme": "file",
-        "format": "csv",
-    }
+    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -153,6 +137,7 @@ def test_resource_source_non_tabular_error_bad_path():
 def test_resource_source_path():
     path = "data/table.csv"
     resource = Resource({"path": path})
+    resource.infer()
     assert resource.path == path
     assert resource.data is None
     assert resource.memory is False

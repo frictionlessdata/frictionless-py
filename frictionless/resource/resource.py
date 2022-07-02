@@ -65,10 +65,10 @@ class Resource(Metadata):
         profile: Optional[str] = None,
         path: Optional[str] = None,
         data: Optional[List[Union[list, dict]]] = None,
-        scheme: str = settings.DEFAULT_SCHEME,
-        format: str = settings.DEFAULT_FORMAT,
-        hashing: str = settings.DEFAULT_HASHING,
-        encoding: str = settings.DEFAULT_ENCODING,
+        scheme: Optional[str] = None,
+        format: Optional[str] = None,
+        hashing: Optional[str] = None,
+        encoding: Optional[str] = None,
         innerpath: Optional[str] = None,
         compression: Optional[str] = None,
         extrapaths: List[str] = [],
@@ -87,7 +87,6 @@ class Resource(Metadata):
     ):
 
         # Store state
-        self.source = source
         self.name = name
         self.title = title
         self.description = description
@@ -131,15 +130,22 @@ class Resource(Metadata):
         if control:
             self.dialect.set_control(control)
 
+        # Handled by __create__
+        assert source is None
+
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, trusted: bool = False, **options):
-        entity = cls.metadata_detect(source)
-        if isinstance(source, Mapping):
-            entity = "package"
-        if entity == "resource":
-            return Resource.from_descriptor(
-                source, trusted=trusted, **options  # type: ignore
-            )
+    def __create__(cls, source: Optional[Any] = None, **options):
+        if source:
+
+            # Descriptor
+            entity = cls.metadata_detect(source)
+            if isinstance(source, Mapping) or entity == "resource":
+                options["trusted"] = False
+                return Resource.from_descriptor(source, **options)
+
+            # Path/data
+            options["path" if isinstance(source, str) else "data"] = source
+            return Resource(**options)
 
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -159,11 +165,6 @@ class Resource(Metadata):
             yield from self.__row_stream
 
     # State
-
-    source: Any
-    """
-    Data source
-    """
 
     name: Optional[str]
     """
@@ -220,25 +221,25 @@ class Resource(Metadata):
     Inline data source
     """
 
-    scheme: str
+    scheme: Optional[str]
     """
     Scheme for loading the file (file, http, ...).
     If not set, it'll be inferred from `source`.
     """
 
-    format: str
+    format: Optional[str]
     """
     File source's format (csv, xls, ...).
     If not set, it'll be inferred from `source`.
     """
 
-    hashing: str
+    hashing: Optional[str]
     """
     An algorithm to hash data.
     It defaults to 'md5'.
     """
 
-    encoding: str
+    encoding: Optional[str]
     """
     Source encoding.
     If not set, it'll be inferred from `source`.

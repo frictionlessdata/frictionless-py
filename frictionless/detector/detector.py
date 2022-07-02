@@ -124,15 +124,6 @@ class Detector(Metadata):
 
     # Detect
 
-    # TODO: support expandable paths
-    def detect_package(self, package: Package) -> None:
-        """Detect package's metadata
-
-        It works in-place updating a provided resource.
-        """
-
-        pass
-
     # TODO detect profile here?
     # TODO: added plugin hooks into the loop
     def detect_resource(self, resource: Resource) -> None:
@@ -140,15 +131,6 @@ class Detector(Metadata):
 
         It works in-place updating a provided resource.
         """
-
-        # Handle source
-        if resource.source is not None:
-            if isinstance(resource.source, str):
-                resource.path = resource.source
-            else:
-                resource.data = resource.source
-        if not resource.path and not resource.data:
-            return
 
         # Detect name
         name = "memory"
@@ -166,6 +148,7 @@ class Detector(Metadata):
         format = ""
         innerpath = None
         compression = None
+        hashing = settings.DEFAULT_HASHING
         if resource.fullpath:
             fullpath = resource.fullpath
             scheme, format = helpers.parse_scheme_and_format(fullpath)
@@ -182,6 +165,7 @@ class Detector(Metadata):
         resource.set_not_defined("name", name)
         resource.set_not_defined("scheme", scheme)
         resource.set_not_defined("format", format)
+        resource.set_not_defined("hashing", hashing)
         resource.set_not_defined("innerpath", innerpath)
         resource.set_not_defined("compression", compression)
 

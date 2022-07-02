@@ -242,7 +242,6 @@ class Loader:
         Parameters:
             buffer (bytes): byte buffer
         """
-        self.resource.add_defined("hashing")
         self.resource.encoding = self.resource.detector.detect_encoding(
             buffer, encoding=self.resource.get_defined("encoding")
         )
