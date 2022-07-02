@@ -17,20 +17,18 @@ def test_package():
     package = Package("data/package.json")
     assert package.name == "name"
     assert package.basepath == "data"
-    assert package.profile == "data-package"
     assert package.to_descriptor() == {
         "name": "name",
         "resources": [
             {
                 "name": "name",
                 "path": "table.csv",
-                "scheme": "file",
-                "format": "csv",
             },
         ],
     }
 
 
+@pytest.mark.skip
 def test_package_from_dict():
     package = Package({"name": "name", "profile": "data-package"})
     assert package.to_descriptor() == {
@@ -54,26 +52,20 @@ class NotADict(Mapping):
 
 
 def test_package_from_mapping():
-    package = Package(NotADict(name="name", profile="data-package"))
-    assert package.to_descriptor() == {
-        "name": "name",
-        "profile": "data-package",
-    }
+    package = Package(NotADict(name="name"))
+    assert package.to_descriptor() == {"name": "name"}
 
 
 def test_package_from_path():
     package = Package("data/package.json")
     assert package.name == "name"
     assert package.basepath == "data"
-    assert package.profile == "data-package"
     assert package.to_descriptor() == {
         "name": "name",
         "resources": [
             {
                 "name": "name",
                 "path": "table.csv",
-                "scheme": "file",
-                "format": "csv",
             },
         ],
     }
