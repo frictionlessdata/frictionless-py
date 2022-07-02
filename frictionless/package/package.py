@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import json
 import jinja2
@@ -5,6 +6,7 @@ import zipfile
 import tempfile
 import builtins
 from copy import deepcopy
+from collections import Mapping
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
@@ -55,7 +57,7 @@ class Package(Metadata):
         description: Optional[str] = None,
         licenses: List[dict] = [],
         sources: List[dict] = [],
-        profile: Optional[str] = None,
+        profile: str = settings.DEFAULT_PACKAGE_PROFILE,
         homepage: Optional[str] = None,
         version: Optional[str] = None,
         contributors: List[dict] = [],
@@ -109,11 +111,9 @@ class Package(Metadata):
         trusted: bool = False,
         **options,
     ):
-        entity = cls.metadata_detect(source)
-        if helpers.is_zip_descriptor(source):
-            source = helpers.unzip_descriptor(source, innerpath)
-            entity = "package"
-        if entity == "package":
+        if source:
+            if helpers.is_zip_descriptor(source):
+                source = helpers.unzip_descriptor(source, innerpath)
             return Package.from_descriptor(
                 source, innerpath=innerpath, trusted=trusted, **options  # type: ignore
             )
@@ -163,7 +163,7 @@ class Package(Metadata):
     Each Source object MUST have a title and
     MAY have path and/or email properties.
     """
-    profile: Optional[str]
+    profile: str
     """
     A string identifying the profile of this descriptor.
     For example, `fiscal-data-package`.
@@ -438,7 +438,7 @@ class Package(Metadata):
         for resource in self.resources:
             if resource.name == name:
                 return resource
-        error = errors.SchemaError(note=f'resource "{name}" does not exist')
+        error = errors.PackageError(note=f'resource "{name}" does not exist')
         raise FrictionlessException(error)
 
     def set_resource(self, resource: Resource) -> Optional[Resource]:
@@ -494,6 +494,20 @@ class Package(Metadata):
             dialect=self.dialect,
             hashing=self.hashing,
         )
+
+    @classmethod
+    def from_descriptor(cls, descriptor, **options):
+        if isinstance(descriptor, str):
+            options["basepath"] = helpers.parse_basepath(descriptor)
+        package = super().from_descriptor(descriptor, **options)
+
+        # Resource
+        # TODO: add more
+        for resource in package.resources:
+            resource.basepath = package.basepath
+            resource.package = package
+
+        return package
 
     # TODO: if path is not provided return as a string
     def to_er_diagram(self, path=None) -> str:
@@ -728,30 +742,9 @@ class Package(Metadata):
     metadata_profile = deepcopy(settings.PACKAGE_PROFILE)
     metadata_profile["properties"]["resources"] = {"type": "array"}
 
-    def metadata_process(self):
-
-        # Resources
-        resources = self.get("resources")
-        if isinstance(resources, list):
-            for index, resource in enumerate(resources):
-                if not isinstance(resource, Resource):
-                    if not isinstance(resource, dict):
-                        resource = {"name": f"resource{index+1}"}
-                    resource = Resource(
-                        resource,
-                        dialect=self.__dialect,
-                        basepath=self.__basepath,
-                        detector=self.__detector,
-                        hashing=self.__hashing,
-                    )
-                    list.__setitem__(resources, index, resource)
-                resource.onerror = self.__onerror
-                resource.trusted = self.__trusted
-                resource.package = self
-            if not isinstance(resources, helpers.ControlledList):
-                resources = helpers.ControlledList(resources)
-                resources.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "resources", resources)
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(resources=Resource)
 
     def metadata_validate(self):
         # Check invalid properties

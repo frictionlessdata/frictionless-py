@@ -18,6 +18,7 @@ from .. import errors
 if TYPE_CHECKING:
     from ..interfaces import IBuffer, EncodingFunction
     from ..resource import Resource
+    from ..package import Package
 
 
 @dataclass
@@ -123,22 +124,14 @@ class Detector(Metadata):
 
     # Detect
 
+    # TODO: support expandable paths
     def detect_package(self, package: Package) -> None:
         """Detect package's metadata
 
         It works in-place updating a provided resource.
         """
-        # Handle source
-        if source is not None:
-            if descriptor is None:
-                descriptor = source
-                file = system.create_file(source, basepath=basepath)
-                if file.multipart:
-                    descriptor = {"resources": []}
-                    for part in file.normpath:
-                        descriptor["resources"].append({"path": part})
-                elif file.type == "table" and not file.compression:
-                    descriptor = {"resources": [{"path": file.normpath}]}
+
+        pass
 
     # TODO detect profile here?
     # TODO: added plugin hooks into the loop

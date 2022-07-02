@@ -18,14 +18,22 @@ def test_package():
     assert package.name == "name"
     assert package.basepath == "data"
     assert package.profile == "data-package"
-    assert package.resources == [
-        {"name": "name", "path": "table.csv"},
-    ]
+    assert package.to_descriptor() == {
+        "name": "name",
+        "resources": [
+            {
+                "name": "name",
+                "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+            },
+        ],
+    }
 
 
 def test_package_from_dict():
     package = Package({"name": "name", "profile": "data-package"})
-    assert package == {
+    assert package.to_descriptor() == {
         "name": "name",
         "profile": "data-package",
     }
@@ -47,7 +55,7 @@ class NotADict(Mapping):
 
 def test_package_from_mapping():
     package = Package(NotADict(name="name", profile="data-package"))
-    assert package == {
+    assert package.to_descriptor() == {
         "name": "name",
         "profile": "data-package",
     }
@@ -58,9 +66,17 @@ def test_package_from_path():
     assert package.name == "name"
     assert package.basepath == "data"
     assert package.profile == "data-package"
-    assert package.resources == [
-        {"name": "name", "path": "table.csv"},
-    ]
+    assert package.to_descriptor() == {
+        "name": "name",
+        "resources": [
+            {
+                "name": "name",
+                "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+            },
+        ],
+    }
 
 
 def test_package_from_pathlib():

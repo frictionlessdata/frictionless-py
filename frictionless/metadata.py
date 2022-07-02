@@ -261,6 +261,7 @@ class Metadata(metaclass=Metaclass):
                 properties[name] = Types.get(name)
         return properties
 
+    # TODO: support expandable paths?
     # TODO: support loading descriptor for detection
     @staticmethod
     def metadata_detect(source) -> Optional[str]:
@@ -273,8 +274,6 @@ class Metadata(metaclass=Metaclass):
             elif isinstance(source, str):
                 if source.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
                     entity = name
-        if helpers.is_expandable_path(source):
-            entity = "package"
         return entity
 
     # TODO: return plain descriptor?

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from .package import Package
-    from .resource import Resource
+    from ..resource import Resource
 
 
 # NOTE:

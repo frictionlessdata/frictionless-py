@@ -4,6 +4,7 @@ import petl
 import builtins
 import warnings
 from copy import deepcopy
+from collections import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
 from ..table import Header, Row
@@ -138,6 +139,8 @@ class Resource(Metadata):
     @classmethod
     def __create__(cls, source: Optional[Any] = None, trusted: bool = False, **options):
         entity = cls.metadata_detect(source)
+        if isinstance(source, Mapping):
+            entity = "package"
         if entity == "resource":
             return Resource.from_descriptor(
                 source, trusted=trusted, **options  # type: ignore
