@@ -3,6 +3,7 @@ import json
 import petl
 import builtins
 import warnings
+from pathlib import Path
 from copy import deepcopy
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any
@@ -25,7 +26,7 @@ from .. import errors
 if TYPE_CHECKING:
     from ..error import Error
     from ..package import Package
-    from ..interfaces import FilterFunction, ProcessFunction, IOnerror
+    from ..interfaces import IDescriptorSource, FilterFunction, ProcessFunction, IOnerror
 
 
 # NOTE:
@@ -79,9 +80,9 @@ class Resource(Metadata):
         pipeline: Optional[Union[Pipeline, str]] = None,
         stats: dict = {},
         # Software
-        basepath: str = settings.DEFAULT_BASEPATH,
-        onerror: IOnerror = settings.DEFAULT_ONERROR,
-        trusted: bool = settings.DEFAULT_TRUSTED,
+        basepath: Optional[str] = None,
+        onerror: Optional[IOnerror] = None,
+        trusted: Optional[bool] = None,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
         control: Optional[Control] = None,
@@ -106,10 +107,6 @@ class Resource(Metadata):
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
         self.stats = stats.copy()
-        self.basepath = basepath
-        self.onerror = onerror
-        self.trusted = trusted
-        self.detector = detector or Detector()
         self.package = package
 
         # Store dereferenced state
@@ -117,6 +114,12 @@ class Resource(Metadata):
         self.schema = schema
         self.checklist = checklist
         self.pipeline = pipeline
+
+        # Store inherited state
+        self.__basepath = basepath
+        self.__onerror = onerror
+        self.__trusted = trusted
+        self.__detector = detector
 
         # Store internal state
         self.__loader = None
@@ -138,6 +141,14 @@ class Resource(Metadata):
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
         if source:
+
+            # Path
+            if isinstance(source, Path):
+                source = str(source)
+
+            # Mapping
+            elif isinstance(source, Mapping):
+                source = {key: value for key, value in source.items()}
 
             # Descriptor
             entity = cls.metadata_detect(source)
@@ -276,34 +287,6 @@ class Resource(Metadata):
     A dict with the following possible properties: hash, bytes, fields, rows.
     """
 
-    basepath: str
-    """
-    A basepath of the resource
-    The fullpath of the resource is joined `basepath` and /path`
-    """
-
-    onerror: IOnerror
-    """
-    Behaviour if there is an error.
-    It defaults to 'ignore'. The default mode will ignore all errors
-    on resource level and they should be handled by the user
-    being available in Header and Row objects.
-    """
-
-    trusted: bool
-    """
-    Don't raise an exception on unsafe paths.
-    A path provided as a part of the descriptor considered unsafe
-    if there are path traversing or the path is absolute.
-    A path provided as `source` or `path` is alway trusted.
-    """
-
-    detector: Detector
-    """
-    Resource detector.
-    For more information, please check the Detector documentation.
-    """
-
     package: Optional[Package]
     """
     Parental to this resource package.
@@ -311,6 +294,49 @@ class Resource(Metadata):
     """
 
     # Props
+
+    @property
+    def description_html(self) -> str:
+        """Description in HTML"""
+        return helpers.md_to_html(self.description or "")
+
+    @property
+    def description_text(self) -> str:
+        """Description in Text"""
+        return helpers.html_to_text(self.description_html or "")
+
+    @property
+    def fullpath(self) -> Optional[str]:
+        """Full path of the resource"""
+        if self.path:
+            return helpers.join_path(self.basepath, self.path)
+
+    # TODO: add asteriks for user/pass in url
+    @property
+    def place(self) -> str:
+        """Stringified resource location"""
+        if self.data:
+            return "<memory>"
+        elif self.innerpath:
+            return f"{self.path}:{self.innerpath}"
+        elif self.path:
+            return self.path
+        return ""
+
+    @property
+    def memory(self) -> bool:
+        """Whether resource is not path based"""
+        return bool(self.data)
+
+    @property
+    def remote(self) -> bool:
+        """Whether resource is remote"""
+        return helpers.is_remote_path(self.basepath or self.path)
+
+    @property
+    def multipart(self) -> bool:
+        """Whether resource is multipart"""
+        return not self.memory and bool(self.extrapaths)
 
     @property
     def dialect(self) -> Dialect:
@@ -369,47 +395,73 @@ class Resource(Metadata):
         self.__pipeline = value
 
     @property
-    def description_html(self) -> str:
-        """Description in HTML"""
-        return helpers.md_to_html(self.description or "")
+    def basepath(self) -> str:
+        """
+        A basepath of the resource
+        The fullpath of the resource is joined `basepath` and /path`
+        """
+        if self.__basepath is not None:
+            return self.__basepath
+        elif self.package:
+            return self.package.basepath
+        return settings.DEFAULT_BASEPATH
+
+    @basepath.setter
+    def basepath(self, value: str):
+        self.__basepath = value
 
     @property
-    def description_text(self) -> str:
-        """Description in Text"""
-        return helpers.html_to_text(self.description_html or "")
+    def onerror(self) -> IOnerror:
+        """
+        Behaviour if there is an error.
+        It defaults to 'ignore'. The default mode will ignore all errors
+        on resource level and they should be handled by the user
+        being available in Header and Row objects.
+        """
+        if self.__onerror is not None:
+            return self.__onerror  # type: ignore
+        elif self.package:
+            return self.package.onerror
+        return settings.DEFAULT_ONERROR
+
+    @onerror.setter
+    def onerror(self, value: IOnerror):
+        self.__onerror = value
 
     @property
-    def fullpath(self) -> Optional[str]:
-        """Full path of the resource"""
-        if self.path:
-            return helpers.join_path(self.basepath, self.path)
+    def trusted(self) -> bool:
+        """
+        Don't raise an exception on unsafe paths.
+        A path provided as a part of the descriptor considered unsafe
+        if there are path traversing or the path is absolute.
+        A path provided as `source` or `path` is alway trusted.
+        """
+        if self.__trusted is not None:
+            return self.__trusted
+        elif self.package:
+            return self.package.trusted
+        return settings.DEFAULT_TRUSTED
 
-    # TODO: add asteriks for user/pass in url
-    @property
-    def place(self) -> str:
-        """Stringified resource location"""
-        if self.data:
-            return "<memory>"
-        elif self.innerpath:
-            return f"{self.path}:{self.innerpath}"
-        elif self.path:
-            return self.path
-        return ""
-
-    @property
-    def memory(self) -> bool:
-        """Whether resource is not path based"""
-        return bool(self.data)
+    @trusted.setter
+    def trusted(self, value: bool):
+        self.__trusted = value
 
     @property
-    def remote(self) -> bool:
-        """Whether resource is remote"""
-        return helpers.is_remote_path(self.basepath or self.path)
+    def detector(self) -> Detector:
+        """
+        Resource detector.
+        For more information, please check the Detector documentation.
+        """
+        if self.__detector is not None:
+            return self.__detector
+        elif self.package:
+            return self.package.detector
+        self.__detector = Detector()
+        return self.__detector
 
-    @property
-    def multipart(self) -> bool:
-        """Whether resource is multipart"""
-        return not self.memory and bool(self.extrapaths)
+    @detector.setter
+    def detector(self, value: Detector):
+        self.__detector = value
 
     @property
     def buffer(self):
@@ -1068,7 +1120,7 @@ class Resource(Metadata):
         )
 
     @classmethod
-    def from_descriptor(cls, descriptor, **options):
+    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         if isinstance(descriptor, str):
             options["basepath"] = helpers.parse_basepath(descriptor)
         return super().from_descriptor(descriptor, **options)

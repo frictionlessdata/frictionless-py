@@ -1,6 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
-from collections.abc import Mapping
 from typing import TYPE_CHECKING
 from typing import Protocol, BinaryIO, TextIO, Iterable, List, Dict, Any, Union, Literal
 
@@ -15,7 +13,7 @@ if TYPE_CHECKING:
 
 
 IDescriptor = Dict[str, Any]
-IDescriptorSource = Union[str, Path, Mapping]
+IDescriptorSource = Union[str, dict]
 IByteStream = BinaryIO
 ITextStream = TextIO
 IListStream = Iterable[List[Any]]

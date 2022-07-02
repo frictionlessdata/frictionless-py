@@ -3,6 +3,8 @@ import pytest
 import pathlib
 from frictionless import Package, Resource, Schema, Field, Detector, Checklist
 
+pytestmark = pytest.mark.skip
+
 
 # General
 

@@ -6,8 +6,10 @@ import jinja2
 import zipfile
 import tempfile
 import builtins
+from pathlib import Path
 from copy import deepcopy
 from multiprocessing import Pool
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..helpers import get_name
@@ -25,6 +27,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..interfaces import IDescriptorSource
     from ..interfaces import IDescriptor, IOnerror, FilterFunction, ProcessFunction
 
 
@@ -40,7 +43,7 @@ class Package(Metadata):
     package.get_resoure('table').read_rows() == [
         {'id': 1, 'name': 'english'},
         {'id': 2, 'name': '中国人'},
-    ]
+
     ```
 
     """
@@ -70,12 +73,13 @@ class Package(Metadata):
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
+        # TODO: support inheritance in resource
         dialect: Optional[Dialect] = None,
+        # TODO: support inheritance in resource
         hashing: Optional[str] = None,
     ):
 
         # Store state
-        self.source = source
         self.resources = resources.copy()
         self.id = id
         self.name = name
@@ -98,12 +102,24 @@ class Package(Metadata):
         self.dialect = dialect
         self.hashing = hashing
 
+        # Handled by __create__
+        assert source is None
+
+    # TODO: support list of paths
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
         if source:
 
+            # Path
+            if isinstance(source, Path):
+                source = str(source)
+
+            # Mapping
+            elif isinstance(source, Mapping):
+                source = {key: value for key, value in source.items()}
+
             # Compressed
-            if helpers.is_zip_descriptor(source):
+            elif helpers.is_zip_descriptor(source):
                 innerpath = options.get("innerpath", settings.DEFAULT_PACKAGE_INNERPATH)
                 source = helpers.unzip_descriptor(source, innerpath)
 
@@ -111,9 +127,9 @@ class Package(Metadata):
             elif isinstance(source, str) and helpers.is_expandable_path(source):
                 options["resources"] = []
                 pattern = f"{source}/*" if os.path.isdir(source) else source
-                options = {"recursive": True} if "**" in pattern else {}
-                for path in sorted(glob.glob(pattern, **options)):
-                    options["resources"].append({"path": path})  # type: ignore
+                configs = {"recursive": True} if "**" in pattern else {}
+                for path in sorted(glob.glob(pattern, **configs)):
+                    options["resources"].append({"path": path})
 
             # Descriptor
             options.setdefault("trusted", False)
@@ -270,6 +286,7 @@ class Package(Metadata):
         """Package description in Text"""
         return helpers.html_to_text(self.description_html)
 
+    @property
     def resource_names(self):
         """Return names of resources"""
         return [resource.name for resource in self.resources]
@@ -498,12 +515,12 @@ class Package(Metadata):
         )
 
     @classmethod
-    def from_descriptor(cls, descriptor, **options):
+    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         if isinstance(descriptor, str):
             options["basepath"] = helpers.parse_basepath(descriptor)
         package = super().from_descriptor(descriptor, **options)
 
-        # Resources
+        # Normalize resources
         for resource in package.resources:
             resource.package = package
 

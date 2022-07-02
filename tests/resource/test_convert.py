@@ -162,6 +162,7 @@ def test_resource_to_markdown_file_837(tmpdir):
 # Problems
 
 
+@pytest.mark.skip
 def test_resource_to_descriptor_infer_dereferencing_issue_904():
     resource = Resource(path="data/table.csv", schema="data/schema.json")
     resource.infer(stats=True)
