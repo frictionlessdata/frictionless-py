@@ -501,10 +501,8 @@ class Package(Metadata):
             options["basepath"] = helpers.parse_basepath(descriptor)
         package = super().from_descriptor(descriptor, **options)
 
-        # Resource
-        # TODO: add more
+        # Resources
         for resource in package.resources:
-            resource.basepath = package.basepath
             resource.package = package
 
         return package

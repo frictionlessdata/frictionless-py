@@ -158,6 +158,35 @@ class Schema(Metadata):
 
     # Convert
 
+    # TODO: handle edge cases like wrong descriptor's prop types
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        schema = super().from_descriptor(descriptor)
+
+        # Normalize fields
+        for field in schema.fields:
+            field.schema = schema
+
+        # Normalize primary key
+        if schema.primary_key and not isinstance(schema.primary_key, list):
+            schema.primary_key = [schema.primary_key]
+
+        # Normalize foreign keys
+        if schema.foreign_keys:
+            for fk in schema.foreign_keys:
+                if not isinstance(fk, dict):
+                    continue
+                fk.setdefault("fields", [])
+                fk.setdefault("reference", {})
+                fk["reference"].setdefault("resource", "")
+                fk["reference"].setdefault("fields", [])
+                if not isinstance(fk["fields"], list):
+                    fk["fields"] = [fk["fields"]]
+                if not isinstance(fk["reference"]["fields"], list):
+                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
+
+        return schema
+
     @staticmethod
     def from_jsonschema(profile):
         """Create a Schema from JSONSchema profile
@@ -169,7 +198,7 @@ class Schema(Metadata):
             Schema: schema instance
         """
         schema = Schema()
-        profile = Metadata2(profile).to_dict()
+        profile = Metadata(profile).to_dict()
         required = profile.get("required", [])
         assert isinstance(required, list)
         properties = profile.get("properties", {})
@@ -266,32 +295,3 @@ class Schema(Metadata):
                 note = 'foreign key fields "%s" does not match the reference fields "%s"'
                 note = note % (fk["fields"], fk["reference"]["fields"])
                 yield errors.SchemaError(note=note)
-
-    # TODO: handle edge cases like wrong descriptor's prop types
-    @classmethod
-    def metadata_import(cls, descriptor):
-        schema = super().metadata_import(descriptor)
-
-        # Normalize fields
-        for field in schema.fields:
-            field.schema = schema
-
-        # Normalize primary key
-        if schema.primary_key and not isinstance(schema.primary_key, list):
-            schema.primary_key = [schema.primary_key]
-
-        # Normalize foreign keys
-        if schema.foreign_keys:
-            for fk in schema.foreign_keys:
-                if not isinstance(fk, dict):
-                    continue
-                fk.setdefault("fields", [])
-                fk.setdefault("reference", {})
-                fk["reference"].setdefault("resource", "")
-                fk["reference"].setdefault("fields", [])
-                if not isinstance(fk["fields"], list):
-                    fk["fields"] = [fk["fields"]]
-                if not isinstance(fk["reference"]["fields"], list):
-                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
-
-        return schema
