@@ -91,14 +91,6 @@ class Metadata(metaclass=Metaclass):
                 return
             setattr(self, name, value)
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.metadata_errors
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Convert
 
     # TODO: review

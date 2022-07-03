@@ -5,30 +5,23 @@ import glob
 import jinja2
 import zipfile
 import tempfile
-import builtins
 from pathlib import Path
 from copy import deepcopy
-from multiprocessing import Pool
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
-from ..helpers import get_name
-from ..pipeline import Pipeline
-from ..checklist import Checklist
 from ..metadata import Metadata
 from ..detector import Detector
 from ..resource import Resource
-from ..dialect import Dialect
-from ..report import Report
 from ..schema import Field
 from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
+from . import methods
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptorSource
-    from ..interfaces import IDescriptor, IOnerror, FilterFunction, ProcessFunction
+    from ..interfaces import IDescriptorSource, IOnerror
 
 
 # TODO: add create_package hook
@@ -47,6 +40,11 @@ class Package(Metadata):
     ```
 
     """
+
+    describe = methods.describe
+    extract = methods.extract
+    transform = methods.transform
+    validate = methods.validate
 
     def __init__(
         self,
@@ -276,153 +274,6 @@ class Package(Metadata):
     def resource_names(self):
         """Return names of resources"""
         return [resource.name for resource in self.resources]
-
-    # Describe
-
-    @staticmethod
-    def describe(source=None, *, stats=False, **options):
-        """Describe the given source as a package
-
-        Parameters:
-            source (any): data source
-            stats? (bool): if `True` infer resource's stats
-            **options (dict): Package constructor options
-
-        Returns:
-            Package: data package
-
-        """
-        package = Package(source, **options)
-        package.infer(stats=stats)
-        return package
-
-    # Extract
-
-    def extract(
-        self,
-        *,
-        filter: Optional[FilterFunction] = None,
-        process: Optional[ProcessFunction] = None,
-        stream: bool = False,
-    ):
-        """Extract package rows
-
-        Parameters:
-            filter? (bool): a row filter function
-            process? (func): a row processor function
-            stream? (bool): return a row streams instead of loading into memory
-
-        Returns:
-            {path: Row[]}: a dictionary of arrays/streams of rows
-
-        """
-        result = {}
-        for number, resource in enumerate(package.resources, start=1):  # type: ignore
-            key = resource.fullpath if not resource.memory else f"memory{number}"
-            data = read_row_stream(resource)
-            data = builtins.filter(filter, data) if filter else data
-            data = (process(row) for row in data) if process else data
-            result[key] = data if stream else list(data)
-        return result
-
-    # Validate
-
-    def validate(
-        self,
-        checklist: Optional[Checklist] = None,
-        *,
-        original: bool = False,
-        parallel: bool = False,
-    ):
-        """Validate package
-
-        Parameters:
-            checklist? (checklist): a Checklist object
-            parallel? (bool): run in parallel if possible
-
-        Returns:
-            Report: validation report
-
-        """
-
-        # Create state
-        timer = helpers.Timer()
-        reports: List[Report] = []
-        with_fks = any(resource.schema.foreign_keys for resource in package.resources)  # type: ignore
-
-        # Prepare checklist
-        checklist = checklist or Checklist()
-        if not checklist.metadata_valid:
-            errors = checklist.metadata_errors
-            return Report.from_validation(time=timer.time, errors=errors)
-
-        # Validate metadata
-        metadata_errors = []
-        for error in self.metadata_errors:
-            if error.code == "package-error":
-                metadata_errors.append(error)
-        if metadata_errors:
-            return Report.from_validation(time=timer.time, errors=metadata_errors)
-
-        # Validate sequential
-        if not parallel or with_fks:
-            for resource in package.resources:  # type: ignore
-                report = validate_sequential(resource, original=original)
-                reports.append(report)
-
-        # Validate parallel
-        else:
-            with Pool() as pool:
-                resource_descriptors: List[dict] = []
-                for resource in package.resources:  # type: ignore
-                    descriptor = resource.to_dict()
-                    descriptor["basepath"] = resource.basepath
-                    descriptor["trusted"] = resource.trusted
-                    descriptor["original"] = original
-                    resource_descriptors.append(descriptor)
-                report_descriptors = pool.map(validate_parallel, resource_descriptors)
-                for report_descriptor in report_descriptors:
-                    reports.append(Report.from_descriptor(report_descriptor))  # type: ignore
-
-        # Return report
-        return Report.from_validation_reports(
-            time=timer.time,
-            reports=reports,
-        )
-
-    # Transform
-
-    # TODO: save transform info into package.stats?
-    def transform(self, pipeline: Pipeline):
-        """Transform package
-
-        Parameters:
-            source (any): data source
-            steps (Step[]): transform steps
-            **options (dict): Package constructor options
-
-        Returns:
-            Package: the transform result
-        """
-
-        # Prepare package
-        self.infer()
-
-        # Prepare pipeline
-        if not pipeline.metadata_valid:
-            raise FrictionlessException(pipeline.metadata_errors[0])
-
-        # Run transforms
-        for step in pipeline.steps:
-
-            # Transform
-            try:
-                step.transform_package(self)
-            except Exception as exception:
-                error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
-                raise FrictionlessException(error) from exception
-
-        return self
 
     # Resources
 
@@ -794,26 +645,3 @@ class Package(Metadata):
                     if not cell:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
-
-
-# Internal
-
-
-def read_row_stream(resource):
-    with resource:
-        for row in resource.row_stream:
-            yield row
-
-
-def validate_sequential(resource: Resource, *, original=False) -> Report:
-    return resource.validate(original=original)
-
-
-# TODO: rebase on from/to_descriptor
-def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
-    basepath = descriptor.pop("basepath")
-    trusted = descriptor.pop("trusted")
-    original = descriptor.pop("original")
-    resource = Resource.from_descriptor(descriptor, basepath=basepath, trusted=trusted)
-    report = resource.validate(original=original)
-    return report.to_descriptor()

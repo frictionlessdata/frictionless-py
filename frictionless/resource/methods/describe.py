@@ -1,9 +1,12 @@
 from __future__ import annotations
-from importlib import import_module
+from typing import TYPE_CHECKING, Type
+
+if TYPE_CHECKING:
+    from ..resource import Resource
 
 
-@staticmethod
-def describe(source=None, *, stats=False, **options):
+@classmethod
+def describe(cls: Type[Resource], source=None, *, stats=False, **options):
     """Describe the given source as a resource
 
     Parameters:
@@ -15,7 +18,6 @@ def describe(source=None, *, stats=False, **options):
         Resource: data resource
 
     """
-    Resource = import_module("frictionless").Resource
-    resource = Resource(source, **options)
+    resource = cls(source, **options)
     resource.infer(stats=stats)
     return resource

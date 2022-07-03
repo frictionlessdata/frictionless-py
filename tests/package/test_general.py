@@ -1,4 +1,3 @@
-import os
 import pytest
 import zipfile
 from collections.abc import Mapping
@@ -292,13 +291,6 @@ def test_package_validation_duplicate_resource_names_issue_942():
     errors = package.metadata_errors
     assert len(errors) == 1
     assert errors[0].note == "names of the resources are not unique"
-
-
-def test_package_set_hashing():
-    package = Package(hashing="SHA-1")
-    assert package.hashing == "SHA-1"
-    package.hashing = "MD5"
-    assert package.hashing == "MD5"
 
 
 def test_package_set_base_path():
