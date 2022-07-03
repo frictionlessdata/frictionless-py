@@ -14,7 +14,7 @@ def test_validate_baseline():
 def test_validate_invalid():
     resource = Resource("data/invalid.csv")
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -136,8 +136,8 @@ def test_validate_baseline_stats_bytes():
 def test_validate_baseline_stats_bytes_invalid():
     resource = Resource("data/table.csv", stats={"bytes": 40})
     report = resource.validate()
-    assert report.task.error.get("rowPosition") is None
-    assert report.task.error.get("fieldPosition") is None
+    assert report.task.error.to_descriptor().get("rowNumber") is None
+    assert report.task.error.to_descriptor().get("fieldNumber") is None
     assert report.flatten(["code", "note"]) == [
         ["byte-count", 'expected is "40" and actual is "30"'],
     ]
@@ -154,8 +154,8 @@ def test_validate_baseline_stats_rows():
 def test_validate_baseline_stats_rows_invalid():
     resource = Resource("data/table.csv", stats={"rows": 3})
     report = resource.validate()
-    assert report.task.error.get("rowPosition") is None
-    assert report.task.error.get("fieldPosition") is None
+    assert report.task.error.to_descriptor().get("rowNumber") is None
+    assert report.task.error.to_descriptor().get("fieldNumber") is None
     assert report.flatten(["code", "note"]) == [
         ["row-count", 'expected is "3" and actual is "2"'],
     ]

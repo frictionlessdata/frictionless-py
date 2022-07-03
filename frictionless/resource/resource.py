@@ -9,7 +9,7 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
 from ..table import Header, Row
-from ..schema import Schema, Field
+from ..schema import Schema
 from ..detector import Detector
 from ..metadata import Metadata
 from ..checklist import Checklist
@@ -333,6 +333,11 @@ class Resource(Metadata):
     def multipart(self) -> bool:
         """Whether resource is multipart"""
         return not self.memory and bool(self.extrapaths)
+
+    @property
+    def tabular(self) -> bool:
+        """Whether resource is tabular"""
+        return self.type == "table"
 
     @property
     def dialect(self) -> Dialect:

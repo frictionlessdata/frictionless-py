@@ -21,6 +21,23 @@ class HeaderError(TableError):
     row_numbers: List[int]
     """TODO: add docs"""
 
+    # Metadata
+
+    metadata_profile = {
+        "type": "object",
+        "required": ["note"],
+        "properties": {
+            "code": {},
+            "name": {},
+            "tags": {},
+            "description": {},
+            "message": {},
+            "note": {},
+            "labels": {},
+            "rowNumbers": {},
+        },
+    }
+
 
 class BlankHeaderError(HeaderError):
     code = "blank-header"

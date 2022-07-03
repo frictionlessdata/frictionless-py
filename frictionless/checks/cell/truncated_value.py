@@ -21,11 +21,6 @@ TRUNCATED_INTEGER_VALUES = [
 class truncated_value(Check):
     """Check for possible truncated values
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=([{"code": "truncated-value"}])`
-
     This check can be enabled using the `checks` parameter
     for the `validate` function.
 

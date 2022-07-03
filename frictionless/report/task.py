@@ -62,7 +62,7 @@ class ReportTask(Metadata):
         result = []
         for error in self.errors:
             context = {}
-            context.update(error)
+            context.update(error.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         return result
 

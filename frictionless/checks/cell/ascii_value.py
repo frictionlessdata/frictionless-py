@@ -4,17 +4,12 @@ from ...checklist import Check
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
-    from ...row import Row
+    from ...table import Row
     from ...error import Error
 
 
 class ascii_value(Check):
     """Check whether all the string characters in the data are ASCII
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "ascii-value"}])`
 
     This check can be enabled using the `checks` parameter
     for the `validate` function.

@@ -39,28 +39,22 @@ class table_dimensions(Check):
         # Check if there is a different number of fields as required
         if self.num_fields and number_fields != self.num_fields:
             yield errors.TableDimensionsError(
-                note="Current number of fields is %s, the required number is %s"
+                note="current number of fields is %s, the required is %s"
                 % (number_fields, self.num_fields),
-                limits={
-                    "requiredNumFields": self.num_fields,
-                    "numberFields": number_fields,
-                },
             )
 
         # Check if there is less field than the minimum
         if self.min_fields and number_fields < self.min_fields:
             yield errors.TableDimensionsError(
-                note="Current number of fields is %s, the minimum is %s"
+                note="current number of fields is %s, the minimum is %s"
                 % (number_fields, self.min_fields),
-                limits={"minFields": self.min_fields, "numberFields": number_fields},
             )
 
         # Check if there is more field than the maximum
         if self.max_fields and number_fields > self.max_fields:
             yield errors.TableDimensionsError(
-                note="Current number of fields is %s, the maximum is %s"
+                note="current number of fields is %s, the maximum is %s"
                 % (number_fields, self.max_fields),
-                limits={"maxFields": self.max_fields, "numberFields": number_fields},
             )
 
     def validate_row(self, row):
@@ -69,9 +63,8 @@ class table_dimensions(Check):
         # Check if exceed the max number of rows
         if self.max_rows and self.last_row.row_number > self.max_rows:  # type: ignore
             yield errors.TableDimensionsError(
-                note="Current number of rows is %s, the maximum is %s"
+                note="current number of rows is %s, the maximum is %s"
                 % (number_rows, self.max_rows),
-                limits={"maxRows": self.max_rows, "numberRows": number_rows},
             )
 
     def validate_end(self):
@@ -80,17 +73,15 @@ class table_dimensions(Check):
         # Check if doesn't have the exact number of rows
         if self.num_rows and number_rows != self.num_rows:
             yield errors.TableDimensionsError(
-                note="Current number of rows is %s, the required is %s"
+                note="current number of rows is %s, the required is %s"
                 % (number_rows, self.num_rows),
-                limits={"requiredNumRows": self.num_rows, "numberRows": number_rows},
             )
 
         # Check if has less rows than the required
         if self.min_rows and number_rows < self.min_rows:  # type: ignore
             yield errors.TableDimensionsError(
-                note="Current number of rows is %s, the minimum is %s"
+                note="current number of rows is %s, the minimum is %s"
                 % (number_rows, self.min_rows),
-                limits={"minRows": self.min_rows, "numberRows": number_rows},
             )
 
     # Metadata

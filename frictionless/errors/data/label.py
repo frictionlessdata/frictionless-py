@@ -23,6 +23,26 @@ class LabelError(HeaderError):
     field_number: int
     """TODO: add docs"""
 
+    # Metadata
+
+    metadata_profile = {
+        "type": "object",
+        "required": ["note"],
+        "properties": {
+            "code": {},
+            "name": {},
+            "tags": {},
+            "description": {},
+            "message": {},
+            "note": {},
+            "labels": {},
+            "rowNumbers": {},
+            "label": {},
+            "fieldName": {},
+            "fieldNumber": {},
+        },
+    }
+
 
 class ExtraLabelError(LabelError):
     code = "extra-label"

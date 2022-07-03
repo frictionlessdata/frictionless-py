@@ -16,7 +16,7 @@ def test_validate_row_constraint():
     resource = Resource(source)
     checklist = Checklist(checks=[checks.row_constraint(formula="salary == bonus * 5")])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, None, "row-constraint"],
         [6, 2, "missing-cell"],
         [6, 3, "missing-cell"],
@@ -40,7 +40,7 @@ def test_validate_row_constraint_incorrect_constraint():
         }
     )
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [2, None, "row-constraint"],
         [2, None, "row-constraint"],
         [2, None, "row-constraint"],

@@ -5,11 +5,6 @@ from .. import errors
 class baseline(Check):
     """Check a table for basic errors
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(...)`
-
     Ths check is enabled by default for any `validate` function run.
 
     """

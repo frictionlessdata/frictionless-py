@@ -12,7 +12,7 @@ def test_validate_forbidden_value():
         ]
     )
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [3, 1, "forbidden-value"],
     ]
 
@@ -38,7 +38,7 @@ def test_validate_forbidden_value_many_rules():
         }
     )
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, 2, "forbidden-value"],
         [5, 2, "forbidden-value"],
         [6, 2, "missing-cell"],
@@ -60,6 +60,6 @@ def test_validate_forbidden_value_many_rules_with_non_existent_field():
         }
     )
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "check-error"],
     ]

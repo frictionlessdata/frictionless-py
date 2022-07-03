@@ -41,6 +41,23 @@ class RowError(ContentError):
             row_number=row.row_number,
         )
 
+    # Metadata
+
+    metadata_profile = {
+        "type": "object",
+        "required": ["note"],
+        "properties": {
+            "code": {},
+            "name": {},
+            "tags": {},
+            "description": {},
+            "message": {},
+            "note": {},
+            "cells": {},
+            "rowNumber": {},
+        },
+    }
+
 
 class BlankRowError(RowError):
     code = "blank-row"

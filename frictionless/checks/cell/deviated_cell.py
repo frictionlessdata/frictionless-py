@@ -6,7 +6,7 @@ from ...checklist import Check
 from ... import errors
 
 if TYPE_CHECKING:
-    from ...row import Row
+    from ...table import Row
     from ...error import Error
 
 

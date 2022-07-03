@@ -66,12 +66,12 @@ def validate(
                     errors.append(error)
 
         # Validate rows
-        if self.type == "table":
+        if self.tabular:
             while True:
 
                 # Emit row
                 try:
-                    row = next(resource.row_stream)  # type: ignore
+                    row = next(self.row_stream)
                 except FrictionlessException as exception:
                     errors.append(exception.error)
                     continue
@@ -103,7 +103,7 @@ def validate(
 
         # Validate end
         if not warnings:
-            if self.type != "table":
+            if not self.tabular:
                 helpers.pass_through(self.byte_stream)
             for check in checks:
                 for error in check.validate_end():

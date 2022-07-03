@@ -6,11 +6,6 @@ from ... import errors
 class duplicate_row(Check):
     """Check for duplicate rows
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "duplicate-row"}])`
-
     This check can be enabled using the `checks` parameter
     for the `validate` function.
 

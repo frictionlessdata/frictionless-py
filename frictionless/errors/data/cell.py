@@ -54,6 +54,26 @@ class CellError(RowError):
                 )
         raise FrictionlessException(f"Field {field_name} is not in the row")
 
+    # Metadata
+
+    metadata_profile = {
+        "type": "object",
+        "required": ["note"],
+        "properties": {
+            "code": {},
+            "name": {},
+            "tags": {},
+            "description": {},
+            "message": {},
+            "note": {},
+            "cells": {},
+            "rowNumber": {},
+            "cell": {},
+            "fieldName": {},
+            "fieldNumber": {},
+        },
+    }
+
 
 class ExtraCellError(CellError):
     code = "extra-cell"

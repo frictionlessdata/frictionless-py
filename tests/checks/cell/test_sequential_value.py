@@ -21,7 +21,7 @@ def test_validate_sequential_value():
         ],
     )
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [3, 3, "sequential-value"],
         [5, 2, "sequential-value"],
         [6, 2, "missing-cell"],
@@ -45,6 +45,6 @@ def test_validate_sequential_value_non_existent_field():
         }
     )
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "check-error"],
     ]
