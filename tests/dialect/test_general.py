@@ -12,6 +12,7 @@ def test_dialect():
     assert dialect.header_case == True
 
 
+# TODO: shall we validate dialect/schema's metadata on resource.open?
 @pytest.mark.skip
 def test_dialect_bad_property():
     dialect = Dialect.from_descriptor({"bad": True})

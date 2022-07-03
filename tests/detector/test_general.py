@@ -81,6 +81,7 @@ def test_schema_from_sparse_sample():
     }
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("confidence", [0.6, 0.7, 0.8])
 def test_schema_from_synthetic_sparse_sample(confidence):
 
