@@ -73,8 +73,6 @@ class Package(Metadata):
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
-        dialect: Optional[Dialect] = None,
-        hashing: Optional[str] = None,
     ):
 
         # Store state
@@ -96,9 +94,7 @@ class Package(Metadata):
         self.basepath = basepath
         self.onerror = onerror
         self.trusted = trusted
-        self.detector = detector
-        self.dialect = dialect
-        self.hashing = hashing
+        self.detector = detector or Detector()
 
         # Connect resources
         for resource in self.resources:
@@ -258,22 +254,10 @@ class Package(Metadata):
     A path provided as `source` or `path` is alway trusted.
     """
 
-    detector: Optional[Detector]
+    detector: Detector
     """
     File/table detector.
     For more information, please check the Detector documentation.
-    """
-
-    dialect: Optional[Dialect]
-    """
-    Table dialect.
-    For more information, please check the Dialect documentation.
-    """
-
-    hashing: Optional[str]
-    """
-    A hashing algorithm for resources
-    It defaults to 'md5'.
     """
 
     # Props

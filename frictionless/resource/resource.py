@@ -102,6 +102,7 @@ class Resource(Metadata):
         self.data = data
         self.scheme = scheme
         self.format = format
+        self.hashing = hashing
         self.encoding = encoding
         self.compression = compression
         self.extrapaths = extrapaths.copy()
@@ -111,6 +112,7 @@ class Resource(Metadata):
 
         # Store dereferenced state
         self.__dialect = dialect
+        self.__control = control
         self.__schema = schema
         self.__checklist = checklist
         self.__pipeline = pipeline
@@ -120,7 +122,6 @@ class Resource(Metadata):
         self.__onerror = onerror
         self.__trusted = trusted
         self.__detector = detector
-        self.__hashing = hashing
 
         # Store internal state
         self.__loader = None
@@ -131,10 +132,6 @@ class Resource(Metadata):
         self.__header = None
         self.__lookup = None
         self.__row_stream = None
-
-        # Store shortcuts
-        if control:
-            self.dialect.set_control(control)
 
         # Handled by __create__
         assert source is None
@@ -252,6 +249,12 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
+    hashing: Optional[str]
+    """
+    An algorithm to hash data.
+    It defaults to 'md5'.
+    """
+
     encoding: Optional[str]
     """
     Source encoding.
@@ -334,21 +337,6 @@ class Resource(Metadata):
         return not self.memory and bool(self.extrapaths)
 
     @property
-    def hashing(self) -> Optional[str]:
-        """
-        An algorithm to hash data.
-        It defaults to 'md5'.
-        """
-        if self.__hashing is not None:
-            return self.__hashing
-        elif self.package:
-            return self.package.hashing
-
-    @hashing.setter
-    def hashing(self, value: str):
-        self.__hashing = value
-
-    @property
     def dialect(self) -> Dialect:
         """
         File Dialect object.
@@ -356,8 +344,8 @@ class Resource(Metadata):
         """
         if self.__dialect is None:
             self.__dialect = Dialect()
-            if self.package and self.package.dialect:
-                self.__dialect = self.package.dialect.to_copy()
+            if self.__control:
+                self.__dialect.set_control(self.__control)
         elif isinstance(self.__dialect, str):
             path = os.path.join(self.basepath, self.__dialect)
             self.__dialect = Dialect.from_descriptor(path)
@@ -470,10 +458,11 @@ class Resource(Metadata):
         Resource detector.
         For more information, please check the Detector documentation.
         """
-        if self.__detector is None:
-            self.__detector = Detector()
-            if self.package and self.package.detector:
-                self.__detector = self.package.detector.to_copy()
+        if self.__detector is not None:
+            return self.__detector
+        elif self.package:
+            return self.package.detector
+        self.__detector = Detector()
         return self.__detector
 
     @detector.setter
