@@ -2,7 +2,6 @@ from __future__ import annotations
 import os
 import json
 import petl
-import builtins
 import warnings
 from pathlib import Path
 from copy import deepcopy
@@ -11,30 +10,23 @@ from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
 from ..table import Header, Row
 from ..schema import Schema, Field
-from ..helpers import get_name
 from ..detector import Detector
 from ..metadata import Metadata
 from ..checklist import Checklist
 from ..pipeline import Pipeline
 from ..dialect import Dialect, Control
-from ..report import Report
 from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
+from . import methods
 
 
 if TYPE_CHECKING:
-    from ..error import Error
     from ..package import Package
-    from ..interfaces import IDescriptorSource, FilterFunction, ProcessFunction, IOnerror
+    from ..interfaces import IDescriptorSource, IOnerror
 
 
-# NOTE:
-# Review the situation with describe function removing stats (move to infer?)
-
-
-# TODO: handle setting profile
 class Resource(Metadata):
     """Resource representation.
 
@@ -52,6 +44,11 @@ class Resource(Metadata):
     ```
 
     """
+
+    describe = methods.describe
+    extract = methods.extract
+    validate = methods.validate  # type: ignore
+    transform = methods.transform
 
     def __init__(
         self,
@@ -566,215 +563,6 @@ class Resource(Metadata):
         """
         return self.__row_stream
 
-    # Describe
-
-    @staticmethod
-    def describe(source=None, *, stats=False, **options):
-        """Describe the given source as a resource
-
-        Parameters:
-            source (any): data source
-            stats? (bool): if `True` infer resource's stats
-            **options (dict): Resource constructor options
-
-        Returns:
-            Resource: data resource
-
-        """
-        resource = Resource(source, **options)
-        resource.infer(stats=stats)
-        return resource
-
-    # Extract
-
-    # TODO: accept an overriding schema (the same as checklist/pipeline)?
-    def extract(
-        self,
-        *,
-        filter: Optional[FilterFunction] = None,
-        process: Optional[ProcessFunction] = None,
-        stream: bool = False,
-    ):
-        """Extract resource rows
-
-        Parameters:
-            filter? (bool): a row filter function
-            process? (func): a row processor function
-            stream? (bool): whether to stream data
-
-        Returns:
-            Row[]: an array/stream of rows
-
-        """
-        data = read_row_stream(self)
-        data = builtins.filter(filter, data) if filter else data
-        data = (process(row) for row in data) if process else data
-        return data if stream else list(data)
-
-    # Validate
-
-    def validate(
-        self,
-        checklist: Optional[Checklist] = None,
-        *,
-        original: bool = False,
-    ):
-        """Validate resource
-
-        Parameters:
-            checklist? (checklist): a Checklist object
-            original? (bool): validate metadata as it is
-
-        Returns:
-            Report: validation report
-
-        """
-
-        # Create state
-        timer = helpers.Timer()
-        errors: List[Error] = []
-        warnings: List[str] = []
-        original_resource = self.to_copy()
-
-        # Prepare checklist
-        checklist = checklist or self.checklist or Checklist()
-        checks = checklist.connect(self)
-        if not checklist.metadata_valid:
-            errors = checklist.metadata_errors
-            return Report.from_validation(time=timer.time, errors=errors)
-
-        # Prepare resource
-        try:
-            self.open()
-        except FrictionlessException as exception:
-            self.close()
-            errors = [exception.error]
-            return Report.from_validation_task(self, time=timer.time, errors=errors)
-
-        # Validate metadata
-        metadata = original_resource if original else self
-        if not metadata.metadata_valid:
-            errors = metadata.metadata_errors
-            return Report.from_validation_task(self, time=timer.time, errors=errors)
-
-        # Validate data
-        with self:
-
-            # Validate start
-            for index, check in enumerate(checks):
-                for error in check.validate_start():
-                    if error.code == "check-error":
-                        del checks[index]
-                    if checklist.match(error):
-                        errors.append(error)
-
-            # Validate rows
-            if self.tabular:
-                while True:
-
-                    # Emit row
-                    try:
-                        row = next(resource.row_stream)  # type: ignore
-                    except FrictionlessException as exception:
-                        errors.append(exception.error)
-                        continue
-                    except StopIteration:
-                        break
-
-                    # Validate row
-                    for check in checks:
-                        for error in check.validate_row(row):
-                            if checklist.match(error):
-                                errors.append(error)
-
-                    # Limit errors
-                    if checklist.limit_errors:
-                        if len(errors) >= checklist.limit_errors:
-                            errors = errors[: checklist.limit_errors]
-                            warning = f"reached error limit: {checklist.limit_errors}"
-                            warnings.append(warning)
-                            break
-
-                    # Limit memory
-                    if checklist.limit_memory:
-                        if not row.row_number % 100000:
-                            memory = helpers.get_current_memory_usage()
-                            if memory and memory >= checklist.limit_memory:
-                                warning = (
-                                    f"reached memory limit: {checklist.limit_memory}MB"
-                                )
-                                warnings.append(warning)
-                                break
-
-            # Validate end
-            if not warnings:
-                if not self.tabular:
-                    helpers.pass_through(self.byte_stream)
-                for check in checks:
-                    for error in check.validate_end():
-                        if checklist.match(error):
-                            errors.append(error)
-
-        # Return report
-        return Report.from_validation_task(
-            self,
-            time=timer.time,
-            scope=checklist.scope,
-            errors=errors,
-            warnings=warnings,
-        )
-
-    # Transform
-
-    # TODO: save transform info into resource.stats?
-    def transform(self, pipeline: Optional[Pipeline] = None):
-        """Transform resource
-
-        Parameters:
-            steps (Step[]): transform steps
-
-        Returns:
-            Resource: the transform result
-        """
-
-        # Prepare resource
-        self.infer()
-
-        # Prepare pipeline
-        pipeline = pipeline or self.pipeline or Pipeline()
-        if not pipeline.metadata_valid:
-            raise FrictionlessException(pipeline.metadata_errors[0])
-
-        # Run transforms
-        for step in pipeline.steps:
-            data = self.data
-
-            # Transform
-            try:
-                step.transform_resource(self)
-            except Exception as exception:
-                error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
-                raise FrictionlessException(error) from exception
-
-            # Postprocess
-            if self.data is not data:
-                self.data = DataWithErrorHandling(self.data, step=step)  # type: ignore
-                # NOTE:
-                # We need rework self.data or move to self.__setattr__
-                # https://github.com/frictionlessdata/frictionless-py/issues/722
-                self.scheme = ""  # type: ignore
-                self.format = "inline"  # type: ignore
-                dict.pop(self, "path", None)
-                dict.pop(self, "hashing", None)
-                dict.pop(self, "encoding", None)
-                dict.pop(self, "innerpath", None)
-                dict.pop(self, "compression", None)
-                dict.pop(self, "control", None)
-                dict.pop(self, "dialect", None)
-                dict.pop(self, "layout", None)
-
-        return self
-
     # Infer
 
     def infer(self, *, stats=False):
@@ -1263,32 +1051,3 @@ class Resource(Metadata):
                     if not cell:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
-
-
-# Internal
-
-
-def read_row_stream(resource):
-    with resource:
-        for row in resource.row_stream:
-            yield row
-
-
-# TODO: do we need error handling here?
-class DataWithErrorHandling:
-    def __init__(self, data, *, step):
-        self.data = data
-        self.step = step
-
-    def __repr__(self):
-        return "<transformed-data>"
-
-    def __iter__(self):
-        try:
-            yield from self.data() if callable(self.data) else self.data
-        except Exception as exception:
-            if isinstance(exception, FrictionlessException):
-                if exception.error.code == "step-error":
-                    raise
-            error = errors.StepError(note=f'"{get_name(self.step)}" raises "{exception}"')
-            raise FrictionlessException(error) from exception

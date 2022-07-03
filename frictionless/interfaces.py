@@ -25,29 +25,26 @@ IOnerror = Literal["ignore", "warn", "raise"]
 # Functions
 
 
-# TODO: add "I" prefix
-
-
-class CheckFunction(Protocol):
+class ICheckFunction(Protocol):
     def __call__(self, row: Row) -> Iterable[Error]:
         ...
 
 
-class EncodingFunction(Protocol):
+class IEncodingFunction(Protocol):
     def __call__(self, buffer: IBuffer) -> str:
         ...
 
 
-class FilterFunction(Protocol):
+class IFilterFunction(Protocol):
     def __call__(self, row: Row) -> bool:
         ...
 
 
-class ProcessFunction(Protocol):
+class IProcessFunction(Protocol):
     def __call__(self, row: Row) -> Iterable[Any]:
         ...
 
 
-class StepFunction(Protocol):
+class IStepFunction(Protocol):
     def __call__(self, source: Union[Resource, Package]) -> None:
         ...
