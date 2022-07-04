@@ -260,7 +260,6 @@ def test_csv_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_csv_parser_write_delimiter(tmpdir):
     control = formats.CsvControl(delimiter=";")
     source = Resource("data/table.csv")
@@ -268,7 +267,7 @@ def test_csv_parser_write_delimiter(tmpdir):
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
-        assert target.dialect == {"delimiter": ";"}
+        assert target.dialect.get_control("csv").delimiter == ";"
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -286,7 +285,6 @@ def test_csv_parser_write_inline_source(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_csv_parser_tsv_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.tsv")))
@@ -295,25 +293,23 @@ def test_csv_parser_tsv_write(tmpdir):
         assert file.read() == "id\tname\n1\tenglish\n2\t中国人\n"
 
 
-@pytest.mark.skip
 def test_csv_parser_write_newline_lf(tmpdir):
     control = formats.CsvControl(line_terminator="\n")
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
-        assert target.dialect == {"lineTerminator": "\n"}
+        assert target.dialect.get_control("csv").line_terminator == "\n"
     with open(target.fullpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\n1,english\n2,中国人\n"
 
 
-@pytest.mark.skip
 def test_csv_parser_write_newline_crlf(tmpdir):
     control = formats.CsvControl(line_terminator="\r\n")
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
-        assert target.dialect == {"lineTerminator": "\r\n"}
+        assert target.dialect.get_control("csv").line_terminator == "\r\n"
     with open(target.fullpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\r\n1,english\r\n2,中国人\r\n"

@@ -899,7 +899,7 @@ class Resource(Metadata):
             **options (dict): Resource constructor options
         """
         native = isinstance(target, Resource)
-        target = target.to_copy() if native else Resource(target, **options)
+        target = target if native else Resource(target, **options)
         self.detector.detect_resource(target)
         system.detect_resource(target)
         parser = system.create_parser(target)
@@ -920,6 +920,8 @@ class Resource(Metadata):
             trusted=self.trusted,
             detector=self.detector,
             package=self.package,
+            # TODO: rework with dialect rework
+            control=self.__control,
             **options,
         )
 

@@ -46,9 +46,9 @@ class CsvParser(Parser):
         options = {}
         source = resource
         target = self.resource
-        print(source)
-        print(target)
         control = target.dialect.get_control("csv", ensure=CsvControl())
+        if target.format == "tsv":
+            control.delimiter = "\t"
         for name, value in vars(control.to_python()).items():
             if not name.startswith("_") and value is not None:
                 options[name] = value
