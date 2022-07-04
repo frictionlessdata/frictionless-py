@@ -1,14 +1,13 @@
 import pytest
-from frictionless import Resource, Dialect
-
-pytestmark = pytest.mark.skip
+from frictionless import Resource, Dialect, formats
 
 
 # General
 
 
 def test_resource_validate_dialect_delimiter():
-    resource = Resource("data/delimiter.csv", dialect={"delimiter": ";"})
+    control = formats.CsvControl(delimiter=";")
+    resource = Resource("data/delimiter.csv", control=control)
     report = resource.validate()
     assert report.valid
     assert report.task.stats["rows"] == 2
@@ -33,7 +32,7 @@ def test_resource_validate_dialect_none_extra_cell():
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [3, 3, "extra-cell"],
     ]
 
