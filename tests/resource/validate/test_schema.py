@@ -1,15 +1,21 @@
 import pytest
-from frictionless import Resource, Checklist
-
-pytestmark = pytest.mark.skip
+from frictionless import Resource, Schema, Checklist
 
 
 # General
 
 
+@pytest.mark.skip
 def test_resource_validate_schema_invalid():
     source = [["name", "age"], ["Alex", "33"]]
-    schema = {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "name"},
+                {"name": "age", "type": "bad"},
+            ]
+        }
+    )
     resource = Resource(source, schema=schema)
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
@@ -20,19 +26,20 @@ def test_resource_validate_schema_invalid():
     ]
 
 
+@pytest.mark.skip
 def test_resource_validate_schema_invalid_json():
     resource = Resource("data/table.csv", schema="data/invalid.json")
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "schema-error"],
     ]
 
 
 def test_resource_validate_schema_extra_headers_and_cells():
-    schema = {"fields": [{"name": "id", "type": "integer"}]}
+    schema = Schema.from_descriptor({"fields": [{"name": "id", "type": "integer"}]})
     resource = Resource("data/table.csv", schema=schema)
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 2, "extra-label"],
         [2, 2, "extra-cell"],
         [3, 2, "extra-cell"],
@@ -46,7 +53,7 @@ def test_resource_validate_schema_multiple_errors():
     checklist = Checklist(pick_errors=["#row"], limit_errors=3)
     report = resource.validate(checklist)
     assert report.task.warnings == ["reached error limit: 3"]
-    assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.task.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],
         [4, 3, "constraint-error"],
@@ -55,32 +62,36 @@ def test_resource_validate_schema_multiple_errors():
 
 def test_resource_validate_schema_min_length_constraint():
     source = [["row", "word"], [2, "a"], [3, "ab"], [4, "abc"], [5, "abcd"], [6]]
-    schema = {
-        "fields": [
-            {"name": "row", "type": "integer"},
-            {"name": "word", "type": "string", "constraints": {"minLength": 2}},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "row", "type": "integer"},
+                {"name": "word", "type": "string", "constraints": {"minLength": 2}},
+            ]
+        }
+    )
     resource = Resource(source, schema=schema)
     checklist = Checklist(pick_errors=["constraint-error"])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [2, 2, "constraint-error"],
     ]
 
 
 def test_resource_validate_schema_max_length_constraint():
     source = [["row", "word"], [2, "a"], [3, "ab"], [4, "abc"], [5, "abcd"], [6]]
-    schema = {
-        "fields": [
-            {"name": "row", "type": "integer"},
-            {"name": "word", "type": "string", "constraints": {"maxLength": 2}},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "row", "type": "integer"},
+                {"name": "word", "type": "string", "constraints": {"maxLength": 2}},
+            ]
+        }
+    )
     resource = Resource(source, schema=schema)
     checklist = Checklist(pick_errors=["constraint-error"])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, 2, "constraint-error"],
         [5, 2, "constraint-error"],
     ]
@@ -88,37 +99,42 @@ def test_resource_validate_schema_max_length_constraint():
 
 def test_resource_validate_schema_minimum_constraint():
     source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
-    schema = {
-        "fields": [
-            {"name": "row", "type": "integer"},
-            {"name": "score", "type": "integer", "constraints": {"minimum": 2}},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "row", "type": "integer"},
+                {"name": "score", "type": "integer", "constraints": {"minimum": 2}},
+            ]
+        }
+    )
     resource = Resource(source, schema=schema)
     checklist = Checklist(pick_errors=["constraint-error"])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [2, 2, "constraint-error"],
     ]
 
 
 def test_resource_validate_schema_maximum_constraint():
     source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
-    schema = {
-        "fields": [
-            {"name": "row", "type": "integer"},
-            {"name": "score", "type": "integer", "constraints": {"maximum": 2}},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "row", "type": "integer"},
+                {"name": "score", "type": "integer", "constraints": {"maximum": 2}},
+            ]
+        }
+    )
     resource = Resource(source, schema=schema)
     checklist = Checklist(pick_errors=["constraint-error"])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, 2, "constraint-error"],
         [5, 2, "constraint-error"],
     ]
 
 
+@pytest.mark.skip
 def test_resource_validate_schema_foreign_key_error_self_referencing():
     source = {
         "path": "data/nested.csv",
@@ -138,6 +154,7 @@ def test_resource_validate_schema_foreign_key_error_self_referencing():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_resource_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
         "path": "data/nested-invalid.csv",
@@ -154,7 +171,7 @@ def test_resource_validate_schema_foreign_key_error_self_referencing_invalid():
     }
     resource = Resource(source)
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [6, None, "foreign-key", ["5", "6", "Rome"]],
     ]
 
@@ -163,7 +180,7 @@ def test_resource_validate_schema_unique_error():
     resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
     checklist = Checklist(pick_errors=["unique-error"])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [10, 1, "unique-error"],
     ]
 
@@ -177,15 +194,21 @@ def test_resource_validate_schema_unique_error_and_type_error():
         ["a4", 0],
         ["a5", 0],
     ]
-    schema = {
-        "fields": [
-            {"name": "id"},
-            {"name": "unique_number", "type": "number", "constraints": {"unique": True}},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id"},
+                {
+                    "name": "unique_number",
+                    "type": "number",
+                    "constraints": {"unique": True},
+                },
+            ]
+        }
+    )
     resource = Resource(source, schema=schema)
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [3, 2, "type-error", ["a2", "bad"]],
         [4, 2, "unique-error", ["a3", "100"]],
         [6, 2, "unique-error", ["a5", "0"]],
@@ -196,7 +219,7 @@ def test_resource_validate_schema_primary_key_error():
     resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
     checklist = Checklist(pick_errors=["primary-key"])
     report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [10, None, "primary-key"],
     ]
 
@@ -207,7 +230,7 @@ def test_resource_validate_schema_primary_key_and_unique_error():
         schema="data/unique-field.json",
     )
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [10, 1, "unique-error"],
         [10, None, "primary-key"],
     ]
@@ -222,16 +245,18 @@ def test_resource_validate_schema_primary_key_error_composite():
         [1, "John"],
         ["", None],
     ]
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "primaryKey": ["id", "name"],
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "primaryKey": ["id", "name"],
+        }
+    )
     resource = Resource(source, schema=schema)
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [5, None, "primary-key"],
         [6, None, "blank-row"],
         [6, None, "primary-key"],
