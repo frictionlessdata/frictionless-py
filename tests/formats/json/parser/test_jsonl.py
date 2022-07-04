@@ -26,7 +26,6 @@ def test_jsonl_parser_ndjson():
 # Write
 
 
-@pytest.mark.skip
 def test_jsonl_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.jsonl")))
@@ -38,7 +37,6 @@ def test_jsonl_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_jsonl_parser_write_keyed(tmpdir):
     control = formats.JsonControl(keyed=True)
     source = Resource("data/table.csv")

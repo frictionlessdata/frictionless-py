@@ -63,11 +63,11 @@ class JsonParser(Parser):
         target = self.resource
         control = target.dialect.get_control("json", ensure=JsonControl())
         with source:
+            if not control.keyed:
+                data.append(resource.schema.field_names)
             for row in source.row_stream:
                 cells = row.to_list(json=True)
                 item = dict(zip(row.field_names, cells)) if control.keyed else cells
-                if not control.keyed and row.row_number == 1:
-                    data.append(row.field_names)
                 data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             json.dump(data, file, indent=2)

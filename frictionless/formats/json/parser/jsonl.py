@@ -58,11 +58,11 @@ class JsonlParser(Parser):
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
             with source:
+                if not control.keyed:
+                    writer.write(resource.schema.field_names)
                 for row in source.row_stream:
                     cells = row.to_list(json=True)
                     item = dict(zip(row.field_names, cells)) if control.keyed else cells
-                    if not control.keyed and row.row_number == 1:
-                        writer.write(row.field_names)
                     writer.write(item)
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
