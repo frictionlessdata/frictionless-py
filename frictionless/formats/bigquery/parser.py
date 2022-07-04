@@ -5,12 +5,7 @@ from .storage import BigqueryStorage
 
 
 class BigqueryParser(Parser):
-    """Bigquery parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.bigquery import BigqueryParser`
-    """
+    """Bigquery parser implementation."""
 
     supported_types = [
         "string",

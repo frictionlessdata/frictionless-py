@@ -7,7 +7,7 @@ from frictionless import Resource, FrictionlessException, formats
 # https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
-# General
+# Read
 
 
 @pytest.mark.ci
@@ -40,6 +40,9 @@ def test_gsheets_parser_bad_url():
     error = excinfo.value.error
     assert error.code == "scheme-error"
     assert error.note.count("404 Client Error: Not Found for url")
+
+
+# Write
 
 
 @pytest.mark.ci

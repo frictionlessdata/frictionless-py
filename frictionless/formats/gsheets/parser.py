@@ -10,13 +10,7 @@ from ... import errors
 
 
 class GsheetsParser(Parser):
-    """Google Sheets parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.gsheets import GsheetsParser`
-
-    """
+    """Google Sheets parser implementation."""
 
     supported_types = [
         "string",
@@ -58,9 +52,8 @@ class GsheetsParser(Parser):
         wks = sh.worksheet_by_id(gid) if gid else sh[0]
         data = []
         with source:
+            data.append(source.schema.field_names)
             for row in source.row_stream:
-                if row.row_number == 1:
-                    data.append(row.field_names)
                 data.append(row.to_list())
         wks.update_values("A1", data)
         return fullpath
