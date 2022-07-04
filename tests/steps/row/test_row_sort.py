@@ -13,7 +13,7 @@ def test_step_row_sort():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -35,7 +35,7 @@ def test_step_row_sort_with_reverse():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -58,7 +58,7 @@ def test_step_row_sort_with_reverse_in_desriptor_issue_996():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
