@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from frictionless import Resource, Dialect, formats
+from frictionless import Resource, formats
 from frictionless import FrictionlessException
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -95,12 +95,11 @@ def test_ods_parser_with_ints_floats_dates():
 # Write
 
 
-@pytest.mark.skip
+# NOTE: ezodf writer creates more cells than we ask
+@pytest.mark.xfail
 def test_ods_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    # NOTE: ezodf writer creates more cells than we ask (remove limits)
-    dialect = Dialect(limit_fields=2, limit_rows=2)
-    target = Resource(str(tmpdir.join("table.ods")), dialect=dialect)
+    target = Resource(str(tmpdir.join("table.ods")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]

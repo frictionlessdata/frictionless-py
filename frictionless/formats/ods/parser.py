@@ -10,13 +10,7 @@ from ... import errors
 
 
 class OdsParser(Parser):
-    """ODS parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ods import OdsParser`
-
-    """
+    """ODS parser implementation."""
 
     requires_loader = True
     supported_types = [
@@ -89,10 +83,9 @@ class OdsParser(Parser):
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]
         with source:
+            for field_index, name in enumerate(source.schema.field_names):
+                sheet[(0, field_index)].set_value(name)
             for row_index, row in enumerate(source.row_stream):
-                if row.row_number == 1:
-                    for field_index, name in enumerate(row.field_names):
-                        sheet[(0, field_index)].set_value(name)
                 cells = row.to_list(types=self.supported_types)
                 for field_index, cell in enumerate(cells):
                     sheet[(row_index + 1, field_index)].set_value(cell)
