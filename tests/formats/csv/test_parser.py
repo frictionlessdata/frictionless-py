@@ -248,7 +248,6 @@ def test_csv_parser_format_tsv():
 # Write
 
 
-@pytest.mark.skip
 def test_csv_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")))
@@ -276,7 +275,6 @@ def test_csv_parser_write_delimiter(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_csv_parser_write_inline_source(tmpdir):
     source = Resource([{"key1": "value1", "key2": "value2"}])
     target = Resource(str(tmpdir.join("table.csv")))

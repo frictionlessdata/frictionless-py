@@ -1,4 +1,3 @@
-# type: ignore
 import csv
 import tempfile
 from itertools import chain
@@ -47,6 +46,8 @@ class CsvParser(Parser):
         options = {}
         source = resource
         target = self.resource
+        print(source)
+        print(target)
         control = target.dialect.get_control("csv", ensure=CsvControl())
         for name, value in vars(control.to_python()).items():
             if not name.startswith("_") and value is not None:
@@ -56,9 +57,8 @@ class CsvParser(Parser):
         ) as file:
             writer = csv.writer(file, **options)
             with source:
+                writer.writerow(source.schema.field_names)
                 for row in source.row_stream:
-                    if row.row_number == 1:
-                        writer.writerow(row.field_names)
                     writer.writerow(row.to_list(types=self.supported_types))
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
