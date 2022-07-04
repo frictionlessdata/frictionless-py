@@ -1,4 +1,3 @@
-# type: ignore
 from ...exception import FrictionlessException
 from .control import InlineControl
 from ...resource import Parser
@@ -6,13 +5,7 @@ from ... import errors
 
 
 class InlineParser(Parser):
-    """Inline parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.inline import InlineParser
-
-    """
+    """Inline parser implementation."""
 
     supported_types = [
         "array",
@@ -91,9 +84,9 @@ class InlineParser(Parser):
         target = self.resource
         control = target.dialect.get_control("inline", ensure=InlineControl())
         with source:
+            if not control.keyed:
+                data.append(source.schema.field_names)
             for row in source.row_stream:
                 item = row.to_dict() if control.keyed else row.to_list()
-                if not control.keyed and row.row_number == 1:
-                    data.append(row.field_names)
                 data.append(item)
         target.data = data

@@ -94,7 +94,6 @@ def test_inline_parser_from_ordered_dict():
 # Write
 
 
-@pytest.mark.skip
 def test_inline_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(format="inline")
