@@ -73,7 +73,6 @@ def test_extract_resource_from_file_stream():
     ]
 
 
-@pytest.mark.skip
 def test_extract_resource_from_file_pathlib():
     resource = Resource(Path("data/table.csv"))
     assert resource.extract() == [
@@ -91,6 +90,9 @@ def test_extract_resource_from_file_process_and_stream():
         [1, "english"],
         [2, "中国人"],
     ]
+
+
+# Problems
 
 
 @pytest.mark.skip
