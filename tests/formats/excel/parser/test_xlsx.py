@@ -86,6 +86,7 @@ def test_xlsx_parser_merged_cells():
         ]
 
 
+@pytest.mark.skip
 def test_xlsx_parser_merged_cells_fill():
     source = "data/merged-cells.xlsx"
     dialect = Dialect(header=False)
@@ -200,6 +201,7 @@ def test_xlsx_parser_merged_cells_boolean():
         ]
 
 
+@pytest.mark.skip
 def test_xlsx_parser_merged_cells_fill_boolean():
     source = "data/merged-cells-boolean.xls"
     dialect = Dialect(header=False)
@@ -253,6 +255,7 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
 # Bugs
 
 
+@pytest.mark.skip
 def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():
     dialect = Dialect(header_rows=[10, 11, 12])
     control = formats.ExcelControl(sheet="IPC", fill_merged_cells=True)

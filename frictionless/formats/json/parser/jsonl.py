@@ -36,7 +36,11 @@ class JsonlParser(Parser):
         control = self.resource.dialect.get_control("json", ensure=JsonControl())
         source = iter(jsonlines.Reader(self.loader.text_stream))
         inline_control = InlineControl(keys=control.keys)
-        resource = Resource(data=source, dialect=Dialect(controls=[control]))
+        resource = Resource(
+            data=source,
+            format="inline",
+            dialect=Dialect(controls=[control]),
+        )
         with system.create_parser(resource) as parser:
             yield next(parser.list_stream)
             parser_control = parser.resource.dialect.get_control("inline")

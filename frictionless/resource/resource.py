@@ -599,6 +599,7 @@ class Resource(Metadata):
         try:
 
             # Detect
+            # TODO: do we need detect method?
             self.detector.detect_resource(self)
             system.detect_resource(self)
 
@@ -889,6 +890,7 @@ class Resource(Metadata):
 
     # Write
 
+    # TODO: review this method
     def write(self, target=None, **options):
         """Write this resource to the target resource
 
@@ -898,6 +900,8 @@ class Resource(Metadata):
         """
         native = isinstance(target, Resource)
         target = target.to_copy() if native else Resource(target, **options)
+        self.detector.detect_resource(target)
+        system.detect_resource(target)
         parser = system.create_parser(target)
         parser.write_row_stream(self.to_copy())
         return target

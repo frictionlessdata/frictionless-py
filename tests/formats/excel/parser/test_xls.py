@@ -77,6 +77,7 @@ def test_xls_parser_merged_cells():
         ]
 
 
+@pytest.mark.skip
 def test_xls_parser_merged_cells_fill():
     source = "data/merged-cells.xls"
     dialect = Dialect(header=False)

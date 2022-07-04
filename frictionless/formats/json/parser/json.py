@@ -39,7 +39,11 @@ class JsonParser(Parser):
             path = "%s.item" % control.property
         source = ijson.items(self.loader.byte_stream, path)
         inline_control = InlineControl(keys=control.keys)
-        resource = Resource(data=source, dialect=Dialect(controls=[inline_control]))
+        resource = Resource(
+            data=source,
+            format="inline",
+            dialect=Dialect(controls=[inline_control]),
+        )
         with system.create_parser(resource) as parser:
             try:
                 yield next(parser.list_stream)
