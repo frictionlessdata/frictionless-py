@@ -59,7 +59,7 @@ class JsonlParser(Parser):
             writer = jsonlines.Writer(file)
             with source:
                 if not control.keyed:
-                    writer.write(resource.schema.field_names)
+                    writer.write(source.schema.field_names)
                 for row in source.row_stream:
                     cells = row.to_list(json=True)
                     item = dict(zip(row.field_names, cells)) if control.keyed else cells

@@ -27,7 +27,6 @@ def test_html_parser(source, selector):
 # Write
 
 
-@pytest.mark.skip
 def test_html_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.html")))
@@ -42,7 +41,6 @@ def test_html_parser_write(tmpdir):
 # Bugs
 
 
-@pytest.mark.skip
 def test_html_parser_newline_in_cell_issue_865(tmpdir):
     source = Resource("data/table-with-newline.html")
     target = source.write(str(tmpdir.join("table.csv")))
@@ -56,7 +54,6 @@ def test_html_parser_newline_in_cell_issue_865(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_html_parser_newline_in_cell_construction_file_issue_865(tmpdir):
     source = Resource("data/construction.html")
     target = source.write(str(tmpdir.join("table.csv")))

@@ -7,13 +7,7 @@ from ... import helpers
 
 
 class HtmlParser(Parser):
-    """HTML parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.html import HtmlParser`
-
-    """
+    """HTML parser implementation."""
 
     requires_loader = True
     supported_types = [
@@ -60,12 +54,11 @@ class HtmlParser(Parser):
         target = self.resource
         html = "<html><body><table>\n"
         with source:
+            html += "<tr>"
+            for name in source.schema.field_names:
+                html += f"<td>{name}</td>"
+            html += "</tr>\n"
             for row in source.row_stream:
-                if row.row_number == 1:
-                    html += "<tr>"
-                    for name in row.field_names:
-                        html += f"<td>{name}</td>"
-                    html += "</tr>\n"
                 cells = row.to_list(types=self.supported_types)
                 html += "<tr>"
                 for cell in cells:

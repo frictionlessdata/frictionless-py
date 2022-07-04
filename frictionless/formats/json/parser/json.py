@@ -64,7 +64,7 @@ class JsonParser(Parser):
         control = target.dialect.get_control("json", ensure=JsonControl())
         with source:
             if not control.keyed:
-                data.append(resource.schema.field_names)
+                data.append(source.schema.field_names)
             for row in source.row_stream:
                 cells = row.to_list(json=True)
                 item = dict(zip(row.field_names, cells)) if control.keyed else cells
