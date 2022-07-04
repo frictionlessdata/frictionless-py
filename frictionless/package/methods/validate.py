@@ -32,7 +32,7 @@ def validate(
     # Create state
     timer = helpers.Timer()
     reports: List[Report] = []
-    with_fks = any(resource.schema.foreign_keys for resource in package.resources)  # type: ignore
+    with_fks = any(resource.schema and resource.schema.foreign_keys for resource in self.resources)  # type: ignore
 
     # Prepare checklist
     checklist = checklist or Checklist()
@@ -50,7 +50,7 @@ def validate(
 
     # Validate sequential
     if not parallel or with_fks:
-        for resource in package.resources:  # type: ignore
+        for resource in self.resources:  # type: ignore
             report = validate_sequential(resource, original=original)
             reports.append(report)
 
@@ -58,7 +58,7 @@ def validate(
     else:
         with Pool() as pool:
             resource_descriptors: List[dict] = []
-            for resource in package.resources:  # type: ignore
+            for resource in self.resources:  # type: ignore
                 descriptor = resource.to_dict()
                 descriptor["basepath"] = resource.basepath
                 descriptor["trusted"] = resource.trusted
