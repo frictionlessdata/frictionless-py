@@ -22,7 +22,7 @@ class CsvParser(Parser):
         control = self.resource.dialect.get_control("csv", ensure=CsvControl())
         sample = extract_samle(self.loader.text_stream)
         if self.resource.format == "tsv":
-            control.delimiter = "\t"
+            control.set_not_defined("delimiter", "\t")
         delimiter = control.get_defined("delimiter", default=",\t;|")
         try:
             config = csv.Sniffer().sniff("".join(sample), delimiter)
@@ -48,7 +48,7 @@ class CsvParser(Parser):
         target = self.resource
         control = target.dialect.get_control("csv", ensure=CsvControl())
         if target.format == "tsv":
-            control.delimiter = "\t"
+            control.set_not_defined("delimiter", "\t")
         for name, value in vars(control.to_python()).items():
             if not name.startswith("_") and value is not None:
                 options[name] = value
