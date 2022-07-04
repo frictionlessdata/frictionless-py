@@ -47,6 +47,13 @@ class Report(Metadata):
             raise FrictionlessException(error)
         return self.tasks[0]
 
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        return Report.from_validation(time=timer.time, errors=errors)
+
     # Flatten
 
     def flatten(self, spec=["taskPosition", "rowPosition", "fieldPosition", "code"]):

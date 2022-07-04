@@ -1,6 +1,11 @@
-from frictionless import validate
+from frictionless import Resource
+
+
+# General
 
 
 def test_report_validate():
-    report = validate("data/table.csv")
-    assert report.validate().valid
+    resource = Resource("data/table.csv")
+    report = resource.validate()
+    report = report.validate()
+    assert report.valid
