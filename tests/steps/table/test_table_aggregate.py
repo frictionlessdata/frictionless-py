@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_aggregate():
     source = Resource("data/transform-groups.csv")
     pipeline = Pipeline(
@@ -15,7 +17,7 @@ def test_step_table_aggregate():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "sum"},
@@ -28,6 +30,7 @@ def test_step_table_aggregate():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_aggregate_multiple():
     source = Resource("data/transform-groups.csv")
     pipeline = Pipeline(
@@ -44,7 +47,7 @@ def test_step_table_aggregate_multiple():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "sum"},

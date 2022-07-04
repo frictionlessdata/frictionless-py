@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_recast():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -14,7 +16,7 @@ def test_step_table_recast():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

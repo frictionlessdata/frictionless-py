@@ -15,7 +15,7 @@ def test_step_table_pivot():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "region", "type": "string"},
             {"name": "boy", "type": "integer"},

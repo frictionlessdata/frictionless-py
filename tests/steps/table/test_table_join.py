@@ -18,7 +18,7 @@ def test_step_table_join():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -45,7 +45,7 @@ def test_step_table_join_from_dict():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -73,7 +73,7 @@ def test_step_table_join_with_name_is_not_first_field():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -101,7 +101,7 @@ def test_step_table_join_mode_left():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -129,7 +129,7 @@ def test_step_table_join_mode_left_from_descriptor_issue_996():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -158,7 +158,7 @@ def test_step_table_join_mode_right():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -186,7 +186,7 @@ def test_step_table_join_mode_outer():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -214,7 +214,7 @@ def test_step_table_join_mode_cross():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -245,7 +245,7 @@ def test_step_table_join_mode_negate():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -272,7 +272,7 @@ def test_step_table_join_hash_is_true():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

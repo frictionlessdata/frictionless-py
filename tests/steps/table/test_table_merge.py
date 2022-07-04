@@ -16,7 +16,7 @@ def test_step_table_merge():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -43,7 +43,7 @@ def test_step_table_merge_from_dict():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -71,7 +71,7 @@ def test_step_table_merge_with_field_names():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -97,7 +97,7 @@ def test_step_merge_ignore_fields():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -124,7 +124,7 @@ def test_step_table_merge_with_sort():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

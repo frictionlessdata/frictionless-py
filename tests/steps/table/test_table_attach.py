@@ -14,7 +14,7 @@ def test_step_table_attach():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -38,7 +38,7 @@ def test_step_table_attach_from_dict():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
