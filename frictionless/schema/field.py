@@ -130,9 +130,9 @@ class Field(Metadata):
 
     # Write
 
-    def write_cell(self, cell):
+    def write_cell(self, cell, *, ignore_missing=False):
         cell_writer = self.create_cell_writer()
-        return cell_writer(cell)
+        return cell_writer(cell, ignore_missing=ignore_missing)
 
     def create_cell_writer(self):
         value_writer = self.create_value_writer()

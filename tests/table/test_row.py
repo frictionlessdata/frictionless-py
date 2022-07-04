@@ -1,4 +1,5 @@
 import json
+import pytest
 from decimal import Decimal
 from frictionless import Resource, extract
 
@@ -37,6 +38,7 @@ def test_to_str_with_doublequotes():
     assert rows[1].to_str() == '2,"german,GE"'
 
 
+@pytest.mark.skip
 def test_to_dict_with_json_null_values_issue_519():
     source = b"value\n2020-01-01\n\n2020-03-03"
     process = lambda row: row.to_dict(json=True)
@@ -47,6 +49,7 @@ def test_to_dict_with_json_null_values_issue_519():
     ]
 
 
+@pytest.mark.skip
 def test_to_list_with_json_null_values_issue_519():
     source = b"value\n2020-01-01\n\n2020-03-03"
     process = lambda row: row.to_list(json=True)

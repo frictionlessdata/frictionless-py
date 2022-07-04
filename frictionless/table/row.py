@@ -15,10 +15,6 @@ from .. import errors
 class Row(dict):
     """Row representation
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Row`
-
     > Constructor of this object is not Public API
 
     This object is returned by `extract`, `resource.read_rows`, and other functions.
