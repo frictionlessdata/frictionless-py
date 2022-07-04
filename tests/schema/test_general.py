@@ -40,6 +40,7 @@ def test_schema_extract_metadata_error():
         Schema.from_descriptor([])  # type: ignore
 
 
+@pytest.mark.skip
 def test_schema_descriptor():
     assert Schema.from_descriptor(DESCRIPTOR_MIN).to_descriptor() == DESCRIPTOR_MIN
     assert Schema.from_descriptor(DESCRIPTOR_MAX).to_descriptor() == DESCRIPTOR_MAX

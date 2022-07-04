@@ -187,7 +187,11 @@ class Field(Metadata):
     # Metadata
 
     metadata_Error = errors.FieldError
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]
+    # TODO: fix it
+    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
+        14
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
 
     def metadata_validate(self):
         yield from super().metadata_validate()

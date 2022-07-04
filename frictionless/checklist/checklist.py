@@ -1,4 +1,5 @@
 from __future__ import annotations
+from importlib import import_module
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Optional
 from ..exception import FrictionlessException
@@ -6,6 +7,7 @@ from ..metadata import Metadata
 from ..checks import baseline
 from .check import Check
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -58,6 +60,14 @@ class Checklist(Metadata):
                         continue
                 scope.append(Error.code)
         return scope
+
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Checks
 

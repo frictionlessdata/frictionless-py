@@ -1,10 +1,12 @@
 from __future__ import annotations
 from typing import Optional, List
+from importlib import import_module
 from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
 from .. import settings
+from .. import helpers
 from .. import errors
 
 
@@ -26,6 +28,14 @@ class Pipeline(Metadata):
     @property
     def step_codes(self) -> List[str]:
         return [step.code for step in self.steps]
+
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Steps
 

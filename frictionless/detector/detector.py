@@ -4,6 +4,7 @@ import glob
 import codecs
 import chardet
 from copy import copy, deepcopy
+from importlib import import_module
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
 from ..metadata import Metadata
@@ -121,6 +122,14 @@ class Detector(Metadata):
     key named after a field name and the values being a field patch.
     For more information, please check "Extracting Data" guide.
     """
+
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Detect
 

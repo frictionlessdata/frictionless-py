@@ -71,6 +71,14 @@ class Schema(Metadata):
         schema = resource.schema
         return schema
 
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
+
     # Fields
 
     def add_field(self, field: Field) -> None:
