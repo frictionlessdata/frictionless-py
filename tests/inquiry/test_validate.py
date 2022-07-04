@@ -1,6 +1,8 @@
 import pytest
 from frictionless import Inquiry
 
+pytestmark = pytest.mark.skip
+
 
 # Sequential
 

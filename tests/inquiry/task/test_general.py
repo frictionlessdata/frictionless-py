@@ -1,4 +1,7 @@
+import pytest
 from frictionless import InquiryTask
+
+pytestmark = pytest.mark.skip
 
 
 # General
