@@ -13,7 +13,7 @@ def test_step_field_move():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
@@ -47,7 +47,7 @@ def test_transform_rename_move_field_issue_953():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "population", "type": "integer"},

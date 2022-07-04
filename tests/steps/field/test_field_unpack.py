@@ -15,7 +15,7 @@ def test_step_field_unpack():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
@@ -40,7 +40,7 @@ def test_step_field_unpack_with_preserve():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "array"},
             {"name": "name", "type": "string"},
@@ -66,7 +66,7 @@ def test_step_field_unpack_source_is_object():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},

@@ -12,7 +12,7 @@ def test_step_field_remove():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
