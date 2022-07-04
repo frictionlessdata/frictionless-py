@@ -349,6 +349,28 @@ def test_schema_pprint():
     assert repr(schema) == expected
 
 
+@pytest.mark.skip
+def test_schema_pprint():
+    metadata = Schema.from_descriptor("data/schema-valid.json")
+    expected = """{'fields': [{'constraints': {'required': True},
+             'description': 'The id.',
+             'name': 'id',
+             'title': 'ID',
+             'type': 'integer'},
+            {'constraints': {'required': True},
+             'description': 'The name.',
+             'name': 'name',
+             'title': 'Name',
+             'type': 'string'},
+            {'constraints': {'required': True},
+             'description': 'The age.',
+             'name': 'age',
+             'title': 'Age',
+             'type': 'integer'}],
+ 'primaryKey': 'id'}"""
+    assert repr(metadata) == expected
+
+
 # Bugs
 
 
