@@ -347,8 +347,6 @@ class Package(Metadata):
             onerror=self.onerror,
             trusted=self.trusted,
             detector=self.detector,
-            dialect=self.dialect,
-            hashing=self.hashing,
         )
 
     @classmethod

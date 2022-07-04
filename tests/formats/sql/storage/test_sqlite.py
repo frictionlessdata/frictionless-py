@@ -6,7 +6,6 @@ from frictionless import FrictionlessException
 
 pytestmark = pytest.mark.skip
 
-
 # General
 
 
@@ -18,7 +17,7 @@ def test_sql_storage_sqlite_types(sqlite_url):
     target = Package.from_sql(sqlite_url, control=control)
 
     # Assert metadata
-    assert target.get_resource("types").schema == {
+    assert target.get_resource("types").schema.to_descriptor() == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "string"},  # type fallback
@@ -73,7 +72,7 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
     target = Package.from_sql(sqlite_url, control=control)
 
     # Assert metadata (main)
-    assert target.get_resource("integrity_main").schema == {
+    assert target.get_resource("integrity_main").schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "parent", "type": "integer"},
@@ -86,7 +85,7 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
     }
 
     # Assert metadata (link)
-    assert target.get_resource("integrity_link").schema == {
+    assert target.get_resource("integrity_link").schema.to_descriptor() == {
         "fields": [
             {"name": "main_id", "type": "integer"},
             # removed unique
@@ -127,7 +126,7 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
     target = Package.from_sql(sqlite_url, control=control)
 
     # Assert metadata
-    assert target.get_resource("constraints").schema == {
+    assert target.get_resource("constraints").schema.to_descriptor() == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -224,7 +223,7 @@ def test_sql_storage_sqlite_views_support(sqlite_url):
     engine.execute("CREATE VIEW 'table_view' AS SELECT * FROM 'table'")
     storage = formats.SqlStorage(engine)
     resource = storage.read_resource("table_view")
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -241,7 +240,7 @@ def test_sql_storage_sqlite_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
     target = source.write(sqlite_url, control={"table": "table"})
     with target:
-        assert target.schema == {
+        assert target.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
@@ -258,7 +257,7 @@ def test_sql_storage_sqlite_package_url_argument(sqlite_url):
     source = Package(resources=[Resource(path="data/table.csv")])
     source.to_sql(sqlite_url)
     target = Package.from_sql(sqlite_url)
-    assert target.get_resource("table").schema == {
+    assert target.get_resource("table").schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
