@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Package, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_resource_update():
     source = Package("data/package/datapackage.json")
     pipeline = Pipeline(
@@ -15,6 +17,7 @@ def test_step_resource_update():
     assert target.get_resource("data").title == "New title"
 
 
+@pytest.mark.skip
 def test_step_resource_update_new_name():
     source = Package("data/package/datapackage.json")
     pipeline = Pipeline(

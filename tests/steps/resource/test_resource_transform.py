@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Package, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_resource_transform():
     source = Package("data/package/datapackage.json")
     pipeline = Pipeline(
