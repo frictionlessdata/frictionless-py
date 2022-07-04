@@ -64,7 +64,7 @@ class Resource(Metadata):
         licenses: List[dict] = [],
         sources: List[dict] = [],
         path: Optional[str] = None,
-        data: Optional[List[Union[list, dict]]] = None,
+        data: Optional[Any] = None,
         type: Optional[str] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
@@ -230,7 +230,7 @@ class Resource(Metadata):
     Path to data source
     """
 
-    data: Optional[List[Union[list, dict]]]
+    data: Optional[Any]
     """
     Inline data source
     """

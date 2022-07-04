@@ -1,13 +1,14 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
-@pytest.mark.skip
+# General
+
+
 def test_resource_transform_bound_pipeline():
     pipeline = Pipeline(steps=[steps.cell_set(field_name="population", value=100)])
     source = Resource("data/transform.csv", pipeline=pipeline)
     target = source.transform()
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

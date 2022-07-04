@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
+from ...dialect import Dialect
 from ...pipeline import Pipeline
 from ...exception import FrictionlessException
 from ...helpers import get_name
@@ -40,21 +41,18 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
             raise FrictionlessException(error) from exception
 
         # Postprocess
+        # TODO: review this code
+        # https://github.com/frictionlessdata/frictionless-py/issues/722
         if self.data is not data:
-            self.data = DataWithErrorHandling(self.data, step=step)  # type: ignore
-            # NOTE:
-            # We need rework self.data or move to self.__setattr__
-            # https://github.com/frictionlessdata/frictionless-py/issues/722
-            self.scheme = ""  # type: ignore
-            self.format = "inline"  # type: ignore
-            dict.pop(self, "path", None)
-            dict.pop(self, "hashing", None)
-            dict.pop(self, "encoding", None)
-            dict.pop(self, "innerpath", None)
-            dict.pop(self, "compression", None)
-            dict.pop(self, "control", None)
-            dict.pop(self, "dialect", None)
-            dict.pop(self, "layout", None)
+            self.path = None
+            self.data = DataWithErrorHandling(self.data, step=step)
+            self.scheme = ""
+            self.format = "inline"
+            self.hashing = None
+            self.encoding = None
+            self.compression = None
+            self.innerpath = None
+            self.dialect = Dialect()
 
     return self
 

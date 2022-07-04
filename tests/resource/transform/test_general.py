@@ -15,7 +15,7 @@ def test_resource_transform():
         ],
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "variable"},
@@ -32,7 +32,6 @@ def test_resource_transform():
     ]
 
 
-@pytest.mark.skip
 def test_resource_transform_cell_set():
     source = Resource("data/transform.csv")
     pipeline = Pipeline.from_descriptor(
@@ -43,7 +42,7 @@ def test_resource_transform_cell_set():
         }
     )
     target = source.transform(pipeline)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
