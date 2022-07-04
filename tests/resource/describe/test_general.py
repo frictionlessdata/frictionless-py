@@ -1,22 +1,22 @@
 import pytest
-from frictionless import Resource, Detector, helpers
+from frictionless import Resource, Dialect, Detector, helpers
 
 
 # General
 
 
-@pytest.mark.skip
 def test_describe_resource():
     resource = Resource.describe("data/table.csv")
     assert resource.metadata_valid
-    assert resource == {
-        "profile": "tabular-data-resource",
+    assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
+        "type": "table",
         "scheme": "file",
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
+        "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -26,19 +26,19 @@ def test_describe_resource():
     }
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_describe_resource_with_stats():
     resource = Resource.describe("data/table.csv", stats=True)
     assert resource.metadata_valid
-    assert resource == {
-        "profile": "tabular-data-resource",
+    assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
+        "type": "table",
         "scheme": "file",
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
+        "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -73,19 +73,6 @@ def test_describe_resource_schema_utf8():
             {"name": "age", "type": "integer"},
             {"name": "name", "type": "string"},
         ],
-    }
-
-
-@pytest.mark.skip
-def test_describe_resource_schema_expand():
-    resource = Resource.describe("data/table-infer.csv", expand=True)
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer", "format": "default", "bareNumber": True},
-            {"name": "age", "type": "integer", "format": "default", "bareNumber": True},
-            {"name": "name", "type": "string", "format": "default"},
-        ],
-        "missingValues": [""],
     }
 
 
@@ -125,11 +112,12 @@ def test_describe_resource_schema_with_missing_values_using_the_argument():
     }
 
 
-@pytest.mark.xfail
 def test_describe_resource_schema_check_type_boolean_string_tie():
-    layout = Layout(header=False)
+    dialect = Dialect(header=False)
     detector = Detector(field_names=["field"])
-    resource = Resource.describe([["f"], ["stringish"]], layout=layout, detector=detector)
+    resource = Resource.describe(
+        [["f"], ["stringish"]], dialect=dialect, detector=detector
+    )
     assert resource.schema.get_field("field").type == "string"
 
 
@@ -171,7 +159,7 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
 @pytest.mark.skip
 def test_describe_schema_proper_quote_issue_493():
     resource = Resource.describe("data/issue-493.csv")
-    assert resource.dialect.quote_char == '"'
+    assert resource.dialect.get_control("csv").quote_char == '"'
     assert len(resource.schema.fields) == 126
 
 
@@ -199,7 +187,6 @@ def test_describe_resource_with_years_in_the_header_issue_825():
     assert resource.schema.field_names == ["Musei", "2011", "2010"]
 
 
-@pytest.mark.xfail
 def test_describe_resource_schema_summary():
     resource = Resource.describe("data/countries.csv")
     resource.infer()
