@@ -105,7 +105,7 @@ class Checklist(Metadata):
     # Match
 
     def match(self, error: errors.Error) -> bool:
-        if error.tags.count("#data"):
+        if isinstance(error, errors.DataError):
             if error.code not in self.scope:
                 return False
         return True
