@@ -102,7 +102,6 @@ def test_xls_parser_with_boolean():
 # Write
 
 
-@pytest.mark.skip
 def test_xls_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.xls")))
@@ -115,7 +114,6 @@ def test_xls_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_xls_parser_write_sheet_name(tmpdir):
     control = formats.ExcelControl(sheet="sheet")
     source = Resource("data/table.csv")

@@ -225,7 +225,6 @@ def test_xlsx_parser_fix_for_2007_xls():
 # Write
 
 
-@pytest.mark.skip
 def test_xlsx_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.xlsx")))
@@ -238,7 +237,6 @@ def test_xlsx_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.skip
 def test_xlsx_parser_write_sheet_name(tmpdir):
     control = formats.ExcelControl(sheet="sheet")
     source = Resource("data/table.csv")

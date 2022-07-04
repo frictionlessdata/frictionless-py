@@ -155,10 +155,8 @@ class XlsxParser(Parser):
             title = f"Sheet {control.sheet}"
         sheet = book.create_sheet(title)
         with source:
+            sheet.append(source.schema.field_names)
             for row in source.row_stream:
-                cells = []
-                if row.row_number == 1:
-                    sheet.append(row.field_names)
                 cells = row.to_list(types=self.supported_types)
                 sheet.append(cells)
         file = tempfile.NamedTemporaryFile(delete=False)
