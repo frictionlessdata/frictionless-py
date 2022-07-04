@@ -4,20 +4,17 @@ from frictionless import Metadata
 # General
 
 
-def test_descriptor():
+def test_metadata():
     metadata = Metadata({"key": "value"})
     assert metadata["key"] == "value"
 
 
-def test_descriptor_from_path():
+def test_metadata_from_path():
     metadata = Metadata("data/schema-valid.json")
     assert metadata["primaryKey"] == "id"
 
 
-# Problems
-
-
-def test_metadata_pprint_1029():
+def test_metadata_pprint():
     metadata = Metadata("data/schema-valid.json")
     expected = """{'fields': [{'constraints': {'required': True},
              'description': 'The id.',

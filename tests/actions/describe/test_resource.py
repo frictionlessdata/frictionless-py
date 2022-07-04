@@ -129,7 +129,7 @@ def test_describe_resource_schema_check_type_boolean_string_tie():
     assert resource.schema.get_field("field").type == "string"
 
 
-# Problems
+# Bugs
 
 
 def test_describe_resource_schema_xlsx_file_with_boolean_column_issue_203():

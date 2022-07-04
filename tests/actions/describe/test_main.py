@@ -72,7 +72,7 @@ def test_describe_package_type_package():
     assert isinstance(resource, Package)
 
 
-# Problems
+# Bugs
 
 
 def test_describe_blank_cells_issue_7():

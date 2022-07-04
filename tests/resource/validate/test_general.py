@@ -339,7 +339,7 @@ def test_resource_validate_custom_check_with_arguments():
     ]
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

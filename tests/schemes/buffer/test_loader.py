@@ -25,7 +25,7 @@ def test_buffer_loader_write():
     assert target.data == "id,name\r\n1,english\r\n2,中国人\r\n".encode("utf-8")
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

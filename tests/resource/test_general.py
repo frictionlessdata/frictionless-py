@@ -375,9 +375,6 @@ def test_resource_description_text_plain():
     assert resource.description_text == "It's just a plain text. Another sentence"
 
 
-# Metadata
-
-
 @pytest.mark.skip
 def test_resource_metadata_bad_schema_format():
     schema = Schema(
@@ -394,7 +391,89 @@ def test_resource_metadata_bad_schema_format():
     assert resource.metadata_errors[0].code == "field-error"
 
 
-# Problems
+def test_resource_set_base_path():
+    resource = Resource(basepath="/data")
+    assert resource.basepath == "/data"
+    resource.basepath = "/data/csv"
+    assert resource.basepath == "/data/csv"
+
+
+def test_resource_set_detector():
+    detector_set_init = Detector(field_missing_values=["na"])
+    resource = Resource("data/table.csv", detector=detector_set_init)
+    assert resource.detector == detector_set_init
+    detector_set = Detector(sample_size=3)
+    resource.detector = detector_set
+    assert resource.detector == detector_set
+
+
+def test_resource_set_onerror():
+    resource = Resource(onerror="raise")
+    assert resource.onerror == "raise"
+    resource.onerror = "ignore"
+    assert resource.onerror == "ignore"
+
+
+def test_resource_set_trusted():
+    resource = Resource(trusted=True)
+    assert resource.trusted is True
+    resource.trusted = False
+    assert resource.trusted is False
+
+
+@pytest.mark.skip
+def test_resource_set_package():
+    test_package_1 = Package()
+    resource = Resource(package=test_package_1)
+    assert resource.package == test_package_1
+    test_package_2 = Package()
+    resource.package = test_package_2
+    assert resource.package == test_package_2
+
+
+@pytest.mark.skip
+def test_resource_pprint():
+    resource = Resource(
+        name="resource",
+        title="My Resource",
+        description="My Resource for the Guide",
+        path="data/table.csv",
+    )
+    expected = """{'description': 'My Resource for the Guide',
+ 'name': 'resource',
+ 'path': 'data/table.csv',
+ 'title': 'My Resource'}"""
+    assert repr(resource) == expected
+
+
+def test_resource_summary_valid_resource():
+    resource = Resource("data/capital-valid.csv")
+    output = resource.to_view()
+    assert (
+        output.count("| id | name     |")
+        and output.count("|  1 | 'London' |")
+        and output.count("|  2 | 'Berlin' |")
+        and output.count("|  3 | 'Paris'  |")
+        and output.count("|  4 | 'Madrid' |")
+        and output.count("|  5 | 'Rome'   |")
+    )
+
+
+@pytest.mark.skip
+def test_resource_summary_invalid_resource():
+    resource = Resource("data/countries.csv")
+    output = resource.to_view()
+    assert (
+        output.count("| id | neighbor_id | name      | population |")
+        and output.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
+        and output.count("|  2 | '3'         | 'France'  | 'n/a'      |")
+        and output.count("|  3 | '22'        | 'Germany' | '83'       |")
+        and output.count("|  4 | None        | 'Italy'   | '60'       |")
+        and output.count("|  5 | None        | None      | None       |")
+    )
+
+
+# Bugs
 
 
 @pytest.mark.skip
@@ -533,85 +612,3 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
             "rows": 3,
         },
     }
-
-
-def test_resource_set_base_path():
-    resource = Resource(basepath="/data")
-    assert resource.basepath == "/data"
-    resource.basepath = "/data/csv"
-    assert resource.basepath == "/data/csv"
-
-
-def test_resource_set_detector():
-    detector_set_init = Detector(field_missing_values=["na"])
-    resource = Resource("data/table.csv", detector=detector_set_init)
-    assert resource.detector == detector_set_init
-    detector_set = Detector(sample_size=3)
-    resource.detector = detector_set
-    assert resource.detector == detector_set
-
-
-def test_resource_set_onerror():
-    resource = Resource(onerror="raise")
-    assert resource.onerror == "raise"
-    resource.onerror = "ignore"
-    assert resource.onerror == "ignore"
-
-
-def test_resource_set_trusted():
-    resource = Resource(trusted=True)
-    assert resource.trusted is True
-    resource.trusted = False
-    assert resource.trusted is False
-
-
-@pytest.mark.skip
-def test_resource_set_package():
-    test_package_1 = Package()
-    resource = Resource(package=test_package_1)
-    assert resource.package == test_package_1
-    test_package_2 = Package()
-    resource.package = test_package_2
-    assert resource.package == test_package_2
-
-
-@pytest.mark.skip
-def test_resource_pprint():
-    resource = Resource(
-        name="resource",
-        title="My Resource",
-        description="My Resource for the Guide",
-        path="data/table.csv",
-    )
-    expected = """{'description': 'My Resource for the Guide',
- 'name': 'resource',
- 'path': 'data/table.csv',
- 'title': 'My Resource'}"""
-    assert repr(resource) == expected
-
-
-def test_resource_summary_valid_resource():
-    resource = Resource("data/capital-valid.csv")
-    output = resource.to_view()
-    assert (
-        output.count("| id | name     |")
-        and output.count("|  1 | 'London' |")
-        and output.count("|  2 | 'Berlin' |")
-        and output.count("|  3 | 'Paris'  |")
-        and output.count("|  4 | 'Madrid' |")
-        and output.count("|  5 | 'Rome'   |")
-    )
-
-
-@pytest.mark.skip
-def test_resource_summary_invalid_resource():
-    resource = Resource("data/countries.csv")
-    output = resource.to_view()
-    assert (
-        output.count("| id | neighbor_id | name      | population |")
-        and output.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
-        and output.count("|  2 | '3'         | 'France'  | 'n/a'      |")
-        and output.count("|  3 | '22'        | 'Germany' | '83'       |")
-        and output.count("|  4 | None        | 'Italy'   | '60'       |")
-        and output.count("|  5 | None        | None      | None       |")
-    )

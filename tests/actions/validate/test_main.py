@@ -29,7 +29,7 @@ def test_validate_from_resource_instance():
     assert report.valid
 
 
-# Problems
+# Bugs
 
 
 def test_validate_multiple_files_issue_850():

@@ -92,7 +92,7 @@ def test_extract_resource_from_file_process_and_stream():
     ]
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

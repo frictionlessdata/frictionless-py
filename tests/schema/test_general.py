@@ -349,7 +349,7 @@ def test_schema_pprint():
     assert repr(schema) == expected
 
 
-# Problems
+# Bugs
 
 
 def test_schema_field_date_format_issue_177():

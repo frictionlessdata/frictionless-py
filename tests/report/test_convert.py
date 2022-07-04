@@ -88,7 +88,7 @@ def test_report_to_summary_partial_validation():
     )
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

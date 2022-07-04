@@ -250,7 +250,7 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
         ]
 
 
-# Problems
+# Bugs
 
 
 def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():

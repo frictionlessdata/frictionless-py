@@ -39,7 +39,7 @@ def test_html_parser_write(tmpdir):
         ]
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

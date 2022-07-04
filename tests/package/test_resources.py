@@ -105,7 +105,7 @@ def test_package_resources_remove_in_place():
     assert package == {"resources": []}
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

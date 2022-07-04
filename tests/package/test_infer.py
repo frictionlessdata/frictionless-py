@@ -100,7 +100,7 @@ def test_package_infer_empty_file():
     assert package.resources[0].stats["bytes"] == 0
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

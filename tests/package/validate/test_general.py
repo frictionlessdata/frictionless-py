@@ -145,7 +145,23 @@ def test_validate_package_with_schema_as_string():
     assert report.valid
 
 
-# Problems
+def test_validate_package_descriptor_type_package():
+    package = Package(descriptor="data/package/datapackage.json")
+    report = package.validate()
+    assert report.valid
+
+
+def test_validate_package_descriptor_type_package_invalid():
+    package = Package(descriptor="data/invalid/datapackage.json")
+    report = package.validate()
+    assert report.flatten() == [
+        [1, 3, None, "blank-row"],
+        [1, 3, None, "primary-key"],
+        [2, 4, None, "blank-row"],
+    ]
+
+
+# Bugs
 
 
 def test_validate_package_mixed_issue_170():
@@ -264,22 +280,6 @@ def test_validate_package_using_detector_schema_sync_issue_847():
         resource.detector = Detector(schema_sync=True)
     package = Package(package)
     assert report.valid
-
-
-def test_validate_package_descriptor_type_package():
-    package = Package(descriptor="data/package/datapackage.json")
-    report = package.validate()
-    assert report.valid
-
-
-def test_validate_package_descriptor_type_package_invalid():
-    package = Package(descriptor="data/invalid/datapackage.json")
-    report = package.validate()
-    assert report.flatten() == [
-        [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key"],
-        [2, 4, None, "blank-row"],
-    ]
 
 
 def test_validate_package_with_diacritic_symbol_issue_905():

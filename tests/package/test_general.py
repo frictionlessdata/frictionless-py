@@ -259,7 +259,37 @@ def test_package_description_text_plain():
     assert package.description_text == "It's just a plain text. Another sentence"
 
 
-# Problems
+def test_package_set_base_path():
+    package = Package(basepath="/data")
+    assert package.basepath == "/data"
+    package.basepath = "/data/csv"
+    assert package.basepath == "/data/csv"
+
+
+def test_package_set_onerror():
+    package = Package(onerror="raise")
+    assert package.onerror == "raise"
+    package.onerror = "ignore"
+    assert package.onerror == "ignore"
+
+
+def test_package_set_trusted():
+    package = Package(trusted=True)
+    assert package.trusted is True
+    package.trusted = False
+    assert package.trusted is False
+
+
+@pytest.mark.skip
+def test_package_pprint():
+    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
+    package = Package({"resources": [{"name": "name", "data": data}]})
+    expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
+                'name': 'name'}]}"""
+    assert repr(package) == expected
+
+
+# Bugs
 
 
 @pytest.mark.skip
@@ -291,33 +321,3 @@ def test_package_validation_duplicate_resource_names_issue_942():
     errors = package.metadata_errors
     assert len(errors) == 1
     assert errors[0].note == "names of the resources are not unique"
-
-
-def test_package_set_base_path():
-    package = Package(basepath="/data")
-    assert package.basepath == "/data"
-    package.basepath = "/data/csv"
-    assert package.basepath == "/data/csv"
-
-
-def test_package_set_onerror():
-    package = Package(onerror="raise")
-    assert package.onerror == "raise"
-    package.onerror = "ignore"
-    assert package.onerror == "ignore"
-
-
-def test_package_set_trusted():
-    package = Package(trusted=True)
-    assert package.trusted is True
-    package.trusted = False
-    assert package.trusted is False
-
-
-@pytest.mark.skip
-def test_package_pprint():
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    package = Package({"resources": [{"name": "name", "data": data}]})
-    expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
-                'name': 'name'}]}"""
-    assert repr(package) == expected

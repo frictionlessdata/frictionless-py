@@ -159,7 +159,7 @@ def test_resource_to_markdown_file_837(tmpdir):
     assert expected == output
 
 
-# Problems
+# Bugs
 
 
 @pytest.mark.skip

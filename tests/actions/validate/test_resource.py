@@ -1101,7 +1101,7 @@ def test_validate_resource_descriptor_type_invalid():
     assert report.flatten() == [[1, None, None, "resource-error"]]
 
 
-# Problems
+# Bugs
 
 
 def test_validate_infer_fields_issue_223():
