@@ -598,12 +598,8 @@ class Resource(Metadata):
         # Open
         try:
 
-            # Detect
-            # TODO: do we need detect method?
-            self.detector.detect_resource(self)
-            system.detect_resource(self)
-
             # Parser
+            self.__detect_file()
             if self.type != "file":
                 try:
                     self.__parser = system.create_parser(self)
@@ -614,7 +610,7 @@ class Resource(Metadata):
             # Table
             if self.__parser:
                 self.__parser.open()
-                self.__read_details()
+                self.__detect_table()
                 self.__header = self.__read_header()
                 self.__row_stream = self.__read_row_stream()
                 return self
@@ -647,6 +643,46 @@ class Resource(Metadata):
             bool: if closed
         """
         return self.__parser is None and self.__loader is None
+
+    # Detect
+
+    def __detect_file(self):
+        self.detector.detect_resource(self)
+        system.detect_resource(self)
+
+    def __detect_table(self):
+
+        # Sample
+        sample = self.__parser.sample  # type: ignore
+        dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
+        if dialect:
+            self.dialect = dialect
+        self.__sample = sample
+
+        # Schema
+        labels = self.dialect.read_labels(self.sample)
+        fragment = self.dialect.read_fragment(self.sample)
+        field_candidates = system.create_field_candidates()
+        schema = self.detector.detect_schema(
+            fragment,
+            labels=labels,
+            schema=self.schema,
+            field_candidates=field_candidates,
+        )
+        if schema:
+            if not self.schema or self.schema.to_descriptor() != schema.to_descriptor():
+                self.schema = schema
+        self.__labels = labels
+        self.__fragment = fragment
+        self.stats["fields"] = len(schema.fields)
+        # NOTE: review whether it's a proper place for this fallback to data resource
+        if not schema:
+            self.profile = "data-resource"
+
+        # Lookup
+        lookup = self.detector.detect_lookup(self)
+        if lookup:
+            self.__lookup = lookup
 
     # Read
 
@@ -712,42 +748,6 @@ class Resource(Metadata):
                 if size and len(rows) >= size:
                     break
             return rows
-
-    # TODO: rework this method
-    # TODO: review how to name / where to place this method
-    def __read_details(self):
-
-        # Sample
-        sample = self.__parser.sample  # type: ignore
-        dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
-        if dialect:
-            self.dialect = dialect
-        self.__sample = sample
-
-        # Schema
-        labels = self.dialect.read_labels(self.sample)
-        fragment = self.dialect.read_fragment(self.sample)
-        field_candidates = system.create_field_candidates()
-        schema = self.detector.detect_schema(
-            fragment,
-            labels=labels,
-            schema=self.schema,
-            field_candidates=field_candidates,
-        )
-        if schema:
-            if not self.schema or self.schema.to_descriptor() != schema.to_descriptor():
-                self.schema = schema
-        self.__labels = labels
-        self.__fragment = fragment
-        self.stats["fields"] = len(schema.fields)
-        # NOTE: review whether it's a proper place for this fallback to data resource
-        if not schema:
-            self.profile = "data-resource"
-
-        # Lookup
-        lookup = self.detector.detect_lookup(self)
-        if lookup:
-            self.__lookup = lookup
 
     def __read_header(self):
 
@@ -900,8 +900,7 @@ class Resource(Metadata):
         """
         native = isinstance(target, Resource)
         target = target if native else Resource(target, **options)
-        self.detector.detect_resource(target)
-        system.detect_resource(target)
+        target.__detect_file()
         parser = system.create_parser(target)
         parser.write_row_stream(self.to_copy())
         return target
