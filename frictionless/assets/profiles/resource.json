@@ -260,7 +260,6 @@
       "title": "Media Type",
       "description": "The media type of this resource. Can be any valid media type listed with [IANA](https://www.iana.org/assignments/media-types/media-types.xhtml).",
       "type": "string",
-      "pattern": "^(.+)/(.+)$",
       "examples": [
         "{\n  \"mediatype\": \"text/csv\"\n}\n"
       ]
