@@ -66,7 +66,6 @@ def test_csv_parser_unix():
         ]
 
 
-@pytest.mark.skip
 def test_csv_parser_escaping():
     control = formats.CsvControl(escape_char="\\")
     with Resource("data/escaping.csv", control=control) as resource:

@@ -22,7 +22,7 @@ class CsvControl(Control):
     quote_char: str = settings.DEFAULT_QUOTE_CHAR
     """TODO: add docs"""
 
-    double_quote: bool = False
+    double_quote: bool = settings.DEFAULT_DOUBLE_QUOTE
     """TODO: add docs"""
 
     escape_char: Optional[str] = None
