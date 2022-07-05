@@ -17,3 +17,7 @@ class CsvPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format in ["csv", "tsv"]:
             return CsvParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.format in ["csv", "tsv"]:
+            resource.type = "table"

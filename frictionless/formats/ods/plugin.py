@@ -17,3 +17,7 @@ class OdsPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format == "ods":
             return OdsParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.format == "ods":
+            resource.type = "table"

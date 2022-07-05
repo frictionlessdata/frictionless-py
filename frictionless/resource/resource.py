@@ -591,24 +591,19 @@ class Resource(Metadata):
 
     # Open/Close
 
-    def open(self):
+    def open(self, *, as_file=False):
         """Open the resource as "io.open" does"""
+
+        # Prepare
         self.close()
+        self.__detect_file()
 
         # Open
         try:
 
-            # Parser
-            self.__detect_file()
-            if self.type != "file":
-                try:
-                    self.__parser = system.create_parser(self)
-                    self.type = "table"
-                except Exception:
-                    self.type = "file"
-
             # Table
-            if self.__parser:
+            if self.type == "table" and not as_file:
+                self.__parser = system.create_parser(self)
                 self.__parser.open()
                 self.__detect_table()
                 self.__header = self.__read_header()
@@ -647,6 +642,8 @@ class Resource(Metadata):
     # Detect
 
     def __detect_file(self):
+
+        # Details
         self.detector.detect_resource(self)
         system.detect_resource(self)
 

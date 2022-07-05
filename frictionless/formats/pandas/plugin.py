@@ -26,6 +26,7 @@ class PandasPlugin(Plugin):
 
     def detect_resource(self, resource):
         if resource.data:
+            resource.type = "table"
             if helpers.is_type(resource.data, "DataFrame"):
                 resource.scheme = ""
                 resource.format = "pandas"

@@ -19,3 +19,7 @@ class JsonPlugin(Plugin):
             return JsonParser(resource)
         elif resource.format in ["jsonl", "ndjson"]:
             return JsonlParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.format in ["json", "jsonl", "ndjson"]:
+            resource.type = "table"

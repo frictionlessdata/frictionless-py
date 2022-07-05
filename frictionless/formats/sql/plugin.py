@@ -32,5 +32,6 @@ class SqlPlugin(Plugin):
         if resource.scheme:
             for prefix in settings.SCHEME_PREFIXES:
                 if resource.scheme.startswith(prefix):
+                    resource.type = "table"
                     resource.scheme = ""
                     resource.format = "sql"

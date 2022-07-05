@@ -22,6 +22,7 @@ class InlinePlugin(Plugin):
     def detect_resource(self, resource):
         if resource.data:
             if not hasattr(resource.data, "read"):
+                resource.type = "table"
                 types = (list, typing.Iterator, typing.Generator)
                 if callable(resource.data) or isinstance(resource.data, types):
                     resource.scheme = ""

@@ -19,3 +19,7 @@ class ExcelPlugin(Plugin):
             return XlsxParser(resource)
         elif resource.format == "xls":
             return XlsParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.format in ["xlsx", "xls"]:
+            resource.type = "table"

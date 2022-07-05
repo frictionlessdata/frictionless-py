@@ -17,3 +17,7 @@ class HtmlPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format == "html":
             return HtmlParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.format == "html":
+            resource.type = "table"

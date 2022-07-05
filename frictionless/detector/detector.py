@@ -153,6 +153,7 @@ class Detector(Metadata):
             name = name or "name"
 
         # Detect details
+        type = settings.DEFAULT_TYPE
         scheme = ""
         format = ""
         hashing = settings.DEFAULT_HASHING
@@ -172,6 +173,7 @@ class Detector(Metadata):
 
         # Apply detected
         resource.set_not_defined("name", name)
+        resource.set_not_defined("type", type)
         resource.set_not_defined("scheme", scheme)
         resource.set_not_defined("format", format)
         resource.set_not_defined("hashing", hashing)

@@ -25,3 +25,7 @@ class CkanPlugin(Plugin):
     def create_storage(self, name, source, **options):
         if name == "ckan":
             return CkanStorage(source, **options)
+
+    def detect_resource(self, resource):
+        if resource.format == "ckan":
+            resource.type = "table"

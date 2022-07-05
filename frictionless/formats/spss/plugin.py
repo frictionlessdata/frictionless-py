@@ -17,3 +17,7 @@ class SpssPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format in ["sav", "zsav"]:
             return SpssParser(resource)
+
+    def detect_resource(self, resource):
+        if resource.format in ["sav", "zsav"]:
+            resource.type = "table"

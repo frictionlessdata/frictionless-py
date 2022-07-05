@@ -21,6 +21,7 @@ class GsheetsPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.path:
             if "docs.google.com/spreadsheets" in resource.path:
+                resource.type = "table"
                 if "export" not in resource.path and "pub" not in resource.path:
                     resource.scheme = ""
                     resource.format = "gsheets"
