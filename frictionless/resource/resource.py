@@ -646,7 +646,7 @@ class Resource(Metadata):
         # Resource
         self.detector.detect_resource(self)
         system.detect_resource(self)
-        # TODO: recover when core profiles are fixed
+        # TODO: recover when core profiles are fixed?
         #  if not self.metadata_valid:
         #  raise FrictionlessException(self.metadata_errors[0])
 

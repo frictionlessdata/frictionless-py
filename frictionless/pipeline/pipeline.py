@@ -67,6 +67,16 @@ class Pipeline(Metadata):
             return prev_step
         self.add_step(step)
 
+    def remove_step(self, code: str) -> Step:
+        """Remove step by code"""
+        step = self.get_step(code)
+        self.steps.remove(step)
+        return step
+
+    def clear_steps(self) -> None:
+        """Remove all the steps"""
+        self.steps = []
+
     # Metadata
 
     metadata_Error = errors.PipelineError

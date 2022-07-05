@@ -49,7 +49,7 @@ class XlsxParser(Parser):
 
             # Cached
             if control.workbook_cache is not None and fullpath in control.workbook_cache:
-                resource = Resource(path=fullpath, stats=self.resource.stats)
+                resource = Resource(fullpath, type="table", scheme="file", format="xlsx")
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -61,7 +61,7 @@ class XlsxParser(Parser):
             if not target.delete:
                 control.workbook_cache[fullpath] = target.name
                 atexit.register(os.remove, target.name)
-            resource = Resource(path=target)
+            resource = Resource(target, type="table", scheme="stream", format="xlsx")
             loader = system.create_loader(resource)
             return loader.open()
 

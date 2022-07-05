@@ -127,6 +127,10 @@ class Schema(Metadata):
         self.fields.remove(field)
         return field
 
+    def clear_fields(self) -> None:
+        """Remove all the fields"""
+        self.fields = []
+
     # Read
 
     def read_cells(self, cells):

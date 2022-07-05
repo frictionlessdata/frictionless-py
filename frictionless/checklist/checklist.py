@@ -99,6 +99,16 @@ class Checklist(Metadata):
             return prev_check
         self.add_check(check)
 
+    def remove_check(self, code: str) -> Check:
+        """Remove check by code"""
+        check = self.get_check(code)
+        self.checks.remove(check)
+        return check
+
+    def clear_checks(self) -> None:
+        """Remove all the checks"""
+        self.checks = []
+
     # Connect
 
     def connect(self, resource: Resource) -> List[Check]:

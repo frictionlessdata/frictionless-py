@@ -17,9 +17,8 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IBuffer, EncodingFunction
+    from ..interfaces import IBuffer, IEncodingFunction
     from ..resource import Resource
-    from ..package import Package
 
 
 @dataclass
@@ -40,7 +39,7 @@ class Detector(Metadata):
     It defaults to 100
     """
 
-    encoding_function: Optional[EncodingFunction] = None
+    encoding_function: Optional[IEncodingFunction] = None
     """
     A custom encoding function for the file.
     """
@@ -324,8 +323,11 @@ class Detector(Metadata):
 
             # Handle type/empty
             if self.field_type or not fragment:
-                type = self.field_type
-                schema.fields = [{"name": name, "type": type or "any"} for name in names]  # type: ignore
+                type = self.field_type or settings.DEFAULT_FIELD_TYPE
+                schema.fields = []
+                for name in names:
+                    field = Field.from_descriptor({"name": name, "type": type})
+                    schema.add_field(field)
                 return schema
 
             # Prepare runners
