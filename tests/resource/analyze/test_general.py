@@ -1,4 +1,7 @@
-from frictionless import Resource
+from frictionless import Resource, helpers
+
+
+IS_UNIX = not helpers.is_platform("windows")
 
 
 def test_analyze_resource():
@@ -16,7 +19,7 @@ def test_analyze_resource():
         "fields",
         "rows",
     ]
-    assert round(analysis["average_record_size_in_bytes"]) == 85
+    assert round(analysis["average_record_size_in_bytes"]) == 85 if IS_UNIX else 86
     assert analysis["fields"] == 11
     assert analysis["rows"] == 9
     assert analysis["rows_with_null_values"] == 2
@@ -40,7 +43,7 @@ def test_analyze_resource_detailed():
         "fields",
         "rows",
     ]
-    assert round(analysis["average_record_size_in_bytes"]) == 85
+    assert round(analysis["average_record_size_in_bytes"]) == 85 if IS_UNIX else 86
     assert analysis["fields"] == 11
     assert analysis["rows"] == 9
     assert analysis["rows_with_null_values"] == 2
@@ -107,9 +110,9 @@ def test_analyze_resource_detailed_numeric_descriptive_statistics_with_missing_v
     assert analysis["field_stats"]["average_grades"]["missing_values"] == 2
     assert analysis["field_stats"]["average_grades"]["mode"] == 86.79
     assert analysis["field_stats"]["average_grades"]["quantiles"] == [86.79, 86.91, 90.39]
-    assert analysis["field_stats"]["average_grades"]["stdev"] == 3746.7017278979297
+    assert round(analysis["field_stats"]["average_grades"]["stdev"]) == 3747
     assert analysis["field_stats"]["average_grades"]["unique_values"] == 6
-    assert analysis["field_stats"]["average_grades"]["variance"] == 14037773.837833332
+    assert round(analysis["field_stats"]["average_grades"]["variance"]) == 14037774
     assert analysis["field_stats"]["average_grades"]["outliers"] == [10000.0]
 
 
@@ -212,7 +215,7 @@ def test_analyze_resource_detailed_with_empty_rows():
 def test_analyze_resource_with_invalid_data():
     resource = Resource({"path": "data/invalid.csv"})
     analysis = resource.analyze()
-    assert round(analysis["average_record_size_in_bytes"]) == 12
+    assert round(analysis["average_record_size_in_bytes"]) == 12 if IS_UNIX else 14
     assert analysis["fields"] == 4
     assert analysis["field_stats"] == {}
     assert analysis["rows"] == 4
@@ -224,7 +227,7 @@ def test_analyze_resource_with_invalid_data():
 def test_analyze_resource_detailed_with_invalid_data():
     resource = Resource({"path": "data/invalid.csv"})
     analysis = resource.analyze(detailed=True)
-    assert round(analysis["average_record_size_in_bytes"]) == 12
+    assert round(analysis["average_record_size_in_bytes"]) == 12 if IS_UNIX else 14
     assert analysis["fields"] == 4
     assert list(analysis["field_stats"].keys()) == ["id", "name", "field3", "name2"]
     assert analysis["rows"] == 4
