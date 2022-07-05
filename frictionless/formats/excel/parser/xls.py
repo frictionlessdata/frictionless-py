@@ -10,13 +10,7 @@ from .... import errors
 
 
 class XlsParser(Parser):
-    """XLS parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.excel import XlsParser
-
-    """
+    """XLS parser implementation."""
 
     requires_loader = True
     supported_types = [

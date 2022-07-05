@@ -65,7 +65,6 @@ def test_xls_parser_sheet_by_name_not_existent():
     assert 'sheet "bad"' in str(excinfo.value)
 
 
-@pytest.mark.skip
 def test_xls_parser_merged_cells():
     source = "data/merged-cells.xls"
     dialect = Dialect(header=False)
@@ -77,12 +76,11 @@ def test_xls_parser_merged_cells():
         ]
 
 
-@pytest.mark.skip
 def test_xls_parser_merged_cells_fill():
     source = "data/merged-cells.xls"
-    dialect = Dialect(header=False)
     control = formats.ExcelControl(fill_merged_cells=True)
-    with Resource(source, dialect=dialect, control=control) as resource:
+    dialect = Dialect(header=False, controls=[control])
+    with Resource(source, dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"field1": "data", "field2": "data"},
             {"field1": "data", "field2": "data"},

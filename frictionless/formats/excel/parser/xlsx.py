@@ -18,13 +18,7 @@ from .. import settings
 
 
 class XlsxParser(Parser):
-    """XLSX parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.excel import XlsxParser
-
-    """
+    """XLSX parser implementation."""
 
     requires_loader = True
     supported_types = [

@@ -29,7 +29,7 @@ class ExcelControl(Control):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile = {
         "type": "object",
         "additionalProperties": False,
         "properties": {
