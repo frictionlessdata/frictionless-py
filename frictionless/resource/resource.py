@@ -136,7 +136,7 @@ class Resource(Metadata):
 
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
-        if source:
+        if source is not None:
 
             # Path
             if isinstance(source, Path):
@@ -322,7 +322,7 @@ class Resource(Metadata):
     @property
     def memory(self) -> bool:
         """Whether resource is not path based"""
-        return bool(self.data)
+        return self.data is not None
 
     @property
     def remote(self) -> bool:

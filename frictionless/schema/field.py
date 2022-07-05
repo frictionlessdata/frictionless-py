@@ -75,7 +75,7 @@ class Field(Metadata):
 
     @required.setter
     def required(self, value: bool):
-        self.constraints["requied"] = value
+        self.constraints["required"] = value
 
     # Read
 

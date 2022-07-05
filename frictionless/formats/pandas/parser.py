@@ -1,4 +1,3 @@
-# type: ignore
 import isodate
 import datetime
 import decimal
@@ -49,17 +48,17 @@ class PandasParser(Parser):
             if name is not None:
                 dtype = dataframe.index.get_level_values(index).dtype
                 type = self.__read_convert_type(dtype)
-                field = Field(name=name, type=type)
+                field = Field.from_descriptor({"name": name, "type": type})
                 field.required = True
-                schema.fields.append(field)
+                schema.add_field(field)
                 schema.primary_key.append(name)
 
         # Fields
         for name, dtype in dataframe.dtypes.iteritems():
             sample = dataframe[name].iloc[0] if len(dataframe) else None
             type = self.__read_convert_type(dtype, sample=sample)
-            field = Field(name=name, type=type)
-            schema.fields.append(field)
+            field = Field.from_descriptor({"name": name, "type": type})
+            schema.add_field(field)
 
         # Return schema
         return schema

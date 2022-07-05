@@ -20,7 +20,7 @@ class InlinePlugin(Plugin):
             return InlineParser(resource)
 
     def detect_resource(self, resource):
-        if resource.data:
+        if resource.data is not None:
             if not hasattr(resource.data, "read"):
                 resource.type = "table"
                 types = (list, typing.Iterator, typing.Generator)

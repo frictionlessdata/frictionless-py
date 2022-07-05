@@ -19,6 +19,6 @@ class StreamPlugin(Plugin):
             return StreamLoader(resource)
 
     def detect_resource(self, resource):
-        if resource.data:
+        if resource.data is not None:
             if hasattr(resource.data, "read"):
                 resource.scheme = "stream"

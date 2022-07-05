@@ -104,7 +104,7 @@ class Package(Metadata):
     # TODO: support list of paths
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
-        if source:
+        if source is not None:
 
             # Path
             if isinstance(source, Path):
