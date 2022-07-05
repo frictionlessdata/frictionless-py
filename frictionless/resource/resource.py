@@ -912,6 +912,7 @@ class Resource(Metadata):
 
     # Convert
 
+    # TODO: review
     def to_copy(self, **options):
         """Create a copy from the resource
 
@@ -919,6 +920,7 @@ class Resource(Metadata):
             Resource: resource copy
         """
         return super().to_copy(
+            data=self.data,
             basepath=self.basepath,
             onerror=self.onerror,
             trusted=self.trusted,

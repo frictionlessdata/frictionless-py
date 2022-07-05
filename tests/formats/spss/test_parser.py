@@ -1,6 +1,6 @@
 import pytest
-from datetime import datetime, date, time
 from dateutil.tz import tzoffset, tzutc
+from datetime import datetime, date, time
 from frictionless import Package, Resource, helpers
 
 

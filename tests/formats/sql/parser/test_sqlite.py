@@ -1,9 +1,8 @@
 import pytest
-import datetime
+from datetime import datetime, time
+from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, Dialect, formats
 from frictionless import FrictionlessException
-
-pytestmark = pytest.mark.skip
 
 
 # Read
@@ -12,7 +11,7 @@ pytestmark = pytest.mark.skip
 def test_sql_parser(database_url):
     control = formats.SqlControl(table="table")
     with Resource(database_url, control=control) as resource:
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
@@ -55,24 +54,22 @@ def test_sql_parser_where(database_url):
         ]
 
 
-@pytest.mark.skip
 def test_sql_parser_table_is_required_error(database_url):
     resource = Resource(database_url)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "dialect-error"
-    assert error.note.count("'table' is a required property")
+    assert error.code == "error"
+    assert error.note.count('Please provide "dialect.sql.table" for reading')
 
 
-# NOTE: Probably it's not correct behaviour
+@pytest.mark.xfail(reason="It should ignore header set to false?")
 def test_sql_parser_headers_false(database_url):
-    dialect = Dialect(header=False)
     control = formats.SqlControl(table="table")
-    with Resource(database_url, dialect=dialect, control=control) as resource:
+    dialect = Dialect(header=False, controls=[control])
+    with Resource(database_url, dialect=dialect) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
-            {"id": None, "name": "name"},
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -104,7 +101,7 @@ def test_sql_parser_write_where(database_url):
         ]
 
 
-# TODO: add timezone support or document if it's not possible
+@pytest.mark.xfail(reason="timezone is not supported")
 def test_sql_parser_write_timezone(sqlite_url):
     source = Resource("data/timezone.csv")
     control = formats.SqlControl(table="timezone")
@@ -112,11 +109,26 @@ def test_sql_parser_write_timezone(sqlite_url):
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": time(15, 0, tzinfo=tzutc()),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+            },
         ]
+
+
+# Bugs
 
 
 def test_sql_parser_write_string_pk_issue_777_sqlite(sqlite_url):
@@ -134,8 +146,7 @@ def test_sql_parser_write_string_pk_issue_777_sqlite(sqlite_url):
         ]
 
 
-# The resource.to_yaml call was failing before the fix (see the issue)
-def test_sql_parser_describe_to_yaml_issue_821(database_url):
+def test_sql_parser_describe_to_yaml_failing_issue_821(database_url):
     control = formats.SqlControl(table="table")
     resource = Resource(database_url, control=control)
     resource.infer()

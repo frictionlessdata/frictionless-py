@@ -1,4 +1,3 @@
-# type: ignore
 import re
 from functools import partial
 from urllib.parse import urlsplit, urlunsplit
@@ -63,7 +62,7 @@ class SqlStorage(Storage):
             raise FrictionlessException(note)
         schema = self.__read_convert_schema(sql_table)
         data = partial(self.__read_convert_data, name, order_by=order_by, where=where)
-        resource = Resource(name=name, schema=schema, data=data)
+        resource = Resource(name=name, data=data, schema=schema)
         return resource
 
     def read_package(self):
@@ -85,12 +84,12 @@ class SqlStorage(Storage):
         # Fields
         for column in sql_table.columns:
             field_type = self.__read_convert_type(column.type)
-            field = Field(name=str(column.name), type=field_type)
+            field = Field.from_descriptor({"name": str(column.name), "type": field_type})
             if not column.nullable:
                 field.required = True
             if column.comment:
                 field.description = column.comment
-            schema.fields.append(field)
+            schema.add_field(field)
 
         # Primary key
         for constraint in sql_table.constraints:

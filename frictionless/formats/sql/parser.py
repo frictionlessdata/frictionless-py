@@ -21,6 +21,9 @@ class SqlParser(Parser):
 
     def read_list_stream_create(self):
         control = self.resource.dialect.get_control("sql", ensure=SqlControl())
+        if not control.table:
+            note = 'Please provide "dialect.sql.table" for reading'
+            raise FrictionlessException(note)
         storage = SqlStorage(self.resource.fullpath, control=control)
         resource = storage.read_resource(
             control.table, order_by=control.order_by, where=control.where
@@ -37,7 +40,7 @@ class SqlParser(Parser):
         target = self.resource
         control = target.dialect.get_control("sql", ensure=SqlControl())
         if not control.table:
-            note = 'Please provide "control.table" for writing'
+            note = 'Please provide "dialect.sql.table" for writing'
             raise FrictionlessException(note)
         source.name = control.table
         storage = SqlStorage(target.fullpath, control=control)

@@ -27,3 +27,4 @@ class InlinePlugin(Plugin):
                 if callable(resource.data) or isinstance(resource.data, types):
                     resource.scheme = "inline"
                     resource.format = "inline"
+                    resource.mediatype = "application/inline"

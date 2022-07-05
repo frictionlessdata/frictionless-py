@@ -12,7 +12,7 @@ class SqlControl(Control):
 
     # State
 
-    table: str = settings.DEFAULT_TABLE
+    table: Optional[str] = None
     """TODO: add docs"""
 
     prefix: str = settings.DEFAULT_PREFIX
