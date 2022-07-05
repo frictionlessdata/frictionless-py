@@ -232,7 +232,6 @@ def test_csv_parser_quotechar_is_empty_string():
         ]
 
 
-@pytest.mark.skip
 def test_csv_parser_format_tsv():
     detector = Detector(schema_patch={"missingValues": ["\\N"]})
     with Resource("data/table.tsv", detector=detector) as resource:

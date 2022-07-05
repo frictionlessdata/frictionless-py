@@ -383,6 +383,7 @@ class Detector(Metadata):
             schema.fields = fields  # type: ignore
 
         # Sync schema
+        # TODO: update to the typed version
         if self.schema_sync:
             if labels:
                 fields = []
@@ -393,11 +394,15 @@ class Detector(Metadata):
 
         # Patch schema
         if self.schema_patch:
-            schema_patch = deepcopy(self.schema_patch)
-            fields = schema_patch.pop("fields", {})
-            schema.update(schema_patch)
-            for field in schema.fields:  # type: ignore
-                field.update((fields.get(field.get("name"), {})))
+            patch = deepcopy(self.schema_patch)
+            patch_fields = patch.pop("fields", {})
+            descriptor = schema.to_descriptor()
+            descriptor.update(patch)
+            for field_descriptor in descriptor.get("fields", []):
+                field_name = field_descriptor.get("name")
+                field_patch = patch_fields.get(field_name, {})
+                field_descriptor.update(field_patch)
+            schema = Schema.from_descriptor(descriptor)
 
         # Validate schema
         # NOTE: at some point we might need to remove it for transform needs
