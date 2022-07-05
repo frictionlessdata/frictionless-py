@@ -643,18 +643,24 @@ class Resource(Metadata):
 
     def __detect_file(self):
 
-        # Details
+        # Resource
         self.detector.detect_resource(self)
         system.detect_resource(self)
+        # TODO: recover when core profiles are fixed
+        #  if not self.metadata_valid:
+        #  raise FrictionlessException(self.metadata_errors[0])
 
+    # TODO: rework this method
     def __detect_table(self):
 
-        # Sample
+        # Dialect
         sample = self.__parser.sample  # type: ignore
         dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
         if dialect:
             self.dialect = dialect
         self.__sample = sample
+        if not self.dialect.metadata_valid:
+            raise FrictionlessException(self.dialect.metadata_errors[0])
 
         # Schema
         labels = self.dialect.read_labels(self.sample)
@@ -675,6 +681,8 @@ class Resource(Metadata):
         # NOTE: review whether it's a proper place for this fallback to data resource
         if not schema:
             self.profile = "data-resource"
+        if not self.schema.metadata_valid:
+            raise FrictionlessException(self.schema.metadata_errors[0])
 
         # Lookup
         lookup = self.detector.detect_lookup(self)

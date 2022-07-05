@@ -6,13 +6,7 @@ from ... import helpers
 
 
 class S3Loader(Loader):
-    """S3 loader implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.s3 import S3Loader`
-
-    """
+    """S3 loader implementation."""
 
     remote = True
 

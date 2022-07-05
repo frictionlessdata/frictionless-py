@@ -12,13 +12,11 @@ def test_dialect():
     assert dialect.header_case == True
 
 
-# TODO: shall we validate dialect/schema's metadata on resource.open?
-@pytest.mark.skip
 def test_dialect_bad_property():
-    dialect = Dialect.from_descriptor({"bad": True})
+    dialect = Dialect.from_descriptor({"headerRows": "bad"})
     resource = Resource("data/table.csv", dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "control-error"
+    assert error.code == "dialect-error"
     assert error.note.count("bad")

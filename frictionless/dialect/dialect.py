@@ -180,14 +180,14 @@ class Dialect(Metadata):
         "type": "object",
         "required": [],
         "properties": {
-            "header": {},
-            "headerRows": {},
-            "headerJoin": {},
-            "headerCase": {},
-            "commentChar": {},
-            "commentRows": {},
-            "nullSequence": {},
-            "controls": {},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array"},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+            "commentChar": {"type": "string"},
+            "commentRows": {"type": "array"},
+            "nullSequence": {"type": "string"},
+            "controls": {"type": "array"},
         },
     }
 
