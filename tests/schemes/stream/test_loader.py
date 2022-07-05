@@ -37,7 +37,6 @@ def test_stream_loader_without_open():
 # Write
 
 
-@pytest.mark.skip
 def test_stream_loader_write():
     source = Resource("data/table.csv")
     target = source.write(scheme="stream", format="csv")
@@ -51,15 +50,15 @@ def test_stream_loader_write():
 # Bugs
 
 
-@pytest.mark.skip
 def test_stream_loader_validate_issue_740():
     with open("data/table.csv", mode="rb") as file:
-        report = validate(file, format="csv")
+        resource = Resource(file, format="csv")
+        report = resource.validate()
         assert report.valid
 
 
-@pytest.mark.skip
 def test_stream_loader_validate_text_stream_issue_740():
     with open("data/table.csv") as file:
-        report = validate(file, format="csv")
+        resource = Resource(file, format="csv")
+        report = resource.validate()
         assert report.valid

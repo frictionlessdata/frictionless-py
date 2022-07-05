@@ -937,10 +937,12 @@ class Resource(Metadata):
             options["basepath"] = helpers.parse_basepath(descriptor)
         return super().from_descriptor(descriptor, **options)
 
+    # TODO: review / sync with report
     def to_descriptor(self, *, exclude=[]):
         descriptor = super().to_descriptor(exclude=exclude)
         if not isinstance(descriptor.get("data", []), (list, dict)):
             descriptor.pop("data", None)
+            descriptor["path"] = "<memory>"
         return descriptor
 
     def to_view(self, type="look", **options):

@@ -1,4 +1,3 @@
-import pytest
 from frictionless import Resource
 
 
@@ -18,7 +17,6 @@ def test_buffer_loader():
 # Write
 
 
-@pytest.mark.skip
 def test_buffer_loader_write():
     source = Resource("data/table.csv")
     target = source.write(Resource(scheme="buffer", format="csv"))
@@ -28,7 +26,6 @@ def test_buffer_loader_write():
 # Bugs
 
 
-@pytest.mark.skip
 def test_buffer_loader_recursion_error_issue_647():
     with open("data/issue-647.csv.txt", "rb") as file:
         with Resource(file.read(), format="csv", encoding="iso-8859-1") as resource:

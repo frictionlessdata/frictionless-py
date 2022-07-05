@@ -54,7 +54,6 @@ def test_remote_loader_http_preload():
 # NOTE:
 # This test only checks the POST request the loader makes
 # We need fully mock a session with a server or use a real one and vcr.py
-@pytest.mark.skip
 def test_remote_loader_write(requests_mock):
     path = "https://example.com/post/table.csv"
     requests_mock.post("https://example.com/post/")
