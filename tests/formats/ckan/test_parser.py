@@ -1,12 +1,12 @@
 import pytest
-import datetime
+from datetime import datetime, time
+from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
 
-# General
+# Write
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_ckan_parser(options):
     url = options.pop("url")
@@ -21,9 +21,8 @@ def test_ckan_parser(options):
         ]
 
 
-# TODO: add timezone support or document if it's not possible
-@pytest.mark.skip
 @pytest.mark.vcr
+@pytest.mark.xfail(reason="timezone is not supported")
 def test_ckan_parser_timezone(options):
     url = options.pop("url")
     control = formats.CkanControl(resource="timezone", **options)
@@ -31,8 +30,20 @@ def test_ckan_parser_timezone(options):
     target = source.write(url, format="ckan", control=control)
     with target:
         assert target.read_rows() == [
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": time(15, 0, tzinfo=tzutc()),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+            },
         ]

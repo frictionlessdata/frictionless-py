@@ -23,7 +23,7 @@ class GsheetsPlugin(Plugin):
             if "docs.google.com/spreadsheets" in resource.path:
                 resource.type = "table"
                 if "export" not in resource.path and "pub" not in resource.path:
-                    resource.scheme = ""
+                    resource.scheme = "gsheets"
                     resource.format = "gsheets"
                 elif "csv" in resource.path:
                     resource.scheme = "https"

@@ -430,7 +430,7 @@ class Detector(Metadata):
             # Prepare source
             source_name = fk["reference"]["resource"]
             source_key = tuple(fk["reference"]["fields"])
-            if source_name != "" and not resource.__package:
+            if source_name != "" and not resource.package:
                 continue
             if source_name:
                 if not resource.package.has_resource(source_name):
@@ -439,7 +439,7 @@ class Detector(Metadata):
                 source_res = resource.package.get_resource(source_name)
             else:
                 source_res = resource.to_copy()
-            source_res.schema.pop("foreignKeys", None)
+            source_res.schema.foreign_keys = []
 
             # Prepare lookup
             lookup.setdefault(source_name, {})

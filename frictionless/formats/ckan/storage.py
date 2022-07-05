@@ -1,9 +1,9 @@
-# type: ignore
 import os
 import json
 from functools import partial
-from ...schema import Schema, Field
 from ...exception import FrictionlessException
+from ...schema import Schema, Field
+from ..inline import InlineControl
 from ...resource import Resource
 from ...package import Package
 from ...package import Storage
@@ -21,11 +21,6 @@ class CkanStorage(Storage):
         url (string): CKAN instance url e.g. "https://demo.ckan.org"
         dataset (string): dataset id in CKAN e.g. "my-dataset"
         apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ckan import CkanStorage`
     """
 
     def __init__(self, source, *, control=None):
@@ -59,9 +54,9 @@ class CkanStorage(Storage):
         schema = self.__read_convert_schema(ckan_table)
         resource = Resource(
             name=name,
-            schema=schema,
             data=partial(self.__read_convert_data, ckan_table),
-            dialect={"keys": schema.field_names},
+            schema=schema,
+            control=InlineControl(keys=schema.field_names),
         )
         return resource
 
@@ -70,11 +65,11 @@ class CkanStorage(Storage):
         for name in self:
             try:
                 resource = self.read_resource(name)
+                package.add_resource(resource)
             # We skip not tabular resources
             except FrictionlessException as exception:
                 if not exception.error.note.count("Not Found Error"):
                     raise
-            package.resources.append(resource)
         return package
 
     def __read_convert_schema(self, ckan_table):
@@ -85,8 +80,8 @@ class CkanStorage(Storage):
             if ckan_field["id"] != "_id":
                 ckan_type = ckan_field["type"]
                 type = self.__read_convert_type(ckan_type)
-                field = Field(name=ckan_field["id"], type=type)
-                schema.fields.append(field)
+                field = Field.from_descriptor({"name": ckan_field["id"], "type": type})
+                schema.add_field(field)
 
         return schema
 
@@ -110,7 +105,7 @@ class CkanStorage(Storage):
             for row in response["result"]["records"]:
                 yield row
             if "limit" not in self.__queryoptions:
-                next_url = self.__url + response["result"]["_links"]["next"]
+                next_url = self.__url + response["result"]["_links"]["next"]  # type: ignore
                 response = self.__make_ckan_request(next_url)
             else:
                 response = dict(result=dict(records=[]))
@@ -195,7 +190,7 @@ class CkanStorage(Storage):
         ckan_table = {"resource": {"package_id": self.__dataset, "name": resource.name}}
 
         # Fields
-        ckan_table["fields"] = []
+        ckan_table["fields"] = []  # type: ignore
         for field in resource.schema.fields:
             ckan_field = {"id": field.name}
             ckan_type = self.__write_convert_type(field.type)
@@ -218,7 +213,7 @@ class CkanStorage(Storage):
             endpoint,
             method="POST",
             json={
-                "resource_id": ckan_table["resource_id"],
+                "resource_id": ckan_table["resource_id"],  # type: ignore
                 "method": "insert",
                 "records": records,
             },
@@ -269,7 +264,7 @@ class CkanStorage(Storage):
             # Remove from CKAN
             ckan_table = self.__read_ckan_table(name)
             endpoint = f"{self.__endpoint}/resource_delete"
-            params = {"id": ckan_table["resource_id"]}
+            params = {"id": ckan_table["resource_id"]}  # type: ignore
             self.__make_ckan_request(endpoint, method="POST", json=params)
 
     # Helpers

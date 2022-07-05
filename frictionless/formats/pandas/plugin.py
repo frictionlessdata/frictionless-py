@@ -28,5 +28,5 @@ class PandasPlugin(Plugin):
         if resource.data:
             resource.type = "table"
             if helpers.is_type(resource.data, "DataFrame"):
-                resource.scheme = ""
+                resource.scheme = "pandas"
                 resource.format = "pandas"

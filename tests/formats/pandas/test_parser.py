@@ -1,11 +1,10 @@
 import pytz
 import pytest
 import isodate
-import datetime
-from dateutil.tz import tzutc
-from dateutil.tz import tzoffset
 import pandas as pd
 from decimal import Decimal
+from dateutil.tz import tzoffset, tzutc
+from datetime import datetime, date, time
 from frictionless import Package, Resource
 
 pytestmark = pytest.mark.skip
@@ -43,14 +42,14 @@ def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
         # Assert rows
         assert resource.read_rows() == [
             {
-                "Date": datetime.datetime(2004, 1, 5, tzinfo=pytz.utc),
+                "Date": datetime(2004, 1, 5, tzinfo=pytz.utc),
                 "VIXClose": Decimal("17.49"),
                 "VIXHigh": Decimal("18.49"),
                 "VIXLow": Decimal("17.44"),
                 "VIXOpen": Decimal("18.45"),
             },
             {
-                "Date": datetime.datetime(2004, 1, 6, tzinfo=pytz.utc),
+                "Date": datetime(2004, 1, 6, tzinfo=pytz.utc),
                 "VIXClose": Decimal("16.73"),
                 "VIXHigh": Decimal("17.67"),
                 "VIXLow": Decimal("16.19"),
@@ -125,9 +124,9 @@ def test_pandas_parser_write_types():
                 "any": "中国人",
                 "array": ["Mike", "John"],
                 "boolean": True,
-                "date": datetime.date(2015, 1, 1),
-                "date_year": datetime.date(2015, 1, 1),
-                "datetime": datetime.datetime(2015, 1, 1, 3, 0),
+                "date": date(2015, 1, 1),
+                "date_year": date(2015, 1, 1),
+                "datetime": datetime(2015, 1, 1, 3, 0),
                 "duration": isodate.parse_duration("P1Y1M"),
                 "geojson": {"type": "Point", "coordinates": [33, 33.33]},
                 "geopoint": [30, 70],
@@ -135,7 +134,7 @@ def test_pandas_parser_write_types():
                 "number": 7,
                 "object": {"chars": 560},
                 "string": "english",
-                "time": datetime.time(3, 0),
+                "time": time(3, 0),
                 "year": 2015,
                 "yearmonth": [2015, 1],
             },
@@ -189,22 +188,21 @@ def test_pandas_parser_write_timezone():
 
         # Assert rows
         assert target.read_rows() == [
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {
-                "datetime": datetime.datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-                "time": datetime.time(15, 0, tzinfo=tzutc()),
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
             },
             {
-                "datetime": datetime.datetime(
-                    2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)
-                ),
-                "time": datetime.time(15, 0, tzinfo=tzoffset(None, 10800)),
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": time(15, 0, tzinfo=tzutc()),
             },
             {
-                "datetime": datetime.datetime(
-                    2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)
-                ),
-                "time": datetime.time(15, 0, tzinfo=tzoffset(None, -10800)),
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
             },
         ]
 

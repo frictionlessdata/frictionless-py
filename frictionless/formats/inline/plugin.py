@@ -25,5 +25,5 @@ class InlinePlugin(Plugin):
                 resource.type = "table"
                 types = (list, typing.Iterator, typing.Generator)
                 if callable(resource.data) or isinstance(resource.data, types):
-                    resource.scheme = ""
+                    resource.scheme = "inline"
                     resource.format = "inline"

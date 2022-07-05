@@ -95,8 +95,7 @@ def test_ods_parser_with_ints_floats_dates():
 # Write
 
 
-# NOTE: ezodf writer creates more cells than we ask
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="ezodf writer creates more cells than we ask")
 def test_ods_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.ods")))

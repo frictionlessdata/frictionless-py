@@ -11,7 +11,7 @@ class CkanControl(Control):
 
     # State
 
-    dataset: str
+    dataset: Optional[str] = None
     """TODO: add docs"""
 
     resource: Optional[str] = None

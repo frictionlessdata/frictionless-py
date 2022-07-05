@@ -314,6 +314,10 @@ class Package(Metadata):
         self.resources.remove(resource)
         return resource
 
+    def clear_resources(self):
+        """Remove all the resources"""
+        self.resources = []
+
     # Infer
 
     def infer(self, *, stats=False):
