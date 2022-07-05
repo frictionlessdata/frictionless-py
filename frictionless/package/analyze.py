@@ -8,7 +8,7 @@ def analyze(package: "Package", *, detailed=False):
     """Analyze the resources of the package
 
     Parameters:
-        source (any): package descriptor
+        package (Package): package object
         detailed? (bool): detailed analysis
 
     Returns:

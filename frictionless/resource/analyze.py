@@ -14,6 +14,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
     """Analyze the resource
 
     Parameters:
+        resource (Resource): resource object
         detailed? (bool): detailed analysis
 
     Returns:

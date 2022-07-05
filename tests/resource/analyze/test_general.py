@@ -1,7 +1,7 @@
 from frictionless import Resource
 
 
-def test_analyze():
+def test_analyze_resource():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze()
     assert list(analysis.keys()) == [
@@ -24,7 +24,7 @@ def test_analyze():
     assert analysis["variable_types"] == {}
 
 
-def test_analyze_detailed():
+def test_analyze_resource_detailed():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert list(analysis.keys()) == [
@@ -53,13 +53,13 @@ def test_analyze_detailed():
     }
 
 
-def test_analyze_detailed_non_numeric_values_summary():
+def test_analyze_resource_detailed_non_numeric_values_summary():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert list(analysis["field_stats"]["gender"].keys()) == ["type", "values"]
 
 
-def test_analyze_detailed_numeric_values_descriptive_summray():
+def test_analyze_resource_detailed_numeric_values_descriptive_summray():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert list(analysis["field_stats"]["parent_age"].keys()) == [
@@ -79,7 +79,7 @@ def test_analyze_detailed_numeric_values_descriptive_summray():
     ]
 
 
-def test_analyze_detailed_numeric_descriptive_statistics():
+def test_analyze_resource_detailed_numeric_descriptive_statistics():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert analysis["field_stats"]["parent_age"]["bounds"] == [39, 67]
@@ -96,7 +96,7 @@ def test_analyze_detailed_numeric_descriptive_statistics():
     assert analysis["field_stats"]["parent_age"]["outliers"] == []
 
 
-def test_analyze_detailed_numeric_descriptive_statistics_with_missing_values():
+def test_analyze_resource_detailed_numeric_descriptive_statistics_with_missing_values():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert analysis["field_stats"]["average_grades"]["bounds"] == [81, 96]
@@ -113,14 +113,14 @@ def test_analyze_detailed_numeric_descriptive_statistics_with_missing_values():
     assert analysis["field_stats"]["average_grades"]["outliers"] == [10000.0]
 
 
-def test_analyze_detailed_descriptive_statistics_with_outliers():
+def test_analyze_resource_detailed_descriptive_statistics_with_outliers():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert analysis["field_stats"]["average_grades"]["bounds"] == [81, 96]
     assert analysis["field_stats"]["average_grades"]["outliers"] == [10000.0]
 
 
-def test_analyze_detailed_descriptive_statistics_variables_correlation():
+def test_analyze_resource_detailed_descriptive_statistics_variables_correlation():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert list(analysis["correlations"].keys()) == [
@@ -147,14 +147,14 @@ def test_analyze_detailed_descriptive_statistics_variables_correlation():
     )
 
 
-def test_analyze_detailed_non_numeric_summary():
+def test_analyze_resource_detailed_non_numeric_summary():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
     assert list(analysis["field_stats"]["gender"].keys()) == ["type", "values"]
     assert analysis["field_stats"]["gender"]["values"] == {"Male", "Female"}
 
 
-def test_analyze_detailed_non_numeric_data_identification():
+def test_analyze_resource_detailed_non_numeric_data_identification():
     data = [
         ["gender", "country"],
         ["male", "usa"],
@@ -171,7 +171,7 @@ def test_analyze_detailed_non_numeric_data_identification():
     assert analysis["field_stats"]["country"]["values"] == {"usa", "italy"}
 
 
-def test_analyze_with_empty_rows():
+def test_analyze_resource_with_empty_rows():
     data = [["a", "b"]]
     resource = Resource(data)
     analysis = resource.analyze()
@@ -190,7 +190,7 @@ def test_analyze_with_empty_rows():
     assert analysis["rows"] == 0
 
 
-def test_analyze_detailed_with_empty_rows():
+def test_analyze_resource_detailed_with_empty_rows():
     data = [["a", "b"]]
     resource = Resource(data)
     analysis = resource.analyze(detailed=True)
@@ -209,7 +209,7 @@ def test_analyze_detailed_with_empty_rows():
     assert analysis["rows"] == 0
 
 
-def test_analyze_with_invalid_data():
+def test_analyze_resource_with_invalid_data():
     resource = Resource({"path": "data/invalid.csv"})
     analysis = resource.analyze()
     assert round(analysis["average_record_size_in_bytes"]) == 12
@@ -221,7 +221,7 @@ def test_analyze_with_invalid_data():
     assert analysis["variable_types"] == {}
 
 
-def test_analyze_detailed_with_invalid_data():
+def test_analyze_resource_detailed_with_invalid_data():
     resource = Resource({"path": "data/invalid.csv"})
     analysis = resource.analyze(detailed=True)
     assert round(analysis["average_record_size_in_bytes"]) == 12
