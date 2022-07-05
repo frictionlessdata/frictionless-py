@@ -81,53 +81,6 @@ def test_schema_from_sparse_sample():
     }
 
 
-@pytest.mark.skip
-@pytest.mark.parametrize("confidence", [0.6, 0.7, 0.8])
-def test_schema_from_synthetic_sparse_sample(confidence):
-
-    # For each type (integer, number, string) there are example of
-    # the type ("is") and examples of other type ("not")
-    type_sample = {
-        "integer": {"is": 1, "not": "string"},
-        "number": {"is": 3.14, "not": "string"},
-        "string": {"is": "string", "not": 1},
-    }
-
-    # Columns with type and confidence
-    columns = [
-        {"type": "integer", "conf": 0.7},
-        {"type": "number", "conf": 1},
-        {"type": "string", "conf": 1},
-    ]
-
-    def generate_rows(num_rows=100, columns=[]):
-        rows = []
-        num_per_type = [num_rows * c["conf"] for c in columns]
-        for i in range(num_rows):
-            row = []
-            for ci, col in enumerate(columns):
-                if i < num_per_type[ci]:
-                    row.append(type_sample[col["type"]]["is"])
-                else:
-                    row.append(type_sample[col["type"]]["not"])
-            rows.append(row)
-        return rows
-
-    fragment = generate_rows(columns=columns)
-    detector = Detector(field_confidence=confidence)
-    labels = [f"field{i}" for i in range(1, 4)]
-    schema = detector.detect_schema(fragment, labels=labels)
-    assert schema.to_descriptor() == {
-        "fields": [
-            {
-                "name": f"field{i + 1}",
-                "type": columns[i]["type"] if columns[i]["conf"] >= confidence else "any",
-            }
-            for i in range(len(columns))
-        ],
-    }
-
-
 def test_schema_infer_no_names():
     sample = [[1], [2], [3]]
     detector = Detector()
@@ -152,10 +105,10 @@ def test_detector_set_sample_size():
 
 
 def test_detector_set_encoding_function():
-    enc_func = lambda sample: "utf-8"
+    enc_func = lambda buffer: "utf-8"
     detector = Detector(encoding_function=enc_func)
     assert detector.encoding_function == enc_func
-    enc_func = lambda sample: "utf-16"
+    enc_func = lambda buffer: "utf-16"
     detector.encoding_function = enc_func
     assert detector.encoding_function == enc_func
 
@@ -227,3 +180,52 @@ def test_detector_true_false_values():
             {"id": 1, "value": True},
             {"id": 2, "value": False},
         ]
+
+
+# Bugs
+
+
+@pytest.mark.parametrize("confidence", [0.6, 0.7, 0.8])
+def test_schema_from_synthetic_sparse_sample_issue_1050(confidence):
+
+    # For each type (integer, number, string) there are example of
+    # the type ("is") and examples of other type ("not")
+    type_sample = {
+        "integer": {"is": 1, "not": "string"},
+        "number": {"is": 3.14, "not": "string"},
+        "string": {"is": "string", "not": 1},
+    }
+
+    # Columns with type and confidence
+    columns = [
+        {"type": "integer", "conf": 0.7},
+        {"type": "number", "conf": 1},
+        {"type": "string", "conf": 1},
+    ]
+
+    def generate_rows(num_rows=100, columns=[]):
+        rows = []
+        num_per_type = [num_rows * c["conf"] for c in columns]
+        for i in range(num_rows):
+            row = []
+            for ci, col in enumerate(columns):
+                if i < num_per_type[ci]:
+                    row.append(type_sample[col["type"]]["is"])
+                else:
+                    row.append(type_sample[col["type"]]["not"])
+            rows.append(row)
+        return rows
+
+    fragment = generate_rows(columns=columns)
+    detector = Detector(field_confidence=confidence)
+    labels = [f"field{i}" for i in range(1, 4)]
+    schema = detector.detect_schema(fragment, labels=labels)
+    assert schema.to_descriptor() == {
+        "fields": [
+            {
+                "name": f"field{i + 1}",
+                "type": columns[i]["type"] if columns[i]["conf"] >= confidence else "any",
+            }
+            for i in range(len(columns))
+        ],
+    }
