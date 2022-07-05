@@ -109,7 +109,7 @@ class Metadata(metaclass=Metaclass):
         source = cls.metadata_normalize(descriptor)
         for name, Type in cls.metadata_properties().items():
             value = source.get(name)
-            if not value:
+            if not value and value is not False:
                 continue
             # TODO: rebase on "type" only?
             if name in ["code", "type"]:
@@ -135,7 +135,7 @@ class Metadata(metaclass=Metaclass):
         descriptor = {}
         for name, Type in self.metadata_properties().items():
             value = getattr(self, stringcase.snakecase(name), None)
-            if not value:
+            if not value and value is not False:
                 continue
             if name in exclude:
                 continue
