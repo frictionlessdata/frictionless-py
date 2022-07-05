@@ -112,8 +112,8 @@ def test_spss_parser_write_timezone(tmpdir):
     target = source.write(str(tmpdir.join("table.sav")))
     with target:
 
-        # Assert schmea
-        assert target.schema == {
+        # Assert schema
+        assert target.schema.to_descriptor() == {
             "fields": [
                 {"name": "datetime", "type": "datetime"},
                 {"name": "time", "type": "time"},

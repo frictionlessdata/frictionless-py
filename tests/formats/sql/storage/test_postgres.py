@@ -3,13 +3,10 @@ import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource, formats
 
-pytestmark = pytest.mark.skip
-
 
 # General
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_types(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
@@ -17,7 +14,7 @@ def test_sql_storage_postgresql_types(postgresql_url):
     target = Package.from_sql(postgresql_url, control=control)
 
     # Assert metadata
-    assert target.get_resource("types").schema == {
+    assert target.get_resource("types").schema.to_descriptor() == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "object"},  # type downgrade
@@ -64,7 +61,6 @@ def test_sql_storage_postgresql_types(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_integrity(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -72,7 +68,7 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
     target = Package.from_sql(postgresql_url, control=control)
 
     # Assert metadata (main)
-    assert target.get_resource("integrity_main").schema == {
+    assert target.get_resource("integrity_main").schema.to_descriptor() == {
         "fields": [
             # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
@@ -86,7 +82,7 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
     }
 
     # Assert metadata (link)
-    assert target.get_resource("integrity_link").schema == {
+    assert target.get_resource("integrity_link").schema.to_descriptor() == {
         "fields": [
             # added required
             {"name": "main_id", "type": "integer", "constraints": {"required": True}},
@@ -120,7 +116,6 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -131,7 +126,6 @@ def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_u
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_constraints(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
@@ -139,7 +133,7 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
     target = Package.from_sql(postgresql_url, control=control)
 
     # Assert metadata
-    assert target.get_resource("constraints").schema == {
+    assert target.get_resource("constraints").schema.to_descriptor() == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -168,7 +162,6 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "name, cell",
     [
@@ -189,10 +182,10 @@ def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name
         if field.name == name:
             resource.data[1][index] = cell
     with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
-        resource.write(postgresql_url, control={"table": "table"})
+        control = formats.SqlControl(table="table")
+        resource.write(postgresql_url, control=control)
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_views_support(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
@@ -202,7 +195,7 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
     engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
     storage = formats.SqlStorage(engine)
     resource = storage.read_resource("data_view")
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -214,7 +207,6 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
     ]
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_comment_support(postgresql_url):
     control = formats.SqlControl(table="table")
 
@@ -228,7 +220,7 @@ def test_sql_storage_postgresql_comment_support(postgresql_url):
     # Read
     target = Resource(postgresql_url, control=control)
     with target:
-        assert target.schema == {
+        assert target.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer", "description": "integer field"},
                 {"name": "name", "type": "string", "description": "string field"},

@@ -1,6 +1,5 @@
 # General
 
-DEFAULT_TABLE = "table"
 DEFAULT_PREFIX = ""
 
 # https://docs.sqlalchemy.org/en/13/core/engines.html

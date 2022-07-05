@@ -63,7 +63,7 @@ def test_sql_parser_table_is_required_error(database_url):
     assert error.note.count('Please provide "dialect.sql.table" for reading')
 
 
-@pytest.mark.xfail(reason="It should ignore header set to false?")
+@pytest.mark.xfail(reason="It should ignore header set to false")
 def test_sql_parser_headers_false(database_url):
     control = formats.SqlControl(table="table")
     dialect = Dialect(header=False, controls=[control])
@@ -101,7 +101,7 @@ def test_sql_parser_write_where(database_url):
         ]
 
 
-@pytest.mark.xfail(reason="timezone is not supported")
+@pytest.mark.xfail(reason="Timezone is not supported")
 def test_sql_parser_write_timezone(sqlite_url):
     source = Resource("data/timezone.csv")
     control = formats.SqlControl(table="timezone")
