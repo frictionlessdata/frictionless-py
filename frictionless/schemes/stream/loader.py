@@ -6,13 +6,7 @@ from ... import errors
 
 
 class StreamLoader(Loader):
-    """Stream loader implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.stream import StreamLoader`
-
-    """
+    """Stream loader implementation."""
 
     # Read
 

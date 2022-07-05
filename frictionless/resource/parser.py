@@ -15,10 +15,6 @@ if TYPE_CHECKING:
 class Parser:
     """Parser representation
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Parser`
-
     Parameters:
         resource (Resource): resource
 

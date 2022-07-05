@@ -11,24 +11,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class field_pack(Step):
-    """Pack fields
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import steps`
-    Implicit | `validate(checks=([{"code": "field-pack", **descriptor}])`
-
-    This step can be added using the `steps` parameter
-    for the `transform` function.
-
-    Parameters:
-       descriptor (dict): step's descriptor
-       name (str): name of new field
-       from_names (str): field names to pack
-       field_type? (str): type of new field
-       preserve? (bool): preserve source fields
-
-    """
+    """Pack fields"""
 
     code = "field-pack"
 

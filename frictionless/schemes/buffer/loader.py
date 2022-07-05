@@ -4,13 +4,7 @@ from ...resource import Loader
 
 
 class BufferLoader(Loader):
-    """Buffer loader implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.buffer import BufferLoader`
-
-    """
+    """Buffer loader implementation."""
 
     # Read
 

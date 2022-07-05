@@ -13,21 +13,8 @@ if TYPE_CHECKING:
 class field_merge(Step):
     """Merge fields
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import steps`
-    Implicit | `validate(checks=([{"code": "field-merge", **descriptor}])`
-
     This step can be added using the `steps` parameter
     for the `transform` function.
-
-    Parameters:
-       descriptor (dict): step's descriptor
-       name (str): name of new field
-       from_names (str): field names to merge
-       field_type? (str): type of new field
-       separator? (str): delimeter to use
-       preserve? (bool): preserve source fields
 
     """
 

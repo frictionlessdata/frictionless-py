@@ -9,10 +9,6 @@ if TYPE_CHECKING:
 class FrictionlessException(Exception):
     """Main Frictionless exception
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import FrictionlessException`
-
     Parameters:
         error (Error): an underlaying error
 

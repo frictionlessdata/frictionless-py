@@ -12,13 +12,7 @@ from ... import helpers
 
 
 class MultipartLoader(Loader):
-    """Multipart loader implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.multipart import MultipartLoader`
-
-    """
+    """Multipart loader implementation."""
 
     # Read
 

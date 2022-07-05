@@ -6,13 +6,7 @@ from ... import helpers
 
 
 class LocalLoader(Loader):
-    """Local loader implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.local import LocalLoader`
-
-    """
+    """Local loader implementation."""
 
     # Read
 

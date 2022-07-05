@@ -259,7 +259,9 @@ def is_platform(name):
 
 # TODO: move to system (public API)?
 def is_python(version):
-    return sys.version_info >= tuple(map(int, version.split(".")))
+    current = sys.version_info
+    minimal = tuple(map(int, version.split(".")))
+    return current >= minimal
 
 
 def parse_json_string(string):
