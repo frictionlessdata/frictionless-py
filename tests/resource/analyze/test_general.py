@@ -62,7 +62,6 @@ def test_analyze_detailed_non_numeric_values_summary():
 def test_analyze_detailed_numeric_values_descriptive_summray():
     resource = Resource({"path": "data/analysis-data.csv"})
     analysis = resource.analyze(detailed=True)
-    print(analysis["field_stats"]["parent_age"].keys())
     assert list(analysis["field_stats"]["parent_age"].keys()) == [
         "type",
         "mean",
