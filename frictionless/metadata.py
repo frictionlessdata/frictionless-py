@@ -54,8 +54,8 @@ class Metadata(metaclass=Metaclass):
                 self.metadata_assigned.add(name)
             elif isinstance(value, (list, dict)):
                 self.metadata_defaults[name] = value.copy()
-            elif isinstance(value, Metadata):
-                self.metadata_defaults[name] = value.to_descriptor()
+            elif isinstance(value, type):
+                self.metadata_defaults[name] = value.__dict__.copy()
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
@@ -67,8 +67,8 @@ class Metadata(metaclass=Metaclass):
         defined = list(self.metadata_assigned)
         for name, default in self.metadata_defaults.items():
             value = getattr(self, name, None)
-            if isinstance(value, Metadata):
-                value = value.to_descriptor()
+            if isinstance(value, type):
+                value = value.__dict__.copy()
             if value != default:
                 defined.append(name)
         return defined
