@@ -23,3 +23,4 @@ class JsonPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.format in ["json", "jsonl", "ndjson"]:
             resource.type = "table"
+            resource.mediatype = f"text/{resource.format}"

@@ -16,6 +16,7 @@ def test_describe_resource():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "text/csv",
         "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
         "schema": {
             "fields": [
@@ -38,6 +39,7 @@ def test_describe_resource_with_stats():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "text/csv",
         "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
         "schema": {
             "fields": [

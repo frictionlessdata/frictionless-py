@@ -59,7 +59,6 @@ class Resource(Metadata):
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
-        mediatype: Optional[str] = None,
         profiles: List[str] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
@@ -70,6 +69,7 @@ class Resource(Metadata):
         format: Optional[str] = None,
         hashing: Optional[str] = None,
         encoding: Optional[str] = None,
+        mediatype: Optional[str] = None,
         compression: Optional[str] = None,
         extrapaths: List[str] = [],
         innerpath: Optional[str] = None,
@@ -91,7 +91,6 @@ class Resource(Metadata):
         self.name = name
         self.title = title
         self.description = description
-        self.mediatype = mediatype
         self.profiles = profiles.copy()
         self.licenses = licenses.copy()
         self.sources = sources.copy()
@@ -102,6 +101,7 @@ class Resource(Metadata):
         self.format = format
         self.hashing = hashing
         self.encoding = encoding
+        self.mediatype = mediatype
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
@@ -193,13 +193,6 @@ class Resource(Metadata):
     It should a human-oriented description of the resource.
     """
 
-    mediatype: Optional[str]
-    """
-    Mediatype/mimetype of the resource e.g. “text/csv”,
-    or “application/vnd.ms-excel”.  Mediatypes are maintained by the
-    Internet Assigned Numbers Authority (IANA) in a media type registry.
-    """
-
     profiles: List[str]
     """
     Strings identifying the profile of this descriptor.
@@ -257,6 +250,13 @@ class Resource(Metadata):
     """
     Source encoding.
     If not set, it'll be inferred from `source`.
+    """
+
+    mediatype: Optional[str]
+    """
+    Mediatype/mimetype of the resource e.g. “text/csv”,
+    or “application/vnd.ms-excel”.  Mediatypes are maintained by the
+    Internet Assigned Numbers Authority (IANA) in a media type registry.
     """
 
     compression: Optional[str]

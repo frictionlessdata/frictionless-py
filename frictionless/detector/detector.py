@@ -152,10 +152,8 @@ class Detector(Metadata):
             name = name or "name"
 
         # Detect details
-        type = settings.DEFAULT_TYPE
         scheme = ""
         format = ""
-        hashing = settings.DEFAULT_HASHING
         compression = None
         innerpath = None
         if resource.fullpath:
@@ -172,10 +170,11 @@ class Detector(Metadata):
 
         # Apply detected
         resource.set_not_defined("name", name)
-        resource.set_not_defined("type", type)
+        resource.set_not_defined("type", settings.DEFAULT_TYPE)
         resource.set_not_defined("scheme", scheme)
         resource.set_not_defined("format", format)
-        resource.set_not_defined("hashing", hashing)
+        resource.set_not_defined("hashing", settings.DEFAULT_HASHING)
+        resource.set_not_defined("mediatype", f"application/{format}")
         resource.set_not_defined("compression", compression)
         resource.set_not_defined("innerpath", innerpath)
 
