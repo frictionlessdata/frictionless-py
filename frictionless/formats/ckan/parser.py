@@ -1,16 +1,11 @@
-# type: ignore
 from ...exception import FrictionlessException
 from ...resource import Parser
+from .control import CkanControl
 from .storage import CkanStorage
 
 
 class CkanParser(Parser):
-    """Ckan parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ckan import CkanParser`
-    """
+    """Ckan parser implementation."""
 
     supported_types = [
         "string",
@@ -19,7 +14,7 @@ class CkanParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        control = self.resource.dialect.get_control("ckan")
+        control = self.resource.dialect.get_control("ckan", ensure=CkanControl())
         storage = CkanStorage(self.resource.fullpath, control=control)
         resource = storage.read_resource(control.resource)
         self.resource.schema = resource.schema
@@ -32,7 +27,7 @@ class CkanParser(Parser):
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
-        control = target.dialect.get_control("ckan")
+        control = target.dialect.get_control("ckan", ensure=CkanControl())
         storage = CkanStorage(target.fullpath, control=control)
         if not control.resource:
             note = 'Please provide "dialect.resource" for writing'

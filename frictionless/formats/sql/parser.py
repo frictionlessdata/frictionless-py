@@ -5,13 +5,7 @@ from .storage import SqlStorage
 
 
 class SqlParser(Parser):
-    """SQL parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.sql import SqlParser`
-
-    """
+    """SQL parser implementation."""
 
     supported_types = [
         "boolean",

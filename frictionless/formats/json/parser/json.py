@@ -12,11 +12,7 @@ from .... import helpers
 
 
 class JsonParser(Parser):
-    """JSON parser implementation.
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.json import JsonParser
-    """
+    """JSON parser implementation."""
 
     requires_loader = True
     supported_types = [

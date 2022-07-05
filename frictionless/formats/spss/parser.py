@@ -1,4 +1,3 @@
-# type: ignore
 import re
 import warnings
 from ...resource import Parser
@@ -8,13 +7,7 @@ from . import settings
 
 
 class SpssParser(Parser):
-    """Spss parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssParser`
-
-    """
+    """Spss parser implementation."""
 
     supported_types = [
         "string",
@@ -52,11 +45,11 @@ class SpssParser(Parser):
         schema = Schema()
         for name in spss_schema.varNames:
             type = self.__read_convert_type(spss_schema.formats[name])
-            field = Field(name=name, type=type)
+            field = Field.from_descriptor({"name": name, "type": type})
             title = spss_schema.varLabels[name]
             if title:
                 field.title = title
-            schema.fields.append(field)
+            schema.add_field(field)
         return schema
 
     def __read_convert_type(self, spss_type=None):
@@ -110,8 +103,8 @@ class SpssParser(Parser):
                             format = settings.FORMAT_WRITE[field.type]
                             cell = cell.strftime(format).encode()
                             cell = writer.spssDateTime(cell, format)
-                        elif field.type not in mapping:
-                            cell, notes = field.write_cell(cell)
+                        elif field.type not in mapping:  # type: ignore
+                            cell, _ = field.write_cell(cell)
                             cell = cell.encode("utf-8")
                         cells.append(cell)
                     writer.writerow(cells)
@@ -127,7 +120,7 @@ class SpssParser(Parser):
                 spss_schema["varNames"].append(field.name)
                 if field.title:
                     spss_schema["varLabels"][field.name] = field.title
-                spss_type = mapping.get(field.type)
+                spss_type = mapping.get(field.type)  # type: ignore
                 if spss_type:
                     spss_schema["varTypes"][field.name] = spss_type[0]
                     spss_schema["formats"][field.name] = spss_type[1]
@@ -139,7 +132,7 @@ class SpssParser(Parser):
                 for name in sizes.keys():
                     cell = row[name]
                     field = source.schema.get_field(name)
-                    cell, notes = field.write_cell(cell)
+                    cell, _ = field.write_cell(cell)
                     size = len(cell.encode("utf-8"))
                     if size > sizes[name]:
                         sizes[name] = size

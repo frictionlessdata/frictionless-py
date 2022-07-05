@@ -3,6 +3,7 @@ import io
 import re
 import os
 import csv
+import sys
 import json
 import glob
 import marko
@@ -254,6 +255,11 @@ def is_platform(name):
     elif name == "windows":
         return current == "Windows"
     return False
+
+
+# TODO: move to system (public API)?
+def is_python(version):
+    return sys.version_info >= tuple(map(int, version.split(".")))
 
 
 def parse_json_string(string):

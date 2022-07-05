@@ -8,13 +8,7 @@ from ... import helpers
 
 
 class PandasParser(Parser):
-    """Pandas parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.pandas import PandasParser`
-
-    """
+    """Pandas parser implementation."""
 
     supported_types = [
         "string",

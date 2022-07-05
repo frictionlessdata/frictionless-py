@@ -9,13 +9,7 @@ from .... import helpers
 
 
 class JsonlParser(Parser):
-    """JSONL parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.json import JsonlParser
-
-    """
+    """JSONL parser implementation."""
 
     requires_loader = True
     supported_types = [

@@ -1,13 +1,13 @@
-import sys
 import pytest
-from datetime import datetime, time
+from datetime import datetime, date, time
 from dateutil.tz import tzoffset, tzutc
 from frictionless import Package, Resource, helpers
 
-if helpers.is_platform("macos"):
-    pytestmark = pytest.mark.skip(reason="Not supported MacOS")
-if sys.version_info >= (3, 10):
-    pytestmark = pytest.mark.skip(reason="Not supported Python3.10+")
+
+pytestmark = pytest.mark.skipif(
+    helpers.is_platform("macos") or helpers.is_python("3.10"),
+    reason="Not supported MacOS and Python3.10+",
+)
 
 
 # General
@@ -57,9 +57,9 @@ def test_spss_parser_write_types(tmpdir):
                 "any": "中国人",
                 "array": '["Mike", "John"]',
                 "boolean": "true",
-                "date": datetime.date(2015, 1, 1),
-                "date_year": datetime.date(2015, 1, 1),
-                "datetime": datetime.datetime(2015, 1, 1, 3, 0),
+                "date": date(2015, 1, 1),
+                "date_year": date(2015, 1, 1),
+                "datetime": datetime(2015, 1, 1, 3, 0),
                 "duration": "P1Y1M",
                 "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
                 "geopoint": "30,70",
@@ -67,7 +67,7 @@ def test_spss_parser_write_types(tmpdir):
                 "number": 7.0,
                 "object": '{"chars": 560}',
                 "string": "english",
-                "time": datetime.time(3, 0),
+                "time": time(3, 0),
                 "year": 2015,
                 "yearmonth": "2015-01",
             },
