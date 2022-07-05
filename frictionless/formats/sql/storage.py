@@ -12,19 +12,7 @@ from ... import helpers
 
 
 class SqlStorage(Storage):
-    """SQL storage implementation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.sql import SqlStorage`
-
-    Parameters:
-        url? (string): SQL connection string
-        engine? (object): `sqlalchemy` engine
-        prefix? (str): prefix for all tables
-        namespace? (str): SQL scheme
-
-    """
+    """SQL storage implementation"""
 
     def __init__(self, source, *, control=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")

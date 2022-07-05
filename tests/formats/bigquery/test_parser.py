@@ -1,5 +1,6 @@
 import pytest
-import datetime
+from datetime import datetime, time
+from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
 
@@ -8,10 +9,9 @@ from frictionless import Resource, formats
 # https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
-# General
+# Write
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_parser_write(options):
     prefix = options.pop("prefix")
@@ -27,9 +27,8 @@ def test_bigquery_parser_write(options):
         ]
 
 
-# TODO: add timezone support or document if it's not possible
-@pytest.mark.skip
 @pytest.mark.ci
+@pytest.mark.xfail(reason="Timezone is not supported")
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
@@ -38,8 +37,20 @@ def test_bigquery_parser_write_timezone(options):
     target = source.write(service, control=control)
     with target:
         assert target.read_rows() == [
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": time(15, 0, tzinfo=tzutc()),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
+                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+            },
         ]

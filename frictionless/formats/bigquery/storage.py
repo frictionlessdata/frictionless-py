@@ -1,8 +1,6 @@
-# type: ignore
 import io
 import re
 import csv
-import json
 import time
 from slugify import slugify
 from functools import partial
@@ -17,19 +15,7 @@ from . import settings
 
 
 class BigqueryStorage(Storage):
-    """BigQuery storage implementation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.bigquery import BigqueryStorage`
-
-    Parameters:
-        service (object): BigQuery `Service` object
-        project (str): BigQuery project name
-        dataset (str): BigQuery dataset name
-        prefix? (str): prefix for all names
-
-    """
+    """BigQuery storage implementation"""
 
     def __init__(self, source, *, control=None):
         control = control or BigqueryControl()
@@ -104,10 +90,10 @@ class BigqueryStorage(Storage):
         # Fields
         for bq_field in bq_schema["fields"]:
             field_type = self.__read_convert_type(bq_field["type"])
-            field = Field(name=bq_field["name"], type=field_type)
+            field = Field.from_descriptor({"name": bq_field["name"], "type": field_type})
             if bq_field.get("mode", "NULLABLE") != "NULLABLE":
                 field.required = True
-            schema.fields.append(field)
+            schema.add_field(field)
 
         return schema
 
@@ -226,7 +212,7 @@ class BigqueryStorage(Storage):
         fallback_fields = []
         mapping = self.__write_convert_type()
         for field in resource.schema.fields:
-            if not mapping.get(field.type):
+            if not mapping.get(field.type):  # type: ignore
                 fallback_fields.append(field)
 
         # Timezone fields
@@ -240,7 +226,7 @@ class BigqueryStorage(Storage):
         with resource:
             for row in resource.row_stream:
                 for field in fallback_fields:
-                    row[field.name], notes = field.write_cell(row[field.name])
+                    row[field.name], _ = field.write_cell(row[field.name])
                 for field in timezone_fields:
                     if row[field.name] is not None:
                         row[field.name] = row[field.name].replace(tzinfo=None)
@@ -260,7 +246,7 @@ class BigqueryStorage(Storage):
         writer = csv.writer(chars)
         for cells in buffer:
             writer.writerow(cells)
-        bytes = io.BufferedRandom(io.BytesIO(chars.getvalue().encode("utf-8")))
+        bytes = io.BufferedRandom(io.BytesIO(chars.getvalue().encode("utf-8")))  # type: ignore
 
         # Prepare job body
         body = {
@@ -371,14 +357,3 @@ def _slugify_name(name):
     if not re.match(VALID_NAME, name):
         name = slugify(name, separator="_")
     return name[:MAX_LENGTH]
-
-
-def _uncast_value(value, field):
-    # NOTE:
-    # Eventially should be moved to:
-    # https://github.com/frictionlessdata/tableschema-py/issues/161
-    if isinstance(value, (list, dict)):
-        value = json.dumps(value)
-    else:
-        value = str(value)
-    return value

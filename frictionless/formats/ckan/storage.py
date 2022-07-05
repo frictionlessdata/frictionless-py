@@ -15,13 +15,7 @@ from .control import CkanControl
 
 
 class CkanStorage(Storage):
-    """Ckan storage implementation
-
-    Parameters:
-        url (string): CKAN instance url e.g. "https://demo.ckan.org"
-        dataset (string): dataset id in CKAN e.g. "my-dataset"
-        apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-    """
+    """Ckan storage implementation"""
 
     def __init__(self, source, *, control=None):
         control = control or CkanControl()

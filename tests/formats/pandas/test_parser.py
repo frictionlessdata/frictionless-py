@@ -179,7 +179,7 @@ def test_pandas_parser_write_timezone():
     with target:
 
         # Assert schema
-        assert target.schema == {
+        assert target.schema.to_descriptor() == {
             "fields": [
                 {"name": "datetime", "type": "datetime"},
                 {"name": "time", "type": "time"},

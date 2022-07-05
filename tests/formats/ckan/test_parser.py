@@ -22,7 +22,7 @@ def test_ckan_parser(options):
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="timezone is not supported")
+@pytest.mark.xfail(reason="Timezone is not supported")
 def test_ckan_parser_timezone(options):
     url = options.pop("url")
     control = formats.CkanControl(resource="timezone", **options)
