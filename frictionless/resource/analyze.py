@@ -38,7 +38,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
         for field_name in row:
             field = resource.schema.get_field(field_name)
             cell = field.read_cell(row.get(field_name))[0]
-            if not field.name in columns_data:
+            if field.name not in columns_data:
                 columns_data[field.name] = []
             if cell is None:
                 if field.type in numeric:
@@ -62,7 +62,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
             analysis_report["variable_types"][field.type] += 1
 
             # summary - categorical data
-            if not field.type in [*numeric, "boolean"]:
+            if field.type not in [*numeric, "boolean"]:
                 analysis_report["field_stats"][field.name]["type"] = "categorical"
                 analysis_report["field_stats"][field.name]["values"] = set(
                     columns_data[field.name]
@@ -72,7 +72,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
             if field.type in numeric:
                 analysis_report["field_stats"][field.name]["type"] = "numeric"
                 rows_without_nan_values = [
-                    cell for cell in columns_data[field.name] if not cell is nan
+                    cell for cell in columns_data[field.name] if cell is not nan
                 ]
 
                 # skip rows with nan values
@@ -96,7 +96,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
                         for cell_x, cell_y in zip(
                             columns_data[field.name], columns_data[field_y.name]
                         ):
-                            if not nan in [cell_x, cell_y]:
+                            if nan not in [cell_x, cell_y]:
                                 var_x.append(cell_x)
                                 var_y.append(cell_y)
 
@@ -117,7 +117,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
                     "bounds"
                 ]
                 for cell in columns_data[field.name]:
-                    if not cell is nan:
+                    if cell is not nan:
                         if not lower_bound < cell < upper_bound:
                             analysis_report["field_stats"][field.name]["outliers"].append(
                                 cell
