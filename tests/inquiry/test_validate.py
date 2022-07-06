@@ -1,8 +1,6 @@
 import pytest
 from frictionless import Inquiry
 
-pytestmark = pytest.mark.skip
-
 
 # Sequential
 
@@ -36,7 +34,7 @@ def test_inquiry_validate_multiple_invalid():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
@@ -58,11 +56,11 @@ def test_inquiry_validate_multiple_invalid_limit_errors():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskPosition", "code", "note"]) == [
+    assert report.flatten(["taskNumber", "code", "note"]) == [
         [2, "blank-label", ""],
     ]
-    assert report.tasks[0].flatten(["rowPosition", "fieldPosition", "code"]) == []
-    assert report.tasks[1].flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.tasks[0].flatten(["rowNumber", "fieldNumber", "code"]) == []
+    assert report.tasks[1].flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 3, "blank-label"],
     ]
 
@@ -80,7 +78,7 @@ def test_inquiry_validate_multiple_invalid_with_schema():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [1, None, 1, "incorrect-label"],
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
@@ -127,7 +125,7 @@ def test_inquiry_validate_with_multiple_packages():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [3, 3, None, "blank-row"],
         [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],
@@ -164,7 +162,7 @@ def test_inquiry_validate_parallel_multiple_invalid():
         },
     )
     report = inquiry.validate(parallel=True)
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
@@ -188,7 +186,7 @@ def test_inquiry_validate_with_multiple_packages_with_parallel():
         },
     )
     report = inquiry.validate(parallel=True)
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [3, 3, None, "blank-row"],
         [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],

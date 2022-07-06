@@ -28,5 +28,5 @@ class PandasPlugin(Plugin):
         if resource.data is not None:
             if helpers.is_type(resource.data, "DataFrame"):
                 resource.type = "table"
-                resource.scheme = "pandas"
+                resource.scheme = ""
                 resource.format = "pandas"

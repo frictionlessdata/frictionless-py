@@ -56,7 +56,7 @@ class Report(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["taskPosition", "rowPosition", "fieldPosition", "code"]):
+    def flatten(self, spec=["taskNumber", "rowNumber", "fieldNumber", "code"]):
         """Flatten the report
 
         Parameters
@@ -72,7 +72,7 @@ class Report(Metadata):
             result.append([context.get(prop) for prop in spec])
         for count, task in enumerate(self.tasks, start=1):
             for error in task.errors:
-                context = {"taskNumber": count, "taskPosition": count}
+                context = {"taskNumber": count, "taskNumber": count}
                 context.update(error.to_descriptor())
                 result.append([context.get(prop) for prop in spec])
         return result
@@ -178,8 +178,8 @@ class Report(Metadata):
                     error_descriptor = error.to_descriptor()
                     error_content.append(
                         [
-                            error_descriptor.get("rowPosition", ""),
-                            error_descriptor.get("fieldPosition", ""),
+                            error_descriptor.get("rowNumber", ""),
+                            error_descriptor.get("fieldNumber", ""),
                             error.code,
                             error.message,
                         ]

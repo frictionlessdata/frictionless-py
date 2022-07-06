@@ -50,7 +50,7 @@ class ReportTask(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["rowPosition", "fieldPosition", "code"]):
+    def flatten(self, spec=["rowNumber", "fieldNumber", "code"]):
         """Flatten the report
 
         Parameters

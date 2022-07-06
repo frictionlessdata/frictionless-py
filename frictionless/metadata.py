@@ -103,6 +103,10 @@ class Metadata(metaclass=Metaclass):
         return self.to_descriptor()
 
     @classmethod
+    def from_options(cls, **options):
+        return cls(**helpers.remove_non_values(options))
+
+    @classmethod
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         """Import metadata from a descriptor source"""
         target = {}
@@ -135,7 +139,7 @@ class Metadata(metaclass=Metaclass):
         descriptor = {}
         for name, Type in self.metadata_properties().items():
             value = getattr(self, stringcase.snakecase(name), None)
-            if not value and value is not False:
+            if not value and value != "" and value is not False:
                 continue
             if name in exclude:
                 continue

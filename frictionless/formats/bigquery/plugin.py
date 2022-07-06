@@ -33,5 +33,5 @@ class BigqueryPlugin(Plugin):
         if not resource.scheme and not resource.format and resource.memory:
             if helpers.is_type(resource.data, "Resource"):
                 resource.type = "table"
-                resource.scheme = "bigquery"
+                resource.scheme = ""
                 resource.format = "bigquery"

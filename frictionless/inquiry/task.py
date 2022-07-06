@@ -67,8 +67,8 @@ class InquiryTask(Metadata):
         if not type:
             type = "resource"
             if self.descriptor:
-                file = File(self.descriptor)
-                type = "package" if file.type == "package" else "resource"
+                entity = self.metadata_detect(self.descriptor)
+                type = "package" if entity == "package" else "resource"
 
         # Validate metadata
         if metadata and self.metadata_errors:
@@ -76,14 +76,15 @@ class InquiryTask(Metadata):
             return Report.from_validation(time=timer.time, errors=errors)
 
         # Validate package
-        if self.type == "package":
-            package = Package(descriptor=self.descriptor)
+        if type == "package":
+            assert self.descriptor  # ensured by metadata validation
+            package = Package.from_descriptor(self.descriptor)
             report = package.validate(self.checklist)
             return report
 
         # Validate resource
         resource = (
-            Resource(
+            Resource.from_options(
                 path=self.path,
                 scheme=self.scheme,
                 format=self.format,
@@ -93,12 +94,12 @@ class InquiryTask(Metadata):
                 compression=self.compression,
                 dialect=self.dialect,
                 schema=self.schema,
-                # TODO: pass checklist here
+                checklist=self.checklist,
             )
             if not self.descriptor
             else Resource.from_descriptor(self.descriptor)
         )
-        report = resource.validate(self.checklist)
+        report = resource.validate()
         return report
 
     # Metadata
@@ -121,6 +122,14 @@ class InquiryTask(Metadata):
             "checklist": {},
         }
     }
+
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(
+            dialect=Dialect,
+            schema=Schema,
+            checklist=Checklist,
+        )
 
     # TODO: validate type/descriptor matching
     def metadata_validate(self):

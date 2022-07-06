@@ -29,4 +29,3 @@ class CkanPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.format == "ckan":
             resource.type = "table"
-            resource.scheme = "ckan"

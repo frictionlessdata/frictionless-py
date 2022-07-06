@@ -1,7 +1,5 @@
-import pytest
+import textwrap
 from frictionless import Inquiry, InquiryTask
-
-pytestmark = pytest.mark.skip
 
 
 # General
@@ -31,8 +29,7 @@ def test_inquiry_with_task_class():
     assert report.valid
 
 
-@pytest.mark.skip
-def test_inquiry_pprint_1029():
+def test_inquiry_pprint():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
@@ -41,6 +38,7 @@ def test_inquiry_pprint_1029():
             ]
         }
     )
-    expected = """{'tasks': [{'path': 'data/capital-valid.csv'},
-           {'path': 'data/capital-invalid.csv'}]}"""
-    assert repr(inquiry) == expected
+    expected = """
+    {'tasks': [{'path': 'data/capital-valid.csv'},
+               {'path': 'data/capital-invalid.csv'}]}"""
+    assert repr(inquiry) == textwrap.dedent(expected).strip()
