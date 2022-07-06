@@ -95,7 +95,7 @@ def test_inquiry_validate_with_one_resource_from_descriptor():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"descriptor": "data/resource.json"},
+                {"resource": "data/resource.json"},
             ]
         },
     )
@@ -107,7 +107,7 @@ def test_inquiry_validate_with_one_package_from_descriptor():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"descriptor": "data/package/datapackage.json"},
+                {"package": "data/package/datapackage.json"},
             ]
         },
     )
@@ -119,8 +119,8 @@ def test_inquiry_validate_with_multiple_packages():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"descriptor": "data/package/datapackage.json"},
-                {"descriptor": "data/invalid/datapackage.json"},
+                {"package": "data/package/datapackage.json"},
+                {"package": "data/invalid/datapackage.json"},
             ]
         },
     )

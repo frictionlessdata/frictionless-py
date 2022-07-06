@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Union, List
 from dataclasses import dataclass
 from ..metadata import Metadata
 from ..checklist import Checklist
@@ -17,12 +17,6 @@ class InquiryTask(Metadata):
     """Inquiry task representation."""
 
     # State
-
-    descriptor: Optional[str] = None
-    """# TODO: add docs"""
-
-    type: Optional[str] = None
-    """# TODO: add docs"""
 
     path: Optional[str] = None
     """# TODO: add docs"""
@@ -42,10 +36,13 @@ class InquiryTask(Metadata):
     encoding: Optional[str] = None
     """# TODO: add docs"""
 
-    innerpath: Optional[str] = None
+    compression: Optional[str] = None
     """# TODO: add docs"""
 
-    compression: Optional[str] = None
+    extrapaths: Optional[List[str]] = None
+    """# TODO: add docs"""
+
+    innerpath: Optional[str] = None
     """# TODO: add docs"""
 
     dialect: Optional[Dialect] = None
@@ -57,18 +54,16 @@ class InquiryTask(Metadata):
     checklist: Optional[Checklist] = None
     """# TODO: add docs"""
 
+    resource: Optional[str] = None
+    """# TODO: add docs"""
+
+    package: Optional[str] = None
+    """# TODO: add docs"""
+
     # Validate
 
     def validate(self, *, metadata=True):
         timer = helpers.Timer()
-
-        # Detect type
-        type = self.type
-        if not type:
-            type = "resource"
-            if self.descriptor:
-                entity = self.metadata_detect(self.descriptor)
-                type = "package" if entity == "package" else "resource"
 
         # Validate metadata
         if metadata and self.metadata_errors:
@@ -76,28 +71,30 @@ class InquiryTask(Metadata):
             return Report.from_validation(time=timer.time, errors=errors)
 
         # Validate package
-        if type == "package":
-            assert self.descriptor  # ensured by metadata validation
-            package = Package.from_descriptor(self.descriptor)
-            report = package.validate(self.checklist)
+        if self.package:
+            package = Package.from_descriptor(self.package)
+            report = package.validate()
             return report
 
         # Validate resource
-        resource = (
-            Resource.from_options(
-                path=self.path,
-                scheme=self.scheme,
-                format=self.format,
-                hashing=self.hashing,
-                encoding=self.encoding,
-                innerpath=self.innerpath,
-                compression=self.compression,
-                dialect=self.dialect,
-                schema=self.schema,
-                checklist=self.checklist,
-            )
-            if not self.descriptor
-            else Resource.from_descriptor(self.descriptor)
+        if self.resource:
+            resource = Resource.from_descriptor(self.resource)
+            report = resource.validate()
+            return report
+
+        # Validate default
+        resource = Resource.from_options(
+            path=self.path,
+            scheme=self.scheme,
+            format=self.format,
+            hashing=self.hashing,
+            encoding=self.encoding,
+            compression=self.compression,
+            extrapaths=self.extrapaths,
+            innerpath=self.innerpath,
+            dialect=self.dialect,
+            schema=self.schema,
+            checklist=self.checklist,
         )
         report = resource.validate()
         return report
@@ -107,8 +104,6 @@ class InquiryTask(Metadata):
     metadata_Error = errors.InquiryTaskError
     metadata_profile = {
         "properties": {
-            "descriptor": {},
-            "type": {},
             "path": {},
             "name": {},
             "scheme": {},
@@ -120,6 +115,8 @@ class InquiryTask(Metadata):
             "dialect": {},
             "schema": {},
             "checklist": {},
+            "resource": {},
+            "package": {},
         }
     }
 

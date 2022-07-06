@@ -10,10 +10,10 @@ def test_inquiry_task():
 
 
 def test_inquiry_task_from_resource_descriptor():
-    task = InquiryTask(descriptor="data/resource.json")
-    assert task.descriptor == "data/resource.json"
+    task = InquiryTask(resource="data/resource.json")
+    assert task.resource == "data/resource.json"
 
 
 def test_inquiry_task_from_package_descriptor():
-    task = InquiryTask(descriptor="data/package.json")
-    assert task.descriptor == "data/package.json"
+    task = InquiryTask(package="data/package.json")
+    assert task.package == "data/package.json"
