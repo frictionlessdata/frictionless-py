@@ -345,15 +345,6 @@ def html_to_text(html):
     return parser.text.strip()
 
 
-def format_bytes(size: int) -> str:
-    """Format bytes to larger units"""
-    units = ["bytes", "KB", "MB", "GB", "TB"]
-    index = math.floor(math.log2(size) / 10)
-    if index > len(units):
-        index = len(units) - 1
-    return units[index]
-
-
 def slugify(text, **options):
     """There is a conflict between python-slugify and awesome-slugify
     So we import from a proper module manually

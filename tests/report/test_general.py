@@ -1,16 +1,13 @@
-import pytest
 import pprint
-from frictionless import validate, helpers
-
-
-pytestmark = pytest.mark.skip
+from frictionless import Resource, Checklist, helpers
 
 
 # General
 
 
 def test_report():
-    report = validate("data/table.csv")
+    resource = Resource("data/table.csv")
+    report = resource.validate()
     # Report
     assert report.version
     assert report.valid is True
@@ -61,6 +58,8 @@ def test_report():
     assert report.errors == []
 
 
-def test_report_pprint_1029():
-    report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
+def test_report_pprint():
+    resource = Resource("data/capital-invalid.csv")
+    checklist = Checklist(pick_errors=["duplicate-label"])
+    report = resource.validate(checklist)
     assert repr(report) == pprint.pformat(report)

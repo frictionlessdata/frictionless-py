@@ -70,6 +70,7 @@ INSTALL_REQUIRES = [
     "fastapi>=0.78",
     "uvicorn>=0.17",
     "requests>=2.10",
+    "humanize>=4.2",
     "tabulate>=0.8.9",
     "jsonschema>=2.5",
     "simpleeval>=0.9.11",

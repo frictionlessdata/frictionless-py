@@ -1,81 +1,75 @@
 import pytest
-from frictionless import validate, helpers
+from frictionless import Resource, Checklist, validate, helpers
 
 
 # General
 
 
-@pytest.mark.skip
 def test_report_task_to_summary_valid():
-    report = validate("data/capital-valid.csv")
+    resource = Resource("data/capital-valid.csv")
+    report = resource.validate()
     output = report.tasks[0].to_summary()
-    file_size = 50 if not helpers.is_platform("windows") else 56
-    assert (
-        output.count("File name              | data/capital-valid.csv")
-        and output.count(f"File size (bytes)      | {file_size}                    ")
-        and output.count("Total Time Taken (sec) | ")
-    )
+    assert output.count("File place   | data/capital-valid.csv")
+    assert output.count("Total Time   |")
+    if not helpers.is_platform("windows"):
+        assert output.count("File size    | 50 Bytes")
 
 
-@pytest.mark.skip
 def test_report_task_to_summary_invalid():
-    report = validate("data/capital-invalid.csv")
+    resource = Resource("data/capital-invalid.csv")
+    report = resource.validate()
     output = report.tasks[0].to_summary()
-    file_size = 171 if not helpers.is_platform("windows") else 183
-    assert (
-        output.count("File name                         | data/capital-invalid.csv")
-        and output.count(f"File size (bytes)                 | {file_size}        ")
-        and output.count("Total Time Taken (sec)            |")
-        and output.count("Total Errors                      | 5          ")
-        and output.count("Duplicate Label (duplicate-label) | 1          ")
-        and output.count("Missing Cell (missing-cell)       | 1          ")
-        and output.count("Blank Row (blank-row)             | 1          ")
-        and output.count("Type Error (type-error)           | 1          ")
-        and output.count("Extra Cell (extra-cell)           | 1          ")
-    )
+    assert output.count("File place      | data/capital-invalid.csv")
+    assert output.count("Total Time      |")
+    assert output.count("Total Errors    | 5")
+    assert output.count("Duplicate Label | 1")
+    assert output.count("Missing Cell    | 1")
+    assert output.count("Blank Row       | 1")
+    assert output.count("Type Error      | 1")
+    assert output.count("Extra Cell      | 1")
+    if not helpers.is_platform("windows"):
+        assert output.count(f"File size       | 171 Bytes")
 
 
-@pytest.mark.skip
 def test_report_task_to_summary_file_not_found():
-    report = validate("data/capital-invalids.csv")
+    resource = Resource("bad.csv")
+    report = resource.validate()
     output = report.tasks[0].to_summary()
-    assert (
-        output.count("File name (Not Found)       | data/capital-invalids.csv")
-        and output.count("File size                   | N/A")
-        and output.count("Total Time Taken (sec)      ")
-        and output.count("Total Errors                | 1")
-        and output.count("Scheme Error (scheme-error) | 1")
-    )
+    assert output.count("File place   | bad.csv")
+    assert output.count("File size    | (file not found)")
+    assert output.count("Total Time   |")
+    assert output.count("Total Errors | 1")
+    assert output.count("Scheme Error | 1")
 
 
-@pytest.mark.skip
 def test_report_reporttask_summary_zippedfile():
-    report = validate("data/table.csv.zip")
+    resource = Resource("data/table.csv.zip")
+    report = resource.validate()
     output = report.tasks[0].to_summary()
-    assert output.count("data/table.csv.zip => table.csv") and output.count("198")
+    print(output)
+    assert output.count("data/table.csv.zip -> table.csv") and output.count("198")
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Stats doesn't show rows for partial validation")
 def test_report_task_to_summary_last_row_checked():
-    report = validate("data/capital-invalid.csv", limit_errors=2)
+    resource = Resource("data/capital-invalid.csv")
+    checklist = Checklist(limit_errors=2)
+    report = resource.validate(checklist)
     output = report.tasks[0].to_summary()
-    assert (
-        output.count("Rows Checked(Partial)**           | 10")
-        and output.count("Total Errors                      | 2")
-        and output.count("Duplicate Label (duplicate-label) | 1")
-        and output.count("Missing Cell (missing-cell)       | 1")
-    )
+    assert output.count("> reached error limit: 2")
+    assert output.count("Rows Checked    | 10")
+    assert output.count("Total Errors    | 2")
+    assert output.count("Duplicate Label | 1")
+    assert output.count("Missing Cell    | 1")
 
 
-@pytest.mark.skip
 def test_report_task_to_summary_errors_with_count():
-    report = validate("data/capital-invalid.csv")
+    resource = Resource("data/capital-invalid.csv")
+    report = resource.validate()
     output = report.tasks[0].to_summary()
-    assert (
-        output.count("Total Errors                      | 5          ")
-        and output.count("Duplicate Label (duplicate-label) | 1          ")
-        and output.count("Missing Cell (missing-cell)       | 1          ")
-        and output.count("Blank Row (blank-row)             | 1          ")
-        and output.count("Type Error (type-error)           | 1          ")
-        and output.count("Extra Cell (extra-cell)           | 1          ")
-    )
+    assert output.count("Total Errors    | 5")
+    assert output.count("Duplicate Label | 1")
+    assert output.count("Missing Cell    | 1")
+    assert output.count("Blank Row       | 1")
+    assert output.count("Type Error      | 1")
+    assert output.count("Extra Cell      | 1")

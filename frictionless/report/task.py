@@ -1,11 +1,11 @@
 from __future__ import annotations
+import humanize
 from typing import List
 from tabulate import tabulate
 from dataclasses import dataclass, field
 from ..metadata import Metadata
 from ..exception import FrictionlessException
 from ..errors import Error, ReportTaskError
-from .. import helpers
 
 
 @dataclass
@@ -76,14 +76,15 @@ class ReportTask(Metadata):
         """
         error_list = {}
         for error in self.errors:
-            error_title = f"{error.name} ({error.code})"
+            error_title = f"{error.name}"
             if error_title not in error_list:
                 error_list[error_title] = 0
             error_list[error_title] += 1
+        size = self.stats.get("bytes")
         content = [
             ["File place", self.place],
-            ["File size", helpers.format_bytes(self.stats["bytes"])],
-            ["Total Time", self.stats.get("time")],
+            ["File size", humanize.naturalsize(size) if size else "(file not found)"],
+            ["Total Time", f'{self.stats.get("time")} Seconds'],
             ["Rows Checked", self.stats.get("rows")],
         ]
         if error_list:
@@ -92,7 +93,7 @@ class ReportTask(Metadata):
             content.append([code, count])
         output = ""
         for warning in self.warnings:
-            output += f">> {warning}\n\n"
+            output += f"> {warning}\n\n"
         output += tabulate(content, headers=["Name", "Value"], tablefmt="grid")
         return output
 

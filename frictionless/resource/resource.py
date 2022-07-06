@@ -314,7 +314,7 @@ class Resource(Metadata):
         if self.data:
             return "<memory>"
         elif self.innerpath:
-            return f"{self.path}:{self.innerpath}"
+            return f"{self.path} -> {self.innerpath}"
         elif self.path:
             return self.path
         return ""
