@@ -1,18 +1,18 @@
 from ...plugin import Plugin
-from .control import S3Control
-from .loader import S3Loader
+from .control import AwsControl
+from .loaders import S3Loader
 
 
-class S3Plugin(Plugin):
-    """Plugin for S3"""
+class AwsPlugin(Plugin):
+    """Plugin for Aws"""
 
-    code = "s3"
+    code = "aws"
 
     # Hooks
 
     def create_control(self, descriptor):
         if descriptor.get("code") == "s3":
-            return S3Control.from_descriptor(descriptor)
+            return AwsControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
         if resource.scheme == "s3":

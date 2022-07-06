@@ -3,14 +3,16 @@ from ...dialect import Control
 from . import settings
 
 
-class S3Control(Control):
-    """S3 control representation"""
+class AwsControl(Control):
+    """Aws control representation"""
 
-    code = "s3"
+    code = "aws"
 
     # State
 
-    endpoint_url: str = os.environ.get("S3_ENDPOINT_URL") or settings.DEFAULT_ENDPOINT_URL
+    s3_endpoint_url: str = (
+        os.environ.get("S3_ENDPOINT_URL") or settings.DEFAULT_S3_ENDPOINT_URL
+    )
 
     # Metadata
 
@@ -19,6 +21,6 @@ class S3Control(Control):
         "additionalProperties": False,
         "properties": {
             "code": {},
-            "endpointUrl": {"type": "string"},
+            "s3EndpointUrl": {"type": "string"},
         },
     }

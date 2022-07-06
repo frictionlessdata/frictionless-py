@@ -1,6 +1,6 @@
 from ...plugin import Plugin
 from .control import ExcelControl
-from .parser import XlsxParser, XlsParser
+from .parsers import XlsxParser, XlsParser
 
 
 class ExcelPlugin(Plugin):
