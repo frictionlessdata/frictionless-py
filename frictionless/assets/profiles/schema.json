@@ -1455,7 +1455,6 @@
     },
     "foreignKeys": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "title": "Table Schema Foreign Key",
         "description": "Table Schema Foreign Key",

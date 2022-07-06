@@ -208,7 +208,6 @@ def test_pandas_parser_write_timezone():
 # Bugs
 
 
-@pytest.mark.xfail(reason="Not suppored v1 'profile'")
 def test_pandas_parser_write_bug_1100():
     datapackage = Package("data/issue-1100.package.json")
     target = datapackage.resources[0].to_pandas()
@@ -218,7 +217,6 @@ def test_pandas_parser_write_bug_1100():
     ]
 
 
-@pytest.mark.xfail(reason="Not suppored v1 'profile'")
 def test_pandas_parser_write_bug_1105():
     datapackage = Package("data/issue-1105.package.json")
     target = datapackage.resources[0].to_pandas()
