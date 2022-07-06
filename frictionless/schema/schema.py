@@ -179,15 +179,17 @@ class Schema(Metadata):
     # TODO: handle edge cases like wrong descriptor's prop types
     @classmethod
     def from_descriptor(cls, descriptor, **options):
-        schema = super().from_descriptor(descriptor, **options)
+        descriptor = super().metadata_normalize(descriptor)
 
-        # Normalize primary key
-        if schema.primary_key and not isinstance(schema.primary_key, list):
-            schema.primary_key = [schema.primary_key]
+        # Primary Key (v1)
+        primary_key = descriptor.get("primaryKey")
+        if primary_key and not isinstance(primary_key, list):
+            descriptor["primaryKey"] = [primary_key]
 
-        # Normalize foreign keys
-        if schema.foreign_keys:
-            for fk in schema.foreign_keys:
+        # Foreign Keys (v1)
+        foreign_keys = descriptor.get("foreignKeys")
+        if foreign_keys:
+            for fk in foreign_keys:
                 if not isinstance(fk, dict):
                     continue
                 fk.setdefault("fields", [])
@@ -199,7 +201,7 @@ class Schema(Metadata):
                 if not isinstance(fk["reference"]["fields"], list):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
-        return schema
+        return super().from_descriptor(descriptor, **options)
 
     @staticmethod
     def from_jsonschema(profile):

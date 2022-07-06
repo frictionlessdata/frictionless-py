@@ -935,14 +935,79 @@ class Resource(Metadata):
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         if isinstance(descriptor, str):
             options["basepath"] = helpers.parse_basepath(descriptor)
+        descriptor = super().metadata_normalize(descriptor)
+
+        # Url (v0)
+        url = descriptor.pop("url", None)
+        if url is not None:
+            descriptor.setdefault("path", url)
+
+        # Path (v1)
+        path = descriptor.get("path")
+        if path and isinstance(path, list):
+            descriptor["path"] = path[0]
+            descriptor["extrapaths"] = path[1:]
+
+        # Profile (v1)
+        profile = descriptor.pop("profile", None)
+        if profile == "data-resource":
+            descriptor["type"] = "file"
+        elif profile == "tabular-data-resource":
+            descriptor["type"] = "table"
+        elif profile:
+            descriptor.setdefault("profiles", [])
+            descriptor["profiles"].append(profile)
+
+        # Stats (v1)
+        for name in ["hash", "bytes"]:
+            value = descriptor.pop(name, None)
+            if value:
+                if name == "hash":
+                    hashing, value = helpers.parse_resource_hash(value)
+                    if hashing != settings.DEFAULT_HASHING:
+                        descriptor["hashing"] = hashing
+                descriptor.setdefault("stats", {})
+                descriptor["stats"][name] = value
+
         return super().from_descriptor(descriptor, **options)
 
-    # TODO: review / sync with report
     def to_descriptor(self, *, exclude=[]):
         descriptor = super().to_descriptor(exclude=exclude)
-        if not isinstance(descriptor.get("data", []), (list, dict)):
-            descriptor.pop("data", None)
-            descriptor["path"] = "<memory>"
+
+        # Data
+        if not isinstance(descriptor.get("data", []), list):
+            descriptor["data"] = []
+
+        # Path (v1)
+        if system.standards_version == "v1":
+            path = descriptor.get("path")
+            extrapaths = descriptor.pop("extrapaths")
+            descriptor["path"] = []
+            if path:
+                descriptor["path"].append(path)
+            if extrapaths:
+                descriptor["path"].extend(extrapaths)
+
+        # Profile (v1)
+        if system.standards_version == "v1":
+            type = descriptor.pop("type", None)
+            profiles = descriptor.pop("profiles", None)
+            if type == "table":
+                descriptor["profile"] = "tabular-data-profile"
+            elif profiles:
+                descriptor["profile"] = profiles[0]
+
+        # Stats (v1)
+        if system.standards_version == "v1":
+            stats = descriptor.pop("stats", None)
+            if stats:
+                hash = stats.get("hash")
+                bytes = stats.get("bytes")
+                if hash is not None:
+                    descriptor["hash"] = hash
+                if bytes is not None:
+                    descriptor["bytes"] = bytes
+
         return descriptor
 
     def to_view(self, type="look", **options):

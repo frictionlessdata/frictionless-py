@@ -167,22 +167,20 @@ class Field(Metadata):
     # TODO: review
     @classmethod
     def from_descriptor(cls, descriptor):
-
-        # Factory
+        descriptor = cls.metadata_normalize(descriptor)
         if cls is Field:
-            descriptor = cls.metadata_normalize(descriptor)
             try:
-                return system.create_field(descriptor)  # type: ignore
+                return system.create_field(descriptor)
             except FrictionlessException:
                 fields = import_module("frictionless").fields
                 return fields.AnyField.from_descriptor(descriptor)
-        field = super().from_descriptor(descriptor)
 
-        # Legacy format
-        if isinstance(field.format, str) and field.format.startswith("fmt:"):
-            field.format = field.format.replace("fmt:", "")
+        # Format (v0)
+        format = descriptor.get("format")
+        if format and isinstance(format, str) and format.startswith("fmt:"):
+            descriptor["format"] = format.replace("fmt:", "")
 
-        return field
+        return super().from_descriptor(descriptor)
 
     # Metadata
 

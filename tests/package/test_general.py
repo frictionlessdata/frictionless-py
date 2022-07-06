@@ -1,5 +1,6 @@
 import pytest
 import zipfile
+import textwrap
 from collections.abc import Mapping
 from pathlib import Path
 from frictionless import Package, Resource, system, helpers
@@ -167,7 +168,6 @@ def test_package_from_zip():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_package_from_zip_remote():
     package = Package(BASEURL % "data/package.zip")
@@ -180,7 +180,6 @@ def test_package_from_zip_remote():
     ]
 
 
-@pytest.mark.skip
 def test_package_from_zip_no_descriptor(tmpdir):
     descriptor = str(tmpdir.join("package.zip"))
     with zipfile.ZipFile(descriptor, "w") as zip:
@@ -192,7 +191,6 @@ def test_package_from_zip_no_descriptor(tmpdir):
     assert error.note.count("datapackage.json")
 
 
-@pytest.mark.skip
 def test_package_from_zip_innerpath():
     package = Package("data/innerpath.package.zip", innerpath="datapackage.yaml")
     assert package.name == "emissions"
@@ -283,19 +281,19 @@ def test_package_set_trusted():
     assert package.trusted is False
 
 
-@pytest.mark.skip
 def test_package_pprint():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})
-    expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
-                'name': 'name'}]}"""
-    assert repr(package) == expected
+    expected = """
+    {'resources': [{'name': 'name',
+                    'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']]}]}
+    """
+    assert repr(package) == textwrap.dedent(expected).strip()
 
 
 # Bugs
 
 
-@pytest.mark.skip
 def test_package_dialect_no_header_issue_167():
     package = Package("data/package-dialect-no-header.json")
     resource = package.get_resource("people")
@@ -304,7 +302,6 @@ def test_package_dialect_no_header_issue_167():
     assert rows[1]["score"] == 1
 
 
-@pytest.mark.skip
 def test_package_validation_is_not_strict_enough_issue_869():
     package = Package("data/issue-869.json")
     errors = package.metadata_errors
