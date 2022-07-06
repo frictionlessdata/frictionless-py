@@ -11,6 +11,7 @@ from ..detector import Detector
 from ..resource import Resource
 from ..field import Field
 from ..system import system
+from .analyze import analyze
 from .describe import describe
 from .extract import extract
 from .transform import transform
@@ -130,6 +131,7 @@ class Package(Metadata):
     extract = extract
     transform = transform
     validate = validate
+    analyze = analyze
 
     def __init__(
         self,
