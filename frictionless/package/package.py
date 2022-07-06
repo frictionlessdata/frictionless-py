@@ -43,6 +43,7 @@ class Package(Metadata):
 
     """
 
+    analyze = methods.analyze
     describe = methods.describe
     extract = methods.extract
     transform = methods.transform

@@ -46,6 +46,7 @@ class Resource(Metadata):
 
     """
 
+    analyze = methods.analyze
     describe = methods.describe
     extract = methods.extract
     validate = methods.validate  # type: ignore

@@ -1,0 +1,10 @@
+type_school,school_accreditation,gender,interest,residence,parent_age,parent_salary,house_area,average_grades,parent_was_in_college,in_college
+Academic,A,Male,Less Interested,Urban,56,,83.0,,False,True
+Academic,A,Male,Less Interested,Urban,57,4410000,76.8,86.91,False,True
+Academic,B,Female,Very Interested,Urban,50,6500000,80.6,87.43,False,True
+Vocational,B,Male,Very Interested,Rural,49,6600000,78.2,,True,True
+Academic,A,Female,Very Interested,Urban,57,5250000,75.1,86.79,False,False
+Vocational,B,Female,Less Interested,Rural,48,3770000,65.3,86.79,True,False
+Academic,A,Male,Very Interested,Rural,52,6680000,85.5,90.39,True,True
+Academic,B,Male,Very Interested,Rural,53,5890000,83.3,84.65,True,False
+Academic,B,Female,Uncertain,Rural,52,6730000,80.3,10000,True,True
