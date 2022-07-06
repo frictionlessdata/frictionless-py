@@ -1,13 +1,10 @@
 import pytest
 from frictionless import Package, Pipeline, steps
 
-pytestmark = pytest.mark.skip
-
 
 # General
 
 
-@pytest.mark.skip
 def test_transform_package():
     source = Package("data/tables/chunk*.csv")
     pipeline = Pipeline(

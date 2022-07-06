@@ -14,7 +14,6 @@ def test_resource_onerror():
     assert resource.read_rows()
 
 
-@pytest.mark.skip
 def test_resource_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
     schema = Schema.from_descriptor({"fields": [{"name": "bad", "type": "integer"}]})
@@ -26,7 +25,6 @@ def test_resource_onerror_header_warn():
         resource.read_rows()
 
 
-@pytest.mark.skip
 def test_resource_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = Schema.from_descriptor({"fields": [{"name": "bad", "type": "integer"}]})
@@ -38,7 +36,6 @@ def test_resource_onerror_header_raise():
         resource.read_rows()
 
 
-@pytest.mark.skip
 def test_resource_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
     schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})
@@ -50,7 +47,6 @@ def test_resource_onerror_row_warn():
         resource.read_rows()
 
 
-@pytest.mark.skip
 def test_resource_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})

@@ -40,7 +40,6 @@ def test_package_resources_empty():
     assert package.resources == []
 
 
-@pytest.mark.skip
 def test_package_add_resource():
     package = Package({})
     resource = package.add_resource({"name": "name", "data": []})
@@ -80,7 +79,6 @@ def test_package_remove_resource_error_not_found():
     assert error.note == 'resource "bad" does not exist'
 
 
-@pytest.mark.skip
 def test_package_update_resource():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})
@@ -89,7 +87,6 @@ def test_package_update_resource():
     assert package == {"resources": [{"name": "newname", "data": data}]}
 
 
-@pytest.mark.skip
 def test_package_resources_append_in_place():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": []})
@@ -97,7 +94,6 @@ def test_package_resources_append_in_place():
     assert package == {"resources": [{"name": "newname", "data": data}]}
 
 
-@pytest.mark.skip
 def test_package_resources_remove_in_place():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "newname", "data": data}]})
@@ -108,7 +104,6 @@ def test_package_resources_remove_in_place():
 # Bugs
 
 
-@pytest.mark.skip
 def test_package_resources_respect_layout_set_after_creation_issue_503():
     package = Package(resources=[Resource(path="data/table.csv")])
     resource = package.get_resource("table")

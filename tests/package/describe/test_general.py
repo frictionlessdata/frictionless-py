@@ -1,8 +1,6 @@
 import pytest
 from frictionless import Package, helpers
 
-pytestmark = pytest.mark.skip
-
 
 # General
 
