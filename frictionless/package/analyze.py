@@ -6,6 +6,8 @@ if TYPE_CHECKING:
 
 def analyze(package: "Package", *, detailed=False):
     """Analyze the resources of the package
+    This feature is currently experimental, and its API may change
+    without warning.
 
     Parameters:
         package (Package): package object

@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 def analyze(resource: "Resource", *, detailed=False) -> dict:
     """Analyze the resource
+    This feature is currently experimental, and its API may change
+    without warning.
 
     Parameters:
         resource (Resource): resource object
@@ -26,10 +28,10 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
 
     # Row stats
     analysis_report = {}
-    analysis_report["variable_types"] = {}
-    analysis_report["not_null_rows"] = 0
-    analysis_report["rows_with_null_values"] = 0
-    analysis_report["field_stats"] = {}
+    analysis_report["variableTypes"] = {}
+    analysis_report["notNullRows"] = 0
+    analysis_report["rowsWithNullValues"] = 0
+    analysis_report["fieldStats"] = {}
 
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
@@ -49,28 +51,28 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
             columns_data[field.name].append(cell)
 
         if null_columns > 0:
-            analysis_report["rows_with_null_values"] += 1
+            analysis_report["rowsWithNullValues"] += 1
 
     # Field/Column Stats
     if columns_data and detailed:
         analysis_report["correlations"] = {}
         for field in resource.schema.fields:
-            analysis_report["field_stats"][field.name] = {}
+            analysis_report["fieldStats"][field.name] = {}
 
-            if field.type not in analysis_report["variable_types"]:
-                analysis_report["variable_types"][field.type] = 0
-            analysis_report["variable_types"][field.type] += 1
+            if field.type not in analysis_report["variableTypes"]:
+                analysis_report["variableTypes"][field.type] = 0
+            analysis_report["variableTypes"][field.type] += 1
 
             # summary - categorical data
             if field.type not in [*numeric, "boolean"]:
-                analysis_report["field_stats"][field.name]["type"] = "categorical"
-                analysis_report["field_stats"][field.name]["values"] = set(
+                analysis_report["fieldStats"][field.name]["type"] = "categorical"
+                analysis_report["fieldStats"][field.name]["values"] = set(
                     columns_data[field.name]
                 )
 
             # descriptive statistics - numeric data
             if field.type in numeric:
-                analysis_report["field_stats"][field.name]["type"] = "numeric"
+                analysis_report["fieldStats"][field.name]["type"] = "numeric"
                 rows_without_nan_values = [
                     cell for cell in columns_data[field.name] if cell is not nan
                 ]
@@ -79,12 +81,12 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
                 if len(rows_without_nan_values) < 2:
                     continue
 
-                analysis_report["field_stats"][field.name].update(
+                analysis_report["fieldStats"][field.name].update(
                     _statistics(rows_without_nan_values)
                 )
-                analysis_report["field_stats"][field.name]["outliers"] = []
-                analysis_report["field_stats"][field.name][
-                    "missing_values"
+                analysis_report["fieldStats"][field.name]["outliers"] = []
+                analysis_report["fieldStats"][field.name][
+                    "missingValues"
                 ] = resource.stats["rows"] - len(rows_without_nan_values)
 
                 # calculate correlation between variables(columns/fields)
@@ -105,7 +107,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
                             if field.name not in analysis_report["correlations"]:
                                 analysis_report["correlations"][field.name] = []
                             correlation_result = {
-                                "field_name": field_y.name,
+                                "fieldName": field_y.name,
                                 "corr": _correlation(var_x, var_y),
                             }
                             analysis_report["correlations"][field.name].append(
@@ -113,25 +115,25 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
                             )
 
                 # calculate outliers
-                lower_bound, upper_bound = analysis_report["field_stats"][field.name][
+                lower_bound, upper_bound = analysis_report["fieldStats"][field.name][
                     "bounds"
                 ]
                 for cell in columns_data[field.name]:
                     if cell is not nan:
                         if not lower_bound < cell < upper_bound:
-                            analysis_report["field_stats"][field.name]["outliers"].append(
+                            analysis_report["fieldStats"][field.name]["outliers"].append(
                                 cell
                             )
 
-    analysis_report["not_null_rows"] = (
-        resource.stats["rows"] - analysis_report["rows_with_null_values"]
+    analysis_report["notNullRows"] = (
+        resource.stats["rows"] - analysis_report["rowsWithNullValues"]
     )
-    analysis_report["average_record_size_in_bytes"] = 0
+    analysis_report["averageRecordSizeInBytes"] = 0
     if resource.stats["rows"]:
-        analysis_report["average_record_size_in_bytes"] = (
+        analysis_report["averageRecordSizeInBytes"] = (
             resource.stats["bytes"] / resource.stats["rows"]
         )
-    analysis_report["time_taken"] = timer.time
+    analysis_report["timeTaken"] = timer.time
     return {**analysis_report, **resource.stats}
 
 
@@ -212,7 +214,7 @@ def _statistics(data: Union[float, int]) -> dict:
     resource_stats["max"] = max(data)
     resource_stats["min"] = min(data)
     resource_stats["bounds"] = _find_bounds(resource_stats["quantiles"])
-    resource_stats["unique_values"] = len(set(data))
+    resource_stats["uniqueValues"] = len(set(data))
     return resource_stats
 
 
