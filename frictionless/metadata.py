@@ -214,7 +214,8 @@ class Metadata(metaclass=Metaclass):
         Error = self.metadata_Error or frictionless.errors.MetadataError
         filename = self.__class__.__name__.lower()
         template = f"{filename}-table.md" if table is True else f"{filename}.md"
-        md_output = render_markdown(f"{template}", {filename: self}).strip()
+        descriptor = self.to_descriptor()
+        md_output = render_markdown(f"{template}", {filename: descriptor}).strip()
         if path:
             try:
                 helpers.write_file(path, md_output)

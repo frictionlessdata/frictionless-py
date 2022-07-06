@@ -127,7 +127,8 @@ class Package(Metadata):
                 pattern = f"{source}/*" if os.path.isdir(source) else source
                 configs = {"recursive": True} if "**" in pattern else {}
                 for path in sorted(glob.glob(pattern, **configs)):
-                    options["resources"].append({"path": path})
+                    options["resources"].append(Resource(path=path))
+                return Package.from_options(**options)
 
             # Descriptor
             options.setdefault("trusted", False)
@@ -330,7 +331,6 @@ class Package(Metadata):
         """
 
         # General
-        self.setdefault("profile", settings.DEFAULT_PACKAGE_PROFILE)
         for resource in self.resources:
             resource.infer(stats=stats)
 
@@ -472,7 +472,7 @@ class Package(Metadata):
             path(str): file path
             **options(dict): resouce options
         """
-        return Package(descriptor=path, **options)
+        return Package(path, **options)
 
     def to_zip(self, path, *, encoder_class=None, compression=zipfile.ZIP_DEFLATED):
         """Save package to a zip
@@ -487,6 +487,8 @@ class Package(Metadata):
         Raises:
             FrictionlessException: on any error
         """
+        # TODO: review inferring here
+        self.infer()
         try:
             with zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
@@ -597,14 +599,13 @@ class Package(Metadata):
             edges="\n\t".join(edges),
         )
 
-        # Write diagram
-        path = path if path else "package.dot"
-        try:
-            helpers.write_file(path, text)
-        except Exception as exc:
-            raise FrictionlessException(self.__Error(note=str(exc))) from exc
-
-        return path
+        # Output diagram
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(errors.PackageError(note=str(exc))) from exc
+        return text
 
     # Metadata
 

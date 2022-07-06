@@ -11,7 +11,6 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
-@pytest.mark.skip
 def test_package_to_copy():
     source = Package.describe("data/chunk*.csv")
     target = source.to_copy()
@@ -49,7 +48,6 @@ def test_package_to_yaml(tmpdir):
 # Zip
 
 
-@pytest.mark.skip
 def test_package_to_zip(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package("data/package.json")
@@ -64,7 +62,6 @@ def test_package_to_zip(tmpdir):
     ]
 
 
-@pytest.mark.skip
 def test_package_to_zip_resource_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path="data/table.csv")])
@@ -77,8 +74,8 @@ def test_package_to_zip_resource_path(tmpdir):
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
+@pytest.mark.xfail(reason="Doesn't work because of the infer")
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
@@ -91,7 +88,6 @@ def test_package_to_zip_resource_remote_path(tmpdir):
     ]
 
 
-@pytest.mark.skip
 def test_package_to_zip_resource_memory_inline(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = [["id", "name"], [1, "english"], [2, "中国人"]]
@@ -105,7 +101,7 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Doesn't work with function")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
@@ -120,7 +116,6 @@ def test_package_to_zip_resource_memory_function(tmpdir):
     ]
 
 
-@pytest.mark.skip
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     control = formats.SqlControl(table="table")
@@ -134,13 +129,15 @@ def test_package_to_zip_resource_sql(tmpdir, database_url):
     ]
 
 
-@pytest.mark.skip
-def test_package_to_zip_resource_multipart(tmpdir, database_url):
+@pytest.mark.xfail(reason="Doesn't work with multipart")
+def test_package_to_zip_resource_multipart(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
-    source = Package(resources=[Resource(path=["data/chunk1.csv", "data/chunk2.csv"])])
+    resource = Resource(path="data/chunk1.csv", extrapaths=["data/chunk2.csv"])
+    source = Package(resources=[resource])
     source.to_zip(path)
     target = Package.from_zip(path)
-    assert target.get_resource("chunk").path == ["data/chunk1.csv", "data/chunk2.csv"]
+    assert target.get_resource("chunk").path == "data/chunk1.csv"
+    assert target.get_resource("chunk").extrapaths == ["data/chunk2.csv"]
     assert target.get_resource("chunk").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -150,7 +147,6 @@ def test_package_to_zip_resource_multipart(tmpdir, database_url):
 # Markdown
 
 
-@pytest.mark.skip
 def test_package_to_markdown():
     descriptor = {
         "name": "package",
@@ -213,7 +209,6 @@ def test_package_to_markdown():
     assert package.to_markdown().strip() == expected
 
 
-@pytest.mark.skip
 def test_package_to_markdown_table():
     descriptor = {
         "name": "package",
@@ -276,7 +271,6 @@ def test_package_to_markdown_table():
     assert package.to_markdown(table=True).strip() == expected
 
 
-@pytest.mark.skip
 def test_package_to_markdown_file(tmpdir):
     descriptor = descriptor = descriptor = {
         "name": "package",
@@ -346,19 +340,15 @@ def test_package_to_markdown_file(tmpdir):
 # ER Diagram
 
 
-@pytest.mark.skip
-def test_package_to_erd(tmpdir):
+@pytest.mark.xfail(reason="This ER-diagram export doesn't work")
+def test_package_to_erd():
     package = Package("data/package-storage.json")
-    output_file = os.path.join(tmpdir, "output.dot")
     with open("data/fixtures/dot-files/package.dot") as file:
         expected = file.read()
-    package.to_er_diagram(output_file)
-    with open(output_file) as file:
-        output = file.read()
+    output = package.to_er_diagram()
     assert expected.strip() == output.strip()
 
 
-@pytest.mark.skip
 def test_package_to_erd_table_names_with_dash(tmpdir):
     # graphviz shows error if the table/field name has "-" so need to
     # wrap names with quotes ""
@@ -375,7 +365,6 @@ def test_package_to_erd_table_names_with_dash(tmpdir):
     assert output.count('"number-two"')
 
 
-@pytest.mark.skip
 def test_package_to_erd_without_table_relationships(tmpdir):
     package = Package("data/datapackage.json")
     output_file = os.path.join(tmpdir, "output.dot")
