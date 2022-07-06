@@ -18,6 +18,7 @@ from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
+from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
@@ -597,53 +598,54 @@ class Package(Metadata):
         return super().metadata_properties(resources=Resource)
 
     def metadata_validate(self):
+        # TODO: recover
         # Check invalid properties
-        invalid_fields = {
-            "missingValues": "resource.schema.missingValues",
-            "fields": "resource.schema.fields",
-        }
-        for invalid_field, object in invalid_fields.items():
-            if invalid_field in self:
-                note = f'"{invalid_field}" should be set as "{object}" (not "package.{invalid_field}").'
-                yield errors.PackageError(note=note)
+        #  invalid_fields = {
+        #  "missingValues": "resource.schema.missingValues",
+        #  "fields": "resource.schema.fields",
+        #  }
+        #  for invalid_field, object in invalid_fields.items():
+        #  if invalid_field in self:
+        #  note = f'"{invalid_field}" should be set as "{object}" (not "package.{invalid_field}").'
+        #  yield errors.PackageError(note=note)
 
         # Package
-        if self.profile == "data-package":
-            yield from super().metadata_validate()
-        elif self.profile == "fiscal-data-package":
-            yield from super().metadata_validate(settings.FISCAL_PACKAGE_PROFILE)
-        elif self.profile == "tabular-data-package":
-            yield from super().metadata_validate(settings.TABULAR_PACKAGE_PROFILE)
-        else:
-            if not self.trusted:
-                if not helpers.is_safe_path(self.profile):
-                    note = f'path "{self.profile}" is not safe'
-                    error = errors.PackageError(note=note)
-                    raise FrictionlessException(error)
-            profile = Metadata(self.profile).to_dict()
-            yield from super().metadata_validate(profile)
+        #  if self.profile == "data-package":
+        #  yield from super().metadata_validate()
+        #  elif self.profile == "fiscal-data-package":
+        #  yield from super().metadata_validate(settings.FISCAL_PACKAGE_PROFILE)
+        #  elif self.profile == "tabular-data-package":
+        #  yield from super().metadata_validate(settings.TABULAR_PACKAGE_PROFILE)
+        #  else:
+        #  if not self.trusted:
+        #  if not helpers.is_safe_path(self.profile):
+        #  note = f'path "{self.profile}" is not safe'
+        #  error = errors.PackageError(note=note)
+        #  raise FrictionlessException(error)
+        #  profile = Metadata(self.profile).to_dict()
+        #  yield from super().metadata_validate(profile)
 
         # Resources
         for resource in self.resources:
             yield from resource.metadata_errors
-        if len(self.resource_names) != len(set(self.resource_names)):
-            note = "names of the resources are not unique"
-            yield errors.PackageError(note=note)
+        #  if len(self.resource_names) != len(set(self.resource_names)):
+        #  note = "names of the resources are not unique"
+        #  yield errors.PackageError(note=note)
 
         # Created
-        if self.get("created"):
-            field = Field(type="datetime")
-            cell = field.read_cell(self.get("created"))[0]
-            if not cell:
+        if self.created:
+            field = fields.DatetimeField()
+            _, note = field.read_cell(self.created)
+            if note:
                 note = 'property "created" is not valid "datetime"'
                 yield errors.PackageError(note=note)
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:
-            for item in self.get(name, []):
+            for item in getattr(self, name, []):
                 if item.get("email"):
-                    field = Field(type="string", format="email")
-                    cell = field.read_cell(item.get("email"))[0]
-                    if not cell:
+                    field = fields.StringField(format="email")
+                    _, note = field.read_cell(item.get("email"))
+                    if note:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)

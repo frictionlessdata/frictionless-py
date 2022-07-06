@@ -3,7 +3,7 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Resource, Dialect, validate, helpers
+from frictionless import Package, Resource, Dialect, helpers
 
 
 # Read
@@ -35,7 +35,6 @@ def test_s3_loader(bucket_name):
 # Write
 
 
-@pytest.mark.skip
 @mock_s3
 def test_s3_loader_write(bucket_name):
     client = boto3.resource("s3", region_name="us-east-1")
@@ -85,7 +84,6 @@ def test_s3_loader_big_file(bucket_name):
 # Bugs
 
 
-@pytest.mark.skip
 @mock_s3
 def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
 
@@ -108,7 +106,9 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
             {"path": "s3://%s/table2.csv" % bucket_name},
         ]
     }
-    report = validate(descriptor)
+    package = Package(descriptor)
+    print(package.to_descriptor())
+    report = package.validate()
     assert report.valid
     assert report.stats["tasks"] == 2
 
