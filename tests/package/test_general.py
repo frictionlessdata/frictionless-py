@@ -310,7 +310,6 @@ def test_package_validation_is_not_strict_enough_issue_869():
     assert errors[1].note == 'property "contributors[].email" is not valid "email"'
 
 
-@pytest.mark.skip
 def test_package_validation_duplicate_resource_names_issue_942():
     package = Package(
         resources=[
