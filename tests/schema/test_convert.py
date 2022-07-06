@@ -28,12 +28,11 @@ DESCRIPTOR_MAX = {
 # General
 
 
-@pytest.mark.skip
 def test_schema_to_copy():
     source = Schema.describe("data/table.csv")
     target = source.to_copy()
     assert source is not target
-    assert source == target
+    assert source.to_descriptor() == target.to_descriptor()
 
 
 def test_schema_to_json(tmpdir):
@@ -124,8 +123,6 @@ def test_schema_to_summary_with_name_missing_for_some_fields():
 # Markdown
 
 
-# TODO: recover when Schema is renamed
-@pytest.mark.skip
 def test_schema_to_markdown():
     descriptor = {
         "fields": [
@@ -151,8 +148,6 @@ def test_schema_to_markdown():
     assert schema.to_markdown().strip() == expected
 
 
-# TODO: recover when Schema is renamed
-@pytest.mark.skip
 def test_schema_to_markdown_table():
     descriptor = {
         "fields": [
@@ -178,8 +173,6 @@ def test_schema_to_markdown_table():
     assert schema.to_markdown(table=True).strip() == expected
 
 
-# TODO: recover when Schema is renamed
-@pytest.mark.skip
 def test_schema_to_markdown_file(tmpdir):
     descriptor = {
         "fields": [
@@ -212,10 +205,9 @@ def test_schema_to_markdown_file(tmpdir):
 # JSONSchema
 
 
-@pytest.mark.skip
 def test_schema_from_jsonschema():
     schema = Schema.from_jsonschema("data/ecrin.json")
-    assert schema == {
+    assert schema.to_descriptor() == {
         "fields": [
             {"name": "file_type", "type": "string", "description": "always 'study'"},
             {
@@ -288,7 +280,6 @@ def test_schema_from_jsonschema():
 # Excel template
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "zip_path",
     [

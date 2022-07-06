@@ -203,8 +203,8 @@ class Schema(Metadata):
 
         return super().from_descriptor(descriptor, **options)
 
-    @staticmethod
-    def from_jsonschema(profile):
+    @classmethod
+    def from_jsonschema(cls, profile):
         """Create a Schema from JSONSchema profile
 
         Parameters:
@@ -214,7 +214,7 @@ class Schema(Metadata):
             Schema: schema instance
         """
         schema = Schema()
-        profile = Metadata(profile).to_dict()
+        profile = cls.metadata_normalize(profile)
         required = profile.get("required", [])
         assert isinstance(required, list)
         properties = profile.get("properties", {})
@@ -258,7 +258,7 @@ class Schema(Metadata):
         tableschema_to_template = helpers.import_from_plugin(
             "tableschema_to_template", plugin="excel"
         )
-        return tableschema_to_template.create_xlsx(self, path)
+        return tableschema_to_template.create_xlsx(self.to_descriptor(), path)
 
     def to_summary(self) -> str:
         """Summary of the schema in table format"""
