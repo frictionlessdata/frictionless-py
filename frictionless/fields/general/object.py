@@ -51,3 +51,4 @@ class ObjectField(Field):
         9
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}

@@ -66,6 +66,7 @@ class StringField(Field):
         0
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}
 
 
 # Internal

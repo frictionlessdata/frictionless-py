@@ -1,4 +1,5 @@
 import pytest
+import textwrap
 from frictionless import Field, helpers
 
 
@@ -91,7 +92,6 @@ def test_field_description_text_plain():
     assert field.description_text == "It's just a plain text. Another sentence"
 
 
-@pytest.mark.skip
 def test_field_pprint():
     field = Field.from_descriptor(
         {
@@ -100,5 +100,19 @@ def test_field_pprint():
             "constraints": {"maxLength": 2},
         }
     )
-    expected = """{'constraints': {'maxLength': 2}, 'name': 'name', 'type': 'string'}"""
-    assert repr(field) == expected
+    expected = """
+    {'name': 'name', 'type': 'string', 'constraints': {'maxLength': 2}}
+    """
+    assert repr(field) == textwrap.dedent(expected).strip()
+
+
+@pytest.mark.parametrize("example_value", [(None), (42), ("foo")])
+def test_field_with_example_set(example_value):
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "string",
+            "example": example_value,
+        }
+    )
+    assert field.example == example_value

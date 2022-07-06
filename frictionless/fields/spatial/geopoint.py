@@ -77,6 +77,7 @@ class GeopointField(Field):
         10
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}
 
 
 # Internal

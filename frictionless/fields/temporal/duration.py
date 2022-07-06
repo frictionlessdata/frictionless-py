@@ -48,3 +48,4 @@ class DurationField(Field):
         13
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}

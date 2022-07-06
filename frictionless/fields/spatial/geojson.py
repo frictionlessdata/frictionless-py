@@ -53,6 +53,7 @@ class GeojsonField(Field):
         11
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}
 
 
 # Internal

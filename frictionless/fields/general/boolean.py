@@ -57,3 +57,4 @@ class BooleanField(Field):
         8
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}

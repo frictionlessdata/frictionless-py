@@ -65,3 +65,4 @@ class TimeField(Field):
         4
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}

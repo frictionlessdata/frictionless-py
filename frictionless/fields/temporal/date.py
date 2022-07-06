@@ -71,3 +71,4 @@ class DateField(Field):
         3
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}

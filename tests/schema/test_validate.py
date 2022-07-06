@@ -11,9 +11,9 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Not yet decided how to handle these situations")
 def test_validate_invalid():
-    schema = Schema.from_descriptor({"fields": {}})
+    schema = Schema.from_descriptor({"fields": "bad"})
     report = schema.validate()
     assert report.flatten(["code", "note"]) == [
         [

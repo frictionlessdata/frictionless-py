@@ -190,6 +190,7 @@ class Field(Metadata):
         14
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}
 
     def metadata_validate(self):
         yield from super().metadata_validate()

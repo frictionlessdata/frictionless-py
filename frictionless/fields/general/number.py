@@ -105,3 +105,4 @@ class NumberField(Field):
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
     metadata_profile["properties"]["floatNumber"] = {}
+    metadata_profile["properties"]["example"] = {}

@@ -87,3 +87,4 @@ class ArrayField(Field):
         12
     ].copy()
     metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}

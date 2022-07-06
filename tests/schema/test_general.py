@@ -1,6 +1,7 @@
 import io
 import json
 import pytest
+import textwrap
 import requests
 from decimal import Decimal
 from frictionless import Schema, Field, helpers
@@ -40,9 +41,7 @@ def test_schema_extract_metadata_error():
         Schema.from_descriptor([])  # type: ignore
 
 
-@pytest.mark.skip
 def test_schema_descriptor():
-    assert Schema.from_descriptor(DESCRIPTOR_MIN).to_descriptor() == DESCRIPTOR_MIN
     assert Schema.from_descriptor(DESCRIPTOR_MAX).to_descriptor() == DESCRIPTOR_MAX
 
 
@@ -245,7 +244,7 @@ def test_schema_metadata_not_valid():
     ).metadata_valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Error count doesn't match")
 def test_schema_metadata_not_valid_multiple_errors():
     schema = Schema.from_descriptor("data/schema-invalid-multiple-errors.json")
     assert len(schema.metadata_errors) == 5
@@ -256,7 +255,7 @@ def test_schema_metadata_not_valid_multiple_errors_with_pk():
     assert len(schema.metadata_errors) == 3
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Bad type error is not yet supported")
 def test_schema_metadata_error_message():
     schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
     note = schema.metadata_errors[0]["note"]
@@ -282,7 +281,6 @@ def test_schema_metadata_error_bad_schema_format():
     assert schema.metadata_errors[0].code == "field-error"
 
 
-@pytest.mark.skip
 def test_schema_valid_examples():
     schema = Schema.from_descriptor(
         {
@@ -296,21 +294,19 @@ def test_schema_valid_examples():
     assert len(schema.metadata_errors) == 0
 
 
-@pytest.mark.skip
 def test_schema_invalid_example():
     schema = Schema.from_descriptor(
         {
             "fields": [
                 {
                     "name": "name",
-                    "type": "string",
-                    "example": None,
-                    "constraints": {"required": True},
+                    "type": "number",
+                    "example": "bad",
                 }
             ]
         }
     )
-    note = schema.metadata_errors[0]["note"]
+    note = schema.metadata_errors[0].note
     assert len(schema.metadata_errors) == 1
     assert 'example value for field "name" is not valid' == note
 
@@ -334,7 +330,6 @@ def test_schema_standard_specs_properties(create_descriptor):
     assert schema.foreign_keys == []
 
 
-@pytest.mark.skip
 def test_schema_pprint():
     descriptor = {
         "fields": [
@@ -344,32 +339,37 @@ def test_schema_pprint():
         ]
     }
     schema = Schema.from_descriptor(descriptor)
-    expected = """{'fields': [{'format': 'default', 'name': 'test_1', 'type': 'string'},
-            {'format': 'default', 'name': 'test_2', 'type': 'string'},
-            {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
-    assert repr(schema) == expected
+    expected = """
+    {'fields': [{'name': 'test_1', 'type': 'string', 'format': 'default'},
+                {'name': 'test_2', 'type': 'string', 'format': 'default'},
+                {'name': 'test_3', 'type': 'string', 'format': 'default'}]}
+    """
+    print(repr(schema))
+    assert repr(schema) == textwrap.dedent(expected).strip()
 
 
-@pytest.mark.skip
-def test_schema_pprint():
-    metadata = Schema.from_descriptor("data/schema-valid.json")
-    expected = """{'fields': [{'constraints': {'required': True},
-             'description': 'The id.',
-             'name': 'id',
-             'title': 'ID',
-             'type': 'integer'},
-            {'constraints': {'required': True},
-             'description': 'The name.',
-             'name': 'name',
-             'title': 'Name',
-             'type': 'string'},
-            {'constraints': {'required': True},
-             'description': 'The age.',
-             'name': 'age',
-             'title': 'Age',
-             'type': 'integer'}],
- 'primaryKey': 'id'}"""
-    assert repr(metadata) == expected
+def test_schema_pprint_with_constraints():
+    schema = Schema.from_descriptor("data/schema-valid.json")
+    expected = """
+    {'fields': [{'name': 'id',
+                 'title': 'ID',
+                 'description': 'The id.',
+                 'type': 'integer',
+                 'constraints': {'required': True}},
+                {'name': 'name',
+                 'title': 'Name',
+                 'description': 'The name.',
+                 'type': 'string',
+                 'constraints': {'required': True}},
+                {'name': 'age',
+                 'title': 'Age',
+                 'description': 'The age.',
+                 'type': 'integer',
+                 'constraints': {'required': True}}],
+     'primaryKey': ['id']}
+    """
+    print(repr(schema))
+    assert repr(schema) == textwrap.dedent(expected).strip()
 
 
 # Bugs
@@ -402,7 +402,7 @@ def test_schema_add_remove_field_issue_218():
     )
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Not yet handled bad types")
 def test_schema_not_supported_type_issue_goodatbles_304():
     schema = Schema.from_descriptor(
         {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
