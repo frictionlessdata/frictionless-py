@@ -120,7 +120,7 @@ class Metadata(metaclass=Metaclass):
             if Type:
                 if isinstance(value, list):
                     value = [Type.from_descriptor(item) for item in value]
-                else:
+                elif isinstance(value, dict):
                     value = Type.from_descriptor(value)
             target[stringcase.snakecase(name)] = value
         target.update(options)

@@ -1,8 +1,8 @@
-# type: ignore
+import os
 import tempfile
+from .control import MultipartControl
 from ...resource import Resource
 from ...resource import Loader
-from ...system import system
 from ... import helpers
 
 
@@ -17,19 +17,26 @@ class MultipartLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        fullpath = self.resource.fullpath
+        paths = []
+        for path in [self.resource.path] + self.resource.extrapaths:
+            path = os.path.join(self.resource.basepath, path)
+            paths.append(path)
+        self.resource.dialect.get_control("multipart", ensure=MultipartControl())
         remote = self.resource.remote
-        headless = self.resource.get("layout", {}).get("header") is False
+        headless = self.resource.dialect.header is False
         headless = headless or self.resource.format != "csv"
-        byte_stream = MultipartByteStream(fullpath, remote=remote, headless=headless)
+        byte_stream = MultipartByteStream(paths, remote=remote, headless=headless)
         return byte_stream
 
     # Write
 
     def write_byte_stream_save(self, byte_stream):
+        control = self.resource.dialect.get_control(
+            "multipart", ensure=MultipartControl()
+        )
         number = 0
         while True:
-            bytes = byte_stream.read(self.resource.control.chunk_size)
+            bytes = byte_stream.read(control.chunk_size)
             if not bytes:
                 break
             number += 1
@@ -43,8 +50,8 @@ class MultipartLoader(Loader):
 
 
 class MultipartByteStream:
-    def __init__(self, path, *, remote, headless):
-        self.__path = path
+    def __init__(self, paths, *, remote, headless):
+        self.__paths = paths
         self.__remote = remote
         self.__headless = headless
         self.__line_stream = self.read_line_stream()
@@ -97,9 +104,9 @@ class MultipartByteStream:
         return res
 
     def read_line_stream(self):
-        for number, path in enumerate(self.__path, start=1):
-            with system.create_loader(Resource(path=path)) as loader:
-                for line_number, line in enumerate(loader.byte_stream, start=1):
+        for number, path in enumerate(self.__paths, start=1):
+            with Resource(path=path).open(as_file=True) as resource:
+                for line_number, line in enumerate(resource.byte_stream, start=1):
                     if not self.__headless and number > 1 and line_number == 1:
                         continue
                     yield line
