@@ -2,7 +2,7 @@ import pytest
 import zipfile
 from collections.abc import Mapping
 from pathlib import Path
-from frictionless import Package, Resource, helpers
+from frictionless import Package, Resource, system, helpers
 from frictionless import FrictionlessException
 
 
@@ -27,13 +27,17 @@ def test_package():
     }
 
 
-@pytest.mark.skip
 def test_package_from_dict():
     package = Package({"name": "name", "profile": "data-package"})
     assert package.to_descriptor() == {
         "name": "name",
-        "profile": "data-package",
+        "profiles": ["data-package"],
     }
+    with system.use_standards_version("v1"):
+        assert package.to_descriptor() == {
+            "name": "name",
+            "profile": "data-package",
+        }
 
 
 class NotADict(Mapping):

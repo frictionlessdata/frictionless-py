@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 # General
 
 
+IStandardsVersion = Literal["v1", "v2"]
 IDescriptor = Dict[str, Any]
 IDescriptorSource = Union[str, dict]
 IByteStream = BinaryIO

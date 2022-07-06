@@ -13,7 +13,6 @@ from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..detector import Detector
 from ..resource import Resource
-from ..schema import Field
 from ..system import system
 from .. import settings
 from .. import helpers
@@ -358,7 +357,26 @@ class Package(Metadata):
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         if isinstance(descriptor, str):
             options["basepath"] = helpers.parse_basepath(descriptor)
+        descriptor = super().metadata_normalize(descriptor)
+
+        # Profile
+        profile = descriptor.pop("profile", None)
+        if profile:
+            descriptor.setdefault("profiles", [])
+            descriptor["profiles"].append(profile)
+
         return super().from_descriptor(descriptor, **options)
+
+    def to_descriptor(self, *, exclude=[]):
+        descriptor = super().to_descriptor(exclude=exclude)
+        if system.standards_version == "v1":
+
+            # Profile
+            profiles = descriptor.pop("profiles", None)
+            if profiles:
+                descriptor["profile"] = profiles[0]
+
+        return descriptor
 
     # TODO: if path is not provided return as a string
     def to_er_diagram(self, path=None) -> str:

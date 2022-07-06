@@ -30,6 +30,7 @@ TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json")
 # Defaults
 
 
+DEFAULT_STANDARDS_VERSION = "v2"
 DEFAULT_TYPE = "file"
 DEFAULT_SCHEME = "file"
 DEFAULT_FORMAT = "csv"

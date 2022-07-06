@@ -12,6 +12,7 @@ from . import settings
 from . import errors
 
 if TYPE_CHECKING:
+    from .interfaces import IStandardsVersion
     from .resource import Resource, Loader, Parser
     from .package import Storage
     from .plugin import Plugin
@@ -35,6 +36,7 @@ class System:
 
     """
 
+    standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
     supported_hooks = [
         "create_check",
         "create_control",
@@ -286,7 +288,7 @@ class System:
         for func in self.methods["detect_resource"].values():
             func(resource)
 
-    # Requests
+    # Context
 
     def get_http_session(self):
         """Return a HTTP session
@@ -321,6 +323,13 @@ class System:
         self.__http_session = http_session or self.get_http_session()
         yield self.__http_session
         self.__http_session = None
+
+    @contextmanager
+    def use_standards_version(self, version: IStandardsVersion):
+        current = self.standards_version
+        self.standards_version = version
+        yield version
+        self.standards_version = current
 
 
 system = System()
