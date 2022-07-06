@@ -2,6 +2,8 @@ from __future__ import annotations
 import os
 import json
 import glob
+import atexit
+import shutil
 import jinja2
 import zipfile
 import tempfile
@@ -117,7 +119,7 @@ class Package(Metadata):
             # Compressed
             elif helpers.is_zip_descriptor(source):
                 innerpath = options.get("innerpath", settings.DEFAULT_PACKAGE_INNERPATH)
-                source = helpers.unzip_descriptor(source, innerpath)
+                source = unzip_package(source, innerpath)
 
             # Expandable
             elif isinstance(source, str) and helpers.is_expandable_path(source):
@@ -369,12 +371,13 @@ class Package(Metadata):
 
     def to_descriptor(self, *, exclude=[]):
         descriptor = super().to_descriptor(exclude=exclude)
-        if system.standards_version == "v1":
+        if system.standards_version != "v1":
+            return descriptor
 
-            # Profile
-            profiles = descriptor.pop("profiles", None)
-            if profiles:
-                descriptor["profile"] = profiles[0]
+        # Profile
+        profiles = descriptor.pop("profiles", None)
+        if profiles:
+            descriptor["profile"] = profiles[0]
 
         return descriptor
 
@@ -667,3 +670,22 @@ class Package(Metadata):
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
+
+
+# Internal
+
+
+# NOTE: review if we can improve this code / move to a better place
+def unzip_package(path: str, innerpath: str) -> str:
+    with Resource(path=path, compression=None) as resource:
+        byte_stream = resource.byte_stream
+        if resource.remote:
+            byte_stream = tempfile.TemporaryFile()
+            shutil.copyfileobj(resource.byte_stream, byte_stream)
+            byte_stream.seek(0)
+        with zipfile.ZipFile(byte_stream, "r") as zip:
+            tempdir = tempfile.mkdtemp()
+            zip.extractall(tempdir)
+            atexit.register(shutil.rmtree, tempdir)
+            descriptor = os.path.join(tempdir, innerpath)
+    return descriptor

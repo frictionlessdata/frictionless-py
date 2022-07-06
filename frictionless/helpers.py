@@ -7,10 +7,7 @@ import sys
 import json
 import glob
 import marko
-import math
-import atexit
 import shutil
-import zipfile
 import tempfile
 import datetime
 import platform
@@ -295,23 +292,6 @@ def stringify_csv_string(cells):
     writer.writerow(cells)
     result = stream.getvalue().rstrip("\r\n")
     return result
-
-
-def unzip_descriptor(path, innerpath):
-    frictionless = import_module("frictionless")
-    resource = frictionless.Resource(path=path, compression="")
-    with frictionless.system.create_loader(resource) as loader:
-        byte_stream = loader.byte_stream
-        if loader.remote:
-            byte_stream = tempfile.TemporaryFile()
-            shutil.copyfileobj(loader.byte_stream, byte_stream)
-            byte_stream.seek(0)
-        with zipfile.ZipFile(byte_stream, "r") as zip:
-            tempdir = tempfile.mkdtemp()
-            zip.extractall(tempdir)
-            atexit.register(shutil.rmtree, tempdir)
-            descriptor = os.path.join(tempdir, innerpath)
-    return descriptor
 
 
 def parse_resource_hash(hash):

@@ -156,7 +156,6 @@ def test_package_from_invalid_descriptor_type():
     assert error.note.count("51")
 
 
-@pytest.mark.skip
 def test_package_from_zip():
     package = Package("data/package.zip")
     assert package.name == "testing"
