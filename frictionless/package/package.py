@@ -100,7 +100,7 @@ class Package(Metadata):
         for resource in self.resources:
             resource.package = self
 
-        # Handled by create hook
+        # Handled by the create hook
         assert source is None
 
     # TODO: support list of paths

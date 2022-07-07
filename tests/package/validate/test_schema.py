@@ -78,7 +78,7 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     del descriptor["resources"][0]["data"][4]
     package = Package(descriptor)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [4, None, "foreign-key", ["3", "rome", "4"]],
     ]
 
@@ -88,7 +88,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     del descriptor["resources"][1]["data"][4]
     package = Package(descriptor)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [5, None, "foreign-key", ["4", "rio", ""]],
     ]
 
@@ -98,7 +98,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     package = Package(descriptor)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [2, None, "foreign-key", ["1", "london", "2"]],
         [3, None, "foreign-key", ["2", "paris", "3"]],
         [4, None, "foreign-key", ["3", "rome", "4"]],
@@ -121,7 +121,7 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
     descriptor["resources"].append(MULTI_FK_RESSOURCE)
     package = Package(descriptor)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells", "note"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells", "note"]) == [
         [
             2,
             None,

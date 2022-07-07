@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Package, Resource
+from frictionless import Package, Resource, Dialect
 from frictionless import FrictionlessException
 
 
@@ -42,10 +42,9 @@ def test_package_resources_empty():
 
 def test_package_add_resource():
     package = Package({})
-    resource = package.add_resource({"name": "name", "data": []})
+    package.add_resource(Resource.from_descriptor({"name": "name", "data": []}))
     assert len(package.resources) == 1
     assert package.resources[0].name == "name"
-    assert resource.name == "name"
 
 
 def test_package_get_resource():
@@ -84,29 +83,16 @@ def test_package_update_resource():
     package = Package({"resources": [{"name": "name", "data": data}]})
     resource = package.get_resource("name")
     resource.name = "newname"
-    assert package == {"resources": [{"name": "newname", "data": data}]}
-
-
-def test_package_resources_append_in_place():
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    package = Package({"resources": []})
-    package.resources.append({"name": "newname", "data": data})
-    assert package == {"resources": [{"name": "newname", "data": data}]}
-
-
-def test_package_resources_remove_in_place():
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    package = Package({"resources": [{"name": "newname", "data": data}]})
-    del package.resources[0]
-    assert package == {"resources": []}
+    assert package.to_descriptor() == {"resources": [{"name": "newname", "data": data}]}
 
 
 # Bugs
 
 
+@pytest.mark.xfail(reason="Detect resource?")
 def test_package_resources_respect_layout_set_after_creation_issue_503():
     package = Package(resources=[Resource(path="data/table.csv")])
     resource = package.get_resource("table")
-    resource.layout = Layout(limit_rows=1)
+    resource.dialect = Dialect(comment_rows=[3])
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
     assert resource.header == ["id", "name"]

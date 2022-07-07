@@ -132,7 +132,7 @@ class Resource(Metadata):
         self.__lookup = None
         self.__row_stream = None
 
-        # Handled by create hook
+        # Handled by the create hook
         assert source is None
 
     @classmethod

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Package, helpers
+from frictionless import Package, Dialect, helpers
 
 
 # General
@@ -9,17 +9,18 @@ from frictionless import Package, helpers
 def test_describe_package():
     package = Package.describe("data/tables/chunk*.csv")
     assert package.metadata_valid
-    assert package == {
-        "profile": "data-package",
+    assert package.to_descriptor() == {
         "resources": [
             {
                 "path": "data/tables/chunk1.csv",
-                "profile": "tabular-data-resource",
                 "name": "chunk1",
+                "type": "table",
                 "scheme": "file",
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
+                "mediatype": "text/csv",
+                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -28,13 +29,15 @@ def test_describe_package():
                 },
             },
             {
-                "path": "data/tables/chunk2.csv",
-                "profile": "tabular-data-resource",
                 "name": "chunk2",
+                "path": "data/tables/chunk2.csv",
+                "type": "table",
                 "scheme": "file",
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
+                "mediatype": "text/csv",
+                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -50,17 +53,18 @@ def test_describe_package():
 def test_describe_package_with_stats():
     package = Package.describe("data/tables/chunk*.csv", stats=True)
     assert package.metadata_valid
-    assert package == {
-        "profile": "data-package",
+    assert package.to_descriptor() == {
         "resources": [
             {
                 "path": "data/tables/chunk1.csv",
-                "profile": "tabular-data-resource",
                 "name": "chunk1",
+                "type": "table",
                 "scheme": "file",
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
+                "mediatype": "text/csv",
+                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -75,13 +79,15 @@ def test_describe_package_with_stats():
                 },
             },
             {
-                "path": "data/tables/chunk2.csv",
-                "profile": "tabular-data-resource",
                 "name": "chunk2",
+                "path": "data/tables/chunk2.csv",
+                "type": "table",
                 "scheme": "file",
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
+                "mediatype": "text/csv",
+                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -122,15 +128,13 @@ def test_describe_package_hashing():
     )
 
 
-def test_describe_package_expand():
-    package = Package.describe("data/chunk*.csv", expand=True)
-    assert package.get_resource("chunk1").layout.header is True
-    assert package.get_resource("chunk1").schema.missing_values == [""]
+# Bugs
 
 
 def test_describe_package_with_dialect_1126():
-    package = Package.describe("data/country-2.csv", dialect={"delimiter": ";"})
-    assert package.get_resource("country-2")["schema"] == {
+    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ";"}]})
+    package = Package.describe("data/country-2.csv", dialect=dialect)
+    assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [
             {"type": "integer", "name": "id"},
             {"type": "integer", "name": "neighbor_id"},
@@ -142,7 +146,7 @@ def test_describe_package_with_dialect_1126():
 
 def test_describe_package_with_dialect_path_1126():
     package = Package.describe("data/country-2.csv", dialect="data/dialect.json")
-    assert package.get_resource("country-2")["schema"] == {
+    assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [
             {"type": "integer", "name": "id"},
             {"type": "integer", "name": "neighbor_id"},
@@ -153,17 +157,17 @@ def test_describe_package_with_dialect_path_1126():
 
 
 def test_describe_package_with_incorrect_dialect_1126():
-    package = Package.describe("data/country-2.csv", dialect={"delimiter": ","})
-    assert package.get_resource("country-2")["schema"] == {
+    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ","}]})
+    package = Package.describe("data/country-2.csv", dialect=dialect)
+    assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [{"type": "string", "name": "# Author: the scientist"}]
     }
 
 
 def test_describe_package_with_glob_having_one_incorrect_dialect_1126():
-    package = Package.describe("data/country-*.csv", dialect={"delimiter": ","})
-    resource_1 = package.get_resource("country-1")
-    resource_2 = package.get_resource("country-2")
-    assert resource_1["schema"] == {
+    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ","}]})
+    package = Package.describe("data/country-*.csv", dialect=dialect)
+    assert package.get_resource("country-1").schema.to_descriptor() == {
         "fields": [
             {"type": "integer", "name": "id"},
             {"type": "integer", "name": "neighbor_id"},
@@ -171,6 +175,6 @@ def test_describe_package_with_glob_having_one_incorrect_dialect_1126():
             {"type": "integer", "name": "population"},
         ]
     }
-    assert resource_2["schema"] == {
+    assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [{"type": "string", "name": "# Author: the scientist"}]
     }

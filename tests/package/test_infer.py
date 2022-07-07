@@ -100,6 +100,7 @@ def test_package_infer_non_utf8_file():
     assert package.resources[0].encoding == "iso8859-1"
 
 
+@pytest.mark.xfail(reason="Not supported empty")
 def test_package_infer_empty_file():
     package = Package("data/empty.csv")
     package.infer()

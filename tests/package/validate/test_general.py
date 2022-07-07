@@ -24,9 +24,7 @@ def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         package = Package(json.load(file), basepath="data/invalid")
         report = package.validate()
-        assert report.flatten(
-            ["taskPosition", "rowPosition", "fieldPosition", "code"]
-        ) == [
+        assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
             [1, 3, None, "blank-row"],
             [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
@@ -42,7 +40,7 @@ def test_validate_package_from_path():
 def test_validate_package_from_path_invalid():
     package = Package("data/invalid/datapackage.json")
     report = package.validate()
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -58,7 +56,7 @@ def test_validate_package_from_zip():
 def test_validate_package_from_zip_invalid():
     package = Package("data/package-invalid.zip")
     report = package.validate()
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -93,7 +91,7 @@ def test_validate_package_invalid_package_original():
 def test_validate_package_invalid_table():
     package = Package({"resources": [{"path": "data/invalid.csv"}]})
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -123,10 +121,10 @@ def test_validate_package_dialect_header_false():
             {
                 "name": "name",
                 "data": [["John", "22"], ["Alex", "33"], ["Paul", "44"]],
+                "dialect": {"header": False},
                 "schema": {
                     "fields": [{"name": "name"}, {"name": "age", "type": "integer"}]
                 },
-                "layout": {"header": False},
             }
         ]
     }
@@ -144,13 +142,13 @@ def test_validate_package_with_schema_as_string():
 
 
 def test_validate_package_descriptor_type_package():
-    package = Package(descriptor="data/package/datapackage.json")
+    package = Package("data/package/datapackage.json")
     report = package.validate()
     assert report.valid
 
 
 def test_validate_package_descriptor_type_package_invalid():
-    package = Package(descriptor="data/invalid/datapackage.json")
+    package = Package("data/invalid/datapackage.json")
     report = package.validate()
     assert report.flatten() == [
         [1, 3, None, "blank-row"],
@@ -202,7 +200,7 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     package = Package(descriptor)
     checklist = Checklist(skip_errors=["duplicate-row"])
     report = package.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [3, None, "primary-key"],
     ]
 
@@ -244,7 +242,7 @@ def test_validate_package_with_schema_issue_348():
     }
     package = Package(descriptor)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 4, "missing-label"],
         [2, 4, "missing-cell"],
         [3, 4, "missing-cell"],
@@ -281,14 +279,14 @@ def test_validate_package_using_detector_schema_sync_issue_847():
 
 
 def test_validate_package_with_diacritic_symbol_issue_905():
-    package = Package(descriptor="data/issue-905/datapackage.json")
+    package = Package("data/issue-905/datapackage.json")
     report = package.validate()
     assert report.stats["tasks"] == 3
 
 
 @pytest.mark.skip
 def test_validate_package_with_resource_data_is_a_string_issue_977():
-    package = Package(descriptor="data/issue-977.json")
+    package = Package("data/issue-977.json")
     report = package.validate()
     assert report.flatten() == [
         [None, None, None, "package-error"],
@@ -296,7 +294,7 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
 
 
 def test_validate_package_metadata_errors_with_missing_values_993():
-    package = Package(descriptor="data/package-with-missingvalues-993.json")
+    package = Package("data/package-with-missingvalues-993.json")
     assert package.metadata_errors[0].code == "package-error"
     assert (
         package.metadata_errors[0].note
@@ -305,7 +303,7 @@ def test_validate_package_metadata_errors_with_missing_values_993():
 
 
 def test_validate_package_metadata_errors_with_fields_993():
-    package = Package(descriptor="data/package-with-fields-993.json")
+    package = Package("data/package-with-fields-993.json")
     assert package.metadata_errors[0].code == "package-error"
     assert (
         package.metadata_errors[0].note
@@ -314,7 +312,7 @@ def test_validate_package_metadata_errors_with_fields_993():
 
 
 def test_validate_package_errors_with_missing_values_993():
-    package = Package(descriptor="data/package-with-missingvalues-993.json")
+    package = Package("data/package-with-missingvalues-993.json")
     report = package.validate()
     assert report.flatten(["code", "message"]) == [
         [
@@ -324,9 +322,8 @@ def test_validate_package_errors_with_missing_values_993():
     ]
 
 
-@pytest.mark.skip
 def test_validate_package_errors_with_fields_993():
-    package = Package(descriptor="data/package-with-fields-993.json")
+    package = Package("data/package-with-fields-993.json")
     report = package.validate()
     assert report.flatten(["code", "message"]) == [
         [

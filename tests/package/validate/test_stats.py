@@ -35,7 +35,7 @@ def test_validate_package_stats_invalid():
     source["resources"][0]["stats"]["bytes"] += 1
     package = Package(source)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "hash-count"],
         [None, None, "byte-count"],
     ]
@@ -56,7 +56,7 @@ def test_validate_package_stats_size_invalid():
     source["resources"][0]["stats"].pop("hash")
     package = Package(source)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "byte-count"],
     ]
 
@@ -76,7 +76,7 @@ def test_check_file_package_stats_hash_invalid():
     source["resources"][0]["stats"]["hash"] += "a"
     package = Package(source)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "hash-count"],
     ]
 
@@ -87,6 +87,6 @@ def test_check_file_package_stats_hash_not_supported_algorithm():
     source["resources"][0]["stats"].pop("bytes")
     package = Package(source)
     report = package.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "hashing-error"],
     ]
