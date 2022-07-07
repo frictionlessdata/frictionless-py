@@ -174,6 +174,7 @@ class PandasParser(Parser):
         # If the column is of type float instead of integer, convert it to the type
         # Int64 from pandas that supports NaN.
         # Bug: #1109
+        # Bug: #1138 create datetime64 for date columns
         for field in source.schema.fields:
             if (
                 field.type == "integer"
@@ -181,6 +182,13 @@ class PandasParser(Parser):
                 and str(dataframe.dtypes[field.name]) != "int64"
             ):
                 dataframe[field.name] = dataframe[field.name].astype("Int64")
+
+            if (
+                field.type == "date"
+                and field.name in dataframe.columns
+                and str(dataframe.dtypes[field.name]) != "date"
+            ):
+                dataframe[field.name] = pd.to_datetime(dataframe[field.name])
 
         target.data = dataframe
 
