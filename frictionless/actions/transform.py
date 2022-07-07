@@ -1,9 +1,10 @@
 from typing import Optional, List, Any
-from ..system import system
-from ..package import Package
-from ..resource import Resource
-from ..pipeline import Pipeline, Step
 from ..exception import FrictionlessException
+from ..pipeline import Pipeline, Step
+from ..resource import Resource
+from ..detector import Detector
+from ..package import Package
+from .. import helpers
 
 
 # TODO: here we'd like to accept both pipeline + individual options
@@ -30,10 +31,13 @@ def transform(
         any: the transform result
     """
 
-    # Infer type
+    # Detect type
     if not type:
-        file = system.create_file(source, basepath=options.get("basepath", ""))
-        type = "package" if file.multipart else "resource"
+        type = Detector.detect_descriptor(source)
+        if not type:
+            type = "resource"
+            if helpers.is_expandable_source(source):
+                type = "package"
 
     # Create pipeline
     if not pipeline:

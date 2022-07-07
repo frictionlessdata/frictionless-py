@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, transform, steps
 
 
 # General
 
 
+@pytest.mark.xfail(reason="Recover steps")
 def test_transform_resource():
     target = transform(
         "data/transform.csv",
@@ -13,7 +15,7 @@ def test_transform_resource():
         ],
     )
     assert isinstance(target, Resource)
-    assert target.schema == {
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "variable"},

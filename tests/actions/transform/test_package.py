@@ -5,7 +5,7 @@ from frictionless import Package, transform, steps
 # General
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover steps")
 def test_transform_package():
     target = transform(
         "data/tables/chunk*.csv",
