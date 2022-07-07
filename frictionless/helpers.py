@@ -291,7 +291,7 @@ def parse_json_string(string):
     return string
 
 
-def parse_csv_string(string, *, convert=str, fallback=False):
+def parse_csv_string(string, *, convert: type = str, fallback=False):
     if string is None:
         return None
     reader = csv.reader(io.StringIO(string), delimiter=",")

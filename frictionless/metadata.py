@@ -64,6 +64,9 @@ class Metadata(metaclass=Metaclass):
     def __repr__(self) -> str:
         return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
+    def __bool__(self) -> bool:
+        return bool(self.to_descriptor())
+
     # Defined
 
     def list_defined(self):
@@ -106,8 +109,8 @@ class Metadata(metaclass=Metaclass):
         return self.to_descriptor()
 
     @classmethod
-    def from_options(cls, **options):
-        return cls(**helpers.remove_non_values(options))
+    def from_options(cls, *args, **options):
+        return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):

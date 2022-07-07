@@ -1,9 +1,9 @@
-# type: ignore
 import sys
 import typer
 from typing import List
 from ..actions import describe
 from ..detector import Detector
+from ..dialect import Dialect
 from .main import program
 from .. import helpers
 from . import common
@@ -22,18 +22,12 @@ def program_describe(
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
-    # Control
-    control: str = common.control,
     # Dialect
     dialect: str = common.dialect,
-    # Layout
     header_rows: str = common.header_rows,
     header_join: str = common.header_join,
-    pick_rows: str = common.pick_rows,
-    skip_rows: str = common.skip_rows,
-    limit_rows: int = common.limit_rows,
-    # Stats
-    stats: bool = common.stats,
+    comment_rows: str = common.comment_rows,
+    control: str = common.control,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -44,7 +38,7 @@ def program_describe(
     field_missing_values: str = common.field_missing_values,
     # Command
     basepath: str = common.basepath,
-    expand: bool = common.expand,
+    stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
 ):
@@ -60,7 +54,7 @@ def program_describe(
     if not source and not path:
         if not sys.stdin.isatty():
             is_stdin = True
-            source = [sys.stdin.buffer.read()]
+            source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
     if not source and not path:
@@ -68,50 +62,39 @@ def program_describe(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
-    # Normalize parameters
-    source = list(source) if len(source) > 1 else (source[0] if source else None)
-    control = helpers.parse_json_string(control)
-    dialect = helpers.parse_json_string(dialect)
-    header_rows = helpers.parse_csv_string(header_rows, convert=int)
-    pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
-    skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
-    pick_rows = helpers.parse_csv_string(pick_rows, convert=int, fallback=True)
-    skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
-    field_names = helpers.parse_csv_string(field_names)
-    field_missing_values = helpers.parse_csv_string(field_missing_values)
+    # Prepare source
+    def prepare_source():
+        return list(source) if len(source) > 1 else (source[0] if source else None)
 
-    # Prepare layout
-    layout = (
-        Layout(
-            header_rows=header_rows,
+    # Prepare dialect
+    def prepare_dialect():
+        descriptor = helpers.parse_json_string(dialect)
+        if descriptor:
+            return Dialect.from_descriptor(descriptor)
+        return Dialect.from_options(
+            header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
-            pick_rows=pick_rows,
-            skip_rows=skip_rows,
-            limit_rows=limit_rows,
+            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
         )
-        or None
-    )
 
     # Prepare detector
-    detector = Detector(
-        **helpers.remove_non_values(
-            dict(
-                buffer_size=buffer_size,
-                sample_size=sample_size,
-                field_type=field_type,
-                field_names=field_names,
-                field_confidence=field_confidence,
-                field_float_numbers=field_float_numbers,
-                field_missing_values=field_missing_values,
-            )
+    def prepare_detector():
+        return Detector.from_options(
+            buffer_size=buffer_size,
+            sample_size=sample_size,
+            field_type=field_type,
+            field_names=helpers.parse_csv_string(field_names),
+            field_confidence=field_confidence,
+            field_float_numbers=field_float_numbers,
+            field_missing_values=helpers.parse_csv_string(field_missing_values),
         )
-    )
 
-    # Prepare options
-    options = helpers.remove_non_values(
-        dict(
+    # Describe source
+    try:
+        metadata = describe(
+            prepare_source(),
             type=type,
-            # Spec
+            # Standard
             path=path,
             scheme=scheme,
             format=format,
@@ -119,20 +102,12 @@ def program_describe(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            control=control,
-            dialect=dialect,
-            layout=layout,
-            # Extra
-            detector=detector,
+            dialect=prepare_dialect() or None,
+            # Software
+            detector=prepare_detector() or None,
             basepath=basepath,
-            expand=expand,
             stats=stats,
         )
-    )
-
-    # Describe source
-    try:
-        metadata = describe(source, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
@@ -150,13 +125,12 @@ def program_describe(
         raise typer.Exit()
 
     # Return default
+    name = " ".join(source)
     if is_stdin:
-        source = "stdin"
-    elif isinstance(source, list):
-        source = " ".join(source)
+        name = "stdin"
     prefix = "metadata"
     typer.secho(f"# {'-'*len(prefix)}", bold=True)
-    typer.secho(f"# {prefix}: {source}", bold=True)
+    typer.secho(f"# {prefix}: {name}", bold=True)
     typer.secho(f"# {'-'*len(prefix)}", bold=True)
     typer.secho("")
     typer.secho(metadata.to_yaml().strip())

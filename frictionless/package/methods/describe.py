@@ -29,7 +29,7 @@ def describe(
         Package: data package
 
     """
-    package = cls(source, **options)
+    package = cls.from_options(source, **options)
     if hashing:
         for resource in package.resources:
             resource.hashing = hashing
