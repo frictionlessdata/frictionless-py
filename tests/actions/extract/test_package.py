@@ -47,5 +47,5 @@ def test_extract_package_process_and_stream():
 
 
 def test_extract_package_descriptor_type_package():
-    data = extract(descriptor="data/package/datapackage.json")
+    data = extract("data/package/datapackage.json")
     assert isinstance(data, dict)

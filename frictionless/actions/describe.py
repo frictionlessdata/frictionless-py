@@ -26,7 +26,7 @@ def describe(
         Metadata: described metadata e.g. a Table Schema
     """
 
-    # Infer type
+    # Detect type
     if not type:
         type = "resource"
         if helpers.is_expandable_source(source):

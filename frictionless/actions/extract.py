@@ -1,20 +1,21 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Any
+from ..detector import Detector
 from ..resource import Resource
 from ..package import Package
 from ..exception import FrictionlessException
-from ..system import system
+from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import FilterFunction, ProcessFunction
+    from ..interfaces import IFilterFunction, IProcessFunction
 
 
 def extract(
-    source: Optional[Any] = None,
+    source: Any = None,
     *,
     type: Optional[str] = None,
-    filter: Optional[FilterFunction] = None,
-    process: Optional[ProcessFunction] = None,
+    filter: Optional[IFilterFunction] = None,
+    process: Optional[IProcessFunction] = None,
     stream: bool = False,
     **options,
 ):
@@ -36,14 +37,13 @@ def extract(
         Row[]|{path: Row[]}: rows in a form depending on the source type
     """
 
-    # Infer type
+    # Detect type
     if not type:
-        basepath = options.get("basepath", "")
-        descriptor = options.get("descriptor")
-        file = system.create_file(descriptor or source, basepath=basepath)
-        type = "package" if file.multipart else file.type
-        if type == "table":
+        type = Detector.detect_descriptor(source)
+        if not type:
             type = "resource"
+            if helpers.is_expandable_source(source):
+                type = "package"
 
     # Extract package
     if type == "package":
