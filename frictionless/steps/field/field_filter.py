@@ -20,9 +20,8 @@ class field_filter(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         names = self.get("names")
-        for name in resource.schema.field_names:
-            if name not in names:
-                resource.schema.remove_field(name)
+        schema_fields_dict = {dct["name"]: dct for dct in resource.schema.fields}
+        resource.schema.fields = [schema_fields_dict[name] for name in names]
         resource.data = table.cut(*names)
 
     # Metadata
