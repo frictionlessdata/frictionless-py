@@ -1,4 +1,8 @@
+import pytest
+
+
 from frictionless import Resource, transform, steps
+from frictionless.exception import FrictionlessException
 
 
 # General
@@ -43,4 +47,24 @@ def test_step_field_filter_changed_field_order():
         {"name": "germany", "id": 1},
         {"name": "france", "id": 2},
         {"name": "spain", "id": 3},
+    ]
+
+
+def test_step_field_filter_missing_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_filter(names=["name", "nonexistent"]),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany"},
+        {"name": "france"},
+        {"name": "spain"},
     ]

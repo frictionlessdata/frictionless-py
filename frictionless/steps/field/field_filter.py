@@ -21,8 +21,12 @@ class field_filter(Step):
         table = resource.to_petl()
         names = self.get("names")
         schema_fields_dict = {dct["name"]: dct for dct in resource.schema.fields}
-        resource.schema.fields = [schema_fields_dict[name] for name in names]
-        resource.data = table.cut(*names)
+        new_schema_fields = [
+            schema_fields_dict[name] for name in names if name in schema_fields_dict
+        ]
+        resource.schema.fields = new_schema_fields
+        new_names = [dct["name"] for dct in new_schema_fields]
+        resource.data = table.cut(*new_names)
 
     # Metadata
 
