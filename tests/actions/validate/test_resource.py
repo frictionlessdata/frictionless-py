@@ -941,8 +941,7 @@ def test_validate_custom_check_with_arguments():
     ]
 
 
-# TODO: figure out how to handle errors like this
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_custom_check_bad_name():
     report = validate("data/table.csv", checks=[{"code": "bad"}])  # type: ignore
     assert report.flatten(["code", "note"]) == [
@@ -950,8 +949,7 @@ def test_validate_custom_check_bad_name():
     ]
 
 
-# TODO: figure out how to handle errors like this
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_descriptor_type_invalid():
     report = validate(descriptor="data/table.csv")
     assert report.flatten() == [[1, None, None, "resource-error"]]
