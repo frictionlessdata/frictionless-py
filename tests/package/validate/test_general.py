@@ -293,6 +293,7 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     ]
 
 
+@pytest.mark.only
 def test_validate_package_metadata_errors_with_missing_values_993():
     package = Package("data/package-with-missingvalues-993.json")
     assert package.metadata_errors[0].code == "package-error"

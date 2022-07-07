@@ -41,8 +41,11 @@ class Metaclass(type):
 class Metadata(metaclass=Metaclass):
     """Metadata represenation"""
 
+    custom: dict[str, Any] = {}
+
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
+        obj.custom = obj.custom.copy()
         obj.metadata_defaults = cls.metadata_defaults.copy()
         obj.metadata_assigned = cls.metadata_assigned.copy()
         obj.metadata_assigned.update(kwargs.keys())
@@ -112,7 +115,7 @@ class Metadata(metaclass=Metaclass):
         target = {}
         source = cls.metadata_normalize(descriptor)
         for name, Type in cls.metadata_properties().items():
-            value = source.get(name)
+            value = source.pop(name, None)
             if value is None or value == {}:
                 continue
             # TODO: rebase on "type" only?
@@ -129,6 +132,7 @@ class Metadata(metaclass=Metaclass):
             target[stringcase.snakecase(name)] = value
         target.update(options)
         metadata = cls(**target)
+        metadata.custom = source
         if isinstance(descriptor, str):
             metadata.metadata_descriptor_path = descriptor
             metadata.metadata_descriptor_initial = source
@@ -153,6 +157,7 @@ class Metadata(metaclass=Metaclass):
                 else:
                     value = value.to_descriptor_source()
             descriptor[name] = value
+        descriptor.update(self.custom)
         return descriptor
 
     def to_descriptor_source(self, *, exclude: List[str] = []) -> IDescriptorSource:
