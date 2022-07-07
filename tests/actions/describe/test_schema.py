@@ -1,4 +1,4 @@
-from frictionless import describe
+from frictionless import Schema, describe
 
 
 # General
@@ -6,4 +6,5 @@ from frictionless import describe
 
 def test_describe_schema():
     schema = describe("data/leading-zeros.csv", type="schema")
-    assert schema == {"fields": [{"name": "value", "type": "integer"}]}
+    assert isinstance(schema, Schema)
+    assert schema.to_descriptor() == {"fields": [{"name": "value", "type": "integer"}]}

@@ -3,55 +3,50 @@ from ..dialect import Dialect
 from ..resource import Resource
 from ..package import Package
 from ..schema import Schema
-from ..system import system
 from ..exception import FrictionlessException
+from .. import helpers
 
 
 def describe(
     source: Any = None,
     *,
     type: Optional[str] = None,
-    expand: bool = False,
     stats: bool = False,
     **options,
 ):
     """Describe the data source
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import describe`
-
     Parameters:
         source (any): data source
         type (str): source type - `schema`, `resource` or `package` (default: infer)
-        expand? (bool): if `True` it will expand the metadata
         stats? (bool): if `True` infer resource's stats
         **options (dict): options for the underlaying describe function
 
     Returns:
-        Dialect|Package|Resource|Schema: metadata
+        Metadata: described metadata e.g. a Table Schema
     """
 
     # Infer type
     if not type:
-        file = system.create_file(source, basepath=options.get("basepath", ""))
-        type = "package" if file.multipart else "resource"
+        type = "resource"
+        if helpers.is_expandable_source(source):
+            type = "package"
 
     # Describe dialect
     if type == "dialect":
-        return Dialect.describe(source, expand=expand, **options)
+        return Dialect.describe(source, **options)
 
     # Describe package
     elif type == "package":
-        return Package.describe(source, expand=expand, stats=stats, **options)
+        return Package.describe(source, stats=stats, **options)
 
     # Describe resource
     elif type == "resource":
-        return Resource.describe(source, expand=expand, stats=stats, **options)
+        return Resource.describe(source, stats=stats, **options)
 
     # Describe schema
     elif type == "schema":
-        return Schema.describe(source, expand=expand, **options)
+        return Schema.describe(source, **options)
 
     # Not supported
     raise FrictionlessException(f"Not supported describe type: {type}")

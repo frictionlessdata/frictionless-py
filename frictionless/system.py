@@ -4,9 +4,9 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
+from functools import cached_property
 from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
-from .helpers import cached_property
 from .dialect import Control
 from . import settings
 from . import errors

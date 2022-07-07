@@ -132,6 +132,18 @@ class Detector(Metadata):
 
     # Detect
 
+    # TODO: support loading descriptor for detection
+    @staticmethod
+    def detect_descriptor(source) -> Optional[str]:
+        """Return an descriptor type as 'resource' or 'package'"""
+        for name, trait in settings.ENTITY_TRAITS.items():
+            if isinstance(source, dict):
+                if set(trait).intersection(source.keys()):
+                    return name
+            elif isinstance(source, str):
+                if source.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
+                    return name
+
     # TODO detect profile here?
     # TODO: added plugin hooks into the loop
     def detect_resource(self, resource: Resource) -> None:

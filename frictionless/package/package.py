@@ -1,7 +1,6 @@
 from __future__ import annotations
 import os
 import json
-import glob
 import atexit
 import shutil
 import jinja2
@@ -101,7 +100,7 @@ class Package(Metadata):
         for resource in self.resources:
             resource.package = self
 
-        # Handled by __create__
+        # Handled by create hook
         assert source is None
 
     # TODO: support list of paths
@@ -123,17 +122,20 @@ class Package(Metadata):
                 source = unzip_package(source, innerpath)
 
             # Expandable
-            elif isinstance(source, str) and helpers.is_expandable_path(source):
+            elif helpers.is_expandable_source(source):
                 options["resources"] = []
-                pattern = f"{source}/*" if os.path.isdir(source) else source
-                configs = {"recursive": True} if "**" in pattern else {}
-                for path in sorted(glob.glob(pattern, **configs)):
+                basepath = options.get("basepath", settings.DEFAULT_BASEPATH)
+                for path in helpers.expand_source(source, basepath=basepath):
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
 
             # Descriptor
-            options.setdefault("trusted", False)
-            return Package.from_descriptor(source, **options)
+            if helpers.is_descriptor_source(source):
+                return Package.from_descriptor(source, **options)
+
+            # Path/data
+            options["resources"] = [Resource(source)]
+            return Package(**options)
 
     # State
 
@@ -358,8 +360,9 @@ class Package(Metadata):
 
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
+        options.setdefault("trusted", False)
         if isinstance(descriptor, str):
-            options["basepath"] = helpers.parse_basepath(descriptor)
+            options.setdefault("basepath", helpers.parse_basepath(descriptor))
         descriptor = super().metadata_normalize(descriptor)
 
         # Profile (v1)

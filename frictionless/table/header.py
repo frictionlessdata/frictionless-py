@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List
-from ..helpers import cached_property
+from functools import cached_property
 from .. import helpers
 from .. import errors
 

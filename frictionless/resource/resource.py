@@ -132,7 +132,7 @@ class Resource(Metadata):
         self.__lookup = None
         self.__row_stream = None
 
-        # Handled by __create__
+        # Handled by create hook
         assert source is None
 
     @classmethod
@@ -148,9 +148,7 @@ class Resource(Metadata):
                 source = {key: value for key, value in source.items()}
 
             # Descriptor
-            entity = cls.metadata_detect(source)
-            if isinstance(source, Mapping) or entity == "resource":
-                options.setdefault("trusted", False)
+            if helpers.is_descriptor_source(source):
                 return Resource.from_descriptor(source, **options)
 
             # Path/data
@@ -934,8 +932,9 @@ class Resource(Metadata):
 
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
+        options.setdefault("trusted", False)
         if isinstance(descriptor, str):
-            options["basepath"] = helpers.parse_basepath(descriptor)
+            options.setdefault("basepath", helpers.parse_basepath(descriptor))
         descriptor = super().metadata_normalize(descriptor)
 
         # Url (v0)

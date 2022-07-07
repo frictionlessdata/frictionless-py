@@ -1,4 +1,3 @@
-# type: ignore
 import io
 import re
 import os
@@ -12,15 +11,13 @@ import tempfile
 import datetime
 import platform
 import textwrap
-import functools
 import stringcase
-from typing import List
-from inspect import signature
 from html.parser import HTMLParser
+from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
-from _thread import RLock  # type: ignore
+from typing import Union, List, Any
 from . import settings
 
 
@@ -180,7 +177,7 @@ def write_file(path, text):
 
 
 def create_byte_stream(bytes):
-    stream = io.BufferedRandom(io.BytesIO())
+    stream = io.BufferedRandom(io.BytesIO())  # type: ignore
     stream.write(bytes)
     stream.seek(0)
     return stream
@@ -223,7 +220,10 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
-def is_expandable_path(source):
+def is_expandable_source(source: Any):
+    if isinstance(source, list):
+        if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):
+            return True
     if not isinstance(source, str):
         return False
     if is_remote_path(source):
@@ -231,11 +231,33 @@ def is_expandable_path(source):
     return glob.has_magic(source) or os.path.isdir(source)
 
 
+def expand_source(source: Union[list, str], *, basepath: str):
+    if isinstance(source, list):
+        return source
+    paths = []
+    source = os.path.join(basepath, source)
+    pattern = f"{source}/*" if os.path.isdir(source) else source
+    configs = {"recursive": True} if "**" in pattern else {}
+    for path in sorted(glob.glob(pattern, **configs)):
+        path = os.path.relpath(path, basepath)
+        paths.append(path)
+    return paths
+
+
 def is_zip_descriptor(descriptor):
     if isinstance(descriptor, str):
         parsed = urlparse(descriptor)
         format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower()
         return format == "zip"
+
+
+def is_descriptor_source(source):
+    if isinstance(source, Mapping):
+        return True
+    if isinstance(source, str):
+        if source.endswith((".json", ".yaml", ".yml")):
+            return True
+    return False
 
 
 def is_type(object, name):
@@ -386,158 +408,3 @@ def wrap_text_to_colwidths(list_of_lists: List, colwidths: List = [5, 5, 10, 50]
             new_row.append("\n".join(wrapped))
         result.append(new_row)
     return result
-
-
-# TODO: remove below for v5
-
-
-class ControlledDict(dict):
-    def __onchange__(self, onchange=None):
-        if onchange is not None:
-            self.__onchange = onchange
-            return
-        onchange = getattr(self, "_ControlledDict__onchange", None)
-        if onchange:
-            onchange(self) if signature(onchange).parameters else onchange()
-
-    def __setitem__(self, *args, **kwargs):
-        result = super().__setitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def __delitem__(self, *args, **kwargs):
-        result = super().__delitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def clear(self, *args, **kwargs):
-        result = super().clear(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def pop(self, *args, **kwargs):
-        result = super().pop(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def popitem(self, *args, **kwargs):
-        result = super().popitem(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def setdefault(self, *args, **kwargs):
-        result = super().setdefault(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def update(self, *args, **kwargs):
-        result = super().update(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-
-class ControlledList(list):
-    def __onchange__(self, onchange=None):
-        if onchange is not None:
-            self.__onchange = onchange
-            return
-        onchange = getattr(self, "_ControlledList__onchange", None)
-        if onchange:
-            onchange(self) if signature(onchange).parameters else onchange()
-
-    def __setitem__(self, *args, **kwargs):
-        result = super().__setitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def __delitem__(self, *args, **kwargs):
-        result = super().__delitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def append(self, *args, **kwargs):
-        result = super().append(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def clear(self, *args, **kwargs):
-        result = super().clear(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def extend(self, *args, **kwargs):
-        result = super().extend(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def insert(self, *args, **kwargs):
-        result = super().insert(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def pop(self, *args, **kwargs):
-        result = super().pop(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def remove(self, *args, **kwargs):
-        result = super().remove(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-
-class cached_property_backport:
-    # It can be removed after dropping support for Python 3.6 and Python 3.7
-
-    def __init__(self, func):
-        self.func = func
-        self.attrname = None
-        self.__doc__ = func.__doc__
-        self.lock = RLock()
-
-    def __set_name__(self, owner, name):
-        if self.attrname is None:
-            self.attrname = name
-        elif name != self.attrname:
-            raise TypeError(
-                "Cannot assign the same cached_property to two different names "
-                f"({self.attrname!r} and {name!r})."
-            )
-
-    def __get__(self, instance, owner=None):
-        if instance is None:
-            return self
-        if self.attrname is None:
-            raise TypeError(
-                "Cannot use cached_property instance without calling __set_name__ on it."
-            )
-        try:
-            cache = instance.__dict__
-        except AttributeError:  # not all objects have __dict__ (e.g. class defines slots)
-            msg = (
-                f"No '__dict__' attribute on {type(instance).__name__!r} "
-                f"instance to cache {self.attrname!r} property."
-            )
-            raise TypeError(msg) from None
-        val = cache.get(self.attrname, settings.UNDEFINED)
-        if val is settings.UNDEFINED:
-            with self.lock:
-                # check if another thread filled cache while we awaited lock
-                val = cache.get(self.attrname, settings.UNDEFINED)
-                if val is settings.UNDEFINED:
-                    val = self.func(instance)
-                    try:
-                        cache[self.attrname] = val
-                    except TypeError:
-                        msg = (
-                            f"The '__dict__' attribute on {type(instance).__name__!r} instance "
-                            f"does not support item assignment for caching {self.attrname!r} property."
-                        )
-                        raise TypeError(msg) from None
-        return val
-
-
-try:
-    cached_property = functools.cached_property
-except Exception:
-    cached_property = cached_property_backport
