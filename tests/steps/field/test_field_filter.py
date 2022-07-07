@@ -23,3 +23,24 @@ def test_step_field_filter():
         {"id": 2, "name": "france"},
         {"id": 3, "name": "spain"},
     ]
+
+
+def test_step_field_filter_changed_field_order():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_filter(names=["name", "id"]),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "id", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "id": 1},
+        {"name": "france", "id": 2},
+        {"name": "spain", "id": 3},
+    ]
