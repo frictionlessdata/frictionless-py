@@ -139,7 +139,6 @@ def test_program_describe_package_with_dialect_1126():
     }
 
 
-@pytest.mark.xfail(reason="Fails until dialect/control is reworked")
 def test_program_describe_package_with_dialect_path_1126():
     result = runner.invoke(
         program,
@@ -157,7 +156,6 @@ def test_program_describe_package_with_dialect_path_1126():
     }
 
 
-@pytest.mark.xfail(reason="Fails until dialect/control is reworked")
 def test_program_describe_package_with_incorrect_dialect_1126():
     result = runner.invoke(
         program,
@@ -170,7 +168,6 @@ def test_program_describe_package_with_incorrect_dialect_1126():
     }
 
 
-@pytest.mark.xfail(reason="Fails until dialect/control is reworked")
 def test_program_describe_package_with_glob_having_one_incorrect_dialect_1126():
     result = runner.invoke(
         program,

@@ -102,9 +102,9 @@ def program_describe(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            dialect=prepare_dialect() or None,
+            dialect=prepare_dialect(),
             # Software
-            detector=prepare_detector() or None,
+            detector=prepare_detector(),
             basepath=basepath,
             stats=stats,
         )

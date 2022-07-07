@@ -64,9 +64,6 @@ class Metadata(metaclass=Metaclass):
     def __repr__(self) -> str:
         return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
-    def __bool__(self) -> bool:
-        return bool(self.to_descriptor())
-
     # Defined
 
     def list_defined(self):
