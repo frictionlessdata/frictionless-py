@@ -258,14 +258,8 @@ class Metadata(metaclass=Metaclass):
                 properties[name] = Types.get(name)
         return properties
 
-    # TODO: return plain descriptor?
     @classmethod
-    def metadata_normalize(
-        cls,
-        descriptor: IDescriptorSource,
-        *,
-        descriptor_basepath: str = settings.DEFAULT_BASEPATH,
-    ) -> IDescriptor:
+    def metadata_normalize(cls, descriptor: IDescriptorSource) -> IDescriptor:
         """Extract metadata"""
         try:
             if isinstance(descriptor, Mapping):
@@ -273,7 +267,6 @@ class Metadata(metaclass=Metaclass):
             if isinstance(descriptor, (str, Path)):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
-                descriptor = os.path.join(descriptor_basepath, descriptor)
                 if helpers.is_remote_path(descriptor):
                     system = import_module("frictionless.system").system
                     http_session = system.get_http_session()

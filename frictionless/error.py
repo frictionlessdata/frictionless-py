@@ -25,6 +25,11 @@ class Error(Metadata):
     def __post_init__(self):
         descriptor = self.to_descriptor(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
+        # TODO: review this situation -- why we set it by hands??
+        self.metadata_assigned.add("name")
+        self.metadata_assigned.add("tags")
+        self.metadata_assigned.add("message")
+        self.metadata_assigned.add("description")
 
     # State
 

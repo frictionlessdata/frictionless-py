@@ -293,13 +293,12 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     ]
 
 
-@pytest.mark.only
 def test_validate_package_metadata_errors_with_missing_values_993():
     package = Package("data/package-with-missingvalues-993.json")
     assert package.metadata_errors[0].code == "package-error"
     assert (
         package.metadata_errors[0].note
-        == '"missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").'
+        == '"missingValues" should be set as "resource.schema.missingValues"'
     )
 
 
@@ -308,7 +307,7 @@ def test_validate_package_metadata_errors_with_fields_993():
     assert package.metadata_errors[0].code == "package-error"
     assert (
         package.metadata_errors[0].note
-        == '"fields" should be set as "resource.schema.fields" (not "package.fields").'
+        == '"fields" should be set as "resource.schema.fields"'
     )
 
 
@@ -318,7 +317,7 @@ def test_validate_package_errors_with_missing_values_993():
     assert report.flatten(["code", "message"]) == [
         [
             "package-error",
-            'The data package has an error: "missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").',
+            'The data package has an error: "missingValues" should be set as "resource.schema.missingValues"',
         ]
     ]
 
@@ -329,6 +328,6 @@ def test_validate_package_errors_with_fields_993():
     assert report.flatten(["code", "message"]) == [
         [
             "package-error",
-            'The data package has an error: "fields" should be set as "resource.schema.fields" (not "package.fields").',
+            'The data package has an error: "fields" should be set as "resource.schema.fields"',
         ]
     ]
