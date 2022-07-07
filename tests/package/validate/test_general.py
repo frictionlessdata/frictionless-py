@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Resource, Schema, Field, Detector, Checklist
+from frictionless import Package, Resource, Schema, Field, Detector, Checklist, fields
 
 
 # General
@@ -76,7 +76,7 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package_original():
     package = Package({"resources": [{"path": "data/table.csv"}]})
     report = package.validate(original=True)
@@ -259,15 +259,19 @@ def test_validate_package_uppercase_format_issue_494():
         assert report.stats["tasks"] == 1
 
 
-# TODO: recover
 # See also: https://github.com/frictionlessdata/project/discussions/678
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover sync schema validation")
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
             Resource(
                 data=[["f1"], ["v1"], ["v2"], ["v3"]],
-                schema=Schema(fields=[Field(name="f1"), Field(name="f2")]),
+                schema=Schema(
+                    fields=[
+                        fields.AnyField(name="f1"),
+                        fields.AnyField(name="f2"),
+                    ]
+                ),
             ),
         ]
     )
@@ -284,7 +288,7 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats["tasks"] == 3
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     package = Package("data/issue-977.json")
     report = package.validate()
