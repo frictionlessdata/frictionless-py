@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 @classmethod
 def describe(
     cls: Type[Package],
-    source: Any = None,
+    source: Any,
     *,
     hashing: Optional[str] = None,
     dialect: Optional[Dialect] = None,

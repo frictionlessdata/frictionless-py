@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Type, Any
 
 if TYPE_CHECKING:
     from ..resource import Resource
 
 
 @classmethod
-def describe(cls: Type[Resource], source=None, *, stats=False, **options):
+def describe(cls: Type[Resource], source: Any, *, stats: bool = False, **options):
     """Describe the given source as a resource
 
     Parameters:

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 def extract(
-    source: Any = None,
+    source: Any,
     *,
     type: Optional[str] = None,
     filter: Optional[IFilterFunction] = None,
@@ -20,10 +20,6 @@ def extract(
     **options,
 ):
     """Extract resource rows
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import extract`
 
     Parameters:
         source (dict|str): data source

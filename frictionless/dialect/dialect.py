@@ -59,6 +59,14 @@ class Dialect(Metadata):
         dialect = resource.dialect
         return dialect
 
+    # Validate
+
+    def validate(self):
+        timer = helpers.Timer()
+        errors = self.metadata_errors
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
+
     # Controls
 
     def add_control(self, control: Control) -> None:

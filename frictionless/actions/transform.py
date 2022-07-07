@@ -20,10 +20,6 @@ def transform(
 ):
     """Transform resource
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import transform`
-
     Parameters:
         source (any): data source
         type (str): source type - package, resource or pipeline (default: infer)

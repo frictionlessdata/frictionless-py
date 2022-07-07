@@ -8,7 +8,7 @@ from .. import helpers
 
 
 def describe(
-    source: Any = None,
+    source: Any,
     *,
     type: Optional[str] = None,
     stats: bool = False,

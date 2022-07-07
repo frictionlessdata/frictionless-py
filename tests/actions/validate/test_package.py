@@ -23,9 +23,7 @@ def test_validate_package_from_dict():
 def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         report = validate(json.load(file), basepath="data/invalid")
-        assert report.flatten(
-            ["taskPosition", "rowPosition", "fieldPosition", "code"]
-        ) == [
+        assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
             [1, 3, None, "blank-row"],
             [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
@@ -39,7 +37,7 @@ def test_validate_package_from_path():
 
 def test_validate_package_from_path_invalid():
     report = validate("data/invalid/datapackage.json")
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -53,7 +51,7 @@ def test_validate_package_from_zip():
 
 def test_validate_package_from_zip_invalid():
     report = validate("data/package-invalid.zip", type="package")
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -72,8 +70,6 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-# TODO: figure out how to handle errors like this
-@pytest.mark.skip
 def test_validate_package_invalid_descriptor_path():
     with pytest.raises(FrictionlessException) as excinfo:
         validate("bad/datapackage.json")
@@ -83,8 +79,7 @@ def test_validate_package_invalid_descriptor_path():
     assert error.note.count("bad/datapackage.json")
 
 
-# TODO: figure out how to handle errors like this (wrap into report or raise)
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
     assert report["stats"]["errors"] == 1
@@ -93,7 +88,7 @@ def test_validate_package_invalid_package():
     assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package_original():
     report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
     assert report.flatten(["code", "note"]) == [
@@ -106,7 +101,7 @@ def test_validate_package_invalid_package_original():
 
 def test_validate_package_invalid_table():
     report = validate({"resources": [{"path": "data/invalid.csv"}]})
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -137,7 +132,7 @@ def test_validate_package_dialect_header_false():
                 "schema": {
                     "fields": [{"name": "name"}, {"name": "age", "type": "integer"}]
                 },
-                "layout": {"header": False},
+                "dialect": {"header": False},
             }
         ]
     }
@@ -224,7 +219,7 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [4, None, "foreign-key", ["3", "rome", "4"]],
     ]
 
@@ -233,7 +228,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [5, None, "foreign-key", ["4", "rio", ""]],
     ]
 
@@ -242,7 +237,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [2, None, "foreign-key", ["1", "london", "2"]],
         [3, None, "foreign-key", ["2", "paris", "3"]],
         [4, None, "foreign-key", ["3", "rome", "4"]],
@@ -263,7 +258,7 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
     del descriptor["resources"][0]["data"][1]
     descriptor["resources"].append(MULTI_FK_RESSOURCE)
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells", "note"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells", "note"]) == [
         [
             2,
             None,
@@ -303,7 +298,7 @@ def test_validate_package_stats_invalid():
     source["resources"][0]["stats"]["hash"] += "a"
     source["resources"][0]["stats"]["bytes"] += 1
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "hash-count"],
         [None, None, "byte-count"],
     ]
@@ -322,7 +317,7 @@ def test_validate_package_stats_size_invalid():
     source["resources"][0]["stats"]["bytes"] += 1
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "byte-count"],
     ]
 
@@ -340,7 +335,7 @@ def test_check_file_package_stats_hash_invalid():
     source["resources"][0]["stats"].pop("bytes")
     source["resources"][0]["stats"]["hash"] += "a"
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "hash-count"],
     ]
 
@@ -350,7 +345,7 @@ def test_check_file_package_stats_hash_not_supported_algorithm():
     source["resources"][0]["hashing"] = "bad"
     source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, None, "hashing-error"],
     ]
 
@@ -359,7 +354,6 @@ def test_check_file_package_stats_hash_not_supported_algorithm():
 
 
 @pytest.mark.ci
-@pytest.mark.skip
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
         with pytest.warns(UserWarning):
@@ -368,13 +362,10 @@ def test_validate_package_parallel_from_dict():
 
 
 @pytest.mark.ci
-@pytest.mark.skip
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         report = validate(json.load(file), basepath="data/invalid", parallel=True)
-        assert report.flatten(
-            ["taskPosition", "rowPosition", "fieldPosition", "code"]
-        ) == [
+        assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
             [1, 3, None, "blank-row"],
             [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
@@ -382,10 +373,9 @@ def test_validate_package_parallel_from_dict_invalid():
 
 
 @pytest.mark.ci
-@pytest.mark.skip
 def test_validate_package_with_parallel():
     report = validate("data/invalid/datapackage.json", parallel=True)
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -393,12 +383,12 @@ def test_validate_package_with_parallel():
 
 
 def test_validate_package_descriptor_type_package():
-    report = validate(descriptor="data/package/datapackage.json")
+    report = validate("data/package/datapackage.json")
     assert report.valid
 
 
 def test_validate_package_descriptor_type_package_invalid():
-    report = validate(descriptor="data/invalid/datapackage.json")
+    report = validate("data/invalid/datapackage.json")
     assert report.flatten() == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
@@ -414,8 +404,7 @@ def test_validate_package_mixed_issue_170():
     assert report.valid
 
 
-# TODO: figure out how to handle errors like this (wrap into report or raise)
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Handle errors like this (wrap?)")
 def test_validate_package_invalid_json_issue_192():
     report = validate("data/invalid.json", type="package")
     assert report.flatten(["code", "note"]) == [
@@ -457,7 +446,7 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
         ],
     }
     report = validate(descriptor, skip_errors=["duplicate-row"])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [3, None, "primary-key"],
     ]
 
@@ -496,7 +485,7 @@ def test_validate_package_with_schema_issue_348():
         ]
     }
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 4, "missing-label"],
         [2, 4, "missing-cell"],
         [3, 4, "missing-cell"],
@@ -513,6 +502,7 @@ def test_validate_package_uppercase_format_issue_494():
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
+@pytest.mark.xfail(reason="Problems with schema_sync")
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
@@ -529,13 +519,13 @@ def test_validate_package_using_detector_schema_sync_issue_847():
 
 
 def test_validate_package_with_diacritic_symbol_issue_905():
-    report = validate(descriptor="data/issue-905/datapackage.json")
+    report = validate("data/issue-905/datapackage.json")
     assert report.stats["tasks"] == 3
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
-    report = validate(descriptor="data/issue-977.json", type="package")
+    report = validate("data/issue-977.json", type="package")
     assert report.flatten() == [
         [None, None, None, "package-error"],
     ]
@@ -546,8 +536,7 @@ def test_validate_package_single_resource_221():
     assert report.valid
 
 
-# TODO: figure out how to handle errors like this
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_single_resource_wrong_resource_name_221():
     report = validate("data/datapackage.json", resource_name="number-twoo")
     assert report.flatten(["code", "message"]) == [

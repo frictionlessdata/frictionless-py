@@ -1,5 +1,4 @@
 from typing import Optional, List, Any
-from ..system import system
 from ..schema import Schema
 from ..report import Report
 from ..dialect import Dialect
@@ -11,11 +10,11 @@ from ..detector import Detector
 from ..checklist import Checklist, Check
 from ..exception import FrictionlessException
 from .. import settings
+from .. import helpers
 
 
-# TODO: support detector type when it's converted to metadata
 def validate(
-    source: Optional[Any] = None,
+    source: Any,
     *,
     type: Optional[str] = None,
     # Checklist
@@ -33,10 +32,6 @@ def validate(
 ):
     """Validate resource
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import validate`
-
     Parameters:
         source (dict|str): a data source
         type (str): source type - inquiry, package, resource, schema or table
@@ -46,14 +41,13 @@ def validate(
         Report: validation report
     """
 
-    # Infer type
+    # Detect type
     if not type:
-        basepath = options.get("basepath", "")
-        descriptor = options.get("descriptor")
-        file = system.create_file(descriptor or source, basepath=basepath)
-        type = "package" if file.multipart else file.type
-        if type == "table":
+        type = Detector.detect_descriptor(source)
+        if not type:
             type = "resource"
+            if helpers.is_expandable_source(source):
+                type = "package"
 
     # Create checklist
     if not checklist:
@@ -76,22 +70,21 @@ def validate(
     elif type == "detector":
         detector = source
         if not isinstance(detector, Detector):
-            detector = Detector.from_descriptor(detector)  # type: ignore
-        return detector.validate()  # type: ignore
+            detector = Detector.from_descriptor(detector)
+        return detector.validate()
 
     # Validate dialect
     elif type == "dialect":
         dialect = source
         if not isinstance(dialect, Dialect):
-            dialect = Dialect.from_descriptor(dialect)  # type: ignore
-        return dialect.validate()  # type: ignore
+            dialect = Dialect.from_descriptor(dialect)
+        return dialect.validate()
 
     # Validate inquiry
     elif type == "inquiry":
         inquiry = source
         if not isinstance(inquiry, Inquiry):
-            # TODO: fix it
-            inquiry = Inquiry.from_descriptor(inquiry)  # type: ignore
+            inquiry = Inquiry.from_descriptor(inquiry)
         return inquiry.validate()
 
     # Validate package
@@ -108,15 +101,14 @@ def validate(
     elif type == "pipeline":
         pipeline = source
         if not isinstance(pipeline, Pipeline):
-            pipeline = Pipeline.from_descriptor(pipeline)  # type: ignore
+            pipeline = Pipeline.from_descriptor(pipeline)
         return pipeline.validate()
 
     # Validate report
     elif type == "report":
         report = source
         if not isinstance(report, Report):
-            # TODO: fix it
-            report = Report.from_descriptor(report)  # type: ignore
+            report = Report.from_descriptor(report)
         return report.validate()
 
     # Validate resource
@@ -130,7 +122,7 @@ def validate(
     elif type == "schema":
         schema = source
         if not isinstance(schema, Schema):
-            schema = Schema(schema, **options)
+            schema = Schema.from_descriptor(schema, **options)
         return schema.validate()
 
     # Not supported

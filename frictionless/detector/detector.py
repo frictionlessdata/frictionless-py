@@ -1,12 +1,12 @@
 from __future__ import annotations
 import os
-import glob
 import codecs
 import chardet
+from pathlib import Path
 from copy import copy, deepcopy
 from importlib import import_module
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..metadata import Metadata
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
@@ -134,8 +134,10 @@ class Detector(Metadata):
 
     # TODO: support loading descriptor for detection
     @staticmethod
-    def detect_descriptor(source) -> Optional[str]:
+    def detect_descriptor(source: Any) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
+        if isinstance(source, Path):
+            source = str(source)
         for name, trait in settings.ENTITY_TRAITS.items():
             if isinstance(source, dict):
                 if set(trait).intersection(source.keys()):
@@ -397,11 +399,13 @@ class Detector(Metadata):
         # TODO: update to the typed version
         if self.schema_sync:
             if labels:
-                fields = []
-                mapping = {field.get("name"): field for field in schema.fields}  # type: ignore
+                mapping = {field.name: field for field in schema.fields}
+                schema.clear_fields()
                 for name in labels:
-                    fields.append(mapping.get(name, {"name": name, "type": "any"}))
-                schema.fields = fields  # type: ignore
+                    field = mapping.get(name)
+                    if not field:
+                        field = Field.from_descriptor({"name": name, "type": "any"})
+                    schema.add_field(field)
 
         # Patch schema
         if self.schema_patch:
@@ -451,7 +455,8 @@ class Detector(Metadata):
                 source_res = resource.package.get_resource(source_name)
             else:
                 source_res = resource.to_copy()
-            source_res.schema.foreign_keys = []
+            if source_res.schema:
+                source_res.schema.foreign_keys = []
 
             # Prepare lookup
             lookup.setdefault(source_name, {})
