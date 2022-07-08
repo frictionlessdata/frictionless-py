@@ -1,4 +1,3 @@
-# type: ignore
 import sys
 import typer
 from typing import List
@@ -179,11 +178,10 @@ def program_validate(
     # Return validation report errors
     if report.errors:
         content = []
-        if is_stdin:
-            source = "stdin"
         prefix = "invalid"
+        name = "stdin" if is_stdin else source
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {prefix}: {name}", bold=True)
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
         for error in report.errors:
             content.append([error.code, error.message])
