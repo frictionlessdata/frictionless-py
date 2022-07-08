@@ -156,6 +156,8 @@ class Metadata(metaclass=Metaclass):
                     value = [item.to_descriptor_source() for item in value]
                 else:
                     value = value.to_descriptor_source()
+                    if not value:
+                        continue
             descriptor[name] = value
         descriptor.update(self.custom)
         return descriptor

@@ -44,13 +44,13 @@ def extract(
     # Extract package
     if type == "package":
         if not isinstance(source, Package):
-            source = Package(source, **options)
+            source = Package.from_options(source, **options)
         return source.extract(filter=filter, process=process, stream=stream)
 
     # Extract resource
     elif type == "resource":
         if not isinstance(source, Resource):
-            source = Resource(source, **options)
+            source = Resource.from_options(source, **options)
         return source.extract(filter=filter, process=process, stream=stream)
 
     # Not supported

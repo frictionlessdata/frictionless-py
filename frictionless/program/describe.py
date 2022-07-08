@@ -26,6 +26,7 @@ def program_describe(
     dialect: str = common.dialect,
     header_rows: str = common.header_rows,
     header_join: str = common.header_join,
+    comment_char: str = common.comment_char,
     comment_rows: str = common.comment_rows,
     control: str = common.control,
     # Detector
@@ -74,6 +75,7 @@ def program_describe(
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
+            comment_char=comment_char,
             comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
         )
 
@@ -89,10 +91,9 @@ def program_describe(
             field_missing_values=helpers.parse_csv_string(field_missing_values),
         )
 
-    # Describe source
-    try:
-        metadata = describe(
-            prepare_source(),
+    # Prepare options
+    def prepare_options():
+        return dict(
             type=type,
             # Standard
             path=path,
@@ -108,6 +109,10 @@ def program_describe(
             basepath=basepath,
             stats=stats,
         )
+
+    # Describe source
+    try:
+        metadata = describe(prepare_source(), **prepare_options())
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
@@ -126,9 +131,8 @@ def program_describe(
 
     # Return default
     name = " ".join(source)
-    if is_stdin:
-        name = "stdin"
     prefix = "metadata"
+    name = "stdin" if is_stdin else " ".join(source)
     typer.secho(f"# {'-'*len(prefix)}", bold=True)
     typer.secho(f"# {prefix}: {name}", bold=True)
     typer.secho(f"# {'-'*len(prefix)}", bold=True)

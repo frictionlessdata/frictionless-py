@@ -101,6 +101,11 @@ header_join = Option(
     help="Multiline header joiner [default: inferred]",
 )
 
+comment_char = Option(
+    default=None,
+    help='A char indicating that the row is a comment e.g. "#"',
+)
+
 comment_rows = Option(
     default=None,
     help='Comma-separated rows to be considered as comments e.g. "2,3,4,5"',
