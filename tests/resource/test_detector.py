@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Detector
+from frictionless import Resource, Schema, Detector
 
 
 # General
@@ -14,12 +14,11 @@ def test_resource_detector_encoding_function():
         assert resource.header == ["id", "name"]
 
 
-@pytest.mark.skip
 def test_resource_detector_field_type():
     detector = Detector(field_type="string")
     resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "string"},
             {"name": "name", "type": "string"},
@@ -32,12 +31,11 @@ def test_resource_detector_field_type():
     ]
 
 
-@pytest.mark.skip
 def test_resource_detector_field_names():
     detector = Detector(field_names=["new1", "new2"])
     resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "new1", "type": "integer"},
             {"name": "new2", "type": "string"},
@@ -51,13 +49,12 @@ def test_resource_detector_field_names():
     ]
 
 
-@pytest.mark.skip
 def test_resource_detector_field_float_numbers():
     data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
     detector = Detector(field_float_numbers=True)
     resource = Resource(data=data, detector=detector)
     resource.infer(stats=True)
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "number", "type": "number", "floatNumber": True},
         ]
@@ -70,12 +67,11 @@ def test_resource_detector_field_float_numbers():
     ]
 
 
-@pytest.mark.skip
 def test_resource_detector_field_type_with_open():
     detector = Detector(field_type="string")
     with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "string"},
                 {"name": "name", "type": "string"},
@@ -87,11 +83,10 @@ def test_resource_detector_field_type_with_open():
         ]
 
 
-@pytest.mark.skip
 def test_resource_detector_field_names_with_open():
     detector = Detector(field_names=["new1", "new2"])
     with Resource("data/table.csv", detector=detector) as resource:
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "new1", "type": "integer"},
                 {"name": "new2", "type": "string"},
@@ -105,14 +100,15 @@ def test_resource_detector_field_names_with_open():
         ]
 
 
-@pytest.mark.skip
 def test_resource_detector_schema_sync():
-    schema = {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "id", "type": "integer"},
+            ]
+        }
+    )
     detector = Detector(schema_sync=True)
     with Resource("data/sync-schema.csv", schema=schema, detector=detector) as resource:
         assert resource.schema == schema
@@ -125,14 +121,15 @@ def test_resource_detector_schema_sync():
         ]
 
 
-@pytest.mark.skip
 def test_resource_detector_schema_sync_with_infer():
-    schema = {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "id", "type": "integer"},
+            ]
+        }
+    )
     detector = Detector(schema_sync=True)
     resource = Resource(path="data/sync-schema.csv", schema=schema, detector=detector)
     resource.infer(stats=True)
@@ -146,11 +143,10 @@ def test_resource_detector_schema_sync_with_infer():
     ]
 
 
-@pytest.mark.skip
 def test_resource_detector_schema_patch():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
     with Resource("data/table.csv", detector=detector) as resource:
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "ID", "type": "string"},
                 {"name": "name", "type": "string"},
@@ -164,12 +160,11 @@ def test_resource_detector_schema_patch():
         ]
 
 
-@pytest.mark.skip
 def test_resource_detector_schema_patch_missing_values():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
     with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
@@ -182,12 +177,11 @@ def test_resource_detector_schema_patch_missing_values():
         ]
 
 
-@pytest.mark.skip
 def test_resource_detector_schema_patch_with_infer():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
     resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "ID", "type": "string"},
             {"name": "name", "type": "string"},
