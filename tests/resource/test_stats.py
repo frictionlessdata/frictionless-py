@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource, Dialect, helpers
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -125,9 +125,9 @@ def test_resource_stats_rows_remote():
         assert resource.stats["rows"] == 5
 
 
-@pytest.mark.xfail
+@pytest.mark.ci
 def test_resource_stats_rows_significant():
-    layout = Layout(header=False)
-    with Resource("data/table-1MB.csv", layout=layout) as resource:
+    dialect = Dialect(header=False)
+    with Resource("data/table-1MB.csv", dialect=dialect) as resource:
         print(resource.read_rows())
         assert resource.stats["rows"] == 10000
