@@ -1,5 +1,4 @@
 import pytz
-import pytest
 import isodate
 import pandas as pd
 from decimal import Decimal

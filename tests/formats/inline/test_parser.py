@@ -1,4 +1,3 @@
-import pytest
 from collections import OrderedDict
 from frictionless import Resource, formats
 

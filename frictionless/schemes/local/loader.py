@@ -11,7 +11,7 @@ class LocalLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        control = self.resource.dialect.get_control("local", ensure=LocalControl())
+        self.resource.dialect.get_control("local", ensure=LocalControl())
         scheme = "file://"
         fullpath = self.resource.fullpath
         if fullpath.startswith(scheme):

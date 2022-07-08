@@ -33,7 +33,7 @@ class JsonlParser(Parser):
         resource = Resource(
             data=source,
             format="inline",
-            dialect=Dialect(controls=[control]),
+            dialect=Dialect(controls=[inline_control]),
         )
         with system.create_parser(resource) as parser:
             yield next(parser.list_stream)

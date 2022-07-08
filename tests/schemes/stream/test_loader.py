@@ -1,5 +1,4 @@
-import pytest
-from frictionless import Resource, validate
+from frictionless import Resource
 
 
 # Read

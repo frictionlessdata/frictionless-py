@@ -1,7 +1,7 @@
 import os
 import json
 import pytest
-from frictionless import Resource, validate, schemes, helpers
+from frictionless import Resource, schemes, helpers
 from frictionless import FrictionlessException
 
 

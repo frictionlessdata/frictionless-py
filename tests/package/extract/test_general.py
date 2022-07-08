@@ -1,5 +1,4 @@
 import types
-import pytest
 from frictionless import Package, helpers
 
 

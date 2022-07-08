@@ -1,6 +1,5 @@
 import os
 import types
-import pytest
 from pathlib import Path
 from frictionless import Resource
 

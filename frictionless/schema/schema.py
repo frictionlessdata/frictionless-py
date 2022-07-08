@@ -2,7 +2,7 @@ from copy import deepcopy
 from tabulate import tabulate
 from typing import Optional, List
 from importlib import import_module
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as datafield
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .field import Field
@@ -32,18 +32,18 @@ class Schema(Metadata):
 
     # State
 
-    fields: List[Field] = field(default_factory=list)
+    fields: List[Field] = datafield(default_factory=list)
     """TODO: add docs"""
 
-    missing_values: List[str] = field(
+    missing_values: List[str] = datafield(
         default_factory=settings.DEFAULT_MISSING_VALUES.copy
     )
     """TODO: add docs"""
 
-    primary_key: List[str] = field(default_factory=list)
+    primary_key: List[str] = datafield(default_factory=list)
     """TODO: add docs"""
 
-    foreign_keys: List[dict] = field(default_factory=list)
+    foreign_keys: List[dict] = datafield(default_factory=list)
     """TODO: add docs"""
 
     # Props

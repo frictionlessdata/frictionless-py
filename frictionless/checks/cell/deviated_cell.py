@@ -1,6 +1,6 @@
 from __future__ import annotations
 import statistics
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as datafield
 from typing import TYPE_CHECKING, List, Iterable
 from ...checklist import Check
 from ... import errors
@@ -25,7 +25,7 @@ class deviated_cell(Check):
     interval: int = DEFAULT_INTERVAL
     """# TODO: add docs"""
 
-    ignore_fields: List[str] = field(default_factory=list)
+    ignore_fields: List[str] = datafield(default_factory=list)
     """# TODO: add docs"""
 
     # Connect

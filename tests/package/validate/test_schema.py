@@ -1,4 +1,3 @@
-import pytest
 from copy import deepcopy
 from frictionless import Package
 

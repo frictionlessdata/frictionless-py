@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, validate, helpers
+from frictionless import Resource
 
 
 # General

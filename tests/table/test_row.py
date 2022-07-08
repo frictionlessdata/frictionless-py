@@ -1,7 +1,6 @@
 import json
-import pytest
 from decimal import Decimal
-from frictionless import Resource, extract
+from frictionless import Resource
 
 
 # General

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Union, List
+from typing import Optional, List
 from dataclasses import dataclass
 from ..metadata import Metadata
 from ..checklist import Checklist

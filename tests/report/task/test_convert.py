@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Checklist, validate, helpers
+from frictionless import Resource, Checklist, helpers
 
 
 # General
@@ -28,7 +28,7 @@ def test_report_task_to_summary_invalid():
     assert output.count("Type Error      | 1")
     assert output.count("Extra Cell      | 1")
     if not helpers.is_platform("windows"):
-        assert output.count(f"File Size       | 171 Bytes")
+        assert output.count("File Size       | 171 Bytes")
 
 
 def test_report_task_to_summary_file_not_found():

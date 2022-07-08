@@ -76,11 +76,11 @@ class Plugin:
         """
         pass
 
-    def create_loader(self, file: File) -> Optional[Loader]:
+    def create_loader(self, resource: Resource) -> Optional[Loader]:
         """Create loader
 
         Parameters:
-            file (File): loader file
+            resource (Resource): loader resource
 
         Returns:
             Loader: loader
@@ -96,11 +96,11 @@ class Plugin:
         """
         pass
 
-    def create_parser(self, file: File) -> Optional[Parser]:
+    def create_parser(self, resource: Resource) -> Optional[Parser]:
         """Create parser
 
         Parameters:
-            file (File): parser file
+            resource (Resource): parser resource
 
         Returns:
             Parser: parser

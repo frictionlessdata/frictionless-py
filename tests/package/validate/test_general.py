@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Resource, Schema, Field, Detector, Checklist, fields
+from frictionless import Package, Resource, Schema, Detector, Checklist, fields
 
 
 # General

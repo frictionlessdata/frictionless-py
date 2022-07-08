@@ -4,7 +4,6 @@ from typing import List
 from tabulate import tabulate
 from ..actions import validate
 from ..detector import Detector
-from ..checklist import Checklist
 from ..dialect import Dialect
 from .main import program
 from .. import helpers

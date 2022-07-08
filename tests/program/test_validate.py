@@ -2,7 +2,7 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import Metadata, Detector, Dialect, program, validate
+from frictionless import Detector, Dialect, program, validate
 
 runner = CliRunner()
 
