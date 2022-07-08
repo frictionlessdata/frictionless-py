@@ -19,7 +19,7 @@ class field_filter(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names")
+        names = self.get("names", [])
         schema_fields_dict = {dct["name"]: dct for dct in resource.schema.fields}
         new_schema_fields = [
             schema_fields_dict[name] for name in names if name in schema_fields_dict
