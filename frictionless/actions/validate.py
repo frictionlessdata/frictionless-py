@@ -91,7 +91,7 @@ def validate(
     elif type == "package":
         package = source
         if not isinstance(package, Package):
-            package = Package(package, **options)
+            package = Package.from_options(package, **options)
         if resource_name:
             resource = package.get_resource(resource_name)
             return resource.validate(checklist, original=original)
@@ -115,7 +115,7 @@ def validate(
     elif type == "resource":
         resource = source
         if not isinstance(resource, Resource):
-            resource = Resource(resource, **options)
+            resource = Resource.from_options(resource, **options)
         return resource.validate(checklist, original=original)
 
     # Validate schema

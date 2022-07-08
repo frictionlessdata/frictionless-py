@@ -68,6 +68,10 @@ class SafeFormatDict(dict):
         return ""
 
 
+def cleaned_dict(**options):
+    return dict(**remove_non_values(options))
+
+
 def remove_non_values(mapping):
     return {key: value for key, value in mapping.items() if value is not None}
 
