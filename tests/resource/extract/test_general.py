@@ -95,7 +95,6 @@ def test_extract_resource_from_file_process_and_stream():
 # Bugs
 
 
-@pytest.mark.skip
 def test_extract_resource_from_json_format_issue_827():
     resource = Resource(path="data/table.json")
     rows = resource.extract()

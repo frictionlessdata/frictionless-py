@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover steps")
 def test_resource_transform():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

@@ -171,7 +171,7 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
     assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Fix quote char detection")
 def test_describe_schema_proper_quote_issue_493():
     resource = Resource.describe("data/issue-493.csv")
     assert resource.dialect.get_control("csv").quote_char == '"'
@@ -191,9 +191,9 @@ def test_describe_resource_compression_gzip_issue_606():
     assert resource.stats["bytes"] == 61
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_describe_resource_with_json_format_issue_827():
-    resource = Resource.describe(path="data/table.json")
+    resource = Resource.describe("data/table.json")
     assert resource.name == "table"
 
 
