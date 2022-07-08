@@ -1,7 +1,6 @@
 # type: ignore
 import re
 from ...resource import Parser
-from ...system import system
 from ...resource import Resource
 from ...exception import FrictionlessException
 from .control import GsheetsControl
