@@ -795,7 +795,7 @@ class Resource(Metadata):
         for fk in self.schema.foreign_keys:
 
             # Prepare source
-            source_name = fk["reference"]["self"]
+            source_name = fk["reference"]["resource"]
             source_key = tuple(fk["reference"]["fields"])
             if source_name != "" and not self.package:
                 continue
