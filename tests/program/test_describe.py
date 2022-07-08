@@ -53,7 +53,7 @@ def test_program_describe_header_join():
     assert json.loads(actual.stdout) == expect.to_descriptor()
 
 
-def test_program_describe_skip_rows():
+def test_program_describe_comment_rows():
     actual = runner.invoke(program, "describe data/table.csv --json --comment-rows 1")
     expect = describe("data/table.csv", dialect=Dialect(comment_rows=[1]))
     assert actual.exit_code == 0
