@@ -354,7 +354,7 @@ class SqlStorage(Storage):
             "any": sa.Text,
             "boolean": sa.Boolean,
             "date": sa.Date,
-            "datetime": sa.DateTime(timezone=True),
+            "datetime": sa.DateTime(timezone=False),
             "integer": sa.Integer,
             "number": sa.Float,
             "string": sa.Text,
