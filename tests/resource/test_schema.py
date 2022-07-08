@@ -1,8 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, Detector, FrictionlessException
-
-pytestmark = pytest.mark.skip
+from frictionless import Resource, Schema, Detector, FrictionlessException
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -24,7 +22,6 @@ DESCRIPTOR_FK = {
 }
 
 
-@pytest.mark.skip
 def test_resource_schema():
     descriptor = {
         "name": "name",
@@ -34,7 +31,10 @@ def test_resource_schema():
     }
     resource = Resource(descriptor, basepath="data")
     assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -42,7 +42,6 @@ def test_resource_schema():
     ]
 
 
-@pytest.mark.skip
 def test_resource_schema_source_data():
     descriptor = {
         "name": "name",
@@ -51,8 +50,11 @@ def test_resource_schema_source_data():
         "schema": "resource-schema.json",
     }
     resource = Resource(descriptor, basepath="data")
-    assert resource.schema == {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -69,8 +71,11 @@ def test_resource_schema_source_remote():
         "schema": "schema.json",
     }
     resource = Resource(descriptor, basepath=BASEURL % "data")
-    assert resource.schema == {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -78,46 +83,55 @@ def test_resource_schema_source_remote():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
-    assert resource == {
+    assert resource.to_descriptor() == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
         "schema": "schema.json",
     }
-    assert resource.schema == {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path_with_basepath():
     descriptor = {"name": "name", "path": "table.csv", "schema": "schema.json"}
     resource = Resource(descriptor, basepath="data")
-    assert resource == descriptor
-    assert resource.schema == {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+    assert resource.to_descriptor() == descriptor
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
+@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
-    assert resource == {
+    assert resource.to_descriptor() == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
         "schema": "schema.json",
     }
-    assert resource.schema == {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -127,6 +141,7 @@ def test_resource_schema_from_path_error_bad_path():
     assert error.note.count("bad.json")
 
 
+@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path_error_path_not_safe():
     schema = os.path.abspath("data/schema.json")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -139,7 +154,7 @@ def test_resource_schema_from_path_error_path_not_safe():
 def test_resource_schema_inferred():
     with Resource("data/table.csv") as resource:
         assert resource.header == ["id", "name"]
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
@@ -152,16 +167,23 @@ def test_resource_schema_inferred():
 
 
 def test_resource_schema_provided():
-    schema = {
-        "fields": [
-            {"name": "new1", "type": "string"},
-            {"name": "new2", "type": "string"},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "new1", "type": "string"},
+                {"name": "new2", "type": "string"},
+            ]
+        }
+    )
     with Resource("data/table.csv", schema=schema) as resource:
-        assert resource.schema == schema
         assert resource.labels == ["id", "name"]
         assert resource.header == ["new1", "new2"]
+        assert resource.schema.to_descriptor() == {
+            "fields": [
+                {"name": "new1", "type": "string"},
+                {"name": "new2", "type": "string"},
+            ]
+        }
         assert resource.read_rows() == [
             {"new1": "1", "new2": "english"},
             {"new1": "2", "new2": "中国人"},
