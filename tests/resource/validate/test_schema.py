@@ -5,7 +5,7 @@ from frictionless import Resource, Schema, Checklist
 # General
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_schema_invalid():
     source = [["name", "age"], ["Alex", "33"]]
     schema = Schema.from_descriptor(
@@ -26,7 +26,7 @@ def test_resource_validate_schema_invalid():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_schema_invalid_json():
     resource = Resource("data/table.csv", schema="data/invalid.json")
     report = resource.validate()
@@ -134,7 +134,6 @@ def test_resource_validate_schema_maximum_constraint():
     ]
 
 
-@pytest.mark.skip
 def test_resource_validate_schema_foreign_key_error_self_referencing():
     source = {
         "path": "data/nested.csv",
@@ -154,7 +153,6 @@ def test_resource_validate_schema_foreign_key_error_self_referencing():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
         "path": "data/nested-invalid.csv",

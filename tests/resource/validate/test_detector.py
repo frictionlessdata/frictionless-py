@@ -1,24 +1,23 @@
-import pytest
-from frictionless import Detector, Resource
-
-pytestmark = pytest.mark.skip
+from frictionless import Resource, Dialect, Schema, Detector
 
 
 # General
 
 
 def test_resource_validate_detector_sync_schema():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+        }
+    )
     detector = Detector(schema_sync=True)
     resource = Resource("data/sync-schema.csv", schema=schema, detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "id", "type": "integer"},
@@ -28,7 +27,9 @@ def test_resource_validate_detector_sync_schema():
 
 def test_resource_validate_detector_sync_schema_invalid():
     source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
-    schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
+    schema = Schema.from_descriptor(
+        {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
+    )
     detector = Detector(schema_sync=True)
     resource = Resource(source, schema=schema, detector=detector)
     report = resource.validate()
@@ -42,17 +43,19 @@ def test_resource_validate_detector_headers_errors():
         [2, "Peters", "John", "Afrikaans"],
         [3, "Smith", "Paul", None],
     ]
-    schema = {
-        "fields": [
-            {"name": "id", "type": "number"},
-            {"name": "language", "constraints": {"required": True}},
-            {"name": "country"},
-        ]
-    }
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "number"},
+                {"name": "language", "constraints": {"required": True}},
+                {"name": "country"},
+            ]
+        }
+    )
     detector = Detector(schema_sync=True)
     resource = Resource(source, schema=schema, detector=detector)
     report = resource.validate()
-    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
         [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
     ]
 
@@ -62,7 +65,7 @@ def test_resource_validate_detector_patch_schema():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -78,7 +81,7 @@ def test_resource_validate_detector_patch_schema_fields():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
         "missingValues": ["-"],
     }
@@ -89,7 +92,7 @@ def test_resource_validate_detector_infer_type_string():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
     }
 
@@ -99,22 +102,19 @@ def test_resource_validate_detector_infer_type_any():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema == {
+    assert resource.schema.to_descriptor() == {
         "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
     }
 
 
 def test_resource_validate_detector_infer_names():
+    dialect = Dialect(header=False)
     detector = Detector(field_names=["id", "name"])
-    resource = Resource(
-        "data/without-headers.csv",
-        layout={"header": False},
-        detector=detector,
-    )
+    resource = Resource("data/without-headers.csv", dialect=dialect, detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema["fields"][0]["name"] == "id"  # type: ignore
-    assert resource.schema["fields"][1]["name"] == "name"  # type: ignore
+    assert resource.schema.fields[0].name == "id"  # type: ignore
+    assert resource.schema.fields[1].name == "name"  # type: ignore
     assert resource.stats["rows"] == 3  # type: ignore
     assert resource.labels == []
     assert resource.header == ["id", "name"]
