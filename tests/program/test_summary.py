@@ -16,97 +16,80 @@ def test_program_summary_error_not_found():
     )
 
 
-@pytest.mark.skip
 def test_program_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
-    assert (
-        result.stdout.count("invalid")
-        and result.stdout.count("Describe")
-        and result.stdout.count("Extract")
-        and result.stdout.count("Validate")
-        and result.stdout.count("Summary")
-        and result.stdout.count("Errors")
-    )
+    assert result.stdout.count("invalid")
+    assert result.stdout.count("Describe")
+    assert result.stdout.count("Extract")
+    assert result.stdout.count("Validate")
+    assert result.stdout.count("Summary")
+    assert result.stdout.count("Errors")
 
 
-@pytest.mark.skip
 def test_program_summary_valid():
     result = runner.invoke(program, "summary data/capital-valid.csv")
     assert result.exit_code == 0
-    assert (
-        result.stdout.count("valid")
-        and result.stdout.count("Describe")
-        and result.stdout.count("Extract")
-        and result.stdout.count("Validate")
-        and result.stdout.count("Summary")
-        and not result.stdout.count("Errors")
-    )
+    assert result.stdout.count("valid")
+    assert result.stdout.count("Describe")
+    assert result.stdout.count("Extract")
+    assert result.stdout.count("Validate")
+    assert result.stdout.count("Summary")
+    assert not result.stdout.count("Errors")
 
 
 def test_program_summary_describe():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
-    assert (
-        result.stdout.count("| name        | type    | required   |")
-        and result.stdout.count("| id          | integer |            |")
-        and result.stdout.count("| neighbor_id | string  |            |")
-        and result.stdout.count("| name        | string  |            |")
-        and result.stdout.count("| population  | string  |            |")
-    )
+    assert result.stdout.count("| name        | type    | required   |")
+    assert result.stdout.count("| id          | integer |            |")
+    assert result.stdout.count("| neighbor_id | string  |            |")
+    assert result.stdout.count("| name        | string  |            |")
+    assert result.stdout.count("| population  | string  |            |")
 
 
 def test_program_summary_extract():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
-    assert (
-        result.stdout.count("| id | neighbor_id | name      | population |")
-        and result.stdout.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
-        and result.stdout.count("|  2 | '3'         | 'France'  | 'n/a'      |")
-        and result.stdout.count("|  3 | '22'        | 'Germany' | '83'       |")
-        and result.stdout.count("|  4 | None        | 'Italy'   | '60'       |")
-        and result.stdout.count("|  5 | None        | None      | None       |")
-    )
+    assert result.stdout.count("| id | neighbor_id | name      | population |")
+    assert result.stdout.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
+    assert result.stdout.count("|  2 | '3'         | 'France'  | 'n/a'      |")
+    assert result.stdout.count("|  3 | '22'        | 'Germany' | '83'       |")
+    assert result.stdout.count("|  4 | None        | 'Italy'   | '60'       |")
+    assert result.stdout.count("|  5 | None        | None      | None       |")
 
 
-@pytest.mark.skip
 def test_program_summary_extract_only_5_rows():
     result = runner.invoke(program, "summary data/long.csv")
     assert result.exit_code == 0
-    assert (
-        result.stdout.count("valid")
-        and result.stdout.count("|  1 | 'a'  |")
-        and result.stdout.count("|  2 | 'b'  |")
-        and result.stdout.count("|  3 | 'c'  |")
-        and result.stdout.count("|  4 | 'd'  |")
-        and result.stdout.count("|  5 | 'e'  |")
-        and not result.stdout.count("|  6 | 'f'  |")
-    )
+    assert result.stdout.count("valid")
+    assert result.stdout.count("|  1 | 'a'  |")
+    assert result.stdout.count("|  2 | 'b'  |")
+    assert result.stdout.count("|  3 | 'c'  |")
+    assert result.stdout.count("|  4 | 'd'  |")
+    assert result.stdout.count("|  5 | 'e'  |")
+    assert not result.stdout.count("|  6 | 'f'  |")
 
 
-@pytest.mark.skip
 def test_program_summary_validate():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
     assert result.stdout.count("# invalid:")
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Update")
 def test_program_summary_validate_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
-    assert (
-        result.stdout.count("Description                 | Size/Name/Count")
-        and result.stdout.count("File name                   | data/countries.csv")
-        and result.stdout.count("File size (bytes)           | 143")
-        and result.stdout.count("Total Time Taken (sec)      |")
-        and result.stdout.count("Total Errors                | 4")
-        and result.stdout.count("Extra Cell (extra-cell)     | 1")
-        and result.stdout.count("Missing Cell (missing-cell) | 3")
-    )
+    assert result.stdout.count("Description                 | Size/Name/Count")
+    assert result.stdout.count("File name                   | data/countries.csv")
+    assert result.stdout.count("File size (bytes)           | 143")
+    assert result.stdout.count("Total Time Taken (sec)      |")
+    assert result.stdout.count("Total Errors                | 4")
+    assert result.stdout.count("Extra Cell (extra-cell)     | 1")
+    assert result.stdout.count("Missing Cell (missing-cell) | 3")
 
 
-@pytest.mark.skip
 def test_program_summary_validate_errors():
     result = runner.invoke(program, "summary data/countries.csv")
     output_file_path = "data/fixtures/summary/multiline-errors.txt"
@@ -116,7 +99,6 @@ def test_program_summary_validate_errors():
     assert result.stdout.count(expected.strip())
 
 
-@pytest.mark.skip
 def test_program_summary_without_command(tmpdir):
     output_file_path = f"{tmpdir}/output.txt"
     exit_code = os.system(f"frictionless data/countries.csv > {output_file_path}")
@@ -143,8 +125,7 @@ def test_program_summary_without_filepath():
     assert result.stdout.strip() == 'Providing "source" is required'
 
 
-@pytest.mark.skip
 def test_program_summary_zipped_innerpath():
     result = runner.invoke(program, "summary data/table.csv.zip")
     assert result.exit_code == 0
-    assert result.stdout.count("table.csv.zip => table.csv")
+    assert result.stdout.count("table.csv.zip -> table.csv")
