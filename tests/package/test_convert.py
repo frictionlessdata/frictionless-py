@@ -75,7 +75,6 @@ def test_package_to_zip_resource_path(tmpdir):
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Doesn't work because of the infer")
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
