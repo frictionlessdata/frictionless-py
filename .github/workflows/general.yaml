@@ -88,20 +88,21 @@ jobs:
 
   # Test (Windows)
 
-  test-windows:
-    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install dependencies
-        run: make install
-      - name: Test software
-        run: make test
+  # TODO: recover
+  # test-windows:
+    # if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
+    # runs-on: windows-latest
+    # steps:
+      # - name: Checkout repository
+        # uses: actions/checkout@v2
+      # - name: Install Python
+        # uses: actions/setup-python@v2
+        # with:
+          # python-version: 3.8
+      # - name: Install dependencies
+        # run: make install
+      # - name: Test software
+        # run: make test
 
   # Deploy
 
