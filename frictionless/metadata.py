@@ -152,7 +152,7 @@ class Metadata(metaclass=Metaclass):
                     continue
             if Type:
                 if isinstance(value, list):
-                    value = [item.to_descriptor_source() for item in value]
+                    value = [item.to_descriptor_source() for item in value]  # type: ignore
                 else:
                     value = value.to_descriptor_source()
                     if not value:

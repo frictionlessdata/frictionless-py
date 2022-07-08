@@ -31,7 +31,7 @@ class table_recast(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        resource.pop("schema", None)
+        resource.schema = None
         resource.data = table.recast(  # type: ignore
             key=self.field_name,
             variablefield=self.from_field_names[0],

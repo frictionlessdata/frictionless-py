@@ -399,7 +399,7 @@ class Detector(Metadata):
         # TODO: update to the typed version
         if self.schema_sync:
             if labels:
-                mapping = {field.name: field for field in schema.fields}
+                mapping = {field.name: field for field in schema.fields}  # type: ignore
                 schema.clear_fields()
                 for name in labels:
                     field = mapping.get(name)
@@ -428,7 +428,7 @@ class Detector(Metadata):
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 
-        return schema
+        return schema  # type: ignore
 
     # Metadata
 

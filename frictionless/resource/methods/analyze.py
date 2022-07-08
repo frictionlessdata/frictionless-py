@@ -1,3 +1,4 @@
+# type: ignore
 from __future__ import annotations
 import statistics
 from math import nan

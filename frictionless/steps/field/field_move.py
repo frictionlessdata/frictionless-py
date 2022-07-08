@@ -1,3 +1,4 @@
+# type: ignore
 from dataclasses import dataclass
 from ...pipeline import Step
 

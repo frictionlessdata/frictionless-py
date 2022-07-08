@@ -1,3 +1,4 @@
+# type: ignore
 import petl
 from dataclasses import dataclass
 from typing import Optional, List

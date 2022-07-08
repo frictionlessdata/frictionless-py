@@ -1,3 +1,4 @@
+# type: ignore
 from ...exception import FrictionlessException
 from .control import InlineControl
 from ...resource import Parser

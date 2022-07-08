@@ -25,7 +25,7 @@ def program_summary(source: str = common.source):
     typer.secho("")
     typer.secho("# Describe ", bold=True)
     typer.secho("")
-    typer.secho(str(resource.schema.to_summary()))
+    typer.secho(str(resource.schema.to_summary()))  # type: ignore
     typer.secho("")
     typer.secho("# Extract ", bold=True)
     typer.secho("")

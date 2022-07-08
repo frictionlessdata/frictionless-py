@@ -1,3 +1,4 @@
+# type: ignore
 import tempfile
 from ...inline import InlineControl
 from ....resource import Resource

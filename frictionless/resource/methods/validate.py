@@ -71,7 +71,7 @@ def validate(
 
                 # Emit row
                 try:
-                    row = next(self.row_stream)
+                    row = next(self.row_stream)  # type: ignore
                 except FrictionlessException as exception:
                     errors.append(exception.error)
                     continue

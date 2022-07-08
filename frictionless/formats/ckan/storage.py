@@ -50,7 +50,7 @@ class CkanStorage(Storage):
             name=name,
             data=partial(self.__read_convert_data, ckan_table),
             schema=schema,
-            control=InlineControl(keys=schema.field_names),
+            control=InlineControl(keys=schema.field_names),  # type: ignore
         )
         return resource
 

@@ -43,10 +43,10 @@ class deviated_value(Check):
 
     def validate_start(self):
         numeric = ["integer", "number"]
-        if self.field_name not in self.resource.schema.field_names:
+        if self.field_name not in self.resource.schema.field_names:  # type: ignore
             note = 'deviated value check requires field "%s" to exist'
             yield errors.CheckError(note=note % self.field_name)
-        elif self.resource.schema.get_field(self.field_name).type not in numeric:
+        elif self.resource.schema.get_field(self.field_name).type not in numeric:  # type: ignore
             note = 'deviated value check requires field "%s" to be numeric'
             yield errors.CheckError(note=note % self.field_name)
         if not self.__average_function:

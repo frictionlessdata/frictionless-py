@@ -1,3 +1,4 @@
+# type: ignore
 import isodate
 import datetime
 import decimal

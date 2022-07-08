@@ -1,3 +1,4 @@
+# type: ignore
 import io
 import tempfile
 from datetime import datetime

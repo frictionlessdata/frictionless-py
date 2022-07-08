@@ -1,3 +1,4 @@
+# type: ignore
 from ...exception import FrictionlessException
 from ...resource import Parser
 from .control import CkanControl

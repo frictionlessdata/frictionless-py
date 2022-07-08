@@ -1,3 +1,4 @@
+# type: ignore
 import os
 import tempfile
 from .control import MultipartControl

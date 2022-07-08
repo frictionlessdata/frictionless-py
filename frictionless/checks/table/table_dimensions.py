@@ -34,7 +34,7 @@ class table_dimensions(Check):
     # Validate
 
     def validate_start(self):
-        number_fields = len(self.resource.schema.fields)
+        number_fields = len(self.resource.schema.fields)  # type: ignore
 
         # Check if there is a different number of fields as required
         if self.num_fields and number_fields != self.num_fields:

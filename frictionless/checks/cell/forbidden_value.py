@@ -22,7 +22,7 @@ class forbidden_value(Check):
     # Validate
 
     def validate_start(self):
-        if self.field_name not in self.resource.schema.field_names:
+        if self.field_name not in self.resource.schema.field_names:  # type: ignore
             note = 'forbidden value check requires field "%s"' % self.field_name
             yield errors.CheckError(note=note)
 

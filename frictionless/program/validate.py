@@ -77,7 +77,7 @@ def program_validate(
     if not source and not path:
         if not sys.stdin.isatty():
             is_stdin = True
-            source = [sys.stdin.buffer.read()]
+            source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
     if not source and not path:

@@ -1,3 +1,4 @@
+# type: ignore
 from typing import Optional
 from ...pipeline import Step
 from ... import helpers
