@@ -5,6 +5,7 @@ import pandas as pd
 from decimal import Decimal
 from dateutil.tz import tzoffset, tzutc
 from datetime import datetime, date, time
+from pandas.core.dtypes.common import is_datetime64_ns_dtype
 from frictionless import Package, Resource
 
 
@@ -68,7 +69,7 @@ def test_pandas_parser_write():
     ]
 
 
-def test_pandas_nan_in_integer_resource_column():
+def test_pandas_parser_nan_in_integer_resource_column():
     # see issue 1109
     res = Resource(
         [
@@ -82,7 +83,7 @@ def test_pandas_nan_in_integer_resource_column():
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
 
 
-def test_pandas_nan_in_integer_csv_column():
+def test_pandas_parser_nan_in_integer_csv_column():
     # see issue 1109
     res = Resource("data/issue-1109.csv")
     df = res.to_pandas()
@@ -100,8 +101,8 @@ def test_pandas_parser_write_types():
                 {"name": "any", "type": "string"},  # type fallback
                 {"name": "array", "type": "array"},
                 {"name": "boolean", "type": "boolean"},
-                {"name": "date", "type": "date"},
-                {"name": "date_year", "type": "date"},  # format removal
+                {"name": "date", "type": "datetime"},
+                {"name": "date_year", "type": "datetime"},  # format removal
                 {"name": "datetime", "type": "datetime"},
                 {"name": "duration", "type": "duration"},
                 {"name": "geojson", "type": "object"},
@@ -228,7 +229,7 @@ def test_pandas_parser_write_bug_1105():
     }
 
 
-def test_pandas_nan_with_field_type_information_1143():
+def test_pandas_parser_nan_with_field_type_information_1143():
     descriptor = {
         "dialect": {"delimiter": ","},
         "name": "issue-1109",
@@ -246,7 +247,7 @@ def test_pandas_nan_with_field_type_information_1143():
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
 
 
-def test_pandas_nan_without_field_type_information_1143():
+def test_pandas_parser_nan_without_field_type_information_1143():
     descriptor = {
         "dialect": {"delimiter": ","},
         "name": "issue-1109",
@@ -262,3 +263,50 @@ def test_pandas_nan_without_field_type_information_1143():
     res = Resource(descriptor)
     df = res.to_pandas()
     assert all(df.dtypes.values == pd.array([object, object, object]))
+
+
+def test_pandas_parser_preserve_datetime_field_type_1138():
+    descriptor = {
+        "name": "article",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "datetime", "type": "date"},
+            ]
+        },
+        "data": [
+            ["id", "datetime"],
+            ["1", "2020-01-01 15:00:00"],
+            ["2", "2020-01-01 15:00:00"],
+        ],
+    }
+    resource = Resource(descriptor)
+    df = resource.to_pandas()
+    assert is_datetime64_ns_dtype(df.dtypes.values[1])
+
+
+def test_pandas_parser_test_issue_sample_data_1138():
+    descriptor = {
+        "path": "data/issue-1138.csv",
+        "name": "pegeldaten-schleswig-holstein-114515",
+        "profile": "tabular-data-resource",
+        "format": "csv",
+        "encoding": "iso8859-1",
+        "dialect": {"delimiter": ";"},
+        "schema": {
+            "fields": [
+                {"type": "date", "format": "%d.%m.%Y", "name": "Zeit [MEZ]"},
+                {"type": "integer", "name": "Wasserstand"},
+                {
+                    "type": "string",
+                    "name": "Status",
+                    "constraints": {
+                        "enum": ["qualitätsgesichert", "nicht qualitätsgesichert"]
+                    },
+                },
+            ]
+        },
+    }
+    resource = Resource(descriptor)
+    df = resource.to_pandas()
+    assert is_datetime64_ns_dtype(df.dtypes.values[0])

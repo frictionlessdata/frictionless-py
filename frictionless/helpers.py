@@ -17,7 +17,7 @@ from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
-from typing import Union, List, Any
+from typing import Union, Any
 from . import settings
 
 
@@ -351,6 +351,18 @@ def html_to_text(html):
     return parser.text.strip()
 
 
+class Timer:
+    def __init__(self):
+        self.__start = datetime.datetime.now()
+        self.__stop = None
+
+    @property
+    def time(self):
+        if not self.__stop:
+            self.__stop = datetime.datetime.now()
+        return round((self.__stop - self.__start).total_seconds(), 3)
+
+
 def slugify(text, **options):
     """There is a conflict between python-slugify and awesome-slugify
     So we import from a proper module manually
@@ -378,37 +390,3 @@ def get_current_memory_usage():
                     return int(parts[1]) / 1000
     except Exception:
         pass
-
-
-class Timer:
-    def __init__(self):
-        self.__start = datetime.datetime.now()
-        self.__stop = None
-
-    @property
-    def time(self):
-        if not self.__stop:
-            self.__stop = datetime.datetime.now()
-        return round((self.__stop - self.__start).total_seconds(), 3)
-
-
-# TODO: Temporary function to use with tabulate  tabulate 0.8.9 does not support text wrap
-def wrap_text_to_colwidths(list_of_lists: List, colwidths: List = [5, 5, 10, 50]) -> List:
-    """Create new list with wrapped text with different column width.
-
-    Args:
-        list_of_lists (List): List of lines
-        colwidths (List): width for each column
-
-    Returns:
-        List: list of lines with wrapped text
-    """
-    result = []
-    for row in list_of_lists:
-        new_row = []
-        for cell, width in zip(row, colwidths):
-            cell = str(cell)
-            wrapped = textwrap.wrap(cell, width=width)
-            new_row.append("\n".join(wrapped))
-        result.append(new_row)
-    return result

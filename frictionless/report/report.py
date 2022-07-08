@@ -185,7 +185,6 @@ class Report(Metadata):
                         ]
                     )
             # Validate
-            error_content = helpers.wrap_text_to_colwidths(error_content)
             validation_content += "\n\n"
             validation_content += "## Summary "
             validation_content += "\n\n"
@@ -200,6 +199,7 @@ class Report(Metadata):
                         error_content,
                         headers=["row", "field", "code", "message"],
                         tablefmt="grid",
+                        maxcolwidths=[5, 5, 10, 50],
                     )
                 )
                 validation_content += "\n\n"
