@@ -47,7 +47,6 @@ def test_resource_to_yaml(tmpdir):
 # Markdown
 
 
-@pytest.mark.skip
 def test_resource_to_markdown_path_schema():
     descriptor = {
         "name": "main",
@@ -76,7 +75,6 @@ def test_resource_to_markdown_path_schema():
     assert resource.to_markdown().strip() == expected
 
 
-@pytest.mark.skip
 def test_resource_to_markdown_path_schema_table():
     descriptor = {
         "name": "main",
@@ -105,8 +103,7 @@ def test_resource_to_markdown_path_schema_table():
     assert resource.to_markdown(table=True).strip() == expected
 
 
-@pytest.mark.skip
-def test_resource_to_markdown_file_837(tmpdir):
+def test_resource_to_markdown_file(tmpdir):
     descriptor = descriptor = {
         "name": "main",
         "schema": {
@@ -164,7 +161,7 @@ def test_to_yaml_allow_unicode_issue_844():
     assert "età" in text
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Fix metadata_descriptor_path / normalization problem")
 def test_resource_to_descriptor_infer_dereferencing_issue_904():
     resource = Resource(path="data/table.csv", schema="data/schema.json")
     resource.infer(stats=True)
@@ -176,6 +173,7 @@ def test_resource_to_descriptor_infer_dereferencing_issue_904():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "text/csv",
         "dialect": {
             "controls": [
                 {"code": "local"},

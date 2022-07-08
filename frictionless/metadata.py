@@ -13,7 +13,6 @@ from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING, Iterator, Optional, Union, List, Dict, Any, Set
 from .exception import FrictionlessException
-from . import settings
 from . import helpers
 
 if TYPE_CHECKING:
@@ -132,7 +131,7 @@ class Metadata(metaclass=Metaclass):
             target[stringcase.snakecase(name)] = value
         target.update(options)
         metadata = cls(**target)
-        metadata.custom = source
+        metadata.custom = source.copy()
         if isinstance(descriptor, str):
             metadata.metadata_descriptor_path = descriptor
             metadata.metadata_descriptor_initial = source
