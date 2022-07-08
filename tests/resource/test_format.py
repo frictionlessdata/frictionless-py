@@ -10,7 +10,6 @@ def test_resource_format_csv():
         assert resource.format == "csv"
 
 
-@pytest.mark.skip
 def test_resource_format_ndjson():
     with Resource("data/table.ndjson") as resource:
         assert resource.format == "ndjson"
@@ -31,7 +30,6 @@ def test_resource_format_xlsx():
         assert resource.format == "xlsx"
 
 
-@pytest.mark.skip
 def test_resource_format_error_non_matching_format():
     resource = Resource("data/table.csv", format="xlsx")
     with pytest.raises(FrictionlessException) as excinfo:
