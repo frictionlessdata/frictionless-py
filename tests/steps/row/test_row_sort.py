@@ -49,7 +49,10 @@ def test_step_row_sort_with_reverse():
     ]
 
 
-@pytest.mark.skip
+# Bugs
+
+
+@pytest.mark.xfail
 def test_step_row_sort_with_reverse_in_desriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

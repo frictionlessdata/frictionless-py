@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -32,7 +32,7 @@ def test_step_table_join():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -59,7 +59,7 @@ def test_step_table_join_from_dict():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_with_name_is_not_first_field():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -87,7 +87,7 @@ def test_step_table_join_with_name_is_not_first_field():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_left():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -116,7 +116,7 @@ def test_step_table_join_mode_left():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_left_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -144,7 +144,7 @@ def test_step_table_join_mode_left_from_descriptor_issue_996():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_right():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -172,7 +172,7 @@ def test_step_table_join_mode_right():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_outer():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -202,7 +202,7 @@ def test_step_table_join_mode_outer():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_cross():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -233,7 +233,7 @@ def test_step_table_join_mode_cross():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_negate():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -258,7 +258,7 @@ def test_step_table_join_mode_negate():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_hash_is_true():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

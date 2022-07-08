@@ -1,7 +1,4 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
-
-pytestmark = pytest.mark.skip
 
 
 # General

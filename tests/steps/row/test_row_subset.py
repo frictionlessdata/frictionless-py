@@ -23,26 +23,7 @@ def test_step_row_subset_conflicts():
     assert target.read_rows() == []
 
 
-@pytest.mark.skip
-def test_step_row_subset_conflicts_from_descriptor_issue_996():
-    source = Resource("data/transform.csv")
-    pipeline = Pipeline(
-        steps=[
-            steps.row_subset({"subset": "conflicts", "fieldName": "id"}),
-        ],
-    )
-    target = source.transform(pipeline)
-    assert target.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-        ]
-    }
-    assert target.read_rows() == []
-
-
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_row_subset_conflicts_with_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -88,7 +69,7 @@ def test_step_row_subset_distinct():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_row_subset_distinct_with_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -110,7 +91,7 @@ def test_step_row_subset_distinct_with_duplicates():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_row_subset_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -129,7 +110,7 @@ def test_step_row_subset_duplicates():
     assert target.read_rows() == []
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_row_subset_duplicates_with_name():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -153,7 +134,7 @@ def test_step_row_subset_duplicates_with_name():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_row_subset_unique():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -176,13 +157,35 @@ def test_step_row_subset_unique():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_row_subset_unique_with_name():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="unique", field_name="id"),
+        ],
+    )
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == []
+
+
+# Bugs
+
+
+@pytest.mark.xfail
+def test_step_row_subset_conflicts_from_descriptor_issue_996():
+    source = Resource("data/transform.csv")
+    pipeline = Pipeline(
+        steps=[
+            steps.row_subset({"subset": "conflicts", "fieldName": "id"}),
         ],
     )
     target = source.transform(pipeline)

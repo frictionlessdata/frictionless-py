@@ -5,7 +5,6 @@ from frictionless import Resource, Pipeline, FrictionlessException, steps
 # General
 
 
-@pytest.mark.skip
 def test_step_table_validate():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

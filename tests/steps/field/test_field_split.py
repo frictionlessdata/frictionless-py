@@ -1,12 +1,11 @@
 import pytest
 from frictionless import Resource, Pipeline, steps
 
-pytestmark = pytest.mark.skip
-
 
 # General
 
 
+@pytest.mark.xfail
 def test_step_field_split():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -30,6 +29,7 @@ def test_step_field_split():
     ]
 
 
+@pytest.mark.xfail
 def test_step_field_split_with_preserve():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -56,6 +56,7 @@ def test_step_field_split_with_preserve():
     ]
 
 
+@pytest.mark.xfail
 def test_step_field_split_with_capturing_groups():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

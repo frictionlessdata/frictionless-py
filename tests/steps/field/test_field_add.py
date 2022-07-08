@@ -1,12 +1,11 @@
 import pytest
 from frictionless import Resource, Pipeline, steps
 
-pytestmark = pytest.mark.skip
-
 
 # General
 
 
+@pytest.mark.xfail
 def test_step_field_add():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -30,6 +29,7 @@ def test_step_field_add():
     ]
 
 
+@pytest.mark.xfail
 def test_step_field_add_with_position():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -53,6 +53,7 @@ def test_step_field_add_with_position():
     ]
 
 
+@pytest.mark.xfail
 def test_step_field_add_with_formula():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -77,6 +78,7 @@ def test_step_field_add_with_formula():
     ]
 
 
+@pytest.mark.xfail
 def test_step_field_add_with_function():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -103,7 +105,7 @@ def test_step_field_add_with_function():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_field_add_with_incremental():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

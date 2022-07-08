@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
