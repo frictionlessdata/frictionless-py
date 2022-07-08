@@ -44,27 +44,6 @@ def test_resource_to_yaml(tmpdir):
         }
 
 
-def test_to_json_with_resource_data_is_not_a_list_issue_693():
-    data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
-    resource = Resource(data=data)
-    text = resource.to_json()
-    assert json.loads(text) == {}
-
-
-def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
-    data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
-    resource = Resource(data=data)
-    text = resource.to_yaml()
-    assert yaml.safe_load(text) == {}
-
-
-def test_to_yaml_allow_unicode_issue_844():
-    resource = Resource("data/issue-844.csv", encoding="utf-8")
-    resource.infer()
-    text = resource.to_yaml()
-    assert "età" in text
-
-
 # Markdown
 
 
@@ -160,6 +139,29 @@ def test_resource_to_markdown_file_837(tmpdir):
 
 
 # Bugs
+
+
+@pytest.mark.xfail(reason="Recover")
+def test_to_json_with_resource_data_is_not_a_list_issue_693():
+    data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
+    resource = Resource(data=data)
+    text = resource.to_json()
+    assert json.loads(text) == {}
+
+
+@pytest.mark.xfail(reason="Recover")
+def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
+    data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
+    resource = Resource(data=data)
+    text = resource.to_yaml()
+    assert yaml.safe_load(text) == {}
+
+
+def test_to_yaml_allow_unicode_issue_844():
+    resource = Resource("data/issue-844.csv", encoding="utf-8")
+    resource.infer()
+    text = resource.to_yaml()
+    assert "età" in text
 
 
 @pytest.mark.skip

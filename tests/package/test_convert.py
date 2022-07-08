@@ -116,6 +116,7 @@ def test_package_to_zip_resource_memory_function(tmpdir):
     ]
 
 
+@pytest.mark.xfail(reason="Recover")
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     control = formats.SqlControl(table="table")
