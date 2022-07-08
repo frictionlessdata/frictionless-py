@@ -1021,6 +1021,11 @@ class Resource(Metadata):
                 descriptor.setdefault("stats", {})
                 descriptor["stats"][name] = value
 
+        # Compression (v1.5)
+        compression = descriptor.get("compression")
+        if compression == "no":
+            descriptor.pop("compression")
+
         return super().from_descriptor(descriptor, **options)
 
     def to_descriptor(self, *, exclude=[]):

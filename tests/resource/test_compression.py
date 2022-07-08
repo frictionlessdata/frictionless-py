@@ -103,7 +103,6 @@ def test_resource_compression_remote_csv_gz():
         ]
 
 
-@pytest.mark.skip
 def test_resource_compression_error_bad():
     resource = Resource("data/table.csv", compression="bad")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -113,7 +112,6 @@ def test_resource_compression_error_bad():
     assert error.note == 'compression "bad" is not supported'
 
 
-@pytest.mark.skip
 def test_resource_compression_error_invalid_zip():
     source = b"id,filename\n1,archive"
     resource = Resource(source, format="csv", compression="zip")
@@ -124,7 +122,6 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = b"id,filename\n\1,dump"
@@ -136,14 +133,16 @@ def test_resource_compression_error_invalid_gz():
     assert error.note == "Not a gzipped file (b'id')"
 
 
-@pytest.mark.skip
+# Bugs
+
+
 def test_resource_compression_legacy_no_value_issue_616():
-    with pytest.warns(UserWarning):
-        with Resource("data/table.csv", compression="no") as resource:
-            assert resource.innerpath == ""
-            assert resource.compression == ""
-            assert resource.header == ["id", "name"]
-            assert resource.read_rows() == [
-                {"id": 1, "name": "english"},
-                {"id": 2, "name": "中国人"},
-            ]
+    descriptor = {"path": "data/table.csv", "compression": "no"}
+    with Resource.from_descriptor(descriptor) as resource:
+        assert resource.innerpath is None
+        assert resource.compression is None
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
