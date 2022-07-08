@@ -19,7 +19,6 @@ def test_resource_dialect_header():
         ]
 
 
-@pytest.mark.skip
 def test_resource_dialect_header_false():
     descriptor = {
         "name": "name",
@@ -67,7 +66,6 @@ def test_resource_dialect_header_inline():
         ]
 
 
-@pytest.mark.skip
 def test_resource_dialect_header_json_keyed():
     source = "[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
     source = source.encode("utf-8")
@@ -165,7 +163,6 @@ def test_resource_layout_header_case_default():
         assert resource.header.errors[1].code == "incorrect-label"
 
 
-@pytest.mark.skip
 def test_resource_layout_header_case_is_false():
     dialect = Dialect(header_case=False)
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
@@ -208,8 +205,7 @@ def test_resource_layout_skip_rows_with_headers_example_from_readme():
         ]
 
 
-# TODO: support legacy dialect
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Support v1 dialect")
 def test_resource_dialect_from_descriptor():
     dialect = {
         "delimiter": "|",
@@ -233,8 +229,7 @@ def test_resource_dialect_from_descriptor():
     ]
 
 
-# TODO: support legacy dialect
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Support v1 dialect")
 def test_resource_dialect_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
     assert resource == {
@@ -248,9 +243,9 @@ def test_resource_dialect_from_path():
     }
 
 
-# TODO: support legacy dialect
 @pytest.mark.skip
 @pytest.mark.vcr
+@pytest.mark.xfail(reason="Support v1 dialect")
 def test_resource_dialect_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
@@ -264,7 +259,7 @@ def test_resource_dialect_from_path_remote():
     }
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Support safety checks")
 def test_resource_dialect_from_path_error_path_not_safe():
     dialect = os.path.abspath("data/dialect.json")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -274,15 +269,14 @@ def test_resource_dialect_from_path_error_path_not_safe():
     assert error.note.count("dialect.json")
 
 
-@pytest.mark.skip
 def test_resource_dialect_csv_default():
     with Resource("data/table.csv") as resource:
         assert resource.header == ["id", "name"]
-        assert resource.dialect.delimiter == ","
-        assert resource.dialect.line_terminator == "\r\n"
-        assert resource.dialect.double_quote is True
-        assert resource.dialect.quote_char == '"'
-        assert resource.dialect.skip_initial_space is False
+        assert resource.dialect.get_control("csv").delimiter == ","
+        assert resource.dialect.get_control("csv").line_terminator == "\r\n"
+        assert resource.dialect.get_control("csv").double_quote is True
+        assert resource.dialect.get_control("csv").quote_char == '"'
+        assert resource.dialect.get_control("csv").skip_initial_space is False
         assert resource.dialect.header is True
         assert resource.dialect.header_rows == [1]
         # TODO: review
@@ -295,22 +289,20 @@ def test_resource_dialect_csv_default():
         ]
 
 
-@pytest.mark.skip
 def test_resource_dialect_csv_delimiter():
     with Resource("data/delimiter.csv") as resource:
         assert resource.header == ["id", "name"]
-        assert resource.dialect == {"delimiter": ";"}
+        assert resource.dialect.get_control("csv").delimiter == ";"
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
-@pytest.mark.skip
 def test_resource_dialect_json_property():
     source = b'{"root": [["header1", "header2"], ["value1", "value2"]]}'
     dialect = Dialect.from_descriptor(
-        {"controls": [{"code": "json", "property": "property"}]}
+        {"controls": [{"code": "json", "property": "root"}]}
     )
     with Resource(source, format="json", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
@@ -319,7 +311,7 @@ def test_resource_dialect_json_property():
         ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_dialect_bad_property():
     resource = Resource("data/table.csv", dialect={"bad": True})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -329,7 +321,6 @@ def test_resource_dialect_bad_property():
     assert error.note.count("bad")
 
 
-@pytest.mark.skip
 def test_resource_dialect_header_false_official():
     descriptor = {
         "name": "name",
