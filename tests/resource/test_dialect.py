@@ -243,7 +243,6 @@ def test_resource_dialect_from_path():
     }
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.xfail(reason="Support v1 dialect")
 def test_resource_dialect_from_path_remote():

@@ -1176,17 +1176,6 @@ class Resource(Metadata):
         if self.pipeline:
             yield from self.pipeline.metadata_errors
 
-        # TODO: implement after custom support
-        # Check invalid properties
-        #  invalid_fields = {
-        #  "missingValues": "resource.schema.missingValues",
-        #  "fields": "resource.schema.fields",
-        #  }
-        #  for invalid_field, object in invalid_fields.items():
-        #  if invalid_field in self:
-        #  note = f'"{invalid_field}" should be set as "{object}" (not "resource.{invalid_field}").'
-        #  yield errors.ResourceError(note=note)
-
         # Contributors/Sources
         for name in ["contributors", "sources"]:
             for item in getattr(self, name, []):
@@ -1196,3 +1185,8 @@ class Resource(Metadata):
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
+        # Custom
+        for name in ["missingValues", "fields"]:
+            if name in self.custom:
+                note = f'"{name}" should be set as "schema.{name}"'
+                yield errors.ResourceError(note=note)

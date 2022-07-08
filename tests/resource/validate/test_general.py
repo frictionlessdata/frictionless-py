@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Check, Checklist, errors
+from frictionless import Resource, Dialect, Detector, Check, Checklist, errors
 from frictionless.schema.schema import Schema
 
 
@@ -13,7 +13,7 @@ def test_resource_validate():
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_invalid_resource():
     resource = Resource({"path": "data/table.csv", "schema": "bad"})
     report = resource.validate()
@@ -134,7 +134,7 @@ def test_resource_validate_blank_cell_not_required():
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_no_data():
     resource = Resource("data/empty.csv")
     report = resource.validate()
@@ -143,21 +143,18 @@ def test_resource_validate_no_data():
     ]
 
 
-@pytest.mark.skip
 def test_resource_validate_no_rows():
     resource = Resource("data/without-rows.csv")
     report = resource.validate()
     assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_no_rows_with_compression():
     resource = Resource("data/without-rows.csv.zip")
     report = resource.validate()
     assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
@@ -168,7 +165,6 @@ def test_resource_validate_source_invalid():
     ]
 
 
-@pytest.mark.skip
 def test_resource_validate_source_invalid_many_rows():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
@@ -267,12 +263,14 @@ def test_resource_validate_structure_errors_with_limit_errors():
 
 
 @pytest.mark.ci
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_limit_memory():
     source = lambda: ([integer] for integer in range(1, 100000000))
-    schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
-    layout = Layout(header=False)
-    resource = Resource(source, schema=schema, layout=layout)
+    schema = Schema.from_descriptor(
+        {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
+    )
+    dialect = Dialect(header=False)
+    resource = Resource(source, schema=schema, dialect=dialect)
     checklist = Checklist(limit_memory=50)
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
@@ -281,12 +279,14 @@ def test_resource_validate_limit_memory():
 
 
 @pytest.mark.ci
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_limit_memory_small():
     source = lambda: ([integer] for integer in range(1, 100000000))
-    schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
-    layout = Layout(header=False)
-    resource = Resource(source, schema=schema, layout=layout)
+    schema = Schema.from_descriptor(
+        {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
+    )
+    dialect = Dialect(header=False)
+    resource = Resource(source, schema=schema, dialect=dialect)
     checklist = Checklist(limit_memory=1)
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
@@ -342,7 +342,6 @@ def test_resource_validate_custom_check_with_arguments():
 # Bugs
 
 
-@pytest.mark.skip
 def test_resource_validate_infer_fields_issue_223():
     source = [["name1", "name2"], ["123", "abc"], ["456", "def"], ["789", "ghi"]]
     detector = Detector(schema_patch={"fields": {"name": {"type": "string"}}})
@@ -351,7 +350,6 @@ def test_resource_validate_infer_fields_issue_223():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_infer_fields_issue_225():
     source = [["name1", "name2"], ["123", None], ["456", None], ["789"]]
     detector = Detector(schema_patch={"fields": {"name": {"type": "string"}}})
@@ -362,7 +360,6 @@ def test_resource_validate_infer_fields_issue_225():
     ]
 
 
-@pytest.mark.skip
 def test_resource_validate_fails_with_wrong_encoding_issue_274():
     # For now, by default encoding is detected incorectly by chardet
     resource = Resource("data/encoding-issue-274.csv", encoding="utf-8")
@@ -370,7 +367,6 @@ def test_resource_validate_fails_with_wrong_encoding_issue_274():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_wide_table_with_order_fields_issue_277():
     source = "data/issue-277.csv"
     schema = "data/issue-277.json"
@@ -384,7 +380,7 @@ def test_resource_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_invalid_table_schema_issue_304():
     source = [["name", "age"], ["Alex", "33"]]
     schema = Schema.from_descriptor(
@@ -425,7 +421,6 @@ def test_resource_validate_missing_local_file_raises_scheme_error_issue_315():
     assert note.count("[Errno 2]") and note.count("bad-path.csv")
 
 
-@pytest.mark.skip
 def test_resource_validate_inline_not_a_binary_issue_349():
     with open("data/table.csv") as source:
         resource = Resource(source)
@@ -433,14 +428,12 @@ def test_resource_validate_inline_not_a_binary_issue_349():
         assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_newline_inside_label_issue_811():
     resource = Resource("data/issue-811.csv")
     report = resource.validate()
     assert report.valid
 
 
-@pytest.mark.skip
 def test_resource_validate_resource_from_json_format_issue_827():
     resource = Resource(path="data/table.json")
     report = resource.validate()
@@ -453,14 +446,14 @@ def test_resource_validate_resource_none_is_not_iterable_enum_constraint_issue_8
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Support limit rows?")
 def test_resource_validate_resource_header_row_has_first_number_issue_870():
     resource = Resource("data/issue-870.xlsx", layout={"limitRows": 5})
     report = resource.validate()
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_resource_array_path_issue_991():
     resource = Resource("data/issue-991.resource.json")
     report = resource.validate()
@@ -472,7 +465,6 @@ def test_resource_validate_resource_array_path_issue_991():
     ]
 
 
-@pytest.mark.skip
 # TODO: review if the error type is correct
 def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
@@ -490,45 +482,38 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     ]
 
 
-@pytest.mark.skip
 def test_resource_validate_resource_metadata_errors_with_missing_values_993():
     resource = Resource("data/resource-with-missingvalues-993.json")
     assert resource.metadata_errors[0].code == "resource-error"
     assert (
         resource.metadata_errors[0].note
-        == '"missingValues" should be set as "resource.schema.missingValues" (not "resource.missingValues").'
+        == '"missingValues" should be set as "schema.missingValues"'
     )
 
 
-@pytest.mark.skip
 def test_resource_validate_resource_metadata_errors_with_fields_993():
     resource = Resource("data/resource-with-fields-993.json")
     assert resource.metadata_errors[0].code == "resource-error"
-    assert (
-        resource.metadata_errors[0].note
-        == '"fields" should be set as "resource.schema.fields" (not "resource.fields").'
-    )
+    assert resource.metadata_errors[0].note == '"fields" should be set as "schema.fields"'
 
 
-@pytest.mark.skip
 def test_resource_validate_resource_errors_with_missing_values_993():
     resource = Resource("data/resource-with-missingvalues-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
         [
             "resource-error",
-            'The data resource has an error: "missingValues" should be set as "resource.schema.missingValues" (not "resource.missingValues").',
+            'The data resource has an error: "missingValues" should be set as "schema.missingValues"',
         ]
     ]
 
 
-@pytest.mark.skip
 def test_resource_validate_resource_errors_with_fields_993():
     resource = Resource("data/resource-with-fields-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
         [
             "resource-error",
-            'The data resource has an error: "fields" should be set as "resource.schema.fields" (not "resource.fields").',
+            'The data resource has an error: "fields" should be set as "schema.fields"',
         ]
     ]

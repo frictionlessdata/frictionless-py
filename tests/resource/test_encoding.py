@@ -47,7 +47,6 @@ def test_resource_encoding_utf_16():
         ]
 
 
-@pytest.mark.skip
 def test_resource_encoding_error_bad_encoding():
     resource = Resource("data/table.csv", encoding="bad")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -57,7 +56,6 @@ def test_resource_encoding_error_bad_encoding():
     assert error.note == "unknown encoding: bad"
 
 
-@pytest.mark.skip
 def test_resource_encoding_error_non_matching_encoding():
     resource = Resource("data/table.csv", encoding="ascii")
     with pytest.raises(FrictionlessException) as excinfo:
