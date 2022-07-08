@@ -9,17 +9,17 @@ def test_report_task_to_summary_valid():
     resource = Resource("data/capital-valid.csv")
     report = resource.validate()
     output = report.tasks[0].to_summary()
-    assert output.count("File place   | data/capital-valid.csv")
+    assert output.count("File Place   | data/capital-valid.csv")
     assert output.count("Total Time   |")
     if not helpers.is_platform("windows"):
-        assert output.count("File size    | 50 Bytes")
+        assert output.count("File Size    | 50 Bytes")
 
 
 def test_report_task_to_summary_invalid():
     resource = Resource("data/capital-invalid.csv")
     report = resource.validate()
     output = report.tasks[0].to_summary()
-    assert output.count("File place      | data/capital-invalid.csv")
+    assert output.count("File Place      | data/capital-invalid.csv")
     assert output.count("Total Time      |")
     assert output.count("Total Errors    | 5")
     assert output.count("Duplicate Label | 1")
@@ -28,15 +28,15 @@ def test_report_task_to_summary_invalid():
     assert output.count("Type Error      | 1")
     assert output.count("Extra Cell      | 1")
     if not helpers.is_platform("windows"):
-        assert output.count(f"File size       | 171 Bytes")
+        assert output.count(f"File Size       | 171 Bytes")
 
 
 def test_report_task_to_summary_file_not_found():
     resource = Resource("bad.csv")
     report = resource.validate()
     output = report.tasks[0].to_summary()
-    assert output.count("File place   | bad.csv")
-    assert output.count("File size    | (file not found)")
+    assert output.count("File Place   | bad.csv")
+    assert output.count("File Size    | (file not found)")
     assert output.count("Total Time   |")
     assert output.count("Total Errors | 1")
     assert output.count("Scheme Error | 1")

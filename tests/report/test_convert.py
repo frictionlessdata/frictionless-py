@@ -13,7 +13,7 @@ def test_report_to_summary_error_not_found():
     with open(path, encoding="utf-8") as file:
         expected = file.read()
     assert output.count(expected.strip())
-    assert output.count("File size    | (file not found)")
+    assert output.count("File Size    | (file not found)")
 
 
 def test_report_to_summary_valid():
