@@ -154,7 +154,7 @@ def program_extract(
     # Normalize data
     normdata = data
     if isinstance(data, list):
-        normdata = {source: data}
+        normdata = {prepare_source(): data}
 
     # Return JSON
     if json:

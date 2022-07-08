@@ -37,7 +37,8 @@ TESTS_REQUIRE = [
     "requests-mock",
     "python-dotenv",
     "pytest-timeout",
-    "pydoc-markdown",
+    # TODO: review
+    #  "pydoc-markdown",
     "docstring-parser",
 ]
 EXTRAS_REQUIRE = {
