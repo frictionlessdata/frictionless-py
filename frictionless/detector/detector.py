@@ -430,50 +430,6 @@ class Detector(Metadata):
 
         return schema
 
-    # TODO: add lookup to interfaces
-    def detect_lookup(self, resource: Resource) -> dict:
-        """Detect lookup from resource
-
-        Parameters:
-            resource (Resource): tabular resource
-
-        Returns:
-            dict: lookup
-        """
-        lookup = {}
-        for fk in resource.schema.foreign_keys:
-
-            # Prepare source
-            source_name = fk["reference"]["resource"]
-            source_key = tuple(fk["reference"]["fields"])
-            if source_name != "" and not resource.package:
-                continue
-            if source_name:
-                if not resource.package.has_resource(source_name):
-                    note = f'Failed to handle a foreign key for resource "{resource.name}" as resource "{source_name}" does not exist'
-                    raise FrictionlessException(errors.ResourceError(note=note))
-                source_res = resource.package.get_resource(source_name)
-            else:
-                source_res = resource.to_copy()
-            if source_res.schema:
-                source_res.schema.foreign_keys = []
-
-            # Prepare lookup
-            lookup.setdefault(source_name, {})
-            if source_key in lookup[source_name]:
-                continue
-            lookup[source_name][source_key] = set()
-            if not source_res:
-                continue
-            with source_res:
-                for row in source_res.row_stream:  # type: ignore
-                    cells = tuple(row.get(field_name) for field_name in source_key)
-                    if set(cells) == {None}:
-                        continue
-                    lookup[source_name][source_key].add(cells)
-
-        return lookup
-
     # Metadata
 
     metadata_Error = errors.DetectorError

@@ -570,12 +570,16 @@ class Resource(Metadata):
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, sample=True, stats=False):
         """Infer metadata
 
         Parameters:
+            sample? (bool): open file and infer from a sample (default: True)
             stats? (bool): stream file completely and infer stats
         """
+        if not sample:
+            self.__detect_file()
+            return
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
             raise FrictionlessException(errors.ResourceError(note=note))
@@ -604,8 +608,10 @@ class Resource(Metadata):
             if self.type == "table" and not as_file:
                 self.__parser = system.create_parser(self)
                 self.__parser.open()
-                self.__detect_table()
+                self.__detect_dialect()
+                self.__detect_schema()
                 self.__header = self.__read_header()
+                self.__lookup = self.__read_lookup()
                 self.__row_stream = self.__read_row_stream()
                 return self
 
@@ -640,53 +646,55 @@ class Resource(Metadata):
 
     # Detect
 
+    # TODO: enable validation?
     def __detect_file(self):
 
-        # Resource
+        # Detect
         self.detector.detect_resource(self)
         system.detect_resource(self)
-        # TODO: recover when core profiles are fixed?
+
+        # Validate
         #  if not self.metadata_valid:
         #  raise FrictionlessException(self.metadata_errors[0])
 
-    # TODO: rework this method
-    def __detect_table(self):
+    def __detect_dialect(self):
 
-        # Dialect
-        sample = self.__parser.sample  # type: ignore
-        dialect = self.detector.detect_dialect(sample, dialect=self.dialect)
+        # Detect
+        self.__sample = self.__parser.sample  # type: ignore
+        dialect = self.detector.detect_dialect(self.__sample, dialect=self.dialect)
         if dialect:
             self.dialect = dialect
-        self.__sample = sample
+
+        # Validate
         if not self.dialect.metadata_valid:
             raise FrictionlessException(self.dialect.metadata_errors[0])
 
-        # Schema
-        labels = self.dialect.read_labels(self.sample)
-        fragment = self.dialect.read_fragment(self.sample)
+    def __detect_schema(self):
+
+        # Detect
+        self.__labels = self.dialect.read_labels(self.sample)
+        self.__fragment = self.dialect.read_fragment(self.sample)
         field_candidates = system.create_field_candidates()
         schema = self.detector.detect_schema(
-            fragment,
-            labels=labels,
+            self.__fragment,
+            labels=self.__labels,
             schema=self.schema,
             field_candidates=field_candidates,
         )
+
+        # Process
+        # TODO: review
         if schema:
             if not self.schema or self.schema.to_descriptor() != schema.to_descriptor():
                 self.schema = schema
-        self.__labels = labels
-        self.__fragment = fragment
         self.stats["fields"] = len(schema.fields)
         # NOTE: review whether it's a proper place for this fallback to data resource
         if not schema:
             self.profile = "data-resource"
+
+        # Validate
         if not self.schema.metadata_valid:
             raise FrictionlessException(self.schema.metadata_errors[0])
-
-        # Lookup
-        lookup = self.detector.detect_lookup(self)
-        if lookup:
-            self.__lookup = lookup
 
     # Read
 
@@ -772,6 +780,50 @@ class Resource(Metadata):
                 raise FrictionlessException(error)
 
         return header
+
+    # TODO: add lookup to interfaces
+    def __read_lookup(self) -> dict:
+        """Detect lookup from resource
+
+        Parameters:
+            resource (Resource): tabular resource
+
+        Returns:
+            dict: lookup
+        """
+        lookup = {}
+        for fk in self.schema.foreign_keys:
+
+            # Prepare source
+            source_name = fk["reference"]["self"]
+            source_key = tuple(fk["reference"]["fields"])
+            if source_name != "" and not self.package:
+                continue
+            if source_name:
+                if not self.package.has_resource(source_name):
+                    note = f'Failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
+                    raise FrictionlessException(errors.ResourceError(note=note))
+                source_res = self.package.get_resource(source_name)
+            else:
+                source_res = self.to_copy()
+            if source_res.schema:
+                source_res.schema.foreign_keys = []
+
+            # Prepare lookup
+            lookup.setdefault(source_name, {})
+            if source_key in lookup[source_name]:
+                continue
+            lookup[source_name][source_key] = set()
+            if not source_res:
+                continue
+            with source_res:
+                for row in source_res.row_stream:  # type: ignore
+                    cells = tuple(row.get(field_name) for field_name in source_key)
+                    if set(cells) == {None}:
+                        continue
+                    lookup[source_name][source_key].add(cells)
+
+        return lookup
 
     def __read_row_stream(self):
 
@@ -904,7 +956,7 @@ class Resource(Metadata):
         """
         native = isinstance(target, Resource)
         target = target if native else Resource(target, **options)
-        target.__detect_file()
+        target.infer(sample=False)
         parser = system.create_parser(target)
         parser.write_row_stream(self.to_copy())
         return target

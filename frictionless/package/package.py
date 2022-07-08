@@ -326,16 +326,17 @@ class Package(Metadata):
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, sample=True, stats=False):
         """Infer package's attributes
 
         Parameters:
+            sample? (bool): open files and infer from a sample (default: True)
             stats? (bool): stream files completely and infer stats
         """
 
         # General
         for resource in self.resources:
-            resource.infer(stats=stats)
+            resource.infer(sample=sample, stats=stats)
 
         # Deduplicate names
         if len(self.resource_names) != len(set(self.resource_names)):
@@ -491,9 +492,8 @@ class Package(Metadata):
         Raises:
             FrictionlessException: on any error
         """
-        # TODO: review inferring here
-        self.infer()
         try:
+            self.infer(sample=False)
             with zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
