@@ -1,6 +1,7 @@
 import os
 import sys
 import pytest
+import textwrap
 from frictionless import Package, Resource, Control, Schema, Field, Detector, helpers
 from frictionless import Dialect, FrictionlessException
 
@@ -211,8 +212,7 @@ def test_resource_source_path_error_bad_path():
     assert error.note.count("[Errno 2]") and error.note.count("table.csv")
 
 
-# TODO: recover safety checks
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover safety checks")
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": os.path.abspath("data/table.csv")})
@@ -221,8 +221,7 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
     assert error.note.count("table.csv")
 
 
-# TODO: recover safety checks
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover safety checks")
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(
@@ -237,52 +236,49 @@ def test_resource_source_path_error_bad_path_not_safe_traversing():
     assert error.note.count("table.csv")
 
 
-@pytest.mark.skip
 def test_resource_source_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    resource = Resource({"data": data})
-    assert resource.path is None
-    assert resource.data == data
-    assert resource.memory is True
-    assert resource.tabular is True
-    assert resource.multipart is False
-    assert resource.basepath == ""
-    assert resource.fullpath is None
-    assert resource.read_bytes() == b""
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-    assert resource.sample == data
-    assert resource.fragment == data[1:]
-    assert resource.labels == ["id", "name"]
-    assert resource.header == ["id", "name"]
-    assert resource.stats == {
-        "hash": "",
-        "bytes": 0,
-        "fields": 2,
-        "rows": 2,
-    }
+    with Resource({"data": data}) as resource:
+        assert resource.path is None
+        assert resource.data == data
+        assert resource.memory is True
+        assert resource.tabular is True
+        assert resource.multipart is False
+        assert resource.basepath == ""
+        assert resource.fullpath is None
+        assert resource.read_bytes() == b""
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+        assert resource.sample == data
+        assert resource.fragment == data[1:]
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["id", "name"]
+        assert resource.stats == {
+            "fields": 2,
+            "rows": 2,
+        }
 
 
-@pytest.mark.skip
+# TODO: shall it fail on read_rows (metadata validation)?
 def test_resource_source_path_and_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     resource = Resource({"data": data, "path": "path"})
     assert resource.path == "path"
     assert resource.data == data
-    assert resource.fullpath is None
+    assert resource.fullpath == "path"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_source_no_path_and_no_data():
     resource = Resource({})
     assert resource.path is None
-    assert resource.data == []
+    assert resource.data is None
     assert resource.fullpath is None
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
@@ -316,29 +312,25 @@ def test_resource_standard_specs_properties(create_descriptor):
     assert resource.sources == []
 
 
-@pytest.mark.skip
 def test_resource_official_hash_bytes_rows():
-    resource = Resource({"path": "path", "hash": "hash", "bytes": 1, "rows": 1})
-    assert resource == {
+    resource = Resource({"path": "path", "hash": "hash", "bytes": 1})
+    assert resource.to_descriptor() == {
         "path": "path",
         "stats": {
             "hash": "hash",
             "bytes": 1,
-            "rows": 1,
         },
     }
 
 
-@pytest.mark.skip
 def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
-    resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1, "rows": 1})
-    assert resource == {
+    resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1})
+    assert resource.to_descriptor() == {
         "path": "path",
         "hashing": "sha256",
         "stats": {
             "hash": "hash",
             "bytes": 1,
-            "rows": 1,
         },
     }
 
@@ -355,8 +347,7 @@ def test_resource_description_html_multiline():
     assert resource.description_html == "<p><strong>test</strong></p><p>line</p>"
 
 
-# TODO: decide on behaviour
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_description_html_not_set():
     resource = Resource()
     assert resource.description == ""
@@ -375,14 +366,15 @@ def test_resource_description_text_plain():
     assert resource.description_text == "It's just a plain text. Another sentence"
 
 
-@pytest.mark.skip
 def test_resource_metadata_bad_schema_format():
     schema = Schema(
         fields=[
-            Field(
-                name="name",
-                type="boolean",
-                format={"trueValues": "Yes", "falseValues": "No"},
+            Field.from_descriptor(
+                dict(
+                    name="name",
+                    type="boolean",
+                    format={"trueValues": "Yes", "falseValues": "No"},
+                )
             )
         ]
     )
@@ -421,7 +413,6 @@ def test_resource_set_trusted():
     assert resource.trusted is False
 
 
-@pytest.mark.skip
 def test_resource_set_package():
     test_package_1 = Package()
     resource = Resource(package=test_package_1)
@@ -431,7 +422,6 @@ def test_resource_set_package():
     assert resource.package == test_package_2
 
 
-@pytest.mark.skip
 def test_resource_pprint():
     resource = Resource(
         name="resource",
@@ -439,11 +429,13 @@ def test_resource_pprint():
         description="My Resource for the Guide",
         path="data/table.csv",
     )
-    expected = """{'description': 'My Resource for the Guide',
- 'name': 'resource',
- 'path': 'data/table.csv',
- 'title': 'My Resource'}"""
-    assert repr(resource) == expected
+    expected = """
+    {'name': 'resource',
+     'path': 'data/table.csv',
+     'title': 'My Resource',
+     'description': 'My Resource for the Guide'}
+    """
+    assert repr(resource) == textwrap.dedent(expected).strip()
 
 
 def test_resource_summary_valid_resource():
@@ -459,27 +451,23 @@ def test_resource_summary_valid_resource():
     )
 
 
-@pytest.mark.skip
 def test_resource_summary_invalid_resource():
     resource = Resource("data/countries.csv")
     output = resource.to_view()
-    assert (
-        output.count("| id | neighbor_id | name      | population |")
-        and output.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
-        and output.count("|  2 | '3'         | 'France'  | 'n/a'      |")
-        and output.count("|  3 | '22'        | 'Germany' | '83'       |")
-        and output.count("|  4 | None        | 'Italy'   | '60'       |")
-        and output.count("|  5 | None        | None      | None       |")
-    )
+    assert output.count("| id | neighbor_id | name      | population |")
+    assert output.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
+    assert output.count("|  2 | '3'         | 'France'  | 'n/a'      |")
+    assert output.count("|  3 | '22'        | 'Germany' | '83'       |")
+    assert output.count("|  4 | None        | 'Italy'   | '60'       |")
+    assert output.count("|  5 | None        | None      | None       |")
 
 
 # Bugs
 
 
-@pytest.mark.skip
 def test_resource_from_path_yml_issue_644():
     resource = Resource("data/resource.yml")
-    assert resource == {"name": "name", "path": "table.csv"}
+    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -487,23 +475,21 @@ def test_resource_from_path_yml_issue_644():
     ]
 
 
-@pytest.mark.xfail
 def test_resource_reset_on_close_issue_190():
-    layout = Layout(header=False, limit_rows=1)
+    dialect = Dialect(header=False)
     source = [["1", "english"], ["2", "中国人"]]
-    resource = Resource(source, layout=layout)
+    resource = Resource(source, dialect=dialect)
     resource.open()
-    assert resource.read_rows() == [{"field1": 1, "field2": "english"}]
+    assert resource.read_rows(size=1) == [{"field1": 1, "field2": "english"}]
     resource.open()
-    assert resource.read_rows() == [{"field1": 1, "field2": "english"}]
+    assert resource.read_rows(size=1) == [{"field1": 1, "field2": "english"}]
     resource.close()
 
 
-@pytest.mark.xfail
 def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
-    layout = Layout(skip_rows=["#"])
+    dialect = Dialect(comment_char="#")
     source = "data/skip-blank-at-the-end.csv"
-    with Resource(source, layout=layout) as resource:
+    with Resource(source, dialect=dialect) as resource:
         rows = resource.read_rows()
         assert resource.header == ["test1", "test2"]
         assert rows[0].cells == ["1", "2"]
@@ -534,8 +520,6 @@ def test_resource_not_existent_remote_file_with_no_format_issue_287():
     assert error.note == "404 Client Error: Not Found for url: http://example.com/bad"
 
 
-# TODO: fix recursion
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_chardet_raises_remote_issue_305():
     source = "https://gist.githubusercontent.com/roll/56b91d7d998c4df2d4b4aeeefc18cab5/raw/a7a577cd30139b3396151d43ba245ac94d8ddf53/tabulator-issue-305.csv"
@@ -554,7 +538,6 @@ def test_resource_skip_rows_non_string_cell_issue_320():
         assert resource.header[7] == "Current Population Analysed % of total county Pop"
 
 
-@pytest.mark.skip
 def test_resource_skip_rows_non_string_cell_issue_322():
     dialect = Dialect(comment_char="1")
     source = [["id", "name"], [1, "english"], [2, "spanish"]]
@@ -565,7 +548,7 @@ def test_resource_skip_rows_non_string_cell_issue_322():
         ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover safety checks")
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     path = (
         "data/../data/table.csv"
@@ -586,19 +569,25 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)
-    assert resource == {
-        "path": "data/table.csvformat",
-        "format": "csv",
-        "profile": "tabular-data-resource",
+    assert resource.to_descriptor() == {
         "name": "table",
+        "path": "data/table.csvformat",
+        "type": "table",
+        "format": "csv",
         "scheme": "file",
         "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "text/csv",
+        "dialect": {
+            "controls": [
+                {"code": "local"},
+                {"code": "csv"},
+            ]
+        },
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},
