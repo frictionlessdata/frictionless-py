@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Detector, FrictionlessException
+from frictionless import Resource, Dialect, Detector, FrictionlessException
 
 
 # General
@@ -74,7 +74,6 @@ def test_resource_open_row_stream_iterate():
                 assert row.to_dict() == {"id": 2, "name": "中国人"}
 
 
-@pytest.mark.skip
 def test_resource_open_row_stream_error_cells():
     detector = Detector(field_type="integer")
     with Resource("data/table.csv", detector=detector) as resource:
@@ -90,7 +89,6 @@ def test_resource_open_row_stream_error_cells():
         assert row2.valid is False
 
 
-@pytest.mark.skip
 def test_resource_open_row_stream_blank_cells():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
     with Resource("data/table.csv", detector=detector) as resource:
@@ -135,21 +133,20 @@ def test_resource_open_list_stream_iterate():
                 assert cells == ["2", "中国人"]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="Recover")
 def test_resource_open_empty():
     with Resource("data/empty.csv") as resource:
         assert resource.header.missing
         assert resource.header == []
-        assert resource.schema == {}
+        assert resource.schema.to_descriptor() == {}
         assert resource.read_rows() == []
 
 
-@pytest.mark.skip
 def test_resource_open_without_rows():
     with Resource("data/without-rows.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == []
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "any"},
                 {"name": "name", "type": "any"},
@@ -157,14 +154,13 @@ def test_resource_open_without_rows():
         }
 
 
-@pytest.mark.xfail
 def test_resource_open_without_headers():
-    layout = Layout(header=False)
-    with Resource("data/without-headers.csv", layout=layout) as resource:
+    dialect = Dialect(header=False)
+    with Resource("data/without-headers.csv", dialect=dialect) as resource:
         assert resource.labels == []
         assert resource.header.missing
         assert resource.header == ["field1", "field2"]
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "field1", "type": "integer"},
                 {"name": "field2", "type": "string"},
@@ -177,7 +173,6 @@ def test_resource_open_without_headers():
         ]
 
 
-@pytest.mark.skip
 def test_resource_open_source_error_data():
     resource = Resource(b"[1,2]", format="json")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -235,14 +230,13 @@ def test_resource_reopen_and_detector_sample_size():
         ]
 
 
-@pytest.mark.xfail
 def test_resource_reopen_generator():
     def generator():
         yield [1]
         yield [2]
 
-    layout = Layout(header=False)
-    with Resource(generator, layout=layout) as resource:
+    dialect = Dialect(header=False)
+    with Resource(generator, dialect=dialect) as resource:
         # Before reopen
         assert resource.read_rows() == [{"field1": 1}, {"field1": 2}]
         # Reset resource
