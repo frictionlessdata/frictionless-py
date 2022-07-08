@@ -1,9 +1,7 @@
 import functools
-import textwrap
 from copy import deepcopy
 from importlib import import_module
 from tabulate import tabulate
-from typing import List
 from ..metadata import Metadata
 from ..errors import Error, TaskError, ReportError
 from ..exception import FrictionlessException
@@ -202,7 +200,6 @@ class Report(Metadata):
                         ]
                     )
             # Validate
-            error_content = _wrap_text_to_colwidths(error_content)
             validation_content += "\n\n"
             validation_content += "## Summary "
             validation_content += "\n\n"
@@ -224,6 +221,7 @@ class Report(Metadata):
                         error_content,
                         headers=["row", "field", "code", "message"],
                         tablefmt="grid",
+                        maxcolwidths=[5, 5, 10, 50],
                     )
                 )
                 validation_content += "\n\n"
@@ -441,11 +439,7 @@ class ReportTask(Metadata):
         for code, count in error_list.items():
             content.append([code, count])
         return str(
-            tabulate(
-                content,
-                headers=["Description", "Size/Name/Count"],
-                tablefmt="grid",
-            )
+            tabulate(content, headers=["Description", "Size/Name/Count"], tablefmt="grid")
         )
 
     # Metadata
@@ -461,28 +455,3 @@ class ReportTask(Metadata):
         if not isinstance(resource, Resource):
             resource = Resource(resource)
             dict.__setitem__(self, "resource", resource)
-
-
-# TODO:This is a temporary function to use with tabulate as
-# tabulate 0.8.9 does not support text wrap
-def _wrap_text_to_colwidths(
-    list_of_lists: List, colwidths: List = [5, 5, 10, 50]
-) -> List:
-    """Create new list with wrapped text with different column width.
-    Args:
-        list_of_lists (List): List of lines
-        colwidths (List): width for each column
-
-    Returns:
-        List: list of lines with wrapped text
-
-    """
-    result = []
-    for row in list_of_lists:
-        new_row = []
-        for cell, width in zip(row, colwidths):
-            cell = str(cell)
-            wrapped = textwrap.wrap(cell, width=width)
-            new_row.append("\n".join(wrapped))
-        result.append(new_row)
-    return result
