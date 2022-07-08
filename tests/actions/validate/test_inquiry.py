@@ -169,8 +169,8 @@ def test_validate_inquiry_with_multiple_packages_with_parallel():
     report = validate(
         {
             "tasks": [
-                {"descriptor": "data/package/datapackage.json"},
-                {"descriptor": "data/invalid/datapackage.json"},
+                {"package": "data/package/datapackage.json"},
+                {"package": "data/invalid/datapackage.json"},
             ]
         },
         parallel=True,

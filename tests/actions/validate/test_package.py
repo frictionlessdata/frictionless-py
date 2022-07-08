@@ -354,6 +354,7 @@ def test_check_file_package_stats_hash_not_supported_algorithm():
 
 
 @pytest.mark.ci
+@pytest.mark.xfail
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
         with pytest.warns(UserWarning):
@@ -494,6 +495,7 @@ def test_validate_package_with_schema_issue_348():
 
 @pytest.mark.ci
 @pytest.mark.vcr
+@pytest.mark.xfail
 def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
         report = validate("data/issue-494.package.json")

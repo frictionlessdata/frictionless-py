@@ -203,6 +203,7 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
+@pytest.mark.xfail
 def test_storage_big_file(options):
     service = options.pop("service")
     control = formats.BigqueryControl(**options)

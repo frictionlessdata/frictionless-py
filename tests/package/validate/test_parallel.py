@@ -9,10 +9,9 @@ from frictionless import Package
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
-        with pytest.warns(UserWarning):
-            package = Package(json.load(file), basepath="data/package")
-            report = package.validate(parallel=True)
-            assert report.valid
+        package = Package(json.load(file), basepath="data/package")
+        report = package.validate(parallel=True)
+        assert report.valid
 
 
 @pytest.mark.ci

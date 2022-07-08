@@ -252,11 +252,10 @@ def test_validate_package_with_schema_issue_348():
 @pytest.mark.ci
 @pytest.mark.vcr
 def test_validate_package_uppercase_format_issue_494():
-    with pytest.warns(UserWarning):
-        package = Package("data/issue-494.package.json")
-        report = package.validate()
-        assert report.valid
-        assert report.stats["tasks"] == 1
+    package = Package("data/issue-494.package.json")
+    report = package.validate()
+    assert report.valid
+    assert report.stats["tasks"] == 1
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678

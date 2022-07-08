@@ -30,8 +30,8 @@ class BigqueryParser(Parser):
         target = self.resource
         control = target.dialect.get_control("bigquery")
         storage = BigqueryStorage(self.resource.data, control=control)
-        if not target.dialect.table:
+        if not control.table:
             note = 'Please provide "dialect.table" for writing'
             raise FrictionlessException(note)
-        source.name = target.dialect.table
+        source.name = control.table
         storage.write_resource(source, force=True)

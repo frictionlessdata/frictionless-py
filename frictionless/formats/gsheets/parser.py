@@ -29,9 +29,8 @@ class GsheetsParser(Parser):
         fullpath = fullpath % (key, key)
         if gid:
             fullpath = "%s&gid=%s" % (fullpath, gid)
-        resource = Resource(path=fullpath, stats=self.resource.stats)
-        with system.create_parser(resource) as parser:
-            yield from parser.list_stream
+        with Resource(path=fullpath, stats=self.resource.stats) as resource:
+            yield from resource.list_stream
 
     # Write
 
