@@ -7,7 +7,6 @@ from ..control import JsonControl
 from ....dialect import Dialect
 from ....resource import Parser
 from ....system import system
-from .... import helpers
 
 
 class JsonlParser(Parser):

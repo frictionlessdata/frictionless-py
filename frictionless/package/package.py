@@ -493,8 +493,12 @@ class Package(Metadata):
         Raises:
             FrictionlessException: on any error
         """
+
+        # Infer
+        self.infer(sample=False)
+
+        # Save
         try:
-            self.infer(sample=False)
             with zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
@@ -547,6 +551,7 @@ class Package(Metadata):
                     ),
                 )
 
+        # Error
         except Exception as exception:
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception
@@ -567,7 +572,10 @@ class Package(Metadata):
 
         """
 
-        # Render diagram
+        # Infer
+        self.infer()
+
+        # Render
         template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
         environ = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_dir),
@@ -604,7 +612,7 @@ class Package(Metadata):
             edges="\n\t".join(edges),
         )
 
-        # Output diagram
+        # Output
         if path:
             try:
                 helpers.write_file(path, text)
