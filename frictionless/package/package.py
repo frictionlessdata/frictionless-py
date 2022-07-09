@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptorSource, IOnerror
 
 
-# TODO: add create_package hook
+# TODO: think about package/resource/schema/etc extension mechanism (e.g. FiscalPackage)
 class Package(Metadata):
     """Package representation
 
