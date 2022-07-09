@@ -43,24 +43,6 @@ def test_validate_inquiry_multiple_invalid():
     ]
 
 
-def test_validate_inquiry_multiple_invalid_limit_errors():
-    report = validate(
-        {
-            "tasks": [
-                {"path": "data/table.csv"},
-                {"path": "data/invalid.csv", "checklist": {"limitErrors": 1}},
-            ]
-        },
-    )
-    assert report.flatten(["taskNumber", "code", "note"]) == [
-        [2, "blank-label", ""],
-    ]
-    assert report.tasks[0].flatten(["rowNumber", "fieldNumber", "code"]) == []
-    assert report.tasks[1].flatten(["rowNumber", "fieldNumber", "code"]) == [
-        [None, 3, "blank-label"],
-    ]
-
-
 def test_validate_inquiry_multiple_invalid_with_schema():
     report = validate(
         {

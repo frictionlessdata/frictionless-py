@@ -240,8 +240,7 @@ def test_resource_validate_skip_errors_tags():
 
 def test_resource_validate_invalid_limit_errors():
     resource = Resource("data/invalid.csv")
-    checklist = Checklist(limit_errors=3)
-    report = resource.validate(checklist)
+    report = resource.validate(limit_errors=3)
     assert report.task.warnings == ["reached error limit: 3"]
     assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [None, 3, "blank-label"],
@@ -252,8 +251,7 @@ def test_resource_validate_invalid_limit_errors():
 
 def test_resource_validate_structure_errors_with_limit_errors():
     resource = Resource("data/structure-errors.csv")
-    checklist = Checklist(limit_errors=3)
-    report = resource.validate(checklist)
+    report = resource.validate(limit_errors=3)
     assert report.task.warnings == ["reached error limit: 3"]
     assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, None, "blank-row"],
@@ -414,10 +412,9 @@ def test_resource_validate_resource_none_is_not_iterable_enum_constraint_issue_8
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Support limit rows?")
 def test_resource_validate_resource_header_row_has_first_number_issue_870():
-    resource = Resource("data/issue-870.xlsx", layout={"limitRows": 5})
-    report = resource.validate()
+    resource = Resource("data/issue-870.xlsx")
+    report = resource.validate(limit_rows=5)
     assert report.valid
 
 

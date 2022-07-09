@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
-import builtins
 
 if TYPE_CHECKING:
     from ...interfaces import IFilterFunction, IProcessFunction
@@ -10,8 +9,9 @@ if TYPE_CHECKING:
 def extract(
     self: Package,
     *,
-    filter: Optional[IFilterFunction] = None,
+    limit_rows: Optional[int] = None,
     process: Optional[IProcessFunction] = None,
+    filter: Optional[IFilterFunction] = None,
     stream: bool = False,
 ):
     """Extract package rows
@@ -26,19 +26,12 @@ def extract(
 
     """
     result = {}
-    for number, resource in enumerate(self.resources, start=1):  # type: ignore
+    for number, resource in enumerate(self.resources, start=1):
         key = resource.fullpath if not resource.memory else f"memory{number}"
-        data = read_row_stream(resource)
-        data = builtins.filter(filter, data) if filter else data
-        data = (process(row) for row in data) if process else data
-        result[key] = data if stream else list(data)
+        result[key] = resource.extract(
+            limit_rows=limit_rows,
+            process=process,
+            filter=filter,
+            stream=stream,
+        )
     return result
-
-
-# Internal
-
-
-def read_row_stream(resource):
-    with resource:
-        for row in resource.row_stream:
-            yield row

@@ -50,8 +50,8 @@ def test_resource_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
     resource = Resource(source, schema=schema)
-    checklist = Checklist(pick_errors=["#row"], limit_errors=3)
-    report = resource.validate(checklist)
+    checklist = Checklist(pick_errors=["#row"])
+    report = resource.validate(checklist, limit_errors=3)
     assert report.task.warnings == ["reached error limit: 3"]
     assert report.task.flatten(["rowNumber", "fieldNumber", "code"]) == [
         [4, 1, "type-error"],

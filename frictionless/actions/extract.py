@@ -14,8 +14,9 @@ def extract(
     source: Any,
     *,
     type: Optional[str] = None,
-    filter: Optional[IFilterFunction] = None,
+    limit_rows: Optional[int] = None,
     process: Optional[IProcessFunction] = None,
+    filter: Optional[IFilterFunction] = None,
     stream: bool = False,
     **options,
 ):
@@ -43,15 +44,27 @@ def extract(
 
     # Extract package
     if type == "package":
-        if not isinstance(source, Package):
-            source = Package.from_options(source, **options)
-        return source.extract(filter=filter, process=process, stream=stream)
+        package = source
+        if not isinstance(package, Package):
+            package = Package.from_options(package, **options)
+        return package.extract(
+            limit_rows=limit_rows,
+            process=process,
+            filter=filter,
+            stream=stream,
+        )
 
     # Extract resource
     elif type == "resource":
-        if not isinstance(source, Resource):
-            source = Resource.from_options(source, **options)
-        return source.extract(filter=filter, process=process, stream=stream)
+        resource = source
+        if not isinstance(resource, Resource):
+            resource = Resource.from_options(resource, **options)
+        return resource.extract(
+            limit_rows=limit_rows,
+            process=process,
+            filter=filter,
+            stream=stream,
+        )
 
     # Not supported
     raise FrictionlessException(f"Not supported extract type: {type}")

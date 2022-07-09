@@ -5,10 +5,10 @@ from frictionless import Checklist, checks
 
 
 def test_checklist():
-    checklist = Checklist(checks=[checks.ascii_value()], limit_errors=100)
+    checklist = Checklist(checks=[checks.ascii_value()], pick_errors=["type-error"])
     descriptor = checklist.to_descriptor()
     print(descriptor)
     assert descriptor == {
         "checks": [{"code": "ascii-value"}],
-        "limitErrors": 100,
+        "pickErrors": ["type-error"],
     }

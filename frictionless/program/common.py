@@ -52,44 +52,7 @@ compression = Option(
     help="Specify compression  [default: inferred]",
 )
 
-# Control
-
-control = Option(
-    default=None,
-    help="An inline JSON object or a path to a JSON file that provides the control (configuration for the data Loader)",
-)
-
 # Dialect
-
-dialect = Option(
-    default=None,
-    help="An inline JSON object or a path to a JSON file that provides the dialect (configuration for the parser)",
-)
-
-
-sheet = Option(
-    default=None,
-    help="The sheet to use from the input data (only with XLS and ODS files/plugins)",
-)
-
-table = Option(
-    default=None,
-    help="The table to use from the SQL database (SQL plugin)",
-)
-
-keys = Option(
-    default=None,
-    help="The keys to use as column names for the Inline or JSON data plugins",
-)
-
-
-keyed = Option(
-    default=None,
-    help="Whether the input data is keyed for the Inline or JSON data plugins",
-)
-
-
-# Layout
 
 header_rows = Option(
     default=None,
@@ -126,11 +89,67 @@ limit_rows = Option(
     help='Limit rows by this integer e.g "100"',
 )
 
+control = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the control (configuration for the data Loader)",
+)
+
+dialect = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the dialect (configuration for the parser)",
+)
+
+
+sheet = Option(
+    default=None,
+    help="The sheet to use from the input data (only with XLS and ODS files/plugins)",
+)
+
+table = Option(
+    default=None,
+    help="The table to use from the SQL database (SQL plugin)",
+)
+
+keys = Option(
+    default=None,
+    help="The keys to use as column names for the Inline or JSON data plugins",
+)
+
+
+keyed = Option(
+    default=None,
+    help="Whether the input data is keyed for the Inline or JSON data plugins",
+)
+
 # Schema
 
 schema = Option(
     default=None,
     help="Specify a path to a schema",
+)
+
+# Checklist
+
+checklist = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the checklist",
+)
+
+pick_errors = Option(
+    default=None,
+    help='Comma-separated errors to pick e.g. "type-error"',
+)
+
+skip_errors = Option(
+    default=None,
+    help='Comma-separated errors to skip e.g. "blank-row"',
+)
+
+# Pipeline
+
+pipeline = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the pipeline",
 )
 
 # Stats
@@ -205,44 +224,41 @@ schema_sync = Option(
     help="Sync the schema based on the data's header row",
 )
 
-# Package
-
-resource_name = Option(
-    default=None,
-    help="Name of resource to validate",
-)
-
-# Checklist
-
-checklist = Option(
-    default=None,
-    help="An inline JSON object or a path to a JSON file that provides the checklist",
-)
-
-# Pipeline
-
-pipeline = Option(
-    default=None,
-    help="An inline JSON object or a path to a JSON file that provides the pipeline",
-)
-
-# Server
-
-port = Option(
-    settings.DEFAULT_SERVER_PORT,
-    help="Specify server port",
-)
-
-# Command
+# Software
 
 basepath = Option(
     default=None,
     help="Basepath of the resource/package",
 )
 
-expand = Option(
+trusted = Option(
     default=None,
-    help="Expand default values",
+    help="Follow unsafe paths",
+)
+
+resource_name = Option(
+    default=None,
+    help="Name of resource to validate",
+)
+
+valid_rows = Option(
+    default=False,
+    help="Return valid rows",
+)
+
+invalid_rows = Option(
+    default=False,
+    help="Return invalid rows",
+)
+
+limit_errors = Option(
+    default=settings.DEFAULT_LIMIT_ERRORS,
+    help="Limit errors by this integer",
+)
+
+limit_rows = Option(
+    default=None,
+    help="Limit rows by this integer",
 )
 
 original = Option(
@@ -253,26 +269,6 @@ original = Option(
 parallel = Option(
     default=None,
     help="Enable multiprocessing",
-)
-
-pick_errors = Option(
-    default=None,
-    help='Comma-separated errors to pick e.g. "type-error"',
-)
-
-skip_errors = Option(
-    default=None,
-    help='Comma-separated errors to skip e.g. "blank-row"',
-)
-
-limit_errors = Option(
-    default=None,
-    help="Limit errors by this integer",
-)
-
-trusted = Option(
-    default=None,
-    help="Follow unsafe paths",
 )
 
 yaml = Option(
@@ -290,21 +286,7 @@ csv = Option(
     help="Return in CSV format",
 )
 
-# Resource
-
-resource_name = Option(
-    default=None,
-    help="Name of resource to validate",
-)
-
-# Row
-
-valid_rows = Option(
-    default=False,
-    help="Return valid rows",
-)
-
-invalid_rows = Option(
-    default=False,
-    help="Return invalid rows",
+port = Option(
+    settings.DEFAULT_SERVER_PORT,
+    help="Specify server port",
 )

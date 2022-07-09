@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional, List
 from ...exception import FrictionlessException
 from ...checklist import Checklist
 from ...report import Report
+from ... import settings
 from ... import helpers
 
 if TYPE_CHECKING:
@@ -14,6 +15,8 @@ def validate(
     self: Resource,
     checklist: Optional[Checklist] = None,
     *,
+    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+    limit_rows: Optional[int] = None,
     original: bool = False,
 ):
     """Validate resource
@@ -67,7 +70,9 @@ def validate(
 
         # Validate rows
         if self.tabular:
+            row_count = 0
             while True:
+                row_count += 1
 
                 # Emit row
                 try:
@@ -84,11 +89,18 @@ def validate(
                         if checklist.match(error):
                             errors.append(error)
 
+                # Limit rows
+                if limit_rows:
+                    if row_count >= limit_rows:
+                        warning = f"reached row limit: {limit_rows}"
+                        warnings.append(warning)
+                        break
+
                 # Limit errors
-                if checklist.limit_errors:
-                    if len(errors) >= checklist.limit_errors:
-                        errors = errors[: checklist.limit_errors]
-                        warning = f"reached error limit: {checklist.limit_errors}"
+                if limit_errors:
+                    if len(errors) >= limit_errors:
+                        errors = errors[:limit_errors]
+                        warning = f"reached error limit: {limit_errors}"
                         warnings.append(warning)
                         break
 

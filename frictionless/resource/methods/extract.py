@@ -10,31 +10,35 @@ if TYPE_CHECKING:
 def extract(
     self: Resource,
     *,
-    filter: Optional[IFilterFunction] = None,
+    limit_rows: Optional[int] = None,
     process: Optional[IProcessFunction] = None,
+    filter: Optional[IFilterFunction] = None,
     stream: bool = False,
 ):
     """Extract resource rows
 
     Parameters:
-        filter? (bool): a row filter function
         process? (func): a row processor function
+        filter? (bool): a row filter function
         stream? (bool): whether to stream data
 
     Returns:
         Row[]: an array/stream of rows
 
     """
-    data = read_row_stream(self)
+
+    # Stream
+    def read_row_stream():
+        with self:
+            row_count = 0
+            for row in self.row_stream:
+                row_count += 1
+                yield row
+                if limit_rows and limit_rows >= row_count:
+                    break
+
+    # Return
+    data = read_row_stream()
     data = builtins.filter(filter, data) if filter else data
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)
-
-
-# Internal
-
-
-def read_row_stream(resource):
-    with resource:
-        for row in resource.row_stream:
-            yield row

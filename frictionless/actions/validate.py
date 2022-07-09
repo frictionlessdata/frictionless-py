@@ -22,9 +22,10 @@ def validate(
     checks: List[Check] = [],
     pick_errors: List[str] = [],
     skip_errors: List[str] = [],
-    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     # Validate
     resource_name: Optional[str] = None,
+    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+    limit_rows: Optional[int] = None,
     original: bool = False,
     parallel: bool = False,
     **options,
@@ -54,8 +55,28 @@ def validate(
             checks=checks,
             pick_errors=pick_errors,
             skip_errors=skip_errors,
-            limit_errors=limit_errors,
         )
+
+    # Validate package
+    if type == "package":
+        package = source
+        if not isinstance(package, Package):
+            package = Package.from_options(package, **options)
+
+        # Resource
+        if resource_name:
+            type = "resource"
+            source = package.get_resource(resource_name)
+
+        # Package
+        else:
+            return package.validate(
+                checklist,
+                limit_errors=limit_errors,
+                limit_rows=limit_rows,
+                original=original,
+                parallel=parallel,
+            )
 
     # Validate checklist
     if type == "checklist":
@@ -85,16 +106,6 @@ def validate(
             inquiry = Inquiry.from_descriptor(inquiry)
         return inquiry.validate()
 
-    # Validate package
-    elif type == "package":
-        package = source
-        if not isinstance(package, Package):
-            package = Package.from_options(package, **options)
-        if resource_name:
-            resource = package.get_resource(resource_name)
-            return resource.validate(checklist, original=original)
-        return package.validate(checklist, original=original, parallel=parallel)
-
     # Validate pipeline
     elif type == "pipeline":
         pipeline = source
@@ -114,7 +125,12 @@ def validate(
         resource = source
         if not isinstance(resource, Resource):
             resource = Resource.from_options(resource, **options)
-        return resource.validate(checklist, original=original)
+        return resource.validate(
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            original=original,
+        )
 
     # Validate schema
     elif type == "schema":

@@ -4,6 +4,7 @@ from typing import List
 from tabulate import tabulate
 from ..actions import validate
 from ..detector import Detector
+from ..checklist import Checklist
 from ..dialect import Dialect
 from .main import program
 from .. import helpers
@@ -38,6 +39,9 @@ def program_validate(
     schema: str = common.schema,
     # Checklist
     checklist: str = common.checklist,
+    pick_errors: str = common.pick_errors,
+    skip_errors: str = common.skip_errors,
+    # TODO: add checks
     # Stats
     stats_hash: str = common.stats_hash,
     stats_bytes: int = common.stats_bytes,
@@ -52,13 +56,11 @@ def program_validate(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
-    # TODO: add checks
-    # Command
+    # Software
     basepath: str = common.basepath,
-    pick_errors: str = common.pick_errors,
-    skip_errors: str = common.skip_errors,
-    limit_errors: int = common.limit_errors,
     resource_name: str = common.resource_name,
+    limit_errors: int = common.limit_errors,
+    limit_rows: int = common.limit_rows,
     original: bool = common.original,
     parallel: bool = common.parallel,
     yaml: bool = common.yaml,
@@ -102,7 +104,13 @@ def program_validate(
 
     # Prepare checklist
     def prepare_checklist():
-        return checklist
+        descriptor = helpers.parse_json_string(checklist)
+        if descriptor:
+            return Checklist.from_descriptor(descriptor)
+        return Checklist.from_options(
+            pick_errors=helpers.parse_csv_string(pick_errors),
+            skip_errors=helpers.parse_csv_string(skip_errors),
+        )
 
     # Prepare detector
     def prepare_detector():
@@ -145,10 +153,10 @@ def program_validate(
             # Software
             basepath=basepath,
             detector=prepare_detector(),
-            pick_errors=helpers.parse_csv_string(pick_errors),
-            skip_errors=helpers.parse_csv_string(skip_errors),
-            limit_errors=limit_errors,
+            # Action
             resource_name=resource_name,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
             original=original,
             parallel=parallel,
         )

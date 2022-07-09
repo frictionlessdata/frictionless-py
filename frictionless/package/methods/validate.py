@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional, List
 from ...checklist import Checklist
 from ...resource import Resource
 from ...report import Report
+from ... import settings
 from ... import helpers
 
 if TYPE_CHECKING:
@@ -15,6 +16,8 @@ def validate(
     self: Package,
     checklist: Optional[Checklist] = None,
     *,
+    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+    limit_rows: Optional[int] = None,
     original: bool = False,
     parallel: bool = False,
 ):
@@ -50,23 +53,32 @@ def validate(
 
     # Validate sequential
     if not parallel or with_fks:
-        for resource in self.resources:  # type: ignore
-            report = validate_sequential(resource, original=original)
+        for resource in self.resources:
+            report = resource.validate(
+                limit_errors=limit_errors,
+                limit_rows=limit_rows,
+                original=original,
+            )
             reports.append(report)
 
     # Validate parallel
     else:
         with Pool() as pool:
-            resource_descriptors: List[dict] = []
-            for resource in self.resources:  # type: ignore
-                descriptor = resource.to_dict()
-                descriptor["basepath"] = resource.basepath
-                descriptor["trusted"] = resource.trusted
-                descriptor["original"] = original
-                resource_descriptors.append(descriptor)
-            report_descriptors = pool.map(validate_parallel, resource_descriptors)
+            options_pool: List[dict] = []
+            for resource in self.resources:
+                options = {}
+                options["resource"] = {}
+                options["resource"]["descriptor"] = resource.to_descriptor()
+                options["resource"]["basepath"] = resource.basepath
+                options["resource"]["trusted"] = resource.trusted
+                options["validate"] = {}
+                options["validate"]["limit_rows"] = limit_rows
+                options["validate"]["limit_errors"] = limit_errors
+                options["validate"]["original"] = original
+                options_pool.append(options)
+            report_descriptors = pool.map(validate_parallel, options_pool)
             for report_descriptor in report_descriptors:
-                reports.append(Report.from_descriptor(report_descriptor))  # type: ignore
+                reports.append(Report.from_descriptor(report_descriptor))
 
     # Return report
     return Report.from_validation_reports(
@@ -78,15 +90,9 @@ def validate(
 # Internal
 
 
-def validate_sequential(resource: Resource, *, original=False) -> Report:
-    return resource.validate(original=original)
-
-
-# TODO: rebase on from/to_descriptor
-def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
-    basepath = descriptor.pop("basepath")
-    trusted = descriptor.pop("trusted")
-    original = descriptor.pop("original")
-    resource = Resource.from_descriptor(descriptor, basepath=basepath, trusted=trusted)
-    report = resource.validate(original=original)
+def validate_parallel(options: IDescriptor) -> IDescriptor:
+    resource_options = options["resource"]
+    validate_options = options["validate"]
+    resource = Resource.from_descriptor(**resource_options)
+    report = resource.validate(**validate_options)
     return report.to_descriptor()

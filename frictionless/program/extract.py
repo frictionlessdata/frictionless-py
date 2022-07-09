@@ -48,15 +48,15 @@ def program_extract(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
-    # Command
+    # Software
     basepath: str = common.basepath,
+    valid: bool = common.valid_rows,
+    invalid: bool = common.invalid_rows,
+    limit_rows: int = common.limit_rows,
     trusted: bool = common.trusted,
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
-    # Row
-    valid: bool = common.valid_rows,
-    invalid: bool = common.invalid_rows,
 ):
     """
     Extract a data source.
@@ -136,17 +136,16 @@ def program_extract(
             # Software
             basepath=basepath,
             detector=prepare_detector(),
+            # Action
+            limit_rows=limit_rows,
+            process=prepare_process(),
+            filter=prepare_filter(),
             trusted=trusted,
         )
 
     # Extract data
     try:
-        data = extract(
-            prepare_source(),
-            process=prepare_process(),
-            filter=prepare_filter(),
-            **prepare_options(),
-        )
+        data = extract(prepare_source(), **prepare_options())
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)

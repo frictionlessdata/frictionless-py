@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail
 def test_step_table_transpose():
     source = Resource("data/transpose.csv")
     pipeline = Pipeline(
