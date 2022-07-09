@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
-from .. import settings
 from .. import helpers
 from .. import errors
 
@@ -19,9 +18,6 @@ class Pipeline(Metadata):
 
     steps: List[Step] = field(default_factory=list)
     """List of transform steps"""
-
-    limit_memory: int = settings.DEFAULT_LIMIT_MEMORY
-    """TODO: add docs"""
 
     # Props
 
@@ -83,7 +79,6 @@ class Pipeline(Metadata):
     metadata_profile = {
         "properties": {
             "steps": {},
-            "limitMemory": {},
         }
     }
 

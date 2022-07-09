@@ -92,15 +92,6 @@ def validate(
                         warnings.append(warning)
                         break
 
-                # Limit memory
-                if checklist.limit_memory:
-                    if not row.row_number % 100000:
-                        memory = helpers.get_current_memory_usage()
-                        if memory and memory >= checklist.limit_memory:
-                            warning = f"reached memory limit: {checklist.limit_memory}MB"
-                            warnings.append(warning)
-                            break
-
         # Validate end
         if not warnings:
             if not self.tabular:

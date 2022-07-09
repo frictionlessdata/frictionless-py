@@ -23,7 +23,6 @@ def validate(
     pick_errors: List[str] = [],
     skip_errors: List[str] = [],
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-    limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
     # Validate
     resource_name: Optional[str] = None,
     original: bool = False,
@@ -56,7 +55,6 @@ def validate(
             pick_errors=pick_errors,
             skip_errors=skip_errors,
             limit_errors=limit_errors,
-            limit_memory=limit_memory,
         )
 
     # Validate checklist

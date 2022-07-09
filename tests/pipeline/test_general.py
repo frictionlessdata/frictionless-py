@@ -8,18 +8,11 @@ from frictionless import Pipeline, steps
 def test_pipeline():
     pipeline = Pipeline(steps=[steps.table_normalize()])
     assert pipeline.step_codes == ["table-normalize"]
-    assert pipeline.limit_memory == 1000
 
 
 def test_pipeline_from_descriptor():
-    pipeline = Pipeline.from_descriptor(
-        {
-            "steps": [{"code": "table-normalize"}],
-            "limitMemory": 100,
-        }
-    )
+    pipeline = Pipeline.from_descriptor({"steps": [{"code": "table-normalize"}]})
     assert pipeline.step_codes == ["table-normalize"]
-    assert pipeline.limit_memory == 100
     assert isinstance(pipeline.steps[0], steps.table_normalize)
 
 

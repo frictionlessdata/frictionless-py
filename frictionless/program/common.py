@@ -270,11 +270,6 @@ limit_errors = Option(
     help="Limit errors by this integer",
 )
 
-limit_memory = Option(
-    default=None,
-    help="Limit memory by this integer in MB",
-)
-
 trusted = Option(
     default=None,
     help="Follow unsafe paths",

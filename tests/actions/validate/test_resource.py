@@ -878,34 +878,6 @@ def test_validate_structure_errors_with_limit_errors():
     ]
 
 
-@pytest.mark.ci
-@pytest.mark.xfail
-def test_validate_limit_memory():
-    source = lambda: ([integer] for integer in range(1, 100000000))
-    schema = Schema.from_descriptor(
-        {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
-    )
-    dialect = Dialect(header=False)
-    report = validate(source, schema=schema, dialect=dialect, limit_memory=50)
-    assert report.flatten(["code", "note"]) == [
-        ["task-error", 'exceeded memory limit "50MB"']
-    ]
-
-
-@pytest.mark.ci
-@pytest.mark.xfail
-def test_validate_limit_memory_small():
-    source = lambda: ([integer] for integer in range(1, 100000000))
-    schema = Schema.from_descriptor(
-        {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
-    )
-    dialect = Dialect(header=False)
-    report = validate(source, schema=schema, dialect=dialect, limit_memory=1)
-    assert report.flatten(["code", "note"]) == [
-        ["task-error", 'exceeded memory limit "1MB"']
-    ]
-
-
 def test_validate_custom_check():
 
     # Create check

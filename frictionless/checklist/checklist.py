@@ -6,7 +6,6 @@ from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checks import baseline
 from .check import Check
-from .. import settings
 from .. import helpers
 from .. import errors
 
@@ -28,12 +27,6 @@ class Checklist(Metadata):
     """# TODO: add docs"""
 
     skip_errors: List[str] = field(default_factory=list)
-    """# TODO: add docs"""
-
-    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS
-    """# TODO: add docs"""
-
-    limit_memory: int = settings.DEFAULT_LIMIT_MEMORY
     """# TODO: add docs"""
 
     # Props
@@ -138,8 +131,6 @@ class Checklist(Metadata):
             "checks": {},
             "skipErrors": {},
             "pickErrors": {},
-            "limitErrors": {},
-            "limitMemory": {},
         }
     }
 
