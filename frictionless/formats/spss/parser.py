@@ -17,7 +17,7 @@ class SpssParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        sav = helpers.import_from_extras("savReaderWriter", name="spss")
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
 
         # Schema
@@ -84,7 +84,7 @@ class SpssParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        sav = helpers.import_from_extras("savReaderWriter", name="spss")
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
         target = self.resource
         source = resource

@@ -1,5 +1,6 @@
 # type: ignore
 import tempfile
+import jsonlines
 from ...inline import InlineControl
 from ....resource import Resource
 from ..control import JsonControl
@@ -27,7 +28,6 @@ class JsonlParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         control = self.resource.dialect.get_control("json", ensure=JsonControl())
         source = iter(jsonlines.Reader(self.loader.text_stream))
         inline_control = InlineControl(keys=control.keys)
@@ -46,7 +46,6 @@ class JsonlParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         source = resource
         target = self.resource
         control = target.dialect.get_control("json", ensure=JsonControl())

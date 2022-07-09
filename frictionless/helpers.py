@@ -86,12 +86,12 @@ def rows_to_data(rows):
     return data
 
 
-def import_from_plugin(name, *, plugin):
+def import_from_extras(module, *, name):
     try:
-        return import_module(name)
+        return import_module(module)
     except ImportError:
         module = import_module("frictionless.exception")
-        raise module.FrictionlessException(f'Please install "frictionless[{plugin}]"')
+        raise module.FrictionlessException(f'Please install "frictionless[{name}]"')
 
 
 @contextmanager

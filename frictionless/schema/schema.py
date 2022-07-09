@@ -255,10 +255,8 @@ class Schema(Metadata):
         Returns:
             any: excel template
         """
-        tableschema_to_template = helpers.import_from_plugin(
-            "tableschema_to_template", plugin="excel"
-        )
-        return tableschema_to_template.create_xlsx(self.to_descriptor(), path)
+        backend = helpers.import_from_extras("tableschema_to_template", name="excel")
+        return backend.create_xlsx(self.to_descriptor(), path)
 
     def to_summary(self) -> str:
         """Summary of the schema in table format"""

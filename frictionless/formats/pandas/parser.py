@@ -17,7 +17,7 @@ class PandasParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        np = helpers.import_from_plugin("numpy", plugin="pandas")
+        np = helpers.import_from_extras("numpy", name="pandas")
         dataframe = self.resource.data
 
         # Schema
@@ -65,7 +65,7 @@ class PandasParser(Parser):
         return schema
 
     def __read_convert_type(self, dtype, sample=None):
-        pdc = helpers.import_from_plugin("pandas.core.dtypes.api", plugin="pandas")
+        pdc = helpers.import_from_extras("pandas.core.dtypes.api", name="pandas")
 
         # Pandas types
         if pdc.is_bool_dtype(dtype):
@@ -100,8 +100,8 @@ class PandasParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        np = helpers.import_from_plugin("numpy", plugin="pandas")
-        pd = helpers.import_from_plugin("pandas", plugin="pandas")
+        np = helpers.import_from_extras("numpy", name="pandas")
+        pd = helpers.import_from_extras("pandas", name="pandas")
         source = resource
         target = self.resource
 
@@ -135,7 +135,7 @@ class PandasParser(Parser):
                 data_rows.append(tuple(data_values))
 
         # Create index
-        pd = helpers.import_from_plugin("pandas", plugin="pandas")
+        pd = helpers.import_from_extras("pandas", name="pandas")
 
         index = None
         if source.schema.primary_key:
@@ -187,8 +187,8 @@ class PandasParser(Parser):
         target.data = dataframe
 
     def __write_convert_type(self, type=None):
-        np = helpers.import_from_plugin("numpy", plugin="pandas")
-        pd = helpers.import_from_plugin("pandas", plugin="pandas")
+        np = helpers.import_from_extras("numpy", name="pandas")
+        pd = helpers.import_from_extras("pandas", name="pandas")
 
         # Mapping
         mapping = {

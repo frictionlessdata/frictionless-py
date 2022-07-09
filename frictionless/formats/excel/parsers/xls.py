@@ -1,11 +1,12 @@
 # type: ignore
 import sys
+import xlrd
+import xlwt
 import tempfile
 from ....exception import FrictionlessException
 from ..control import ExcelControl
 from ....resource import Parser
 from ....system import system
-from .... import helpers
 from .... import errors
 
 
@@ -27,7 +28,6 @@ class XlsParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        xlrd = helpers.import_from_plugin("xlrd", plugin="excel")
         control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
 
         # Get book
@@ -96,7 +96,6 @@ class XlsParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         source = resource
         target = self.resource
         control = target.dialect.get_control("excel", ensure=ExcelControl())

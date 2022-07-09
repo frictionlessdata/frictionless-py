@@ -1,5 +1,6 @@
 # type: ignore
 import json
+import ijson
 import tempfile
 from ....exception import FrictionlessException
 from ...inline import InlineControl
@@ -9,7 +10,6 @@ from ....dialect import Dialect
 from ....resource import Parser
 from ....system import system
 from .... import errors
-from .... import helpers
 
 
 class JsonParser(Parser):
@@ -29,7 +29,6 @@ class JsonParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        ijson = helpers.import_from_plugin("ijson", plugin="json")
         path = "item"
         control = self.resource.dialect.get_control("json", ensure=JsonControl())
         if control.property is not None:

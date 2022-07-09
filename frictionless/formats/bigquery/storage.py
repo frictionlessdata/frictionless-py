@@ -47,9 +47,7 @@ class BigqueryStorage(Storage):
 
     def read_resource(self, name):
         bq_name = self.__write_convert_name(name)
-        google_errors = helpers.import_from_plugin(
-            "googleapiclient.errors", plugin="bigquery"
-        )
+        bqerrors = helpers.import_from_extras("googleapiclient.errors", name="bigquery")
 
         # Get response
         try:
@@ -62,7 +60,7 @@ class BigqueryStorage(Storage):
                 )
                 .execute()
             )
-        except google_errors.HttpError:
+        except bqerrors.HttpError:
             raise FrictionlessException(f'Resource "{name}" does not exist')
 
         # Create resource
@@ -238,7 +236,7 @@ class BigqueryStorage(Storage):
                 self.__write_convert_data_start_job(resource.name, buffer)
 
     def __write_convert_data_start_job(self, name, buffer):
-        http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
+        http = helpers.import_from_extras("apiclient.http", name="bigquery")
         bq_name = self.__write_convert_name(name)
 
         # Process buffer to byte stream csv

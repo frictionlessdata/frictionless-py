@@ -132,7 +132,7 @@ class Detector(Metadata):
 
     # Detect
 
-    # TODO: support loading descriptor for detection
+    # TODO: support loading descriptor for detection?
     @staticmethod
     def detect_descriptor(source: Any) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
@@ -146,8 +146,6 @@ class Detector(Metadata):
                 if source.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
                     return name
 
-    # TODO detect profile here?
-    # TODO: added plugin hooks into the loop
     def detect_resource(self, resource: Resource) -> None:
         """Detect resource's metadata
 
@@ -396,7 +394,6 @@ class Detector(Metadata):
             schema.fields = fields  # type: ignore
 
         # Sync schema
-        # TODO: update to the typed version
         if self.schema_sync:
             if labels:
                 mapping = {field.name: field for field in schema.fields}  # type: ignore

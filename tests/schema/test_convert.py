@@ -2,9 +2,10 @@ import os
 import json
 import yaml
 import pytest
+import yattag
 from pathlib import Path
 from zipfile import ZipFile
-from frictionless import Schema, helpers
+from frictionless import Schema
 
 
 UNZIPPED_DIR = "data/fixtures/output-unzipped"
@@ -313,7 +314,6 @@ def test_schema_tableschema_to_excel_template(tmpdir, zip_path):
             xml_string = file_handle.read().decode("utf-8")
     # Before Python3.8, attribute order is not stable in minidom,
     # so we need to use an outside library.
-    yattag = helpers.import_from_plugin("yattag", plugin="excel")
     pretty_xml = yattag.indent(xml_string)
     pretty_xml_fixture_path = Path("data/fixtures/output-unzipped", zip_path)
     pretty_xml_tmp_path = Path(Path(tmpdir), Path(zip_path).name)

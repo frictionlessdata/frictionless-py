@@ -34,7 +34,7 @@ class GsheetsParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        pygsheets = helpers.import_from_plugin("pygsheets", plugin="gsheets")
+        pygsheets = helpers.import_from_extras("pygsheets", name="gsheets")
         source = resource
         target = self.resource
         fullpath = target.fullpath

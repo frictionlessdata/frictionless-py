@@ -14,7 +14,7 @@ class SqlStorage(Storage):
     """SQL storage implementation"""
 
     def __init__(self, source, *, control=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sa = helpers.import_from_extras("sqlalchemy", name="sql")
 
         # Create engine
         if control and control.basepath:
@@ -78,7 +78,7 @@ class SqlStorage(Storage):
         return None
 
     def __read_convert_schema(self, sql_table):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sa = helpers.import_from_extras("sqlalchemy", name="sql")
         schema = Schema()
 
         # Fields
@@ -116,7 +116,7 @@ class SqlStorage(Storage):
         return schema
 
     def __read_convert_data(self, name, *, order_by=None, where=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sa = helpers.import_from_extras("sqlalchemy", name="sql")
         sql_table = self.__read_sql_table(name)
         with self.__connection.begin():
             # Streaming could be not working for some backends:
@@ -133,9 +133,9 @@ class SqlStorage(Storage):
                 yield cells
 
     def __read_convert_type(self, sql_type=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
-        sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
+        sa = helpers.import_from_extras("sqlalchemy", name="sql")
+        sapg = helpers.import_from_extras("sqlalchemy.dialects.postgresql", name="sql")
+        sams = helpers.import_from_extras("sqlalchemy.dialects.mysql", name="sql")
 
         # Create mapping
         mapping = {
@@ -214,7 +214,7 @@ class SqlStorage(Storage):
         return self.__prefix + name
 
     def __write_convert_schema(self, resource):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sa = helpers.import_from_extras("sqlalchemy", name="sql")
 
         # Prepare
         columns = []
@@ -322,8 +322,8 @@ class SqlStorage(Storage):
                 self.__connection.execute(sql_table.insert().values(buffer))
 
     def __write_convert_type(self, type=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
+        sa = helpers.import_from_extras("sqlalchemy", name="sql")
+        sapg = helpers.import_from_extras("sqlalchemy.dialects.postgresql", name="sql")
 
         # Default dialect
         mapping = {

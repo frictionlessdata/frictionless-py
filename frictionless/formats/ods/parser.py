@@ -28,7 +28,7 @@ class OdsParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
+        ezodf = helpers.import_from_extras("ezodf", name="ods")
         control = self.resource.dialect.get_control("ods", ensure=OdsControl())
 
         # Get book
@@ -73,7 +73,7 @@ class OdsParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
+        ezodf = helpers.import_from_extras("ezodf", name="ods")
         source = resource
         target = self.resource
         control = target.dialect.get_control("ods", ensure=OdsControl())

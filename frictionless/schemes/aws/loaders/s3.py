@@ -14,7 +14,7 @@ class S3Loader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        boto3 = helpers.import_from_plugin("boto3", plugin="s3")
+        boto3 = helpers.import_from_extras("boto3", name="aws")
         control = self.resource.dialect.get_control("s3", ensure=AwsControl())
         parts = urlparse(self.resource.fullpath, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.s3_endpoint_url)
@@ -25,7 +25,7 @@ class S3Loader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        boto3 = helpers.import_from_plugin("boto3", plugin="s3")
+        boto3 = helpers.import_from_extras("boto3", name="aws")
         control = self.resource.dialect.get_control("s3", ensure=AwsControl())
         parts = urlparse(self.resource.fullpath, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.s3_endpoint_url)

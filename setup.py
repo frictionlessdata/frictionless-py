@@ -42,6 +42,7 @@ TESTS_REQUIRE = [
     "docstring-parser",
 ]
 EXTRAS_REQUIRE = {
+    "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
     "excel": ["tableschema-to-template>=0.0.12"],
@@ -49,7 +50,6 @@ EXTRAS_REQUIRE = {
     "html": ["pyquery>=1.4"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
-    "s3": ["boto3>=1.9"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
     "dev": TESTS_REQUIRE,

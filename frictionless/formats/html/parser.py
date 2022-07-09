@@ -17,7 +17,7 @@ class HtmlParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        pq = helpers.import_from_plugin("pyquery", plugin="html").PyQuery
+        pq = helpers.import_from_extras("pyquery", name="html").PyQuery
 
         # Get table
         page = pq(self.loader.text_stream.read(), parser="html")

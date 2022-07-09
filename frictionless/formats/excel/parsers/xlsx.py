@@ -6,13 +6,13 @@ import hashlib
 import tempfile
 import warnings
 import datetime
+import openpyxl
 from itertools import chain
 from ....exception import FrictionlessException
 from ..control import ExcelControl
 from ....resource import Resource
 from ....resource import Parser
 from ....system import system
-from .... import helpers
 from .... import errors
 from .. import settings
 
@@ -66,7 +66,6 @@ class XlsxParser(Parser):
             return loader.open()
 
     def read_list_stream_create(self):
-        openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
 
         # Get book
@@ -139,7 +138,6 @@ class XlsxParser(Parser):
     # Write
 
     def write_row_stream(self, resource):
-        openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         source = resource
         target = self.resource
         control = target.dialect.get_control("excel", ensure=ExcelControl())
