@@ -9,7 +9,7 @@ def test_validate_table_dimensions_num_rows():
     checklist = Checklist(checks=[checks.table_dimensions(num_rows=42)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of rows is 4, the required is 42"]
+        ["table-dimensions", "number of rows is 3, the required is 42"]
     ]
 
 
@@ -20,7 +20,7 @@ def test_validate_table_dimensions_num_rows_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of rows is 4, the required is 42"]
+        ["table-dimensions", "number of rows is 3, the required is 42"]
     ]
 
 
@@ -29,7 +29,7 @@ def test_validate_table_dimensions_min_rows():
     checklist = Checklist(checks=[checks.table_dimensions(min_rows=42)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of rows is 4, the minimum is 42"]
+        ["table-dimensions", "number of rows is 3, the minimum is 42"]
     ]
 
 
@@ -40,7 +40,7 @@ def test_validate_table_dimensions_min_rows_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of rows is 4, the minimum is 42"]
+        ["table-dimensions", "number of rows is 3, the minimum is 42"]
     ]
 
 
@@ -49,8 +49,7 @@ def test_validate_table_dimensions_max_rows():
     checklist = Checklist(checks=[checks.table_dimensions(max_rows=2)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of rows is 3, the maximum is 2"],
-        ["table-dimensions", "current number of rows is 4, the maximum is 2"],
+        ["table-dimensions", "number of rows is 3, the maximum is 2"],
     ]
 
 
@@ -61,8 +60,7 @@ def test_validate_table_dimensions_max_rows_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of rows is 3, the maximum is 2"],
-        ["table-dimensions", "current number of rows is 4, the maximum is 2"],
+        ["table-dimensions", "number of rows is 3, the maximum is 2"],
     ]
 
 
@@ -71,7 +69,7 @@ def test_validate_table_dimensions_num_fields():
     checklist = Checklist(checks=[checks.table_dimensions(num_fields=42)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the required is 42"]
+        ["table-dimensions", "number of fields is 4, the required is 42"]
     ]
 
 
@@ -82,7 +80,7 @@ def test_validate_table_dimensions_num_fields_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the required is 42"]
+        ["table-dimensions", "number of fields is 4, the required is 42"]
     ]
 
 
@@ -91,7 +89,7 @@ def test_validate_table_dimensions_min_fields():
     checklist = Checklist(checks=[checks.table_dimensions(min_fields=42)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the minimum is 42"]
+        ["table-dimensions", "number of fields is 4, the minimum is 42"]
     ]
 
 
@@ -102,7 +100,7 @@ def test_validate_table_dimensions_min_fields_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the minimum is 42"]
+        ["table-dimensions", "number of fields is 4, the minimum is 42"]
     ]
 
 
@@ -111,7 +109,7 @@ def test_validate_table_dimensions_max_fields():
     checklist = Checklist(checks=[checks.table_dimensions(max_fields=2)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the maximum is 2"]
+        ["table-dimensions", "number of fields is 4, the maximum is 2"]
     ]
 
 
@@ -122,7 +120,7 @@ def test_validate_table_dimensions_max_fields_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the maximum is 2"]
+        ["table-dimensions", "number of fields is 4, the maximum is 2"]
     ]
 
 
@@ -145,8 +143,8 @@ def test_validate_table_dimensions_num_fields_num_rows_wrong():
     checklist = Checklist(checks=[checks.table_dimensions(num_fields=3, num_rows=2)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the required is 3"],
-        ["table-dimensions", "current number of rows is 4, the required is 2"],
+        ["table-dimensions", "number of fields is 4, the required is 3"],
+        ["table-dimensions", "number of rows is 3, the required is 2"],
     ]
 
 
@@ -157,14 +155,14 @@ def test_validate_table_dimensions_num_fields_num_rows_wrong_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the required is 3"],
-        ["table-dimensions", "current number of rows is 4, the required is 2"],
+        ["table-dimensions", "number of fields is 4, the required is 3"],
+        ["table-dimensions", "number of rows is 3, the required is 2"],
     ]
 
 
 def test_validate_table_dimensions_num_fields_num_rows_correct():
     resource = Resource("data/table-limits.csv")
-    checklist = Checklist(checks=[checks.table_dimensions(num_fields=4, num_rows=4)])
+    checklist = Checklist(checks=[checks.table_dimensions(num_fields=4, num_rows=3)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == []
 
@@ -172,7 +170,7 @@ def test_validate_table_dimensions_num_fields_num_rows_correct():
 def test_validate_table_dimensions_num_fields_num_rows_correct_declarative():
     resource = Resource("data/table-limits.csv")
     checklist = Checklist.from_descriptor(
-        {"checks": [{"code": "table-dimensions", "numFields": 4, "numRows": 4}]}
+        {"checks": [{"code": "table-dimensions", "numFields": 4, "numRows": 3}]}
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == []
@@ -183,9 +181,8 @@ def test_validate_table_dimensions_min_fields_max_rows_wrong():
     checklist = Checklist(checks=[checks.table_dimensions(min_fields=5, max_rows=2)])
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the minimum is 5"],
-        ["table-dimensions", "current number of rows is 3, the maximum is 2"],
-        ["table-dimensions", "current number of rows is 4, the maximum is 2"],
+        ["table-dimensions", "number of fields is 4, the minimum is 5"],
+        ["table-dimensions", "number of rows is 3, the maximum is 2"],
     ]
 
 
@@ -196,9 +193,8 @@ def test_validate_table_dimensions_min_fields_max_rows_wrong_declarative():
     )
     report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
-        ["table-dimensions", "current number of fields is 4, the minimum is 5"],
-        ["table-dimensions", "current number of rows is 3, the maximum is 2"],
-        ["table-dimensions", "current number of rows is 4, the maximum is 2"],
+        ["table-dimensions", "number of fields is 4, the minimum is 5"],
+        ["table-dimensions", "number of rows is 3, the maximum is 2"],
     ]
 
 
