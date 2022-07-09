@@ -13,6 +13,7 @@ from .. import settings
 from .. import helpers
 
 
+# TODO: shall we accept dialect/schema/checklist in a form of descriptors?
 def validate(
     source: Any,
     *,
