@@ -261,14 +261,14 @@ limit_rows = Option(
     help="Limit rows by this integer",
 )
 
-original = Option(
-    default=None,
-    help="Don't call infer on resources",
-)
-
 parallel = Option(
     default=None,
     help="Enable multiprocessing",
+)
+
+strict = Option(
+    default=None,
+    help="Validate against strict version of the standards",
 )
 
 yaml = Option(

@@ -17,13 +17,13 @@ def validate(
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
-    original: bool = False,
+    strict: bool = False,
 ):
     """Validate resource
 
     Parameters:
         checklist? (checklist): a Checklist object
-        original? (bool): validate metadata as it is
+        strict? (bool): validate metadata as it is
 
     Returns:
         Report: validation report
@@ -34,7 +34,7 @@ def validate(
     timer = helpers.Timer()
     errors: List[Error] = []
     warnings: List[str] = []
-    original_resource = self.to_copy()
+    descriptor = self.to_descriptor()
 
     # Prepare checklist
     checklist = checklist or self.checklist or Checklist()
@@ -52,7 +52,7 @@ def validate(
         return Report.from_validation_task(self, time=timer.time, errors=errors)
 
     # Validate metadata
-    metadata = original_resource if original else self
+    metadata = self.from_descriptor(descriptor) if strict else self
     if not metadata.metadata_valid:
         errors = metadata.metadata_errors
         return Report.from_validation_task(self, time=timer.time, errors=errors)

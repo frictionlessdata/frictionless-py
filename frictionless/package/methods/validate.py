@@ -18,8 +18,8 @@ def validate(
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
-    original: bool = False,
     parallel: bool = False,
+    strict: bool = False,
 ):
     """Validate package
 
@@ -57,7 +57,7 @@ def validate(
             report = resource.validate(
                 limit_errors=limit_errors,
                 limit_rows=limit_rows,
-                original=original,
+                strict=strict,
             )
             reports.append(report)
 
@@ -74,7 +74,7 @@ def validate(
                 options["validate"] = {}
                 options["validate"]["limit_rows"] = limit_rows
                 options["validate"]["limit_errors"] = limit_errors
-                options["validate"]["original"] = original
+                options["validate"]["strict"] = strict
                 options_pool.append(options)
             report_descriptors = pool.map(validate_parallel, options_pool)
             for report_descriptor in report_descriptors:

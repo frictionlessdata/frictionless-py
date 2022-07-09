@@ -61,8 +61,8 @@ def program_validate(
     resource_name: str = common.resource_name,
     limit_errors: int = common.limit_errors,
     limit_rows: int = common.limit_rows,
-    original: bool = common.original,
     parallel: bool = common.parallel,
+    strict: bool = common.strict,
     yaml: bool = common.yaml,
     json: bool = common.json,
 ):
@@ -157,8 +157,8 @@ def program_validate(
             resource_name=resource_name,
             limit_errors=limit_errors,
             limit_rows=limit_rows,
-            original=original,
             parallel=parallel,
+            strict=strict,
         )
 
     # Validate source
