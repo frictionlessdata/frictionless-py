@@ -176,33 +176,6 @@ class Schema(Metadata):
 
     # Convert
 
-    # TODO: handle edge cases like wrong descriptor's prop types
-    @classmethod
-    def from_descriptor(cls, descriptor, **options):
-        descriptor = super().metadata_normalize(descriptor)
-
-        # Primary Key (v1)
-        primary_key = descriptor.get("primaryKey")
-        if primary_key and not isinstance(primary_key, list):
-            descriptor["primaryKey"] = [primary_key]
-
-        # Foreign Keys (v1)
-        foreign_keys = descriptor.get("foreignKeys")
-        if foreign_keys:
-            for fk in foreign_keys:
-                if not isinstance(fk, dict):
-                    continue
-                fk.setdefault("fields", [])
-                fk.setdefault("reference", {})
-                fk["reference"].setdefault("resource", "")
-                fk["reference"].setdefault("fields", [])
-                if not isinstance(fk["fields"], list):
-                    fk["fields"] = [fk["fields"]]
-                if not isinstance(fk["reference"]["fields"], list):
-                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
-
-        return super().from_descriptor(descriptor, **options)
-
     @classmethod
     def from_jsonschema(cls, profile):
         """Create a Schema from JSONSchema profile
@@ -275,6 +248,33 @@ class Schema(Metadata):
     @classmethod
     def metadata_properties(cls):
         return super().metadata_properties(fields=Field)
+
+    # TODO: handle edge cases like wrong descriptor's prop types
+    @classmethod
+    def metadata_import(cls, descriptor):
+        descriptor = super().metadata_normalize(descriptor)
+
+        # Primary Key (v1)
+        primary_key = descriptor.get("primaryKey")
+        if primary_key and not isinstance(primary_key, list):
+            descriptor["primaryKey"] = [primary_key]
+
+        # Foreign Keys (v1)
+        foreign_keys = descriptor.get("foreignKeys")
+        if foreign_keys:
+            for fk in foreign_keys:
+                if not isinstance(fk, dict):
+                    continue
+                fk.setdefault("fields", [])
+                fk.setdefault("reference", {})
+                fk["reference"].setdefault("resource", "")
+                fk["reference"].setdefault("fields", [])
+                if not isinstance(fk["fields"], list):
+                    fk["fields"] = [fk["fields"]]
+                if not isinstance(fk["reference"]["fields"], list):
+                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
+
+        return super().metadata_import(descriptor)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

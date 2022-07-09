@@ -360,32 +360,6 @@ class Package(Metadata):
             detector=self.detector,
         )
 
-    @classmethod
-    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
-        options.setdefault("trusted", False)
-        if isinstance(descriptor, str):
-            options.setdefault("basepath", helpers.parse_basepath(descriptor))
-        descriptor = super().metadata_normalize(descriptor)
-
-        # Profile (v1)
-        profile = descriptor.pop("profile", None)
-        if profile:
-            descriptor.setdefault("profiles", [])
-            descriptor["profiles"].append(profile)
-
-        return super().from_descriptor(descriptor, **options)
-
-    def to_descriptor(self, *, exclude=[]):
-        descriptor = super().to_descriptor(exclude=exclude)
-
-        # Profile (v1)
-        if system.standards_version == "v1":
-            profiles = descriptor.pop("profiles", None)
-            if profiles:
-                descriptor["profile"] = profiles[0]
-
-        return descriptor
-
     @staticmethod
     def from_bigquery(source, *, control=None):
         """Import package from Bigquery
@@ -630,6 +604,32 @@ class Package(Metadata):
     @classmethod
     def metadata_properties(cls):
         return super().metadata_properties(resources=Resource)
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptorSource, **options):
+        options.setdefault("trusted", False)
+        if isinstance(descriptor, str):
+            options.setdefault("basepath", helpers.parse_basepath(descriptor))
+        descriptor = super().metadata_normalize(descriptor)
+
+        # Profile (v1)
+        profile = descriptor.pop("profile", None)
+        if profile:
+            descriptor.setdefault("profiles", [])
+            descriptor["profiles"].append(profile)
+
+        return super().metadata_import(descriptor, **options)
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Profile (v1)
+        if system.standards_version == "v1":
+            profiles = descriptor.pop("profiles", None)
+            if profiles:
+                descriptor["profile"] = profiles[0]
+
+        return descriptor
 
     def metadata_validate(self):
 

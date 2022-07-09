@@ -8,17 +8,14 @@ class Control(Metadata):
 
     code: str
 
-    # Convert
+    # Metadata
 
-    # TODO: review
+    metadata_Error = errors.ControlError
+
     @classmethod
-    def from_descriptor(cls, descriptor):
+    def metadata_import(cls, descriptor):
         if cls is Control:
             descriptor = cls.metadata_normalize(descriptor)
             system = import_module("frictionless").system
             return system.create_control(descriptor)  # type: ignore
-        return super().from_descriptor(descriptor)
-
-    # Metadata
-
-    metadata_Error = errors.ControlError
+        return super().metadata_import(descriptor)

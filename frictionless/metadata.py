@@ -111,59 +111,15 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptorSource, **options):
         """Import metadata from a descriptor source"""
-        target = {}
-        source = cls.metadata_normalize(descriptor)
-        for name, Type in cls.metadata_properties().items():
-            value = source.pop(name, None)
-            if value is None or value == {}:
-                continue
-            # TODO: rebase on "type" only?
-            if name in ["code", "type"]:
-                if getattr(cls, "code", None):
-                    continue
-                if getattr(cls, "type", None):
-                    continue
-            if Type:
-                if isinstance(value, list):
-                    value = [Type.from_descriptor(item) for item in value]
-                elif isinstance(value, dict):
-                    value = Type.from_descriptor(value)
-            target[stringcase.snakecase(name)] = value
-        target.update(options)
-        metadata = cls(**target)
-        metadata.custom = source.copy()
-        if isinstance(descriptor, str):
-            metadata.metadata_descriptor_path = descriptor
-            metadata.metadata_descriptor_initial = source
-        return metadata
+        return cls.metadata_import(descriptor, **options)
 
-    def to_descriptor(self, *, exclude: List[str] = []) -> IDescriptor:
+    def to_descriptor(self) -> IDescriptor:
         """Export metadata as a descriptor"""
-        descriptor = {}
-        for name, Type in self.metadata_properties().items():
-            value = getattr(self, stringcase.snakecase(name), None)
-            if value is None or value == {}:
-                continue
-            if name in exclude:
-                continue
-            # TODO: rebase on "type" only?
-            if name not in ["code", "type"]:
-                if not self.has_defined(stringcase.snakecase(name)):
-                    continue
-            if Type:
-                if isinstance(value, list):
-                    value = [item.to_descriptor_source() for item in value]  # type: ignore
-                else:
-                    value = value.to_descriptor_source()
-                    if not value:
-                        continue
-            descriptor[name] = value
-        descriptor.update(self.custom)
-        return descriptor
+        return self.metadata_export()
 
-    def to_descriptor_source(self, *, exclude: List[str] = []) -> IDescriptorSource:
+    def to_descriptor_source(self) -> IDescriptorSource:
         """Export metadata as a descriptor or a path to the descriptor"""
-        descriptor = self.to_descriptor(exclude=exclude)
+        descriptor = self.metadata_export()
         if self.metadata_descriptor_path:
             if self.metadata_descriptor_initial == descriptor:
                 return self.metadata_descriptor_path
@@ -260,6 +216,80 @@ class Metadata(metaclass=Metaclass):
         return properties
 
     @classmethod
+    def metadata_import(cls, descriptor: IDescriptorSource, **options):
+        """Import metadata from a descriptor source"""
+        target = {}
+        source = cls.metadata_normalize(descriptor)
+        for name, Type in cls.metadata_properties().items():
+            value = source.pop(name, None)
+            if value is None or value == {}:
+                continue
+            # TODO: rebase on "type" only?
+            if name in ["code", "type"]:
+                if getattr(cls, "code", None):
+                    continue
+                if getattr(cls, "type", None):
+                    continue
+            if Type:
+                if isinstance(value, list):
+                    value = [Type.from_descriptor(item) for item in value]
+                elif isinstance(value, dict):
+                    value = Type.from_descriptor(value)
+            target[stringcase.snakecase(name)] = value
+        target.update(options)
+        metadata = cls(**target)
+        metadata.custom = source.copy()
+        if isinstance(descriptor, str):
+            metadata.metadata_descriptor_path = descriptor
+            metadata.metadata_descriptor_initial = source
+        return metadata
+
+    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
+        """Export metadata as a descriptor"""
+        descriptor = {}
+        for name, Type in self.metadata_properties().items():
+            value = getattr(self, stringcase.snakecase(name), None)
+            if value is None or value == {}:
+                continue
+            if name in exclude:
+                continue
+            # TODO: rebase on "type" only?
+            if name not in ["code", "type"]:
+                if not self.has_defined(stringcase.snakecase(name)):
+                    continue
+            if Type:
+                if isinstance(value, list):
+                    value = [item.to_descriptor_source() for item in value]  # type: ignore
+                else:
+                    value = value.to_descriptor_source()
+                    if not value:
+                        continue
+            descriptor[name] = value
+        descriptor.update(self.custom)
+        return descriptor
+
+    # TODO: automate metadata_validate of the children using metadata_properties!!!
+    def metadata_validate(self) -> Iterator[Error]:
+        """Validate metadata and emit validation errors"""
+        if self.metadata_profile:
+            frictionless = import_module("frictionless")
+            Error = self.metadata_Error or frictionless.errors.MetadataError
+            validator_class = jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
+            validator = validator_class(self.metadata_profile)
+            for error in validator.iter_errors(self.to_descriptor()):
+                # Withouth this resource with both path/data is invalid
+                if "is valid under each of" in error.message:
+                    continue
+                metadata_path = "/".join(map(str, error.path))
+                profile_path = "/".join(map(str, error.schema_path))
+                # We need it because of the metadata.__repr__ overriding
+                message = re.sub(r"\s+", " ", error.message)
+                note = '"%s" at "%s" in metadata and at "%s" in profile'
+                note = note % (message, metadata_path, profile_path)
+                yield Error(note=note)
+        yield from []
+
+    @classmethod
     def metadata_normalize(cls, descriptor: IDescriptorSource) -> IDescriptor:
         """Extract metadata"""
         try:
@@ -289,27 +319,6 @@ class Metadata(metaclass=Metaclass):
             Error = cls.metadata_Error or frictionless.errors.MetadataError
             note = f'cannot normalize metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
-
-    # TODO: automate metadata_validate of the children using metadata_properties!!!
-    def metadata_validate(self) -> Iterator[Error]:
-        """Validate metadata and emit validation errors"""
-        if self.metadata_profile:
-            frictionless = import_module("frictionless")
-            Error = self.metadata_Error or frictionless.errors.MetadataError
-            validator_class = jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
-            validator = validator_class(self.metadata_profile)
-            for error in validator.iter_errors(self.to_descriptor()):
-                # Withouth this resource with both path/data is invalid
-                if "is valid under each of" in error.message:
-                    continue
-                metadata_path = "/".join(map(str, error.path))
-                profile_path = "/".join(map(str, error.schema_path))
-                # We need it because of the metadata.__repr__ overriding
-                message = re.sub(r"\s+", " ", error.message)
-                note = '"%s" at "%s" in metadata and at "%s" in profile'
-                note = note % (message, metadata_path, profile_path)
-                yield Error(note=note)
-        yield from []
 
 
 # Internal

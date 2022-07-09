@@ -983,91 +983,6 @@ class Resource(Metadata):
             **options,
         )
 
-    @classmethod
-    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
-        options.setdefault("trusted", False)
-        if isinstance(descriptor, str):
-            options.setdefault("basepath", helpers.parse_basepath(descriptor))
-        descriptor = super().metadata_normalize(descriptor)
-
-        # Url (v0)
-        url = descriptor.pop("url", None)
-        if url is not None:
-            descriptor.setdefault("path", url)
-
-        # Path (v1)
-        path = descriptor.get("path")
-        if path and isinstance(path, list):
-            descriptor["path"] = path[0]
-            descriptor["extrapaths"] = path[1:]
-
-        # Profile (v1)
-        profile = descriptor.pop("profile", None)
-        if profile == "data-resource":
-            descriptor["type"] = "file"
-        elif profile == "tabular-data-resource":
-            descriptor["type"] = "table"
-        elif profile:
-            descriptor.setdefault("profiles", [])
-            descriptor["profiles"].append(profile)
-
-        # Stats (v1)
-        for name in ["hash", "bytes"]:
-            value = descriptor.pop(name, None)
-            if value:
-                if name == "hash":
-                    hashing, value = helpers.parse_resource_hash(value)
-                    if hashing != settings.DEFAULT_HASHING:
-                        descriptor["hashing"] = hashing
-                descriptor.setdefault("stats", {})
-                descriptor["stats"][name] = value
-
-        # Compression (v1.5)
-        compression = descriptor.get("compression")
-        if compression == "no":
-            descriptor.pop("compression")
-
-        return super().from_descriptor(descriptor, **options)
-
-    def to_descriptor(self, *, exclude=[]):
-        descriptor = super().to_descriptor(exclude=exclude)
-
-        # Data
-        if not isinstance(descriptor.get("data", []), list):
-            descriptor["data"] = []
-
-        # Path (v1)
-        if system.standards_version == "v1":
-            path = descriptor.get("path")
-            extrapaths = descriptor.pop("extrapaths")
-            descriptor["path"] = []
-            if path:
-                descriptor["path"].append(path)
-            if extrapaths:
-                descriptor["path"].extend(extrapaths)
-
-        # Profile (v1)
-        if system.standards_version == "v1":
-            type = descriptor.pop("type", None)
-            profiles = descriptor.pop("profiles", None)
-            if type == "table":
-                descriptor["profile"] = "tabular-data-profile"
-            elif profiles:
-                descriptor["profile"] = profiles[0]
-
-        # Stats (v1)
-        if system.standards_version == "v1":
-            stats = descriptor.pop("stats", None)
-            if stats:
-                hash = stats.get("hash")
-                bytes = stats.get("bytes")
-                if hash is not None:
-                    descriptor["hash"] = hash
-                if bytes is not None:
-                    descriptor["bytes"] = bytes
-
-        return descriptor
-
     def to_view(self, type="look", **options):
         """Create a view from the resource
 
@@ -1157,6 +1072,91 @@ class Resource(Metadata):
             checklist=Checklist,
             pipeline=Pipeline,
         )
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptorSource, **options):
+        options.setdefault("trusted", False)
+        if isinstance(descriptor, str):
+            options.setdefault("basepath", helpers.parse_basepath(descriptor))
+        descriptor = super().metadata_normalize(descriptor)
+
+        # Url (v0)
+        url = descriptor.pop("url", None)
+        if url is not None:
+            descriptor.setdefault("path", url)
+
+        # Path (v1)
+        path = descriptor.get("path")
+        if path and isinstance(path, list):
+            descriptor["path"] = path[0]
+            descriptor["extrapaths"] = path[1:]
+
+        # Profile (v1)
+        profile = descriptor.pop("profile", None)
+        if profile == "data-resource":
+            descriptor["type"] = "file"
+        elif profile == "tabular-data-resource":
+            descriptor["type"] = "table"
+        elif profile:
+            descriptor.setdefault("profiles", [])
+            descriptor["profiles"].append(profile)
+
+        # Stats (v1)
+        for name in ["hash", "bytes"]:
+            value = descriptor.pop(name, None)
+            if value:
+                if name == "hash":
+                    hashing, value = helpers.parse_resource_hash(value)
+                    if hashing != settings.DEFAULT_HASHING:
+                        descriptor["hashing"] = hashing
+                descriptor.setdefault("stats", {})
+                descriptor["stats"][name] = value
+
+        # Compression (v1.5)
+        compression = descriptor.get("compression")
+        if compression == "no":
+            descriptor.pop("compression")
+
+        return super().metadata_import(descriptor, **options)
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Data
+        if not isinstance(descriptor.get("data", []), list):
+            descriptor["data"] = []
+
+        # Path (v1)
+        if system.standards_version == "v1":
+            path = descriptor.get("path")
+            extrapaths = descriptor.pop("extrapaths")
+            descriptor["path"] = []
+            if path:
+                descriptor["path"].append(path)
+            if extrapaths:
+                descriptor["path"].extend(extrapaths)
+
+        # Profile (v1)
+        if system.standards_version == "v1":
+            type = descriptor.pop("type", None)
+            profiles = descriptor.pop("profiles", None)
+            if type == "table":
+                descriptor["profile"] = "tabular-data-profile"
+            elif profiles:
+                descriptor["profile"] = profiles[0]
+
+        # Stats (v1)
+        if system.standards_version == "v1":
+            stats = descriptor.pop("stats", None)
+            if stats:
+                hash = stats.get("hash")
+                bytes = stats.get("bytes")
+                if hash is not None:
+                    descriptor["hash"] = hash
+                if bytes is not None:
+                    descriptor["bytes"] = bytes
+
+        return descriptor
 
     def metadata_validate(self):
         yield from super().metadata_validate()

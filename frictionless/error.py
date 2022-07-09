@@ -23,7 +23,7 @@ class Error(Metadata):
     description: str = field(init=False, default="Error")
 
     def __post_init__(self):
-        descriptor = self.to_descriptor(exclude=["message"])
+        descriptor = self.metadata_export(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
         # TODO: review this situation -- why we set it by hands??
         self.metadata_assigned.add("name")
@@ -39,14 +39,6 @@ class Error(Metadata):
     message: str = field(init=False)
     """TODO: add docs"""
 
-    # Convert
-
-    # TODO: review
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        system = import_module("frictionless").system
-        return system.create_error(descriptor)
-
     # Metadata
 
     metadata_profile = {
@@ -61,3 +53,8 @@ class Error(Metadata):
             "note": {},
         },
     }
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        system = import_module("frictionless").system
+        return system.create_error(descriptor)

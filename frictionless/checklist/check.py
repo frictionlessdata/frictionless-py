@@ -69,16 +69,13 @@ class Check(Metadata):
         """
         yield from []
 
-    # Convert
-
-    # TODO: review
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        if cls is Check:
-            descriptor = cls.metadata_normalize(descriptor)
-            return system.create_check(descriptor)  # type: ignore
-        return super().from_descriptor(descriptor)
-
     # Metadata
 
     metadata_Error = errors.CheckError
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        if cls is Check:
+            descriptor = cls.metadata_normalize(descriptor)
+            return system.create_check(descriptor)  # type: ignore
+        return super().metadata_import(descriptor)

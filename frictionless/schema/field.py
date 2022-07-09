@@ -162,11 +162,18 @@ class Field(Metadata):
     def create_value_writer(self):
         raise NotImplementedError()
 
-    # Convert
+    # Metadata
 
-    # TODO: review
+    metadata_Error = errors.FieldError
+    # TODO: fix it
+    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
+        14
+    ].copy()
+    metadata_profile["properties"]["missingValues"] = {}
+    metadata_profile["properties"]["example"] = {}
+
     @classmethod
-    def from_descriptor(cls, descriptor):
+    def metadata_import(cls, descriptor):
         descriptor = cls.metadata_normalize(descriptor)
         if cls is Field:
             try:
@@ -180,17 +187,7 @@ class Field(Metadata):
         if format and isinstance(format, str) and format.startswith("fmt:"):
             descriptor["format"] = format.replace("fmt:", "")
 
-        return super().from_descriptor(descriptor)
-
-    # Metadata
-
-    metadata_Error = errors.FieldError
-    # TODO: fix it
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        14
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
+        return super().metadata_import(descriptor)
 
     def metadata_validate(self):
         yield from super().metadata_validate()
