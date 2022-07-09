@@ -31,7 +31,7 @@ def extract(
     def read_row_stream():
         with self:
             row_count = 0
-            for row in self.row_stream:
+            for row in self.row_stream:  # type: ignore
                 row_count += 1
                 yield row
                 if limit_rows and limit_rows >= row_count:

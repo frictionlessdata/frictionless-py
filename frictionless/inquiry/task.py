@@ -21,7 +21,7 @@ class InquiryTask(Metadata):
     path: Optional[str] = None
     """# TODO: add docs"""
 
-    name: Optional[str] = None
+    type: Optional[str] = None
     """# TODO: add docs"""
 
     scheme: Optional[str] = None
@@ -85,6 +85,7 @@ class InquiryTask(Metadata):
         # Validate default
         resource = Resource.from_options(
             path=self.path,
+            type=self.type,
             scheme=self.scheme,
             format=self.format,
             hashing=self.hashing,
@@ -105,7 +106,7 @@ class InquiryTask(Metadata):
     metadata_profile = {
         "properties": {
             "path": {},
-            "name": {},
+            "type": {},
             "scheme": {},
             "format": {},
             "hashing": {},

@@ -292,56 +292,6 @@ class Resource(Metadata):
     # Props
 
     @property
-    def description_html(self) -> str:
-        """Description in HTML"""
-        return helpers.md_to_html(self.description or "")
-
-    @property
-    def description_text(self) -> str:
-        """Description in Text"""
-        return helpers.html_to_text(self.description_html or "")
-
-    @property
-    def fullpath(self) -> Optional[str]:
-        """Full path of the resource"""
-        if self.path:
-            return helpers.join_path(self.basepath, self.path)
-
-    # TODO: add asteriks for user/pass in url
-    @property
-    def place(self) -> str:
-        """Stringified resource location"""
-        if self.data:
-            return "<memory>"
-        elif self.extrapaths:
-            return f"{self.path} (multipart)"
-        elif self.innerpath:
-            return f"{self.path} -> {self.innerpath}"
-        elif self.path:
-            return self.path
-        return ""
-
-    @property
-    def memory(self) -> bool:
-        """Whether resource is not path based"""
-        return self.data is not None
-
-    @property
-    def remote(self) -> bool:
-        """Whether resource is remote"""
-        return helpers.is_remote_path(self.basepath or self.path)
-
-    @property
-    def multipart(self) -> bool:
-        """Whether resource is multipart"""
-        return not self.memory and bool(self.extrapaths)
-
-    @property
-    def tabular(self) -> bool:
-        """Whether resource is tabular"""
-        return self.type == "table"
-
-    @property
     def dialect(self) -> Dialect:
         """
         File Dialect object.
@@ -473,6 +423,56 @@ class Resource(Metadata):
     @detector.setter
     def detector(self, value: Detector):
         self.__detector = value
+
+    @property
+    def description_html(self) -> str:
+        """Description in HTML"""
+        return helpers.md_to_html(self.description or "")
+
+    @property
+    def description_text(self) -> str:
+        """Description in Text"""
+        return helpers.html_to_text(self.description_html or "")
+
+    @property
+    def fullpath(self) -> Optional[str]:
+        """Full path of the resource"""
+        if self.path:
+            return helpers.join_path(self.basepath, self.path)
+
+    # TODO: add asteriks for user/pass in url
+    @property
+    def place(self) -> str:
+        """Stringified resource location"""
+        if self.data:
+            return "<memory>"
+        elif self.extrapaths:
+            return f"{self.path} (multipart)"
+        elif self.innerpath:
+            return f"{self.path} -> {self.innerpath}"
+        elif self.path:
+            return self.path
+        return ""
+
+    @property
+    def memory(self) -> bool:
+        """Whether resource is not path based"""
+        return self.data is not None
+
+    @property
+    def remote(self) -> bool:
+        """Whether resource is remote"""
+        return helpers.is_remote_path(self.basepath or self.path)
+
+    @property
+    def multipart(self) -> bool:
+        """Whether resource is multipart"""
+        return not self.memory and bool(self.extrapaths)
+
+    @property
+    def tabular(self) -> bool:
+        """Whether resource is tabular"""
+        return self.type == "table"
 
     @property
     def buffer(self):
