@@ -36,6 +36,7 @@ def test_s3_loader(bucket_name):
 
 
 @mock_s3
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_s3_loader_write(bucket_name):
     client = boto3.resource("s3", region_name="us-east-1")
     client.create_bucket(Bucket=bucket_name, ACL="public-read")

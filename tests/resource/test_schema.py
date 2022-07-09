@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, Schema, Detector, FrictionlessException
+from frictionless import Resource, Schema, Detector, FrictionlessException, helpers
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -63,6 +63,7 @@ def test_resource_schema_source_data():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_schema_source_remote():
     descriptor = {
         "name": "name",

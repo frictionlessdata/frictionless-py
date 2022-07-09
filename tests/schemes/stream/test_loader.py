@@ -1,4 +1,5 @@
-from frictionless import Resource
+import pytest
+from frictionless import Resource, helpers
 
 
 # Read
@@ -36,6 +37,7 @@ def test_stream_loader_without_open():
 # Write
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_stream_loader_write():
     source = Resource("data/table.csv")
     target = source.write(scheme="stream", format="csv")

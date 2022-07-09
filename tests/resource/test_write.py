@@ -1,10 +1,11 @@
 import pytest
-from frictionless import Resource, FrictionlessException
+from frictionless import Resource, FrictionlessException, helpers
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.csv")))
@@ -17,6 +18,7 @@ def test_resource_write(tmpdir):
         ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_write_to_path(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.csv")))
