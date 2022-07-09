@@ -52,7 +52,6 @@ class Step(Metadata):
 
     metadata_Error = errors.StepError
 
-    # TODO: review
     @classmethod
     def metadata_import(cls, descriptor):
         if cls is Step:

@@ -6,8 +6,6 @@ from .loader import MultipartLoader
 class MultipartPlugin(Plugin):
     """Plugin for Multipart Data"""
 
-    code = "multipart"
-
     # Hooks
 
     def create_control(self, descriptor):

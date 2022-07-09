@@ -6,8 +6,6 @@ from .parsers import XlsxParser, XlsParser
 class ExcelPlugin(Plugin):
     """Plugin for Excel"""
 
-    code = "excel"
-
     # Hooks
 
     def create_control(self, descriptor):

@@ -6,8 +6,6 @@ from .loader import LocalLoader
 class LocalPlugin(Plugin):
     """Plugin for Local Data"""
 
-    code = "local"
-
     # Hooks
 
     def create_control(self, descriptor):

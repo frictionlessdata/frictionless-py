@@ -6,8 +6,6 @@ from .loaders import S3Loader
 class AwsPlugin(Plugin):
     """Plugin for Aws"""
 
-    code = "aws"
-
     # Hooks
 
     def create_control(self, descriptor):

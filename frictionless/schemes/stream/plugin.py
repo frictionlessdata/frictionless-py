@@ -6,8 +6,6 @@ from .loader import StreamLoader
 class StreamPlugin(Plugin):
     """Plugin for Stream Data"""
 
-    code = "stream"
-
     # Hooks
 
     def create_control(self, descriptor):

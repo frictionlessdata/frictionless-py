@@ -6,8 +6,6 @@ from .parsers import JsonParser, JsonlParser
 class JsonPlugin(Plugin):
     """Plugin for Json"""
 
-    code = "json"
-
     # Hooks
 
     def create_control(self, descriptor):

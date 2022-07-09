@@ -6,8 +6,6 @@ from .parser import OdsParser
 class OdsPlugin(Plugin):
     """Plugin for ODS"""
 
-    code = "ods"
-
     # Hooks
 
     def create_control(self, descriptor):

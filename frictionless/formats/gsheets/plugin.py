@@ -6,8 +6,6 @@ from .parser import GsheetsParser
 class GsheetsPlugin(Plugin):
     """Plugin for Google Sheets"""
 
-    code = "gsheet"
-
     # Hooks
 
     def create_control(self, descriptor):

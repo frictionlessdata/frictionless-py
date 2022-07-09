@@ -8,8 +8,6 @@ from . import settings
 class RemotePlugin(Plugin):
     """Plugin for Remote Data"""
 
-    code = "remote"
-
     # Hooks
 
     def create_control(self, descriptor):

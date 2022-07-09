@@ -6,8 +6,6 @@ from .parser import CsvParser
 class CsvPlugin(Plugin):
     """Plugin for CSV"""
 
-    code = "csv"
-
     # Hooks
 
     def create_control(self, descriptor):

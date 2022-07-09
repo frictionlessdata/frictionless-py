@@ -6,8 +6,6 @@ from .parser import HtmlParser
 class HtmlPlugin(Plugin):
     """Plugin for HTML"""
 
-    code = "html"
-
     # Hooks
 
     def create_control(self, descriptor):

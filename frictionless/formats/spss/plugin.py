@@ -6,8 +6,6 @@ from .parser import SpssParser
 class SpssPlugin(Plugin):
     """Plugin for SPSS"""
 
-    code = "spss"
-
     # Hooks
 
     def create_control(self, descriptor):

@@ -7,8 +7,6 @@ from .parser import InlineParser
 class InlinePlugin(Plugin):
     """Plugin for Inline"""
 
-    code = "inline"
-
     # Hooks
 
     def create_control(self, descriptor):

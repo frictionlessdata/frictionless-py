@@ -6,8 +6,6 @@ from .loader import BufferLoader
 class BufferPlugin(Plugin):
     """Plugin for Buffer Data"""
 
-    code = "buffer"
-
     # Hooks
 
     def create_control(self, descriptor):

@@ -10,8 +10,6 @@ from .storage import CkanStorage
 class CkanPlugin(Plugin):
     """Plugin for CKAN"""
 
-    code = "ckan"
-
     # Hooks
 
     def create_control(self, descriptor):

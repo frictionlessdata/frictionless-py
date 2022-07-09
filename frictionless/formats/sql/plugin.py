@@ -12,8 +12,6 @@ from . import settings
 class SqlPlugin(Plugin):
     """Plugin for SQL"""
 
-    code = "sql"
-
     # Hooks
 
     def create_control(self, descriptor):
