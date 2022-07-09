@@ -77,9 +77,9 @@ def test_validate_package_with_non_tabular():
 
 
 @pytest.mark.xfail(reason="Decide on behaviour")
-def test_validate_package_invalid_package_original():
+def test_validate_package_invalid_package_strict():
     package = Package({"resources": [{"path": "data/table.csv"}]})
-    report = package.validate(original=True)
+    report = package.validate(strict=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

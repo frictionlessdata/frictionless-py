@@ -126,8 +126,8 @@ class Report(Metadata):
                 ReportTask(
                     valid=not errors,
                     name=resource.name,  # type: ignore
+                    type=resource.type,  # type: ignore
                     place=resource.place,  # type: ignore
-                    tabular=resource.tabular,  # type: ignore
                     stats=task_stats,
                     scope=scope,
                     errors=errors,

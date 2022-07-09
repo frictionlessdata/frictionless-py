@@ -8,11 +8,11 @@ def test_report_task():
     task = ReportTask(
         valid=True,
         name="name",
+        type="table",
         place="place",
-        tabular=True,
         stats={"time": 1},
     )
     assert task.name == "name"
+    assert task.type == "table"
     assert task.place == "place"
-    assert task.tabular is True
     assert task.stats == {"time": 1}

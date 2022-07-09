@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Dialect, Detector, Check, Checklist, errors
+from frictionless import Resource, Detector, Check, Checklist, errors
 from frictionless.schema.schema import Schema
 
 
@@ -23,9 +23,9 @@ def test_resource_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
-def test_resource_validate_invalid_resource_original():
+def test_resource_validate_invalid_resource_strict():
     resource = Resource({"path": "data/table.csv"})
-    report = resource.validate(original=True)
+    report = resource.validate(strict=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

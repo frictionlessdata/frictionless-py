@@ -89,8 +89,8 @@ def test_validate_package_invalid_package():
 
 
 @pytest.mark.xfail(reason="Decide on behaviour")
-def test_validate_package_invalid_package_original():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
+def test_validate_package_invalid_package_strict():
+    report = validate({"resources": [{"path": "data/table.csv"}]}, strict=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

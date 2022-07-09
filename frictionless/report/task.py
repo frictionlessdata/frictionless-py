@@ -20,10 +20,10 @@ class ReportTask(Metadata):
     name: str
     """# TODO: add docs"""
 
-    place: str
+    type: str
     """# TODO: add docs"""
 
-    tabular: bool
+    place: str
     """# TODO: add docs"""
 
     stats: dict
@@ -47,6 +47,11 @@ class ReportTask(Metadata):
             error = Error(note='The "task.error" is available for single error tasks')
             raise FrictionlessException(error)
         return self.errors[0]
+
+    @property
+    def tabular(self) -> bool:
+        """Whether task's resource is tabular"""
+        return self.type == "table"
 
     # Flatten
 
@@ -104,8 +109,8 @@ class ReportTask(Metadata):
         "properties": {
             "valid": {},
             "name": {},
+            "type": {},
             "place": {},
-            "tabular": {},
             "stats": {},
             "scope": {},
             "warnings": {},
