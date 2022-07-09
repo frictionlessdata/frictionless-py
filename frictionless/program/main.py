@@ -34,7 +34,7 @@ def version(value: bool):
 
 @program.callback()
 def program_main(
-    version: Optional[bool] = typer.Option(None, "--version", callback=version)
+    version: Optional[bool] = typer.Option(None, "--version", callback=version),
 ):
     """Describe, extract, validate and transform tabular data."""
     pass

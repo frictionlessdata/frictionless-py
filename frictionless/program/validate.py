@@ -65,6 +65,7 @@ def program_validate(
     strict: bool = common.strict,
     yaml: bool = common.yaml,
     json: bool = common.json,
+    debug: bool = common.debug,
 ):
     """
     Validate a data source.
@@ -165,8 +166,10 @@ def program_validate(
     try:
         report = validate(prepare_source(), **prepare_options())
     except Exception as exception:
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
 
     # Return JSON
     if json:

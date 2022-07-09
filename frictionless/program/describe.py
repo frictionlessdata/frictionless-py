@@ -42,6 +42,7 @@ def program_describe(
     stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
+    debug: bool = common.debug,
 ):
     """
     Describe a data source.
@@ -114,6 +115,8 @@ def program_describe(
     try:
         metadata = describe(prepare_source(), **prepare_options())
     except Exception as exception:
+        if debug:
+            raise
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 

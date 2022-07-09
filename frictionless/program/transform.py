@@ -16,6 +16,7 @@ def program_transform(
     # Command
     yaml: bool = common.yaml,
     json: bool = common.json,
+    debug: bool = common.debug,
 ):
     """Transform data using a provided pipeline.
 
@@ -48,5 +49,7 @@ def program_transform(
         typer.secho("")
         typer.secho(resource.to_petl())
     except Exception as exception:
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise

@@ -57,6 +57,7 @@ def program_extract(
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
+    debug: bool = common.debug,
 ):
     """
     Extract a data source.
@@ -147,8 +148,10 @@ def program_extract(
     try:
         data = extract(prepare_source(), **prepare_options())
     except Exception as exception:
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
 
     # Normalize data
     normdata = data

@@ -290,3 +290,8 @@ port = Option(
     settings.DEFAULT_SERVER_PORT,
     help="Specify server port",
 )
+
+debug = Option(
+    default=False,
+    help="Enable debug mode",
+)
