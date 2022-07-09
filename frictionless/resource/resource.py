@@ -313,6 +313,8 @@ class Resource(Metadata):
         """Stringified resource location"""
         if self.data:
             return "<memory>"
+        elif self.extrapaths:
+            return f"{self.path} (multipart)"
         elif self.innerpath:
             return f"{self.path} -> {self.innerpath}"
         elif self.path:
