@@ -1131,11 +1131,11 @@ class Resource(Metadata):
         # Path (v1)
         if system.standards_version == "v1":
             path = descriptor.get("path")
-            extrapaths = descriptor.pop("extrapaths")
-            descriptor["path"] = []
-            if path:
-                descriptor["path"].append(path)
+            extrapaths = descriptor.pop("extrapaths", None)
             if extrapaths:
+                descriptor["path"] = []
+                if path:
+                    descriptor["path"].append(path)
                 descriptor["path"].extend(extrapaths)
 
         # Profile (v1)

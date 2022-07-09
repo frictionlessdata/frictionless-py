@@ -295,3 +295,8 @@ debug = Option(
     default=False,
     help="Enable debug mode",
 )
+
+standards = Option(
+    default=None,
+    help='Set to "v1" to get Standards v1 stictly compatible metadata',
+)

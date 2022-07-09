@@ -1,9 +1,10 @@
 import sys
 import typer
 from typing import List
-from ..actions import describe
 from ..detector import Detector
+from ..actions import describe
 from ..dialect import Dialect
+from ..system import system
 from .main import program
 from .. import helpers
 from . import common
@@ -43,6 +44,7 @@ def program_describe(
     yaml: bool = common.yaml,
     json: bool = common.json,
     debug: bool = common.debug,
+    standards: str = common.standards,
 ):
     """
     Describe a data source.
@@ -50,6 +52,10 @@ def program_describe(
     Based on the inferred data source type it will return resource or package descriptor.
     Default output format is YAML with a front matter.
     """
+
+    # Standards version
+    if standards:
+        system.standards_version = standards  # type: ignore
 
     # Support stdin
     is_stdin = False
@@ -115,10 +121,10 @@ def program_describe(
     try:
         metadata = describe(prepare_source(), **prepare_options())
     except Exception as exception:
-        if debug:
-            raise
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
 
     # Return JSON
     if json:
