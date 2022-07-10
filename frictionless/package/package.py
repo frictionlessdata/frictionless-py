@@ -348,6 +348,24 @@ class Package(Metadata):
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
 
+    # Flatten
+
+    def flatten(self, spec=["name", "path"]):
+        """Flatten the package
+
+        Parameters
+            spec (str[]): flatten specification
+
+        Returns:
+            any[]: flatten package
+        """
+        result = []
+        for resource in self.resources:
+            context = {}
+            context.update(resource.to_descriptor())
+            result.append([context.get(prop) for prop in spec])
+        return result
+
     # Convert
 
     def to_copy(self):

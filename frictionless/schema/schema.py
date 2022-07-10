@@ -174,6 +174,24 @@ class Schema(Metadata):
     def create_cell_writers(self):
         return {field.name: field.create_cell_reader() for field in self.fields}
 
+    # Flatten
+
+    def flatten(self, spec=["name", "type"]):
+        """Flatten the schema
+
+        Parameters
+            spec (str[]): flatten specification
+
+        Returns:
+            any[]: flatten schema
+        """
+        result = []
+        for field in self.fields:
+            context = {}
+            context.update(field.to_descriptor())
+            result.append([context.get(prop) for prop in spec])
+        return result
+
     # Convert
 
     @classmethod
