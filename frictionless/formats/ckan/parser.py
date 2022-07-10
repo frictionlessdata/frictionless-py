@@ -14,13 +14,13 @@ class CkanParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         control = self.resource.dialect.get_control("ckan", ensure=CkanControl())
         storage = CkanStorage(self.resource.fullpath, control=control)
         resource = storage.read_resource(control.resource)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.list_stream
+            yield from resource.cell_stream
 
     # Write
 

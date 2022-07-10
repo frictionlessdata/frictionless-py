@@ -27,7 +27,7 @@ class InlineParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         control = self.resource.dialect.get_control("inline", ensure=InlineControl())
 
         # Iter

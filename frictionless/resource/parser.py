@@ -9,7 +9,7 @@ from .. import errors
 if TYPE_CHECKING:
     from .loader import Loader
     from .resource import Resource
-    from ..interfaces import IListStream, ISample
+    from ..interfaces import ICellStream, ISample
 
 
 class Parser:
@@ -27,7 +27,7 @@ class Parser:
         self.__resource: Resource = resource
         self.__loader: Optional[Loader] = None
         self.__sample: Optional[ISample] = None
-        self.__list_stream: Optional[IListStream] = None
+        self.__cell_stream: Optional[ICellStream] = None
 
     def __enter__(self):
         if self.closed:
@@ -62,12 +62,12 @@ class Parser:
         return self.__sample
 
     @property
-    def list_stream(self):
+    def cell_stream(self):
         """
         Yields:
             any[][]: list stream
         """
-        return self.__list_stream
+        return self.__cell_stream
 
     # Open/Close
 
@@ -76,7 +76,7 @@ class Parser:
         self.close()
         try:
             self.__loader = self.read_loader()
-            self.__list_stream = self.read_list_stream()
+            self.__cell_stream = self.read_cell_stream()
             return self
         except Exception:
             self.close()
@@ -108,23 +108,23 @@ class Parser:
             loader = system.create_loader(self.resource)
             return loader.open()
 
-    def read_list_stream(self):
+    def read_cell_stream(self):
         """Read list stream
 
         Returns:
             gen<any[][]>: list stream
         """
         self.__sample = []
-        list_stream = self.read_list_stream_create()
-        list_stream = self.read_list_stream_handle_errors(list_stream)
-        for cells in list_stream:
+        cell_stream = self.read_cell_stream_create()
+        cell_stream = self.read_cell_stream_handle_errors(cell_stream)
+        for cells in cell_stream:
             self.__sample.append(cells)
             if len(self.__sample) >= self.resource.detector.sample_size:
                 break
-        list_stream = chain(self.__sample, list_stream)
-        return list_stream
+        cell_stream = chain(self.__sample, cell_stream)
+        return cell_stream
 
-    def read_list_stream_create(self) -> IListStream:
+    def read_cell_stream_create(self) -> ICellStream:
         """Create list stream from loader
 
         Parameters:
@@ -135,7 +135,7 @@ class Parser:
         """
         raise NotImplementedError()
 
-    def read_list_stream_handle_errors(self, list_stream):
+    def read_cell_stream_handle_errors(self, cell_stream):
         """Wrap list stream into error handler
 
         Parameters:
@@ -144,7 +144,7 @@ class Parser:
         Returns:
             gen<any[][]>: list stream
         """
-        return ListStreamWithErrorHandling(list_stream)
+        return CellStreamWithErrorHandling(cell_stream)
 
     # Write
 
@@ -165,16 +165,16 @@ class Parser:
 # We can consider moving it to Loader if it's possible
 
 
-class ListStreamWithErrorHandling:
-    def __init__(self, list_stream):
-        self.list_stream = list_stream
+class CellStreamWithErrorHandling:
+    def __init__(self, cell_stream):
+        self.cell_stream = cell_stream
 
     def __iter__(self):
         return self
 
     def __next__(self):
         try:
-            return self.list_stream.__next__()
+            return self.cell_stream.__next__()
         except StopIteration:
             raise
         except FrictionlessException:

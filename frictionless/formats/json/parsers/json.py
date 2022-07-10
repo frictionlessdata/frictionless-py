@@ -28,7 +28,7 @@ class JsonParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         path = "item"
         control = self.resource.dialect.get_control("json", ensure=JsonControl())
         if control.property is not None:
@@ -42,14 +42,14 @@ class JsonParser(Parser):
         )
         with system.create_parser(resource) as parser:
             try:
-                yield next(parser.list_stream)
+                yield next(parser.cell_stream)
             except StopIteration:
                 note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             parser_control = parser.resource.dialect.get_control("inline")
             if parser_control.keyed:
                 control.keyed = True
-            yield from parser.list_stream
+            yield from parser.cell_stream
 
     # Write
 

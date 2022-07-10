@@ -23,17 +23,16 @@ def test_resource_read_text():
 
 def test_resource_read_data():
     resource = Resource(path="data/table.json")
-    assert resource.read_lists() == [
+    assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
         [2, "中国人"],
     ]
 
 
-def test_resource_read_lists():
+def test_resource_read_cells():
     resource = Resource(path="data/table.json")
-    lists = resource.read_lists()
-    assert lists == [
+    assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
         [2, "中国人"],

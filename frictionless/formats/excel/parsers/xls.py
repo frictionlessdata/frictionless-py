@@ -27,7 +27,7 @@ class XlsParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
 
         # Get book

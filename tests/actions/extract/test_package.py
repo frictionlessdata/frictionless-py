@@ -37,10 +37,10 @@ def test_extract_package_stream():
 def test_extract_package_process_and_stream():
     process = lambda row: row.to_list()
     path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
-    list_streams = extract("data/package.json", process=process, stream=True)
-    list_stream = list_streams[path]
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_streams = extract("data/package.json", process=process, stream=True)
+    cell_stream = cell_streams[path]
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]

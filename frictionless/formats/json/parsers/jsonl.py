@@ -26,7 +26,7 @@ class JsonlParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         control = self.resource.dialect.get_control("json", ensure=JsonControl())
         source = iter(jsonlines.Reader(self.loader.text_stream))
         inline_control = InlineControl(keys=control.keys)
@@ -36,11 +36,11 @@ class JsonlParser(Parser):
             dialect=Dialect(controls=[inline_control]),
         )
         with system.create_parser(resource) as parser:
-            yield next(parser.list_stream)
+            yield next(parser.cell_stream)
             parser_control = parser.resource.dialect.get_control("inline")
             if parser_control.keyed:
                 control.keyed = True
-            yield from parser.list_stream
+            yield from parser.cell_stream
 
     # Write
 

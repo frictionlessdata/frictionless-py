@@ -27,7 +27,7 @@ class OdsParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         ezodf = helpers.import_from_extras("ezodf", name="ods")
         control = self.resource.dialect.get_control("ods", ensure=OdsControl())
 

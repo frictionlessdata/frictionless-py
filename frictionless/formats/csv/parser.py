@@ -18,7 +18,7 @@ class CsvParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         # TODO: find a nicer way to ensure control
         control = self.resource.dialect.get_control("csv", ensure=CsvControl())
         sample = extract_samle(self.loader.text_stream)

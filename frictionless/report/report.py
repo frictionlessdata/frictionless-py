@@ -199,7 +199,8 @@ class Report(Metadata):
                         error_content,
                         headers=["row", "field", "code", "message"],
                         tablefmt="grid",
-                        maxcolwidths=[5, 5, 10, 50],
+                        # TODO: create based on the actual users's terminal width?
+                        maxcolwidths=[5, 5, 20, 90],
                     )
                 )
                 validation_content += "\n\n"

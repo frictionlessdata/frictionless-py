@@ -5,7 +5,8 @@ from tabulate import tabulate
 from dataclasses import dataclass, field
 from ..metadata import Metadata
 from ..exception import FrictionlessException
-from ..errors import Error, ReportTaskError
+from ..errors import ReportTaskError
+from ..error import Error
 
 
 @dataclass
@@ -117,6 +118,10 @@ class ReportTask(Metadata):
             "errors": {},
         }
     }
+
+    @classmethod
+    def metadata_properties(cls):
+        return super().metadata_properties(errors=Error)
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

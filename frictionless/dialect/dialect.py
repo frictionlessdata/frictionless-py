@@ -145,12 +145,12 @@ class Dialect(Metadata):
 
         return fragment
 
-    def read_enumerated_content_stream(self, list_stream):
+    def read_enumerated_content_stream(self, cell_stream):
         first_content_row = self.create_first_content_row()
         comment_filter = self.create_comment_filter()
 
         # Emit content stream
-        for row_number, cells in enumerate(list_stream, start=1):
+        for row_number, cells in enumerate(cell_stream, start=1):
             if row_number < first_content_row:
                 continue
             if comment_filter:

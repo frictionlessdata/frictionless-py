@@ -14,13 +14,13 @@ class BigqueryParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         control = self.resource.dialect.get_control("bigquery")
         storage = BigqueryStorage(self.resource.data, control=control)
         resource = storage.read_resource(control.table)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.list_stream
+            yield from resource.cell_stream
 
     # Write
 

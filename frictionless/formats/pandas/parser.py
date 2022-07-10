@@ -16,7 +16,7 @@ class PandasParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         np = helpers.import_from_extras("numpy", name="pandas")
         dataframe = self.resource.data
 

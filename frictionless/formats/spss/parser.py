@@ -16,7 +16,7 @@ class SpssParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         sav = helpers.import_from_extras("savReaderWriter", name="spss")
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
 

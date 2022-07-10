@@ -37,9 +37,9 @@ def test_extract_resource_stream():
 def test_extract_resource_process_and_stream():
     resource = Resource("data/resource.json")
     process = lambda row: row.to_list()
-    list_stream = resource.extract(process=process, stream=True)
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_stream = resource.extract(process=process, stream=True)
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]
@@ -83,9 +83,9 @@ def test_extract_resource_from_file_pathlib():
 def test_extract_resource_from_file_process_and_stream():
     resource = Resource("data/table.csv")
     process = lambda row: row.to_list()
-    list_stream = resource.extract(process=process, stream=True)
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_stream = resource.extract(process=process, stream=True)
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]

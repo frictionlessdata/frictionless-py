@@ -553,14 +553,14 @@ class Resource(Metadata):
             return self.__loader.text_stream
 
     @property
-    def list_stream(self):
-        """List stream in form of a generator
+    def cell_stream(self):
+        """Cell stream in form of a generator
 
         Yields:
-            gen<any[][]>?: list stream
+            gen<any[][]>?: cell stream
         """
         if self.__parser:
-            return self.__parser.list_stream
+            return self.__parser.cell_stream
 
     @property
     def row_stream(self):
@@ -736,19 +736,19 @@ class Resource(Metadata):
             data = json.loads(text)
             return data
 
-    def read_lists(self, *, size=None):
+    def read_cells(self, *, size=None):
         """Read lists into memory
 
         Returns:
             any[][]: table lists
         """
         with helpers.ensure_open(self):
-            lists = []
-            for cells in self.list_stream:
-                lists.append(cells)
-                if size and len(lists) >= size:
+            result = []
+            for cells in self.cell_stream:
+                result.append(cells)
+                if size and len(result) >= size:
                     break
-            return lists
+            return result
 
     def read_rows(self, *, size=None):
         """Read rows into memory
@@ -863,7 +863,7 @@ class Resource(Metadata):
 
         # Create content stream
         enumerated_content_stream = self.dialect.read_enumerated_content_stream(
-            self.__parser.list_stream
+            self.__parser.cell_stream
         )
 
         # Create row stream

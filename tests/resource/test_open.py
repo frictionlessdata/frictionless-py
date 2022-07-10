@@ -102,28 +102,28 @@ def test_resource_open_row_stream_blank_cells():
         assert row2.valid is True
 
 
-def test_resource_open_read_lists():
+def test_resource_open_read_cells():
     with Resource("data/table.csv") as resource:
-        assert resource.read_lists() == [
+        assert resource.read_cells() == [
             ["id", "name"],
             ["1", "english"],
             ["2", "中国人"],
         ]
 
 
-def test_resource_open_list_stream():
+def test_resource_open_cell_stream():
     with Resource("data/table.csv") as resource:
-        assert list(resource.list_stream) == [
+        assert list(resource.cell_stream) == [
             ["id", "name"],
             ["1", "english"],
             ["2", "中国人"],
         ]
-        assert list(resource.list_stream) == []
+        assert list(resource.cell_stream) == []
 
 
-def test_resource_open_list_stream_iterate():
+def test_resource_open_cell_stream_iterate():
     with Resource("data/table.csv") as resource:
-        for number, cells in enumerate(resource.list_stream):
+        for number, cells in enumerate(resource.cell_stream):
             assert len(cells) == 2
             if number == 0:
                 assert cells == ["id", "name"]

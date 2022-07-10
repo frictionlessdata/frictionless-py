@@ -17,7 +17,7 @@ class GsheetsParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self):
+    def read_cell_stream_create(self):
         fullpath = self.resource.fullpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         fullpath = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
@@ -29,7 +29,7 @@ class GsheetsParser(Parser):
         if gid:
             fullpath = "%s&gid=%s" % (fullpath, gid)
         with Resource(path=fullpath, stats=self.resource.stats) as resource:
-            yield from resource.list_stream
+            yield from resource.cell_stream
 
     # Write
 
