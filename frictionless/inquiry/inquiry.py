@@ -66,15 +66,12 @@ class Inquiry(Metadata):
     # Metadata
 
     metadata_Error = InquiryError
+    metadata_Types = dict(tasks=InquiryTask)
     metadata_profile = {
         "properties": {
             "tasks": {},
         }
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(tasks=InquiryTask)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

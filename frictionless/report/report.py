@@ -6,7 +6,6 @@ from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .task import ReportTask
-from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
@@ -57,7 +56,7 @@ class Report(Metadata):
         """Flatten the report
 
         Parameters
-            spec (any[]): flatten specification
+            spec (str[]): flatten specification
 
         Returns:
             any[]: flatten report
@@ -205,6 +204,7 @@ class Report(Metadata):
     # Metadata
 
     metadata_Error = ReportError
+    metadata_Types = dict(tasks=ReportTask)
     metadata_profile = {
         "properties": {
             "valid": {},
@@ -214,10 +214,6 @@ class Report(Metadata):
             "tasks": {},
         }
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(tasks=ReportTask)
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

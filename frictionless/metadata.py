@@ -189,6 +189,7 @@ class Metadata(metaclass=Metaclass):
 
     # TODO: add/improve types
     metadata_Error = None
+    metadata_Types = {}
     metadata_profile = None
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
@@ -207,12 +208,12 @@ class Metadata(metaclass=Metaclass):
         return list(self.metadata_validate())
 
     @classmethod
-    def metadata_properties(cls, **Types):
+    def metadata_properties(cls):
         """Extract metadata properties"""
         properties = {}
         if cls.metadata_profile:
             for name in cls.metadata_profile.get("properties", []):
-                properties[name] = Types.get(name)
+                properties[name] = cls.metadata_Types.get(name)
         return properties
 
     @classmethod

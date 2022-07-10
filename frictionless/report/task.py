@@ -106,6 +106,7 @@ class ReportTask(Metadata):
     # Metadata
 
     metadata_Error = ReportTaskError
+    metadata_Types = dict(errors=Error)
     metadata_profile = {
         "properties": {
             "valid": {},
@@ -118,10 +119,6 @@ class ReportTask(Metadata):
             "errors": {},
         }
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(errors=Error)
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

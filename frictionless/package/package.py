@@ -614,14 +614,10 @@ class Package(Metadata):
 
     # Metadata
 
-    metadata_duplicate = True
-    metadata_Error = errors.PackageError  # type: ignore
+    metadata_Error = errors.PackageError
+    metadata_Types = dict(resources=Resource)
     metadata_profile = deepcopy(settings.PACKAGE_PROFILE)
     metadata_profile["properties"]["resources"] = {"type": "array"}
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(resources=Resource)
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptorSource, **options):

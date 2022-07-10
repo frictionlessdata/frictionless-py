@@ -259,13 +259,10 @@ class Schema(Metadata):
 
     # Metadata
 
-    metadata_Error = errors.SchemaError  # type: ignore
+    metadata_Error = errors.SchemaError
+    metadata_Types = dict(fields=Field)
     metadata_profile = deepcopy(settings.SCHEMA_PROFILE)
     metadata_profile["properties"]["fields"] = {"type": "array"}
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(fields=Field)
 
     # TODO: handle edge cases like wrong descriptor's prop types
     @classmethod

@@ -1054,6 +1054,12 @@ class Resource(Metadata):
     # Metadata
 
     metadata_Error = errors.ResourceError
+    metadata_Types = dict(
+        dialect=Dialect,
+        schema=Schema,
+        checklist=Checklist,
+        pipeline=Pipeline,
+    )
     metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
     metadata_profile["properties"].pop("schema")
     # TODO: move to assets?
@@ -1065,15 +1071,6 @@ class Resource(Metadata):
     metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["pipeline"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["stats"] = {"type": "object"}
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(
-            dialect=Dialect,
-            schema=Schema,
-            checklist=Checklist,
-            pipeline=Pipeline,
-        )
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptorSource, **options):

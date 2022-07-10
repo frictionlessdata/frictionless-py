@@ -76,15 +76,12 @@ class Pipeline(Metadata):
     # Metadata
 
     metadata_Error = errors.PipelineError
+    metadata_Types = dict(steps=Step)
     metadata_profile = {
         "properties": {
             "steps": {},
         }
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(steps=Step)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

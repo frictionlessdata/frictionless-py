@@ -126,6 +126,7 @@ class Checklist(Metadata):
     # Metadata
 
     metadata_Error = errors.ChecklistError
+    metadata_Types = dict(checks=Check)
     metadata_profile = {
         "properties": {
             "checks": {},
@@ -133,10 +134,6 @@ class Checklist(Metadata):
             "pickErrors": {},
         }
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(checks=Check)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

@@ -184,6 +184,7 @@ class Dialect(Metadata):
     # Metadata
 
     metadata_Error = errors.DialectError
+    metadata_Types = dict(controls=Control)
     metadata_profile = {
         "type": "object",
         "required": [],
@@ -198,7 +199,3 @@ class Dialect(Metadata):
             "controls": {"type": "array"},
         },
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(controls=Control)

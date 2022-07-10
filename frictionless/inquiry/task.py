@@ -103,6 +103,7 @@ class InquiryTask(Metadata):
     # Metadata
 
     metadata_Error = errors.InquiryTaskError
+    metadata_Types = dict(dialect=Dialect, schema=Schema, checklist=Checklist)
     metadata_profile = {
         "properties": {
             "path": {},
@@ -120,14 +121,6 @@ class InquiryTask(Metadata):
             "package": {},
         }
     }
-
-    @classmethod
-    def metadata_properties(cls):
-        return super().metadata_properties(
-            dialect=Dialect,
-            schema=Schema,
-            checklist=Checklist,
-        )
 
     # TODO: validate type/descriptor matching
     def metadata_validate(self):
