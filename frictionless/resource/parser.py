@@ -148,7 +148,7 @@ class Parser:
 
     # Write
 
-    def write_row_stream(self, resource: Resource) -> None:
+    def write_row_stream(self, source: Resource) -> None:
         """Write row stream from the source resource
 
         Parameters:

@@ -72,11 +72,9 @@ class OdsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, source):
         ezodf = helpers.import_from_extras("ezodf", name="ods")
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("ods", ensure=OdsControl())
+        control = self.resource.dialect.get_control("ods", ensure=OdsControl())
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()
         book = ezodf.newdoc(doctype="ods", filename=file.name)
@@ -91,5 +89,5 @@ class OdsParser(Parser):
                 for field_index, cell in enumerate(cells):
                     sheet[(row_index + 1, field_index)].set_value(cell)
             book.save()
-        loader = system.create_loader(target)
+        loader = system.create_loader(self.resource)
         loader.write_byte_stream(file.name)

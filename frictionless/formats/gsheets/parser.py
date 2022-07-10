@@ -33,12 +33,10 @@ class GsheetsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, source):
         pygsheets = helpers.import_from_extras("pygsheets", name="gsheets")
-        source = resource
-        target = self.resource
-        fullpath = target.fullpath
-        control = target.dialect.get_control("gsheets", ensure=GsheetsControl())
+        fullpath = self.resource.fullpath
+        control = self.resource.dialect.get_control("gsheets", ensure=GsheetsControl())
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         if not match:
             error = errors.FormatError(note=f"Cannot save {fullpath}")

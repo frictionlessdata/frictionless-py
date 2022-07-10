@@ -25,11 +25,9 @@ class CkanParser(Parser):
     # Write
 
     # NOTE: this approach is questionable
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("ckan", ensure=CkanControl())
-        storage = CkanStorage(target.fullpath, control=control)
+    def write_row_stream(self, source):
+        control = self.resource.dialect.get_control("ckan", ensure=CkanControl())
+        storage = CkanStorage(self.resource.fullpath, control=control)
         if not control.resource:
             note = 'Please provide "dialect.resource" for writing'
             raise FrictionlessException(note)

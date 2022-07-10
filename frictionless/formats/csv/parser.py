@@ -43,25 +43,23 @@ class CsvParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, source):
         options = {}
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("csv", ensure=CsvControl())
-        if target.format == "tsv":
+        control = self.resource.dialect.get_control("csv", ensure=CsvControl())
+        if self.resource.format == "tsv":
             control.set_not_defined("delimiter", "\t")
         for name, value in vars(control.to_python()).items():
             if not name.startswith("_") and value is not None:
                 options[name] = value
         with tempfile.NamedTemporaryFile(
-            "wt", delete=False, encoding=target.encoding, newline=""
+            "wt", delete=False, encoding=self.resource.encoding, newline=""
         ) as file:
             writer = csv.writer(file, **options)
             with source:
                 writer.writerow(source.schema.field_names)
                 for row in source.row_stream:
                     writer.writerow(row.to_list(types=self.supported_types))
-        loader = system.create_loader(target)
+        loader = system.create_loader(self.resource)
         loader.write_byte_stream(file.name)
 
 

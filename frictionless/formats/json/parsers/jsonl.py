@@ -44,10 +44,8 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("json", ensure=JsonControl())
+    def write_row_stream(self, source):
+        control = self.resource.dialect.get_control("json", ensure=JsonControl())
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
             with source:
@@ -57,5 +55,5 @@ class JsonlParser(Parser):
                     cells = row.to_list(json=True)
                     item = dict(zip(row.field_names, cells)) if control.keyed else cells
                     writer.write(item)
-        loader = system.create_loader(target)
+        loader = system.create_loader(self.resource)
         loader.write_byte_stream(file.name)

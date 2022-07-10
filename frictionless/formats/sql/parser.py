@@ -36,13 +36,11 @@ class SqlParser(Parser):
     # Write
 
     # NOTE: this approach is questionable
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("sql", ensure=SqlControl())
+    def write_row_stream(self, source):
+        control = self.resource.dialect.get_control("sql", ensure=SqlControl())
         if not control.table:
             note = 'Please provide "dialect.sql.table" for writing'
             raise FrictionlessException(note)
         source.name = control.table
-        storage = SqlStorage(target.fullpath, control=control)
+        storage = SqlStorage(self.resource.fullpath, control=control)
         storage.write_resource(source, force=True)

@@ -79,15 +79,13 @@ class InlineParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, source):
         data = []
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("inline", ensure=InlineControl())
+        control = self.resource.dialect.get_control("inline", ensure=InlineControl())
         with source:
             if not control.keyed:
                 data.append(source.schema.field_names)
             for row in source.row_stream:
                 item = row.to_dict() if control.keyed else row.to_list()
                 data.append(item)
-        target.data = data
+        self.resource.data = data

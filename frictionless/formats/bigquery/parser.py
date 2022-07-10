@@ -25,10 +25,8 @@ class BigqueryParser(Parser):
     # Write
 
     # NOTE: this approach is questionable
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("bigquery")
+    def write_row_stream(self, source):
+        control = self.resource.dialect.get_control("bigquery")
         storage = BigqueryStorage(self.resource.data, control=control)
         if not control.table:
             note = 'Please provide "dialect.table" for writing'

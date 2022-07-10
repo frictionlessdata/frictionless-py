@@ -99,11 +99,9 @@ class PandasParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, source):
         np = helpers.import_from_extras("numpy", name="pandas")
         pd = helpers.import_from_extras("pandas", name="pandas")
-        source = resource
-        target = self.resource
 
         # Get data/index
         data_rows = []
@@ -184,7 +182,7 @@ class PandasParser(Parser):
             ):
                 dataframe[field.name] = pd.to_datetime(dataframe[field.name])
 
-        target.data = dataframe
+        self.resource.data = dataframe
 
     def __write_convert_type(self, type=None):
         np = helpers.import_from_extras("numpy", name="pandas")

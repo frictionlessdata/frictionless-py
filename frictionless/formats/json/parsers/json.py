@@ -53,11 +53,9 @@ class JsonParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, source):
         data = []
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("json", ensure=JsonControl())
+        control = self.resource.dialect.get_control("json", ensure=JsonControl())
         with source:
             if not control.keyed:
                 data.append(source.schema.field_names)
@@ -67,5 +65,5 @@ class JsonParser(Parser):
                 data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             json.dump(data, file, indent=2)
-        loader = system.create_loader(target)
+        loader = system.create_loader(self.resource)
         loader.write_byte_stream(file.name)

@@ -137,10 +137,8 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        control = target.dialect.get_control("excel", ensure=ExcelControl())
+    def write_row_stream(self, source):
+        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
         book = openpyxl.Workbook(write_only=True)
         title = control.sheet
         if isinstance(title, int):
@@ -154,7 +152,7 @@ class XlsxParser(Parser):
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()
         book.save(file.name)
-        loader = system.create_loader(target)
+        loader = system.create_loader(self.resource)
         loader.write_byte_stream(file.name)
 
 
