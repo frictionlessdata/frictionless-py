@@ -1125,7 +1125,8 @@ class Resource(Metadata):
         descriptor = super().metadata_export()
 
         # Data
-        if not isinstance(descriptor.get("data", []), list):
+        data = descriptor.get("data")
+        if data and not isinstance(data, (list, dict)):
             descriptor["data"] = []
 
         # Path (v1)
