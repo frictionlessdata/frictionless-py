@@ -19,22 +19,19 @@ class Report(Metadata):
 
     # State
 
-    version: str
-    """# TODO: add docs"""
-
     valid: bool
     """# TODO: add docs"""
 
     stats: dict
     """# TODO: add docs"""
 
-    tasks: List[ReportTask] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
     errors: List[Error] = field(default_factory=list)
     """# TODO: add docs"""
 
-    warnings: List[str] = field(default_factory=list)
+    tasks: List[ReportTask] = field(default_factory=list)
     """# TODO: add docs"""
 
     # Props
@@ -94,12 +91,11 @@ class Report(Metadata):
         error_count = len(errors) + sum(task.stats["errors"] for task in tasks)
         stats = {"time": time, "tasks": len(tasks), "errors": error_count}
         return Report(
-            version=settings.VERSION,
             valid=not error_count,
             stats=stats,
-            tasks=tasks,
-            errors=errors,
             warnings=warnings,
+            errors=errors,
+            tasks=tasks,
         )
 
     @staticmethod
@@ -118,9 +114,9 @@ class Report(Metadata):
         task_stats = helpers.copy_merge(resource.stats, time=time, errors=len(errors))
         report_stats = {"time": time, "tasks": 1, "errors": len(errors)}
         return Report(
-            version=settings.VERSION,
             valid=not errors,
             stats=report_stats,
+            warnings=[],
             errors=[],
             tasks=[
                 ReportTask(
@@ -152,9 +148,9 @@ class Report(Metadata):
             warnings.extend(report.warnings)
         return Report.from_validation(
             time=time,
-            tasks=tasks,
-            errors=errors,
             warnings=warnings,
+            errors=errors,
+            tasks=tasks,
         )
 
     # TODO: move to ReportTask
@@ -211,12 +207,11 @@ class Report(Metadata):
     metadata_Error = ReportError
     metadata_profile = {
         "properties": {
-            "version": {},
             "valid": {},
             "stats": {},
-            "tasks": {},
-            "errors": {},
             "warnings": {},
+            "errors": {},
+            "tasks": {},
         }
     }
 

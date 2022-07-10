@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Checklist, helpers
+from frictionless import Resource, helpers
 
 
 # General
@@ -53,8 +53,7 @@ def test_report_reporttask_summary_zippedfile():
 @pytest.mark.xfail(reason="Stats doesn't show rows for partial validation")
 def test_report_task_to_summary_last_row_checked():
     resource = Resource("data/capital-invalid.csv")
-    checklist = Checklist(limit_errors=2)
-    report = resource.validate(checklist)
+    report = resource.validate(limit_errors=2)
     output = report.tasks[0].to_summary()
     assert output.count("> reached error limit: 2")
     assert output.count("Rows Checked    | 10")

@@ -21,10 +21,10 @@ class ReportTask(Metadata):
     name: str
     """# TODO: add docs"""
 
-    type: str
+    place: str
     """# TODO: add docs"""
 
-    place: str
+    type: str
     """# TODO: add docs"""
 
     stats: dict
@@ -110,8 +110,8 @@ class ReportTask(Metadata):
         "properties": {
             "valid": {},
             "name": {},
-            "type": {},
             "place": {},
+            "type": {},
             "stats": {},
             "scope": {},
             "warnings": {},

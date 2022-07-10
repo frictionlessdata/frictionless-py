@@ -9,7 +9,6 @@ def test_report():
     resource = Resource("data/table.csv")
     report = resource.validate()
     # Report
-    assert report.version
     assert report.valid is True
     assert report.stats["time"]
     assert report.stats["errors"] == 0
