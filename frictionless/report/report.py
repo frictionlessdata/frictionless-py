@@ -193,7 +193,7 @@ class Report(Metadata):
                 validation_content += str(
                     tabulate(
                         error_content,
-                        headers=["row", "field", "code", "message"],
+                        headers=["Row", "Field", "Code", "Message"],
                         tablefmt="grid",
                         # TODO: create based on the actual users's terminal width?
                         maxcolwidths=[5, 5, 20, 90],
