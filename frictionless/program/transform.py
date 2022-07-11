@@ -1,21 +1,22 @@
 # type: ignore
 import sys
 import typer
-from ..pipeline import Pipeline
+from typing import List
+from ..pipeline import Pipeline, Step
 from ..actions import transform
 from .main import program
+from .. import helpers
 from . import common
 
 
 @program.command(name="transform")
 def program_transform(
     # Source
-    source: str = common.source,
+    source: List[str] = common.source,
     # Pipeline
     pipeline: str = common.pipeline,
+    steps: str = common.steps,
     # Command
-    yaml: bool = common.yaml,
-    json: bool = common.json,
     debug: bool = common.debug,
 ):
     """Transform data using a provided pipeline.
@@ -40,16 +41,37 @@ def program_transform(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
-    # TODO: it's a dummy implemenation (we need a proper one)
-    # TODO: support for a package
+    # Prepare source
+    def prepare_source():
+        return list(source) if len(source) > 1 else (source[0] if source else None)
+
+    # Prepare pipeline
+    def prepare_pipeline():
+        descriptor = helpers.parse_json_string(pipeline)
+        if descriptor:
+            return Pipeline.from_descriptor(descriptor)
+        step_objects = []
+        for step_descriptor in helpers.parse_descriptors_string(steps) or []:
+            step_objects.append(Step.from_descriptor(step_descriptor))
+        return Pipeline.from_options(
+            steps=step_objects,
+        )
+
+    # Prepare options
+    def prepare_options():
+        return dict(pipeline=prepare_pipeline())
+
     # Transform source
     try:
-        pipeline = Pipeline(pipeline)
-        resource = transform(source, pipeline=pipeline)
-        typer.secho("")
-        typer.secho(resource.to_petl())
+        resource = transform(prepare_source(), **prepare_options())
     except Exception as exception:
         if not debug:
             typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
             raise typer.Exit(1)
         raise
+
+    # Return default
+    typer.secho("\n## Schema\n")
+    typer.secho(resource.schema.to_summary())
+    typer.secho("\n## Table\n")
+    typer.secho(resource.to_petl())

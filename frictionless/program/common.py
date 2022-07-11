@@ -137,7 +137,7 @@ checklist = Option(
 
 checks = Option(
     default=None,
-    help='Validation checks e.g "duplicate-row deviated-cell forbidden-value:values=a,b,c"',
+    help='Validation checks e.g "duplicate-row table-dimensions:numRows=1"',
 )
 
 pick_errors = Option(
@@ -155,6 +155,11 @@ skip_errors = Option(
 pipeline = Option(
     default=None,
     help="An inline JSON object or a path to a JSON file that provides the pipeline",
+)
+
+steps = Option(
+    default=None,
+    help='Tranform steps e.g "table-recast cell-set:fieldName=id:value=3"',
 )
 
 # Stats
