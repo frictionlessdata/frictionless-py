@@ -135,6 +135,11 @@ checklist = Option(
     help="An inline JSON object or a path to a JSON file that provides the checklist",
 )
 
+checks = Option(
+    default=None,
+    help='Validation checks e.g "duplicate-row deviated-cell forbidden-value:values=a,b,c"',
+)
+
 pick_errors = Option(
     default=None,
     help='Comma-separated errors to pick e.g. "type-error"',

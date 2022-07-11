@@ -31,7 +31,7 @@ class forbidden_value(Check):
         if cell in self.values:
             yield errors.ForbiddenValueError.from_row(
                 row,
-                note='forbiddened values are "%s"' % self.values,
+                note='forbidden values are "%s"' % self.values,
                 field_name=self.field_name,
             )
 

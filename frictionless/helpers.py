@@ -2,6 +2,7 @@ import io
 import re
 import os
 import csv
+import ast
 import sys
 import json
 import glob
@@ -293,6 +294,25 @@ def parse_json_string(string):
     if string.startswith("{") and string.endswith("}"):
         return json.loads(string)
     return string
+
+
+def parse_descriptors_string(string):
+    if string is None:
+        return None
+    descriptors = []
+    parts = string.split(" ")
+    for part in parts:
+        type, *props = part.split(":")
+        descriptor = dict(code=type)  # TODO: rebase on type
+        for prop in props:
+            name, value = prop.split("=")
+            try:
+                value = ast.literal_eval(value)
+            except Exception:
+                pass
+            descriptor[name] = value
+        descriptors.append(descriptor)
+    return descriptors
 
 
 def parse_csv_string(string, *, convert: type = str, fallback=False):

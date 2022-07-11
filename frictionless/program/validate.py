@@ -4,7 +4,7 @@ from typing import List
 from tabulate import tabulate
 from ..actions import validate
 from ..detector import Detector
-from ..checklist import Checklist
+from ..checklist import Checklist, Check
 from ..dialect import Dialect
 from .main import program
 from .. import helpers
@@ -39,6 +39,7 @@ def program_validate(
     schema: str = common.schema,
     # Checklist
     checklist: str = common.checklist,
+    checks: str = common.checks,
     pick_errors: str = common.pick_errors,
     skip_errors: str = common.skip_errors,
     # TODO: add checks
@@ -108,7 +109,11 @@ def program_validate(
         descriptor = helpers.parse_json_string(checklist)
         if descriptor:
             return Checklist.from_descriptor(descriptor)
+        check_objects = []
+        for check_descriptor in helpers.parse_descriptors_string(checks) or []:
+            check_objects.append(Check.from_descriptor(check_descriptor))
         return Checklist.from_options(
+            checks=check_objects,
             pick_errors=helpers.parse_csv_string(pick_errors),
             skip_errors=helpers.parse_csv_string(skip_errors),
         )
