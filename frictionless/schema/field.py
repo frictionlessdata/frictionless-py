@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from .schema import Schema
 
 
+# TODO: make abstract?
 @dataclass
 class Field(Metadata):
     """Field representation"""

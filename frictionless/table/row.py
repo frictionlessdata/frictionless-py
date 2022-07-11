@@ -60,7 +60,7 @@ class Row(dict):
 
     def __setitem__(self, key, value):
         try:
-            _, field_number = self.__field_info["mapping"][key]
+            _, field_number, _, _ = self.__field_info["mapping"][key]
         except KeyError:
             raise KeyError(f"Row does not have a field {key}")
         if len(self.__cells) < field_number:
@@ -207,7 +207,8 @@ class Row(dict):
 
         # Convert
         if types is not None:
-            for index, field in enumerate(self.__field_info["objects"]):
+            for index, field_mapping in enumerate(self.__field_info["mapping"].values()):
+                field, _, _, cell_writer = field_mapping
                 # Here we can optimize performance if we use a types mapping
                 if field.type in types:
                     continue
@@ -215,7 +216,7 @@ class Row(dict):
                 if json is True and field.type == "number" and field.float_number:
                     continue
                 cell = result[index]
-                cell, _ = field.write_cell(cell, ignore_missing=True)
+                cell, _ = cell_writer(cell, ignore_missing=True)
                 result[index] = cell
 
         # Return
@@ -239,11 +240,12 @@ class Row(dict):
 
         # Covert
         if types is not None:
-            for field in self.__field_info["objects"]:
+            for field_mapping in self.__field_info["mapping"].values():
+                field, _, _, cell_writer = field_mapping
                 # Here we can optimize performance if we use a types mapping
                 if field.type not in types:
                     cell = result[field.name]
-                    cell, _ = field.write_cell(cell, ignore_missing=True)
+                    cell, _ = cell_writer(cell, ignore_missing=True)
                     result[field.name] = cell
 
         # Return
@@ -270,11 +272,13 @@ class Row(dict):
         is_empty = not bool(super().__len__())
         if key:
             try:
-                field, field_number = self.__field_info["mapping"][key]
+                field, field_number, cell_reader, cell_writer = self.__field_info[
+                    "mapping"
+                ][key]
             except KeyError:
                 raise KeyError(f"Row does not have a field {key}")
             cell = cells[field_number - 1] if len(cells) >= field_number else None
-            iterator = zip([(field, field_number)], [cell])
+            iterator = zip([(field, field_number, cell_reader, cell_writer)], [cell])
 
         # Iterate cells
         for field_mapping, source in iterator:
@@ -282,12 +286,12 @@ class Row(dict):
             # Prepare context
             if field_mapping is None:
                 break
-            field, field_number = field_mapping
+            field, field_number, cell_reader, _ = field_mapping
             if not is_empty and super().__contains__(field.name):
                 continue
 
             # Read cell
-            target, notes = field.read_cell(source)
+            target, notes = cell_reader(source)
             type_note = notes.pop("type", None) if notes else None
             if target is None and not type_note:
                 self.__blank_cells[field.name] = source

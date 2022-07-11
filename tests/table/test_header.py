@@ -1,4 +1,4 @@
-from frictionless import Field, Schema, Resource
+from frictionless import Schema, Resource, fields
 
 
 # General
@@ -16,7 +16,7 @@ def test_basic():
 
 
 def test_extra_label():
-    schema = Schema(fields=[Field(name="id")])
+    schema = Schema(fields=[fields.AnyField(name="id")])
     with Resource(path="data/table.csv", schema=schema) as resource:
         header = resource.header
         assert header == ["id"]
@@ -25,7 +25,13 @@ def test_extra_label():
 
 
 def test_missing_label():
-    schema = Schema(fields=[Field(name="id"), Field(name="name"), Field(name="extra")])
+    schema = Schema(
+        fields=[
+            fields.AnyField(name="id"),
+            fields.AnyField(name="name"),
+            fields.AnyField(name="extra"),
+        ]
+    )
     with Resource(path="data/table.csv", schema=schema) as resource:
         header = resource.header
         assert header == ["id", "name", "extra"]

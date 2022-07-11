@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, Dialect, Control, Schema, Field
+from frictionless import Resource, Dialect, Control, Schema, fields
 from frictionless import FrictionlessException
 
 
@@ -153,7 +153,7 @@ def test_resource_dialect_header_strip_and_non_strings():
 
 
 def test_resource_layout_header_case_default():
-    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+    schema = Schema(fields=[fields.AnyField(name="ID"), fields.AnyField(name="NAME")])
     with Resource("data/table.csv", schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
         assert resource.labels == ["id", "name"]
@@ -165,7 +165,7 @@ def test_resource_layout_header_case_default():
 
 def test_resource_layout_header_case_is_false():
     dialect = Dialect(header_case=False)
-    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+    schema = Schema(fields=[fields.AnyField(name="ID"), fields.AnyField(name="NAME")])
     with Resource("data/table.csv", dialect=dialect, schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
         assert resource.labels == ["id", "name"]

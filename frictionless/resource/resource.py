@@ -830,6 +830,7 @@ class Resource(Metadata):
 
     def __read_row_stream(self):
 
+        # TODO: we need to rework this field_info / row code
         # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
@@ -841,7 +842,12 @@ class Resource(Metadata):
             field_number += 1
             field_info["names"].append(field.name)
             field_info["objects"].append(field.to_copy())
-            field_info["mapping"][field.name] = (field, field_number)
+            field_info["mapping"][field.name] = (
+                field,
+                field_number,
+                field.create_cell_reader(),
+                field.create_cell_writer(),
+            )
 
         # Create state
         memory_unique = {}
