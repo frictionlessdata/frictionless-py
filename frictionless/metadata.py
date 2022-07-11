@@ -190,7 +190,7 @@ class Metadata(metaclass=Metaclass):
     # TODO: add/improve types
     metadata_Error = None
     metadata_Types = {}
-    metadata_profile = None
+    metadata_profile = {}
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
@@ -208,21 +208,13 @@ class Metadata(metaclass=Metaclass):
         return list(self.metadata_validate())
 
     @classmethod
-    def metadata_properties(cls):
-        """Extract metadata properties"""
-        properties = {}
-        if cls.metadata_profile:
-            for name in cls.metadata_profile.get("properties", []):
-                properties[name] = cls.metadata_Types.get(name)
-        return properties
-
-    @classmethod
     def metadata_import(cls, descriptor: IDescriptorSource, **options):
         """Import metadata from a descriptor source"""
         target = {}
         source = cls.metadata_normalize(descriptor)
-        for name, Type in cls.metadata_properties().items():
+        for name in cls.metadata_profile.get("properties", []):
             value = source.pop(name, None)
+            Type = cls.metadata_Types.get(name)
             if value is None or value == {}:
                 continue
             # TODO: rebase on "type" only?
@@ -248,8 +240,9 @@ class Metadata(metaclass=Metaclass):
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         """Export metadata as a descriptor"""
         descriptor = {}
-        for name, Type in self.metadata_properties().items():
+        for name in self.metadata_profile.get("properties", []):
             value = getattr(self, stringcase.snakecase(name), None)
+            Type = self.metadata_Types.get(name)
             if value is None or value == {}:
                 continue
             if name in exclude:
@@ -269,7 +262,7 @@ class Metadata(metaclass=Metaclass):
         descriptor.update(self.custom)
         return descriptor
 
-    # TODO: automate metadata_validate of the children using metadata_properties!!!
+    # TODO: automate metadata_validate of the children using metadata_profile?
     def metadata_validate(self) -> Iterator[Error]:
         """Validate metadata and emit validation errors"""
         if self.metadata_profile:
