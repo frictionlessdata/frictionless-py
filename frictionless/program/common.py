@@ -286,6 +286,11 @@ csv = Option(
     help="Return in CSV format",
 )
 
+markdown = Option(
+    default=False,
+    help="Return in Markdown format",
+)
+
 port = Option(
     settings.DEFAULT_SERVER_PORT,
     help="Specify server port",

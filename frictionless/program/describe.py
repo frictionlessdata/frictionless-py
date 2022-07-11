@@ -43,6 +43,7 @@ def program_describe(
     stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
+    markdown: bool = common.markdown,
     debug: bool = common.debug,
     standards: str = common.standards,
 ):
@@ -128,14 +129,20 @@ def program_describe(
 
     # Return JSON
     if json:
-        descriptor = metadata.to_json()
-        typer.secho(descriptor)
+        output = metadata.to_json()
+        typer.secho(output)
         raise typer.Exit()
 
     # Return YAML
     if yaml:
-        descriptor = metadata.to_yaml().strip()
-        typer.secho(descriptor)
+        output = metadata.to_yaml().strip()
+        typer.secho(output)
+        raise typer.Exit()
+
+    # Return Markdown
+    if markdown:
+        output = metadata.to_markdown().strip()
+        typer.secho(output)
         raise typer.Exit()
 
     # Return default
