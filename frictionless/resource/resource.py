@@ -1122,6 +1122,12 @@ class Resource(Metadata):
         if compression == "no":
             descriptor.pop("compression")
 
+        # Layout (v1.5)
+        layout = descriptor.pop("layout", None)
+        if layout:
+            descriptor.setdefault("dialect", {})
+            descriptor["dialect"].update(layout)
+
         return super().metadata_import(descriptor, **options)
 
     def metadata_export(self):

@@ -19,6 +19,19 @@ def test_resource_to_view():
     assert resource.to_view()
 
 
+def test_resource_from_descriptor_layout_v1_5():
+    resource = Resource.from_descriptor(
+        {
+            "path": "data/table.csv",
+            "layout": {"header": False},
+        }
+    )
+    assert resource.to_descriptor() == {
+        "path": "data/table.csv",
+        "dialect": {"header": False},
+    }
+
+
 # Json/Yaml
 
 
