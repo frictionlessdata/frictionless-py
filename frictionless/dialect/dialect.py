@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .control import Control
+from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -227,6 +228,11 @@ class Dialect(Metadata):
             code = control_descriptor.pop("code")
             if control_descriptor:
                 descriptor[code] = control_descriptor
+
+        # Csv (v1)
+        if system.standards_version == "v1":
+            for name, value in descriptor.pop("csv", {}).items():
+                descriptor[name] = value
 
         return descriptor
 
