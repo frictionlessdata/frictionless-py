@@ -189,7 +189,6 @@ def test_program_extract_invalid_rows():
     ]
 
 
-@pytest.mark.xfail(reason="Fix output")
 def test_program_extract_valid_rows_with_no_valid_rows():
     actual = runner.invoke(program, "extract data/invalid.csv --valid")
     assert actual.exit_code == 0
@@ -197,7 +196,6 @@ def test_program_extract_valid_rows_with_no_valid_rows():
     assert actual.stdout.count("No valid rows")
 
 
-@pytest.mark.xfail(reason="Fix output")
 def test_program_extract_invalid_rows_with_no_invalid_rows():
     actual = runner.invoke(program, "extract data/capital-valid.csv --invalid")
     assert actual.exit_code == 0

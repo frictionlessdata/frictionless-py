@@ -56,7 +56,6 @@ def test_program_validate_field_type():
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 
 
-@pytest.mark.xfail(reason="Fix")
 def test_program_validate_field_names():
     actual = runner.invoke(program, "validate data/table.csv --json --field-names 'a,b'")
     expect = validate("data/table.csv", detector=Detector(field_names=["a", "b"]))

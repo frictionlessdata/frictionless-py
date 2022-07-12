@@ -171,8 +171,9 @@ class Dialect(Metadata):
         # Create filter
         def comment_filter(row_number, cells):
             if self.comment_char:
-                if cells and str(cells[0]).startswith(self.comment_char):
-                    return False
+                if cells and isinstance(cells[0], str):
+                    if cells[0].startswith(self.comment_char):
+                        return False
             if self.comment_rows:
                 if row_number in self.comment_rows:
                     return False

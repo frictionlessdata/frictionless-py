@@ -538,6 +538,7 @@ def test_resource_skip_rows_non_string_cell_issue_320():
         assert resource.header[7] == "Current Population Analysed % of total county Pop"
 
 
+@pytest.mark.xfail(reason="Drop in v5?")
 def test_resource_skip_rows_non_string_cell_issue_322():
     dialect = Dialect(comment_char="1")
     source = [["id", "name"], [1, "english"], [2, "spanish"]]
