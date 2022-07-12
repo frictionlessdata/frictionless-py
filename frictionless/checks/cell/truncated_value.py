@@ -1,3 +1,4 @@
+from typing import Optional
 from ...checklist import Check
 from ... import errors
 
@@ -29,6 +30,11 @@ class truncated_value(Check):
     type = "truncated-value"
     Errors = [errors.TruncatedValueError]
 
+    # State
+
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
     # Validate
 
     def validate_row(self, row):
@@ -59,6 +65,7 @@ class truncated_value(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
         },
     }

@@ -1,4 +1,5 @@
 import statistics
+from typing import Optional
 from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
@@ -20,7 +21,7 @@ class deviated_value(Check):
     type = "deviated-value"
     Errors = [errors.DeviatedValueError]
 
-    # Properties
+    # State
 
     field_name: str
     """# TODO: add docs"""
@@ -29,6 +30,9 @@ class deviated_value(Check):
     """# TODO: add docs"""
 
     average: str = DEFAULT_AVERAGE
+    """# TODO: add docs"""
+
+    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Connect
@@ -89,7 +93,8 @@ class deviated_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "fieldName": {"type": "string"},
             "interval": {"type": ["number", "null"]},
             "average": {"type": ["string", "null"]},

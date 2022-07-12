@@ -20,6 +20,9 @@ class Checklist(Metadata):
 
     # State
 
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
     checks: List[Check] = field(default_factory=list)
     """# TODO: add docs"""
 
@@ -129,6 +132,7 @@ class Checklist(Metadata):
     metadata_Types = dict(checks=Check)
     metadata_profile = {
         "properties": {
+            "name": {"type": "string"},
             "checks": {},
             "skipErrors": {},
             "pickErrors": {},

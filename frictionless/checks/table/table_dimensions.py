@@ -96,7 +96,8 @@ class table_dimensions(Check):
             ]
         },
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "numRows": {"type": "number"},
             "minRows": {"type": "number"},
             "maxRows": {"type": "number"},

@@ -1,4 +1,5 @@
 from typing import List, Any
+from typing import Optional
 from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
@@ -11,12 +12,15 @@ class forbidden_value(Check):
     type = "forbidden-value"
     Errors = [errors.ForbiddenValueError]
 
-    # Properties
+    # State
 
     field_name: str
     """# TODO: add docs"""
 
     values: List[Any]
+    """# TODO: add docs"""
+
+    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Validate
@@ -41,7 +45,8 @@ class forbidden_value(Check):
         "type": "object",
         "requred": ["fieldName", "values"],
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "fieldName": {"type": "string"},
             "values": {"type": "array"},
         },

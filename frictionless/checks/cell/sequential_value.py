@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
@@ -10,9 +11,12 @@ class sequential_value(Check):
     type = "sequential-value"
     Errors = [errors.SequentialValueError]
 
-    # Properties
+    # State
 
     field_name: str
+    """# TODO: add docs"""
+
+    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Connect
@@ -50,7 +54,8 @@ class sequential_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "fieldName": {"type": "string"},
         },
     }

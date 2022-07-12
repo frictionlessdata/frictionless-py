@@ -1,7 +1,7 @@
 from __future__ import annotations
 import statistics
 from dataclasses import dataclass, field as datafield
-from typing import TYPE_CHECKING, List, Iterable
+from typing import TYPE_CHECKING, List, Iterable, Optional
 from ...checklist import Check
 from ... import errors
 
@@ -20,12 +20,15 @@ class deviated_cell(Check):
     type = "deviated-cell"
     Errors = [errors.DeviatedCellError]
 
-    # Properties
+    # State
 
     interval: int = DEFAULT_INTERVAL
     """# TODO: add docs"""
 
     ignore_fields: List[str] = datafield(default_factory=list)
+    """# TODO: add docs"""
+
+    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Connect
@@ -75,7 +78,8 @@ class deviated_cell(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "interval": {"type": "number"},
             "ignoreFields": {"type": "array"},
         },
