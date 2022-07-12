@@ -1,8 +1,8 @@
 # type: ignore
 import tempfile
+from .control import HtmlControl
 from ...resource import Parser
 from ...system import system
-from .control import HtmlControl
 from ... import helpers
 
 
@@ -21,7 +21,7 @@ class HtmlParser(Parser):
 
         # Get table
         page = pq(self.loader.text_stream.read(), parser="html")
-        control = self.resource.dialect.get_control("html", ensure=HtmlControl())
+        control = HtmlControl.from_dialect(self.resource.dialect)
         tables = page.find(control.selector)
         table = pq(tables[0]) if tables else None
         if not table:

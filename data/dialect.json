@@ -1,8 +1,5 @@
 {
-  "controls": [
-    {
-      "code": "csv",
-      "delimiter": ";"
-    }
-  ]
+  "csv": {
+    "delimiter": ";"
+  }
 }

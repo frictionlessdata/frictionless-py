@@ -5,13 +5,11 @@ from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .control import Control
-from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
 
 
-# TODO: provide helpers properties like `dialect.csv`?
 @dataclass
 class Dialect(Metadata):
     """Dialect representation"""
@@ -72,6 +70,9 @@ class Dialect(Metadata):
 
     def add_control(self, control: Control) -> None:
         """Add new control to the schema"""
+        if self.has_control(control.code):
+            error = errors.DialectError(note=f'control "{control.code}" already exists')
+            raise FrictionlessException(error)
         self.controls.append(control)
         control.schema = self
 
@@ -82,15 +83,11 @@ class Dialect(Metadata):
                 return True
         return False
 
-    def get_control(self, code: str, *, create=False) -> Control:
+    def get_control(self, code: str) -> Control:
         """Get control by code"""
         for control in self.controls:
             if control.code == code:
                 return control
-        if create:
-            control = system.create_control(dict(code=code))
-            self.controls.append(control)
-            return control
         error = errors.DialectError(note=f'control "{code}" does not exist')
         raise FrictionlessException(error)
 
@@ -220,7 +217,7 @@ class Dialect(Metadata):
         for control in self.controls:
             control_descriptor = control.to_descriptor()
             code = control_descriptor.pop("code")
-            if control:
+            if control_descriptor:
                 descriptor[code] = control_descriptor
 
         return descriptor

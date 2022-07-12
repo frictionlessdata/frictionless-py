@@ -140,12 +140,6 @@ def test_multipart_loader_resource_infer():
         "encoding": "utf-8",
         "mediatype": "text/csv",
         "extrapaths": ["data/chunk2.csv"],
-        "dialect": {
-            "controls": [
-                {"code": "multipart"},
-                {"code": "csv"},
-            ],
-        },
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

@@ -1,4 +1,3 @@
-# type: ignore
 import io
 from urllib.parse import urlparse
 from ..control import AwsControl
@@ -15,7 +14,7 @@ class S3Loader(Loader):
 
     def read_byte_stream_create(self):
         boto3 = helpers.import_from_extras("boto3", name="aws")
-        control = self.resource.dialect.get_control("s3", ensure=AwsControl())
+        control = AwsControl.from_dialect(self.resource.dialect)
         parts = urlparse(self.resource.fullpath, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.s3_endpoint_url)
         object = client.Object(bucket_name=parts.netloc, key=parts.path[1:])
@@ -26,7 +25,7 @@ class S3Loader(Loader):
 
     def write_byte_stream_save(self, byte_stream):
         boto3 = helpers.import_from_extras("boto3", name="aws")
-        control = self.resource.dialect.get_control("s3", ensure=AwsControl())
+        control = AwsControl.from_dialect(self.resource.dialect)
         parts = urlparse(self.resource.fullpath, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.s3_endpoint_url)
         object = client.Object(bucket_name=parts.netloc, key=parts.path[1:])

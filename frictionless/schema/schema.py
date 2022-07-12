@@ -83,6 +83,10 @@ class Schema(Metadata):
 
     def add_field(self, field: Field) -> None:
         """Add new field to the schema"""
+        # TODO: review
+        if self.has_field(field.name):  # type: ignore
+            error = errors.SchemaError(note=f'field "{field.name}" already exists')
+            raise FrictionlessException(error)
         self.fields.append(field)
         field.schema = self
 

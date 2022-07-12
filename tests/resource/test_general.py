@@ -582,12 +582,6 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "hashing": "md5",
         "encoding": "utf-8",
         "mediatype": "text/csv",
-        "dialect": {
-            "controls": [
-                {"code": "local"},
-                {"code": "csv"},
-            ]
-        },
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},

@@ -22,7 +22,6 @@ class MultipartLoader(Loader):
         for path in [self.resource.path] + self.resource.extrapaths:
             path = os.path.join(self.resource.basepath, path)
             paths.append(path)
-        self.resource.dialect.get_control("multipart", ensure=MultipartControl())
         remote = self.resource.remote
         headless = self.resource.dialect.header is False
         headless = headless or self.resource.format != "csv"
@@ -32,9 +31,7 @@ class MultipartLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        control = self.resource.dialect.get_control(
-            "multipart", ensure=MultipartControl()
-        )
+        control = MultipartControl.from_dialect(self.resource.dialect)
         number = 0
         while True:
             bytes = byte_stream.read(control.chunk_size)

@@ -29,7 +29,7 @@ class OdsParser(Parser):
 
     def read_cell_stream_create(self):
         ezodf = helpers.import_from_extras("ezodf", name="ods")
-        control = self.resource.dialect.get_control("ods", ensure=OdsControl())
+        control = OdsControl.from_dialect(self.resource.dialect)
 
         # Get book
         book = ezodf.opendoc(io.BytesIO(self.loader.byte_stream.read()))
@@ -74,7 +74,7 @@ class OdsParser(Parser):
 
     def write_row_stream(self, source):
         ezodf = helpers.import_from_extras("ezodf", name="ods")
-        control = self.resource.dialect.get_control("ods", ensure=OdsControl())
+        control = OdsControl.from_dialect(self.resource.dialect)
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()
         book = ezodf.newdoc(doctype="ods", filename=file.name)

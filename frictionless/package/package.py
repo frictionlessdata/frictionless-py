@@ -286,6 +286,9 @@ class Package(Metadata):
 
     def add_resource(self, resource: Resource) -> None:
         """Add new resource to the package"""
+        if self.has_resource(resource.name):
+            error = errors.PackageError(note=f'resource "{resource.name}" already exists')
+            raise FrictionlessException(error)
         self.resources.append(resource)
         resource.package = self
 

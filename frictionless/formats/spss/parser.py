@@ -1,4 +1,3 @@
-# type: ignore
 import re
 import warnings
 from ...resource import Parser
@@ -94,9 +93,9 @@ class SpssParser(Parser):
         # Write rows
         with sav.SavWriter(self.resource.fullpath, ioUtf8=True, **spss_schema) as writer:
             with source:
-                for row in source.row_stream:
+                for row in source.row_stream:  # type: ignore
                     cells = []
-                    for field in source.schema.fields:
+                    for field in source.schema.fields:  # type: ignore
                         cell = row[field.name]
                         if field.type in ["datetime", "date", "time"]:
                             format = settings.FORMAT_WRITE[field.type]

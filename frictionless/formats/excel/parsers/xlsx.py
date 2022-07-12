@@ -36,7 +36,7 @@ class XlsxParser(Parser):
 
     def read_loader(self):
         fullpath = self.resource.fullpath
-        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
+        control = ExcelControl.from_dialect(self.resource.dialect)
         loader = system.create_loader(self.resource)
         if not loader.remote:
             return loader.open()
@@ -66,7 +66,7 @@ class XlsxParser(Parser):
             return loader.open()
 
     def read_cell_stream_create(self):
-        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
+        control = ExcelControl.from_dialect(self.resource.dialect)
 
         # Get book
         # To fill merged cells we can't use read-only because
@@ -138,7 +138,7 @@ class XlsxParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
+        control = ExcelControl.from_dialect(self.resource.dialect)
         book = openpyxl.Workbook(write_only=True)
         title = control.sheet
         if isinstance(title, int):

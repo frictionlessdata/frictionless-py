@@ -28,7 +28,7 @@ class InlineParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        control = self.resource.dialect.get_control("inline", ensure=InlineControl())
+        control = InlineControl.from_dialect(self.resource.dialect)
 
         # Iter
         data = self.resource.data
@@ -81,7 +81,7 @@ class InlineParser(Parser):
 
     def write_row_stream(self, source):
         data = []
-        control = self.resource.dialect.get_control("inline", ensure=InlineControl())
+        control = InlineControl.from_dialect(self.resource.dialect)
         with source:
             if not control.keyed:
                 data.append(source.schema.field_names)

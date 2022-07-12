@@ -27,7 +27,7 @@ class JsonlParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        control = self.resource.dialect.get_control("json", ensure=JsonControl())
+        control = JsonControl.from_dialect(self.resource.dialect)
         source = iter(jsonlines.Reader(self.loader.text_stream))
         inline_control = InlineControl(keys=control.keys)
         resource = Resource(
@@ -45,7 +45,7 @@ class JsonlParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        control = self.resource.dialect.get_control("json", ensure=JsonControl())
+        control = JsonControl.from_dialect(self.resource.dialect)
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
             with source:

@@ -430,7 +430,7 @@ def test_resource_validate_resource_array_path_issue_991():
     ]
 
 
-# TODO: review if the error type is correct
+@pytest.mark.xfail(reason="Review if the error type is correct")
 def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     resource = Resource(

@@ -14,7 +14,7 @@ class RemoteLoader(Loader):
 
     def read_byte_stream_create(self):
         fullpath = requests.utils.requote_uri(self.resource.fullpath)
-        control = self.resource.dialect.get_control("remote", ensure=RemoteControl())
+        control = RemoteControl.from_dialect(self.resource.dialect)
         session = control.http_session
         timeout = control.http_timeout
         byte_stream = RemoteByteStream(fullpath, session=session, timeout=timeout).open()
@@ -30,7 +30,7 @@ class RemoteLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.fullpath.replace(file, "")
-        control = self.resource.dialect.get_control("remote", ensure=RemoteControl())
+        control = RemoteControl.from_dialect(self.resource.dialect)
         response = control.http_session.post(url, files={file: byte_stream})
         response.raise_for_status()
         return response

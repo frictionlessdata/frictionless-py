@@ -1,5 +1,6 @@
 # type: ignore
 from ...exception import FrictionlessException
+from .control import BigqueryControl
 from ...resource import Parser
 from .storage import BigqueryStorage
 
@@ -15,7 +16,7 @@ class BigqueryParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        control = self.resource.dialect.get_control("bigquery")
+        control = BigqueryControl.from_dialect(self.resource.dialect)
         storage = BigqueryStorage(self.resource.data, control=control)
         resource = storage.read_resource(control.table)
         self.resource.schema = resource.schema
@@ -26,7 +27,7 @@ class BigqueryParser(Parser):
 
     # NOTE: this approach is questionable
     def write_row_stream(self, source):
-        control = self.resource.dialect.get_control("bigquery")
+        control = BigqueryControl.from_dialect(self.resource.dialect)
         storage = BigqueryStorage(self.resource.data, control=control)
         if not control.table:
             note = 'Please provide "dialect.table" for writing'

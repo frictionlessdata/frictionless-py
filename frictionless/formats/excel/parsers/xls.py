@@ -28,7 +28,7 @@ class XlsParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
+        control = ExcelControl.from_dialect(self.resource.dialect)
 
         # Get book
         bytes = self.loader.byte_stream.read()
@@ -96,7 +96,7 @@ class XlsParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        control = self.resource.dialect.get_control("excel", ensure=ExcelControl())
+        control = ExcelControl.from_dialect(self.resource.dialect)
         book = xlwt.Workbook()
         title = control.sheet
         if isinstance(title, int):

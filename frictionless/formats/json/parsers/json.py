@@ -4,8 +4,8 @@ import ijson
 import tempfile
 from ....exception import FrictionlessException
 from ...inline import InlineControl
-from ....resource import Resource
 from ..control import JsonControl
+from ....resource import Resource
 from ....dialect import Dialect
 from ....resource import Parser
 from ....system import system
@@ -30,7 +30,7 @@ class JsonParser(Parser):
 
     def read_cell_stream_create(self):
         path = "item"
-        control = self.resource.dialect.get_control("json", ensure=JsonControl())
+        control = JsonControl.from_dialect(self.resource.dialect)
         if control.property is not None:
             path = "%s.item" % control.property
         source = ijson.items(self.loader.byte_stream, path)
@@ -55,7 +55,7 @@ class JsonParser(Parser):
 
     def write_row_stream(self, source):
         data = []
-        control = self.resource.dialect.get_control("json", ensure=JsonControl())
+        control = JsonControl.from_dialect(self.resource.dialect)
         with source:
             if not control.keyed:
                 data.append(source.schema.field_names)

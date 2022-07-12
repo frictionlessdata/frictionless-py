@@ -300,9 +300,7 @@ def test_resource_dialect_csv_delimiter():
 
 def test_resource_dialect_json_property():
     source = b'{"root": [["header1", "header2"], ["value1", "value2"]]}'
-    dialect = Dialect.from_descriptor(
-        {"controls": [{"code": "json", "property": "root"}]}
-    )
+    dialect = Dialect.from_descriptor({"json": {"property": "root"}})
     with Resource(source, format="json", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [

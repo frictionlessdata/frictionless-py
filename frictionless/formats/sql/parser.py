@@ -1,8 +1,7 @@
-# type: ignore
 from ...exception import FrictionlessException
 from ...resource import Parser
-from .control import SqlControl
 from .storage import SqlStorage
+from .control import SqlControl
 
 
 class SqlParser(Parser):
@@ -21,7 +20,8 @@ class SqlParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        control = self.resource.dialect.get_control("sql", ensure=SqlControl())
+        control = SqlControl.from_dialect(self.resource.dialect)
+        assert isinstance(control, SqlControl)
         if not control.table:
             note = 'Please provide "dialect.sql.table" for reading'
             raise FrictionlessException(note)
@@ -31,13 +31,13 @@ class SqlParser(Parser):
         )
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.cell_stream
+            yield from resource.cell_stream  # type: ignore
 
     # Write
 
     # NOTE: this approach is questionable
     def write_row_stream(self, source):
-        control = self.resource.dialect.get_control("sql", ensure=SqlControl())
+        control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             note = 'Please provide "dialect.sql.table" for writing'
             raise FrictionlessException(note)

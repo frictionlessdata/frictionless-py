@@ -1,12 +1,27 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from importlib import import_module
 from ..metadata import Metadata
 from .. import errors
+
+if TYPE_CHECKING:
+    from .dialect import Dialect
 
 
 class Control(Metadata):
     """Control representation"""
 
     code: str
+
+    # Convert
+
+    @classmethod
+    def from_dialect(cls, dialect: Dialect):
+        if not dialect.has_control(cls.code):
+            dialect.add_control(cls())
+        control = dialect.get_control(cls.code)
+        assert isinstance(control, cls)
+        return control
 
     # Metadata
 

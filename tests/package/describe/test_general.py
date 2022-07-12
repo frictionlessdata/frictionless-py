@@ -20,7 +20,6 @@ def test_describe_package():
                 "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
-                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -37,7 +36,6 @@ def test_describe_package():
                 "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
-                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -64,7 +62,6 @@ def test_describe_package_with_stats():
                 "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
-                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -87,7 +84,6 @@ def test_describe_package_with_stats():
                 "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
-                "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -132,7 +128,7 @@ def test_describe_package_hashing():
 
 
 def test_describe_package_with_dialect_1126():
-    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ";"}]})
+    dialect = Dialect.from_descriptor({"csv": {"delimiter": ";"}})
     package = Package.describe("data/country-2.csv", dialect=dialect)
     assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [
@@ -157,7 +153,7 @@ def test_describe_package_with_dialect_path_1126():
 
 
 def test_describe_package_with_incorrect_dialect_1126():
-    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ","}]})
+    dialect = Dialect.from_descriptor({"csv": {"delimiter": ","}})
     package = Package.describe("data/country-2.csv", dialect=dialect)
     assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [{"type": "string", "name": "# Author: the scientist"}]
@@ -165,7 +161,7 @@ def test_describe_package_with_incorrect_dialect_1126():
 
 
 def test_describe_package_with_glob_having_one_incorrect_dialect_1126():
-    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ","}]})
+    dialect = Dialect.from_descriptor({"csv": {"delimiter": ","}})
     package = Package.describe("data/country-*.csv", dialect=dialect)
     assert package.get_resource("country-1").schema.to_descriptor() == {
         "fields": [

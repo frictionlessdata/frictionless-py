@@ -187,6 +187,7 @@ class Metadata(metaclass=Metaclass):
 
     # Metadata
 
+    # TODO: don't use uppercase?
     # TODO: add/improve types
     metadata_Error = None
     metadata_Types = {}

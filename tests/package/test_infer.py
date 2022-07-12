@@ -21,12 +21,6 @@ def test_package_infer():
                 "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
-                "dialect": {
-                    "controls": [
-                        {"code": "local"},
-                        {"code": "csv"},
-                    ]
-                },
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "string"},
@@ -51,12 +45,6 @@ def test_package_infer():
                 "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
-                "dialect": {
-                    "controls": [
-                        {"code": "local"},
-                        {"code": "csv"},
-                    ]
-                },
                 "schema": {
                     "fields": [
                         {"name": "parent", "type": "string"},

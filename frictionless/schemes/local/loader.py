@@ -1,6 +1,5 @@
 # type: ignore
 import io
-from .control import LocalControl
 from ...resource import Loader
 from ... import helpers
 
@@ -11,7 +10,6 @@ class LocalLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        self.resource.dialect.get_control("local", ensure=LocalControl())
         scheme = "file://"
         fullpath = self.resource.fullpath
         if fullpath.startswith(scheme):

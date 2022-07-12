@@ -19,8 +19,7 @@ class CsvParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        # TODO: find a nicer way to ensure control
-        control = self.resource.dialect.get_control("csv", ensure=CsvControl())
+        control = CsvControl.from_dialect(self.resource.dialect)
         sample = extract_samle(self.loader.text_stream)
         if self.resource.format == "tsv":
             control.set_not_defined("delimiter", "\t")
@@ -45,7 +44,7 @@ class CsvParser(Parser):
 
     def write_row_stream(self, source):
         options = {}
-        control = self.resource.dialect.get_control("csv", ensure=CsvControl())
+        control = CsvControl.from_dialect(self.resource.dialect)
         if self.resource.format == "tsv":
             control.set_not_defined("delimiter", "\t")
         for name, value in vars(control.to_python()).items():

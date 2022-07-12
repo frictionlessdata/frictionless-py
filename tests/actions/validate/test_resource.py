@@ -1060,6 +1060,7 @@ def test_validate_resource_array_path_issue_991():
     ]
 
 
+@pytest.mark.xfail(reason="Decide on error type")
 def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     report = validate(

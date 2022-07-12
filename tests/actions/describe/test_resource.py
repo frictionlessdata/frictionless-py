@@ -18,7 +18,6 @@ def test_describe_resource():
         "hashing": "md5",
         "encoding": "utf-8",
         "mediatype": "text/csv",
-        "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -42,7 +41,6 @@ def test_describe_resource_with_stats():
         "hashing": "md5",
         "encoding": "utf-8",
         "mediatype": "text/csv",
-        "dialect": {"controls": [{"code": "local"}, {"code": "csv"}]},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
