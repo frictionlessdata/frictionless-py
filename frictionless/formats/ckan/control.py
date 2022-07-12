@@ -39,7 +39,8 @@ class CkanControl(Control):
         "required": ["dataset"],
         "additionalProperties": False,
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "resource": {"type": "string"},
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},

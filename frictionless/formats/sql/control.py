@@ -37,7 +37,8 @@ class SqlControl(Control):
         "required": [],
         "additionalProperties": False,
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "table": {"type": "string"},
             "prefix": {"type": "string"},
             "order_by": {"type": "string"},

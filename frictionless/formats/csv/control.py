@@ -56,7 +56,8 @@ class CsvControl(Control):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "delimiter": {"type": "string"},
             "lineTerminator": {"type": "string"},
             "quoteChar": {"type": "string"},

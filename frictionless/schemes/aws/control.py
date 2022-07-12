@@ -20,7 +20,8 @@ class AwsControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "s3EndpointUrl": {"type": "string"},
         },
     }

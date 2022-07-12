@@ -26,7 +26,8 @@ class JsonControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
             "keys": {"type": "array"},
             "keyed": {"type": "boolean"},
             "property": {"type": "string"},

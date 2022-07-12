@@ -17,6 +17,9 @@ class Dialect(Metadata):
 
     # State
 
+    name: Optional[str] = None
+    """TODO: add docs"""
+
     header: bool = settings.DEFAULT_HEADER
     """TODO: add docs"""
 
@@ -189,6 +192,7 @@ class Dialect(Metadata):
         "type": "object",
         "required": [],
         "properties": {
+            "name": {"type": "string"},
             "header": {"type": "boolean"},
             "headerRows": {"type": "array"},
             "headerJoin": {"type": "string"},

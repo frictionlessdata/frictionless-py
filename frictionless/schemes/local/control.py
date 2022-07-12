@@ -12,6 +12,7 @@ class LocalControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "type": {},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
         },
     }
