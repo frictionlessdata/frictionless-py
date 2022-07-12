@@ -19,8 +19,6 @@ class Plugin:
 
     """
 
-    code = "plugin"
-
     # Hooks
 
     def create_check(self, descriptor: dict) -> Optional[Check]:

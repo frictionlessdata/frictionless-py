@@ -197,9 +197,9 @@ def program_validate(
         typer.secho(f"# {prefix}: {name}", bold=True)
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
         for error in report.errors:
-            content.append([error.code, error.message])
+            content.append([error.type, error.message])
         typer.secho(
-            str(tabulate(content, headers=["code", "message"], tablefmt="simple"))
+            str(tabulate(content, headers=["type", "message"], tablefmt="simple"))
         )
 
     # Return validation report summary and tables

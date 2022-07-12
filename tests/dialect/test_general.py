@@ -18,5 +18,5 @@ def test_dialect_bad_property():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "dialect-error"
+    assert error.type == "dialect-error"
     assert error.note.count("bad")

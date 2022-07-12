@@ -8,7 +8,7 @@ from ... import errors
 class forbidden_value(Check):
     """Check for forbidden values in a field"""
 
-    code = "forbidden-value"
+    type = "forbidden-value"
     Errors = [errors.ForbiddenValueError]
 
     # Properties
@@ -41,7 +41,7 @@ class forbidden_value(Check):
         "type": "object",
         "requred": ["fieldName", "values"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
             "values": {"type": "array"},
         },

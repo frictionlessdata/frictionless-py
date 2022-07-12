@@ -9,6 +9,6 @@ def test_checklist():
     descriptor = checklist.to_descriptor()
     print(descriptor)
     assert descriptor == {
-        "checks": [{"code": "ascii-value"}],
+        "checks": [{"type": "ascii-value"}],
         "pickErrors": ["type-error"],
     }

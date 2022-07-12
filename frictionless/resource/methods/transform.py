@@ -71,7 +71,7 @@ class DataWithErrorHandling:
             yield from self.data() if callable(self.data) else self.data
         except Exception as exception:
             if isinstance(exception, FrictionlessException):
-                if exception.error.code == "step-error":
+                if exception.error.type == "step-error":
                     raise
             error = errors.StepError(note=f'"{get_name(self.step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception

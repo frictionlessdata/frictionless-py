@@ -155,7 +155,7 @@ def test_ckan_storage_not_existent_error(options):
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count("does not exist")
 
 
@@ -169,7 +169,7 @@ def test_ckan_storage_write_resource_existent_error(options):
     with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count("already exists")
     # Cleanup storage
     storage.delete_package(list(storage))
@@ -183,5 +183,5 @@ def test_ckan_storage_delete_resource_not_existent_error(options):
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count("does not exist")

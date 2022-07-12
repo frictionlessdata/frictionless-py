@@ -8,7 +8,7 @@ from ... import errors
 class row_constraint(Check):
     """Check that every row satisfies a provided Python expression"""
 
-    code = "row-constraint"
+    type = "row-constraint"
     Errors = [errors.RowConstraintError]
 
     # Properties
@@ -37,7 +37,7 @@ class row_constraint(Check):
         "type": "object",
         "requred": ["formula"],
         "properties": {
-            "code": {},
+            "type": {},
             "formula": {"type": "string"},
         },
     }

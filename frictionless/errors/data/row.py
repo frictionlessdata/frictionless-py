@@ -7,8 +7,8 @@ from .content import ContentError
 class RowError(ContentError):
     """Row error representation"""
 
-    code = "row-error"
     name = "Row Error"
+    type = "row-error"
     tags = ["#table", "content", "#row"]
     template = "Row Error"
     description = "Row Error"
@@ -47,7 +47,7 @@ class RowError(ContentError):
         "type": "object",
         "required": ["note"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {},
             "tags": {},
             "description": {},
@@ -60,35 +60,35 @@ class RowError(ContentError):
 
 
 class BlankRowError(RowError):
-    code = "blank-row"
     name = "Blank Row"
+    type = "blank-row"
     template = 'Row at position "{rowNumber}" is completely blank'
     description = "This row is empty. A row should contain at least one value."
 
 
 class PrimaryKeyError(RowError):
-    code = "primary-key"
     name = "PrimaryKey Error"
+    type = "primary-key"
     template = 'Row at position "{rowNumber}" violates the primary key: {note}'
     description = "Values in the primary key fields should be unique for every row"
 
 
 class ForeignKeyError(RowError):
-    code = "foreign-key"
     name = "ForeignKey Error"
+    type = "foreign-key"
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
     description = "Values in the foreign key fields should exist in the reference table"
 
 
 class DuplicateRowError(RowError):
-    code = "duplicate-row"
     name = "Duplicate Row"
+    type = "duplicate-row"
     template = "Row at position {rowNumber} is duplicated: {note}"
     description = "The row is duplicated."
 
 
 class RowConstraintError(RowError):
-    code = "row-constraint"
     name = "Row Constraint"
+    type = "row-constraint"
     template = "The row at position {rowNumber} has an error: {note}"
     description = "The value does not conform to the row constraint."

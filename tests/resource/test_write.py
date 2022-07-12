@@ -36,5 +36,5 @@ def test_resource_write_format_error_bad_format(tmpdir):
     with pytest.raises(FrictionlessException) as excinfo:
         source.write(target)
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert error.note.count('format "bad" is not supported')

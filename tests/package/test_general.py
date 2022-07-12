@@ -84,7 +84,7 @@ def test_package_from_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/bad.json")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("bad.json")
 
 
@@ -92,7 +92,7 @@ def test_package_from_path_error_non_json():
     with pytest.raises(FrictionlessException) as excinfo:
         Package.from_descriptor("data/table.csv")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("table.csv")
 
 
@@ -100,7 +100,7 @@ def test_package_from_path_error_bad_json():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/invalid.json")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("invalid.json")
 
 
@@ -108,7 +108,7 @@ def test_package_from_path_error_bad_json_not_dict():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/table.json")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("table.json")
 
 
@@ -127,7 +127,7 @@ def test_package_from_path_remote_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(BASEURL % "data/bad.json")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("bad.json")
 
 
@@ -136,7 +136,7 @@ def test_package_from_path_remote_error_bad_json():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(BASEURL % "data/invalid.json")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("invalid.json")
 
 
@@ -145,7 +145,7 @@ def test_package_from_path_remote_error_bad_json_not_dict():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(BASEURL % "data/table-lists.json")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("table-lists.json")
 
 
@@ -153,7 +153,7 @@ def test_package_from_invalid_descriptor_type():
     with pytest.raises(FrictionlessException) as excinfo:
         Package.from_descriptor(51)
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("51")
 
 
@@ -187,7 +187,7 @@ def test_package_from_zip_no_descriptor(tmpdir):
     with pytest.raises(FrictionlessException) as excinfo:
         Package(descriptor)
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note.count("datapackage.json")
 
 

@@ -24,5 +24,5 @@ def test_step_table_validate():
     with pytest.raises(FrictionlessException) as excinfo:
         target.read_rows()
     error = excinfo.value.error
-    assert error.code == "step-error"
+    assert error.type == "step-error"
     assert error.note.count('type is "integer/default"')

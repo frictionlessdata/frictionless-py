@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 class Check(Metadata):
     """Check representation."""
 
-    code: str = "check"
-    # TODO: can it be just codes not objects?
+    type: str = "check"
+    # TODO: can it be just types not objects?
     Errors: List[Type[Error]] = []
 
     # Props

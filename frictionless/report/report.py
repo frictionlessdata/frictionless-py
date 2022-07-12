@@ -52,7 +52,7 @@ class Report(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["taskNumber", "rowNumber", "fieldNumber", "code"]):
+    def flatten(self, spec=["taskNumber", "rowNumber", "fieldNumber", "type"]):
         """Flatten the report
 
         Parameters
@@ -175,7 +175,7 @@ class Report(Metadata):
                         [
                             error_descriptor.get("rowNumber", ""),
                             error_descriptor.get("fieldNumber", ""),
-                            error.code,
+                            error.type,
                             error.message,
                         ]
                     )
@@ -192,7 +192,7 @@ class Report(Metadata):
                 validation_content += str(
                     tabulate(
                         error_content,
-                        headers=["Row", "Field", "Code", "Message"],
+                        headers=["Row", "Field", "Type", "Message"],
                         tablefmt="grid",
                         # TODO: create based on the actual users's terminal width?
                         maxcolwidths=[5, 5, 20, 90],

@@ -7,7 +7,7 @@ from ... import errors
 class sequential_value(Check):
     """Check that a column having sequential values"""
 
-    code = "sequential-value"
+    type = "sequential-value"
     Errors = [errors.SequentialValueError]
 
     # Properties
@@ -50,7 +50,7 @@ class sequential_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
         },
     }

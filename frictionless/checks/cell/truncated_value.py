@@ -26,7 +26,7 @@ class truncated_value(Check):
 
     """
 
-    code = "truncated-value"
+    type = "truncated-value"
     Errors = [errors.TruncatedValueError]
 
     # Validate
@@ -59,6 +59,6 @@ class truncated_value(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

@@ -9,7 +9,7 @@ def test_resource_validate_bound_checklist():
     resource = Resource("data/invalid.csv", checklist=checklist)
     report = resource.validate()
     assert report.task.scope == ["blank-label", "blank-row"]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
     ]

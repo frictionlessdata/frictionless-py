@@ -101,7 +101,7 @@ def test_multipart_loader_resource_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]") and error.note.count("chunk1.csv")
 
 
@@ -111,7 +111,7 @@ def test_multipart_loader_resource_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": bad_path, "extrapaths": ["data/chunk2.csv"]})
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("not safe")
 
 
@@ -121,7 +121,7 @@ def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": "data/chunk1.csv", "extrapaths": [bad_path]})
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("not safe")
 
 

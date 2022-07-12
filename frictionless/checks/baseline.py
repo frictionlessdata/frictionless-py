@@ -9,7 +9,7 @@ class baseline(Check):
 
     """
 
-    code = "baseline"
+    type = "baseline"
     Errors = [
         # File
         errors.HashCountError,
@@ -95,6 +95,6 @@ class baseline(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

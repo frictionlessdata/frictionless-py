@@ -63,7 +63,7 @@ def validate(
         # Validate start
         for index, check in enumerate(checks):
             for error in check.validate_start():
-                if error.code == "check-error":
+                if error.type == "check-error":
                     del checks[index]
                 if checklist.match(error):
                     errors.append(error)

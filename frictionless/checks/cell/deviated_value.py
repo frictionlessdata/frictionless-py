@@ -17,7 +17,7 @@ AVERAGE_FUNCTIONS = {
 class deviated_value(Check):
     """Check for deviated values in a field"""
 
-    code = "deviated-value"
+    type = "deviated-value"
     Errors = [errors.DeviatedValueError]
 
     # Properties
@@ -89,7 +89,7 @@ class deviated_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
             "interval": {"type": ["number", "null"]},
             "average": {"type": ["string", "null"]},

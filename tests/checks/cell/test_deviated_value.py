@@ -17,7 +17,7 @@ def test_validate_deviated_value():
         ]
     )
     report = resource.validate(checklist)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "deviated-value",
             'value "100" in row at position "10" and field "temperature" is deviated "[-87.21, 91.21]"',
@@ -34,12 +34,12 @@ def test_value_deviated_value_not_enough_data():
     checklist = Checklist.from_descriptor(
         {
             "checks": [
-                {"code": "deviated-value", "fieldName": "temperature"},
+                {"type": "deviated-value", "fieldName": "temperature"},
             ]
         }
     )
     report = resource.validate(checklist)
-    assert report.flatten(["code", "note"]) == []
+    assert report.flatten(["type", "note"]) == []
 
 
 def test_validate_deviated_value_not_a_number():
@@ -50,13 +50,13 @@ def test_validate_deviated_value_not_a_number():
     checklist = Checklist.from_descriptor(
         {
             "checks": [
-                {"code": "deviated-value", "fieldName": "name"},
+                {"type": "deviated-value", "fieldName": "name"},
             ]
         }
     )
     resource = Resource(source)
     report = resource.validate(checklist)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["check-error", 'deviated value check requires field "name" to be numeric'],
     ]
 
@@ -69,13 +69,13 @@ def test_validate_deviated_value_non_existent_field():
     checklist = Checklist.from_descriptor(
         {
             "checks": [
-                {"code": "deviated-value", "fieldName": "bad"},
+                {"type": "deviated-value", "fieldName": "bad"},
             ]
         }
     )
     resource = Resource(source)
     report = resource.validate(checklist)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["check-error", 'deviated value check requires field "bad" to exist'],
     ]
 
@@ -89,12 +89,12 @@ def test_validate_deviated_value_incorrect_average():
     checklist = Checklist.from_descriptor(
         {
             "checks": [
-                {"code": "deviated-value", "fieldName": "row", "average": "bad"},
+                {"type": "deviated-value", "fieldName": "row", "average": "bad"},
             ]
         }
     )
     report = resource.validate(checklist)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "check-error",
             'deviated value check supports only average functions "mean, median, mode"',

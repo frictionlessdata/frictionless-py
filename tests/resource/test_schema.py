@@ -138,7 +138,7 @@ def test_resource_schema_from_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
-    assert error.code == "schema-error"
+    assert error.type == "schema-error"
     assert error.note.count("bad.json")
 
 
@@ -148,7 +148,7 @@ def test_resource_schema_from_path_error_path_not_safe():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": "path", "schema": schema})
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("schema.json")
 
 
@@ -210,7 +210,7 @@ def test_resource_schema_unique_error():
         for row in resource:
             if row.row_number == 4:
                 assert row.valid is False
-                assert row.errors[0].code == "unique-error"
+                assert row.errors[0].type == "unique-error"
                 continue
             assert row.valid
 
@@ -230,7 +230,7 @@ def test_resource_schema_primary_key_error():
         for row in resource:
             if row.row_number == 4:
                 assert row.valid is False
-                assert row.errors[0].code == "primary-key"
+                assert row.errors[0].type == "primary-key"
                 continue
             assert row.valid
 
@@ -255,7 +255,7 @@ def test_resource_schema_foreign_keys_invalid():
     assert rows[1].valid
     assert rows[2].valid
     assert rows[3].valid
-    assert rows[4].errors[0].code == "foreign-key"
+    assert rows[4].errors[0].type == "foreign-key"
     assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
     assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
     assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}

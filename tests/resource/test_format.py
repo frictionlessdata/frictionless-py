@@ -35,5 +35,5 @@ def test_resource_format_error_non_matching_format():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert error.note == 'invalid excel file "data/table.csv"'

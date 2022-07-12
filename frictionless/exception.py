@@ -18,7 +18,7 @@ class FrictionlessException(Exception):
     def __init__(self, error: Union[str, Error]):
         ErrorClass: Type[Error] = import_module("frictionless").Error
         self.__error = error if isinstance(error, ErrorClass) else ErrorClass(note=error)
-        super().__init__(f"[{self.error.code}] {self.error.message}")
+        super().__init__(f"[{self.error.type}] {self.error.message}")
 
     @property
     def error(self) -> Error:

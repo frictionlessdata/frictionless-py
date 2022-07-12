@@ -16,8 +16,8 @@ def test_validate():
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
     assert report.stats["errors"] == 1
-    [[code, note]] = report.flatten(["code", "note"])
-    assert code == "resource-error"
+    [[type, note]] = report.flatten(["type", "note"])
+    assert type == "resource-error"
     assert note.count("[Errno 2]") and note.count("bad.json")
 
 
@@ -25,8 +25,8 @@ def test_validate_invalid_source():
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
     assert report.stats["errors"] == 1
-    [[code, note]] = report.flatten(["code", "note"])
-    assert code == "schema-error"
+    [[type, note]] = report.flatten(["type", "note"])
+    assert type == "schema-error"
     assert note.count("[Errno 2]") and note.count("bad")
 
 
@@ -35,19 +35,19 @@ def test_validate_forbidden_value_task_error():
     checklist = Checklist.from_descriptor(
         {
             "checks": [
-                {"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]},
+                {"type": "forbidden-value", "fieldName": "bad", "forbidden": [2]},
             ]
         }
     )
     report = validate("data/table.csv", checklist=checklist)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "task-error"],
     ]
 
 
 def test_validate_invalid_resource_strict():
     report = validate({"path": "data/table.csv"}, strict=True)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "resource-error",
             '"{\'path\': \'data/table.csv\'} is not valid under any of the given schemas" at "" in metadata and at "oneOf" in profile',
@@ -57,7 +57,7 @@ def test_validate_invalid_resource_strict():
 
 def test_validate_invalid_table():
     report = validate({"path": "data/invalid.csv"})
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -81,7 +81,7 @@ def test_validate_from_path():
 
 def test_validate_invalid():
     report = validate("data/invalid.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -95,14 +95,14 @@ def test_validate_invalid():
 
 def test_validate_blank_headers():
     report = validate("data/blank-headers.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 2, "blank-label"],
     ]
 
 
 def test_validate_duplicate_headers():
     report = validate("data/duplicate-headers.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "duplicate-label"],
         [None, 5, "duplicate-label"],
     ]
@@ -110,7 +110,7 @@ def test_validate_duplicate_headers():
 
 def test_validate_defective_rows():
     report = validate("data/defective-rows.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, 3, "missing-cell"],
         [3, 4, "extra-cell"],
     ]
@@ -118,14 +118,14 @@ def test_validate_defective_rows():
 
 def test_validate_blank_rows():
     report = validate("data/blank-rows.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, None, "blank-row"],
     ]
 
 
 def test_validate_blank_rows_multiple():
     report = validate("data/blank-rows-multiple.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, None, "blank-row"],
         [5, None, "blank-row"],
         [6, None, "blank-row"],
@@ -148,7 +148,7 @@ def test_validate_blank_cell_not_required():
 @pytest.mark.xfail(reason="Figure out how to handle errors like this")
 def test_validate_no_data():
     report = validate("data/empty.csv")
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["source-error", "the source is empty"],
     ]
 
@@ -166,7 +166,7 @@ def test_validate_no_rows_with_compression():
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_task_error():
     report = validate("data/table.csv", limit_rows="bad")
-    assert report.flatten(["code"]) == [
+    assert report.flatten(["type"]) == [
         ["task-error"],
     ]
 
@@ -175,7 +175,7 @@ def test_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
     report = validate([["h"], [1], "bad"], detector=detector)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "source-error"],
     ]
 
@@ -195,7 +195,7 @@ def test_validate_scheme():
 
 def test_validate_scheme_invalid():
     report = validate("bad://data/table.csv")
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "scheme-error",
             'scheme "bad" is not supported. Try installing "frictionless-bad"',
@@ -228,7 +228,7 @@ def test_validate_encoding():
 def test_validate_encoding_invalid():
     report = validate("data/latin1.csv", encoding="utf-8")
     assert not report.valid
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "encoding-error",
             "'utf-8' codec can't decode byte 0xa9 in position 20: invalid start byte",
@@ -251,7 +251,7 @@ def test_validate_compression_explicit():
 
 def test_validate_compression_invalid():
     report = validate("data/table.csv.zip", compression="bad")
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["compression-error", 'compression "bad" is not supported'],
     ]
 
@@ -278,7 +278,7 @@ def test_validate_layout_none_extra_cell():
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [3, 3, "extra-cell"],
     ]
 
@@ -338,7 +338,7 @@ def test_validate_schema_invalid():
         }
     )
     report = validate(source, schema=schema)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "field-error",
             "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
@@ -349,7 +349,7 @@ def test_validate_schema_invalid():
 @pytest.mark.xfail(reason="Catch errors like this")
 def test_validate_schema_invalid_json():
     report = validate("data/table.csv", schema="data/invalid.json")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "schema-error"],
     ]
 
@@ -357,7 +357,7 @@ def test_validate_schema_invalid_json():
 def test_validate_schema_extra_headers_and_cells():
     schema = Schema.from_descriptor({"fields": [{"name": "id", "type": "integer"}]})
     report = validate("data/table.csv", schema=schema)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 2, "extra-label"],
         [2, 2, "extra-cell"],
         [3, 2, "extra-cell"],
@@ -369,7 +369,7 @@ def test_validate_schema_multiple_errors():
     schema = "data/schema-valid.json"
     report = validate(source, schema=schema, pick_errors=["#row"], limit_errors=3)
     assert report.task.warnings == ["reached error limit: 3"]
-    assert report.task.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.task.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],
         [4, 3, "constraint-error"],
@@ -387,7 +387,7 @@ def test_validate_schema_min_length_constraint():
         }
     )
     report = validate(source, schema=schema, pick_errors=["constraint-error"])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, 2, "constraint-error"],
     ]
 
@@ -403,7 +403,7 @@ def test_validate_schema_max_length_constraint():
         }
     )
     report = validate(source, schema=schema, pick_errors=["constraint-error"])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, 2, "constraint-error"],
         [5, 2, "constraint-error"],
     ]
@@ -420,7 +420,7 @@ def test_validate_schema_minimum_constraint():
         }
     )
     report = validate(source, schema=schema, pick_errors=["constraint-error"])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, 2, "constraint-error"],
     ]
 
@@ -436,7 +436,7 @@ def test_validate_schema_maximum_constraint():
         }
     )
     report = validate(source, schema=schema, pick_errors=["constraint-error"])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, 2, "constraint-error"],
         [5, 2, "constraint-error"],
     ]
@@ -475,7 +475,7 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
         },
     }
     report = validate(source)
-    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
         [6, None, "foreign-key", ["5", "6", "Rome"]],
     ]
 
@@ -486,7 +486,7 @@ def test_validate_schema_unique_error():
         schema="data/unique-field.json",
         pick_errors=["unique-error"],
     )
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [10, 1, "unique-error"],
     ]
 
@@ -513,7 +513,7 @@ def test_validate_schema_unique_error_and_type_error():
         }
     )
     report = validate(source, schema=schema)
-    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
         [3, 2, "type-error", ["a2", "bad"]],
         [4, 2, "unique-error", ["a3", "100"]],
         [6, 2, "unique-error", ["a5", "0"]],
@@ -526,7 +526,7 @@ def test_validate_schema_primary_key_error():
         schema="data/unique-field.json",
         pick_errors=["primary-key"],
     )
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [10, None, "primary-key"],
     ]
 
@@ -536,7 +536,7 @@ def test_validate_schema_primary_key_and_unique_error():
         "data/unique-field.csv",
         schema="data/unique-field.json",
     )
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [10, 1, "unique-error"],
         [10, None, "primary-key"],
     ]
@@ -561,7 +561,7 @@ def test_validate_schema_primary_key_error_composite():
         }
     )
     report = validate(source, schema=schema)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [5, None, "primary-key"],
         [6, None, "blank-row"],
         [6, None, "primary-key"],
@@ -582,7 +582,7 @@ def test_validate_stats_hash():
 def test_validate_stats_hash_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", stats={"hash": "bad"})
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["hash-count", 'expected md5 is "bad" and actual is "%s"' % hash],
     ]
 
@@ -598,7 +598,7 @@ def test_validate_stats_hash_md5():
 def test_validate_stats_hash_md5_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", stats={"hash": "bad"})
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["hash-count", 'expected md5 is "bad" and actual is "%s"' % hash],
     ]
 
@@ -614,7 +614,7 @@ def test_validate_stats_hash_sha1():
 def test_validate_stats_hash_sha1_invalid():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
     report = validate("data/table.csv", hashing="sha1", stats={"hash": "bad"})
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["hash-count", 'expected sha1 is "bad" and actual is "%s"' % hash],
     ]
 
@@ -630,7 +630,7 @@ def test_validate_stats_hash_sha256():
 def test_validate_stats_hash_sha256_invalid():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
     report = validate("data/table.csv", hashing="sha256", stats={"hash": "bad"})
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "hash-count",
             'expected sha256 is "bad" and actual is "%s"' % hash,
@@ -649,7 +649,7 @@ def test_validate_stats_hash_sha512():
 def test_validate_stats_hash_sha512_invalid():
     hash = "d52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd"
     report = validate("data/table.csv", hashing="sha512", stats={"hash": "bad"})
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "hash-count",
             'expected sha512 is "bad" and actual is "%s"' % hash,
@@ -668,7 +668,7 @@ def test_validate_stats_bytes_invalid():
     report = validate("data/table.csv", stats={"bytes": 40})
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["byte-count", 'expected is "40" and actual is "30"'],
     ]
 
@@ -684,7 +684,7 @@ def test_validate_stats_rows_invalid():
     report = validate("data/table.csv", stats={"rows": 3})
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         ["row-count", 'expected is "3" and actual is "2"'],
     ]
 
@@ -741,7 +741,7 @@ def test_validate_detector_headers_errors():
     )
     detector = Detector(schema_sync=True)
     report = validate(source, schema=schema, detector=detector)
-    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
         [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
     ]
 
@@ -812,7 +812,7 @@ def test_validate_detector_infer_names():
 def test_validate_pick_errors():
     report = validate("data/invalid.csv", pick_errors=["blank-label", "blank-row"])
     assert report.task.scope == ["blank-label", "blank-row"]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
     ]
@@ -828,7 +828,7 @@ def test_validate_pick_errors_tags():
         "duplicate-label",
         "incorrect-label",
     ]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
     ]
@@ -836,7 +836,7 @@ def test_validate_pick_errors_tags():
 
 def test_validate_skip_errors():
     report = validate("data/invalid.csv", skip_errors=["blank-label", "blank-row"])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
@@ -848,7 +848,7 @@ def test_validate_skip_errors():
 
 def test_validate_skip_errors_tags():
     report = validate("data/invalid.csv", skip_errors=["#header"])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
         [3, 3, "missing-cell"],
@@ -861,7 +861,7 @@ def test_validate_skip_errors_tags():
 def test_validate_invalid_limit_errors():
     report = validate("data/invalid.csv", limit_errors=3)
     assert report.task.warnings == ["reached error limit: 3"]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -871,7 +871,7 @@ def test_validate_invalid_limit_errors():
 def test_validate_structure_errors_with_limit_errors():
     report = validate("data/structure-errors.csv", limit_errors=3)
     assert report.task.warnings == ["reached error limit: 3"]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, None, "blank-row"],
         [5, 4, "extra-cell"],
         [5, 5, "extra-cell"],
@@ -891,7 +891,7 @@ def test_validate_custom_check():
 
     # Validate resource
     report = validate("data/table.csv", checks=[custom()])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, None, "blank-row"],
         [3, None, "blank-row"],
     ]
@@ -913,7 +913,7 @@ def test_validate_custom_check_with_arguments():
 
     # Validate resource
     report = validate("data/table.csv", checks=[custom(row_number=1)])
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
     ]
@@ -921,8 +921,8 @@ def test_validate_custom_check_with_arguments():
 
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_custom_check_bad_name():
-    report = validate("data/table.csv", checks=[{"code": "bad"}])  # type: ignore
-    assert report.flatten(["code", "note"]) == [
+    report = validate("data/table.csv", checks=[{"type": "bad"}])  # type: ignore
+    assert report.flatten(["type", "note"]) == [
         ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
     ]
 
@@ -947,7 +947,7 @@ def test_validate_infer_fields_issue_225():
     source = [["name1", "name2"], ["123", None], ["456", None], ["789"]]
     detector = Detector(schema_patch={"fields": {"name": {"type": "string"}}})
     report = validate(source, detector=detector)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, 2, "missing-cell"],
     ]
 
@@ -963,7 +963,7 @@ def test_validate_wide_table_with_order_fields_issue_277():
     schema = "data/issue-277.json"
     detector = Detector(schema_sync=True)
     report = validate(source, schema=schema, detector=detector)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [49, 50, "constraint-error"],
         [68, 50, "constraint-error"],
         [69, 50, "constraint-error"],
@@ -977,7 +977,7 @@ def test_validate_invalid_table_schema_issue_304():
         {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
     )
     report = validate(source, schema=schema)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "field-error",
             "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
@@ -987,7 +987,7 @@ def test_validate_invalid_table_schema_issue_304():
 
 def test_validate_table_is_invalid_issue_312():
     report = validate("data/issue-312.xlsx")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [None, 5, "blank-label"],
@@ -1016,8 +1016,8 @@ def test_validate_order_fields_issue_313():
 def test_validate_missing_local_file_raises_scheme_error_issue_315():
     report = validate("bad-path.csv")
     assert report.stats["errors"] == 1
-    [[code, note]] = report.flatten(["code", "note"])
-    assert code == "scheme-error"
+    [[type, note]] = report.flatten(["type", "note"])
+    assert type == "scheme-error"
     assert note.count("[Errno 2]") and note.count("bad-path.csv")
 
 
@@ -1052,7 +1052,7 @@ def test_validate_resource_header_row_has_first_number_issue_870():
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_array_path_issue_991():
     report = validate("data/issue-991.resource.json")
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "scheme-error",
             'Multipart resource requires "multipart" scheme but "file" is set',
@@ -1068,7 +1068,7 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
         schema="data/duplicate-column-schema.json",
         detector=detector,
     )
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "schema-error",
             'Duplicate labels in header is not supported with "schema_sync"',

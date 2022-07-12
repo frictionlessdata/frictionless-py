@@ -159,8 +159,8 @@ def test_resource_layout_header_case_default():
         assert resource.labels == ["id", "name"]
         assert resource.header == ["ID", "NAME"]
         assert resource.header.valid is False
-        assert resource.header.errors[0].code == "incorrect-label"
-        assert resource.header.errors[1].code == "incorrect-label"
+        assert resource.header.errors[0].type == "incorrect-label"
+        assert resource.header.errors[1].type == "incorrect-label"
 
 
 def test_resource_layout_header_case_is_false():
@@ -264,7 +264,7 @@ def test_resource_dialect_from_path_error_path_not_safe():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": "path", "dialect": dialect})
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("dialect.json")
 
 
@@ -316,7 +316,7 @@ def test_resource_dialect_bad_property():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "dialect-error"
+    assert error.type == "dialect-error"
     assert error.note.count("bad")
 
 

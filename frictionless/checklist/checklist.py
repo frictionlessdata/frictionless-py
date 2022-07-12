@@ -32,8 +32,8 @@ class Checklist(Metadata):
     # Props
 
     @property
-    def check_codes(self) -> List[str]:
-        return [check.code for check in self.checks]
+    def check_types(self) -> List[str]:
+        return [check.type for check in self.checks]
 
     @property
     def scope(self) -> List[str]:
@@ -42,16 +42,16 @@ class Checklist(Metadata):
         for check in basics + self.checks:
             for Error in check.Errors:
                 if self.pick_errors:
-                    if Error.code not in self.pick_errors and not set(
+                    if Error.type not in self.pick_errors and not set(
                         self.pick_errors
                     ).intersection(Error.tags):
                         continue
                 if self.skip_errors:
-                    if Error.code in self.skip_errors or set(
+                    if Error.type in self.skip_errors or set(
                         self.skip_errors
                     ).intersection(Error.tags):
                         continue
-                scope.append(Error.code)
+                scope.append(Error.type)
         return scope
 
     # Validate
@@ -68,33 +68,33 @@ class Checklist(Metadata):
         """Add new check to the schema"""
         self.checks.append(check)
 
-    def has_check(self, code: str) -> bool:
+    def has_check(self, type: str) -> bool:
         """Check if a check is present"""
         for check in self.checks:
-            if check.code == code:
+            if check.type == type:
                 return True
         return False
 
-    def get_check(self, code: str) -> Check:
-        """Get check by code"""
+    def get_check(self, type: str) -> Check:
+        """Get check by type"""
         for check in self.checks:
-            if check.code == code:
+            if check.type == type:
                 return check
-        error = errors.ChecklistError(note=f'check "{code}" does not exist')
+        error = errors.ChecklistError(note=f'check "{type}" does not exist')
         raise FrictionlessException(error)
 
     def set_check(self, check: Check) -> Optional[Check]:
-        """Set check by code"""
-        if self.has_check(check.code):
-            prev_check = self.get_check(check.code)
+        """Set check by type"""
+        if self.has_check(check.type):
+            prev_check = self.get_check(check.type)
             index = self.checks.index(prev_check)
             self.checks[index] = check
             return prev_check
         self.add_check(check)
 
-    def remove_check(self, code: str) -> Check:
-        """Remove check by code"""
-        check = self.get_check(code)
+    def remove_check(self, type: str) -> Check:
+        """Remove check by type"""
+        check = self.get_check(type)
         self.checks.remove(check)
         return check
 
@@ -119,7 +119,7 @@ class Checklist(Metadata):
 
     def match(self, error: errors.Error) -> bool:
         if isinstance(error, errors.DataError):
-            if error.code not in self.scope:
+            if error.type not in self.scope:
                 return False
         return True
 

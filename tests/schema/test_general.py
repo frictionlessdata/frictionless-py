@@ -129,7 +129,7 @@ def test_schema_get_field_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         schema.get_field("bad")
     error = excinfo.value.error
-    assert error.code == "schema-error"
+    assert error.type == "schema-error"
     assert error.note == 'field "bad" does not exist'
 
 
@@ -159,7 +159,7 @@ def test_schema_remove_field_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         schema.remove_field("bad")
     error = excinfo.value.error
-    assert error.code == "schema-error"
+    assert error.type == "schema-error"
     assert error.note == 'field "bad" does not exist'
 
 
@@ -278,7 +278,7 @@ def test_schema_metadata_error_bad_schema_format():
         ]
     )
     assert schema.metadata_valid is False
-    assert schema.metadata_errors[0].code == "field-error"
+    assert schema.metadata_errors[0].type == "field-error"
 
 
 def test_schema_valid_examples():

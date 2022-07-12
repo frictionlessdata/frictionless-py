@@ -6,7 +6,7 @@ from frictionless import Checklist, checks
 
 def test_checklist():
     checklist = Checklist(checks=[checks.ascii_value()])
-    assert checklist.check_codes == ["ascii-value"]
+    assert checklist.check_types == ["ascii-value"]
     assert checklist.pick_errors == []
     assert checklist.skip_errors == []
     assert checklist.scope == [
@@ -33,8 +33,8 @@ def test_checklist():
 
 
 def test_checklist_from_descriptor():
-    checklist = Checklist.from_descriptor({"checks": [{"code": "ascii-value"}]})
-    assert checklist.check_codes == ["ascii-value"]
+    checklist = Checklist.from_descriptor({"checks": [{"type": "ascii-value"}]})
+    assert checklist.check_types == ["ascii-value"]
     assert checklist.pick_errors == []
     assert checklist.skip_errors == []
     assert checklist.scope.count("ascii-value")

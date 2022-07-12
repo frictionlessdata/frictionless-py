@@ -58,7 +58,7 @@ def test_package_get_resource_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         package.get_resource("bad")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note == 'resource "bad" does not exist'
 
 
@@ -74,7 +74,7 @@ def test_package_remove_resource_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         package.remove_resource("bad")
     error = excinfo.value.error
-    assert error.code == "package-error"
+    assert error.type == "package-error"
     assert error.note == 'resource "bad" does not exist'
 
 

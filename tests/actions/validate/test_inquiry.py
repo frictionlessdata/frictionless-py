@@ -31,7 +31,7 @@ def test_validate_inquiry_multiple_invalid():
             ]
         },
     )
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
@@ -55,7 +55,7 @@ def test_validate_inquiry_multiple_invalid_with_schema():
             ],
         },
     )
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [1, None, 1, "incorrect-label"],
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
@@ -99,7 +99,7 @@ def test_validate_inquiry_with_multiple_packages():
             ]
         },
     )
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [3, 3, None, "blank-row"],
         [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],
@@ -134,7 +134,7 @@ def test_validate_inquiry_parallel_multiple_invalid():
         },
         parallel=True,
     )
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
@@ -157,7 +157,7 @@ def test_validate_inquiry_with_multiple_packages_with_parallel():
         },
         parallel=True,
     )
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [3, 3, None, "blank-row"],
         [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],

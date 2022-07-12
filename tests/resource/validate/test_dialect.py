@@ -31,7 +31,7 @@ def test_resource_validate_dialect_none_extra_cell():
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [3, 3, "extra-cell"],
     ]
 

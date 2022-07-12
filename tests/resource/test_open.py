@@ -79,11 +79,11 @@ def test_resource_open_row_stream_error_cells():
     with Resource("data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
         assert resource.header == ["id", "name"]
-        assert row1.errors[0].code == "type-error"
+        assert row1.errors[0].type == "type-error"
         assert row1.error_cells == {"name": "english"}
         assert row1.to_dict() == {"id": 1, "name": None}
         assert row1.valid is False
-        assert row2.errors[0].code == "type-error"
+        assert row2.errors[0].type == "type-error"
         assert row2.error_cells == {"name": "中国人"}
         assert row2.to_dict() == {"id": 2, "name": None}
         assert row2.valid is False
@@ -178,7 +178,7 @@ def test_resource_open_source_error_data():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "source-error"
+    assert error.type == "source-error"
     assert error.note == "unsupported inline data"
 
 

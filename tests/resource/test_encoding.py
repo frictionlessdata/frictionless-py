@@ -52,7 +52,7 @@ def test_resource_encoding_error_bad_encoding():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "encoding-error"
+    assert error.type == "encoding-error"
     assert error.note == "unknown encoding: bad"
 
 
@@ -61,6 +61,6 @@ def test_resource_encoding_error_non_matching_encoding():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "encoding-error"
+    assert error.type == "encoding-error"
     if not helpers.is_platform("windows"):
         assert error.note[:51] == "'ascii' codec can't decode byte 0xe4 in position 20"

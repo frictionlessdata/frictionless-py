@@ -5,5 +5,5 @@ from frictionless import Check
 
 
 def test_check():
-    check = Check.from_descriptor({"code": "ascii-value"})
-    assert check.code == "ascii-value"
+    check = Check.from_descriptor({"type": "ascii-value"})
+    assert check.type == "ascii-value"

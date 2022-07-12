@@ -108,7 +108,7 @@ def test_resource_compression_error_bad():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "compression-error"
+    assert error.type == "compression-error"
     assert error.note == 'compression "bad" is not supported'
 
 
@@ -118,7 +118,7 @@ def test_resource_compression_error_invalid_zip():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "compression-error"
+    assert error.type == "compression-error"
     assert error.note == "File is not a zip file"
 
 
@@ -129,7 +129,7 @@ def test_resource_compression_error_invalid_gz():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "compression-error"
+    assert error.type == "compression-error"
     assert error.note == "Not a gzipped file (b'id')"
 
 

@@ -46,7 +46,7 @@ def validate(
     # Validate metadata
     metadata_errors = []
     for error in self.metadata_errors:
-        if error.code == "package-error":
+        if error.type == "package-error":
             metadata_errors.append(error)
     if metadata_errors:
         return Report.from_validation(time=timer.time, errors=metadata_errors)

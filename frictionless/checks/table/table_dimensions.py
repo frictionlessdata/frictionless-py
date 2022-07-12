@@ -8,7 +8,7 @@ from ... import errors
 class table_dimensions(Check):
     """Check for minimum and maximum table dimensions"""
 
-    code = "table-dimensions"
+    type = "table-dimensions"
     Errors = [errors.TableDimensionsError]
 
     # Properties
@@ -96,7 +96,7 @@ class table_dimensions(Check):
             ]
         },
         "properties": {
-            "code": {},
+            "type": {},
             "numRows": {"type": "number"},
             "minRows": {"type": "number"},
             "maxRows": {"type": "number"},

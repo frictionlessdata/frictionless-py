@@ -16,8 +16,8 @@ from . import helpers
 class Error(Metadata):
     """Error representation"""
 
-    code: str = field(init=False, default="error")
     name: str = field(init=False, default="Error")
+    type: str = field(init=False, default="error")
     tags: List[str] = field(init=False, default_factory=list)
     template: str = field(init=False, default="{note}")
     description: str = field(init=False, default="Error")
@@ -45,8 +45,8 @@ class Error(Metadata):
         "type": "object",
         "required": ["note"],
         "properties": {
-            "code": {},
             "name": {},
+            "type": {},
             "tags": {},
             "description": {},
             "message": {},

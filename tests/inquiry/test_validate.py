@@ -34,7 +34,7 @@ def test_inquiry_validate_multiple_invalid():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
@@ -59,7 +59,7 @@ def test_inquiry_validate_multiple_invalid_with_schema():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [1, None, 1, "incorrect-label"],
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
@@ -106,7 +106,7 @@ def test_inquiry_validate_with_multiple_packages():
         },
     )
     report = inquiry.validate()
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [3, 3, None, "blank-row"],
         [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],
@@ -143,7 +143,7 @@ def test_inquiry_validate_parallel_multiple_invalid():
         },
     )
     report = inquiry.validate(parallel=True)
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [2, None, 3, "blank-label"],
         [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
@@ -167,7 +167,7 @@ def test_inquiry_validate_with_multiple_packages_with_parallel():
         },
     )
     report = inquiry.validate(parallel=True)
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [3, 3, None, "blank-row"],
         [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],

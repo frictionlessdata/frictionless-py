@@ -16,7 +16,7 @@ class ascii_value(Check):
 
     """
 
-    code = "ascii-value"
+    type = "ascii-value"
     Errors = [errors.AsciiValueError]
 
     # Validate
@@ -36,6 +36,6 @@ class ascii_value(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

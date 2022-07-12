@@ -55,7 +55,7 @@ def test_resource_validate_detector_headers_errors():
     detector = Detector(schema_sync=True)
     resource = Resource(source, schema=schema, detector=detector)
     report = resource.validate()
-    assert report.flatten(["rowNumber", "fieldNumber", "code", "cells"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
         [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
     ]
 

@@ -26,5 +26,5 @@ def test_resource_hashing_error_bad_hashing():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "hashing-error"
+    assert error.type == "hashing-error"
     assert error.note == "unsupported hash type bad"

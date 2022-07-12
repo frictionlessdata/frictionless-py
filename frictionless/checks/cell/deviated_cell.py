@@ -17,7 +17,7 @@ DEFAULT_INTERVAL = 3
 class deviated_cell(Check):
     """Check if the cell size is deviated"""
 
-    code = "deviated-cell"
+    type = "deviated-cell"
     Errors = [errors.DeviatedCellError]
 
     # Properties
@@ -75,7 +75,7 @@ class deviated_cell(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "code": {},
+            "type": {},
             "interval": {"type": "number"},
             "ignoreFields": {"type": "array"},
         },

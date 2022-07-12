@@ -59,7 +59,7 @@ def test_sql_parser_table_is_required_error(database_url):
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count('Please provide "dialect.sql.table" for reading')
 
 

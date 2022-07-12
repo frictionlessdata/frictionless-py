@@ -63,7 +63,7 @@ def test_resource_from_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource("data/bad.resource.json")
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("bad.resource.json")
 
 
@@ -84,7 +84,7 @@ def test_resource_from_path_remote_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(BASEURL % "data/bad.resource.json")
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("bad.resource.json")
 
 
@@ -130,7 +130,7 @@ def test_resource_source_non_tabular_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_bytes()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("data/bad.txt")
 
 
@@ -208,7 +208,7 @@ def test_resource_source_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]") and error.note.count("table.csv")
 
 
@@ -217,7 +217,7 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": os.path.abspath("data/table.csv")})
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("table.csv")
 
 
@@ -232,7 +232,7 @@ def test_resource_source_path_error_bad_path_not_safe_traversing():
             }
         )
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("table.csv")
 
 
@@ -283,7 +283,7 @@ def test_resource_source_no_path_and_no_data():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("is not valid")
 
 
@@ -380,7 +380,7 @@ def test_resource_metadata_bad_schema_format():
     )
     resource = Resource(name="name", path="data/table.csv", schema=schema)
     assert resource.metadata_valid is False
-    assert resource.metadata_errors[0].code == "field-error"
+    assert resource.metadata_errors[0].type == "field-error"
 
 
 def test_resource_set_base_path():
@@ -506,7 +506,7 @@ def test_resource_not_existent_local_file_with_no_format_issue_287():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]") and error.note.count("bad")
 
 
@@ -516,7 +516,7 @@ def test_resource_not_existent_remote_file_with_no_format_issue_287():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note == "404 Client Error: Not Found for url: http://example.com/bad"
 
 
@@ -560,7 +560,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": path})
     error = excinfo.value.error
-    assert error.code == "resource-error"
+    assert error.type == "resource-error"
     assert error.note.count("table.csv")
     # trusted=true
     resource = Resource({"path": path}, trusted=True)

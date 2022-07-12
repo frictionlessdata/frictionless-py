@@ -35,7 +35,7 @@ def test_resource_scheme_error_bad_scheme():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count('scheme "bad" is not supported')
 
 
@@ -44,7 +44,7 @@ def test_resource_scheme_error_bad_scheme_and_format():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count('scheme "bad" is not supported')
 
 
@@ -53,7 +53,7 @@ def test_resource_scheme_error_file_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]") and error.note.count("bad.csv")
 
 
@@ -63,7 +63,7 @@ def test_resource_scheme_error_file_not_found_remote():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note[18:] == "Not Found for url: https://example.com/bad.csv"
 
 
@@ -72,7 +72,7 @@ def test_resource_scheme_error_file_not_found_bad_format():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]") and error.note.count("bad.bad")
 
 
@@ -81,5 +81,5 @@ def test_resource_scheme_error_file_not_found_bad_compression():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]") and error.note.count("bad.csv")

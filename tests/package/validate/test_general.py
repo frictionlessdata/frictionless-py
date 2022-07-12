@@ -24,7 +24,7 @@ def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         package = Package(json.load(file), basepath="data/invalid")
         report = package.validate()
-        assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+        assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
             [1, 3, None, "blank-row"],
             [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
@@ -40,7 +40,7 @@ def test_validate_package_from_path():
 def test_validate_package_from_path_invalid():
     package = Package("data/invalid/datapackage.json")
     report = package.validate()
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -56,7 +56,7 @@ def test_validate_package_from_zip():
 def test_validate_package_from_zip_invalid():
     package = Package("data/package-invalid.zip")
     report = package.validate()
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
@@ -80,7 +80,7 @@ def test_validate_package_with_non_tabular():
 def test_validate_package_invalid_package_strict():
     package = Package({"resources": [{"path": "data/table.csv"}]})
     report = package.validate(strict=True)
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "resource-error",
             "\"{'path': 'data/table.csv', 'stats': {}} is not valid under any of the given schemas\" at \"\" in metadata and at \"oneOf\" in profile",
@@ -91,7 +91,7 @@ def test_validate_package_invalid_package_strict():
 def test_validate_package_invalid_table():
     package = Package({"resources": [{"path": "data/invalid.csv"}]})
     report = package.validate()
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -200,7 +200,7 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     package = Package(descriptor)
     checklist = Checklist(skip_errors=["duplicate-row"])
     report = package.validate(checklist)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [3, None, "primary-key"],
     ]
 
@@ -242,7 +242,7 @@ def test_validate_package_with_schema_issue_348():
     }
     package = Package(descriptor)
     report = package.validate()
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 4, "missing-label"],
         [2, 4, "missing-cell"],
         [3, 4, "missing-cell"],
@@ -298,7 +298,7 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
 
 def test_validate_package_metadata_errors_with_missing_values_993():
     package = Package("data/package-with-missingvalues-993.json")
-    assert package.metadata_errors[0].code == "package-error"
+    assert package.metadata_errors[0].type == "package-error"
     assert (
         package.metadata_errors[0].note
         == '"missingValues" should be set as "resource.schema.missingValues"'
@@ -307,7 +307,7 @@ def test_validate_package_metadata_errors_with_missing_values_993():
 
 def test_validate_package_metadata_errors_with_fields_993():
     package = Package("data/package-with-fields-993.json")
-    assert package.metadata_errors[0].code == "package-error"
+    assert package.metadata_errors[0].type == "package-error"
     assert (
         package.metadata_errors[0].note
         == '"fields" should be set as "resource.schema.fields"'
@@ -317,7 +317,7 @@ def test_validate_package_metadata_errors_with_fields_993():
 def test_validate_package_errors_with_missing_values_993():
     package = Package("data/package-with-missingvalues-993.json")
     report = package.validate()
-    assert report.flatten(["code", "message"]) == [
+    assert report.flatten(["type", "message"]) == [
         [
             "package-error",
             'The data package has an error: "missingValues" should be set as "resource.schema.missingValues"',
@@ -328,7 +328,7 @@ def test_validate_package_errors_with_missing_values_993():
 def test_validate_package_errors_with_fields_993():
     package = Package("data/package-with-fields-993.json")
     report = package.validate()
-    assert report.flatten(["code", "message"]) == [
+    assert report.flatten(["type", "message"]) == [
         [
             "package-error",
             'The data package has an error: "fields" should be set as "resource.schema.fields"',

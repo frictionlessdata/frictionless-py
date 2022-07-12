@@ -50,7 +50,7 @@ def test_xlsx_parser_format_error_sheet_by_index_not_existent():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert error.note == 'Excel document "data/sheet2.xlsx" does not have a sheet "3"'
 
 
@@ -72,7 +72,7 @@ def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert error.note == 'Excel document "data/sheet2.xlsx" does not have a sheet "bad"'
 
 

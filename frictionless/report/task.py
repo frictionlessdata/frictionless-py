@@ -56,7 +56,7 @@ class ReportTask(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["rowNumber", "fieldNumber", "code"]):
+    def flatten(self, spec=["rowNumber", "fieldNumber", "type"]):
         """Flatten the report
 
         Parameters
@@ -95,8 +95,8 @@ class ReportTask(Metadata):
         ]
         if error_list:
             content.append(["Total Errors", sum(error_list.values())])
-        for code, count in error_list.items():
-            content.append([code, count])
+        for type, count in error_list.items():
+            content.append([type, count])
         output = ""
         for warning in self.warnings:
             output += f"> {warning}\n\n"

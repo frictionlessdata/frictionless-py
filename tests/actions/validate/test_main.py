@@ -12,7 +12,7 @@ def test_validate():
 
 def test_validate_invalid():
     report = validate("data/invalid.csv")
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -43,7 +43,7 @@ def test_validate_less_actual_fields_with_required_constraint_issue_950():
     schema = Schema.describe("data/table.csv")
     schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))
     report = validate("data/table.csv", schema=schema)
-    assert report.flatten(["rowNumber", "fieldNumber", "code"]) == [
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "missing-label"],
         [2, 3, "missing-cell"],
         [3, 3, "missing-cell"],

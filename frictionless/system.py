@@ -125,15 +125,15 @@ class System:
         Returns:
             Check: check
         """
-        code = descriptor.get("code", "")
+        type = descriptor.get("type", "")
         for func in self.methods["create_check"].values():
             check = func(descriptor)
             if check is not None:
                 return check
         for Class in vars(import_module("frictionless.checks")).values():
-            if getattr(Class, "code", None) == code:
+            if getattr(Class, "type", None) == type:
                 return Class.from_descriptor(descriptor)
-        note = f'check "{code}" is not supported. Try installing "frictionless-{code}"'
+        note = f'check "{type}" is not supported. Try installing "frictionless-{type}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, descriptor: dict) -> Control:
@@ -161,15 +161,15 @@ class System:
         Returns:
             Error: error
         """
-        code = descriptor.get("code", "")
+        type = descriptor.get("type", "")
         for func in self.methods["create_error"].values():
             error = func(descriptor)
             if error is not None:
                 return error
         for Class in vars(import_module("frictionless.errors")).values():
-            if getattr(Class, "code", None) == code:
+            if getattr(Class, "type", None) == type:
                 return Class(descriptor)
-        note = f'error "{code}" is not supported. Try installing "frictionless-{code}"'
+        note = f'error "{type}" is not supported. Try installing "frictionless-{type}"'
         raise FrictionlessException(note)
 
     def create_field(self, descriptor: dict) -> Field:

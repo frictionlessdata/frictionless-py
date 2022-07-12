@@ -46,7 +46,7 @@ def test_ods_parser_sheet_by_index_not_existent():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert error.note == 'OpenOffice document "data/table.ods" does not have a sheet "3"'
 
 
@@ -66,7 +66,7 @@ def test_ods_parser_sheet_by_name_not_existent():
     with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert (
         error.note == 'OpenOffice document "data/table.ods" does not have a sheet "bad"'
     )

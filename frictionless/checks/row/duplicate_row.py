@@ -11,7 +11,7 @@ class duplicate_row(Check):
 
     """
 
-    code = "duplicate-row"
+    type = "duplicate-row"
     Errors = [errors.DuplicateRowError]
 
     # Connect
@@ -36,6 +36,6 @@ class duplicate_row(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

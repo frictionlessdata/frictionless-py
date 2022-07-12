@@ -182,7 +182,7 @@ def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count("does not exist")
 
 
@@ -193,7 +193,7 @@ def test_sql_storage_sqlite_write_resource_existent_error(sqlite_url):
     with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count("already exists")
     # Cleanup storage
     storage.delete_package(list(storage))
@@ -204,7 +204,7 @@ def test_sql_storage_sqlite_delete_resource_not_existent_error(sqlite_url):
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
-    assert error.code == "error"
+    assert error.type == "error"
     assert error.note.count("does not exist")
 
 

@@ -13,7 +13,7 @@ def test_validate():
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_invalid():
     report = validate({"fields": {}})
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "schema-error",
             '"{} is not of type \'array\'" at "fields" in metadata and at "properties/fields/type" in profile',

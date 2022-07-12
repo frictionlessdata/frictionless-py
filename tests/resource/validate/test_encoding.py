@@ -16,7 +16,7 @@ def test_resource_validate_encoding_invalid():
     resource = Resource("data/latin1.csv", encoding="utf-8")
     report = resource.validate()
     assert not report.valid
-    assert report.flatten(["code", "note"]) == [
+    assert report.flatten(["type", "note"]) == [
         [
             "encoding-error",
             "'utf-8' codec can't decode byte 0xa9 in position 20: invalid start byte",
