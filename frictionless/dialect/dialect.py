@@ -199,9 +199,17 @@ class Dialect(Metadata):
 
     @classmethod
     def metadata_import(cls, descriptor):
-        dialect = super().metadata_import(descriptor)
+        descriptor = super().metadata_normalize(descriptor)
+
+        # Csv (v1)
+        for name in CSV_PROPS_V1:
+            value = descriptor.pop(name, None)
+            if value is not None:
+                descriptor.setdefault("csv", {})
+                descriptor["csv"][name] = value
 
         # Controls
+        dialect = super().metadata_import(descriptor)
         for code, descriptor in dialect.custom.items():
             if isinstance(descriptor, dict):
                 descriptor["code"] = code
@@ -221,3 +229,16 @@ class Dialect(Metadata):
                 descriptor[code] = control_descriptor
 
         return descriptor
+
+
+# Internal
+
+CSV_PROPS_V1 = [
+    "delimiter",
+    "lineTerminator",
+    "quoteChar",
+    "doubleQuote",
+    "escapeChar",
+    "nullSequence",
+    "skipInitialSpace",
+]
