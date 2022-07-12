@@ -171,7 +171,7 @@ def test_xlsx_parser_workbook_cache():
         with Resource(source, control=control) as resource:
             control = resource.dialect.get_control("excel")
             assert isinstance(control, formats.ExcelControl)
-            assert control.workbook_cache) == 1
+            assert control.workbook_cache == 1
             assert resource.read_rows()
 
 
