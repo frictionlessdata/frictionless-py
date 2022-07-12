@@ -13,7 +13,7 @@ from ... import errors
 class resource_remove(Step):
     """Remove resource"""
 
-    code = "resource-remove"
+    type = "resource-remove"
 
     # Properties
 
@@ -35,7 +35,7 @@ class resource_remove(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
         },
     }

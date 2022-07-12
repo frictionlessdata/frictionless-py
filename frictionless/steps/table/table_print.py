@@ -14,7 +14,7 @@ from ...pipeline import Step
 class table_print(Step):
     """Print table"""
 
-    code = "table-print"
+    type = "table-print"
 
     # Transform
 
@@ -27,5 +27,7 @@ class table_print(Step):
     metadata_profile = {  # type: ignore
         "type": "object",
         "required": [],
-        "properties": {},
+        "properties": {
+            "type": {},
+        },
     }

@@ -26,6 +26,12 @@ class Control(Metadata):
     # Metadata
 
     metadata_Error = errors.ControlError
+    metadata_profile = {
+        "type": "object",
+        "properties": {
+            "type": {},
+        },
+    }
 
     @classmethod
     def metadata_import(cls, descriptor):

@@ -13,7 +13,7 @@ from ...pipeline import Step
 class row_filter(Step):
     """Filter rows"""
 
-    code = "row-filter"
+    type = "row-filter"
 
     # Properties
 
@@ -40,7 +40,7 @@ class row_filter(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "code": {},
+            "type": {},
             "formula": {type: "string"},
             "function": {},
         },

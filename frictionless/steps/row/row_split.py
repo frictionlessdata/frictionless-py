@@ -11,7 +11,7 @@ from ...pipeline import Step
 class row_split(Step):
     """Split rows"""
 
-    code = "row-add"
+    type = "row-add"
 
     # Properties
 
@@ -33,7 +33,7 @@ class row_split(Step):
         "type": "object",
         "required": ["fieldName", "pattern"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
             "pattern": {"type": "string"},
         },

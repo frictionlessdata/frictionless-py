@@ -53,9 +53,8 @@ class CsvControl(Control):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile = {
         "type": "object",
-        "additionalProperties": False,
         "properties": {
             "type": {},
             "delimiter": {"type": "string"},

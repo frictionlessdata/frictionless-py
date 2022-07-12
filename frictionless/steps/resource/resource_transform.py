@@ -14,7 +14,7 @@ from ... import errors
 class resource_transform(Step):
     """Transform resource"""
 
-    code = "resource-transform"
+    type = "resource-transform"
 
     # Properties
 
@@ -40,7 +40,7 @@ class resource_transform(Step):
         "type": "object",
         "required": ["name", "steps"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "steps": {"type": "array"},
         },

@@ -12,7 +12,7 @@ from ...pipeline import Step
 class cell_format(Step):
     """Format cell"""
 
-    code = "cell-format"
+    type = "cell-format"
 
     # Properties
 
@@ -37,7 +37,7 @@ class cell_format(Step):
         "type": "object",
         "required": ["template"],
         "properties": {
-            "code": {},
+            "type": {},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },

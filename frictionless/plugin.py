@@ -128,7 +128,7 @@ class Plugin:
         """
         pass
 
-    def detection_resource(self, resource: Resource) -> None:
+    def detect_resource(self, resource: Resource) -> None:
         """Hook into resource detection
 
         Parameters:

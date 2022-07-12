@@ -18,7 +18,7 @@ from ...resource import Resource
 class table_attach(Step):
     """Attach table"""
 
-    code = "table-attach"
+    type = "table-attach"
 
     def __init__(self, descriptor=None, *, resource=None):
         self.setinitial("resource", resource)
@@ -46,6 +46,7 @@ class table_attach(Step):
         "type": "object",
         "required": ["resource"],
         "properties": {
+            "type": {},
             "resource": {},
         },
     }

@@ -12,7 +12,7 @@ from ...pipeline import Step
 class field_move(Step):
     """Move field"""
 
-    code = "field-move"
+    type = "field-move"
 
     # Properties
 
@@ -36,7 +36,7 @@ class field_move(Step):
         "type": "object",
         "required": ["name", "position"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "position": {"type": "number"},
         },

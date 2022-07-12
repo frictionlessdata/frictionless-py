@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class field_pack(Step):
     """Pack fields"""
 
-    code = "field-pack"
+    type = "field-pack"
 
     # Properties
 
@@ -51,7 +51,7 @@ class field_pack(Step):
         "type": "object",
         "required": ["name", "fromNames"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
             "fieldType": {"type": "string"},

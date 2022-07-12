@@ -12,7 +12,7 @@ from ...pipeline import Step
 class cell_fill(Step):
     """Fill cell"""
 
-    code = "cell-fill"
+    type = "cell-fill"
 
     # Properties
 
@@ -47,7 +47,7 @@ class cell_fill(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "code": {},
+            "type": {},
             "value": {},
             "fieldName": {"type": "string"},
             "direction": {

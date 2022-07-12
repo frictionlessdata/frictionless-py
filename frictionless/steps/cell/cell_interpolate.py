@@ -12,7 +12,7 @@ from ...pipeline import Step
 class cell_interpolate(Step):
     """Interpolate cell"""
 
-    code = "cell-interpolate"
+    type = "cell-interpolate"
 
     # Properties
 
@@ -37,7 +37,7 @@ class cell_interpolate(Step):
         "type": "object",
         "required": ["template"],
         "properties": {
-            "code": {},
+            "type": {},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },

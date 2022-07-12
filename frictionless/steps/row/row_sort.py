@@ -12,7 +12,7 @@ from ...pipeline import Step
 class row_sort(Step):
     """Sort rows"""
 
-    code = "row-sort"
+    type = "row-sort"
 
     # Properties
 
@@ -34,7 +34,7 @@ class row_sort(Step):
         "type": "object",
         "required": ["fieldNames"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldNames": {"type": "array"},
             "reverse": {},
         },

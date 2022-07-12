@@ -16,7 +16,7 @@ from ... import helpers
 class field_add(Step):
     """Add field"""
 
-    code = "field-add"
+    type = "field-add"
 
     def __init__(
         self,
@@ -91,7 +91,7 @@ class field_add(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "value": {},
             "formula": {},

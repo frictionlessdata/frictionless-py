@@ -18,7 +18,7 @@ from ...resource import Resource
 class table_join(Step):
     """Join tables"""
 
-    code = "table-join"
+    type = "table-join"
 
     def __init__(
         self,
@@ -77,6 +77,7 @@ class table_join(Step):
         "type": "object",
         "required": ["resource"],
         "properties": {
+            "type": {},
             "resource": {},
             "fieldName": {"type": "string"},
             "mode": {

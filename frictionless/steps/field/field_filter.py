@@ -13,7 +13,7 @@ from ...pipeline import Step
 class field_filter(Step):
     """Filter fields"""
 
-    code = "field-filter"
+    type = "field-filter"
 
     # Properties
 
@@ -35,7 +35,7 @@ class field_filter(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
-            "code": {},
+            "type": {},
             "names": {"type": "array"},
         },
     }

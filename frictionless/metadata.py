@@ -218,10 +218,7 @@ class Metadata(metaclass=Metaclass):
             Type = cls.metadata_Types.get(name)
             if value is None or value == {}:
                 continue
-            # TODO: rebase on "type" only?
-            if name in ["code", "type"]:
-                if getattr(cls, "code", None):
-                    continue
+            if name == "type":
                 if getattr(cls, "type", None):
                     continue
             if Type:
@@ -248,8 +245,7 @@ class Metadata(metaclass=Metaclass):
                 continue
             if name in exclude:
                 continue
-            # TODO: rebase on "type" only?
-            if name not in ["code", "type"]:
+            if name != "type":
                 if not self.has_defined(stringcase.snakecase(name)):
                     continue
             if Type:

@@ -18,7 +18,7 @@ from ...schema import Field
 class table_aggregate(Step):
     """Aggregate table"""
 
-    code = "table-aggregate"
+    type = "table-aggregate"
 
     # Properties
 
@@ -45,7 +45,7 @@ class table_aggregate(Step):
         "type": "object",
         "required": ["groupName", "aggregation"],
         "properties": {
-            "code": {},
+            "type": {},
             "groupName": {"type": "string"},
             "aggregation": {},
         },

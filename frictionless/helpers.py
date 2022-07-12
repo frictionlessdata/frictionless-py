@@ -303,7 +303,7 @@ def parse_descriptors_string(string):
     parts = string.split(" ")
     for part in parts:
         type, *props = part.split(":")
-        descriptor = dict(code=type)  # TODO: rebase on type
+        descriptor = dict(type=type)
         for prop in props:
             name, value = prop.split("=")
             try:

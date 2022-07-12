@@ -15,7 +15,7 @@ from ...exception import FrictionlessException
 class table_validate(Step):
     """Validate table"""
 
-    code = "table-validate"
+    type = "table-validate"
 
     # Transform
 
@@ -41,5 +41,7 @@ class table_validate(Step):
     metadata_profile = {  # type: ignore
         "type": "object",
         "required": [],
-        "properties": {},
+        "properties": {
+            "type": {},
+        },
     }

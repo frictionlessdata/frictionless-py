@@ -250,15 +250,15 @@ class System:
         Returns:
             Step: step
         """
-        code = descriptor.get("code", "")
+        type = descriptor.get("type", "")
         for func in self.methods["create_step"].values():
             step = func(descriptor)
             if step is not None:
                 return step
         for Class in vars(import_module("frictionless.steps")).values():
-            if getattr(Class, "code", None) == code:
+            if getattr(Class, "type", None) == type:
                 return Class.from_descriptor(descriptor)
-        note = f'step "{code}" is not supported. Try installing "frictionless-{code}"'
+        note = f'step "{type}" is not supported. Try installing "frictionless-{type}"'
         raise FrictionlessException(errors.StepError(note=note))
 
     def create_storage(self, name: str, source: Any, **options) -> Storage:

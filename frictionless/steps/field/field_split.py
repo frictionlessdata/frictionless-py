@@ -15,7 +15,7 @@ from ...schema import Field
 class field_split(Step):
     """Split field"""
 
-    code = "field-split"
+    type = "field-split"
 
     # Properties
 
@@ -57,7 +57,7 @@ class field_split(Step):
         "type": "object",
         "required": ["name", "toNames", "pattern"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "toNames": {},
             "pattern": {},

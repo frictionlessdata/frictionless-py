@@ -14,7 +14,7 @@ from ...schema import Field
 class field_unpack(Step):
     """Unpack field"""
 
-    code = "field-unpack"
+    type = "field-unpack"
 
     # Properties
 
@@ -53,7 +53,7 @@ class field_unpack(Step):
         "type": "object",
         "required": ["name", "toNames"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "toNames": {"type": "array"},
             "preserve": {},

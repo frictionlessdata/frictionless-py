@@ -5,5 +5,5 @@ from frictionless import Control
 
 
 def test_control():
-    control = Control.from_descriptor({"code": "csv"})
-    assert control.code == "csv"
+    control = Control.from_descriptor({"type": "csv"})
+    assert control.type == "csv"

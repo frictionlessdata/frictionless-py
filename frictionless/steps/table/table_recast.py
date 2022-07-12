@@ -17,7 +17,7 @@ from ...pipeline import Step
 class table_recast(Step):
     """Recast table"""
 
-    code = "table-recast"
+    type = "table-recast"
 
     # Properties
 
@@ -45,7 +45,7 @@ class table_recast(Step):
         "type": "object",
         "required": ["fieldName"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
             "fromFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },

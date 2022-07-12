@@ -18,7 +18,7 @@ from ...resource import Resource
 class table_merge(Step):
     """Merge tables"""
 
-    code = "table-merge"
+    type = "table-merge"
 
     def __init__(
         self,
@@ -78,6 +78,7 @@ class table_merge(Step):
         "type": "object",
         "required": ["resource"],
         "properties": {
+            "type": {},
             "resource": {},
             "fieldNames": {"type": "array"},
             "ignoreFields": {},

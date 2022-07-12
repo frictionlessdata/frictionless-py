@@ -32,7 +32,7 @@ def test_pipeline_package():
     pipeline = Pipeline.from_descriptor(
         {
             "steps": [
-                {"code": "resource-remove", "name": "data2"},
+                {"type": "resource-remove", "name": "data2"},
             ],
         }
     )

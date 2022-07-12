@@ -14,7 +14,7 @@ from ...pipeline import Step
 class table_transpose(Step):
     """Transpose table"""
 
-    code = "table-transpose"
+    type = "table-transpose"
 
     # Transform
 
@@ -29,5 +29,7 @@ class table_transpose(Step):
     metadata_profile = {  # type: ignore
         "type": "object",
         "required": [],
-        "properties": {},
+        "properties": {
+            "type": {},
+        },
     }

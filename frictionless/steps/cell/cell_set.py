@@ -12,7 +12,7 @@ from ...pipeline import Step
 class cell_set(Step):
     """Set cell"""
 
-    code = "cell-set"
+    type = "cell-set"
 
     # Properties
 
@@ -34,7 +34,7 @@ class cell_set(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
             "value": {},
         },

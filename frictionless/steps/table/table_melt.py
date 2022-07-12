@@ -19,7 +19,7 @@ from ...schema import Field
 class table_melt(Step):
     """Melt tables"""
 
-    code = "table-melt"
+    type = "table-melt"
 
     # Properties
 
@@ -54,7 +54,7 @@ class table_melt(Step):
         "type": "object",
         "required": ["fieldName"],
         "properties": {
-            "code": {},
+            "type": {},
             "fieldName": {"type": "string"},
             "variables": {"type": "array"},
             "toFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},

@@ -17,7 +17,7 @@ from ...pipeline import Step
 class table_debug(Step):
     """Debug table"""
 
-    code = "table-debug"
+    type = "table-debug"
 
     # Properties
 
@@ -45,7 +45,7 @@ class table_debug(Step):
         "type": "object",
         "required": ["function"],
         "properties": {
-            "code": {},
+            "type": {},
             "function": {},
         },
     }

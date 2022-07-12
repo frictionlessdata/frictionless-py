@@ -19,7 +19,7 @@ class field_merge(Step):
 
     """
 
-    code = "field-merge"
+    type = "field-merge"
 
     # Properties
 
@@ -56,7 +56,7 @@ class field_merge(Step):
         "type": "object",
         "required": ["name", "fromNames"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
             "fieldType": {"type": "string"},

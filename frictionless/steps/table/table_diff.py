@@ -18,7 +18,7 @@ from ...resource import Resource
 class table_diff(Step):
     """Diff tables"""
 
-    code = "table-diff"
+    type = "table-diff"
 
     def __init__(
         self,
@@ -59,6 +59,7 @@ class table_diff(Step):
         "type": "object",
         "required": ["resource"],
         "properties": {
+            "type": {},
             "resource": {},
             "ignoreOrder": {},
             "useHash": {},

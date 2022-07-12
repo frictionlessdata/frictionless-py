@@ -12,7 +12,7 @@ from ...pipeline import Step
 class row_slice(Step):
     """Slice rows"""
 
-    code = "row-slice"
+    type = "row-slice"
 
     # Properties
 
@@ -48,7 +48,7 @@ class row_slice(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "code": {},
+            "type": {},
             "start": {},
             "stop": {},
             "step": {},

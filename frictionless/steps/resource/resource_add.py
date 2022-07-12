@@ -12,7 +12,7 @@ from ... import helpers
 class resource_add(Step):
     """Add resource"""
 
-    code = "resource-add"
+    type = "resource-add"
 
     def __init__(
         self,
@@ -45,7 +45,7 @@ class resource_add(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "code": {},
+            "type": {},
             "name": {"type": "string"},
         },
     }

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class Step(Metadata):
     """Step representation"""
 
-    code: str = "step"
+    type: str = "step"
 
     # Transform
 

@@ -12,7 +12,7 @@ from ...pipeline import Step
 class cell_convert(Step):
     """Convert cell"""
 
-    code = "cell-convert"
+    type = "cell-convert"
 
     # Properties
 
@@ -45,7 +45,7 @@ class cell_convert(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "code": {},
+            "type": {},
             "value": {},
             "fieldName": {"type": "string"},
         },

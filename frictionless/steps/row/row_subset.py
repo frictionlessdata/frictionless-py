@@ -11,7 +11,7 @@ from ...pipeline import Step
 class row_subset(Step):
     """Subset rows"""
 
-    code = "row-subset"
+    type = "row-subset"
 
     # Properties
 
@@ -40,7 +40,7 @@ class row_subset(Step):
         "type": "object",
         "required": ["subset"],
         "properties": {
-            "code": {},
+            "type": {},
             "subset": {
                 "type": "string",
                 "enum": ["conflicts", "distinct", "duplicates", "unique"],

@@ -13,7 +13,7 @@ from ...pipeline import Step
 class cell_replace(Step):
     """Replace cell"""
 
-    code = "cell-replace"
+    type = "cell-replace"
 
     # Properties
 
@@ -46,7 +46,7 @@ class cell_replace(Step):
         "type": "object",
         "required": ["pattern"],
         "properties": {
-            "code": {},
+            "type": {},
             "pattern": {"type": "string"},
             "replace": {"type": "string"},
             "fieldName": {"type": "string"},

@@ -14,7 +14,7 @@ from ...pipeline import Step
 class table_normalize(Step):
     """Normalize table"""
 
-    code = "table-normalize"
+    type = "table-normalize"
 
     # Transform
 
@@ -37,6 +37,6 @@ class table_normalize(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

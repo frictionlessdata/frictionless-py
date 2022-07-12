@@ -16,7 +16,7 @@ from ...pipeline import Step
 class table_pivot(Step):
     """Pivot table"""
 
-    code = "table-pivot"
+    type = "table-pivot"
 
     def __init__(self, descriptor=None, **options):
         self.setinitial("options", options)
@@ -36,5 +36,7 @@ class table_pivot(Step):
     metadata_profile = {  # type: ignore
         "type": "object",
         "required": [],
-        "properties": {},
+        "properties": {
+            "type": {},
+        },
     }

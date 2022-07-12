@@ -18,7 +18,7 @@ from ...resource import Resource
 class table_intersect(Step):
     """Intersect tables"""
 
-    code = "table-intersect"
+    type = "table-intersect"
 
     def __init__(self, descriptor=None, *, resource=None, use_hash=False):
         self.setinitial("resource", resource)
@@ -47,6 +47,7 @@ class table_intersect(Step):
         "type": "object",
         "required": ["resource"],
         "properties": {
+            "type": {},
             "resource": {},
             "useHash": {},
         },

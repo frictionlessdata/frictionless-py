@@ -13,7 +13,7 @@ from ...pipeline import Step
 class row_ungroup(Step):
     """Ungroup rows"""
 
-    code = "row-ungroup"
+    type = "row-ungroup"
 
     # Properties
 
@@ -40,7 +40,7 @@ class row_ungroup(Step):
         "type": "object",
         "required": ["groupName", "selection"],
         "properties": {
-            "code": {},
+            "type": {},
             "selection": {
                 "type": "string",
                 "enum": ["first", "last", "min", "max"],

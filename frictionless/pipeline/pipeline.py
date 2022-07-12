@@ -22,8 +22,8 @@ class Pipeline(Metadata):
     # Props
 
     @property
-    def step_codes(self) -> List[str]:
-        return [step.code for step in self.steps]
+    def step_types(self) -> List[str]:
+        return [step.type for step in self.steps]
 
     # Validate
 
@@ -39,33 +39,33 @@ class Pipeline(Metadata):
         """Add new step to the schema"""
         self.steps.append(step)
 
-    def has_step(self, code: str) -> bool:
+    def has_step(self, type: str) -> bool:
         """Check if a step is present"""
         for step in self.steps:
-            if step.code == code:
+            if step.type == type:
                 return True
         return False
 
-    def get_step(self, code: str) -> Step:
-        """Get step by code"""
+    def get_step(self, type: str) -> Step:
+        """Get step by type"""
         for step in self.steps:
-            if step.code == code:
+            if step.type == type:
                 return step
-        error = errors.PipelineError(note=f'step "{code}" does not exist')
+        error = errors.PipelineError(note=f'step "{type}" does not exist')
         raise FrictionlessException(error)
 
     def set_step(self, step: Step) -> Optional[Step]:
-        """Set step by code"""
-        if self.has_step(step.code):
-            prev_step = self.get_step(step.code)
+        """Set step by type"""
+        if self.has_step(step.type):
+            prev_step = self.get_step(step.type)
             index = self.steps.index(prev_step)
             self.steps[index] = step
             return prev_step
         self.add_step(step)
 
-    def remove_step(self, code: str) -> Step:
-        """Remove step by code"""
-        step = self.get_step(code)
+    def remove_step(self, type: str) -> Step:
+        """Remove step by type"""
+        step = self.get_step(type)
         self.steps.remove(step)
         return step
 

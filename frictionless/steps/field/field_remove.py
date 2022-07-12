@@ -13,7 +13,7 @@ from ...pipeline import Step
 class field_remove(Step):
     """Remove field"""
 
-    code = "field-remove"
+    type = "field-remove"
 
     # Properties
 
@@ -34,7 +34,7 @@ class field_remove(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
-            "code": {},
+            "type": {},
             "names": {"type": "array"},
         },
     }

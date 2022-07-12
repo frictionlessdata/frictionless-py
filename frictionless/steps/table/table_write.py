@@ -17,7 +17,7 @@ from ...resource import Resource
 class table_write(Step):
     """Write table"""
 
-    code = "table-write"
+    type = "table-write"
 
     def __init__(self, descriptor=None, *, path=None, **options):
         self.setinitial("path", path)
@@ -37,6 +37,7 @@ class table_write(Step):
         "type": "object",
         "required": ["path"],
         "properties": {
+            "type": {},
             "path": {"type": "string"},
         },
     }

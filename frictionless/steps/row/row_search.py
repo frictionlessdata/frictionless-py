@@ -13,7 +13,7 @@ from ...pipeline import Step
 class row_search(Step):
     """Search rows"""
 
-    code = "row-search"
+    type = "row-search"
 
     # Properties
 
@@ -42,7 +42,7 @@ class row_search(Step):
         "type": "object",
         "required": ["regex"],
         "properties": {
-            "code": {},
+            "type": {},
             "regex": {},
             "fieldName": {"type": "string"},
             "negate": {},
