@@ -4,7 +4,7 @@ from ...dialect import Control
 class BufferControl(Control):
     """Buffer control representation"""
 
-    code = "buffer"
+    type = "buffer"
 
     # Metadata
 
@@ -12,6 +12,6 @@ class BufferControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

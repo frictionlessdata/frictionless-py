@@ -8,7 +8,7 @@ from . import settings
 class OdsControl(Control):
     """Ods control representation"""
 
-    code = "ods"
+    type = "ods"
 
     # State
 
@@ -21,7 +21,7 @@ class OdsControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "sheet": {"type": ["number", "string"]},
         },
     }

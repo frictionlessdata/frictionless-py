@@ -9,7 +9,7 @@ class AwsPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "s3":
+        if descriptor.get("type") == "s3":
             return AwsControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

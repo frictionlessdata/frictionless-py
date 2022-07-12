@@ -7,7 +7,7 @@ from ...dialect import Control
 class JsonControl(Control):
     """Json control representation"""
 
-    code = "json"
+    type = "json"
 
     # State
 
@@ -26,7 +26,7 @@ class JsonControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "keys": {"type": "array"},
             "keyed": {"type": "boolean"},
             "property": {"type": "string"},

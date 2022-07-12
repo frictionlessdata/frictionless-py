@@ -9,7 +9,7 @@ class StreamPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "stream":
+        if descriptor.get("type") == "stream":
             return StreamControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

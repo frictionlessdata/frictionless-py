@@ -11,15 +11,15 @@ if TYPE_CHECKING:
 class Control(Metadata):
     """Control representation"""
 
-    code: str
+    type: str
 
     # Convert
 
     @classmethod
     def from_dialect(cls, dialect: Dialect):
-        if not dialect.has_control(cls.code):
+        if not dialect.has_control(cls.type):
             dialect.add_control(cls())
-        control = dialect.get_control(cls.code)
+        control = dialect.get_control(cls.type)
         assert isinstance(control, cls)
         return control
 

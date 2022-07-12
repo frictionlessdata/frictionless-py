@@ -10,7 +10,7 @@ class InlinePlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "inline":
+        if descriptor.get("type") == "inline":
             return InlineControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

@@ -7,7 +7,7 @@ from ...dialect import Control
 class CkanControl(Control):
     """Ckan control representation"""
 
-    code = "ckan"
+    type = "ckan"
 
     # State
 
@@ -39,7 +39,7 @@ class CkanControl(Control):
         "required": ["dataset"],
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "resource": {"type": "string"},
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},

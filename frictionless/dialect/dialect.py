@@ -71,31 +71,31 @@ class Dialect(Metadata):
 
     def add_control(self, control: Control) -> None:
         """Add new control to the schema"""
-        if self.has_control(control.code):
-            error = errors.DialectError(note=f'control "{control.code}" already exists')
+        if self.has_control(control.type):
+            error = errors.DialectError(note=f'control "{control.type}" already exists')
             raise FrictionlessException(error)
         self.controls.append(control)
         control.schema = self
 
-    def has_control(self, code: str):
+    def has_control(self, type: str):
         """Check if control is present"""
         for control in self.controls:
-            if control.code == code:
+            if control.type == type:
                 return True
         return False
 
-    def get_control(self, code: str) -> Control:
-        """Get control by code"""
+    def get_control(self, type: str) -> Control:
+        """Get control by type"""
         for control in self.controls:
-            if control.code == code:
+            if control.type == type:
                 return control
-        error = errors.DialectError(note=f'control "{code}" does not exist')
+        error = errors.DialectError(note=f'control "{type}" does not exist')
         raise FrictionlessException(error)
 
     def set_control(self, control: Control) -> Optional[Control]:
-        """Set control by code"""
-        if self.has_control(control.code):
-            prev_control = self.get_control(control.code)
+        """Set control by type"""
+        if self.has_control(control.type):
+            prev_control = self.get_control(control.type)
             index = self.controls.index(prev_control)
             self.controls[index] = control
             control.schema = self
@@ -212,9 +212,9 @@ class Dialect(Metadata):
 
         # Controls
         dialect = super().metadata_import(descriptor)
-        for code, descriptor in dialect.custom.items():
+        for type, descriptor in dialect.custom.items():
             if isinstance(descriptor, dict):
-                descriptor["code"] = code
+                descriptor["type"] = type
                 control = Control.from_descriptor(descriptor)
                 dialect.add_control(control)
 
@@ -226,9 +226,9 @@ class Dialect(Metadata):
         # Controls
         for control in self.controls:
             control_descriptor = control.to_descriptor()
-            code = control_descriptor.pop("code")
+            type = control_descriptor.pop("type")
             if control_descriptor:
-                descriptor[code] = control_descriptor
+                descriptor[type] = control_descriptor
 
         # Csv (v1)
         if system.standards_version == "v1":

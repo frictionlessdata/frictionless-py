@@ -9,7 +9,7 @@ from . import settings
 class CsvControl(Control):
     """Csv dialect representation"""
 
-    code = "csv"
+    type = "csv"
 
     # State
 
@@ -57,7 +57,7 @@ class CsvControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "delimiter": {"type": "string"},
             "lineTerminator": {"type": "string"},
             "quoteChar": {"type": "string"},

@@ -4,7 +4,7 @@ from ...dialect import Control
 class PandasControl(Control):
     """Pandas dialect representation"""
 
-    code = "pandas"
+    type = "pandas"
 
     # State
 
@@ -12,6 +12,6 @@ class PandasControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

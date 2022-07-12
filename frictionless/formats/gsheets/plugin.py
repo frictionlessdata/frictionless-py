@@ -9,7 +9,7 @@ class GsheetsPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "gsheets":
+        if descriptor.get("type") == "gsheets":
             return GsheetsControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

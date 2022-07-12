@@ -8,7 +8,7 @@ from . import settings
 class ExcelControl(Control):
     """Excel control representation"""
 
-    code = "excel"
+    type = "excel"
 
     # State
 
@@ -33,7 +33,7 @@ class ExcelControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "sheet": {"type": ["number", "string"]},
             "workbookCache": {"type": "object"},
             "fillMergedCells": {"type": "boolean"},

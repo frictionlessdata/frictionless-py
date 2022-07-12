@@ -7,7 +7,7 @@ from ...dialect import Control
 class BigqueryControl(Control):
     """Bigquery control representation"""
 
-    code = "bigquery"
+    type = "bigquery"
 
     # State
 
@@ -30,7 +30,7 @@ class BigqueryControl(Control):
         "required": ["table"],
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "table": {"type": "string"},
             "dataset": {"type": "string"},
             "project": {"type": "string"},

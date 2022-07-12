@@ -9,7 +9,7 @@ class SpssPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "spss":
+        if descriptor.get("type") == "spss":
             return SpssControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

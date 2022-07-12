@@ -7,7 +7,7 @@ from . import settings
 class MultipartControl(Control):
     """Multipart control representation"""
 
-    code = "multipart"
+    type = "multipart"
 
     # State
 
@@ -20,7 +20,7 @@ class MultipartControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "chunkSize": {"type": "number"},
         },
     }

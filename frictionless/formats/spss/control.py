@@ -4,7 +4,7 @@ from ...dialect import Control
 class SpssControl(Control):
     """Spss dialect representation"""
 
-    code = "spss"
+    type = "spss"
 
     # Metadata
 
@@ -12,6 +12,6 @@ class SpssControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

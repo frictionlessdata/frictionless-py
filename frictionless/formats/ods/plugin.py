@@ -9,7 +9,7 @@ class OdsPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "ods":
+        if descriptor.get("type") == "ods":
             return OdsControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

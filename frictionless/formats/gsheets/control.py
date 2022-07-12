@@ -7,7 +7,7 @@ from ...dialect import Control
 class GsheetsControl(Control):
     """Gsheets control representation"""
 
-    code = "gsheets"
+    type = "gsheets"
 
     # State
 
@@ -20,7 +20,7 @@ class GsheetsControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "credentials": {"type": "string"},
         },
     }

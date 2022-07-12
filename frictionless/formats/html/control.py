@@ -7,7 +7,7 @@ from . import settings
 class HtmlControl(Control):
     """Html control representation"""
 
-    code = "html"
+    type = "html"
 
     # State
 
@@ -20,7 +20,7 @@ class HtmlControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "selector": {"type": "string"},
         },
     }

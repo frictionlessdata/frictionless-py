@@ -4,7 +4,7 @@ from ...dialect import Control
 class StreamControl(Control):
     """Stream control representation"""
 
-    code = "stream"
+    type = "stream"
 
     # Metadata
 
@@ -12,6 +12,6 @@ class StreamControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

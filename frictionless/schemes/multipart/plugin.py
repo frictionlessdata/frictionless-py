@@ -9,7 +9,7 @@ class MultipartPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "multipart":
+        if descriptor.get("type") == "multipart":
             return MultipartControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

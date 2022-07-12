@@ -4,7 +4,7 @@ from ...dialect import Control
 class LocalControl(Control):
     """Local control representation"""
 
-    code = "local"
+    type = "local"
 
     # Metadata
 
@@ -12,6 +12,6 @@ class LocalControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
         },
     }

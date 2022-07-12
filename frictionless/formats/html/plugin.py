@@ -9,7 +9,7 @@ class HtmlPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "html":
+        if descriptor.get("type") == "html":
             return HtmlControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

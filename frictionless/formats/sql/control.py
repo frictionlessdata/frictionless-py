@@ -8,7 +8,7 @@ from . import settings
 class SqlControl(Control):
     """SQL control representation"""
 
-    code = "sql"
+    type = "sql"
 
     # State
 
@@ -37,7 +37,7 @@ class SqlControl(Control):
         "required": [],
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "table": {"type": "string"},
             "prefix": {"type": "string"},
             "order_by": {"type": "string"},

@@ -11,7 +11,7 @@ class RemotePlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "remote":
+        if descriptor.get("type") == "remote":
             return RemoteControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

@@ -9,7 +9,7 @@ class JsonPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "json":
+        if descriptor.get("type") == "json":
             return JsonControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

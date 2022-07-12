@@ -7,7 +7,7 @@ from ...dialect import Control
 class InlineControl(Control):
     """Inline control representation"""
 
-    code = "inline"
+    type = "inline"
 
     # State
 
@@ -23,7 +23,7 @@ class InlineControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "keys": {"type": "array"},
             "keyed": {"type": "boolean"},
         },

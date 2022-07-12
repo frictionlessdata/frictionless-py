@@ -6,7 +6,7 @@ from . import settings
 class AwsControl(Control):
     """Aws control representation"""
 
-    code = "aws"
+    type = "aws"
 
     # State
 
@@ -20,7 +20,7 @@ class AwsControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "s3EndpointUrl": {"type": "string"},
         },
     }

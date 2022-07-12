@@ -16,7 +16,7 @@ class BigqueryPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "bigquery":
+        if descriptor.get("type") == "bigquery":
             return BigqueryControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

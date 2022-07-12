@@ -9,7 +9,7 @@ from . import settings
 class RemoteControl(Control):
     """Remote control representation"""
 
-    code = "remote"
+    type = "remote"
 
     # State
 
@@ -28,7 +28,7 @@ class RemoteControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "code": {},
+            "type": {},
             "httpSession": {},
             "httpPreload": {"type": "boolean"},
             "httpTimeout": {"type": "number"},

@@ -9,7 +9,7 @@ class BufferPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "buffer":
+        if descriptor.get("type") == "buffer":
             return BufferControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):

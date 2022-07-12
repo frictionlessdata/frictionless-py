@@ -9,7 +9,7 @@ class CsvPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "csv":
+        if descriptor.get("type") == "csv":
             return CsvControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

@@ -9,7 +9,7 @@ class ExcelPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "excel":
+        if descriptor.get("type") == "excel":
             return ExcelControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

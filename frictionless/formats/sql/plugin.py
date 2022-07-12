@@ -15,7 +15,7 @@ class SqlPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "sql":
+        if descriptor.get("type") == "sql":
             return SqlControl.from_descriptor(descriptor)
 
     def create_parser(self, resource):

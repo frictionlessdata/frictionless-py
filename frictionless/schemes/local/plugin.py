@@ -9,7 +9,7 @@ class LocalPlugin(Plugin):
     # Hooks
 
     def create_control(self, descriptor):
-        if descriptor.get("code") == "local":
+        if descriptor.get("type") == "local":
             return LocalControl.from_descriptor(descriptor)
 
     def create_loader(self, resource):
