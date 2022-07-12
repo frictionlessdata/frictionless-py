@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .control import Control
+from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -81,15 +82,15 @@ class Dialect(Metadata):
                 return True
         return False
 
-    # TODO: rebase on create=True instead of ensure?
-    def get_control(self, code: str, *, ensure: Optional[Control] = None) -> Control:
+    def get_control(self, code: str, *, create=False) -> Control:
         """Get control by code"""
         for control in self.controls:
             if control.code == code:
                 return control
-        if ensure:
-            self.controls.append(ensure)
-            return ensure
+        if create:
+            control = system.create_control(dict(code=code))
+            self.controls.append(control)
+            return control
         error = errors.DialectError(note=f'control "{code}" does not exist')
         raise FrictionlessException(error)
 
@@ -196,6 +197,30 @@ class Dialect(Metadata):
             "commentChar": {"type": "string"},
             "commentRows": {"type": "array"},
             "nullSequence": {"type": "string"},
-            "controls": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        dialect = super().metadata_import(descriptor)
+
+        # Controls
+        for code, descriptor in dialect.custom.items():
+            if isinstance(descriptor, dict):
+                descriptor["code"] = code
+                control = Control.from_descriptor(descriptor)
+                dialect.add_control(control)
+
+        return dialect
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Controls
+        for control in self.controls:
+            control_descriptor = control.to_descriptor()
+            code = control_descriptor.pop("code")
+            if control:
+                descriptor[code] = control_descriptor
+
+        return descriptor
