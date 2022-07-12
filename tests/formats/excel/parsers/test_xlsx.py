@@ -169,7 +169,9 @@ def test_xlsx_parser_workbook_cache():
     for sheet in ["Sheet1", "Sheet2", "Sheet3"]:
         control = formats.ExcelControl(sheet=sheet, workbook_cache={})
         with Resource(source, control=control) as resource:
-            assert len(resource.dialect.get_control("excel").workbook_cache) == 1
+            control = resource.dialect.get_control("excel")
+            assert isinstance(control, formats.ExcelControl)
+            assert control.workbook_cache) == 1
             assert resource.read_rows()
 
 

@@ -234,7 +234,7 @@ def test_csv_parser_quotechar_is_empty_string():
 def test_csv_parser_format_tsv():
     detector = Detector(schema_patch={"missingValues": ["\\N"]})
     with Resource("data/table.tsv", detector=detector) as resource:
-        assert resource.dialect.get_control("csv").delimiter == "\t"
+        assert resource.dialect.to_descriptor() == {"csv": {"delimiter": "\t"}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -267,7 +267,7 @@ def test_csv_parser_write_delimiter(tmpdir):
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
-        assert target.dialect.get_control("csv").delimiter == ";"
+        assert target.dialect.to_descriptor() == {"csv": {"delimiter": ";"}}
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -302,7 +302,7 @@ def test_csv_parser_write_newline_lf(tmpdir):
     target = Resource(str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
-        assert target.dialect.get_control("csv").line_terminator == "\n"
+        assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\n"}}
     with open(target.fullpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\n1,english\n2,中国人\n"
 
@@ -314,6 +314,6 @@ def test_csv_parser_write_newline_crlf(tmpdir):
     target = Resource(str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
-        assert target.dialect.get_control("csv").line_terminator == "\r\n"
+        assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\r\n"}}
     with open(target.fullpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\r\n1,english\r\n2,中国人\r\n"

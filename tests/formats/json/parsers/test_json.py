@@ -20,7 +20,7 @@ def test_json_parser():
 
 def test_json_parser_keyed():
     with Resource(path="data/table.keyed.json") as resource:
-        assert resource.dialect.get_control("json").keyed is True
+        assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -31,7 +31,9 @@ def test_json_parser_keyed():
 def test_json_parser_keyed_with_keys_provided():
     control = formats.JsonControl(keys=["name", "id"])
     with Resource(path="data/table.keyed.json", control=control) as resource:
-        assert resource.dialect.get_control("json").keyed is True
+        assert resource.dialect.to_descriptor() == {
+            "json": {"keyed": True, "keys": ["name", "id"]}
+        }
         assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -52,7 +54,7 @@ def test_json_parser_from_buffer():
 def test_json_parser_from_buffer_keyed():
     source = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'.encode("utf-8")
     with Resource(source, format="json") as resource:
-        assert resource.dialect.get_control("json").keyed is True
+        assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -73,7 +75,7 @@ def test_json_parser_from_remote():
 @pytest.mark.vcr
 def test_json_parser_from_remote_keyed():
     with Resource(path=BASEURL % "data/table.keyed.json") as resource:
-        assert resource.dialect.get_control("json").keyed is True
+        assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

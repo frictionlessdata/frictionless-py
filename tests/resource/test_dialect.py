@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, Dialect, Control, Schema, fields
+from frictionless import Resource, Dialect, Control, Schema, fields, formats
 from frictionless import FrictionlessException
 
 
@@ -270,12 +270,14 @@ def test_resource_dialect_from_path_error_path_not_safe():
 
 def test_resource_dialect_csv_default():
     with Resource("data/table.csv") as resource:
+        control = resource.dialect.get_control("csv")
+        assert isinstance(control, formats.CsvControl)
+        assert control.delimiter == ","
+        assert control.line_terminator == "\r\n"
+        assert control.double_quote is True
+        assert control.quote_char == '"'
+        assert control.skip_initial_space is False
         assert resource.header == ["id", "name"]
-        assert resource.dialect.get_control("csv").delimiter == ","
-        assert resource.dialect.get_control("csv").line_terminator == "\r\n"
-        assert resource.dialect.get_control("csv").double_quote is True
-        assert resource.dialect.get_control("csv").quote_char == '"'
-        assert resource.dialect.get_control("csv").skip_initial_space is False
         assert resource.dialect.header is True
         assert resource.dialect.header_rows == [1]
         # TODO: review
@@ -291,7 +293,7 @@ def test_resource_dialect_csv_default():
 def test_resource_dialect_csv_delimiter():
     with Resource("data/delimiter.csv") as resource:
         assert resource.header == ["id", "name"]
-        assert resource.dialect.get_control("csv").delimiter == ";"
+        assert resource.dialect.to_descriptor() == {"csv": {"delimiter": ";"}}
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

@@ -43,7 +43,7 @@ def test_remote_loader_big_file():
 def test_remote_loader_http_preload():
     control = schemes.RemoteControl(http_preload=True)
     with Resource(BASEURL % "data/table.csv", control=control) as resource:
-        assert resource.dialect.get_control("remote").http_preload is True
+        assert resource.dialect.to_descriptor() == {"remote": {"httpPreload": True}}
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]

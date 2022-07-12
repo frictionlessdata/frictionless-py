@@ -164,7 +164,7 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
 def test_describe_schema_proper_quote_issue_493():
     resource = describe("data/issue-493.csv")
     assert isinstance(resource, Resource)
-    assert resource.dialect.get_control("csv").quote_char == '"'
+    assert resource.dialect.to_descriptor() == {"csv": {"quoteChar": '"'}}
     assert len(resource.schema.fields) == 126
 
 

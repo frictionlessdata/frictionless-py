@@ -159,7 +159,7 @@ def test_describe_package_with_dialect_path_1126():
 
 
 def test_describe_package_with_incorrect_dialect_1126():
-    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ","}]})
+    dialect = Dialect.from_descriptor({"csv": {"delimiter": ","}})
     package = describe("data/country-2.csv", type="package", dialect=dialect)
     assert isinstance(package, Package)
     assert package.get_resource("country-2").schema.to_descriptor() == {
@@ -168,7 +168,7 @@ def test_describe_package_with_incorrect_dialect_1126():
 
 
 def test_describe_package_with_glob_having_one_incorrect_dialect_1126():
-    dialect = Dialect.from_descriptor({"controls": [{"code": "csv", "delimiter": ","}]})
+    dialect = Dialect.from_descriptor({"csv": {"delimiter": ","}})
     package = describe("data/country-*.csv", type="package", dialect=dialect)
     assert isinstance(package, Package)
     assert package.get_resource("country-1").schema.to_descriptor() == {
