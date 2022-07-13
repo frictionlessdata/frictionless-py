@@ -44,16 +44,8 @@ class RowError(ContentError):
 
     # Metadata
 
-    metadata_profile = {
-        "type": "object",
-        "required": ["note"],
+    metadata_profile_patch = {
         "properties": {
-            "type": {},
-            "title": {},
-            "description": {},
-            "message": {},
-            "tags": {},
-            "note": {},
             "cells": {},
             "rowNumber": {},
         },

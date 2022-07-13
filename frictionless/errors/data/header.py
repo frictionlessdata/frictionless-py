@@ -24,16 +24,8 @@ class HeaderError(TableError):
 
     # Metadata
 
-    metadata_profile = {
-        "type": "object",
-        "required": ["note"],
+    metadata_profile_patch = {
         "properties": {
-            "name": {},
-            "type": {},
-            "tags": {},
-            "description": {},
-            "message": {},
-            "note": {},
             "labels": {},
             "rowNumbers": {},
         },
