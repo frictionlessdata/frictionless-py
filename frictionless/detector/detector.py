@@ -1,11 +1,11 @@
 from __future__ import annotations
 import os
+import attrs
 import codecs
 import chardet
 from pathlib import Path
 from copy import copy, deepcopy
 from importlib import import_module
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..metadata import Metadata
 from ..exception import FrictionlessException
@@ -21,11 +21,20 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class Detector(Metadata):
     """Detector representation"""
 
-    # Props
+    # State
+
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
     """
@@ -77,8 +86,8 @@ class Detector(Metadata):
     It defaults to `False`
     """
 
-    field_missing_values: List[str] = field(
-        default_factory=settings.DEFAULT_MISSING_VALUES.copy
+    field_missing_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_MISSING_VALUES.copy,
     )
     """
     String to be considered as missing values.
@@ -86,8 +95,8 @@ class Detector(Metadata):
     It defaults to `['']`
     """
 
-    field_true_values: List[str] = field(
-        default_factory=settings.DEFAULT_TRUE_VALUES.copy
+    field_true_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_TRUE_VALUES.copy,
     )
     """
     String to be considered as true values.
@@ -95,8 +104,8 @@ class Detector(Metadata):
     It defaults to `["true", "True", "TRUE", "1"]`
     """
 
-    field_false_values: List[str] = field(
-        default_factory=settings.DEFAULT_FALSE_VALUES.copy
+    field_false_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_FALSE_VALUES.copy,
     )
     """
     String to be considered as false values.
@@ -432,6 +441,9 @@ class Detector(Metadata):
     metadata_Error = errors.DetectorError
     metadata_profile = {
         "properties": {
+            "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "bufferSize": {},
             "samleSize": {},
             "encodingFunction": {},

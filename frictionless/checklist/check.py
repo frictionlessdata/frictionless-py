@@ -88,6 +88,8 @@ class Check(Metadata):
     metadata_profile = {
         "properties": {
             "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "type": {"type": "string"},
         }
     }

@@ -139,6 +139,8 @@ class Checklist(Metadata):
     metadata_profile = {
         "properties": {
             "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "checks": {},
             "skipErrors": {},
             "pickErrors": {},
