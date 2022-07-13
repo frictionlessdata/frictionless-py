@@ -17,10 +17,8 @@ class MultipartControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "chunkSize": {"type": "number"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "chunkSize": {"type": "number"},
+        },
+    }

@@ -20,11 +20,9 @@ class InlineControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "keys": {"type": "array"},
-                "keyed": {"type": "boolean"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "keys": {"type": "array"},
+            "keyed": {"type": "boolean"},
+        },
+    }

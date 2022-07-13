@@ -84,26 +84,23 @@ class table_dimensions(Check):
 
     # Metadata
 
-    metadata_profile = Check.metadata_merge(
-        {
-            "type": "object",
-            "requred": {
-                "oneOf": [
-                    "numRows",
-                    "minRows",
-                    "maxRows",
-                    "numFields",
-                    "minFields",
-                    "maxFields",
-                ]
-            },
-            "properties": {
-                "numRows": {"type": "number"},
-                "minRows": {"type": "number"},
-                "maxRows": {"type": "number"},
-                "numFields": {"type": "number"},
-                "minFields": {"type": "number"},
-                "maxFields": {"type": "number"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "requred": {
+            "oneOf": [
+                "numRows",
+                "minRows",
+                "maxRows",
+                "numFields",
+                "minFields",
+                "maxFields",
+            ]
+        },
+        "properties": {
+            "numRows": {"type": "number"},
+            "minRows": {"type": "number"},
+            "maxRows": {"type": "number"},
+            "numFields": {"type": "number"},
+            "minFields": {"type": "number"},
+            "maxFields": {"type": "number"},
+        },
+    }

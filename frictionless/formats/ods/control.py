@@ -18,10 +18,8 @@ class OdsControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "sheet": {"type": ["number", "string"]},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "sheet": {"type": ["number", "string"]},
+        },
+    }

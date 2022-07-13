@@ -30,14 +30,12 @@ class ExcelControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "sheet": {"type": ["number", "string"]},
-                "workbookCache": {"type": "object"},
-                "fillMergedCells": {"type": "boolean"},
-                "preserveFormatting": {"type": "boolean"},
-                "adjustFloatingPointError": {"type": "boolean"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "sheet": {"type": ["number", "string"]},
+            "workbookCache": {"type": "object"},
+            "fillMergedCells": {"type": "boolean"},
+            "preserveFormatting": {"type": "boolean"},
+            "adjustFloatingPointError": {"type": "boolean"},
+        },
+    }

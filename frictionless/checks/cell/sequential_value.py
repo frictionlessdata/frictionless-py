@@ -47,11 +47,9 @@ class sequential_value(Check):
 
     # Metadata
 
-    metadata_profile = Check.metadata_merge(
-        {
-            "requred": ["fieldName"],
-            "properties": {
-                "fieldName": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "requred": ["fieldName"],
+        "properties": {
+            "fieldName": {"type": "string"},
+        },
+    }

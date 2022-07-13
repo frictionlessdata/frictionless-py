@@ -86,13 +86,11 @@ class deviated_value(Check):
 
     # Metadata
 
-    metadata_profile = Check.metadata_merge(
-        {
-            "required": ["fieldName"],
-            "properties": {
-                "fieldName": {"type": "string"},
-                "interval": {"type": ["number", "null"]},
-                "average": {"type": ["string", "null"]},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "required": ["fieldName"],
+        "properties": {
+            "fieldName": {"type": "string"},
+            "interval": {"type": ["number", "null"]},
+            "average": {"type": ["string", "null"]},
+        },
+    }

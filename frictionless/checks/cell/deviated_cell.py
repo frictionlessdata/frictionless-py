@@ -72,11 +72,9 @@ class deviated_cell(Check):
 
     # Metadata
 
-    metadata_profile = Check.metadata_merge(
-        {
-            "properties": {
-                "interval": {"type": "number"},
-                "ignoreFields": {"type": "array"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "interval": {"type": "number"},
+            "ignoreFields": {"type": "array"},
+        },
+    }

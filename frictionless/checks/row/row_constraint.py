@@ -34,11 +34,9 @@ class row_constraint(Check):
 
     # Metadata
 
-    metadata_profile = Check.metadata_merge(
-        {
-            "requred": ["formula"],
-            "properties": {
-                "formula": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "requred": ["formula"],
+        "properties": {
+            "formula": {"type": "string"},
+        },
+    }

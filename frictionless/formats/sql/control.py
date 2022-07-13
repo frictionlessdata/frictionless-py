@@ -33,15 +33,13 @@ class SqlControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "table": {"type": "string"},
-                "prefix": {"type": "string"},
-                "order_by": {"type": "string"},
-                "where": {"type": "string"},
-                "namespace": {"type": "string"},
-                "basepath": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "table": {"type": "string"},
+            "prefix": {"type": "string"},
+            "order_by": {"type": "string"},
+            "where": {"type": "string"},
+            "namespace": {"type": "string"},
+            "basepath": {"type": "string"},
+        },
+    }

@@ -17,10 +17,8 @@ class HtmlControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "selector": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "selector": {"type": "string"},
+        },
+    }

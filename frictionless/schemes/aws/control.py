@@ -19,10 +19,8 @@ class AwsControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "s3EndpointUrl": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "s3EndpointUrl": {"type": "string"},
+        },
+    }

@@ -25,12 +25,10 @@ class RemoteControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "httpSession": {},
-                "httpPreload": {"type": "boolean"},
-                "httpTimeout": {"type": "number"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "httpSession": {},
+            "httpPreload": {"type": "boolean"},
+            "httpTimeout": {"type": "number"},
+        },
+    }

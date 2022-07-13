@@ -17,10 +17,8 @@ class GsheetsControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "credentials": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "credentials": {"type": "string"},
+        },
+    }

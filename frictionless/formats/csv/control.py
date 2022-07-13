@@ -54,18 +54,16 @@ class CsvControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "delimiter": {"type": "string"},
-                "lineTerminator": {"type": "string"},
-                "quoteChar": {"type": "string"},
-                "doubleQuote": {"type": "boolean"},
-                "escapeChar": {"type": "string"},
-                "nullSequence": {"type": "string"},
-                "skipInitialSpace": {"type": "boolean"},
-                "commentChar": {"type": "string"},
-                "caseSensitiveHeader": {"type": "boolean"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "delimiter": {"type": "string"},
+            "lineTerminator": {"type": "string"},
+            "quoteChar": {"type": "string"},
+            "doubleQuote": {"type": "boolean"},
+            "escapeChar": {"type": "string"},
+            "nullSequence": {"type": "string"},
+            "skipInitialSpace": {"type": "boolean"},
+            "commentChar": {"type": "string"},
+            "caseSensitiveHeader": {"type": "boolean"},
+        },
+    }

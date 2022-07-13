@@ -13,6 +13,7 @@ import tempfile
 import datetime
 import platform
 import textwrap
+import jsonmerge
 import stringcase
 from html.parser import HTMLParser
 from collections.abc import Mapping
@@ -152,6 +153,12 @@ def parse_scheme_and_format(source):
         if query_string_format is not None and len(query_string_format) == 1:
             format = query_string_format[0]
     return scheme, format
+
+
+def merge_jsonschema(base, head):
+    strategy = {"properties": {"required": {"mergeStrategy": "append"}}}
+    merger = jsonmerge.Merger(strategy)
+    return merger.merge(base, head)
 
 
 def ensure_dir(path):

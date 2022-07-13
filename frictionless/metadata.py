@@ -6,7 +6,6 @@ import json
 import yaml
 import jinja2
 import pprint
-import jsonmerge
 import jsonschema
 import stringcase
 from pathlib import Path
@@ -27,6 +26,15 @@ if TYPE_CHECKING:
 
 
 class Metaclass(type):
+    def __new__(cls, name, bases, dct):
+        cls = super().__new__(cls, name, bases, dct)
+        if cls.metadata_profile_patch:  # type: ignore
+            cls.metadata_profile = helpers.merge_jsonschema(
+                cls.metadata_profile,  # type: ignore
+                cls.metadata_profile_patch,  # type: ignore
+            )
+        return cls
+
     def __call__(cls, *args, **kwargs):
         obj = None
         if hasattr(cls, "__create__"):
@@ -193,6 +201,8 @@ class Metadata(metaclass=Metaclass):
     metadata_Error = None
     metadata_Types = {}
     metadata_profile = {}
+    metadata_profile_patch = {}
+    metadata_profile_merged = {}
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
@@ -208,13 +218,6 @@ class Metadata(metaclass=Metaclass):
     def metadata_errors(self) -> List[Error]:
         """List of metadata errors"""
         return list(self.metadata_validate())
-
-    @classmethod
-    def metadata_merge(cls, profile):
-        """Merge metadata pfofile"""
-        strategy = {"properties": {"required": {"mergeStrategy": "append"}}}
-        merger = jsonmerge.Merger(strategy)
-        return merger.merge(cls.metadata_profile, profile)
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptorSource, **options):

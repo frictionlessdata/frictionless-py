@@ -26,13 +26,11 @@ class BigqueryControl(Control):
 
     # Metadata
 
-    metadata_profile = Control.metadata_merge(
-        {
-            "properties": {
-                "table": {"type": "string"},
-                "dataset": {"type": "string"},
-                "project": {"type": "string"},
-                "prefix": {"type": "string"},
-            },
-        }
-    )
+    metadata_profile_patch = {
+        "properties": {
+            "table": {"type": "string"},
+            "dataset": {"type": "string"},
+            "project": {"type": "string"},
+            "prefix": {"type": "string"},
+        },
+    }
