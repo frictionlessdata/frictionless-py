@@ -163,12 +163,36 @@ class Field(Metadata):
     # Metadata
 
     metadata_Error = errors.FieldError
-    # TODO: fix it
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        14
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
+    metadata_profile = {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "format": {"type": "string"},
+            "missingValues": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "constraints": {
+                "type": "objects",
+                "properties": {
+                    "required": {"type": "boolean"},
+                    "unique": {"type": "boolean"},
+                    "pattern": {"type": "string"},
+                    "enum": {"type": "array"},
+                    "minLength": {"type": "integer"},
+                    "maxLength": {"type": "integer"},
+                    "minimum": {},
+                    "maximum": {},
+                },
+            },
+            "rdfType": {"type": "string"},
+            "example": {"type": "string"},
+        },
+    }
 
     @classmethod
     def metadata_import(cls, descriptor):
