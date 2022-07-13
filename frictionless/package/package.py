@@ -61,10 +61,10 @@ class Package(Metadata):
         profiles: List[str] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
-        version: Optional[str] = None,
         contributors: List[dict] = [],
         keywords: List[str] = [],
         image: Optional[str] = None,
+        version: Optional[str] = None,
         created: Optional[str] = None,
         resources: List[Resource] = [],
         # Software
@@ -85,10 +85,10 @@ class Package(Metadata):
         self.licenses = licenses.copy()
         self.sources = sources.copy()
         self.homepage = homepage
-        self.version = version
         self.contributors = contributors.copy()
         self.keywords = keywords.copy()
         self.image = image
+        self.version = version
         self.created = created
         self.innerpath = innerpath
         self.basepath = basepath
@@ -182,12 +182,6 @@ class Package(Metadata):
     Each Source object MUST have a title and
     MAY have path and/or email properties.
     """
-    version: Optional[str]
-    """
-    A version string identifying the version of the package.
-    It should conform to the Semantic Versioning requirements and
-    should follow the Data Package Version pattern.
-    """
 
     contributors: List[dict]
     """
@@ -207,6 +201,13 @@ class Package(Metadata):
     """
     An image to use for this data package.
     For example, when showing the package in a listing.
+    """
+
+    version: Optional[str]
+    """
+    A version string identifying the version of the package.
+    It should conform to the Semantic Versioning requirements and
+    should follow the Data Package Version pattern.
     """
 
     created: Optional[str]
@@ -611,8 +612,63 @@ class Package(Metadata):
 
     metadata_Error = errors.PackageError
     metadata_Types = dict(resources=Resource)
-    metadata_profile = deepcopy(settings.PACKAGE_PROFILE)
-    metadata_profile["properties"]["resources"] = {"type": "array"}
+    metadata_profile = {
+        "type": "object",
+        "requried": ["resources"],
+        "properties": {
+            "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "homepage": {"type": "string"},
+            "profiles": {"type": "array"},
+            "licenses": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "path": {"type": "string"},
+                        "title": {"type": "string"},
+                    },
+                },
+            },
+            "sources": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "path": {"type": "string"},
+                        "email": {"type": "string"},
+                    },
+                },
+            },
+            "contributors": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "path": {"type": "string"},
+                        "email": {"type": "string"},
+                        "organisation": {"type": "string"},
+                        "role": {"type": "string"},
+                    },
+                },
+            },
+            "keywords": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "image": {"type": "string"},
+            "version": {"type": "string"},
+            "created": {"type": "string"},
+            "resources": {
+                "type": "array",
+                "items": {"type": ["object", "string"]},
+            },
+        },
+    }
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptorSource, **options):

@@ -1077,7 +1077,7 @@ class Resource(Metadata):
         "type": "object",
         "requried": {"oneOf": ["path", "data"]},
         "properties": {
-            "name": {"type": "string", "pattern": "^([-a-z0-9._/])+$"},
+            "name": {"type": "string"},
             "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
@@ -1087,9 +1087,8 @@ class Resource(Metadata):
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "required": ["title"],
                     "properties": {
-                        "name": {"type": "string", "pattern": "^([-a-zA-Z0-9._])+$"},
+                        "name": {"type": "string"},
                         "path": {"type": "string"},
                         "title": {"type": "string"},
                     },
@@ -1099,7 +1098,6 @@ class Resource(Metadata):
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "required": ["title"],
                     "properties": {
                         "title": {"type": "string"},
                         "path": {"type": "string"},
