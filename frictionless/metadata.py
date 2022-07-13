@@ -26,14 +26,12 @@ if TYPE_CHECKING:
 
 
 class Metaclass(type):
-    def __new__(cls, name, bases, dct):
-        cls = super().__new__(cls, name, bases, dct)
+    def __init__(cls, *args, **kwarts):
         if cls.metadata_profile_patch:  # type: ignore
             cls.metadata_profile = helpers.merge_jsonschema(
                 cls.metadata_profile,  # type: ignore
                 cls.metadata_profile_patch,  # type: ignore
             )
-        return cls
 
     def __call__(cls, *args, **kwargs):
         obj = None
