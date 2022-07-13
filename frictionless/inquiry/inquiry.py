@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, List
+import attrs
+from typing import TYPE_CHECKING, Optional, List
 from importlib import import_module
 from multiprocessing import Pool
-from dataclasses import dataclass, field
 from ..metadata import Metadata
 from ..errors import InquiryError
 from .task import InquiryTask
@@ -13,13 +13,22 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
 
-@dataclass
+@attrs.define
 class Inquiry(Metadata):
     """Inquiry representation."""
 
     # State
 
-    tasks: List[InquiryTask] = field(default_factory=list)
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
+
+    tasks: List[InquiryTask] = attrs.field(factory=list)
     """List of underlaying tasks"""
 
     # Validate
@@ -69,7 +78,10 @@ class Inquiry(Metadata):
     metadata_Types = dict(tasks=InquiryTask)
     metadata_profile = {
         "properties": {
-            "tasks": {},
+            "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "tasks": {"type": "array"},
         }
     }
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
+import attrs
 from typing import Optional, List
-from dataclasses import dataclass
 from ..metadata import Metadata
 from ..checklist import Checklist
 from ..dialect import Dialect
@@ -12,7 +12,7 @@ from .. import helpers
 from .. import errors
 
 
-@dataclass
+@attrs.define
 class InquiryTask(Metadata):
     """Inquiry task representation."""
 
