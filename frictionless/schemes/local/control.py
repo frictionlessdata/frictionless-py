@@ -8,15 +8,3 @@ class LocalControl(Control):
     """Local control representation"""
 
     type = "local"
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

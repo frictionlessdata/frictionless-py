@@ -32,14 +32,3 @@ class ascii_value(Check):
                     yield errors.AsciiValueError.from_row(
                         row, note=note, field_name=field.name
                     )
-
-    # Metadata
-
-    metadata_profile = {
-        "type": "object",
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

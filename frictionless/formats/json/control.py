@@ -23,15 +23,12 @@ class JsonControl(Control):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "keys": {"type": "array"},
-            "keyed": {"type": "boolean"},
-            "property": {"type": "string"},
-        },
-    }
+    metadata_profile = Control.metadata_merge(
+        {
+            "properties": {
+                "keys": {"type": "array"},
+                "keyed": {"type": "boolean"},
+                "property": {"type": "string"},
+            },
+        }
+    )

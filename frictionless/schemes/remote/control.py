@@ -25,15 +25,12 @@ class RemoteControl(Control):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "httpSession": {},
-            "httpPreload": {"type": "boolean"},
-            "httpTimeout": {"type": "number"},
-        },
-    }
+    metadata_profile = Control.metadata_merge(
+        {
+            "properties": {
+                "httpSession": {},
+                "httpPreload": {"type": "boolean"},
+                "httpTimeout": {"type": "number"},
+            },
+        }
+    )

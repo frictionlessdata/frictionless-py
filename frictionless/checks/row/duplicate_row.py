@@ -33,14 +33,3 @@ class duplicate_row(Check):
             note = 'the same as row at position "%s"' % match
             yield errors.DuplicateRowError.from_row(row, note=note)
         self.__memory[hash] = row.row_number
-
-    # Metadata
-
-    metadata_profile = {
-        "type": "object",
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

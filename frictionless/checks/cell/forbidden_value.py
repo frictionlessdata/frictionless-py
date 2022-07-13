@@ -38,14 +38,12 @@ class forbidden_value(Check):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "requred": ["fieldName", "values"],
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "fieldName": {"type": "string"},
-            "values": {"type": "array"},
-        },
-    }
+    metadata_profile = Check.metadata_merge(
+        {
+            "requred": ["fieldName", "values"],
+            "properties": {
+                "fieldName": {"type": "string"},
+                "values": {"type": "array"},
+            },
+        }
+    )

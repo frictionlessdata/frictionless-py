@@ -141,9 +141,9 @@ class Checklist(Metadata):
             "name": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "checks": {},
-            "skipErrors": {},
-            "pickErrors": {},
+            "checks": {"type": "array"},
+            "skipErrors": {"type": "array"},
+            "pickErrors": {"type": "array"},
         }
     }
 

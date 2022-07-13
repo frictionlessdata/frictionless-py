@@ -8,15 +8,3 @@ class SpssControl(Control):
     """Spss dialect representation"""
 
     type = "spss"
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

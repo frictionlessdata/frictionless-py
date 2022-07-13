@@ -8,15 +8,3 @@ class BufferControl(Control):
     """Buffer control representation"""
 
     type = "buffer"
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

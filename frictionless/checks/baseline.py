@@ -92,14 +92,3 @@ class baseline(Check):
                 note = 'expected is "%s" and actual is "%s"'
                 note = note % (rows, self.resource.stats["rows"])  # type: ignore
                 yield errors.RowCountError(note=note)
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

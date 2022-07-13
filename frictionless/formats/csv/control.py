@@ -54,20 +54,18 @@ class CsvControl(Control):
 
     # Metadata
 
-    metadata_profile = {
-        "type": "object",
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "delimiter": {"type": "string"},
-            "lineTerminator": {"type": "string"},
-            "quoteChar": {"type": "string"},
-            "doubleQuote": {"type": "boolean"},
-            "escapeChar": {"type": "string"},
-            "nullSequence": {"type": "string"},
-            "skipInitialSpace": {"type": "boolean"},
-            "commentChar": {"type": "string"},
-            "caseSensitiveHeader": {"type": "boolean"},
-        },
-    }
+    metadata_profile = Control.metadata_merge(
+        {
+            "properties": {
+                "delimiter": {"type": "string"},
+                "lineTerminator": {"type": "string"},
+                "quoteChar": {"type": "string"},
+                "doubleQuote": {"type": "boolean"},
+                "escapeChar": {"type": "string"},
+                "nullSequence": {"type": "string"},
+                "skipInitialSpace": {"type": "boolean"},
+                "commentChar": {"type": "string"},
+                "caseSensitiveHeader": {"type": "boolean"},
+            },
+        }
+    )

@@ -56,14 +56,3 @@ class truncated_value(Check):
                 yield errors.TruncatedValueError.from_row(
                     row, note=note, field_name=field_name
                 )
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

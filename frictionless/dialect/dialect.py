@@ -44,9 +44,6 @@ class Dialect(Metadata):
     comment_rows: List[int] = attrs.field(factory=list)
     """TODO: add docs"""
 
-    null_sequence: Optional[str] = None
-    """TODO: add docs"""
-
     controls: List[Control] = attrs.field(factory=list)
     """TODO: add docs"""
 
@@ -207,7 +204,6 @@ class Dialect(Metadata):
             "headerCase": {"type": "boolean"},
             "commentChar": {"type": "string"},
             "commentRows": {"type": "array"},
-            "nullSequence": {"type": "string"},
         },
     }
 

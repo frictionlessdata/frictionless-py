@@ -35,20 +35,16 @@ class CkanControl(Control):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": ["dataset"],
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "resource": {"type": "string"},
-            "dataset": {"type": "string"},
-            "apikey": {"type": "string"},
-            "fields": {"type": "array"},
-            "limit": {"type": "integer"},
-            "sort": {"type": "string"},
-            "filters": {"type": "object"},
-        },
-    }
+    metadata_profile = Control.metadata_merge(
+        {
+            "properties": {
+                "resource": {"type": "string"},
+                "dataset": {"type": "string"},
+                "apikey": {"type": "string"},
+                "fields": {"type": "array"},
+                "limit": {"type": "integer"},
+                "sort": {"type": "string"},
+                "filters": {"type": "object"},
+            },
+        }
+    )

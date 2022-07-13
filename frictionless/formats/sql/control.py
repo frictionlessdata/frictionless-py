@@ -33,19 +33,15 @@ class SqlControl(Control):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
-        "additionalProperties": False,
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "table": {"type": "string"},
-            "prefix": {"type": "string"},
-            "order_by": {"type": "string"},
-            "where": {"type": "string"},
-            "namespace": {"type": "string"},
-            "basepath": {"type": "string"},
-        },
-    }
+    metadata_profile = Control.metadata_merge(
+        {
+            "properties": {
+                "table": {"type": "string"},
+                "prefix": {"type": "string"},
+                "order_by": {"type": "string"},
+                "where": {"type": "string"},
+                "namespace": {"type": "string"},
+                "basepath": {"type": "string"},
+            },
+        }
+    )
