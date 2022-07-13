@@ -23,6 +23,7 @@ def test_resource_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
+@pytest.mark.xfail
 def test_resource_validate_invalid_resource_strict():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate(strict=True)

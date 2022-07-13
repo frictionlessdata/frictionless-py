@@ -431,9 +431,9 @@ def test_resource_pprint():
     )
     expected = """
     {'name': 'resource',
-     'path': 'data/table.csv',
      'title': 'My Resource',
-     'description': 'My Resource for the Guide'}
+     'description': 'My Resource for the Guide',
+     'path': 'data/table.csv'}
     """
     assert repr(resource) == textwrap.dedent(expected).strip()
 

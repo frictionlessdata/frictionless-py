@@ -57,10 +57,10 @@ class Package(Metadata):
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
+        homepage: Optional[str] = None,
         profiles: List[str] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
-        homepage: Optional[str] = None,
         version: Optional[str] = None,
         contributors: List[dict] = [],
         keywords: List[str] = [],
@@ -158,6 +158,12 @@ class Package(Metadata):
     It should a human-oriented description of the resource.
     """
 
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
+
     profiles: List[str]
     """
     A strings identifying the profiles of this descriptor.
@@ -176,13 +182,6 @@ class Package(Metadata):
     Each Source object MUST have a title and
     MAY have path and/or email properties.
     """
-
-    homepage: Optional[str]
-    """
-    A URL for the home on the web that is related to this package.
-    For example, github repository or ckan dataset address.
-    """
-
     version: Optional[str]
     """
     A version string identifying the version of the package.

@@ -22,7 +22,6 @@ UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
 PACKAGE_PROFILE = json.loads(read_asset("profiles", "package.json"))
-RESOURCE_PROFILE = json.loads(read_asset("profiles", "resource.json"))
 SCHEMA_PROFILE = json.loads(read_asset("profiles", "schema.json"))
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "general.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json"))

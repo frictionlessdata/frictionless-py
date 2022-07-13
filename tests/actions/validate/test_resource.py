@@ -45,6 +45,7 @@ def test_validate_forbidden_value_task_error():
     ]
 
 
+@pytest.mark.xfail
 def test_validate_invalid_resource_strict():
     report = validate({"path": "data/table.csv"}, strict=True)
     assert report.flatten(["type", "note"]) == [

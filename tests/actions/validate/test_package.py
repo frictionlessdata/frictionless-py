@@ -452,6 +452,7 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     ]
 
 
+@pytest.mark.xfail
 def test_validate_package_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
     report = validate("data/geopoint/datapackage.json")

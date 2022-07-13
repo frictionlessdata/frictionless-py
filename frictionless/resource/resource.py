@@ -5,7 +5,6 @@ import json
 import petl
 import warnings
 from pathlib import Path
-from copy import deepcopy
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
@@ -62,6 +61,7 @@ class Resource(Metadata):
         type: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
+        homepage: Optional[str] = None,
         profiles: List[str] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
@@ -94,6 +94,7 @@ class Resource(Metadata):
         self.type = type
         self.title = title
         self.description = description
+        self.homepage = homepage
         self.profiles = profiles.copy()
         self.licenses = licenses.copy()
         self.sources = sources.copy()
@@ -196,6 +197,12 @@ class Resource(Metadata):
     """
     Resource description according to the specs
     It should a human-oriented description of the resource.
+    """
+
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
     """
 
     profiles: List[str]
@@ -1066,17 +1073,57 @@ class Resource(Metadata):
         checklist=Checklist,
         pipeline=Pipeline,
     )
-    metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
-    metadata_profile["properties"].pop("schema")
-    # TODO: move to assets?
-    metadata_profile["properties"]["compression"] = {}
-    metadata_profile["properties"]["extrapaths"] = {}
-    metadata_profile["properties"]["innerpath"] = {}
-    metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["checklist"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["pipeline"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["stats"] = {"type": "object"}
+    metadata_profile = {
+        "type": "object",
+        "requried": {"oneOf": ["path", "data"]},
+        "properties": {
+            "name": {"type": "string", "pattern": "^([-a-z0-9._/])+$"},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "homepage": {"type": "string"},
+            "profiles": {"type": "array"},
+            "licenses": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["title"],
+                    "properties": {
+                        "name": {"type": "string", "pattern": "^([-a-zA-Z0-9._])+$"},
+                        "path": {"type": "string"},
+                        "title": {"type": "string"},
+                    },
+                },
+            },
+            "sources": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["title"],
+                    "properties": {
+                        "title": {"type": "string"},
+                        "path": {"type": "string"},
+                        "email": {"type": "string"},
+                    },
+                },
+            },
+            "path": {"type": "string"},
+            "data": {"type": ["object", "array"]},
+            "scheme": {"type": "string"},
+            "format": {"type": "string"},
+            "hashing": {"type": "string"},
+            "encoding": {"type": "string"},
+            "mediatype": {"type": "string"},
+            "compression": {"type": "string"},
+            "extrapaths": {"type": "array"},
+            "innerpath": {"type": "string"},
+            "dialect": {"type": ["object", "string"]},
+            "schema": {"type": ["object", "string"]},
+            "checklist": {"type": ["object", "string"]},
+            "pipeline": {"type": ["object", "string"]},
+            "stats": {"type": "object"},
+        },
+    }
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptorSource, **options):
