@@ -3,43 +3,43 @@ from .data import DataError
 
 
 class TableError(DataError):
-    name = "Table Error"
     type = "table-error"
-    tags = ["#table"]
-    template = "General table error: {note}"
+    title = "Table Error"
     description = "There is a table error."
+    template = "General table error: {note}"
+    tags = ["#table"]
 
 
 class FieldCountError(TableError):
-    name = "Field Count Error"
     type = "field-count"
-    template = "The data source does not match the expected field count: {note}"
+    title = "Field Count Error"
     description = "This error can happen if the data is corrupted."
+    template = "The data source does not match the expected field count: {note}"
 
 
 class RowCountError(TableError):
-    name = "Row Count Error"
     type = "row-count"
-    template = "The data source does not match the expected row count: {note}"
+    title = "Row Count Error"
     description = "This error can happen if the data is corrupted."
+    template = "The data source does not match the expected row count: {note}"
 
 
 class TableDimensionsError(TableError):
-    name = "Table dimensions error"
     type = "table-dimensions"
-    template = "The data source does not have the required dimensions: {note}"
+    title = "Table dimensions error"
     description = "This error can happen if the data is corrupted."
+    template = "The data source does not have the required dimensions: {note}"
 
 
 class DeviatedValueError(TableError):
-    name = "Deviated Value"
     type = "deviated-value"
-    template = "There is a possible error because the value is deviated: {note}"
+    title = "Deviated Value"
     description = "The value is deviated."
+    template = "There is a possible error because the value is deviated: {note}"
 
 
 class DeviatedCellError(TableError):
-    name = "Deviated cell"
     type = "deviated-cell"
-    template = "There is a possible error because the cell is deviated: {note}"
+    title = "Deviated cell"
     description = "The cell is deviated."
+    template = "There is a possible error because the cell is deviated: {note}"

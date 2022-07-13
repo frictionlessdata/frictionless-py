@@ -16,27 +16,27 @@ from . import helpers
 class Error(Metadata):
     """Error representation"""
 
-    name: ClassVar[str] = "Error"
     type: ClassVar[str] = "error"
-    tags: ClassVar[List[str]] = []
-    template: ClassVar[str] = "{note}"
+    title: ClassVar[str] = "Error"
     description: ClassVar[str] = "Error"
+    template: ClassVar[str] = "{note}"
+    tags: ClassVar[List[str]] = []
 
     def __attrs_post_init__(self):
         descriptor = self.metadata_export(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
         # TODO: review this situation -- why we set it by hands??
-        self.metadata_assigned.add("name")
-        self.metadata_assigned.add("tags")
-        self.metadata_assigned.add("message")
+        self.metadata_assigned.add("title")
         self.metadata_assigned.add("description")
+        self.metadata_assigned.add("message")
+        self.metadata_assigned.add("tags")
 
     # State
 
-    note: str
+    message: str = attrs.field(init=False)
     """TODO: add docs"""
 
-    message: str = attrs.field(init=False)
+    note: str
     """TODO: add docs"""
 
     # Metadata
@@ -46,10 +46,10 @@ class Error(Metadata):
         "required": ["note"],
         "properties": {
             "type": {},
-            "name": {},
+            "title": {},
             "description": {},
-            "tags": {},
             "message": {},
+            "tags": {},
             "note": {},
         },
     }

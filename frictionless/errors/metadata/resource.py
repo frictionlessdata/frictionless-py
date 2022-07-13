@@ -3,49 +3,49 @@ from .metadata import MetadataError
 
 
 class ResourceError(MetadataError):
-    name = "Resource Error"
     type = "resource-error"
-    template = "The data resource has an error: {note}"
+    title = "Resource Error"
     description = "A validation cannot be processed."
+    template = "The data resource has an error: {note}"
 
 
 class SourceError(ResourceError):
-    name = "Source Error"
     type = "source-error"
-    template = "The data source has not supported or has inconsistent contents: {note}"
+    title = "Source Error"
     description = "Data reading error because of not supported or inconsistent contents."
+    template = "The data source has not supported or has inconsistent contents: {note}"
 
 
 class SchemeError(ResourceError):
-    name = "Scheme Error"
     type = "scheme-error"
-    template = "The data source could not be successfully loaded: {note}"
+    title = "Scheme Error"
     description = "Data reading error because of incorrect scheme."
+    template = "The data source could not be successfully loaded: {note}"
 
 
 class FormatError(ResourceError):
-    name = "Format Error"
     type = "format-error"
-    template = "The data source could not be successfully parsed: {note}"
+    title = "Format Error"
     description = "Data reading error because of incorrect format."
+    template = "The data source could not be successfully parsed: {note}"
 
 
 class EncodingError(ResourceError):
-    name = "Encoding Error"
     type = "encoding-error"
-    template = "The data source could not be successfully decoded: {note}"
+    title = "Encoding Error"
     description = "Data reading error because of an encoding problem."
+    template = "The data source could not be successfully decoded: {note}"
 
 
 class HashingError(ResourceError):
-    name = "Hashing Error"
     type = "hashing-error"
-    template = "The data source could not be successfully hashed: {note}"
+    title = "Hashing Error"
     description = "Data reading error because of a hashing problem."
+    template = "The data source could not be successfully hashed: {note}"
 
 
 class CompressionError(ResourceError):
-    name = "Compression Error"
     type = "compression-error"
-    template = "The data source could not be successfully decompressed: {note}"
+    title = "Compression Error"
     description = "Data reading error because of a decompression problem."
+    template = "The data source could not be successfully decompressed: {note}"

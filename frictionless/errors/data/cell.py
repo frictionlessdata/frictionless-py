@@ -8,11 +8,11 @@ from .row import RowError
 class CellError(RowError):
     """Cell error representation"""
 
-    name = "Cell Error"
     type = "cell-error"
-    tags = ["#table", "#content", "#row", "#cell"]
-    template = "Cell Error"
+    title = "Cell Error"
     description = "Cell Error"
+    template = "Cell Error"
+    tags = ["#table", "#content", "#row", "#cell"]
 
     # State
 
@@ -61,11 +61,11 @@ class CellError(RowError):
         "type": "object",
         "required": ["note"],
         "properties": {
-            "name": {},
             "type": {},
-            "tags": {},
+            "title": {},
             "description": {},
             "message": {},
+            "tags": {},
             "note": {},
             "cells": {},
             "rowNumber": {},
@@ -77,63 +77,63 @@ class CellError(RowError):
 
 
 class ExtraCellError(CellError):
-    name = "Extra Cell"
     type = "extra-cell"
-    template = 'Row at position "{rowNumber}" has an extra value in field at position "{fieldNumber}"'
+    title = "Extra Cell"
     description = "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
+    template = 'Row at position "{rowNumber}" has an extra value in field at position "{fieldNumber}"'
 
 
 class MissingCellError(CellError):
-    name = "Missing Cell"
     type = "missing-cell"
-    template = 'Row at position "{rowNumber}" has a missing cell in field "{fieldName}" at position "{fieldNumber}"'
+    title = "Missing Cell"
     description = "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
+    template = 'Row at position "{rowNumber}" has a missing cell in field "{fieldName}" at position "{fieldNumber}"'
 
 
 class TypeError(CellError):
-    name = "Type Error"
     type = "type-error"
-    template = 'Type error in the cell "{cell}" in row "{rowNumber}" and field "{fieldName}" at position "{fieldNumber}": {note}'
+    title = "Type Error"
     description = "The value does not match the schema type and format for this field."
+    template = 'Type error in the cell "{cell}" in row "{rowNumber}" and field "{fieldName}" at position "{fieldNumber}": {note}'
 
 
 class ConstraintError(CellError):
-    name = "Constraint Error"
     type = "constraint-error"
-    template = 'The cell "{cell}" in row at position "{rowNumber}" and field "{fieldName}" at position "{fieldNumber}" does not conform to a constraint: {note}'
+    title = "Constraint Error"
     description = "A field value does not conform to a constraint."
+    template = 'The cell "{cell}" in row at position "{rowNumber}" and field "{fieldName}" at position "{fieldNumber}" does not conform to a constraint: {note}'
 
 
 class UniqueError(CellError):
-    name = "Unique Error"
     type = "unique-error"
-    template = 'Row at position "{rowNumber}" has unique constraint violation in field "{fieldName}" at position "{fieldNumber}": {note}'
+    title = "Unique Error"
     description = "This field is a unique field but it contains a value that has been used in another row."
+    template = 'Row at position "{rowNumber}" has unique constraint violation in field "{fieldName}" at position "{fieldNumber}": {note}'
 
 
 class TruncatedValueError(CellError):
-    name = "Truncated Value"
     type = "truncated-value"
-    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
+    title = "Truncated Value"
     description = "The value is possible truncated."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
 
 
 class ForbiddenValueError(CellError):
-    name = "Forbidden Value"
     type = "forbidden-value"
-    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
+    title = "Forbidden Value"
     description = "The value is forbidden."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
 
 
 class SequentialValueError(CellError):
-    name = "Sequential Value"
     type = "sequential-value"
-    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
+    title = "Sequential Value"
     description = "The value is not sequential."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
 
 
 class AsciiValueError(CellError):
-    name = "Ascii Value"
     type = "ascii-value"
-    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
+    title = "Ascii Value"
     description = "The cell contains non-ascii characters."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"

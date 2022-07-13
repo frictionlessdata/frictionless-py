@@ -8,11 +8,11 @@ from .table import TableError
 class HeaderError(TableError):
     """Header error representation"""
 
-    name = "Header Error"
     type = "header-error"
-    tags = ["#table", "#header"]
-    template = "Cell Error"
+    title = "Header Error"
     description = "Cell Error"
+    template = "Cell Error"
+    tags = ["#table", "#header"]
 
     # State
 
@@ -41,7 +41,7 @@ class HeaderError(TableError):
 
 
 class BlankHeaderError(HeaderError):
-    name = "Blank Header"
     type = "blank-header"
-    template = "Header is completely blank"
+    title = "Blank Header"
     description = "This header is empty. A header should contain at least one value."
+    template = "Header is completely blank"

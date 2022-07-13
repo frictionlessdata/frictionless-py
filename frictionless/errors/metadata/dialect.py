@@ -3,14 +3,14 @@ from .metadata import MetadataError
 
 
 class DialectError(MetadataError):
-    name = "Dialect Error"
     type = "dialect-error"
-    template = "Dialect is not valid: {note}"
+    titlte = "Dialect Error"
     description = "Provided dialect is not valid."
+    template = "Dialect is not valid: {note}"
 
 
 class ControlError(DialectError):
-    name = "Control Error"
     type = "control-error"
-    template = "Control is not valid: {note}"
+    titlte = "Control Error"
     description = "Provided control is not valid."
+    template = "Control is not valid: {note}"

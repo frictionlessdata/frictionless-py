@@ -3,14 +3,14 @@ from .metadata import MetadataError
 
 
 class SchemaError(MetadataError):
-    name = "Schema Error"
     type = "schema-error"
-    template = "Schema is not valid: {note}"
+    title = "Schema Error"
     description = "Provided schema is not valid."
+    template = "Schema is not valid: {note}"
 
 
 class FieldError(SchemaError):
-    name = "Field Error"
     type = "field-error"
-    template = "Field is not valid: {note}"
+    title = "Field Error"
     description = "Provided field is not valid."
+    template = "Field is not valid: {note}"

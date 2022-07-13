@@ -3,14 +3,14 @@ from .metadata import MetadataError
 
 
 class PipelineError(MetadataError):
-    name = "Pipeline Error"
     type = "pipeline-error"
-    template = "Pipeline is not valid: {note}"
+    title = "Pipeline Error"
     description = "Provided pipeline is not valid."
+    template = "Pipeline is not valid: {note}"
 
 
 class StepError(PipelineError):
-    name = "Step Error"
     type = "step-error"
-    template = "Step is not valid: {note}"
+    title = "Step Error"
     description = "Provided step is not valid"
+    template = "Step is not valid: {note}"

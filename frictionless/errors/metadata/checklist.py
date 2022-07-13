@@ -3,14 +3,14 @@ from .metadata import MetadataError
 
 
 class ChecklistError(MetadataError):
-    name = "Checklist Error"
     type = "checklist-error"
-    template = "Checklist is not valid: {note}"
+    title = "Checklist Error"
     description = "Provided checklist is not valid."
+    template = "Checklist is not valid: {note}"
 
 
 class CheckError(ChecklistError):
-    name = "Check Error"
     type = "check-error"
-    template = "Check is not valid: {note}"
+    title = "Check Error"
     description = "Provided check is not valid"
+    template = "Check is not valid: {note}"

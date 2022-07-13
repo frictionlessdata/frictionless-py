@@ -3,7 +3,7 @@ from .metadata import MetadataError
 
 
 class PackageError(MetadataError):
-    name = "Package Error"
     type = "package-error"
-    template = "The data package has an error: {note}"
+    title = "Package Error"
     description = "A validation cannot be processed."
+    template = "The data package has an error: {note}"

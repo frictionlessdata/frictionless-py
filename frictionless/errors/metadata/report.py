@@ -3,14 +3,14 @@ from .metadata import MetadataError
 
 
 class ReportError(MetadataError):
-    name = "Report Error"
     type = "report-error"
-    template = "Report is not valid: {note}"
+    title = "Report Error"
     description = "Provided report is not valid."
+    template = "Report is not valid: {note}"
 
 
 class ReportTaskError(ReportError):
-    name = "Report Task Error"
     type = "report-task-error"
-    template = "Report task is not valid: {note}"
+    title = "Report Task Error"
     description = "Provided report task is not valid."
+    template = "Report task is not valid: {note}"

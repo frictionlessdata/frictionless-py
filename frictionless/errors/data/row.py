@@ -8,11 +8,11 @@ from .content import ContentError
 class RowError(ContentError):
     """Row error representation"""
 
-    name = "Row Error"
     type = "row-error"
-    tags = ["#table", "content", "#row"]
-    template = "Row Error"
+    title = "Row Error"
     description = "Row Error"
+    template = "Row Error"
+    tags = ["#table", "content", "#row"]
 
     # State
 
@@ -49,10 +49,10 @@ class RowError(ContentError):
         "required": ["note"],
         "properties": {
             "type": {},
-            "name": {},
-            "tags": {},
+            "title": {},
             "description": {},
             "message": {},
+            "tags": {},
             "note": {},
             "cells": {},
             "rowNumber": {},
@@ -61,35 +61,35 @@ class RowError(ContentError):
 
 
 class BlankRowError(RowError):
-    name = "Blank Row"
     type = "blank-row"
-    template = 'Row at position "{rowNumber}" is completely blank'
+    title = "Blank Row"
     description = "This row is empty. A row should contain at least one value."
+    template = 'Row at position "{rowNumber}" is completely blank'
 
 
 class PrimaryKeyError(RowError):
-    name = "PrimaryKey Error"
     type = "primary-key"
-    template = 'Row at position "{rowNumber}" violates the primary key: {note}'
+    title = "PrimaryKey Error"
     description = "Values in the primary key fields should be unique for every row"
+    template = 'Row at position "{rowNumber}" violates the primary key: {note}'
 
 
 class ForeignKeyError(RowError):
-    name = "ForeignKey Error"
     type = "foreign-key"
-    template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
+    title = "ForeignKey Error"
     description = "Values in the foreign key fields should exist in the reference table"
+    template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
 
 
 class DuplicateRowError(RowError):
-    name = "Duplicate Row"
     type = "duplicate-row"
-    template = "Row at position {rowNumber} is duplicated: {note}"
+    title = "Duplicate Row"
     description = "The row is duplicated."
+    template = "Row at position {rowNumber} is duplicated: {note}"
 
 
 class RowConstraintError(RowError):
-    name = "Row Constraint"
     type = "row-constraint"
-    template = "The row at position {rowNumber} has an error: {note}"
+    title = "Row Constraint"
     description = "The value does not conform to the row constraint."
+    template = "The row at position {rowNumber} has an error: {note}"
