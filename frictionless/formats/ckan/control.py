@@ -1,9 +1,9 @@
-from dataclasses import dataclass
+import attrs
 from typing import Optional, List
 from ...dialect import Control
 
 
-@dataclass
+@attrs.define
 class CkanControl(Control):
     """Ckan control representation"""
 

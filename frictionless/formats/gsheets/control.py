@@ -1,9 +1,9 @@
+import attrs
 from typing import Optional
-from dataclasses import dataclass
 from ...dialect import Control
 
 
-@dataclass
+@attrs.define
 class GsheetsControl(Control):
     """Gsheets control representation"""
 

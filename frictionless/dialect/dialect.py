@@ -1,7 +1,7 @@
 from __future__ import annotations
+import attrs
 from typing import Optional, List
 from importlib import import_module
-from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .control import Control
@@ -11,19 +11,25 @@ from .. import helpers
 from .. import errors
 
 
-@dataclass
+@attrs.define
 class Dialect(Metadata):
     """Dialect representation"""
 
     # State
 
     name: Optional[str] = None
+    """# TODO: add docs"""
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
     """TODO: add docs"""
 
     header: bool = settings.DEFAULT_HEADER
     """TODO: add docs"""
 
-    header_rows: List[int] = field(default_factory=settings.DEFAULT_HEADER_ROWS.copy)
+    header_rows: List[int] = attrs.field(factory=settings.DEFAULT_HEADER_ROWS.copy)
     """TODO: add docs"""
 
     header_join: str = settings.DEFAULT_HEADER_JOIN
@@ -35,13 +41,13 @@ class Dialect(Metadata):
     comment_char: Optional[str] = None
     """TODO: add docs"""
 
-    comment_rows: List[int] = field(default_factory=list)
+    comment_rows: List[int] = attrs.field(factory=list)
     """TODO: add docs"""
 
     null_sequence: Optional[str] = None
     """TODO: add docs"""
 
-    controls: List[Control] = field(default_factory=list)
+    controls: List[Control] = attrs.field(factory=list)
     """TODO: add docs"""
 
     # Describe
@@ -193,6 +199,8 @@ class Dialect(Metadata):
         "required": [],
         "properties": {
             "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "header": {"type": "boolean"},
             "headerRows": {"type": "array"},
             "headerJoin": {"type": "string"},

@@ -1,10 +1,10 @@
+import attrs
 from typing import Union
-from dataclasses import dataclass
 from ...dialect import Control
 from . import settings
 
 
-@dataclass
+@attrs.define
 class OdsControl(Control):
     """Ods control representation"""
 

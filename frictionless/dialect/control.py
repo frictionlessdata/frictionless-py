@@ -1,6 +1,4 @@
 from __future__ import annotations
-from typing import Optional, ClassVar
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from importlib import import_module
 from ..metadata import Metadata
@@ -10,15 +8,10 @@ if TYPE_CHECKING:
     from .dialect import Dialect
 
 
-@dataclass
 class Control(Metadata):
     """Control representation"""
 
-    type: ClassVar[str]
-
-    # State
-
-    name: Optional[str] = None
+    type: str
 
     # Convert
 

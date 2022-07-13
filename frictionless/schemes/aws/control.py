@@ -1,8 +1,10 @@
 import os
+import attrs
 from ...dialect import Control
 from . import settings
 
 
+@attrs.define
 class AwsControl(Control):
     """Aws control representation"""
 

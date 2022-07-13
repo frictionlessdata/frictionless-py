@@ -1,9 +1,9 @@
+import attrs
 from typing import Optional, List
-from dataclasses import dataclass
 from ...dialect import Control
 
 
-@dataclass
+@attrs.define
 class JsonControl(Control):
     """Json control representation"""
 

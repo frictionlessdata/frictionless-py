@@ -1,9 +1,9 @@
-from dataclasses import dataclass
+import attrs
 from ...dialect import Control
 from . import settings
 
 
-@dataclass
+@attrs.define
 class HtmlControl(Control):
     """Html control representation"""
 

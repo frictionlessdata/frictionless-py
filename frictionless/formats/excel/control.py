@@ -1,10 +1,10 @@
+import attrs
 from typing import Optional, Union, Any
-from dataclasses import dataclass
 from ...dialect import Control
 from . import settings
 
 
-@dataclass
+@attrs.define
 class ExcelControl(Control):
     """Excel control representation"""
 

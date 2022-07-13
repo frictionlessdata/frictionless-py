@@ -37,6 +37,8 @@ class duplicate_row(Check):
         "type": "object",
         "properties": {
             "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "type": {"type": "string"},
         },
     }
