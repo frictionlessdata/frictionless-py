@@ -70,6 +70,7 @@ INSTALL_REQUIRES = [
     "uvicorn>=0.17",
     "openpyxl>=3.0",
     "jsonlines>=1.2",
+    "jsonmerge>=1.8",
     "requests>=2.10",
     "humanize>=4.2",
     "tabulate>=0.8.10",
