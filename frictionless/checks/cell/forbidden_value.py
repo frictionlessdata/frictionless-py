@@ -39,7 +39,7 @@ class forbidden_value(Check):
     # Metadata
 
     metadata_profile_patch = {
-        "requred": ["fieldName", "values"],
+        "required": ["fieldName", "values"],
         "properties": {
             "fieldName": {"type": "string"},
             "values": {"type": "array"},

@@ -614,7 +614,7 @@ class Package(Metadata):
     metadata_Types = dict(resources=Resource)
     metadata_profile = {
         "type": "object",
-        "requried": ["resources"],
+        "required": ["resources"],
         "properties": {
             "name": {"type": "string"},
             "title": {"type": "string"},

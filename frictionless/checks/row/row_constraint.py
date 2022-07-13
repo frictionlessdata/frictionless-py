@@ -35,7 +35,7 @@ class row_constraint(Check):
     # Metadata
 
     metadata_profile_patch = {
-        "requred": ["formula"],
+        "required": ["formula"],
         "properties": {
             "formula": {"type": "string"},
         },

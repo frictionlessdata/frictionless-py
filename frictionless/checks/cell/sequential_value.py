@@ -48,7 +48,7 @@ class sequential_value(Check):
     # Metadata
 
     metadata_profile_patch = {
-        "requred": ["fieldName"],
+        "required": ["fieldName"],
         "properties": {
             "fieldName": {"type": "string"},
         },

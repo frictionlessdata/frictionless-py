@@ -273,8 +273,41 @@ class Schema(Metadata):
 
     metadata_Error = errors.SchemaError
     metadata_Types = dict(fields=Field)
-    metadata_profile = deepcopy(settings.SCHEMA_PROFILE)
-    metadata_profile["properties"]["fields"] = {"type": "array"}
+    metadata_profile = {
+        "type": "object",
+        "required": ["fields"],
+        "properties": {
+            "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "fields": {"type": "array"},
+            "missingValues": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "primaryKey": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "foreignKeys": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "fields": {"type": "array", "items": {"type": "string"}},
+                        "reference": {
+                            "type": "object",
+                            "required": ["fields"],
+                            "properties": {
+                                "resource": {"type": "string"},
+                                "fields": {"type": "array", "items": {"type": "string"}},
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
 
     # TODO: handle edge cases like wrong descriptor's prop types
     @classmethod
