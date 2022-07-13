@@ -1,12 +1,13 @@
+from __future__ import annotations
 import json
+import attrs
 from collections import namedtuple
 from decimal import Decimal
-from dataclasses import dataclass
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class GeopointField(Field):
     type = "geopoint"
     builtin = True

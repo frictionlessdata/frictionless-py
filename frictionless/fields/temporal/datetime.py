@@ -1,11 +1,12 @@
+from __future__ import annotations
+import attrs
 from dateutil import parser
 from datetime import datetime
-from dataclasses import dataclass
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class DatetimeField(Field):
     type = "datetime"
     builtin = True

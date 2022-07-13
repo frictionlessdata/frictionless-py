@@ -1,3 +1,4 @@
+from __future__ import annotations
 import uvicorn
 from ..server import server
 from .main import program

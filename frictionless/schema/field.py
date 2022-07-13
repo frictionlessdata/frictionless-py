@@ -1,10 +1,10 @@
 from __future__ import annotations
 import re
+import attrs
 import decimal
 from functools import partial
 from importlib import import_module
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, ClassVar, Optional, List
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
@@ -17,18 +17,15 @@ if TYPE_CHECKING:
 
 
 # TODO: make abstract?
-@dataclass
+@attrs.define(kw_only=True)
 class Field(Metadata):
     """Field representation"""
 
-    type: str = field(init=False)
-    builtin: bool = field(init=False, default=False)
-    supported_constraints: List[str] = field(init=False)
+    type: ClassVar[str]
+    builtin: ClassVar[bool] = False
+    supported_constraints: ClassVar[List[str]] = []
 
     # State
-
-    format: str = settings.DEFAULT_FIELD_FORMAT
-    """TODO: add docs"""
 
     name: Optional[str] = None
     """TODO: add docs"""
@@ -39,21 +36,21 @@ class Field(Metadata):
     description: Optional[str] = None
     """TODO: add docs"""
 
-    example: Optional[str] = None
+    format: str = settings.DEFAULT_FIELD_FORMAT
     """TODO: add docs"""
 
-    missing_values: List[str] = field(
-        default_factory=settings.DEFAULT_MISSING_VALUES.copy
-    )
+    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """TODO: add docs"""
 
-    constraints: dict = field(default_factory=dict)
+    constraints: dict = attrs.field(factory=dict)
     """TODO: add docs"""
 
     rdf_type: Optional[str] = None
     """TODO: add docs"""
 
-    # TODO: recover
+    example: Optional[str] = None
+    """TODO: add docs"""
+
     schema: Optional[Schema] = None
     """TODO: add docs"""
 

@@ -7,6 +7,36 @@
     "fields"
   ],
   "properties": {
+    "name": {
+      "propertyOrder": 20,
+      "title": "Name",
+      "description": "An identifier string. Lower case characters with `.`, `_`, `-` and `/` are allowed.",
+      "type": "string",
+      "pattern": "^([-a-z0-9._/])+$",
+      "context": "This is ideally a url-usable and human-readable name. Name `SHOULD` be invariant, meaning it `SHOULD NOT` change when its parent descriptor is updated.",
+      "examples": [
+        "{\n  \"name\": \"my-nice-name\"\n}\n"
+      ]
+    },
+    "title": {
+      "propertyOrder": 40,
+      "title": "Title",
+      "description": "A human-readable title.",
+      "type": "string",
+      "examples": [
+        "{\n  \"title\": \"My Package Title\"\n}\n"
+      ]
+    },
+    "description": {
+      "propertyOrder": 50,
+      "format": "textarea",
+      "title": "Description",
+      "description": "A text description. Markdown is encouraged.",
+      "type": "string",
+      "examples": [
+        "{\n  \"description\": \"# My Package description\\nAll about my package.\"\n}\n"
+      ]
+    },
     "fields": {
       "type": "array",
       "minItems": 1,

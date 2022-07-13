@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+import attrs
+from typing import TYPE_CHECKING, ClassVar
 from importlib import import_module
 from ..metadata import Metadata
 from .. import errors
@@ -8,10 +9,11 @@ if TYPE_CHECKING:
     from .dialect import Dialect
 
 
+@attrs.define(kw_only=True)
 class Control(Metadata):
     """Control representation"""
 
-    type: str
+    type: ClassVar[str]
 
     # Convert
 

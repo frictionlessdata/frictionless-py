@@ -1,5 +1,6 @@
-# General
+from __future__ import annotations
 
+# General
 
 DEFAULT_DELIMITER = ","
 DEFAULT_LINE_TERMINATOR = "\r\n"

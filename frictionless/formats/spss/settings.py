@@ -1,5 +1,6 @@
-# General
+from __future__ import annotations
 
+# General
 
 FORMAT_READ = {
     "date": "%Y-%m-%d",

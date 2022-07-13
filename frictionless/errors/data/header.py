@@ -1,9 +1,10 @@
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass
 from .table import TableError
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class HeaderError(TableError):
     """Header error representation"""
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...plugin import Plugin
 from ... import helpers
 from .control import BigqueryControl

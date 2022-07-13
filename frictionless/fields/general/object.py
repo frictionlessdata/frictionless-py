@@ -1,10 +1,11 @@
+from __future__ import annotations
 import json
-from dataclasses import dataclass
+import attrs
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class ObjectField(Field):
     type = "object"
     builtin = True

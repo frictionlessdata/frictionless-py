@@ -1,9 +1,10 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class YearField(Field):
     type = "year"
     builtin = True

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...plugin import Plugin
 from .control import JsonControl
 from .parsers import JsonParser, JsonlParser

@@ -1,10 +1,11 @@
+from __future__ import annotations
 import attrs
 import simpleeval
 from ...checklist import Check
 from ... import errors
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class row_constraint(Check):
     """Check that every row satisfies a provided Python expression"""
 

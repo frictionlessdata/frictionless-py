@@ -1,7 +1,7 @@
 from __future__ import annotations
-from typing import List
+import attrs
+from typing import List, ClassVar
 from importlib import import_module
-from dataclasses import dataclass, field
 from .metadata import Metadata
 from . import helpers
 
@@ -12,17 +12,17 @@ from . import helpers
 # raw data without rendering an error template to an error messsage.
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class Error(Metadata):
     """Error representation"""
 
-    name: str = field(init=False, default="Error")
-    type: str = field(init=False, default="error")
-    tags: List[str] = field(init=False, default_factory=list)
-    template: str = field(init=False, default="{note}")
-    description: str = field(init=False, default="Error")
+    name: ClassVar[str] = "Error"
+    type: ClassVar[str] = "error"
+    tags: ClassVar[List[str]] = []
+    template: ClassVar[str] = "{note}"
+    description: ClassVar[str] = "Error"
 
-    def __post_init__(self):
+    def __attrs_post_init__(self):
         descriptor = self.metadata_export(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
         # TODO: review this situation -- why we set it by hands??
@@ -36,7 +36,7 @@ class Error(Metadata):
     note: str
     """TODO: add docs"""
 
-    message: str = field(init=False)
+    message: str = attrs.field(init=False)
     """TODO: add docs"""
 
     # Metadata

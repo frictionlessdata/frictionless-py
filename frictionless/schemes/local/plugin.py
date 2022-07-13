@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...plugin import Plugin
 from .control import LocalControl
 from .loader import LocalLoader

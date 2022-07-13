@@ -1,8 +1,11 @@
+from __future__ import annotations
+import attrs
 import hashlib
 from ...checklist import Check
 from ... import errors
 
 
+@attrs.define(kw_only=True)
 class duplicate_row(Check):
     """Check for duplicate rows
 

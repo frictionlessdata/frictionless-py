@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...plugin import Plugin
 from .control import PandasControl
 from .parser import PandasParser

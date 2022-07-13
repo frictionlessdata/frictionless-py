@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import csv
 import tempfile
 from itertools import chain

@@ -1,9 +1,10 @@
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass
 from .content import ContentError
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class RowError(ContentError):
     """Row error representation"""
 

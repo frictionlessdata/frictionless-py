@@ -1,10 +1,11 @@
+from __future__ import annotations
 import attrs
 from typing import Optional
 from ...checklist import Check
 from ... import errors
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class table_dimensions(Check):
     """Check for minimum and maximum table dimensions"""
 

@@ -1,8 +1,9 @@
+from __future__ import annotations
+import attrs
 from copy import deepcopy
 from tabulate import tabulate
 from typing import Optional, List
 from importlib import import_module
-from dataclasses import dataclass, field as datafield
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .field import Field
@@ -11,7 +12,7 @@ from .. import helpers
 from .. import errors
 
 
-@dataclass
+@attrs.define
 class Schema(Metadata):
     """Schema representation
 
@@ -24,7 +25,7 @@ class Schema(Metadata):
     ```
     """
 
-    def __post_init__(self):
+    def __attrs_post_init__(self):
 
         # Connect fields
         for field in self.fields:
@@ -32,18 +33,25 @@ class Schema(Metadata):
 
     # State
 
-    fields: List[Field] = datafield(default_factory=list)
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
+    title: Optional[str] = None
     """TODO: add docs"""
 
-    missing_values: List[str] = datafield(
-        default_factory=settings.DEFAULT_MISSING_VALUES.copy
-    )
+    description: Optional[str] = None
     """TODO: add docs"""
 
-    primary_key: List[str] = datafield(default_factory=list)
+    fields: List[Field] = attrs.field(factory=list)
     """TODO: add docs"""
 
-    foreign_keys: List[dict] = datafield(default_factory=list)
+    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
+    """TODO: add docs"""
+
+    primary_key: List[str] = attrs.field(factory=list)
+    """TODO: add docs"""
+
+    foreign_keys: List[dict] = attrs.field(factory=list)
     """TODO: add docs"""
 
     # Props

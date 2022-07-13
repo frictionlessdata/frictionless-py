@@ -1,10 +1,11 @@
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass, field
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class BooleanField(Field):
     type = "boolean"
     builtin = True
@@ -15,10 +16,10 @@ class BooleanField(Field):
 
     # Properties
 
-    true_values: List[str] = field(default_factory=settings.DEFAULT_TRUE_VALUES.copy)
+    true_values: List[str] = attrs.field(factory=settings.DEFAULT_TRUE_VALUES.copy)
     """TODO: add docs"""
 
-    false_values: List[str] = field(default_factory=settings.DEFAULT_FALSE_VALUES.copy)
+    false_values: List[str] = attrs.field(factory=settings.DEFAULT_FALSE_VALUES.copy)
     """TODO: add docs"""
 
     # Read

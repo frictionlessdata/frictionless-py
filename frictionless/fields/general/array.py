@@ -1,11 +1,12 @@
+from __future__ import annotations
 import json
+import attrs
 from typing import Optional
-from dataclasses import dataclass, field
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class ArrayField(Field):
     type = "array"
     builtin = True
@@ -18,7 +19,7 @@ class ArrayField(Field):
 
     # Properties
 
-    array_item: Optional[dict] = field(default_factory=dict)
+    array_item: Optional[dict] = attrs.field(factory=dict)
     """TODO: add docs"""
 
     # Read

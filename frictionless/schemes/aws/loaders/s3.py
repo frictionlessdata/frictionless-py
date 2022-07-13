@@ -1,3 +1,4 @@
+from __future__ import annotations
 import io
 from urllib.parse import urlparse
 from ..control import AwsControl

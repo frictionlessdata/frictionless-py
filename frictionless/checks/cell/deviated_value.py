@@ -1,3 +1,4 @@
+from __future__ import annotations
 import attrs
 import statistics
 from ...checklist import Check
@@ -13,7 +14,7 @@ AVERAGE_FUNCTIONS = {
 }
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class deviated_value(Check):
     """Check for deviated values in a field"""
 

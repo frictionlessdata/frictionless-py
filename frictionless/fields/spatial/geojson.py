@@ -1,11 +1,12 @@
+from __future__ import annotations
 import json
-from dataclasses import dataclass
+import attrs
 from jsonschema.validators import validator_for
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class GeojsonField(Field):
     type = "geojson"
     builtin = True

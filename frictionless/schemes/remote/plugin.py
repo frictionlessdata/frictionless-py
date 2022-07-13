@@ -1,3 +1,4 @@
+from __future__ import annotations
 import requests
 from ...plugin import Plugin
 from .control import RemoteControl

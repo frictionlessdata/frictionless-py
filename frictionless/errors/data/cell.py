@@ -1,9 +1,10 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...exception import FrictionlessException
 from .row import RowError
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class CellError(RowError):
     """Cell error representation"""
 

@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import sys
 import typer
 from typing import List

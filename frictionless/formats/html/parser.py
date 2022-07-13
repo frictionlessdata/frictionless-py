@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import tempfile
 from .control import HtmlControl
 from ...resource import Parser

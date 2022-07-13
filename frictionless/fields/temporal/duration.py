@@ -1,11 +1,12 @@
+from __future__ import annotations
+import attrs
 import isodate
 import datetime
-from dataclasses import dataclass
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class DurationField(Field):
     type = "duration"
     builtin = True

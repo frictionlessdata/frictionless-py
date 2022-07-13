@@ -11,7 +11,7 @@ from .. import helpers
 from .. import errors
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class Dialect(Metadata):
     """Dialect representation"""
 

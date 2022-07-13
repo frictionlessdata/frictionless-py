@@ -1,12 +1,13 @@
+from __future__ import annotations
+import attrs
 import base64
 import rfc3986
 import validators
-from dataclasses import dataclass
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class StringField(Field):
     type = "string"
     builtin = True

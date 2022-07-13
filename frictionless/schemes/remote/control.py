@@ -1,3 +1,4 @@
+from __future__ import annotations
 import attrs
 from typing import Any
 from ...dialect import Control
@@ -5,7 +6,7 @@ from ...system import system
 from . import settings
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class RemoteControl(Control):
     """Remote control representation"""
 

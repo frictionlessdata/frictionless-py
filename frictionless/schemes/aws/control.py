@@ -1,10 +1,11 @@
+from __future__ import annotations
 import os
 import attrs
 from ...dialect import Control
 from . import settings
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class AwsControl(Control):
     """Aws control representation"""
 

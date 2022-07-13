@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import isodate
 import datetime
 import decimal

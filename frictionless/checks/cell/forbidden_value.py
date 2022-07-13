@@ -1,10 +1,11 @@
+from __future__ import annotations
 import attrs
 from typing import List, Any
 from ...checklist import Check
 from ... import errors
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class forbidden_value(Check):
     """Check for forbidden values in a field"""
 

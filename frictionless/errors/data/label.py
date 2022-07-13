@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from .header import HeaderError
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class LabelError(HeaderError):
     """Label error representation"""
 

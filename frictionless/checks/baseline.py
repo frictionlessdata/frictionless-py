@@ -1,7 +1,10 @@
+from __future__ import annotations
+import attrs
 from ..checklist import Check
 from .. import errors
 
 
+@attrs.define(kw_only=True)
 class baseline(Check):
     """Check a table for basic errors
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...exception import FrictionlessException
 from ...resource import Parser
 from .storage import SqlStorage

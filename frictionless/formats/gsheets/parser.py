@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import re
 from ...resource import Parser
 from ...resource import Resource

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import attrs
 from ... import errors
 from ...checklist import Check
 from typing import TYPE_CHECKING, Iterable
@@ -8,6 +9,7 @@ if TYPE_CHECKING:
     from ...error import Error
 
 
+@attrs.define(kw_only=True)
 class ascii_value(Check):
     """Check whether all the string characters in the data are ASCII
 

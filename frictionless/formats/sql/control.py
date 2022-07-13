@@ -1,10 +1,11 @@
+from __future__ import annotations
 import attrs
 from typing import Optional
 from ...dialect import Control
 from . import settings
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class SqlControl(Control):
     """SQL control representation"""
 

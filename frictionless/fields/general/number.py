@@ -1,11 +1,12 @@
+from __future__ import annotations
 import re
+import attrs
 from decimal import Decimal
-from dataclasses import dataclass
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class NumberField(Field):
     type = "number"
     builtin = True

@@ -1,3 +1,5 @@
+from __future__ import annotations
+import attrs
 from ...checklist import Check
 from ... import errors
 
@@ -18,6 +20,7 @@ TRUNCATED_INTEGER_VALUES = [
 ]
 
 
+@attrs.define(kw_only=True)
 class truncated_value(Check):
     """Check for possible truncated values
 

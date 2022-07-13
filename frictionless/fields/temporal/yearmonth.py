@@ -1,10 +1,11 @@
+from __future__ import annotations
+import attrs
 from collections import namedtuple
-from dataclasses import dataclass
 from ...schema import Field
 from ... import settings
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class YearmonthField(Field):
     type = "yearmonth"
     builtin = True
