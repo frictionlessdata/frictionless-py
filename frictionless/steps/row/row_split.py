@@ -30,13 +30,9 @@ class row_split(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["fieldName", "pattern"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "pattern": {"type": "string"},
         },

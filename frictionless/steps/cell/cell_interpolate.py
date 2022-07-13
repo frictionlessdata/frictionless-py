@@ -34,13 +34,9 @@ class cell_interpolate(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["template"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },

@@ -47,13 +47,9 @@ class field_pack(Step):
 
     # Metadata
 
-    metadata_profile = {
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name", "fromNames"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
             "fieldType": {"type": "string"},

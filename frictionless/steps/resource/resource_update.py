@@ -49,13 +49,9 @@ class resource_update(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "name": {"type": "string"},
             "newName": {"type": "string"},
         },

@@ -74,13 +74,9 @@ class table_join(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "resource": {},
             "fieldName": {"type": "string"},
             "mode": {

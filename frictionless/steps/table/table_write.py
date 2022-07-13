@@ -34,13 +34,9 @@ class table_write(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["path"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "path": {"type": "string"},
         },
     }

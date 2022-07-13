@@ -24,15 +24,3 @@ class table_print(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         print(table.look(vrepr=str, style="simple"))  # type: ignore
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

@@ -31,13 +31,9 @@ class row_sort(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["fieldNames"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "fieldNames": {"type": "array"},
             "reverse": {},
         },

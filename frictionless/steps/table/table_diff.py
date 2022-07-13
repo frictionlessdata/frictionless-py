@@ -56,13 +56,9 @@ class table_diff(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "resource": {},
             "ignoreOrder": {},
             "useHash": {},

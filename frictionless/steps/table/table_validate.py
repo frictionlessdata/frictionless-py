@@ -38,15 +38,3 @@ class table_validate(Step):
 
         # Meta
         resource.data = data
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }

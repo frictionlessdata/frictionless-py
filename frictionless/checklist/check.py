@@ -82,7 +82,7 @@ class Check(Metadata):
     # Metadata
 
     metadata_Error = errors.CheckError
-    metadata_profile_base = {
+    metadata_profile = {
         "properties": {
             "type": {"type": "string"},
             "title": {"type": "string"},

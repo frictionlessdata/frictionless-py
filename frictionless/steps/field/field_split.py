@@ -54,13 +54,9 @@ class field_split(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name", "toNames", "pattern"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "name": {"type": "string"},
             "toNames": {},
             "pattern": {},

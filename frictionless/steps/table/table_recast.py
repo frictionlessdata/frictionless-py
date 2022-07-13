@@ -42,13 +42,9 @@ class table_recast(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["fieldName"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "fromFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },

@@ -37,13 +37,9 @@ class row_ungroup(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["groupName", "selection"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "selection": {
                 "type": "string",
                 "enum": ["first", "last", "min", "max"],

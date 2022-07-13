@@ -42,13 +42,8 @@ class cell_convert(Step):
 
     # Metadata
 
-    metadata_profile = {
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "value": {},
             "fieldName": {"type": "string"},
         },

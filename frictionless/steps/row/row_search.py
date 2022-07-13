@@ -39,13 +39,9 @@ class row_search(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["regex"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "regex": {},
             "fieldName": {"type": "string"},
             "negate": {},

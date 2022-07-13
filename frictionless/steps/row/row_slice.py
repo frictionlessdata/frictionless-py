@@ -45,13 +45,8 @@ class row_slice(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "start": {},
             "stop": {},
             "step": {},

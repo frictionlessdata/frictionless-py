@@ -42,13 +42,10 @@ class table_aggregate(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile_patch = {
         "type": "object",
         "required": ["groupName", "aggregation"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "groupName": {"type": "string"},
             "aggregation": {},
         },

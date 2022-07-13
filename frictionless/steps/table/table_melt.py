@@ -51,13 +51,9 @@ class table_melt(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["fieldName"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "variables": {"type": "array"},
             "toFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},

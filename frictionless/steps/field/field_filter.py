@@ -32,13 +32,10 @@ class field_filter(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile_patch = {
         "type": "object",
         "required": ["names"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "names": {"type": "array"},
         },
     }

@@ -31,13 +31,8 @@ class cell_set(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "value": {},
         },

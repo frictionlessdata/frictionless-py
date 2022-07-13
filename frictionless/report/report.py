@@ -219,11 +219,11 @@ class Report(Metadata):
             "name": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "valid": {},
-            "stats": {},
-            "warnings": {},
-            "errors": {},
-            "tasks": {},
+            "valid": {"type": "boolean"},
+            "stats": {"type": "object"},
+            "warnings": {"type": "array"},
+            "errors": {"type": "array"},
+            "tasks": {"type": "array"},
         }
     }
 

@@ -37,13 +37,10 @@ class row_subset(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile_patch = {
         "type": "object",
         "required": ["subset"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "subset": {
                 "type": "string",
                 "enum": ["conflicts", "distinct", "duplicates", "unique"],

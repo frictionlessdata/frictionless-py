@@ -43,13 +43,9 @@ class cell_replace(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["pattern"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "pattern": {"type": "string"},
             "replace": {"type": "string"},
             "fieldName": {"type": "string"},

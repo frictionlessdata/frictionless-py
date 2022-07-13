@@ -91,7 +91,7 @@ class Pipeline(Metadata):
             "name": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "steps": {},
+            "steps": {"type": "array"},
         }
     }
 

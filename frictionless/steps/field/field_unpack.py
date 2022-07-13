@@ -50,13 +50,9 @@ class field_unpack(Step):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name", "toNames"],
         "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
             "name": {"type": "string"},
             "toNames": {"type": "array"},
             "preserve": {},

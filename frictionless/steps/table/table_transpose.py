@@ -26,15 +26,3 @@ class table_transpose(Step):
         resource.schema = None
         resource.data = table.transpose()  # type: ignore
         resource.infer()
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
-        "properties": {
-            "type": {"type": "string"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }
