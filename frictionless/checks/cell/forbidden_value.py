@@ -42,10 +42,9 @@ class forbidden_value(Check):
         "type": "object",
         "requred": ["fieldName", "values"],
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
             "fieldName": {"type": "string"},
             "values": {"type": "array"},
         },

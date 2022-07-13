@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 import simpleeval
-from dataclasses import dataclass
 from typing import Optional, Any
 from ...pipeline import Step
 
@@ -9,13 +10,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_filter(Step):
     """Filter rows"""
 
     type = "row-filter"
 
-    # Properties
+    # State
 
     formula: Optional[Any] = None
     """TODO: add docs"""
@@ -40,7 +41,9 @@ class row_filter(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "formula": {type: "string"},
             "function": {},
         },

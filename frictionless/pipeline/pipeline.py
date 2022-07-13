@@ -1,7 +1,7 @@
 from __future__ import annotations
+import attrs
 from typing import Optional, List
 from importlib import import_module
-from dataclasses import dataclass, field
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
@@ -10,13 +10,22 @@ from .. import errors
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
-@dataclass
+@attrs.define(kw_only=True)
 class Pipeline(Metadata):
     """Pipeline representation"""
 
     # State
 
-    steps: List[Step] = field(default_factory=list)
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
+
+    steps: List[Step] = attrs.field(factory=list)
     """List of transform steps"""
 
     # Props
@@ -79,6 +88,9 @@ class Pipeline(Metadata):
     metadata_Types = dict(steps=Step)
     metadata_profile = {
         "properties": {
+            "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "steps": {},
         }
     }

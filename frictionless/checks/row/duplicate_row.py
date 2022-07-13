@@ -39,9 +39,8 @@ class duplicate_row(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
         },
     }

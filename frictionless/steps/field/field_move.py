@@ -1,5 +1,6 @@
 # type: ignore
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...pipeline import Step
 
 
@@ -8,13 +9,13 @@ from ...pipeline import Step
 # Some of the following step use **options - we need to review/fix it
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class field_move(Step):
     """Move field"""
 
     type = "field-move"
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -36,7 +37,9 @@ class field_move(Step):
         "type": "object",
         "required": ["name", "position"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
             "position": {"type": "number"},
         },

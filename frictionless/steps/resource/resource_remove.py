@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...pipeline import Step
 from ...exception import FrictionlessException
 from ... import errors
@@ -9,13 +10,13 @@ from ... import errors
 # The step updating resource might benefit from having schema_patch argument
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class resource_remove(Step):
     """Remove resource"""
 
     type = "resource-remove"
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -35,7 +36,9 @@ class resource_remove(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
         },
     }

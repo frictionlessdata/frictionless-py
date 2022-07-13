@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+import attrs
+from typing import TYPE_CHECKING, ClassVar, Optional
 from ..metadata import Metadata
 from ..system import system
 from .. import errors
@@ -19,10 +20,19 @@ if TYPE_CHECKING:
 
 
 # TODO: support something like "step.transform_resource_row"
+@attrs.define(kw_only=True)
 class Step(Metadata):
     """Step representation"""
 
-    type: str = "step"
+    type: ClassVar[str] = "step"
+
+    # State
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
 
     # Transform
 
@@ -51,6 +61,13 @@ class Step(Metadata):
     # Metadata
 
     metadata_Error = errors.StepError
+    metadata_profile = {
+        "properties": {
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+        }
+    }
 
     @classmethod
     def metadata_import(cls, descriptor):

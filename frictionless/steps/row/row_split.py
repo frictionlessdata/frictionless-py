@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...pipeline import Step
 
 
@@ -7,13 +8,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_split(Step):
     """Split rows"""
 
     type = "row-add"
 
-    # Properties
+    # State
 
     pattern: str
     """TODO: add docs"""
@@ -33,7 +34,9 @@ class row_split(Step):
         "type": "object",
         "required": ["fieldName", "pattern"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "pattern": {"type": "string"},
         },

@@ -5,5 +5,5 @@ from frictionless import Step
 
 
 def test_step():
-    step = Step.from_descriptor({"code": "table-print"})
-    assert step.code == "table-print"
+    step = Step.from_descriptor({"type": "table-print"})
+    assert step.type == "table-print"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Optional
 from importlib import import_module
 from ..metadata import Metadata
 from .. import errors
@@ -14,6 +14,14 @@ class Control(Metadata):
     """Control representation"""
 
     type: ClassVar[str]
+
+    # State
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
 
     # Convert
 
@@ -31,8 +39,9 @@ class Control(Metadata):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "name": {},
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
         },
     }
 

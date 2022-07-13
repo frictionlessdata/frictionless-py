@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 from ...pipeline import Step
 
 
@@ -37,6 +38,8 @@ class table_pivot(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
         },
     }

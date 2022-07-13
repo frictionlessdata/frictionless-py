@@ -37,7 +37,7 @@ def test_resource_transform_cell_set():
     pipeline = Pipeline.from_descriptor(
         {
             "steps": [
-                {"code": "cell-set", "fieldName": "population", "value": 100},
+                {"type": "cell-set", "fieldName": "population", "value": 100},
             ],
         }
     )

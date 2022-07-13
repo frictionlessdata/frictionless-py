@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...pipeline import Step
 
 
@@ -7,13 +8,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_subset(Step):
     """Subset rows"""
 
     type = "row-subset"
 
-    # Properties
+    # State
 
     subset: str
     """TODO: add docs"""
@@ -40,7 +41,9 @@ class row_subset(Step):
         "type": "object",
         "required": ["subset"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "subset": {
                 "type": "string",
                 "enum": ["conflicts", "distinct", "duplicates", "unique"],

@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 from typing import Optional
-from dataclasses import dataclass
 from ...pipeline import Step
 
 
@@ -8,13 +9,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_slice(Step):
     """Slice rows"""
 
     type = "row-slice"
 
-    # Properties
+    # State
 
     start: Optional[int] = None
     """TODO: add docs"""
@@ -48,7 +49,9 @@ class row_slice(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "start": {},
             "stop": {},
             "step": {},

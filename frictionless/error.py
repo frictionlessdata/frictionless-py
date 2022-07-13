@@ -45,10 +45,10 @@ class Error(Metadata):
         "type": "object",
         "required": ["note"],
         "properties": {
-            "name": {},
             "type": {},
-            "tags": {},
+            "name": {},
             "description": {},
+            "tags": {},
             "message": {},
             "note": {},
         },

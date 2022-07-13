@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 from typing import Optional
 from ...pipeline import Step
 from ... import helpers
@@ -26,7 +27,7 @@ class resource_update(Step):
         self.new_name = new_name
         self.descriptor = helpers.create_descriptor(**options)
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -52,7 +53,9 @@ class resource_update(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
             "newName": {"type": "string"},
         },

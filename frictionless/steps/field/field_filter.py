@@ -1,6 +1,7 @@
 # type: ignore
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass
 from ...pipeline import Step
 
 
@@ -9,13 +10,13 @@ from ...pipeline import Step
 # Some of the following step use **options - we need to review/fix it
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class field_filter(Step):
     """Filter fields"""
 
     type = "field-filter"
 
-    # Properties
+    # State
 
     names: List[str]
     """TODO: add docs"""
@@ -35,7 +36,9 @@ class field_filter(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "names": {"type": "array"},
         },
     }

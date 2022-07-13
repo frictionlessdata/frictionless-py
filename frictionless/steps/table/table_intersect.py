@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import petl
 from ...pipeline import Step
 from ...resource import Resource
@@ -47,7 +48,9 @@ class table_intersect(Step):
         "type": "object",
         "required": ["resource"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "resource": {},
             "useHash": {},
         },

@@ -102,7 +102,7 @@ def test_resource_dialect_header_inline_keyed_headers_is_none():
 
 def test_resource_dialect_header_xlsx_multiline():
     source = "data/multiline-headers.xlsx"
-    control = Control.from_descriptor({"code": "excel", "fillMergedCells": True})
+    control = Control.from_descriptor({"type": "excel", "fillMergedCells": True})
     dialect = Dialect(header_rows=[1, 2, 3, 4, 5], controls=[control])
     with Resource(source, dialect=dialect) as resource:
         header = resource.header

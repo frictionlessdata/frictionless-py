@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 from typing import Any
-from dataclasses import dataclass
 from ...pipeline import Step
 
 
@@ -8,13 +9,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class cell_set(Step):
     """Set cell"""
 
     type = "cell-set"
 
-    # Properties
+    # State
 
     value: Any
     """TODO: add docs"""
@@ -34,7 +35,9 @@ class cell_set(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "value": {},
         },

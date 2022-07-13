@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass
 from ...pipeline import Step
 
 
@@ -8,13 +9,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_sort(Step):
     """Sort rows"""
 
     type = "row-sort"
 
-    # Properties
+    # State
 
     field_names: List[str]
     """TODO: add docs"""
@@ -34,7 +35,9 @@ class row_sort(Step):
         "type": "object",
         "required": ["fieldNames"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "fieldNames": {"type": "array"},
             "reverse": {},
         },

@@ -1,5 +1,6 @@
 # type: ignore
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from ...pipeline import Step
 from ...schema import Field
 
@@ -14,13 +15,13 @@ from ...schema import Field
 # We need to review how we use "target.schema.fields.clear()"
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class table_aggregate(Step):
     """Aggregate table"""
 
     type = "table-aggregate"
 
-    # Properties
+    # State
 
     aggregation: str
     """TODO: add docs"""
@@ -45,7 +46,9 @@ class table_aggregate(Step):
         "type": "object",
         "required": ["groupName", "aggregation"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "groupName": {"type": "string"},
             "aggregation": {},
         },

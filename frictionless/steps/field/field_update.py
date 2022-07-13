@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import simpleeval
 from typing import Optional, Any
 from ...pipeline import Step
@@ -33,7 +34,7 @@ class field_update(Step):
         self.new_name = new_name
         self.descriptor = helpers.create_descriptor(**options)
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -78,7 +79,9 @@ class field_update(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
             "newName": {"type": "string"},
         },

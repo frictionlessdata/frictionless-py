@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 import petl
-from dataclasses import dataclass
 from typing import Optional
 from ...pipeline import Step
 
@@ -9,13 +10,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_search(Step):
     """Search rows"""
 
     type = "row-search"
 
-    # Properties
+    # State
 
     regex: str
     """TODO: add docs"""
@@ -42,7 +43,9 @@ class row_search(Step):
         "type": "object",
         "required": ["regex"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "regex": {},
             "fieldName": {"type": "string"},
             "negate": {},

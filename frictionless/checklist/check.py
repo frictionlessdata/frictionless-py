@@ -24,9 +24,6 @@ class Check(Metadata):
 
     # State
 
-    name: Optional[str] = None
-    """TODO: add docs"""
-
     title: Optional[str] = None
     """TODO: add docs"""
 

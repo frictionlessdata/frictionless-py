@@ -1,6 +1,7 @@
 # type: ignore
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass
 from ...pipeline import Step
 from ...schema import Field
 
@@ -10,13 +11,13 @@ from ...schema import Field
 # Some of the following step use **options - we need to review/fix it
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class field_unpack(Step):
     """Unpack field"""
 
     type = "field-unpack"
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -53,7 +54,9 @@ class field_unpack(Step):
         "type": "object",
         "required": ["name", "toNames"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
             "toNames": {"type": "array"},
             "preserve": {},

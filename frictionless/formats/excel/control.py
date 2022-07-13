@@ -34,8 +34,9 @@ class ExcelControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "name": {"type": "string"},
             "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "sheet": {"type": ["number", "string"]},
             "workbookCache": {"type": "object"},
             "fillMergedCells": {"type": "boolean"},

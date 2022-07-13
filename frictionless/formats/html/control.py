@@ -21,8 +21,9 @@ class HtmlControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "name": {"type": "string"},
             "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "selector": {"type": "string"},
         },
     }

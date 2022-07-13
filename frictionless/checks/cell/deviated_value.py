@@ -90,10 +90,9 @@ class deviated_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
             "fieldName": {"type": "string"},
             "interval": {"type": ["number", "null"]},
             "average": {"type": ["string", "null"]},

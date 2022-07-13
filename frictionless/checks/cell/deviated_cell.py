@@ -75,10 +75,9 @@ class deviated_cell(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
             "interval": {"type": "number"},
             "ignoreFields": {"type": "array"},
         },

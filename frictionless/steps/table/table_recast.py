@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass, field
 from ...pipeline import Step
 
 
@@ -13,18 +14,18 @@ from ...pipeline import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class table_recast(Step):
     """Recast table"""
 
     type = "table-recast"
 
-    # Properties
+    # State
 
     field_name: str
     """TODO: add docs"""
 
-    from_field_names: List[str] = field(default_factory=lambda: ["variable", "value"])
+    from_field_names: List[str] = attrs.field(factory=lambda: ["variable", "value"])
     """TODO: add docs"""
 
     # Transform
@@ -45,7 +46,9 @@ class table_recast(Step):
         "type": "object",
         "required": ["fieldName"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "fromFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },

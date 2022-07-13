@@ -59,6 +59,7 @@ class Resource(Metadata):
         *,
         # Standard
         name: Optional[str] = None,
+        type: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
         profiles: List[str] = [],
@@ -66,7 +67,6 @@ class Resource(Metadata):
         sources: List[dict] = [],
         path: Optional[str] = None,
         data: Optional[Any] = None,
-        type: Optional[str] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
         hashing: Optional[str] = None,
@@ -91,12 +91,12 @@ class Resource(Metadata):
 
         # Store state
         self.name = name
+        self.type = type
         self.title = title
         self.description = description
         self.profiles = profiles.copy()
         self.licenses = licenses.copy()
         self.sources = sources.copy()
-        self.type = type
         self.path = path
         self.data = data
         self.scheme = scheme
@@ -181,6 +181,11 @@ class Resource(Metadata):
     It should be a slugified name of the resource.
     """
 
+    type: Optional[str]
+    """
+    Type of the data e.g. "table"
+    """
+
     title: Optional[str]
     """
     Resource title according to the specs
@@ -211,11 +216,6 @@ class Resource(Metadata):
     It MUST be an array of Source objects.
     Each Source object MUST have a title and
     MAY have path and/or email properties.
-    """
-
-    type: Optional[str]
-    """
-    Type of the data e.g. "table"
     """
 
     path: Optional[str]

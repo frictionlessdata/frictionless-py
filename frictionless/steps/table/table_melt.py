@@ -1,6 +1,7 @@
 # type: ignore
+from __future__ import annotations
+import attrs
 from typing import Optional, List
-from dataclasses import dataclass, field
 from ...pipeline import Step
 from ...schema import Field
 
@@ -15,13 +16,13 @@ from ...schema import Field
 # We need to review how we use "target.schema.fields.clear()"
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class table_melt(Step):
     """Melt tables"""
 
     type = "table-melt"
 
-    # Properties
+    # State
 
     field_name: str
     """TODO: add docs"""
@@ -29,7 +30,7 @@ class table_melt(Step):
     variables: Optional[str] = None
     """TODO: add docs"""
 
-    to_field_names: List[str] = field(default_factory=lambda: ["variable", "value"])
+    to_field_names: List[str] = attrs.field(factory=lambda: ["variable", "value"])
     """TODO: add docs"""
 
     # Transform
@@ -54,7 +55,9 @@ class table_melt(Step):
         "type": "object",
         "required": ["fieldName"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "fieldName": {"type": "string"},
             "variables": {"type": "array"},
             "toFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},

@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 from ...pipeline import Step
 from ...resource import Resource
 
@@ -37,7 +38,9 @@ class table_write(Step):
         "type": "object",
         "required": ["path"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "path": {"type": "string"},
         },
     }

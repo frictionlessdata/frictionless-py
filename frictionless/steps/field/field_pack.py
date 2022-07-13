@@ -1,6 +1,6 @@
 # type: ignore
 from __future__ import annotations
-from dataclasses import dataclass
+import attrs
 from typing import TYPE_CHECKING, Any, List, Iterator, Optional
 from petl.compat import next, text_type
 from ...schema import Field
@@ -10,13 +10,13 @@ if TYPE_CHECKING:
     from ...resource import Resource
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class field_pack(Step):
     """Pack fields"""
 
     type = "field-pack"
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -51,7 +51,9 @@ class field_pack(Step):
         "type": "object",
         "required": ["name", "fromNames"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
             "fieldType": {"type": "string"},

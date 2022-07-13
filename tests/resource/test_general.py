@@ -532,7 +532,7 @@ def test_resource_skip_rows_non_string_cell_issue_320():
     source = "data/issue-320.xlsx"
     dialect = Dialect(
         header_rows=[10, 11, 12],
-        controls=[Control.from_descriptor({"code": "excel", "fillMergedCells": True})],
+        controls=[Control.from_descriptor({"type": "excel", "fillMergedCells": True})],
     )
     with Resource(source, dialect=dialect) as resource:
         assert resource.header[7] == "Current Population Analysed % of total county Pop"

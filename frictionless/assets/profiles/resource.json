@@ -41,6 +41,11 @@
         "{\n  \"name\": \"my-nice-name\"\n}\n"
       ]
     },
+    "type": {
+      "propertyOrder": 25,
+      "title": "Type",
+      "description": "Type of the data e.g. 'table'"
+    },
     "path": {
       "propertyOrder": 30,
       "title": "Path",
@@ -86,11 +91,6 @@
       "propertyOrder": 230,
       "title": "Data",
       "description": "Inline data for this resource."
-    },
-    "type": {
-      "propertyOrder": 25,
-      "title": "Type",
-      "description": "Type of the data e.g. 'table'"
     },
     "schema": {
       "propertyOrder": 40,

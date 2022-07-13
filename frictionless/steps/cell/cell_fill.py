@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from typing import Optional, Any
 from ...pipeline import Step
 
@@ -8,13 +9,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class cell_fill(Step):
     """Fill cell"""
 
     type = "cell-fill"
 
-    # Properties
+    # State
 
     value: Optional[Any] = None
     """TODO: add docs"""
@@ -47,7 +48,9 @@ class cell_fill(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "value": {},
             "fieldName": {"type": "string"},
             "direction": {

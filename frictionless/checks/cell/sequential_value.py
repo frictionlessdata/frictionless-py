@@ -51,10 +51,9 @@ class sequential_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
             "fieldName": {"type": "string"},
         },
     }

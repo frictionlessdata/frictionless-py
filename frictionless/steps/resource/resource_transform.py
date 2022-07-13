@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 from typing import List
-from dataclasses import dataclass
 from ...pipeline import Pipeline, Step
 from ...exception import FrictionlessException
 from ... import errors
@@ -10,13 +11,13 @@ from ... import errors
 # The step updating resource might benefit from having schema_patch argument
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class resource_transform(Step):
     """Transform resource"""
 
     type = "resource-transform"
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -40,7 +41,9 @@ class resource_transform(Step):
         "type": "object",
         "required": ["name", "steps"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
             "steps": {"type": "array"},
         },

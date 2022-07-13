@@ -62,9 +62,8 @@ class truncated_value(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
         },
     }

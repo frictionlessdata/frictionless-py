@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 from typing import Any
-from dataclasses import dataclass
 from ...pipeline import Step
 
 
@@ -13,13 +14,13 @@ from ...pipeline import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class table_debug(Step):
     """Debug table"""
 
     type = "table-debug"
 
-    # Properties
+    # State
 
     function: Any
     """TODO: add docs"""
@@ -45,7 +46,9 @@ class table_debug(Step):
         "type": "object",
         "required": ["function"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "function": {},
         },
     }

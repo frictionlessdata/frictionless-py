@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 import petl
-from dataclasses import dataclass
 from typing import Optional
 from ...pipeline import Step
 
@@ -9,13 +10,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class cell_replace(Step):
     """Replace cell"""
 
     type = "cell-replace"
 
-    # Properties
+    # State
 
     pattern: str
     """TODO: add docs"""
@@ -46,7 +47,9 @@ class cell_replace(Step):
         "type": "object",
         "required": ["pattern"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "pattern": {"type": "string"},
             "replace": {"type": "string"},
             "fieldName": {"type": "string"},

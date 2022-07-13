@@ -29,8 +29,9 @@ class RemoteControl(Control):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "name": {"type": "string"},
             "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "httpSession": {},
             "httpPreload": {"type": "boolean"},
             "httpTimeout": {"type": "number"},

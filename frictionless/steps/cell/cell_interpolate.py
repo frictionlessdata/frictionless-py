@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from __future__ import annotations
+import attrs
 from typing import Optional
 from ...pipeline import Step
 
@@ -8,13 +9,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class cell_interpolate(Step):
     """Interpolate cell"""
 
     type = "cell-interpolate"
 
-    # Properties
+    # State
 
     template: str
     """TODO: add docs"""
@@ -37,7 +38,9 @@ class cell_interpolate(Step):
         "type": "object",
         "required": ["template"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },

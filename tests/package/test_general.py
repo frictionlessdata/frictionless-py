@@ -200,9 +200,7 @@ def test_package_from_zip_innerpath():
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_package_standard_specs_properties(create_descriptor):
     options = dict(
-        resources=[],
         name="name",
-        id="id",
         profiles=["profile"],
         licenses=[],
         sources=[],
@@ -214,15 +212,14 @@ def test_package_standard_specs_properties(create_descriptor):
         keywords=["keyword"],
         image="image",
         created="created",
+        resources=[],
     )
     package = (
         Package(**options)
         if not create_descriptor
         else Package(helpers.create_descriptor(**options))
     )
-    assert package.resources == []
     assert package.name == "name"
-    assert package.id == "id"
     assert package.profiles == ["profile"]
     assert package.licenses == []
     assert package.sources == []
@@ -234,6 +231,7 @@ def test_package_standard_specs_properties(create_descriptor):
     assert package.keywords == ["keyword"]
     assert package.image == "image"
     assert package.created == "created"
+    assert package.resources == []
 
 
 def test_package_description_html():

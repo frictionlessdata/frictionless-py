@@ -38,10 +38,9 @@ class row_constraint(Check):
         "type": "object",
         "requred": ["formula"],
         "properties": {
-            "name": {"type": "string"},
+            "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "type": {"type": "string"},
             "formula": {"type": "string"},
         },
     }

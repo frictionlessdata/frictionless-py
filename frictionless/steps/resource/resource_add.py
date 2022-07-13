@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...pipeline import Step
 from ...resource import Resource
 from ... import helpers
@@ -23,7 +24,7 @@ class resource_add(Step):
         self.name = name
         self.descriptor = helpers.create_descriptor(**options)
 
-    # Properties
+    # State
 
     name: str
     """TODO: add docs"""
@@ -45,7 +46,9 @@ class resource_add(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "name": {"type": "string"},
         },
     }

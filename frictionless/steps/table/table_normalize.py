@@ -1,3 +1,5 @@
+from __future__ import annotations
+import attrs
 from ...pipeline import Step
 
 
@@ -11,6 +13,7 @@ from ...pipeline import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
+@attrs.define(kw_only=True)
 class table_normalize(Step):
     """Normalize table"""
 
@@ -37,6 +40,8 @@ class table_normalize(Step):
         "type": "object",
         "required": [],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
         },
     }

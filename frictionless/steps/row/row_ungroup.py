@@ -1,5 +1,6 @@
+from __future__ import annotations
+import attrs
 import petl
-from dataclasses import dataclass
 from typing import Optional
 from ...pipeline import Step
 
@@ -9,13 +10,13 @@ from ...pipeline import Step
 # Currently, metadata profiles are not fully finished; will require improvements
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class row_ungroup(Step):
     """Ungroup rows"""
 
     type = "row-ungroup"
 
-    # Properties
+    # State
 
     selection: str
     """TODO: add docs"""
@@ -40,7 +41,9 @@ class row_ungroup(Step):
         "type": "object",
         "required": ["groupName", "selection"],
         "properties": {
-            "type": {},
+            "type": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "selection": {
                 "type": "string",
                 "enum": ["first", "last", "min", "max"],

@@ -54,8 +54,6 @@ class Package(Metadata):
         source: Optional[Any] = None,
         *,
         # Standard
-        resources: List[Resource] = [],
-        id: Optional[str] = None,
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
@@ -68,6 +66,7 @@ class Package(Metadata):
         keywords: List[str] = [],
         image: Optional[str] = None,
         created: Optional[str] = None,
+        resources: List[Resource] = [],
         # Software
         innerpath: str = settings.DEFAULT_PACKAGE_INNERPATH,
         basepath: str = settings.DEFAULT_BASEPATH,
@@ -139,18 +138,6 @@ class Package(Metadata):
             return Package(**options)
 
     # State
-
-    resources: List[Resource]
-    """
-    A list of resource descriptors.
-    It can be dicts or Resource instances
-    """
-
-    id: Optional[str]
-    """
-    A property reserved for globally unique identifiers.
-    Examples of identifiers that are unique include UUIDs and DOIs.
-    """
 
     name: Optional[str]
     """
@@ -227,6 +214,12 @@ class Package(Metadata):
     """
     The datetime on which this was created.
     The datetime must conform to the string formats for RFC3339 datetime,
+    """
+
+    resources: List[Resource]
+    """
+    A list of resource descriptors.
+    It can be dicts or Resource instances
     """
 
     innerpath: str
