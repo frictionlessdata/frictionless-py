@@ -42,3 +42,10 @@ def test_inquiry_pprint():
     {'tasks': [{'path': 'data/capital-valid.csv'},
                {'path': 'data/capital-invalid.csv'}]}"""
     assert repr(inquiry) == textwrap.dedent(expected).strip()
+
+
+def test_inquiry_name():
+    inquiry = Inquiry(name="name", tasks=[InquiryTask(path="data/table.csv")])
+    report = inquiry.validate()
+    assert report.valid
+    assert report.name == "name"

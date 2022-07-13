@@ -50,10 +50,10 @@ class Inquiry(Metadata):
         # Validate inquiry
         if self.metadata_errors:
             errors = self.metadata_errors
-            return Report.from_validation(time=timer.time, errors=errors)
+            reports.append(Report.from_validation(time=timer.time, errors=errors))
 
         # Validate sequential
-        if not parallel:
+        elif not parallel:
             for task in self.tasks:
                 report = task.validate(metadata=False)
                 reports.append(report)
@@ -67,10 +67,11 @@ class Inquiry(Metadata):
                     reports.append(Report.from_descriptor(report_descriptor))
 
         # Return report
-        return Report.from_validation_reports(
-            time=timer.time,
-            reports=reports,
-        )
+        report = Report.from_validation_reports(time=timer.time, reports=reports)
+        report.name = self.name
+        report.title = self.title
+        report.description = self.description
+        return report
 
     # Metadata
 

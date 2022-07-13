@@ -1,15 +1,15 @@
 from __future__ import annotations
+import attrs
 import humanize
 from typing import List
 from tabulate import tabulate
-from dataclasses import dataclass, field
 from ..metadata import Metadata
 from ..exception import FrictionlessException
 from ..errors import ReportTaskError
 from ..error import Error
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class ReportTask(Metadata):
     """Report task representation."""
 
@@ -30,13 +30,13 @@ class ReportTask(Metadata):
     stats: dict
     """# TODO: add docs"""
 
-    scope: List[str] = field(default_factory=list)
+    scope: List[str] = attrs.field(factory=list)
     """# TODO: add docs"""
 
-    warnings: List[str] = field(default_factory=list)
+    warnings: List[str] = attrs.field(factory=list)
     """# TODO: add docs"""
 
-    errors: List[Error] = field(default_factory=list)
+    errors: List[Error] = attrs.field(factory=list)
     """# TODO: add docs"""
 
     # Props

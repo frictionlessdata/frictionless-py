@@ -1,7 +1,7 @@
 from __future__ import annotations
+import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, List
-from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List, Optional
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
@@ -12,11 +12,20 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-@dataclass
+@attrs.define(kw_only=True)
 class Report(Metadata):
     """Report representation."""
 
     # State
+
+    name: Optional[str] = None
+    """# TODO: add docs"""
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
 
     valid: bool
     """# TODO: add docs"""
@@ -24,13 +33,13 @@ class Report(Metadata):
     stats: dict
     """# TODO: add docs"""
 
-    warnings: List[str] = field(default_factory=list)
+    warnings: List[str] = attrs.field(factory=list)
     """# TODO: add docs"""
 
-    errors: List[Error] = field(default_factory=list)
+    errors: List[Error] = attrs.field(factory=list)
     """# TODO: add docs"""
 
-    tasks: List[ReportTask] = field(default_factory=list)
+    tasks: List[ReportTask] = attrs.field(factory=list)
     """# TODO: add docs"""
 
     # Props
@@ -195,7 +204,7 @@ class Report(Metadata):
                         headers=["Row", "Field", "Type", "Message"],
                         tablefmt="grid",
                         # TODO: create based on the actual users's terminal width?
-                        maxcolwidths=[5, 5, 20, 90],
+                        maxcolwidths=[5, 5, 20, 90],  # type: ignore
                     )
                 )
                 validation_content += "\n\n"
@@ -207,6 +216,9 @@ class Report(Metadata):
     metadata_Types = dict(tasks=ReportTask)
     metadata_profile = {
         "properties": {
+            "name": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "valid": {},
             "stats": {},
             "warnings": {},
