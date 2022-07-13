@@ -1,6 +1,6 @@
 from __future__ import annotations
+import attrs
 from importlib import import_module
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Optional
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 # TODO: raise an exception if we try export a checklist with function based checks
-@dataclass
+@attrs.define(kw_only=True)
 class Checklist(Metadata):
     """Checklist representation"""
 
@@ -23,13 +23,19 @@ class Checklist(Metadata):
     name: Optional[str] = None
     """# TODO: add docs"""
 
-    checks: List[Check] = field(default_factory=list)
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
+
+    checks: List[Check] = attrs.field(factory=list)
     """# TODO: add docs"""
 
-    pick_errors: List[str] = field(default_factory=list)
+    pick_errors: List[str] = attrs.field(factory=list)
     """# TODO: add docs"""
 
-    skip_errors: List[str] = field(default_factory=list)
+    skip_errors: List[str] = attrs.field(factory=list)
     """# TODO: add docs"""
 
     # Props

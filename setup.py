@@ -56,11 +56,12 @@ EXTRAS_REQUIRE = {
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",
-    "marko>=1.0",
-    "jinja2>=3.0",
     "xlrd>=1.2",
     "xlwt>=1.2",
     "ijson>=3.0",
+    "marko>=1.0",
+    "attrs>=21.0",
+    "jinja2>=3.0",
     "pyyaml>=5.3",
     "isodate>=0.6",
     "rfc3986>=1.4",

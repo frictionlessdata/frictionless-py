@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, ClassVar, Iterable, List, Type
+import attrs
+from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type
 from ..metadata import Metadata
 from ..system import system
 from .. import errors
@@ -10,16 +11,27 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-# We can't use name/title/description in a base before Python3.10/dataclasses
 # TODO: add support for validate_package/etc?
 # TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
+@attrs.define(kw_only=True)
 class Check(Metadata):
     """Check representation."""
 
     type: ClassVar[str] = "check"
     # TODO: can it be just types not objects?
     Errors: ClassVar[List[Type[Error]]] = []
+
+    # State
+
+    name: Optional[str] = None
+    """TODO: add docs"""
+
+    title: Optional[str] = None
+    """TODO: add docs"""
+
+    description: Optional[str] = None
+    """TODO: add docs"""
 
     # Props
 

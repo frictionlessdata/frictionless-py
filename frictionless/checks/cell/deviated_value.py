@@ -1,6 +1,5 @@
+import attrs
 import statistics
-from typing import Optional
-from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
 
@@ -14,7 +13,7 @@ AVERAGE_FUNCTIONS = {
 }
 
 
-@dataclass
+@attrs.define
 class deviated_value(Check):
     """Check for deviated values in a field"""
 
@@ -30,9 +29,6 @@ class deviated_value(Check):
     """# TODO: add docs"""
 
     average: str = DEFAULT_AVERAGE
-    """# TODO: add docs"""
-
-    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Connect

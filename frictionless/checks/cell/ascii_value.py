@@ -1,7 +1,7 @@
 from __future__ import annotations
 from ... import errors
 from ...checklist import Check
-from typing import TYPE_CHECKING, Iterable, Optional
+from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
     from ...table import Row
@@ -18,10 +18,6 @@ class ascii_value(Check):
 
     type = "ascii-value"
     Errors = [errors.AsciiValueError]
-
-    # State
-
-    name: Optional[str] = None
 
     # Validate
 

@@ -1,4 +1,3 @@
-from typing import Optional
 from ...checklist import Check
 from ... import errors
 
@@ -29,11 +28,6 @@ class truncated_value(Check):
 
     type = "truncated-value"
     Errors = [errors.TruncatedValueError]
-
-    # State
-
-    name: Optional[str] = None
-    """# TODO: add docs"""
 
     # Validate
 

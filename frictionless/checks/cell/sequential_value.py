@@ -1,10 +1,9 @@
-from typing import Optional
-from dataclasses import dataclass
+import attrs
 from ...checklist import Check
 from ... import errors
 
 
-@dataclass
+@attrs.define
 class sequential_value(Check):
     """Check that a column having sequential values"""
 
@@ -14,9 +13,6 @@ class sequential_value(Check):
     # State
 
     field_name: str
-    """# TODO: add docs"""
-
-    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Connect

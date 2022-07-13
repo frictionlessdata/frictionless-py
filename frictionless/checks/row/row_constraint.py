@@ -1,10 +1,10 @@
+import attrs
 import simpleeval
-from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
 
 
-@dataclass
+@attrs.define
 class row_constraint(Check):
     """Check that every row satisfies a provided Python expression"""
 

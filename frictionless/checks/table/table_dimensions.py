@@ -1,17 +1,17 @@
+import attrs
 from typing import Optional
-from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
 
 
-@dataclass
+@attrs.define
 class table_dimensions(Check):
     """Check for minimum and maximum table dimensions"""
 
     type = "table-dimensions"
     Errors = [errors.TableDimensionsError]
 
-    # Properties
+    # State
 
     num_rows: Optional[int] = None
     """# TODO: add docs"""

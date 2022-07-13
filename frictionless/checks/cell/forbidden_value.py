@@ -1,11 +1,10 @@
+import attrs
 from typing import List, Any
-from typing import Optional
-from dataclasses import dataclass
 from ...checklist import Check
 from ... import errors
 
 
-@dataclass
+@attrs.define
 class forbidden_value(Check):
     """Check for forbidden values in a field"""
 
@@ -18,9 +17,6 @@ class forbidden_value(Check):
     """# TODO: add docs"""
 
     values: List[Any]
-    """# TODO: add docs"""
-
-    name: Optional[str] = None
     """# TODO: add docs"""
 
     # Validate
