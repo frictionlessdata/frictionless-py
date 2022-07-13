@@ -102,6 +102,17 @@ from frictionless import Resource, transform, steps
                 {},
             ],
         },
+        {
+            "test_id": "all_names_not_existing",
+            "csv_path": "data/transform.csv",
+            "names": ["extra_id", "extra_name", "extra_population"],
+            "expected_schema": {"fields": []},
+            "expected_rows": [
+                {},
+                {},
+                {},
+            ],
+        },
     ],
     ids=lambda scenario: scenario["test_id"],
 )
