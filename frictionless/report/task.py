@@ -82,7 +82,7 @@ class ReportTask(Metadata):
         """
         error_list = {}
         for error in self.errors:
-            error_title = f"{error.name}"
+            error_title = f"{error.title}"
             if error_title not in error_list:
                 error_list[error_title] = 0
             error_list[error_title] += 1

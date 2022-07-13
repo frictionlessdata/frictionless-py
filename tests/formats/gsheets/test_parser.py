@@ -38,7 +38,7 @@ def test_gsheets_parser_bad_url():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "scheme-error"
+    assert error.type == "scheme-error"
     assert error.note.count("404 Client Error: Not Found for url")
 
 

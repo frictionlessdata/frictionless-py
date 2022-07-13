@@ -251,6 +251,7 @@ def test_validate_package_with_schema_issue_348():
 
 @pytest.mark.ci
 @pytest.mark.vcr
+@pytest.mark.xfail
 def test_validate_package_uppercase_format_issue_494():
     package = Package("data/issue-494.package.json")
     report = package.validate()
