@@ -194,7 +194,7 @@ class Dialect(Metadata):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "header": {"type": "boolean"},

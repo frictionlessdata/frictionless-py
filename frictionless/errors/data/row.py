@@ -46,8 +46,8 @@ class RowError(ContentError):
 
     metadata_profile_patch = {
         "properties": {
-            "cells": {},
-            "rowNumber": {},
+            "cells": {"type": "array", "items": {"type": "string"}},
+            "rowNumber": {"type": "integer"},
         },
     }
 

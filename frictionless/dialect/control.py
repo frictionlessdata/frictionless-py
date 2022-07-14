@@ -3,6 +3,7 @@ import attrs
 from typing import TYPE_CHECKING, ClassVar, Optional
 from importlib import import_module
 from ..metadata import Metadata
+from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
@@ -40,7 +41,7 @@ class Control(Metadata):
         "type": "object",
         "required": ["type"],
         "properties": {
-            "type": {"type": "string"},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
         },

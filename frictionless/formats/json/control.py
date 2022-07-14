@@ -25,7 +25,7 @@ class JsonControl(Control):
 
     metadata_profile_patch = {
         "properties": {
-            "keys": {"type": "array"},
+            "keys": {"type": "array", "items": {"type": "string"}},
             "keyed": {"type": "boolean"},
             "property": {"type": "string"},
         },

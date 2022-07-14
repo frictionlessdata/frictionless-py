@@ -7,6 +7,7 @@ from ..metadata import Metadata
 from ..errors import InquiryError
 from .task import InquiryTask
 from ..report import Report
+from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
@@ -81,7 +82,7 @@ class Inquiry(Metadata):
         "type": "object",
         "required": ["tasks"],
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "tasks": {"type": "array", "items": {"type": "object"}},

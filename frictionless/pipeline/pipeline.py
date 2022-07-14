@@ -6,6 +6,7 @@ from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
+from .. import settings
 from .. import helpers
 from .. import errors
 
@@ -91,7 +92,7 @@ class Pipeline(Metadata):
         "type": "object",
         "required": ["steps"],
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "steps": {"type": "array"},

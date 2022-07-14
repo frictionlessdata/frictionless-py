@@ -7,6 +7,7 @@ from ..metadata import Metadata
 from ..exception import FrictionlessException
 from ..errors import ReportTaskError
 from ..error import Error
+from .. import settings
 
 
 @attrs.define(kw_only=True)
@@ -121,8 +122,8 @@ class ReportTask(Metadata):
         ],
         "properties": {
             "valid": {"type": "boolean"},
-            "name": {"type": "string"},
-            "type": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "place": {"type": "string"},
             "stats": {"type": "object"},
             "scope": {"type": "array"},

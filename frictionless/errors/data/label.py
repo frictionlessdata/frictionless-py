@@ -28,9 +28,9 @@ class LabelError(HeaderError):
 
     metadata_profile_patch = {
         "properties": {
-            "label": {},
-            "fieldName": {},
-            "fieldNumber": {},
+            "label": {"type": "string"},
+            "fieldName": {"type": "string"},
+            "fieldNumber": {"type": "integer"},
         },
     }
 

@@ -203,7 +203,6 @@ def test_program_extract_invalid_rows_with_no_invalid_rows():
     assert actual.stdout.count("No invalid rows")
 
 
-@pytest.mark.xfail(reason="Fix")
 def test_program_extract_valid_rows_from_datapackage_with_multiple_resources():
     IS_UNIX = not helpers.is_platform("windows")
     path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
@@ -220,7 +219,6 @@ def test_program_extract_valid_rows_from_datapackage_with_multiple_resources():
     }
 
 
-@pytest.mark.xfail(reason="Fix")
 def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources():
     IS_UNIX = not helpers.is_platform("windows")
     path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"

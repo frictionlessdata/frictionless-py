@@ -615,7 +615,7 @@ class Package(Metadata):
         "type": "object",
         "required": ["resources"],
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "homepage": {"type": "string"},

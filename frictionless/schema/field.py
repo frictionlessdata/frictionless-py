@@ -168,7 +168,7 @@ class Field(Metadata):
         "required": ["name", "type"],
         "properties": {
             "name": {"type": "string"},
-            "type": {"type": "string"},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "format": {"type": "string"},

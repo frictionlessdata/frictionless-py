@@ -23,6 +23,8 @@ VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
+NAME_PATTERN = "^([-a-z0-9._/])+$"
+TYPE_PATTERN = "^([-a-z])+$"
 
 
 # Defaults

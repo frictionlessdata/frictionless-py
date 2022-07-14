@@ -6,6 +6,7 @@ from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .task import ReportTask
+from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
@@ -218,7 +219,7 @@ class Report(Metadata):
         "type": "object",
         "required": ["valid", "stats", "warnings", "errors", "tasks"],
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "valid": {"type": "boolean"},

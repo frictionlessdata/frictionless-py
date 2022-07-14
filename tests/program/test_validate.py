@@ -204,7 +204,6 @@ def test_program_validate_partial_validation_info_933():
     assert actual.stdout.count("Rows Checked(Partial)")
 
 
-@pytest.mark.xfail(reason="Fix")
 def test_program_validate_single_resource_221():
     actual = runner.invoke(
         program, "validate data/datapackage.json --resource-name number-two"

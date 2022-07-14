@@ -26,8 +26,8 @@ class HeaderError(TableError):
 
     metadata_profile_patch = {
         "properties": {
-            "labels": {},
-            "rowNumbers": {},
+            "labels": {"type": "array", "items": {"type": "string"}},
+            "rowNumbers": {"type": "array", "items": {"type": "integer"}},
         },
     }
 

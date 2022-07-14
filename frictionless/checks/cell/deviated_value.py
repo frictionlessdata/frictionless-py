@@ -90,7 +90,7 @@ class deviated_value(Check):
         "required": ["fieldName"],
         "properties": {
             "fieldName": {"type": "string"},
-            "interval": {"type": ["number", "null"]},
-            "average": {"type": ["string", "null"]},
+            "interval": {"type": "number"},
+            "average": {"type": "string"},
         },
     }

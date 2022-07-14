@@ -59,9 +59,9 @@ class CellError(RowError):
 
     metadata_profile_patch = {
         "properties": {
-            "cell": {},
-            "fieldName": {},
-            "fieldNumber": {},
+            "cell": {"type": "string"},
+            "fieldName": {"type": "string"},
+            "fieldNumber": {"type": "integer"},
         },
     }
 

@@ -22,13 +22,3 @@ class RemoteControl(Control):
 
     http_preload: bool = False
     """TODO: add docs"""
-
-    # Metadata
-
-    metadata_profile_patch = {
-        "properties": {
-            "httpSession": {},
-            "httpPreload": {"type": "boolean"},
-            "httpTimeout": {"type": "number"},
-        },
-    }

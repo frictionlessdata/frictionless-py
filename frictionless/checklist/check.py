@@ -4,6 +4,7 @@ import warnings
 from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type
 from ..metadata import Metadata
 from ..system import system
+from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
@@ -88,7 +89,7 @@ class Check(Metadata):
         "type": "object",
         "required": ["type"],
         "properties": {
-            "type": {"type": "string"},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
         },

@@ -19,6 +19,6 @@ class MultipartControl(Control):
 
     metadata_profile_patch = {
         "properties": {
-            "chunkSize": {"type": "number"},
+            "chunkSize": {"type": "integer"},
         },
     }

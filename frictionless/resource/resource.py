@@ -1074,8 +1074,8 @@ class Resource(Metadata):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
-            "type": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "homepage": {"type": "string"},

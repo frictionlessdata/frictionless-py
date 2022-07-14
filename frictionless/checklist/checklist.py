@@ -6,6 +6,7 @@ from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checks import baseline
 from .check import Check
+from .. import settings
 from .. import helpers
 from .. import errors
 
@@ -139,7 +140,7 @@ class Checklist(Metadata):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "checks": {"type": "array"},

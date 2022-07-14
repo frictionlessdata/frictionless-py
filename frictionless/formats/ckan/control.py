@@ -40,7 +40,7 @@ class CkanControl(Control):
             "resource": {"type": "string"},
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},
-            "fields": {"type": "array"},
+            "fields": {"type": "array", "items": {"type": "string"}},
             "limit": {"type": "integer"},
             "sort": {"type": "string"},
             "filters": {"type": "object"},

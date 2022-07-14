@@ -276,7 +276,7 @@ class Schema(Metadata):
         "type": "object",
         "required": ["fields"],
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
