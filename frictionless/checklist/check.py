@@ -95,7 +95,13 @@ class Check(Metadata):
 
     @classmethod
     def metadata_import(cls, descriptor):
+        descriptor = cls.metadata_normalize(descriptor)
+
+        # Type (v1.5)
+        code = descriptor.pop("code", None)
+        if code:
+            descriptor.setdefault("type", code)
+
         if cls is Check:
-            descriptor = cls.metadata_normalize(descriptor)
-            return system.create_check(descriptor)  # type: ignore
+            return system.create_check(descriptor)
         return super().metadata_import(descriptor)

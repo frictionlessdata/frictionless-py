@@ -73,7 +73,13 @@ class Step(Metadata):
 
     @classmethod
     def metadata_import(cls, descriptor):
+        descriptor = cls.metadata_normalize(descriptor)
+
+        # Type (v1.5)
+        code = descriptor.pop("code", None)
+        if code:
+            descriptor.setdefault("type", code)
+
         if cls is Step:
-            descriptor = cls.metadata_normalize(descriptor)
             return system.create_step(descriptor)  # type: ignore
         return super().metadata_import(descriptor)

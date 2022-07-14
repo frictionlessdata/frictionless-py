@@ -97,6 +97,17 @@ class Pipeline(Metadata):
         },
     }
 
+    @classmethod
+    def metadata_import(cls, descriptor):
+        descriptor = cls.metadata_normalize(descriptor)
+
+        # Tasks (v1.5)
+        tasks = descriptor.pop("tasks", [])
+        if tasks and isinstance(tasks[0], dict):
+            descriptor.setdefault("steps", tasks[0].get("steps"))
+
+        return super().metadata_import(descriptor)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 
