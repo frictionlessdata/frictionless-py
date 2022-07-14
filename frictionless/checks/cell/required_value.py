@@ -54,7 +54,7 @@ class required_value(Check):
 
     # Metadata
 
-    metadata_profile = {
+    metadata_profile_patch = {
         "required": ["fieldName", "values"],
         "properties": {
             "fieldName": {"type": "string"},
