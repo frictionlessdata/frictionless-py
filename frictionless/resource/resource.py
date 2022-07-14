@@ -961,7 +961,6 @@ class Resource(Metadata):
 
     # Write
 
-    # TODO: review this method
     def write(self, target=None, **options):
         """Write this resource to the target resource
 
@@ -973,7 +972,7 @@ class Resource(Metadata):
         target = target if native else Resource(target, **options)
         target.infer(sample=False)
         parser = system.create_parser(target)
-        parser.write_row_stream(self.to_copy())
+        parser.write_row_stream(self)
         return target
 
     # Convert
