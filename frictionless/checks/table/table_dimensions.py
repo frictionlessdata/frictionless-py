@@ -85,17 +85,6 @@ class table_dimensions(Check):
     # Metadata
 
     metadata_profile_patch = {
-        # TODO: recover
-        #  "required": {
-        #  "oneOf": [
-        #  "numRows",
-        #  "minRows",
-        #  "maxRows",
-        #  "numFields",
-        #  "minFields",
-        #  "maxFields",
-        #  ]
-        #  },
         "properties": {
             "numRows": {"type": "number"},
             "minRows": {"type": "number"},

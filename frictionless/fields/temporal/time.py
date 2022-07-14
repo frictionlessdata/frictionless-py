@@ -58,12 +58,3 @@ class TimeField(Field):
             return cell
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        4
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}

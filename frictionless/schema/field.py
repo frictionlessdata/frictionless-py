@@ -165,7 +165,7 @@ class Field(Metadata):
     metadata_Error = errors.FieldError
     metadata_profile = {
         "type": "object",
-        "required": ["name"],
+        "required": ["name", "type"],
         "properties": {
             "name": {"type": "string"},
             "type": {"type": "string"},
@@ -177,7 +177,7 @@ class Field(Metadata):
                 "items": {"type": "string"},
             },
             "constraints": {
-                "type": "objects",
+                "type": "object",
                 "properties": {
                     "required": {"type": "boolean"},
                     "unique": {"type": "boolean"},
@@ -190,7 +190,7 @@ class Field(Metadata):
                 },
             },
             "rdfType": {"type": "string"},
-            "example": {"type": "string"},
+            "example": {},
         },
     }
 

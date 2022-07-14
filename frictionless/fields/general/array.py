@@ -3,7 +3,6 @@ import json
 import attrs
 from typing import Optional
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -83,9 +82,8 @@ class ArrayField(Field):
 
     # Metadata
 
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        12
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
+    metadata_profile_patch = {
+        "properties": {
+            "arrayItem": {"type": "object"},
+        }
+    }

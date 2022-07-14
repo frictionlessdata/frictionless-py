@@ -3,7 +3,6 @@ import attrs
 import isodate
 import datetime
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -41,12 +40,3 @@ class DurationField(Field):
             return isodate.duration_isoformat(cell)
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        13
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}

@@ -2,7 +2,6 @@ from __future__ import annotations
 import attrs
 from collections import namedtuple
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -51,15 +50,6 @@ class YearmonthField(Field):
             return f"{cell.year}-{cell.month:02}"
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        7
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
 
 
 # Internal

@@ -8,7 +8,6 @@ import jinja2
 import zipfile
 import tempfile
 from pathlib import Path
-from copy import deepcopy
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException

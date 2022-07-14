@@ -1,7 +1,6 @@
 from __future__ import annotations
 import attrs
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -45,12 +44,3 @@ class YearField(Field):
             return str(cell)
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        6
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}

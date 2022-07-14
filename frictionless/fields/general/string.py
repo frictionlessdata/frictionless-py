@@ -4,7 +4,6 @@ import base64
 import rfc3986
 import validators
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -62,12 +61,14 @@ class StringField(Field):
 
     # Metadata
 
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        0
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
+    metadata_profile_patch = {
+        "properties": {
+            "format": {
+                "type": "string",
+                "enum": ["default", "email", "uri", "binary", "uuid"],
+            },
+        }
+    }
 
 
 # Internal

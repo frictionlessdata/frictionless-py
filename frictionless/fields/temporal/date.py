@@ -64,12 +64,3 @@ class DateField(Field):
             return cell.strftime(format)
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        3
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}

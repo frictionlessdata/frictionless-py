@@ -100,10 +100,11 @@ class NumberField(Field):
 
     # Metadata
 
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        1
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["floatNumber"] = {}
-    metadata_profile["properties"]["example"] = {}
+    metadata_profile_patch = {
+        "properties": {
+            "bareNumber": {"type": "boolean"},
+            "floatNumber": {"type": "boolean"},
+            "decimalChar": {"type": "string"},
+            "groupChar": {"type": "string"},
+        }
+    }

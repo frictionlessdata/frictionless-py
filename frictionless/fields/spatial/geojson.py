@@ -49,12 +49,14 @@ class GeojsonField(Field):
 
     # Metadata
 
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        11
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
+    metadata_profile_patch = {
+        "properties": {
+            "format": {
+                "type": "string",
+                "enum": ["default", "topojson"],
+            },
+        }
+    }
 
 
 # Internal

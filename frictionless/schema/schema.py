@@ -1,6 +1,5 @@
 from __future__ import annotations
 import attrs
-from copy import deepcopy
 from tabulate import tabulate
 from typing import Optional, List
 from importlib import import_module

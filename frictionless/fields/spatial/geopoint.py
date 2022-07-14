@@ -4,7 +4,6 @@ import attrs
 from collections import namedtuple
 from decimal import Decimal
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -70,15 +69,6 @@ class GeopointField(Field):
             return ",".join(map(str, cell))
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        10
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
 
 
 # Internal

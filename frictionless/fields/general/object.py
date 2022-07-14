@@ -2,7 +2,6 @@ from __future__ import annotations
 import json
 import attrs
 from ...schema import Field
-from ... import settings
 
 
 @attrs.define(kw_only=True)
@@ -44,12 +43,3 @@ class ObjectField(Field):
             return json.dumps(cell)
 
         return value_writer
-
-    # Metadata
-
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        9
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}

@@ -21,7 +21,6 @@ def read_asset(*paths, encoding="utf-8"):
 UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
-SCHEMA_PROFILE = json.loads(read_asset("profiles", "schema.json"))
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
 

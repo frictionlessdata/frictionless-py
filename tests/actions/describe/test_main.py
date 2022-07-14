@@ -7,6 +7,7 @@ from frictionless import describe, Resource, Package, formats, helpers
 
 def test_describe():
     resource = describe("data/table.csv")
+    print(resource.metadata_errors)
     assert resource.metadata_valid
     assert resource.to_descriptor() == {
         "name": "table",

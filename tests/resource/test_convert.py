@@ -19,7 +19,7 @@ def test_resource_to_view():
     assert resource.to_view()
 
 
-def test_resource_from_descriptor_layout_v1_5():
+def test_resource_from_descriptor_layout_v1x5():
     resource = Resource.from_descriptor(
         {
             "path": "data/table.csv",
@@ -88,6 +88,7 @@ def test_resource_to_markdown_path_schema():
     assert resource.to_markdown().strip() == expected
 
 
+@pytest.mark.xfail
 def test_resource_to_markdown_path_schema_table():
     descriptor = {
         "name": "main",

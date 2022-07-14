@@ -64,9 +64,8 @@ class IntegerField(Field):
 
     # Metadata
 
-    # TODO: use search/settings
-    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]["anyOf"][
-        2
-    ].copy()
-    metadata_profile["properties"]["missingValues"] = {}
-    metadata_profile["properties"]["example"] = {}
+    metadata_profile_patch = {
+        "properties": {
+            "bareNumber": {"type": "boolean"},
+        }
+    }

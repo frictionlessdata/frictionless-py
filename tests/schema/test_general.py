@@ -352,19 +352,19 @@ def test_schema_pprint_with_constraints():
     schema = Schema.from_descriptor("data/schema-valid.json")
     expected = """
     {'fields': [{'name': 'id',
+                 'type': 'integer',
                  'title': 'ID',
                  'description': 'The id.',
-                 'type': 'integer',
                  'constraints': {'required': True}},
                 {'name': 'name',
+                 'type': 'string',
                  'title': 'Name',
                  'description': 'The name.',
-                 'type': 'string',
                  'constraints': {'required': True}},
                 {'name': 'age',
+                 'type': 'integer',
                  'title': 'Age',
                  'description': 'The age.',
-                 'type': 'integer',
                  'constraints': {'required': True}}],
      'primaryKey': ['id']}
     """
