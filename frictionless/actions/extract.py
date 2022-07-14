@@ -46,6 +46,12 @@ def extract(
     if type == "package":
         package = source
         if not isinstance(package, Package):
+            # TODO: remove when we add these to names kwargs
+            options.pop("schema", None)
+            options.pop("dialect", None)
+            options.pop("checklist", None)
+            options.pop("pipeline", None)
+            options.pop("stats", None)
             package = Package.from_options(package, **options)
         return package.extract(
             limit_rows=limit_rows,

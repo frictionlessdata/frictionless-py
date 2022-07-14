@@ -62,6 +62,12 @@ def validate(
     if type == "package":
         package = source
         if not isinstance(package, Package):
+            # TODO: remove when we add these to names kwargs
+            options.pop("schema", None)
+            options.pop("dialect", None)
+            options.pop("checklist", None)
+            options.pop("pipeline", None)
+            options.pop("stats", None)
             package = Package.from_options(package, **options)
 
         # Resource
@@ -137,7 +143,7 @@ def validate(
     elif type == "schema":
         schema = source
         if not isinstance(schema, Schema):
-            schema = Schema.from_descriptor(schema, **options)
+            schema = Schema.from_descriptor(schema)
         return schema.validate()
 
     # Not supported
