@@ -1075,10 +1075,11 @@ class Resource(Metadata):
     )
     metadata_profile = {
         "type": "object",
-        "oneOf": [
-            {"required": ["path"]},
-            {"required": ["data"]},
-        ],
+        "required": ["path"],
+        #  "oneOf": [
+        #  {"required": ["path"]},
+        #  {"required": ["data"]},
+        #  ],
         "properties": {
             "name": {"type": "string"},
             "type": {"type": "string"},

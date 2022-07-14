@@ -281,11 +281,12 @@ class Metadata(metaclass=Metaclass):
                 if "is valid under each of" in error.message:
                     continue
                 metadata_path = "/".join(map(str, error.path))
-                profile_path = "/".join(map(str, error.schema_path))
+                #  profile_path = "/".join(map(str, error.schema_path))
                 # We need it because of the metadata.__repr__ overriding
                 message = re.sub(r"\s+", " ", error.message)
-                note = '"%s" at "%s" in metadata and at "%s" in profile'
-                note = note % (message, metadata_path, profile_path)
+                note = message
+                if metadata_path:
+                    note = f"{note} of {metadata_path}"
                 yield Error(note=note)
         yield from []
 
