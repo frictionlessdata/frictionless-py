@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Step
 
 
@@ -5,5 +6,6 @@ from frictionless import Step
 
 
 def test_step_from_descriptor_type_v1x5():
-    step = Step.from_descriptor({"code": "table-print"})
-    assert step.to_descriptor() == {"type": "table-print"}
+    with pytest.warns(UserWarning):
+        step = Step.from_descriptor({"code": "table-print"})
+        assert step.to_descriptor() == {"type": "table-print"}

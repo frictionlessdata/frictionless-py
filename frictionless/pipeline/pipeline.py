@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+import warnings
 from typing import Optional, List
 from importlib import import_module
 from ..exception import FrictionlessException
@@ -105,6 +106,9 @@ class Pipeline(Metadata):
         tasks = descriptor.pop("tasks", [])
         if tasks and isinstance(tasks[0], dict):
             descriptor.setdefault("steps", tasks[0].get("steps"))
+            note = 'Pipeline "tasks[].steps" is deprecated in favor of "steps"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         return super().metadata_import(descriptor)
 

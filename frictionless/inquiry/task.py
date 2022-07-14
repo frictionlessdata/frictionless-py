@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+import warnings
 from typing import Optional, List
 from ..metadata import Metadata
 from ..checklist import Checklist
@@ -128,12 +129,15 @@ class InquiryTask(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = cls.metadata_normalize(descriptor)
 
-        # Resource/Package (v1.5)
+        # Source (v1.5)
         source = descriptor.pop("source", None)
         if source:
             type = descriptor.pop("type", "resource")
             name = "resource" if type == "resource" else "package"
             descriptor.setdefault(name, source)
+            note = 'InquiryTask "source" is deprecated in favor of "resource/package"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         return super().metadata_import(descriptor)
 

@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Pipeline, steps
 
 
@@ -10,7 +11,7 @@ def test_pipeline_to_descriptor():
 
 
 def test_pipeline_from_descriptor_tasks_v1x5():
-    pipeline = Pipeline.from_descriptor(
-        {"tasks": [{"steps": [{"code": "table-normalize"}]}]}
-    )
-    assert pipeline.to_descriptor() == {"steps": [{"type": "table-normalize"}]}
+    with pytest.warns(UserWarning):
+        descriptor = {"tasks": [{"steps": [{"code": "table-normalize"}]}]}
+        pipeline = Pipeline.from_descriptor(descriptor)
+        assert pipeline.to_descriptor() == {"steps": [{"type": "table-normalize"}]}

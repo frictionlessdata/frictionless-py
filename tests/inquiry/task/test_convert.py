@@ -1,3 +1,4 @@
+import pytest
 from frictionless import InquiryTask
 
 
@@ -10,10 +11,12 @@ def test_inquiry_task_to_descriptor():
 
 
 def test_inquiry_task_from_descriptor_legacy_source_v1x5():
-    task = InquiryTask.from_descriptor({"source": "metadata.json"})
-    assert task.to_descriptor() == {"resource": "metadata.json"}
+    with pytest.warns(UserWarning):
+        task = InquiryTask.from_descriptor({"source": "metadata.json"})
+        assert task.to_descriptor() == {"resource": "metadata.json"}
 
 
 def test_inquiry_task_from_descriptor_legacy_source_with_type_v1x5():
-    task = InquiryTask.from_descriptor({"source": "metadata.json", "type": "package"})
-    assert task.to_descriptor() == {"package": "metadata.json"}
+    with pytest.warns(UserWarning):
+        task = InquiryTask.from_descriptor({"source": "metadata.json", "type": "package"})
+        assert task.to_descriptor() == {"package": "metadata.json"}

@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+import warnings
 from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type
 from ..metadata import Metadata
 from ..system import system
@@ -101,6 +102,9 @@ class Check(Metadata):
         code = descriptor.pop("code", None)
         if code:
             descriptor.setdefault("type", code)
+            note = 'Check "code" is deprecated in favor of "type"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         if cls is Check:
             return system.create_check(descriptor)

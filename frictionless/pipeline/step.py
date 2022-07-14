@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+import warnings
 from typing import TYPE_CHECKING, ClassVar, Optional
 from ..metadata import Metadata
 from ..system import system
@@ -79,6 +80,9 @@ class Step(Metadata):
         code = descriptor.pop("code", None)
         if code:
             descriptor.setdefault("type", code)
+            note = 'Step "code" is deprecated in favor of "type"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         if cls is Step:
             return system.create_step(descriptor)  # type: ignore

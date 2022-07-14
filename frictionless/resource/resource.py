@@ -1163,12 +1163,18 @@ class Resource(Metadata):
         compression = descriptor.get("compression")
         if compression == "no":
             descriptor.pop("compression")
+            note = 'Resource "compression=no" is deprecated in favor not set value'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         # Layout (v1.5)
         layout = descriptor.pop("layout", None)
         if layout:
             descriptor.setdefault("dialect", {})
             descriptor["dialect"].update(layout)
+            note = 'Resource "layout" is deprecated in favor of "dialect"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         return super().metadata_import(descriptor, **options)
 
