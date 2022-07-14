@@ -215,6 +215,8 @@ class Report(Metadata):
     metadata_Error = ReportError
     metadata_Types = dict(tasks=ReportTask)
     metadata_profile = {
+        "type": "object",
+        "required": ["valid", "stats", "warnings", "errors", "tasks"],
         "properties": {
             "name": {"type": "string"},
             "title": {"type": "string"},
@@ -224,7 +226,7 @@ class Report(Metadata):
             "warnings": {"type": "array"},
             "errors": {"type": "array"},
             "tasks": {"type": "array"},
-        }
+        },
     }
 
     # TODO: validate valid/errors count

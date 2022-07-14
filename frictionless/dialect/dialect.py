@@ -193,7 +193,6 @@ class Dialect(Metadata):
     metadata_Types = dict(controls=Control)
     metadata_profile = {
         "type": "object",
-        "required": [],
         "properties": {
             "name": {"type": "string"},
             "title": {"type": "string"},

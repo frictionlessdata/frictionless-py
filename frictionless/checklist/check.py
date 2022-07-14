@@ -52,6 +52,7 @@ class Check(Metadata):
 
     # Validate
 
+    # TODO: fix these types Iterable -> Generator
     def validate_start(self) -> Iterable[Error]:
         """Called to validate the resource after opening
 
@@ -83,11 +84,13 @@ class Check(Metadata):
 
     metadata_Error = errors.CheckError
     metadata_profile = {
+        "type": "object",
+        "required": ["type"],
         "properties": {
             "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-        }
+        },
     }
 
     @classmethod

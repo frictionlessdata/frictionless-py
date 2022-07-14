@@ -87,12 +87,14 @@ class Pipeline(Metadata):
     metadata_Error = errors.PipelineError
     metadata_Types = dict(steps=Step)
     metadata_profile = {
+        "type": "object",
+        "required": ["steps"],
         "properties": {
             "name": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "steps": {"type": "array"},
-        }
+        },
     }
 
     def metadata_validate(self):

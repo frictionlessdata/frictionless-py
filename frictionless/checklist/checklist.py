@@ -137,6 +137,7 @@ class Checklist(Metadata):
     metadata_Error = errors.ChecklistError
     metadata_Types = dict(checks=Check)
     metadata_profile = {
+        "type": "object",
         "properties": {
             "name": {"type": "string"},
             "title": {"type": "string"},
@@ -144,7 +145,7 @@ class Checklist(Metadata):
             "checks": {"type": "array"},
             "skipErrors": {"type": "array"},
             "pickErrors": {"type": "array"},
-        }
+        },
     }
 
     def metadata_validate(self):

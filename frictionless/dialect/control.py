@@ -38,6 +38,7 @@ class Control(Metadata):
     metadata_Error = errors.ControlError
     metadata_profile = {
         "type": "object",
+        "required": ["type"],
         "properties": {
             "type": {"type": "string"},
             "title": {"type": "string"},

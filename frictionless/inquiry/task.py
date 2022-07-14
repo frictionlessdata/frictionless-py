@@ -105,23 +105,26 @@ class InquiryTask(Metadata):
     metadata_Error = errors.InquiryTaskError
     metadata_Types = dict(dialect=Dialect, schema=Schema, checklist=Checklist)
     metadata_profile = {
+        "type": "object",
+        "oneOf": [
+            {"required": ["path"]},
+            {"required": ["resource"]},
+            {"required": ["package"]},
+        ],
         "properties": {
-            "path": {},
-            "type": {},
-            "scheme": {},
-            "format": {},
-            "hashing": {},
-            "encoding": {},
-            "innerpath": {},
-            "compression": {},
-            "dialect": {},
-            "schema": {},
-            "checklist": {},
-            "resource": {},
-            "package": {},
-        }
+            "path": {"type": "string"},
+            "type": {"type": "string"},
+            "scheme": {"type": "string"},
+            "format": {"type": "string"},
+            "hashing": {"type": "string"},
+            "encoding": {"type": "string"},
+            "compression": {"type": "string"},
+            "extrapaths": {"type": "array"},
+            "innerpath": {"type": "string"},
+            "dialect": {"type": ["object", "string"]},
+            "schema": {"type": ["object", "string"]},
+            "checklist": {"type": ["object", "string"]},
+            "resource": {"type": ["object", "string"]},
+            "package": {"type": ["object", "string"]},
+        },
     }
-
-    # TODO: validate type/descriptor matching
-    def metadata_validate(self):
-        yield from super().metadata_validate()

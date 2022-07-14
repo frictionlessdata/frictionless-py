@@ -62,11 +62,13 @@ class Step(Metadata):
 
     metadata_Error = errors.StepError
     metadata_profile = {
+        "type": "object",
+        "required": ["type"],
         "properties": {
             "type": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-        }
+        },
     }
 
     @classmethod

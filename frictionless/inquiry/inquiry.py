@@ -78,12 +78,14 @@ class Inquiry(Metadata):
     metadata_Error = InquiryError
     metadata_Types = dict(tasks=InquiryTask)
     metadata_profile = {
+        "type": "object",
+        "required": ["tasks"],
         "properties": {
             "name": {"type": "string"},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "tasks": {"type": "array"},
-        }
+            "tasks": {"type": "array", "items": {"type": "object"}},
+        },
     }
 
     def metadata_validate(self):

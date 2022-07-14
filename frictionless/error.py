@@ -43,8 +43,7 @@ class Error(Metadata):
 
     metadata_profile = {
         "type": "object",
-        # TODO: extend required
-        "required": ["note"],
+        "required": ["type", "title", "description", "message", "tags", "note"],
         "properties": {
             "type": {"type": "string"},
             "title": {"type": "string"},

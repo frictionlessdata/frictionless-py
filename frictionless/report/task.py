@@ -21,10 +21,10 @@ class ReportTask(Metadata):
     name: str
     """# TODO: add docs"""
 
-    place: str
+    type: str
     """# TODO: add docs"""
 
-    type: str
+    place: str
     """# TODO: add docs"""
 
     stats: dict
@@ -108,16 +108,27 @@ class ReportTask(Metadata):
     metadata_Error = ReportTaskError
     metadata_Types = dict(errors=Error)
     metadata_profile = {
+        "type": "object",
+        "required": [
+            "valid",
+            "name",
+            "type",
+            "place",
+            "stats",
+            "scope",
+            "warnings",
+            "errors",
+        ],
         "properties": {
-            "valid": {},
-            "name": {},
-            "place": {},
-            "type": {},
-            "stats": {},
-            "scope": {},
-            "warnings": {},
-            "errors": {},
-        }
+            "valid": {"type": "boolean"},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "place": {"type": "string"},
+            "stats": {"type": "object"},
+            "scope": {"type": "array"},
+            "warnings": {"type": "array"},
+            "errors": {"type": "array"},
+        },
     }
 
     # TODO: validate valid/errors count
