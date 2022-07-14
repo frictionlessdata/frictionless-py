@@ -34,7 +34,6 @@ def validate(
     timer = helpers.Timer()
     errors: List[Error] = []
     warnings: List[str] = []
-    descriptor = self.to_descriptor()
 
     # Prepare checklist
     checklist = checklist or self.checklist or Checklist()
@@ -43,18 +42,18 @@ def validate(
         errors = checklist.metadata_errors
         return Report.from_validation(time=timer.time, errors=errors)
 
+    # Validate metadata
+    metadata_errors = list(self.metadata_validate(strict=strict))
+    if metadata_errors:
+        errors = metadata_errors
+        return Report.from_validation_task(self, time=timer.time, errors=errors)
+
     # Prepare resource
     try:
         self.open()
     except FrictionlessException as exception:
         self.close()
         errors = [exception.error]
-        return Report.from_validation_task(self, time=timer.time, errors=errors)
-
-    # Validate metadata
-    metadata = self.from_descriptor(descriptor) if strict else self
-    if not metadata.metadata_valid:
-        errors = metadata.metadata_errors
         return Report.from_validation_task(self, time=timer.time, errors=errors)
 
     # Validate data

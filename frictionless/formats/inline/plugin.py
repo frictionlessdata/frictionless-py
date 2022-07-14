@@ -21,9 +21,9 @@ class InlinePlugin(Plugin):
     def detect_resource(self, resource):
         if resource.data is not None:
             if not hasattr(resource.data, "read"):
-                resource.type = "table"
                 types = (list, typing.Iterator, typing.Generator)
                 if callable(resource.data) or isinstance(resource.data, types):
+                    resource.type = "table"
                     resource.scheme = ""
                     resource.format = "inline"
                     resource.mediatype = "application/inline"

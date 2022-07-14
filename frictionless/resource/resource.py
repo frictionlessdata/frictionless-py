@@ -1075,11 +1075,6 @@ class Resource(Metadata):
     )
     metadata_profile = {
         "type": "object",
-        "required": ["path"],
-        #  "oneOf": [
-        #  {"required": ["path"]},
-        #  {"required": ["data"]},
-        #  ],
         "properties": {
             "name": {"type": "string"},
             "type": {"type": "string"},
@@ -1219,8 +1214,24 @@ class Resource(Metadata):
 
         return descriptor
 
-    def metadata_validate(self):
+    def metadata_validate(self, *, strict=False):
         yield from super().metadata_validate()
+
+        # Required (normal)
+        if self.path is None and self.data is None:
+            note = 'one of the properties "path" or "data" is required'
+            yield errors.ResourceError(note=note)
+
+        # Requried (strict)
+        if strict:
+            names = ["name", "type", "scheme", "format", "hashing", "encoding"]
+            names.append("mediatype")
+            if self.tabular:
+                names.append("schema")
+            for name in names:
+                if getattr(self, name, None) is None:
+                    note = f'property "{name}" is required in a strict mode'
+                    yield errors.ResourceError(note=note)
 
         # Dialect
         if self.dialect:
@@ -1246,7 +1257,7 @@ class Resource(Metadata):
                     _, note = field.read_cell(item.get("email"))
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'
-                        yield errors.PackageError(note=note)
+                        yield errors.ResourceError(note=note)
         # Custom
         for name in ["missingValues", "fields"]:
             if name in self.custom:
