@@ -106,11 +106,6 @@ class InquiryTask(Metadata):
     metadata_Types = dict(dialect=Dialect, schema=Schema, checklist=Checklist)
     metadata_profile = {
         "type": "object",
-        "oneOf": [
-            {"required": ["path"]},
-            {"required": ["resource"]},
-            {"required": ["package"]},
-        ],
         "properties": {
             "path": {"type": "string"},
             "type": {"type": "string"},
@@ -128,3 +123,11 @@ class InquiryTask(Metadata):
             "package": {"type": ["object", "string"]},
         },
     }
+
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # Required (normal)
+        if self.path is None and self.resource is None and self.package is None:
+            note = 'one of the properties "path", "resource", or "package" is required'
+            yield errors.InquiryTaskError(note=note)
