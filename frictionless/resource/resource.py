@@ -656,7 +656,6 @@ class Resource(Metadata):
 
     # Detect
 
-    # TODO: enable validation?
     def __detect_file(self):
 
         # Detect
@@ -664,8 +663,8 @@ class Resource(Metadata):
         system.detect_resource(self)
 
         # Validate
-        #  if not self.metadata_valid:
-        #  raise FrictionlessException(self.metadata_errors[0])
+        if not self.metadata_valid:
+            raise FrictionlessException(self.metadata_errors[0])
 
     def __detect_dialect(self):
 
@@ -1179,7 +1178,7 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if data and not isinstance(data, (list, dict)):
+        if data is not None and not isinstance(data, (list, dict)):
             descriptor["data"] = []
 
         # Path (v1)

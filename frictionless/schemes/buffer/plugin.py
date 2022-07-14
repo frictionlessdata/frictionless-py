@@ -21,3 +21,5 @@ class BufferPlugin(Plugin):
         if resource.data is not None:
             if isinstance(resource.data, bytes):
                 resource.scheme = "buffer"
+        elif resource.scheme == "buffer":
+            resource.data = b""

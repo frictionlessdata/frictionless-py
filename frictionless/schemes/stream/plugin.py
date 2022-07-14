@@ -1,4 +1,5 @@
 from __future__ import annotations
+import io
 from ...plugin import Plugin
 from .control import StreamControl
 from .loader import StreamLoader
@@ -21,3 +22,5 @@ class StreamPlugin(Plugin):
         if resource.data is not None:
             if hasattr(resource.data, "read"):
                 resource.scheme = "stream"
+        elif resource.scheme == "stream":
+            resource.data = io.BufferedRandom(io.BytesIO())  # type: ignore

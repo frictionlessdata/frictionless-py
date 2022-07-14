@@ -250,18 +250,19 @@ class Metadata(metaclass=Metaclass):
         for name in self.metadata_profile.get("properties", []):
             value = getattr(self, stringcase.snakecase(name), None)
             Type = self.metadata_Types.get(name)
-            if value is None or value == {}:
+            if value is None or (isinstance(value, dict) and value == {}):
                 continue
             if name in exclude:
                 continue
             if name != "type":
+                # TODO: use at the top of the loop?
                 if not self.has_defined(stringcase.snakecase(name)):
                     continue
             if Type:
                 if isinstance(value, list):
                     value = [item.to_descriptor_source() for item in value]  # type: ignore
                 else:
-                    value = value.to_descriptor_source()
+                    value = value.to_descriptor_source()  # type: ignore
                     if not value:
                         continue
             descriptor[name] = value

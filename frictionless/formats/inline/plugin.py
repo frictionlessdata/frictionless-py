@@ -27,3 +27,5 @@ class InlinePlugin(Plugin):
                     resource.scheme = ""
                     resource.format = "inline"
                     resource.mediatype = "application/inline"
+        elif resource.format == "inline":
+            resource.data = []

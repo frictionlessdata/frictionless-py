@@ -29,3 +29,7 @@ class PandasPlugin(Plugin):
                 resource.type = "table"
                 resource.scheme = ""
                 resource.format = "pandas"
+                resource.mediatype = "application/pandas"
+        elif resource.format == "pandas":
+            pd = helpers.import_from_extras("pandas", name="pandas")
+            resource.data = pd.DataFrame()
