@@ -43,3 +43,10 @@ class DeviatedCellError(TableError):
     title = "Deviated cell"
     description = "The cell is deviated."
     template = "There is a possible error because the cell is deviated: {note}"
+
+
+class RequiredValueError(TableError):
+    type = "required-value"
+    title = "Required Value"
+    description = "The required values are missing."
+    template = "Required values not found: {note}"
