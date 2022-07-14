@@ -47,6 +47,8 @@ def validate(source=None, type=None, **options):
     # We might resolve it when we convert Detector to be a metadata
     if type in ["inquiry", "schema"]:
         options.pop("detector", None)
+    if type != "package":
+        options.pop("resource_name", None)
     return validate(source, deprecate=False, **options)
 
 
@@ -107,6 +109,9 @@ def validate_package(
     package_options = {}
     signature = inspect.signature(validate_resource)
     for name, value in options.copy().items():
+        # Exclude resource_name from package_options
+        if name == "resource_name":
+            continue
         param = signature.parameters.get(name)
         if not param or param.kind != param.KEYWORD_ONLY:
             package_options[name] = options.pop(name)
@@ -115,6 +120,11 @@ def validate_package(
     try:
         native = isinstance(source, Package)
         package = source.to_copy() if native else Package(source, **package_options)
+        # For single resource validation
+        if "resource_name" in options:
+            return validate_resource(
+                package.get_resource(options["resource_name"]), deprecate=False
+            )
         package_stats = []
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})
@@ -135,7 +145,9 @@ def validate_package(
         errors = []
         for resource, stats in zip(package.resources, package_stats):
             resource.stats = stats
-            report = validate_resource(resource, original=original, **options)
+            report = validate_resource(
+                resource, original=original, deprecate=False, **options
+            )
             tasks.extend(report.tasks)
             errors.extend(report.errors)
         return Report(time=timer.time, errors=errors, tasks=tasks)

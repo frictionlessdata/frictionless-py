@@ -14,6 +14,7 @@ from ..header import Header
 from ..system import system
 from ..field import Field
 from ..row import Row
+from .analyze import analyze
 from .describe import describe
 from .extract import extract
 from .transform import transform
@@ -141,6 +142,7 @@ class Resource(Metadata):
     extract = extract
     transform = transform
     validate = validate
+    analyze = analyze
 
     def __init__(
         self,
@@ -1282,6 +1284,16 @@ class Resource(Metadata):
                     raise FrictionlessException(error)
 
     def metadata_validate(self):
+        # Check invalid properties
+        invalid_fields = {
+            "missingValues": "resource.schema.missingValues",
+            "fields": "resource.schema.fields",
+        }
+        for invalid_field, object in invalid_fields.items():
+            if invalid_field in self:
+                note = f'"{invalid_field}" should be set as "{object}" (not "resource.{invalid_field}").'
+                yield errors.ResourceError(note=note)
+
         yield from super().metadata_validate()
 
         # Control/Dialect

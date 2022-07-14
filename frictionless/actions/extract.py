@@ -1,3 +1,4 @@
+import builtins
 import warnings
 from ..resource import Resource
 from ..package import Package
@@ -6,7 +7,9 @@ from ..system import system
 from .. import errors
 
 
-def extract(source=None, *, type=None, process=None, stream=False, **options):
+def extract(
+    source=None, *, type=None, process=None, stream=False, filter=None, **options
+):
     """Extract resource rows
 
     API      | Usage
@@ -18,6 +21,7 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
         type (str): source type - package of resource (default: infer)
         process? (func): a row processor function
         stream? (bool): return a row stream(s) instead of loading into memory
+        filter? (bool): row processor function to filter valid/invalid rows
         **options (dict): options for the underlaying function
 
     Returns:
@@ -34,11 +38,24 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
     if extract is None:
         note = f"Not supported extract type: {type}"
         raise FrictionlessException(errors.GeneralError(note=note))
-    return extract(source, process=process, stream=stream, deprecate=False, **options)
+    return extract(
+        source,
+        process=process,
+        stream=stream,
+        deprecate=False,
+        filter=filter,
+        **options,
+    )
 
 
 def extract_package(
-    source=None, *, process=None, stream=False, deprecate=True, **options
+    source=None,
+    *,
+    process=None,
+    stream=False,
+    deprecate=True,
+    filter=None,
+    **options,
 ):
     """Extract package rows
 
@@ -50,6 +67,8 @@ def extract_package(
         source (dict|str): data resource descriptor
         process? (func): a row processor function
         stream? (bool): return a row streams instead of loading into memory
+        deprecate? (bool): flag to check if the function is deprecated
+        filter? (bool): row processor function to filter valid/invalid rows
         **options (dict): Package constructor options
 
     Returns:
@@ -65,13 +84,20 @@ def extract_package(
     for number, resource in enumerate(package.resources, start=1):
         key = resource.fullpath if not resource.memory else f"memory{number}"
         data = read_row_stream(resource)
+        data = builtins.filter(filter, data) if filter else data
         data = (process(row) for row in data) if process else data
         result[key] = data if stream else list(data)
     return result
 
 
 def extract_resource(
-    source=None, *, process=None, stream=False, deprecate=True, **options
+    source=None,
+    *,
+    process=None,
+    stream=False,
+    deprecate=True,
+    filter=None,
+    **options,
 ):
     """Extract resource rows
 
@@ -82,6 +108,9 @@ def extract_resource(
     Parameters:
         source (any|Resource): data resource
         process? (func): a row processor function
+        stream? (bool): return a row streams instead of loading into memory
+        deprecate? (bool): flag to check if the function is deprecated
+        filter? (bool): row processor function to filter valid/invalid rows
         **options (dict): Resource constructor options
 
     Returns:
@@ -94,6 +123,7 @@ def extract_resource(
     native = isinstance(source, Resource)
     resource = source.to_copy() if native else Resource(source, **options)
     data = read_row_stream(resource)
+    data = builtins.filter(filter, data) if filter else data
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)
 

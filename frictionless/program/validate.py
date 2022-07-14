@@ -1,7 +1,5 @@
 import sys
-import petl
 import typer
-import textwrap
 from typing import List
 from tabulate import tabulate
 from ..actions import validate
@@ -71,6 +69,8 @@ def program_validate(
     parallel: bool = common.parallel,
     yaml: bool = common.yaml,
     json: bool = common.json,
+    # Resource
+    resource_name: str = common.resource_name,
 ):
     """
     Validate a data source.
@@ -192,6 +192,7 @@ def program_validate(
             limit_memory=limit_memory,
             original=original,
             parallel=parallel,
+            resource_name=resource_name,
         )
     )
 
@@ -214,7 +215,7 @@ def program_validate(
         typer.secho(content)
         raise typer.Exit()
 
-    # Return report
+    # Return validation report errors
     if report.errors:
         content = []
         if is_stdin:
@@ -226,78 +227,11 @@ def program_validate(
         for error in report.errors:
             content.append([error.code, error.message])
         typer.secho(
-            str(
-                petl.util.vis.lookall(
-                    [["code", "message"]] + content, vrepr=str, style="simple"
-                )
-            )
+            str(tabulate(content, headers=["code", "message"], tablefmt="simple"))
         )
 
-    # Return tables
-    prev_invalid = False
-    for number, task in enumerate(report.tasks, start=1):
-        tabular = task.resource.profile == "tabular-data-resource"
-        if number != 1 and prev_invalid:
-            typer.secho("")
-        prefix = "valid" if task.valid else "invalid"
-        suffix = "" if tabular else "(non-tabular)"
-        source = task.resource.path or task.resource.name
-        # for zipped resources append file name
-        if task.resource.innerpath:
-            source = f"{source} => {task.resource.innerpath}"
-        if is_stdin:
-            source = "stdin"
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {source} {suffix}", bold=True)
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        if task.errors:
-            prev_invalid = True
-            typer.secho("")
-            content = []
-            for error in task.errors:
-                content.append(
-                    [
-                        error.get("rowPosition", ""),
-                        error.get("fieldPosition", ""),
-                        error.code,
-                        error.message,
-                    ]
-                )
-            content = _wrap_text_to_colwidths(content)
-            typer.secho(
-                str(
-                    tabulate(
-                        content,
-                        headers=["row", "field", "code", "message"],
-                        tablefmt="simple",
-                    )
-                )
-            )
+    # Return validation report summary and tables
+    typer.secho(str(report.to_summary()))
 
     # Return retcode
     raise typer.Exit(code=int(not report.valid))
-
-
-# TODO:This is a temporary function to use with tabulate as
-# tabulate 0.8.9 does not support text wrap
-def _wrap_text_to_colwidths(
-    list_of_lists: List, colwidths: List = [5, 5, 10, 50]
-) -> List:
-    """Create new list with wrapped text with different column width.
-    Args:
-        list_of_lists (List): List of lines
-        colwidths (List): width for each column
-
-    Returns:
-        List: list of lines with wrapped text
-
-    """
-    result = []
-    for row in list_of_lists:
-        new_row = []
-        for cell, width in zip(row, colwidths):
-            cell = str(cell)
-            wrapped = textwrap.wrap(cell, width=width)
-            new_row.append("\n".join(wrapped))
-        result.append(new_row)
-    return result

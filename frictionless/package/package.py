@@ -1,5 +1,6 @@
 import os
 import json
+import jinja2
 import zipfile
 import tempfile
 from pathlib import Path
@@ -10,6 +11,7 @@ from ..detector import Detector
 from ..resource import Resource
 from ..field import Field
 from ..system import system
+from .analyze import analyze
 from .describe import describe
 from .extract import extract
 from .transform import transform
@@ -118,6 +120,9 @@ class Package(Metadata):
         hashing? (str): a hashing algorithm for resources
             It defaults to 'md5'.
 
+        dialect? (dict|Dialect): Table dialect.
+            For more information, please check the Dialect documentation.
+
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
@@ -126,6 +131,7 @@ class Package(Metadata):
     extract = extract
     transform = transform
     validate = validate
+    analyze = analyze
 
     def __init__(
         self,
@@ -154,6 +160,7 @@ class Package(Metadata):
         onerror="ignore",
         trusted=False,
         hashing=None,
+        dialect=None,
     ):
 
         # Handle source
@@ -197,6 +204,7 @@ class Package(Metadata):
         self.setinitial("created", created)
         self.__basepath = basepath or helpers.parse_basepath(descriptor)
         self.__detector = detector or Detector()
+        self.__dialect = dialect
         self.__onerror = onerror
         self.__trusted = trusted
         self.__hashing = hashing
@@ -508,6 +516,28 @@ class Package(Metadata):
             trusted=self.__trusted,
         )
 
+    def to_er_diagram(self, path=None) -> str:
+        """Generate ERD(Entity Relationship Diagram) from package resources
+        and exports it as .dot file
+
+        Parameters:
+            path (str): target path
+
+        Returns:
+            path(str): location of the .dot file
+
+        Raises:
+            FrictionlessException: on any error
+        """
+        text = to_dot(self)
+        path = path if path else "package.dot"
+        try:
+            helpers.write_file(path, text)
+        except Exception as exc:
+            raise FrictionlessException(self.__Error(note=str(exc))) from exc
+
+        return path
+
     @staticmethod
     def from_bigquery(source, *, dialect=None):
         """Import package from Bigquery
@@ -602,18 +632,21 @@ class Package(Metadata):
         """
         return Package(descriptor=path, **options)
 
-    def to_zip(self, path, *, encoder_class=None):
+    def to_zip(self, path, *, encoder_class=None, compression=zipfile.ZIP_DEFLATED):
         """Save package to a zip
 
         Parameters:
             path (str): target path
             encoder_class (object): json encoder class
+            compression (int): the ZIP compression method to use when
+                writing the archive. Possible values are the ones supported
+                by Python's `zipfile` module.
 
         Raises:
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(path, "w") as archive:
+            with zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
@@ -687,6 +720,7 @@ class Package(Metadata):
                         resource = {"name": f"resource{index+1}"}
                     resource = Resource(
                         resource,
+                        dialect=self.__dialect,
                         basepath=self.__basepath,
                         detector=self.__detector,
                         hashing=self.__hashing,
@@ -701,6 +735,15 @@ class Package(Metadata):
                 dict.__setitem__(self, "resources", resources)
 
     def metadata_validate(self):
+        # Check invalid properties
+        invalid_fields = {
+            "missingValues": "resource.schema.missingValues",
+            "fields": "resource.schema.fields",
+        }
+        for invalid_field, object in invalid_fields.items():
+            if invalid_field in self:
+                note = f'"{invalid_field}" should be set as "{object}" (not "package.{invalid_field}").'
+                yield errors.PackageError(note=note)
 
         # Package
         if self.profile == "data-package":
@@ -742,3 +785,45 @@ class Package(Metadata):
                     if not cell:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
+
+
+# https://github.com/frictionlessdata/frictionless-py/issues/1118
+def to_dot(package: dict) -> str:
+    """Generate graphviz from package, using jinja2 template"""
+
+    template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
+    environ = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_dir),
+        lstrip_blocks=True,
+        trim_blocks=True,
+    )
+    table_template = environ.get_template("table.html")
+    field_template = environ.get_template("field.html")
+    primary_key_template = environ.get_template("primary_key_field.html")
+    graph = environ.get_template("graph.html")
+    edges = []
+    nodes = []
+    for t_name in package.resource_names:
+        resource = package.get_resource(t_name)
+        templates = {k: primary_key_template for k in resource.schema.primary_key}
+        t_fields = [
+            templates.get(f.name, field_template).render(name=f.name, type=f.type)
+            for f in resource.schema.fields
+        ]
+        nodes.append(table_template.render(name=t_name, rows="".join(t_fields)))
+        child_table = t_name
+        for fk in resource.schema.foreign_keys:
+            for foreign_key in fk["fields"]:
+                if fk["reference"]["resource"] == "":
+                    continue
+                parent_table = fk["reference"]["resource"]
+                for parent_primary_key in fk["reference"]["fields"]:
+                    edges.append(
+                        f'"{parent_table}":{parent_primary_key}n -> "{child_table}":{foreign_key}n;'
+                    )
+    output_text = graph.render(
+        name=package.name,
+        tables="\n\t".join(nodes),
+        edges="\n\t".join(edges),
+    )
+    return output_text

@@ -128,3 +128,51 @@ def test_describe_package_expand():
     package = describe("data/chunk*.csv", expand=True)
     assert package.get_resource("chunk1").layout.header is True
     assert package.get_resource("chunk1").schema.missing_values == [""]
+
+
+def test_describe_package_with_dialect_1126():
+    package = describe("data/country-2.csv", dialect={"delimiter": ";"}, type="package")
+    assert package.get_resource("country-2")["schema"] == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "integer", "name": "neighbor_id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
+
+
+def test_describe_package_with_dialect_path_1126():
+    package = describe("data/country-2.csv", dialect="data/dialect.json", type="package")
+    assert package.get_resource("country-2")["schema"] == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "integer", "name": "neighbor_id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
+
+
+def test_describe_package_with_incorrect_dialect_1126():
+    package = describe("data/country-2.csv", dialect={"delimiter": ","}, type="package")
+    assert package.get_resource("country-2")["schema"] == {
+        "fields": [{"type": "string", "name": "# Author: the scientist"}]
+    }
+
+
+def test_describe_package_with_glob_having_one_incorrect_dialect_1126():
+    package = describe("data/country-*.csv", dialect={"delimiter": ","}, type="package")
+    resource_1 = package.get_resource("country-1")
+    resource_2 = package.get_resource("country-2")
+    assert resource_1["schema"] == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "integer", "name": "neighbor_id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
+    assert resource_2["schema"] == {
+        "fields": [{"type": "string", "name": "# Author: the scientist"}]
+    }

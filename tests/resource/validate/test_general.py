@@ -519,3 +519,43 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
             'Duplicate labels in header is not supported with "schema_sync"',
         ],
     ]
+
+
+def test_validate_resource_metadata_errors_with_missing_values_993():
+    resource = Resource("data/resource-with-missingvalues-993.json")
+    assert resource.metadata_errors[0].code == "resource-error"
+    assert (
+        resource.metadata_errors[0].note
+        == '"missingValues" should be set as "resource.schema.missingValues" (not "resource.missingValues").'
+    )
+
+
+def test_validate_resource_metadata_errors_with_fields_993():
+    resource = Resource("data/resource-with-fields-993.json")
+    assert resource.metadata_errors[0].code == "resource-error"
+    assert (
+        resource.metadata_errors[0].note
+        == '"fields" should be set as "resource.schema.fields" (not "resource.fields").'
+    )
+
+
+def test_validate_resource_errors_with_missing_values_993():
+    resource = Resource("data/resource-with-missingvalues-993.json")
+    report = resource.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "resource-error",
+            'The data resource has an error: "missingValues" should be set as "resource.schema.missingValues" (not "resource.missingValues").',
+        ]
+    ]
+
+
+def test_validate_resource_errors_with_fields_993():
+    resource = Resource("data/resource-with-fields-993.json")
+    report = resource.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "resource-error",
+            'The data resource has an error: "fields" should be set as "resource.schema.fields" (not "resource.fields").',
+        ]
+    ]

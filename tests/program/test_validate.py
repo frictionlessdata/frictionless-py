@@ -219,11 +219,12 @@ def test_program_validate_zipped_resources_979():
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert result.exit_code == 1
-    assert result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
-    assert result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
-    assert result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
-    assert result.stdout.count("Schema is not valid")
-    assert result.stdout.strip() == expected.strip()
+    assert (
+        result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
+        and result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
+        and result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
+        and result.stdout.count(expected.strip())
+    )
 
 
 def test_program_validate_long_error_messages_976():
@@ -232,7 +233,53 @@ def test_program_validate_long_error_messages_976():
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert result.exit_code == 1
-    assert result.stdout.strip() == expected.strip()
+    assert result.stdout.count(expected.strip())
+
+
+def test_program_validate_partial_validation_info_933():
+    result = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
+    assert result.exit_code == 1
+    assert result.stdout.count(
+        "The document was partially validated because of one of the limits"
+    )
+    assert result.stdout.count("Rows Checked(Partial)")
+
+
+def test_program_validate_summary_1094():
+    result = runner.invoke(program, "validate data/datapackage.json --type resource")
+    assert result.exit_code == 1
+    assert result.stdout.count("Summary")
+    assert result.stdout.count("File name")
+    assert result.stdout.count("File size")
+    assert result.stdout.count("Total Time Taken (sec)")
+
+
+def test_program_validate_single_resource_221():
+    result = runner.invoke(
+        program, "validate data/datapackage.json --resource-name number-two"
+    )
+    assert result.exit_code == 0
+    assert result.stdout.count("valid: table-reverse.csv")
+
+
+def test_program_validate_single_invalid_resource_221():
+    result = runner.invoke(
+        program, "validate data/datapackage.json --resource-name number-twoo"
+    )
+    assert result.exit_code == 1
+    assert result.stdout.count("invalid: data/datapackage.json")
+
+
+def test_program_validate_multipart_resource_1140():
+    result = runner.invoke(program, "validate data/multipart.package.json")
+    assert result.exit_code == 0
+    assert result.stdout.count("chunk1.csv,chunk2.csv")
+
+
+def test_program_validate_multipart_zipped_resource_1140():
+    result = runner.invoke(program, "validate data/multipart-zipped.package.json")
+    assert result.exit_code == 0
+    assert result.stdout.count("chunk1.csv.zip,chunk2.csv.zip")
 
 
 # Helpers

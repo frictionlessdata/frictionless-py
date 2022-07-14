@@ -1,6 +1,7 @@
 import functools
 from copy import deepcopy
 from importlib import import_module
+from tabulate import tabulate
 from ..metadata import Metadata
 from ..errors import Error, TaskError, ReportError
 from ..exception import FrictionlessException
@@ -166,6 +167,67 @@ class Report(Metadata):
 
         return wrapper
 
+    # Summary
+
+    def to_summary(self):
+        """Summary of the report
+
+        Returns:
+            str: validation report
+        """
+
+        validation_content = ""
+        for task in self.tasks:
+            tabular = task.resource.profile == "tabular-data-resource"
+            prefix = "valid" if task.valid else "invalid"
+            suffix = "" if tabular else "(non-tabular)"
+            source = task.resource.path or task.resource.name
+            # for zipped resources append file name
+            if task.resource.innerpath:
+                source = f"{source} => {task.resource.innerpath}"
+            validation_content += f"\n# {'-'*len(prefix)}"
+            validation_content += f"\n# {prefix}: {source} {suffix}"
+            validation_content += f"\n# {'-'*len(prefix)}"
+            error_content = []
+            if task.errors:
+                for error in task.errors:
+                    error_content.append(
+                        [
+                            error.get("rowPosition", ""),
+                            error.get("fieldPosition", ""),
+                            error.code,
+                            error.message,
+                        ]
+                    )
+            # Validate
+            validation_content += "\n\n"
+            validation_content += "## Summary "
+            validation_content += "\n\n"
+            if task.partial:
+                validation_content += (
+                    "The document was partially validated because of one of the limits\n"
+                )
+                validation_content += "* limit errors \n"
+                validation_content += "* memory Limit"
+                validation_content += "\n\n"
+            validation_content += task.to_summary()
+            validation_content += "\n\n"
+            # errors
+            if task.errors:
+                validation_content += "## Errors "
+                validation_content += "\n\n"
+                validation_content += str(
+                    tabulate(
+                        error_content,
+                        headers=["row", "field", "code", "message"],
+                        tablefmt="grid",
+                        maxcolwidths=[5, 5, 10, 50],
+                    )
+                )
+                validation_content += "\n\n"
+
+        return validation_content
+
     # Metadata
 
     metadata_Error = ReportError
@@ -222,7 +284,7 @@ class ReportTask(Metadata):
         time=None,
         scope=None,
         partial=None,
-        errors=None
+        errors=None,
     ):
 
         # Store provided
@@ -330,6 +392,55 @@ class ReportTask(Metadata):
             context.update(error)
             result.append([context.get(prop) for prop in spec])
         return result
+
+    # Summary
+
+    def to_summary(
+        self,
+    ) -> str:
+        """Generate summary for validation task"
+
+        Returns:
+            str: validation summary
+        """
+        source = self.resource.path or self.resource.name
+        if source and isinstance(source, list):
+            source = ",".join(source)
+        # For zipped resources append file name
+        if self.resource.innerpath:
+            source = f"{source} => {self.resource.innerpath}"
+        # Prepare error lists and last row checked(in case of partial validation)
+        error_list = {}
+        for error in self.errors:
+            error_title = f"{error.name} ({error.code})"
+            if error_title not in error_list:
+                error_list[error_title] = 0
+            error_list[error_title] += 1
+            if self.partial:
+                last_row_checked = error.get("rowPosition", "")
+        rows_checked = last_row_checked if self.partial else None
+        unit = None
+        file_size = self.resource.stats["bytes"]
+        if file_size > 0:
+            unit = helpers.format_bytes(file_size)
+        not_found_text = ""
+        if not unit:
+            if not self.resource.innerpath:
+                not_found_text = "(Not Found)"
+        content = [
+            [f"File name {not_found_text}", source],
+            [f"File size { f'({unit})' if unit else '' }", file_size or "N/A"],
+            ["Total Time Taken (sec)", self.time],
+        ]
+        if rows_checked:
+            content.append(["Rows Checked(Partial)**", rows_checked])
+        if error_list:
+            content.append(["Total Errors", sum(error_list.values())])
+        for code, count in error_list.items():
+            content.append([code, count])
+        return str(
+            tabulate(content, headers=["Description", "Size/Name/Count"], tablefmt="grid")
+        )
 
     # Metadata
 
