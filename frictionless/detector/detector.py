@@ -8,7 +8,6 @@ from copy import copy, deepcopy
 from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..metadata import Metadata
-from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..fields import AnyField
 from ..dialect import Dialect
@@ -425,16 +424,7 @@ class Detector(Metadata):
                 field_descriptor.update(field_patch)
             schema = Schema.from_descriptor(descriptor)
 
-        # Validate schema
-        # NOTE: at some point we might need to remove it for transform needs
-        if len(schema.field_names) != len(set(schema.field_names)):  # type: ignore
-            if self.schema_sync:
-                note = 'Duplicate labels in header is not supported with "schema_sync"'
-                raise FrictionlessException(errors.SchemaError(note=note))
-            note = "Schemas with duplicate field names are not supported"
-            raise FrictionlessException(errors.SchemaError(note=note))
-
-        return schema  # type: ignore
+        return schema
 
     # Metadata
 

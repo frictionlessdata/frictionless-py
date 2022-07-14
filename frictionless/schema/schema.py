@@ -343,6 +343,12 @@ class Schema(Metadata):
             if field.builtin:
                 yield from field.metadata_errors
 
+        # Field Names
+        field_names = list(filter(lambda name: name, self.field_names))
+        if len(field_names) != len(set(field_names)):
+            note = "names of the fields are not unique"
+            yield errors.SchemaError(note=note)
+
         # Examples
         for field in [field for field in self.fields if field.example]:
             _, notes = field.read_cell(field.example)
