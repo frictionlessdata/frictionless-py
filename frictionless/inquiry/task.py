@@ -124,6 +124,19 @@ class InquiryTask(Metadata):
         },
     }
 
+    @classmethod
+    def metadata_import(cls, descriptor):
+        descriptor = cls.metadata_normalize(descriptor)
+
+        # Resource/Package (v1.5)
+        source = descriptor.pop("source", None)
+        if source:
+            type = descriptor.pop("type", "resource")
+            name = "resource" if type == "resource" else "package"
+            descriptor.setdefault(name, source)
+
+        return super().metadata_import(descriptor)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 
