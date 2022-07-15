@@ -127,6 +127,7 @@ class Resource(Metadata):
         # Store internal state
         self.__loader = None
         self.__parser = None
+        self.__buffer = None
         self.__sample = None
         self.__labels = None
         self.__fragment = None
@@ -504,11 +505,9 @@ class Resource(Metadata):
         These buffer bytes are used to infer characteristics of the
         source file (e.g. encoding, ...).
         """
-        if self.__parser and self.__parser.loader:
-            return self.__parser.loader.buffer
-        if self.__loader:
-            return self.__loader.buffer
-        raise FrictionlessException("resource is not open")
+        if self.__buffer is None:
+            raise FrictionlessException("resource is not open or non binary")
+        return self.__buffer
 
     @property
     def sample(self) -> ISample:
@@ -521,7 +520,7 @@ class Resource(Metadata):
             list[]?: table sample
         """
         if self.__sample is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__sample
 
     @property
@@ -531,7 +530,7 @@ class Resource(Metadata):
             str[]?: table labels
         """
         if self.__labels is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__labels
 
     @property
@@ -545,7 +544,7 @@ class Resource(Metadata):
             list[]?: table fragment
         """
         if self.__fragment is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__fragment
 
     @property
@@ -555,7 +554,7 @@ class Resource(Metadata):
             str[]?: table header
         """
         if self.__header is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__header
 
     @property
@@ -565,7 +564,7 @@ class Resource(Metadata):
             str[]?: table lookup
         """
         if self.__lookup is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__lookup
 
     @property
@@ -576,7 +575,7 @@ class Resource(Metadata):
             gen<bytes>?: byte stream
         """
         if self.closed:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non binary")
         if not self.__loader:
             self.__loader = system.create_loader(self)
             self.__loader.open()
@@ -590,7 +589,7 @@ class Resource(Metadata):
             gen<str[]>?: text stream
         """
         if self.closed:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non textual")
         if not self.__loader:
             self.__loader = system.create_loader(self)
             self.__loader.open()
@@ -604,7 +603,7 @@ class Resource(Metadata):
             gen<any[][]>?: cell stream
         """
         if self.__parser is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__parser.cell_stream
 
     @property
@@ -615,7 +614,7 @@ class Resource(Metadata):
             gen<Row[]>?: row stream
         """
         if self.__row_stream is None:
-            raise FrictionlessException("resource is not open")
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
 
     # Infer
@@ -658,7 +657,11 @@ class Resource(Metadata):
             if self.type == "table" and not as_file:
                 self.__parser = system.create_parser(self)
                 self.__parser.open()
+                self.__buffer = self.__read_buffer()
+                self.__sample = self.__read_sample()
                 self.__detect_dialect()
+                self.__labels = self.__read_labels()
+                self.__fragment = self.__read_fragment()
                 self.__detect_schema()
                 self.__header = self.__read_header()
                 self.__lookup = self.__read_lookup()
@@ -669,6 +672,7 @@ class Resource(Metadata):
             else:
                 self.__loader = system.create_loader(self)
                 self.__loader.open()
+                self.__buffer = self.__read_buffer()
                 return self
 
         # Error
@@ -707,35 +711,34 @@ class Resource(Metadata):
                 self.__dialect.set_control(self.__control)
 
         # Validate
+        self.metadata_assigned.add("dialect")
         if not self.metadata_valid:
             raise FrictionlessException(self.metadata_errors[0])
 
     def __detect_dialect(self):
 
         # Detect
-        self.__sample = self.__parser.sample  # type: ignore
         self.__dialect = self.detector.detect_dialect(
-            self.__sample,
-            dialect=self.dialect if self.has_dialect else None,
+            self.sample, dialect=self.dialect if self.has_dialect else None
         )
 
         # Validate
+        self.metadata_assigned.add("dialect")
         if not self.dialect.metadata_valid:
             raise FrictionlessException(self.dialect.metadata_errors[0])
 
     def __detect_schema(self):
 
         # Detect
-        self.__labels = self.dialect.read_labels(self.sample)
-        self.__fragment = self.dialect.read_fragment(self.sample)
         self.__schema = self.detector.detect_schema(
-            self.__fragment,
-            labels=self.__labels,
+            self.fragment,
+            labels=self.labels,
             schema=self.schema if self.has_schema else None,
             field_candidates=system.create_field_candidates(),
         )
 
         # Validate
+        self.metadata_assigned.add("schema")
         if not self.schema.metadata_valid:
             raise FrictionlessException(self.schema.metadata_errors[0])
 
@@ -803,6 +806,22 @@ class Resource(Metadata):
                 if size and len(rows) >= size:
                     break
             return rows
+
+    def __read_buffer(self):
+        if self.__parser and self.__parser.loader:
+            return self.__parser.loader.buffer
+        elif self.__loader:
+            return self.__loader.buffer
+
+    def __read_sample(self):
+        if self.__parser:
+            return self.__parser.sample
+
+    def __read_labels(self):
+        return self.dialect.read_labels(self.sample)
+
+    def __read_fragment(self):
+        return self.dialect.read_fragment(self.sample)
 
     def __read_header(self):
 

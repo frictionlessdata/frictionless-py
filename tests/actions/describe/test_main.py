@@ -7,7 +7,7 @@ from frictionless import describe, Resource, Package, formats, helpers
 
 def test_describe():
     resource = describe("data/table.csv")
-    print(resource.metadata_errors)
+    print(resource.list_defined())
     assert resource.metadata_valid
     assert resource.to_descriptor() == {
         "name": "table",
@@ -81,6 +81,7 @@ def test_describe_package_type_package():
 def test_describe_blank_cells_issue_7():
     source = b"header1,header2\n1,\n2,\n3,\n"
     resource = describe(source, format="csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
@@ -92,6 +93,7 @@ def test_describe_blank_cells_issue_7():
 def test_describe_whitespace_cells_issue_7():
     source = b"header1,header2\n1, \n2, \n3, \n"
     resource = describe(source, format="csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
@@ -104,6 +106,7 @@ def test_describe_whitespace_cells_with_skip_initial_space_issue_7():
     source = b"header1,header2\n1, \n2, \n3, \n"
     control = formats.CsvControl(skip_initial_space=True)
     resource = describe(source, format="csv", control=control)
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},

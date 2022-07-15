@@ -58,7 +58,7 @@ class Metadata(metaclass=Metaclass):
         return obj
 
     def __setattr__(self, name, value):
-        if not name.startswith("metadata_"):
+        if not name.startswith(("_", "metadata_")):
             if self.metadata_initiated:
                 if value is not None:
                     self.metadata_assigned.add(name)

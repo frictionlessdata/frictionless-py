@@ -199,7 +199,7 @@ class SqlStorage(Storage):
             sql_tables = []
             self.delete_package(delete_names)
             for resource in package.resources:
-                if not resource.schema:
+                if not resource.has_schema:
                     resource.infer()
                 sql_table = self.__write_convert_schema(resource)
                 sql_tables.append(sql_table)
