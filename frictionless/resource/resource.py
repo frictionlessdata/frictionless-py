@@ -23,6 +23,8 @@ from . import methods
 
 
 if TYPE_CHECKING:
+    from .loader import Loader
+    from .parser import Parser
     from ..package import Package
     from ..interfaces import IDescriptorSource, IOnerror, IBuffer, ISample, IFragment
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
@@ -125,15 +127,15 @@ class Resource(Metadata):
         self.__detector = detector
 
         # Store internal state
-        self.__loader = None
-        self.__parser = None
-        self.__buffer = None
-        self.__sample = None
-        self.__labels = None
-        self.__fragment = None
-        self.__header = None
-        self.__lookup = None
-        self.__row_stream = None
+        self.__loader: Optional[Loader] = None
+        self.__parser: Optional[Parser] = None
+        self.__buffer: Optional[IBuffer] = None
+        self.__sample: Optional[ISample] = None
+        self.__labels: Optional[ILabels] = None
+        self.__fragment: Optional[IFragment] = None
+        self.__header: Optional[Header] = None
+        self.__lookup: Optional[Lookup] = None
+        self.__row_stream: Optional[IRowStream] = None
 
         # Handled by the create hook
         assert source is None
@@ -626,8 +628,8 @@ class Resource(Metadata):
             sample? (bool): open file and infer from a sample (default: True)
             stats? (bool): stream file completely and infer stats
         """
-        if not sample:
-            self.__detect_file()
+        if sample is False:
+            self.__prepare_file()
             return
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
@@ -648,31 +650,29 @@ class Resource(Metadata):
 
         # Prepare
         self.close()
-        self.__detect_file()
+        self.__prepare_file()
 
         # Open
         try:
 
             # Table
             if self.type == "table" and not as_file:
-                self.__parser = system.create_parser(self)
-                self.__parser.open()
-                self.__buffer = self.__read_buffer()
-                self.__sample = self.__read_sample()
-                self.__detect_dialect()
-                self.__labels = self.__read_labels()
-                self.__fragment = self.__read_fragment()
-                self.__detect_schema()
-                self.__header = self.__read_header()
-                self.__lookup = self.__read_lookup()
-                self.__row_stream = self.__read_row_stream()
+                self.__prepare_parser()
+                self.__prepare_buffer()
+                self.__prepare_sample()
+                self.__prepare_dialect()
+                self.__prepare_labels()
+                self.__prepare_fragment()
+                self.__prepare_schema()
+                self.__prepare_header()
+                self.__prepare_lookup()
+                self.__prepare_row_stream()
                 return self
 
             # File
             else:
-                self.__loader = system.create_loader(self)
-                self.__loader.open()
-                self.__buffer = self.__read_buffer()
+                self.__prepare_loader()
+                self.__prepare_buffer()
                 return self
 
         # Error
@@ -681,7 +681,7 @@ class Resource(Metadata):
             raise
 
     def close(self) -> None:
-        """Close the table as "filelike.close" does"""
+        """Close the resource as "filelike.close" does"""
         if self.__parser:
             self.__parser.close()
             self.__parser = None
@@ -698,9 +698,7 @@ class Resource(Metadata):
         """
         return self.__parser is None and self.__loader is None
 
-    # Detect
-
-    def __detect_file(self):
+    def __prepare_file(self):
 
         # Detect
         self.detector.detect_resource(self)
@@ -715,11 +713,40 @@ class Resource(Metadata):
         if not self.metadata_valid:
             raise FrictionlessException(self.metadata_errors[0])
 
-    def __detect_dialect(self):
+    def __prepare_loader(self):
+
+        # Create/open
+        self.__loader = system.create_loader(self)
+        self.__loader.open()
+
+    def __prepare_buffer(self):
+
+        # From parser
+        if self.__parser and self.__parser.loader:
+            self.__buffer = self.__parser.loader.buffer
+
+        # From loader
+        elif self.__loader:
+            self.__buffer = self.__loader.buffer
+
+    def __prepare_parser(self):
+
+        # Create/open
+        self.__parser = system.create_parser(self)
+        self.__parser.open()
+
+    def __prepare_sample(self):
+
+        # From parser
+        if self.__parser:
+            self.__sample = self.__parser.sample
+
+    def __prepare_dialect(self):
 
         # Detect
         self.__dialect = self.detector.detect_dialect(
-            self.sample, dialect=self.dialect if self.has_dialect else None
+            self.sample,
+            dialect=self.dialect if self.has_dialect else None,
         )
 
         # Validate
@@ -727,7 +754,17 @@ class Resource(Metadata):
         if not self.dialect.metadata_valid:
             raise FrictionlessException(self.dialect.metadata_errors[0])
 
-    def __detect_schema(self):
+    def __prepare_labels(self):
+
+        # From sample
+        self.__labels = self.dialect.read_labels(self.sample)
+
+    def __prepare_fragment(self):
+
+        # From sample
+        self.__fragment = self.dialect.read_fragment(self.sample)
+
+    def __prepare_schema(self):
 
         # Detect
         self.__schema = self.detector.detect_schema(
@@ -742,91 +779,10 @@ class Resource(Metadata):
         if not self.schema.metadata_valid:
             raise FrictionlessException(self.schema.metadata_errors[0])
 
-    # Read
-
-    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
-        """Read bytes into memory
-
-        Returns:
-            any[][]: resource bytes
-        """
-        if self.memory:
-            return b""
-        with helpers.ensure_open(self):
-            return self.byte_stream.read1(size)  # type: ignore
-
-    def read_text(self, *, size: Optional[int] = None) -> str:
-        """Read text into memory
-
-        Returns:
-            str: resource text
-        """
-        if self.memory:
-            return ""
-        with helpers.ensure_open(self):
-            return self.text_stream.read(size)  # type: ignore
-
-    def read_data(self, *, size: Optional[int] = None) -> Any:
-        """Read data into memory
-
-        Returns:
-            any: resource data
-        """
-        if self.data:
-            return self.data
-        with helpers.ensure_open(self):
-            text = self.read_text(size=size)
-            data = json.loads(text)
-            return data
-
-    def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
-        """Read lists into memory
-
-        Returns:
-            any[][]: table lists
-        """
-        with helpers.ensure_open(self):
-            result = []
-            for cells in self.cell_stream:
-                result.append(cells)
-                if size and len(result) >= size:
-                    break
-            return result
-
-    def read_rows(self, *, size=None) -> List[Row]:
-        """Read rows into memory
-
-        Returns:
-            Row[]: table rows
-        """
-        with helpers.ensure_open(self):
-            rows = []
-            for row in self.row_stream:
-                rows.append(row)
-                if size and len(rows) >= size:
-                    break
-            return rows
-
-    def __read_buffer(self):
-        if self.__parser and self.__parser.loader:
-            return self.__parser.loader.buffer
-        elif self.__loader:
-            return self.__loader.buffer
-
-    def __read_sample(self):
-        if self.__parser:
-            return self.__parser.sample
-
-    def __read_labels(self):
-        return self.dialect.read_labels(self.sample)
-
-    def __read_fragment(self):
-        return self.dialect.read_fragment(self.sample)
-
-    def __read_header(self):
+    def __prepare_header(self):
 
         # Create header
-        header = Header(
+        self.__header = Header(
             self.__labels,
             fields=self.schema.fields,
             row_numbers=self.dialect.header_rows,
@@ -834,25 +790,15 @@ class Resource(Metadata):
         )
 
         # Handle errors
-        if not header.valid:
-            error = header.errors[0]
+        if not self.header.valid:
+            error = self.header.errors[0]
             if self.onerror == "warn":
                 warnings.warn(error.message, UserWarning)
             elif self.onerror == "raise":
                 raise FrictionlessException(error)
 
-        return header
-
-    def __read_lookup(self) -> Lookup:
-        """Detect lookup from resource
-
-        Parameters:
-            resource (Resource): tabular resource
-
-        Returns:
-            dict: lookup
-        """
-        lookup = Lookup()
+    def __prepare_lookup(self):
+        self.__lookup = Lookup()
         for fk in self.schema.foreign_keys:
 
             # Prepare source
@@ -874,10 +820,10 @@ class Resource(Metadata):
                 source_res.schema.foreign_keys = []
 
             # Prepare lookup
-            lookup.setdefault(source_name, {})
-            if source_key in lookup[source_name]:
+            self.__lookup.setdefault(source_name, {})
+            if source_key in self.__lookup[source_name]:
                 continue
-            lookup[source_name][source_key] = set()
+            self.__lookup[source_name][source_key] = set()
             if not source_res:
                 continue
             with source_res:
@@ -885,11 +831,9 @@ class Resource(Metadata):
                     cells = tuple(row.get(field_name) for field_name in source_key)
                     if set(cells) == {None}:
                         continue
-                    lookup[source_name][source_key].add(cells)
+                    self.__lookup[source_name][source_key].add(cells)
 
-        return lookup
-
-    def __read_row_stream(self):
+    def __prepare_row_stream(self):
 
         # TODO: we need to rework this field_info / row code
         # During row streaming we crate a field info structure
@@ -1012,8 +956,73 @@ class Resource(Metadata):
             self.stats["fields"] = len(self.schema.fields)
             self.stats["rows"] = row_count
 
-        # Return row stream
-        return row_stream()
+        # Crreate row stream
+        self.__row_stream = row_stream()
+
+    # Read
+
+    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
+        """Read bytes into memory
+
+        Returns:
+            any[][]: resource bytes
+        """
+        if self.memory:
+            return b""
+        with helpers.ensure_open(self):
+            return self.byte_stream.read1(size)  # type: ignore
+
+    def read_text(self, *, size: Optional[int] = None) -> str:
+        """Read text into memory
+
+        Returns:
+            str: resource text
+        """
+        if self.memory:
+            return ""
+        with helpers.ensure_open(self):
+            return self.text_stream.read(size)  # type: ignore
+
+    def read_data(self, *, size: Optional[int] = None) -> Any:
+        """Read data into memory
+
+        Returns:
+            any: resource data
+        """
+        if self.data:
+            return self.data
+        with helpers.ensure_open(self):
+            text = self.read_text(size=size)
+            data = json.loads(text)
+            return data
+
+    def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
+        """Read lists into memory
+
+        Returns:
+            any[][]: table lists
+        """
+        with helpers.ensure_open(self):
+            result = []
+            for cells in self.cell_stream:
+                result.append(cells)
+                if size and len(result) >= size:
+                    break
+            return result
+
+    def read_rows(self, *, size=None) -> List[Row]:
+        """Read rows into memory
+
+        Returns:
+            Row[]: table rows
+        """
+        with helpers.ensure_open(self):
+            rows = []
+            for row in self.row_stream:
+                rows.append(row)
+                if size and len(rows) >= size:
+                    break
+            return rows
 
     # Write
 
