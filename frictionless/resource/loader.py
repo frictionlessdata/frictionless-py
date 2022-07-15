@@ -7,7 +7,7 @@ import atexit
 import hashlib
 import zipfile
 import tempfile
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Any
 from ..exception import FrictionlessException
 from .. import settings
 from .. import errors
@@ -34,6 +34,7 @@ class Loader:
     """
 
     remote: bool = False
+    """TODO: add docs"""
 
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource
@@ -52,7 +53,7 @@ class Loader:
     # Props
 
     @property
-    def resource(self):
+    def resource(self) -> Resource:
         """
         Returns:
             resource (Resource): resource
@@ -60,15 +61,17 @@ class Loader:
         return self.__resource
 
     @property
-    def buffer(self):
+    def buffer(self) -> IBuffer:
         """
         Returns:
             Loader: buffer
         """
+        if self.__buffer is None:
+            raise FrictionlessException("loader is not open")
         return self.__buffer
 
     @property
-    def byte_stream(self):
+    def byte_stream(self) -> IByteStream:
         """Resource byte stream
 
         The stream is available after opening the loader
@@ -76,10 +79,12 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
+        if self.__byte_stream is None:
+            raise FrictionlessException("loader is not open")
         return self.__byte_stream
 
     @property
-    def text_stream(self):
+    def text_stream(self) -> ITextStream:
         """Resource text stream
 
         The stream is available after opening the loader
@@ -87,6 +92,8 @@ class Loader:
         Returns:
             io.TextStream: resource text stream
         """
+        if self.closed:
+            raise FrictionlessException("loader is not open")
         if not self.__text_stream:
             self.__text_stream = self.read_text_stream()
         return self.__text_stream
@@ -103,14 +110,14 @@ class Loader:
             self.close()
             raise
 
-    def close(self):
+    def close(self) -> None:
         """Close the loader as "filelike.close" does"""
         if self.__byte_stream:
             self.__byte_stream.close()
         self.__byte_stream = None
 
     @property
-    def closed(self):
+    def closed(self) -> bool:
         """Whether the loader is closed
 
         Returns:
@@ -120,7 +127,7 @@ class Loader:
 
     # Read
 
-    def read_byte_stream(self):
+    def read_byte_stream(self) -> IByteStream:
         """Read bytes stream
 
         Returns:
@@ -129,7 +136,7 @@ class Loader:
         try:
             byte_stream = self.read_byte_stream_create()
             byte_stream = self.read_byte_stream_process(byte_stream)
-            byte_stream = self.read_byte_stream_decompress(byte_stream)
+            byte_stream = self.read_byte_stream_decompress(byte_stream)  # type: ignore
             buffer = self.read_byte_stream_buffer(byte_stream)
             self.read_byte_stream_analyze(buffer)
             self.__buffer = buffer
@@ -152,7 +159,10 @@ class Loader:
         """
         raise NotImplementedError()
 
-    def read_byte_stream_process(self, byte_stream: IByteStream):
+    def read_byte_stream_process(
+        self,
+        byte_stream: IByteStream,
+    ) -> ByteStreamWithStatsHandling:
         """Process byte stream
 
         Parameters:
@@ -163,7 +173,7 @@ class Loader:
         """
         return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 
-    def read_byte_stream_decompress(self, byte_stream):
+    def read_byte_stream_decompress(self, byte_stream: IByteStream) -> IByteStream:
         """Decompress byte stream
 
         Parameters:
@@ -181,12 +191,12 @@ class Loader:
                 target = tempfile.NamedTemporaryFile()
                 shutil.copyfileobj(byte_stream, target)
                 target.seek(0)
-                byte_stream = target
+                byte_stream = target  # type: ignore
             # Stats
             else:
                 bytes = True
                 while bytes:
-                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)
+                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
                 byte_stream.seek(0)
             # Unzip
             with zipfile.ZipFile(byte_stream) as archive:
@@ -199,7 +209,7 @@ class Loader:
                     target = tempfile.NamedTemporaryFile()
                     shutil.copyfileobj(file, target)
                     target.seek(0)
-                byte_stream = target
+                byte_stream = target  # type: ignore
                 self.resource.innerpath = name
             return byte_stream
 
@@ -209,9 +219,9 @@ class Loader:
             if not self.remote:
                 bytes = True
                 while bytes:
-                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)
+                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
                 byte_stream.seek(0)
-            byte_stream = gzip.open(byte_stream)
+            byte_stream = gzip.open(byte_stream)  # type: ignore
             return byte_stream
 
         # No compression
@@ -259,7 +269,7 @@ class Loader:
 
     # Write
 
-    def write_byte_stream(self, path):
+    def write_byte_stream(self, path) -> Any:
         """Write from a temporary file
 
         Parameters:
@@ -272,7 +282,7 @@ class Loader:
         result = self.write_byte_stream_save(byte_stream)
         return result
 
-    def write_byte_stream_create(self, path):
+    def write_byte_stream_create(self, path) -> IByteStream:
         """Create byte stream for writing
 
         Parameters:
@@ -285,7 +295,7 @@ class Loader:
         file = open(path, "rb")
         return file
 
-    def write_byte_stream_save(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream) -> Any:
         """Store byte stream"""
         raise NotImplementedError()
 

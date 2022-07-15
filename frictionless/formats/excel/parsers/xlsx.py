@@ -36,7 +36,6 @@ class XlsxParser(Parser):
     # Read
 
     def read_loader(self):
-        fullpath = self.resource.fullpath
         control = ExcelControl.from_dialect(self.resource.dialect)
         loader = system.create_loader(self.resource)
         if not loader.remote:
@@ -47,6 +46,7 @@ class XlsxParser(Parser):
         # For remote stream we need local copy (will be deleted on close by Python)
         # https://docs.python.org/3.5/library/tempfile.html#tempfile.TemporaryFile
         if loader.remote:
+            fullpath = self.resource.fullpath
 
             # Cached
             if control.workbook_cache is not None and fullpath in control.workbook_cache:

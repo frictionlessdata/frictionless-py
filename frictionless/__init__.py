@@ -16,7 +16,7 @@ from .resource import Resource, Loader, Parser
 from .schema import Schema, Field
 from .server import server
 from .system import system
-from .table import Header, Row
+from .table import Header, Lookup, Row
 from . import checks
 from . import errors
 from . import fields

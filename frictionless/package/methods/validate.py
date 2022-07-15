@@ -35,7 +35,10 @@ def validate(
     # Create state
     timer = helpers.Timer()
     reports: List[Report] = []
-    with_fks = any(resource.schema and resource.schema.foreign_keys for resource in self.resources)  # type: ignore
+    with_fks = any(
+        resource.has_schema and resource.schema.foreign_keys
+        for resource in self.resources
+    )
 
     # Prepare checklist
     checklist = checklist or Checklist()

@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import os
 import json
@@ -8,13 +7,13 @@ from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
-from ..table import Header, Row
-from ..schema import Schema
+from ..table import Header, Lookup, Row
+from ..dialect import Dialect, Control
+from ..checklist import Checklist
 from ..detector import Detector
 from ..metadata import Metadata
-from ..checklist import Checklist
 from ..pipeline import Pipeline
-from ..dialect import Dialect, Control
+from ..schema import Schema
 from ..system import system
 from .. import settings
 from .. import helpers
@@ -25,7 +24,8 @@ from . import methods
 
 if TYPE_CHECKING:
     from ..package import Package
-    from ..interfaces import IDescriptorSource, IOnerror
+    from ..interfaces import IDescriptorSource, IOnerror, IBuffer, ISample, IFragment
+    from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 
 
 class Resource(Metadata):
@@ -49,7 +49,7 @@ class Resource(Metadata):
     analyze = methods.analyze
     describe = methods.describe
     extract = methods.extract
-    validate = methods.validate  # type: ignore
+    validate = methods.validate
     transform = methods.transform
 
     def __init__(
@@ -305,10 +305,8 @@ class Resource(Metadata):
         For more information, please check the Dialect documentation.
         """
         if self.__dialect is None:
-            self.__dialect = Dialect()
-            if self.__control:
-                self.__dialect.set_control(self.__control)
-        elif isinstance(self.__dialect, str):
+            raise FrictionlessException("dialect is not set or inferred")
+        if isinstance(self.__dialect, str):
             path = os.path.join(self.basepath, self.__dialect)
             self.__dialect = Dialect.from_descriptor(path)
         return self.__dialect
@@ -318,11 +316,17 @@ class Resource(Metadata):
         self.__dialect = value
 
     @property
-    def schema(self) -> Optional[Schema]:
+    def has_dialect(self) -> bool:
+        return self.__dialect is not None
+
+    @property
+    def schema(self) -> Schema:
         """
         Table Schema object.
         For more information, please check the Schema documentation.
         """
+        if self.__schema is None:
+            raise FrictionlessException("schema is not set or inferred")
         if isinstance(self.__schema, str):
             path = os.path.join(self.basepath, self.__schema)
             self.__schema = Schema.from_descriptor(path)
@@ -331,6 +335,10 @@ class Resource(Metadata):
     @schema.setter
     def schema(self, value: Optional[Union[Schema, str]]):
         self.__schema = value
+
+    @property
+    def has_schema(self) -> bool:
+        return self.__schema is not None
 
     @property
     def checklist(self) -> Optional[Checklist]:
@@ -442,10 +450,18 @@ class Resource(Metadata):
         return helpers.html_to_text(self.description_html or "")
 
     @property
-    def fullpath(self) -> Optional[str]:
-        """Full path of the resource"""
-        if self.path:
-            return helpers.join_path(self.basepath, self.path)
+    def fullpath(self) -> str:
+        """Full path of the resource or raise if not set"""
+        if self.path is None:
+            raise FrictionlessException("path is not set")
+        return helpers.join_path(self.basepath, self.path)
+
+    @property
+    def fulldata(self) -> str:
+        """Resource's data or raise if not set"""
+        if self.data is None:
+            raise FrictionlessException("data is not set")
+        return self.data
 
     # TODO: add asteriks for user/pass in url
     @property
@@ -482,7 +498,7 @@ class Resource(Metadata):
         return self.type == "table"
 
     @property
-    def buffer(self):
+    def buffer(self) -> IBuffer:
         """File's bytes used as a sample
 
         These buffer bytes are used to infer characteristics of the
@@ -492,9 +508,10 @@ class Resource(Metadata):
             return self.__parser.loader.buffer
         if self.__loader:
             return self.__loader.buffer
+        raise FrictionlessException("resource is not open")
 
     @property
-    def sample(self):
+    def sample(self) -> ISample:
         """Table's lists used as sample.
 
         These sample rows are used to infer characteristics of the
@@ -503,18 +520,22 @@ class Resource(Metadata):
         Returns:
             list[]?: table sample
         """
+        if self.__sample is None:
+            raise FrictionlessException("resource is not open")
         return self.__sample
 
     @property
-    def labels(self):
+    def labels(self) -> ILabels:
         """
         Returns:
             str[]?: table labels
         """
+        if self.__labels is None:
+            raise FrictionlessException("resource is not open")
         return self.__labels
 
     @property
-    def fragment(self):
+    def fragment(self) -> IFragment:
         """Table's lists used as fragment.
 
         These fragment rows are used internally to infer characteristics of the
@@ -523,64 +544,83 @@ class Resource(Metadata):
         Returns:
             list[]?: table fragment
         """
+        if self.__fragment is None:
+            raise FrictionlessException("resource is not open")
         return self.__fragment
 
     @property
-    def header(self):
+    def header(self) -> Header:
         """
         Returns:
             str[]?: table header
         """
+        if self.__header is None:
+            raise FrictionlessException("resource is not open")
         return self.__header
 
     @property
-    def byte_stream(self):
+    def lookup(self) -> Lookup:
+        """
+        Returns:
+            str[]?: table lookup
+        """
+        if self.__lookup is None:
+            raise FrictionlessException("resource is not open")
+        return self.__lookup
+
+    @property
+    def byte_stream(self) -> IByteStream:
         """Byte stream in form of a generator
 
         Yields:
             gen<bytes>?: byte stream
         """
-        if not self.closed:
-            if not self.__loader:
-                self.__loader = system.create_loader(self)
-                self.__loader.open()
-            return self.__loader.byte_stream
+        if self.closed:
+            raise FrictionlessException("resource is not open")
+        if not self.__loader:
+            self.__loader = system.create_loader(self)
+            self.__loader.open()
+        return self.__loader.byte_stream
 
     @property
-    def text_stream(self):
+    def text_stream(self) -> ITextStream:
         """Text stream in form of a generator
 
         Yields:
             gen<str[]>?: text stream
         """
-        if not self.closed:
-            if not self.__loader:
-                self.__loader = system.create_loader(self)
-                self.__loader.open()
-            return self.__loader.text_stream
+        if self.closed:
+            raise FrictionlessException("resource is not open")
+        if not self.__loader:
+            self.__loader = system.create_loader(self)
+            self.__loader.open()
+        return self.__loader.text_stream
 
     @property
-    def cell_stream(self):
+    def cell_stream(self) -> ICellStream:
         """Cell stream in form of a generator
 
         Yields:
             gen<any[][]>?: cell stream
         """
-        if self.__parser:
-            return self.__parser.cell_stream
+        if self.__parser is None:
+            raise FrictionlessException("resource is not open")
+        return self.__parser.cell_stream
 
     @property
-    def row_stream(self):
+    def row_stream(self) -> IRowStream:
         """Row stream in form of a generator of Row objects
 
         Yields:
             gen<Row[]>?: row stream
         """
+        if self.__row_stream is None:
+            raise FrictionlessException("resource is not open")
         return self.__row_stream
 
     # Infer
 
-    def infer(self, *, sample=True, stats=False):
+    def infer(self, *, sample: bool = True, stats: bool = False) -> None:
         """Infer metadata
 
         Parameters:
@@ -599,12 +639,12 @@ class Resource(Metadata):
                 self.stats = {}
                 self.metadata_assigned.remove("stats")
                 return
-            stream = self.row_stream or self.byte_stream
+            stream = self.__row_stream or self.byte_stream
             helpers.pass_through(stream)
 
     # Open/Close
 
-    def open(self, *, as_file=False):
+    def open(self, *, as_file: bool = False):
         """Open the resource as "io.open" does"""
 
         # Prepare
@@ -636,7 +676,7 @@ class Resource(Metadata):
             self.close()
             raise
 
-    def close(self):
+    def close(self) -> None:
         """Close the table as "filelike.close" does"""
         if self.__parser:
             self.__parser.close()
@@ -646,7 +686,7 @@ class Resource(Metadata):
             self.__loader = None
 
     @property
-    def closed(self):
+    def closed(self) -> bool:
         """Whether the table is closed
 
         Returns:
@@ -661,6 +701,10 @@ class Resource(Metadata):
         # Detect
         self.detector.detect_resource(self)
         system.detect_resource(self)
+        if self.__dialect is None:
+            self.__dialect = Dialect()
+            if self.__control:
+                self.__dialect.set_control(self.__control)
 
         # Validate
         if not self.metadata_valid:
@@ -670,9 +714,10 @@ class Resource(Metadata):
 
         # Detect
         self.__sample = self.__parser.sample  # type: ignore
-        dialect = self.detector.detect_dialect(self.__sample, dialect=self.dialect)
-        if dialect:
-            self.dialect = dialect
+        self.__dialect = self.detector.detect_dialect(
+            self.__sample,
+            dialect=self.dialect if self.has_dialect else None,
+        )
 
         # Validate
         if not self.dialect.metadata_valid:
@@ -683,23 +728,12 @@ class Resource(Metadata):
         # Detect
         self.__labels = self.dialect.read_labels(self.sample)
         self.__fragment = self.dialect.read_fragment(self.sample)
-        field_candidates = system.create_field_candidates()
-        schema = self.detector.detect_schema(
+        self.__schema = self.detector.detect_schema(
             self.__fragment,
             labels=self.__labels,
-            schema=self.schema,
-            field_candidates=field_candidates,
+            schema=self.schema if self.has_schema else None,
+            field_candidates=system.create_field_candidates(),
         )
-
-        # Process
-        # TODO: review
-        if schema:
-            if not self.schema or self.schema.to_descriptor() != schema.to_descriptor():
-                self.schema = schema
-        self.stats["fields"] = len(schema.fields)
-        # NOTE: review whether it's a proper place for this fallback to data resource
-        if not schema:
-            self.profile = "data-resource"
 
         # Validate
         if not self.schema.metadata_valid:
@@ -707,7 +741,7 @@ class Resource(Metadata):
 
     # Read
 
-    def read_bytes(self, *, size=None):
+    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
         """Read bytes into memory
 
         Returns:
@@ -716,9 +750,9 @@ class Resource(Metadata):
         if self.memory:
             return b""
         with helpers.ensure_open(self):
-            return self.byte_stream.read1(size)
+            return self.byte_stream.read1(size)  # type: ignore
 
-    def read_text(self, *, size=None):
+    def read_text(self, *, size: Optional[int] = None) -> str:
         """Read text into memory
 
         Returns:
@@ -727,9 +761,9 @@ class Resource(Metadata):
         if self.memory:
             return ""
         with helpers.ensure_open(self):
-            return self.text_stream.read(size)
+            return self.text_stream.read(size)  # type: ignore
 
-    def read_data(self, *, size=None):
+    def read_data(self, *, size: Optional[int] = None) -> Any:
         """Read data into memory
 
         Returns:
@@ -742,7 +776,7 @@ class Resource(Metadata):
             data = json.loads(text)
             return data
 
-    def read_cells(self, *, size=None):
+    def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
         """Read lists into memory
 
         Returns:
@@ -756,7 +790,7 @@ class Resource(Metadata):
                     break
             return result
 
-    def read_rows(self, *, size=None):
+    def read_rows(self, *, size=None) -> List[Row]:
         """Read rows into memory
 
         Returns:
@@ -790,8 +824,7 @@ class Resource(Metadata):
 
         return header
 
-    # TODO: add lookup to interfaces
-    def __read_lookup(self) -> dict:
+    def __read_lookup(self) -> Lookup:
         """Detect lookup from resource
 
         Parameters:
@@ -800,7 +833,7 @@ class Resource(Metadata):
         Returns:
             dict: lookup
         """
-        lookup = {}
+        lookup = Lookup()
         for fk in self.schema.foreign_keys:
 
             # Prepare source
@@ -809,13 +842,16 @@ class Resource(Metadata):
             if source_name != "" and not self.package:
                 continue
             if source_name:
+                if not self.package:
+                    note = 'package is required for FK: "{fk}"'
+                    raise FrictionlessException(errors.ResourceError(note=note))
                 if not self.package.has_resource(source_name):
-                    note = f'Failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
+                    note = f'failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
                     raise FrictionlessException(errors.ResourceError(note=note))
                 source_res = self.package.get_resource(source_name)
             else:
                 source_res = self.to_copy()
-            if source_res.schema:
+            if source_res.has_schema:
                 source_res.schema.foreign_keys = []
 
             # Prepare lookup
@@ -875,7 +911,7 @@ class Resource(Metadata):
 
         # Create content stream
         enumerated_content_stream = self.dialect.read_enumerated_content_stream(
-            self.__parser.cell_stream
+            self.cell_stream
         )
 
         # Create row stream
@@ -923,7 +959,7 @@ class Resource(Metadata):
                 # Foreign Key Error
                 if is_integrity and foreign_groups:
                     for group in foreign_groups:
-                        group_lookup = self.__lookup.get(group["sourceName"])
+                        group_lookup = self.lookup.get(group["sourceName"])
                         if group_lookup:
                             cells = tuple(row[name] for name in group["targetKey"])
                             if set(cells) == {None}:
@@ -954,6 +990,7 @@ class Resource(Metadata):
                 yield row
 
             # Update stats
+            self.stats["fields"] = len(self.schema.fields)
             self.stats["rows"] = row_count
 
         # Return row stream
@@ -961,7 +998,7 @@ class Resource(Metadata):
 
     # Write
 
-    def write(self, target=None, **options):
+    def write(self, target: Any = None, **options) -> Resource:
         """Write this resource to the target resource
 
         Parameters:
@@ -1238,11 +1275,11 @@ class Resource(Metadata):
                     yield errors.ResourceError(note=note)
 
         # Dialect
-        if self.dialect:
+        if self.has_dialect:
             yield from self.dialect.metadata_errors
 
         # Schema
-        if self.schema:
+        if self.has_schema:
             yield from self.schema.metadata_errors
 
         # Checklist

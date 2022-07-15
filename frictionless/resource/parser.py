@@ -1,6 +1,6 @@
 from __future__ import annotations
 from itertools import chain
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, ClassVar, Optional, List
 from ..exception import FrictionlessException
 from ..system import system
 from .. import settings
@@ -20,8 +20,11 @@ class Parser:
 
     """
 
-    requires_loader: bool = False
-    supported_types: List[str] = []
+    requires_loader: ClassVar[bool] = False
+    """TODO: add docs"""
+
+    supported_types: ClassVar[List[str]] = []
+    """TODO: add docs"""
 
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource
@@ -38,7 +41,7 @@ class Parser:
         self.close()
 
     @property
-    def resource(self):
+    def resource(self) -> Resource:
         """
         Returns:
             Resource: resource
@@ -46,7 +49,7 @@ class Parser:
         return self.__resource
 
     @property
-    def loader(self):
+    def loader(self) -> Optional[Loader]:
         """
         Returns:
             Loader: loader
@@ -54,19 +57,23 @@ class Parser:
         return self.__loader
 
     @property
-    def sample(self):
+    def sample(self) -> ISample:
         """
         Returns:
             Loader: sample
         """
+        if self.__sample is None:
+            raise FrictionlessException("parser is not open")
         return self.__sample
 
     @property
-    def cell_stream(self):
+    def cell_stream(self) -> ICellStream:
         """
         Yields:
             any[][]: list stream
         """
+        if self.__cell_stream is None:
+            raise FrictionlessException("parser is not open")
         return self.__cell_stream
 
     # Open/Close
@@ -82,13 +89,13 @@ class Parser:
             self.close()
             raise
 
-    def close(self):
+    def close(self) -> None:
         """Close the parser as "filelike.close" does"""
         if self.__loader:
             self.__loader.close()
 
     @property
-    def closed(self):
+    def closed(self) -> bool:
         """Whether the parser is closed
 
         Returns:
@@ -98,7 +105,7 @@ class Parser:
 
     # Read
 
-    def read_loader(self):
+    def read_loader(self) -> Optional[Loader]:
         """Create and open loader
 
         Returns:
@@ -108,7 +115,7 @@ class Parser:
             loader = system.create_loader(self.resource)
             return loader.open()
 
-    def read_cell_stream(self):
+    def read_cell_stream(self) -> ICellStream:
         """Read list stream
 
         Returns:
@@ -135,7 +142,10 @@ class Parser:
         """
         raise NotImplementedError()
 
-    def read_cell_stream_handle_errors(self, cell_stream):
+    def read_cell_stream_handle_errors(
+        self,
+        cell_stream: ICellStream,
+    ) -> CellStreamWithErrorHandling:
         """Wrap list stream into error handler
 
         Parameters:
@@ -166,7 +176,7 @@ class Parser:
 
 
 class CellStreamWithErrorHandling:
-    def __init__(self, cell_stream):
+    def __init__(self, cell_stream: ICellStream):
         self.cell_stream = cell_stream
 
     def __iter__(self):
@@ -174,7 +184,7 @@ class CellStreamWithErrorHandling:
 
     def __next__(self):
         try:
-            return self.cell_stream.__next__()
+            return self.cell_stream.__next__()  # type: ignore
         except StopIteration:
             raise
         except FrictionlessException:

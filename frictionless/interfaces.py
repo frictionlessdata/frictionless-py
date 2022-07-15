@@ -18,8 +18,11 @@ IDescriptorSource = Union[str, dict]
 IByteStream = BinaryIO
 ITextStream = TextIO
 ICellStream = Iterable[List[Any]]
+IRowStream = Iterable[Row]
 IBuffer = bytes
 ISample = List[List[Any]]
+IFragment = List[List[Any]]
+ILabels = List[str]
 IOnerror = Literal["ignore", "warn", "raise"]
 
 

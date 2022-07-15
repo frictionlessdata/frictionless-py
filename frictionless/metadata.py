@@ -60,7 +60,10 @@ class Metadata(metaclass=Metaclass):
     def __setattr__(self, name, value):
         if not name.startswith("metadata_"):
             if self.metadata_initiated:
-                self.metadata_assigned.add(name)
+                if value is not None:
+                    self.metadata_assigned.add(name)
+                elif name in self.metadata_assigned:
+                    self.metadata_assigned.remove(name)
             elif isinstance(value, (list, dict)):
                 self.metadata_defaults[name] = value.copy()
             elif isinstance(value, type):
@@ -248,16 +251,14 @@ class Metadata(metaclass=Metaclass):
         """Export metadata as a descriptor"""
         descriptor = {}
         for name in self.metadata_profile.get("properties", []):
+            if name in exclude:
+                continue
+            if name != "type" and not self.has_defined(stringcase.snakecase(name)):
+                continue
             value = getattr(self, stringcase.snakecase(name), None)
             Type = self.metadata_Types.get(name)
             if value is None or (isinstance(value, dict) and value == {}):
                 continue
-            if name in exclude:
-                continue
-            if name != "type":
-                # TODO: use at the top of the loop?
-                if not self.has_defined(stringcase.snakecase(name)):
-                    continue
             if Type:
                 if isinstance(value, list):
                     value = [item.to_descriptor_source() for item in value]  # type: ignore

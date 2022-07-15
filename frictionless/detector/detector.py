@@ -176,7 +176,7 @@ class Detector(Metadata):
         format = ""
         compression = None
         innerpath = None
-        if resource.fullpath:
+        if resource.path:
             fullpath = resource.fullpath
             scheme, format = helpers.parse_scheme_and_format(fullpath)
             if format in settings.COMPRESSION_FORMATS:

@@ -23,7 +23,7 @@ class PandasParser(Parser):
 
         # Schema
         schema = self.__read_convert_schema()
-        if not self.resource.schema:
+        if not self.resource.has_schema:
             self.resource.schema = schema
 
         # Lists

@@ -1,0 +1,2 @@
+class Lookup(dict):
+    pass

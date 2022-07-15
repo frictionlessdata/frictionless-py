@@ -245,7 +245,6 @@ def test_resource_source_data():
         assert resource.tabular is True
         assert resource.multipart is False
         assert resource.basepath == ""
-        assert resource.fullpath is None
         assert resource.read_bytes() == b""
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
