@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import isodate
 import datetime
@@ -28,7 +27,7 @@ class PandasParser(Parser):
 
         # Lists
         yield schema.field_names
-        for pk, item in dataframe.iterrows():
+        for pk, item in dataframe.iterrows():  # type: ignore
             cells = []
             for field in schema.fields:
                 if field.name in schema.primary_key:
@@ -46,9 +45,9 @@ class PandasParser(Parser):
         schema = Schema()
 
         # Primary key
-        for index, name in enumerate(dataframe.index.names):
+        for index, name in enumerate(dataframe.index.names):  # type: ignore
             if name is not None:
-                dtype = dataframe.index.get_level_values(index).dtype
+                dtype = dataframe.index.get_level_values(index).dtype  # type: ignore
                 type = self.__read_convert_type(dtype)
                 field = Field.from_descriptor({"name": name, "type": type})
                 field.required = True
@@ -56,8 +55,8 @@ class PandasParser(Parser):
                 schema.primary_key.append(name)
 
         # Fields
-        for name, dtype in dataframe.dtypes.iteritems():
-            sample = dataframe[name].iloc[0] if len(dataframe) else None
+        for name, dtype in dataframe.dtypes.iteritems():  # type: ignore
+            sample = dataframe[name].iloc[0] if len(dataframe) else None  # type: ignore
             type = self.__read_convert_type(dtype, sample=sample)
             field = Field.from_descriptor({"name": name, "type": type})
             schema.add_field(field)

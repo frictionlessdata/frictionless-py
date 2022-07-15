@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import os
 import tempfile
@@ -20,7 +19,8 @@ class MultipartLoader(Loader):
 
     def read_byte_stream_create(self):
         paths = []
-        for path in [self.resource.path] + self.resource.extrapaths:
+        # TODO: rebase on normpath?
+        for path in [self.resource.path] + self.resource.extrapaths:  # type: ignore
             path = os.path.join(self.resource.basepath, path)
             paths.append(path)
         remote = self.resource.remote

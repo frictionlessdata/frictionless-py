@@ -4,5 +4,8 @@
   ],
   "strict": [
     "frictionless/formats/csv"
+  ],
+  "ignore": [
+    "**/__init__.py"
   ]
 }

@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import os
 from ...resource import Loader
@@ -13,12 +12,12 @@ class StreamLoader(Loader):
 
     def read_byte_stream_create(self):
         byte_stream = self.resource.data
-        if not os.path.isfile(byte_stream.name):
+        if not os.path.isfile(byte_stream.name):  # type: ignore
             note = f"only local streams are supported: {byte_stream}"
             raise FrictionlessException(errors.SchemeError(note=note))
         if hasattr(byte_stream, "encoding"):
             try:
-                byte_stream = open(byte_stream.name, "rb")
+                byte_stream = open(byte_stream.name, "rb")  # type: ignore
             except Exception:
                 note = f"cannot open a stream in the byte mode: {byte_stream}"
                 raise FrictionlessException(errors.SchemeError(note=note))

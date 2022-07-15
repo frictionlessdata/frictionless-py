@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import os
 import json
@@ -278,7 +277,7 @@ class Package(Metadata):
 
     def add_resource(self, resource: Resource) -> None:
         """Add new resource to the package"""
-        if self.has_resource(resource.name):
+        if resource.name and self.has_resource(resource.name):
             error = errors.PackageError(note=f'resource "{resource.name}" already exists')
             raise FrictionlessException(error)
         self.resources.append(resource)
@@ -508,7 +507,7 @@ class Package(Metadata):
 
                     # Multipart data
                     elif resource.multipart:
-                        for path, fullpath in zip(resource.path, resource.fullpath):
+                        for path, fullpath in zip(resource.path, resource.fullpath):  # type: ignore
                             if os.path.isfile(fullpath):
                                 if not helpers.is_safe_path(fullpath):
                                     note = f'Zipping usafe "{fullpath}" is not supported'
@@ -576,10 +575,10 @@ class Package(Metadata):
         edges = []
         nodes = []
         for t_name in self.resource_names:
-            resource = self.get_resource(t_name)
+            resource = self.get_resource(t_name)  # type: ignore
             templates = {k: primary_key_template for k in resource.schema.primary_key}
             t_fields = [
-                templates.get(f.name, field_template).render(name=f.name, type=f.type)
+                templates.get(f.name, field_template).render(name=f.name, type=f.type)  # type: ignore
                 for f in resource.schema.fields
             ]
             nodes.append(table_template.render(name=t_name, rows="".join(t_fields)))

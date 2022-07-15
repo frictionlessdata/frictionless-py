@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import sys
 import typer
@@ -31,7 +30,7 @@ def program_transform(
     if not source:
         if not sys.stdin.isatty():
             is_stdin = True
-            source = [sys.stdin.buffer.read()]
+            source = [sys.stdin.buffer.read()]  # type: ignore
 
     # TODO: implement
     assert not is_stdin
@@ -73,6 +72,6 @@ def program_transform(
 
     # Return default
     typer.secho("\n## Schema\n")
-    typer.secho(resource.schema.to_summary())
+    typer.secho(resource.schema.to_summary())  # type: ignore
     typer.secho("\n## Table\n")
-    typer.secho(resource.to_petl())
+    typer.secho(resource.to_petl())  # type: ignore

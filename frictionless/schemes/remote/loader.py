@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import io
 import requests.utils
@@ -20,7 +19,7 @@ class RemoteLoader(Loader):
         timeout = control.http_timeout
         byte_stream = RemoteByteStream(fullpath, session=session, timeout=timeout).open()
         if control.http_preload:
-            buffer = io.BufferedRandom(io.BytesIO())
+            buffer = io.BufferedRandom(io.BytesIO())  # type: ignore
             buffer.write(byte_stream.read())
             buffer.seek(0)
             byte_stream = buffer

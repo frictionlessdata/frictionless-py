@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import statistics
 from math import nan
@@ -84,7 +83,7 @@ def analyze(self: Resource, *, detailed=False) -> dict:
                     continue
 
                 analysis_report["fieldStats"][field.name].update(
-                    _statistics(rows_without_nan_values)
+                    _statistics(rows_without_nan_values)  # type: ignore
                 )
                 analysis_report["fieldStats"][field.name]["outliers"] = []
                 analysis_report["fieldStats"][field.name]["missingValues"] = self.stats[
@@ -190,11 +189,11 @@ def _common_values(data: Union[float, int]) -> Union[float, int]:
     Returns:
         (float|int): highly common element and its count
     """
-    column = Counter(data)
+    column = Counter(data)  # type: ignore
     common_value = column.most_common(1)
     if common_value and common_value[0][1] > 1:
         return common_value[0][0]
-    return None
+    return None  # type: ignore
 
 
 def _statistics(data: Union[float, int]) -> dict:
@@ -207,16 +206,16 @@ def _statistics(data: Union[float, int]) -> dict:
         dict : statistics of the data
     """
     resource_stats = {}
-    resource_stats["mean"] = statistics.mean(data)
-    resource_stats["median"] = statistics.median(data)
+    resource_stats["mean"] = statistics.mean(data)  # type: ignore
+    resource_stats["median"] = statistics.median(data)  # type: ignore
     resource_stats["mode"] = _common_values(data)
-    resource_stats["variance"] = statistics.variance(data)
+    resource_stats["variance"] = statistics.variance(data)  # type: ignore
     resource_stats["quantiles"] = _quantiles(data)
-    resource_stats["stdev"] = statistics.stdev(data)
-    resource_stats["max"] = max(data)
-    resource_stats["min"] = min(data)
+    resource_stats["stdev"] = statistics.stdev(data)  # type: ignore
+    resource_stats["max"] = max(data)  # type: ignore
+    resource_stats["min"] = min(data)  # type: ignore
     resource_stats["bounds"] = _find_bounds(resource_stats["quantiles"])
-    resource_stats["uniqueValues"] = len(set(data))
+    resource_stats["uniqueValues"] = len(set(data))  # type: ignore
     return resource_stats
 
 

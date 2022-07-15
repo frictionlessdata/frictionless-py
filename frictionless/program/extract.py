@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import sys
 import petl
@@ -72,7 +71,7 @@ def program_extract(
     if not source and not path:
         if not sys.stdin.isatty():
             is_stdin = True
-            source = [sys.stdin.buffer.read()]
+            source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
     if not source and not path:
@@ -174,17 +173,17 @@ def program_extract(
     # Return CSV
     # TODO: rework
     if csv:
-        for number, rows in enumerate(normdata.values(), start=1):
+        for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
             for index, row in enumerate(rows):
                 if index == 0:
-                    typer.secho(helpers.stringify_csv_string(row.field_names))
-                typer.secho(row.to_str())
-            if number < len(normdata):
+                    typer.secho(helpers.stringify_csv_string(row.field_names))  # type: ignore
+                typer.secho(row.to_str())  # type: ignore
+            if number < len(normdata):  # type: ignore
                 typer.secho("")
         raise typer.Exit()
 
     # Return default
-    for number, (name, rows) in enumerate(normdata.items(), start=1):
+    for number, (name, rows) in enumerate(normdata.items(), start=1):  # type: ignore
         if is_stdin:
             name = "stdin"
         prefix = "data"
@@ -197,6 +196,6 @@ def program_extract(
             valid_text = "valid" if valid else "invalid"
             typer.secho(str(f"No {valid_text} rows"))
             continue
-        typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))
-        if number < len(normdata):
+        typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))  # type: ignore
+        if number < len(normdata):  # type: ignore
             typer.secho("")
