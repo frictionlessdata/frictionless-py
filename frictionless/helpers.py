@@ -305,6 +305,15 @@ def unzip_descriptor(path, innerpath):
             tempdir = tempfile.mkdtemp()
             zip.extractall(tempdir)
             atexit.register(shutil.rmtree, tempdir)
+            if innerpath != "":
+                pass
+            elif os.path.isfile(os.path.join(tempdir, "datapackage.json")):
+                innerpath = "datapackage.json"
+            elif os.path.isfile(os.path.join(tempdir, "datapackage.yaml")):
+                innerpath = "datapackage.yaml"
+            else:
+                # maybe an error
+                innerpath = "datapackage.json"
             descriptor = os.path.join(tempdir, innerpath)
     return descriptor
 
