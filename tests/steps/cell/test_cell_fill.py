@@ -9,7 +9,7 @@ def test_step_cell_fill():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.cell_replace(pattern="france", replace=None),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(field_name="name", value="FRANCE"),
         ],
     )
@@ -32,7 +32,7 @@ def test_step_cell_fill_direction_down():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.cell_replace(pattern="france", replace=None),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="down"),
         ],
     )
@@ -58,7 +58,7 @@ def test_step_cell_fill_direction_right():
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
-            steps.cell_replace(pattern="france", replace=None),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="right"),
         ],
     )
@@ -84,7 +84,7 @@ def test_step_cell_fill_direction_left():
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
-            steps.cell_replace(pattern="france", replace=None),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="left"),
         ],
     )

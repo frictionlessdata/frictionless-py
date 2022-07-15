@@ -141,7 +141,7 @@ def test_describe_package_with_dialect_1126():
 
 
 def test_describe_package_with_dialect_path_1126():
-    package = Package.describe("data/country-2.csv", dialect="data/dialect.json")
+    package = Package.describe("data/country-2.csv", dialect="data/dialect.json")  # type: ignore
     assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [
             {"type": "integer", "name": "id"},

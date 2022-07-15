@@ -38,7 +38,7 @@ def test_validate_multiple_files_issue_850():
     assert report.stats["tasks"] == 2
 
 
-@pytest.mark.xfail(reasong="Problem with the field")
+@pytest.mark.xfail(reason="Problem with the field")
 def test_validate_less_actual_fields_with_required_constraint_issue_950():
     schema = Schema.describe("data/table.csv")
     schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))

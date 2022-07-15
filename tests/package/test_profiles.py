@@ -10,7 +10,7 @@ from frictionless import FrictionlessException, Package, Resource, helpers
 def test_package_external_profile():
     profile = "frictionless/assets/profiles/package/general.json"
     resource = Resource(name="table", path="data/table.csv")
-    package = Package(resources=[resource], profile=profile)
+    package = Package(resources=[resource], profile=profile)  # type: ignore
     assert package.metadata_valid
 
 
@@ -19,7 +19,7 @@ def test_package_external_profile():
 def test_package_external_profile_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
-    package = Package(resources=[resource], profile=profile)
+    package = Package(resources=[resource], profile=profile)  # type: ignore
     assert len(package.metadata_errors) == 5
     for error in package.metadata_errors:
         assert "required" in error.message
@@ -66,7 +66,7 @@ def test_package_external_profile_invalid_remote():
         "https://raw.githubusercontent.com/tdwg/camtrap-dp/main/camtrap-dp-profile.json"
     )
     resource = Resource(name="table", path="data/table.csv")
-    package = Package(resources=[resource], profile=profile)
+    package = Package(resources=[resource], profile=profile)  # type: ignore
     assert len(package.metadata_errors) == 5
     for error in package.metadata_errors:
         assert "required" in error.message

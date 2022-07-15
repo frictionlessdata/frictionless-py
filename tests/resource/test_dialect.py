@@ -312,7 +312,7 @@ def test_resource_dialect_json_property():
 
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_dialect_bad_property():
-    resource = Resource("data/table.csv", dialect={"bad": True})
+    resource = Resource("data/table.csv", dialect={"bad": True})  # type: ignore
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error

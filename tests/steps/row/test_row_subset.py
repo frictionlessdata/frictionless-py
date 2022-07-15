@@ -96,7 +96,7 @@ def test_step_row_subset_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset(subset="duplicates"),
+            steps.row_subset(subset="duplicates"),  # type: ignore
         ],
     )
     target = source.transform(pipeline)
@@ -139,7 +139,7 @@ def test_step_row_subset_unique():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset(subset="unique"),
+            steps.row_subset(subset="unique"),  # type: ignore
         ],
     )
     target = source.transform(pipeline)
@@ -185,7 +185,7 @@ def test_step_row_subset_conflicts_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset({"subset": "conflicts", "fieldName": "id"}),
+            steps.row_subset({"subset": "conflicts", "fieldName": "id"}),  # type: ignore
         ],
     )
     target = source.transform(pipeline)

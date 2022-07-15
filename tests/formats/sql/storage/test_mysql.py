@@ -58,7 +58,7 @@ def test_sql_storage_mysql_types(mysql_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_mysql_integrity(mysql_url):
@@ -113,7 +113,7 @@ def test_sql_storage_mysql_integrity(mysql_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_mysql_constraints(mysql_url):
@@ -149,7 +149,7 @@ def test_sql_storage_mysql_constraints(mysql_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -170,9 +170,9 @@ def test_sql_storage_mysql_constraints_not_valid_error(mysql_url, field_name, ce
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
-            resource.data[1][index] = cell
+            resource.data[1][index] = cell  # type: ignore
     # NOTE: should we wrap these exceptions? (why other exceptions for mysql here?)
-    types = (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)
+    types = (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)  # type: ignore
     with pytest.raises(types):
         control = formats.SqlControl(table="table")
         resource.write(mysql_url, control=control)

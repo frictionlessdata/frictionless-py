@@ -82,8 +82,8 @@ def test_validate_package_invalid_descriptor_path():
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
-    assert report["stats"]["errors"] == 1
-    error = report["errors"][0]
+    assert report.stats["errors"] == 1
+    error = report.stats["errors"][0]
     assert error["type"] == "schema-error"
     assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
 

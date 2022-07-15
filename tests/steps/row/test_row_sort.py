@@ -57,7 +57,7 @@ def test_step_row_sort_with_reverse_in_desriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_sort({"fieldNames": ["id"], "reverse": True}),
+            steps.row_sort({"fieldNames": ["id"], "reverse": True}),  # type: ignore
         ],
     )
     target = source.transform(pipeline)

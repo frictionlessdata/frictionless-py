@@ -59,7 +59,7 @@ def test_sql_storage_sqlite_types(sqlite_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_sqlite_integrity(sqlite_url):
@@ -112,7 +112,7 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_sqlite_constraints(sqlite_url):
@@ -148,7 +148,7 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -170,9 +170,9 @@ def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, 
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
-            resource.data[1][index] = cell
+            resource.data[1][index] = cell  # type: ignore
     # NOTE: should we wrap these exceptions?
-    with pytest.raises(sa.exc.IntegrityError):
+    with pytest.raises(sa.exc.IntegrityError):  # type: ignore
         control = formats.SqlControl(table="table")
         resource.write(sqlite_url, control=control)
 

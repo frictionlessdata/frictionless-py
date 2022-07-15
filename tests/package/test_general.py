@@ -151,7 +151,7 @@ def test_package_from_path_remote_error_bad_json_not_dict():
 
 def test_package_from_invalid_descriptor_type():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package.from_descriptor(51)
+        Package.from_descriptor(51)  # type: ignore
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("51")

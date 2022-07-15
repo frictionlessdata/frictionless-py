@@ -12,7 +12,7 @@ def test_step_table_aggregate():
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(
-                group_name="name", aggregation={"sum": ("population", sum)}
+                group_name="name", aggregation={"sum": ("population", sum)}  # type: ignore
             ),
         ],
     )
@@ -39,9 +39,9 @@ def test_step_table_aggregate_multiple():
             steps.table_aggregate(
                 group_name="name",
                 aggregation={
-                    "sum": ("population", sum),
-                    "min": ("population", min),
-                    "max": ("population", max),
+                    "sum": ("population", sum),  # type: ignore
+                    "min": ("population", min),  # type: ignore
+                    "max": ("population", max),  # type: ignore
                 },
             ),
         ],

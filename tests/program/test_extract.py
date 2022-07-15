@@ -149,7 +149,7 @@ def test_program_extract_dialect_keyed_option():
     keyed = True
     actual = runner.invoke(program, f"extract --path {file} --keyed {keyed} --json")
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == extract(path=file, dialect={"keyed": keyed})
+    assert json.loads(actual.stdout) == extract(path=file, dialect={"keyed": keyed})  # type: ignore
 
 
 @pytest.mark.xfail(reason="Not supported yet")
@@ -158,7 +158,7 @@ def test_program_extract_dialect_keys_option():
     actual = runner.invoke(program, f"extract --path {file} --keys 'name,id' --json")
     assert actual.exit_code == 0
     assert json.loads(actual.stdout) == extract(
-        path=file, dialect={"keys": ["name", "id"]}
+        path=file, dialect={"keys": ["name", "id"]}  # type: ignore
     )
 
 

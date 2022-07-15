@@ -72,7 +72,7 @@ def test_package_schema_foreign_key():
 
 def test_package_schema_foreign_key_invalid():
     package = Package(DESCRIPTOR_FK)
-    package.resources[1].data[3][0] = "bad"
+    package.resources[1].data[3][0] = "bad"  # type: ignore
     resource = package.get_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
@@ -114,7 +114,7 @@ def test_package_schema_foreign_key_self_reference():
 @pytest.mark.xfail(reason="Self-reference doesn't work")
 def test_package_schema_foreign_key_self_reference_invalid():
     package = Package(DESCRIPTOR_FK)
-    package.resources[0].data[2][0] = "0"
+    package.resources[0].data[2][0] = "0"  # type: ignore
     package.resources[0].schema.foreign_keys = [
         {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
     ]
@@ -149,7 +149,7 @@ def test_package_schema_foreign_key_multifield_invalid():
             "reference": {"resource": "people", "fields": ["firstname", "surname"]},
         }
     ]
-    package.resources[1].data[3][0] = "bad"
+    package.resources[1].data[3][0] = "bad"  # type: ignore
     resource = package.get_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid

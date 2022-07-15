@@ -24,9 +24,7 @@ install:
 lint:
 	black $(PACKAGE) tests --check
 	pylama $(PACKAGE) tests
-	# TODO: enable for tests
-	# pyright $(PACKAGE) tests
-	pyright $(PACKAGE)
+	pyright $(PACKAGE) tests
 
 release:
 	git checkout main && git pull origin && git fetch -p

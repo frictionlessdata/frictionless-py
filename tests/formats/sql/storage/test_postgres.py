@@ -58,7 +58,7 @@ def test_sql_storage_postgresql_types(postgresql_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_postgresql_integrity(postgresql_url):
@@ -113,7 +113,7 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_url):
@@ -123,7 +123,7 @@ def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_u
     storage = source.to_sql(postgresql_url, control=control)
     target = Package.from_sql(postgresql_url, control=control)
     assert len(target.resources) == 2
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 def test_sql_storage_postgresql_constraints(postgresql_url):
@@ -159,7 +159,7 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
     ]
 
     # Cleanup storage
-    storage.delete_package(target.resource_names)
+    storage.delete_package(target.resource_names)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -180,8 +180,8 @@ def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == name:
-            resource.data[1][index] = cell
-    with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
+            resource.data[1][index] = cell  # type: ignore
+    with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):  # type: ignore
         control = formats.SqlControl(table="table")
         resource.write(postgresql_url, control=control)
 

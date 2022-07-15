@@ -315,7 +315,7 @@ def test_schema_tableschema_to_excel_template(tmpdir, zip_path):
             xml_string = file_handle.read().decode("utf-8")
     # Before Python3.8, attribute order is not stable in minidom,
     # so we need to use an outside library.
-    pretty_xml = yattag.indent(xml_string)
+    pretty_xml = yattag.indent(xml_string)  # type: ignore
     pretty_xml_fixture_path = Path("data/fixtures/output-unzipped", zip_path)
     pretty_xml_tmp_path = Path(Path(tmpdir), Path(zip_path).name)
     pretty_xml_tmp_path.write_text(pretty_xml, encoding="utf-8")

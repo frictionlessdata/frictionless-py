@@ -166,7 +166,7 @@ def test_validate_no_rows_with_compression():
 
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_task_error():
-    report = validate("data/table.csv", limit_rows="bad")
+    report = validate("data/table.csv", limit_rows="bad")  # type: ignore
     assert report.flatten(["type"]) == [
         ["task-error"],
     ]
@@ -930,7 +930,7 @@ def test_validate_custom_check_bad_name():
 
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_descriptor_type_invalid():
-    report = validate(descriptor="data/table.csv")
+    report = validate(descriptor="data/table.csv")  # type: ignore
     assert report.flatten() == [[1, None, None, "resource-error"]]
 
 
@@ -999,7 +999,7 @@ def test_validate_table_is_invalid_issue_312():
 @pytest.mark.xfail(reason="Review the issue")
 def test_validate_order_fields_issue_313():
     source = "data/issue-313.xlsx"
-    layout = Dialect(pick_fields=[1, 2, 3, 4, 5])
+    layout = Dialect(pick_fields=[1, 2, 3, 4, 5])  # type: ignore
     schema = {
         "fields": [
             {"name": "Column_1", "type": "string"},
@@ -1035,7 +1035,7 @@ def test_validate_newline_inside_label_issue_811():
 
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_from_json_format_issue_827():
-    report = validate(path="data/table.json")
+    report = validate(path="data/table.json")  # type: ignore
     assert report.valid
 
 

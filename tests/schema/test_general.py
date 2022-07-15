@@ -258,7 +258,7 @@ def test_schema_metadata_not_valid_multiple_errors_with_pk():
 @pytest.mark.xfail(reason="Bad type error is not yet supported")
 def test_schema_metadata_error_message():
     schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
-    note = schema.metadata_errors[0]["note"]
+    note = schema.metadata_errors[0].note
     assert len(schema.metadata_errors) == 1
     assert "is not valid" in note
     assert "{'name': 'name', 'type': 'other'}" in note

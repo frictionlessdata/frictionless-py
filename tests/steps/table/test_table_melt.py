@@ -38,7 +38,7 @@ def test_step_table_melt_with_variables():
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_melt(field_name="name", variables=["population"]),
+            steps.table_melt(field_name="name", variables=["population"]),  # type: ignore
         ],
     )
     target = source.transform(pipeline)
@@ -63,7 +63,7 @@ def test_step_table_melt_with_to_field_names():
         steps=[
             steps.table_normalize(),
             steps.table_melt(
-                field_name="name", variables=["population"], to_field_names=["key", "val"]
+                field_name="name", variables=["population"], to_field_names=["key", "val"]  # type: ignore
             ),
         ],
     )

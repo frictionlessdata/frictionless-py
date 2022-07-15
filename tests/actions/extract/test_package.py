@@ -26,7 +26,7 @@ def test_extract_package_process():
 def test_extract_package_stream():
     path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     row_streams = extract("data/package.json", stream=True)
-    row_stream = row_streams[path]
+    row_stream = row_streams[path]  # type: ignore
     assert isinstance(row_stream, types.GeneratorType)
     assert list(row_stream) == [
         {"id": 1, "name": "english"},
@@ -38,7 +38,7 @@ def test_extract_package_process_and_stream():
     process = lambda row: row.to_list()
     path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     cell_streams = extract("data/package.json", process=process, stream=True)
-    cell_stream = cell_streams[path]
+    cell_stream = cell_streams[path]  # type: ignore
     assert isinstance(cell_stream, types.GeneratorType)
     assert list(cell_stream) == [
         [1, "english"],
