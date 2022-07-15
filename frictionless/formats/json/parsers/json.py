@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import json
 import ijson
@@ -43,11 +42,11 @@ class JsonParser(Parser):
         )
         with system.create_parser(resource) as parser:
             try:
-                yield next(parser.cell_stream)
+                yield next(parser.cell_stream)  # type: ignore
             except StopIteration:
                 note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
-            parser_control = parser.resource.dialect.get_control("inline")
+            parser_control = InlineControl.from_dialect(parser.resource.dialect)
             if parser_control.keyed:
                 control.keyed = True
             yield from parser.cell_stream

@@ -1,12 +1,16 @@
-# type: ignore
 from __future__ import annotations
 import csv
 import tempfile
 from itertools import chain
+from typing import TYPE_CHECKING
+from .control import CsvControl
 from ...resource import Parser
 from ...system import system
-from .control import CsvControl
 from . import settings
+
+if TYPE_CHECKING:
+    from ...resource import Resource
+    from ...interfaces import ITextStream, ISample
 
 
 class CsvParser(Parser):
@@ -26,10 +30,9 @@ class CsvParser(Parser):
             control.set_not_defined("delimiter", "\t")
         delimiter = control.get_defined("delimiter", default=",\t;|")
         try:
-            config = csv.Sniffer().sniff("".join(sample), delimiter)
+            config = csv.Sniffer().sniff("".join(sample), delimiter)  # type: ignore
         except csv.Error:
             config = csv.excel()
-        # TODO: set only if it differs from default?
         control.set_not_defined("delimiter", config.delimiter, distinct=True)
         control.set_not_defined("line_terminator", config.lineterminator, distinct=True)
         control.set_not_defined("escape_char", config.escapechar, distinct=True)
@@ -38,12 +41,12 @@ class CsvParser(Parser):
             "skip_initial_space", config.skipinitialspace, distinct=True
         )
         source = chain(sample, self.loader.text_stream)
-        data = csv.reader(source, dialect=control.to_python())
+        data = csv.reader(source, dialect=control.to_python())  # type: ignore
         yield from data
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: Resource):
         options = {}
         control = CsvControl.from_dialect(self.resource.dialect)
         if self.resource.format == "tsv":
@@ -58,9 +61,9 @@ class CsvParser(Parser):
             with source:
                 writer.writerow(source.schema.field_names)
                 for row in source.row_stream:
-                    writer.writerow(row.to_list(types=self.supported_types))
+                    writer.writerow(row.to_list(types=self.supported_types))  # type: ignore
         loader = system.create_loader(self.resource)
-        loader.write_byte_stream(file.name)
+        loader.write_byte_stream(file.name)  # type: ignore
 
 
 # Internal
@@ -68,11 +71,11 @@ class CsvParser(Parser):
 SAMPLE_SIZE = 100
 
 
-def extract_samle(text_stream):
-    sample = []
+def extract_samle(text_stream: ITextStream) -> ISample:
+    sample: ISample = []
     while True:
         try:
-            sample.append(next(text_stream))
+            sample.append(next(text_stream))  # type: ignore
         except StopIteration:
             break
         if len(sample) >= SAMPLE_SIZE:

@@ -75,7 +75,7 @@ class Metadata(metaclass=Metaclass):
 
     # Defined
 
-    def list_defined(self):
+    def list_defined(self) -> List[str]:
         defined = list(self.metadata_assigned)
         for name, default in self.metadata_defaults.items():
             value = getattr(self, name, None)
@@ -85,19 +85,19 @@ class Metadata(metaclass=Metaclass):
                 defined.append(name)
         return defined
 
-    def add_defined(self, name: str):
-        return self.metadata_assigned.add(name)
+    def add_defined(self, name: str) -> None:
+        self.metadata_assigned.add(name)
 
-    def has_defined(self, name: str):
+    def has_defined(self, name: str) -> bool:
         return name in self.list_defined()
 
-    def get_defined(self, name: str, *, default=None):
+    def get_defined(self, name: str, *, default: Any = None) -> Any:
         if self.has_defined(name):
             return getattr(self, name)
         if default is not None:
             return default
 
-    def set_not_defined(self, name: str, value, *, distinct=False):
+    def set_not_defined(self, name: str, value: Any, *, distinct=False) -> None:
         if not self.has_defined(name) and value is not None:
             if distinct and getattr(self, name, None) == value:
                 return

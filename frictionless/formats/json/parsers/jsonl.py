@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import tempfile
 import jsonlines
@@ -37,8 +36,8 @@ class JsonlParser(Parser):
             dialect=Dialect(controls=[inline_control]),
         )
         with system.create_parser(resource) as parser:
-            yield next(parser.cell_stream)
-            parser_control = parser.resource.dialect.get_control("inline")
+            yield next(parser.cell_stream)  # type: ignore
+            parser_control = InlineControl.from_dialect(parser.resource.dialect)
             if parser_control.keyed:
                 control.keyed = True
             yield from parser.cell_stream

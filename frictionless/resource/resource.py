@@ -722,7 +722,7 @@ class Resource(Metadata):
     def __prepare_buffer(self):
 
         # From parser
-        if self.__parser and self.__parser.loader:
+        if self.__parser and self.__parser.requires_loader:
             self.__buffer = self.__parser.loader.buffer
 
         # From loader

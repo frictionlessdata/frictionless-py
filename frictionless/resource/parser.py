@@ -40,6 +40,8 @@ class Parser:
     def __exit__(self, type, value, traceback):
         self.close()
 
+    # Props
+
     @property
     def resource(self) -> Resource:
         """
@@ -49,11 +51,13 @@ class Parser:
         return self.__resource
 
     @property
-    def loader(self) -> Optional[Loader]:
+    def loader(self) -> Loader:
         """
         Returns:
             Loader: loader
         """
+        if self.__loader is None:
+            raise FrictionlessException("parser is not open or non requiring loader")
         return self.__loader
 
     @property

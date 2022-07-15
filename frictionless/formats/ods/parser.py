@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 import io
 import tempfile
@@ -60,10 +59,10 @@ class OdsParser(Parser):
 
             # Date or datetime
             if ctype == "date":
-                if len(value) == 10:
-                    return datetime.strptime(value, "%Y-%m-%d").date()
+                if len(value) == 10:  # type: ignore
+                    return datetime.strptime(value, "%Y-%m-%d").date()  # type: ignore
                 else:
-                    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+                    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")  # type: ignore
 
             return value
 

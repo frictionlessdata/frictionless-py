@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 from ...exception import FrictionlessException
 from .control import InlineControl
@@ -34,8 +33,8 @@ class InlineParser(Parser):
         # Iter
         data = self.resource.data
         if not hasattr(data, "__iter__"):
-            data = data()
-        data = iter(data)
+            data = data()  # type: ignore
+        data = iter(data)  # type: ignore
 
         # Empty
         try:

@@ -1,5 +1,8 @@
 {
   "include": [
     "frictionless"
+  ],
+  "strict": [
+    "frictionless/formats/csv"
   ]
 }
