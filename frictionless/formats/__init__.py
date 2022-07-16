@@ -1,5 +1,4 @@
 from .bigquery import *
-from .ckan import *
 from .csv import *
 from .excel import *
 from .gsheets import *

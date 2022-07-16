@@ -3,6 +3,8 @@ from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
+pytestmark = pytest.mark.xfail
+
 
 # Write
 
