@@ -1,3 +1,4 @@
+from .catalog import *
 from .checklist import *
 from .detector import *
 from .dialect import *

@@ -48,6 +48,7 @@ class Metadata(metaclass=Metaclass):
     """Metadata represenation"""
 
     custom: dict[str, Any] = {}
+    """TODO: add docs"""
 
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
@@ -72,6 +73,19 @@ class Metadata(metaclass=Metaclass):
 
     def __repr__(self) -> str:
         return pprint.pformat(self.to_descriptor(), sort_dicts=False)
+
+    # Props
+
+    @property
+    def description_html(self) -> str:
+        """Description in HTML"""
+        description = getattr(self, "description", None)
+        return helpers.md_to_html(description)
+
+    @property
+    def description_text(self) -> str:
+        """Description in Text"""
+        return helpers.html_to_text(self.description_html)
 
     # Defined
 

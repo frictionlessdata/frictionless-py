@@ -443,16 +443,6 @@ class Resource(Metadata):
         self.__detector = value
 
     @property
-    def description_html(self) -> str:
-        """Description in HTML"""
-        return helpers.md_to_html(self.description)
-
-    @property
-    def description_text(self) -> str:
-        """Description in Text"""
-        return helpers.html_to_text(self.description_html)
-
-    @property
     def normpath(self) -> str:
         """Normalized path of the resource or raise if not set"""
         if self.path is None:

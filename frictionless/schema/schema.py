@@ -56,9 +56,9 @@ class Schema(Metadata):
     # Props
 
     @property
-    def field_names(self):
+    def field_names(self) -> List[str]:
         """List of field names"""
-        return [field.name for field in self.fields]
+        return [field.name for field in self.fields if field.name is not None]
 
     # Describe
 

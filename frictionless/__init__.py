@@ -1,5 +1,5 @@
-from .settings import VERSION as __version__
 from .actions import describe, extract, transform, validate
+from .catalog import Catalog
 from .checklist import Checklist, Check
 from .detector import Detector
 from .dialect import Dialect, Control
@@ -14,6 +14,7 @@ from .program import program
 from .report import Report, ReportTask
 from .resource import Resource, Loader, Parser
 from .schema import Schema, Field
+from .settings import VERSION as __version__
 from .server import server
 from .system import system
 from .table import Header, Lookup, Row

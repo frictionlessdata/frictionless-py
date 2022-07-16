@@ -259,19 +259,9 @@ class Package(Metadata):
     # Props
 
     @property
-    def description_html(self):
-        """Package description in HTML"""
-        return helpers.md_to_html(self.description)
-
-    @property
-    def description_text(self):
-        """Package description in Text"""
-        return helpers.html_to_text(self.description_html)
-
-    @property
-    def resource_names(self):
+    def resource_names(self) -> List[str]:
         """Return names of resources"""
-        return [resource.name for resource in self.resources]
+        return [resource.name for resource in self.resources if resource.name is not None]
 
     # Resources
 
