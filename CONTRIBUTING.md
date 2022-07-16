@@ -59,7 +59,14 @@ Frictionless is a Python3.6+ framework, and it uses some common Python tools for
 - formatting: `black`
 - type checking: `mypy` (under construction)
 
-You also need `git` to work on the project, and `make` is recommended. After cloning the repository, we recommend creating a virtual environment and installing the dependencies by following this code:
+You also need `git` to work on the project, and `make` is recommended.
+
+After cloning the repository, you can set up the development environment
+either by creating a virtual environment or a docker container.
+
+### Using a virtual environment
+
+Create a virtual environment and install the dependencies by following this code:
 
 > this will install a `git commit` hook running the tests
 
@@ -72,6 +79,32 @@ alias "frictionless=python -m frictionless"
 ```
 
 Note: You may need to run `sudo apt-get install postgresql libpq-dev` on a Debian-based system, because the python Postgres module depends on some postgres CLI tools.
+
+### Using a Docker container
+
+Use the following command to build the container:
+
+```bash
+make docker-setup
+```
+
+This should take care of setting up everything. If the container is
+built without errors, you can then run commands like `make` inside the
+container to accomplish various tasks (see the next section for details).
+
+To make things easier, we can create an alias:
+
+```bash
+alias "frictionless-dev=docker run --rm -v $PWD:/home/frictionless -it frictionless-dev"
+```
+
+Then, for example, to run the tests, we can use:
+
+```bash
+frictionless-dev make test
+```
+
+### Using make
 
 Then you can run various make commands:
 - `make docs` - build the docs
