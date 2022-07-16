@@ -18,16 +18,14 @@ class MultipartLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        paths = []
-        # TODO: rebase on normpath?
-        for path in [self.resource.path] + self.resource.extrapaths:  # type: ignore
-            path = os.path.join(self.resource.basepath, path)
-            paths.append(path)
         remote = self.resource.remote
         headless = self.resource.dialect.header is False
         headless = headless or self.resource.format != "csv"
-        byte_stream = MultipartByteStream(paths, remote=remote, headless=headless)
-        return byte_stream
+        return MultipartByteStream(
+            self.resource.normpaths,
+            remote=remote,
+            headless=headless,
+        )
 
     # Write
 
@@ -39,10 +37,10 @@ class MultipartLoader(Loader):
             if not bytes:
                 break
             number += 1
-            normpath = self.resource.normpath.format(number=number)
+            path = self.resource.normpath.format(number=number)
             with tempfile.NamedTemporaryFile(delete=False) as file:
                 file.write(bytes)
-            helpers.move_file(file.name, normpath)
+            helpers.move_file(file.name, path)
 
 
 # Internal

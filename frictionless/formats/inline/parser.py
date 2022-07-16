@@ -31,10 +31,10 @@ class InlineParser(Parser):
         control = InlineControl.from_dialect(self.resource.dialect)
 
         # Iter
-        data = self.resource.data
+        data = self.resource.normdata
         if not hasattr(data, "__iter__"):
-            data = data()  # type: ignore
-        data = iter(data)  # type: ignore
+            data = data()
+        data = iter(data)
 
         # Empty
         try:

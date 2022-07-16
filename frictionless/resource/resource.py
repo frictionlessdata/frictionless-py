@@ -445,12 +445,12 @@ class Resource(Metadata):
     @property
     def description_html(self) -> str:
         """Description in HTML"""
-        return helpers.md_to_html(self.description or "")
+        return helpers.md_to_html(self.description)
 
     @property
     def description_text(self) -> str:
         """Description in Text"""
-        return helpers.html_to_text(self.description_html or "")
+        return helpers.html_to_text(self.description_html)
 
     @property
     def normpath(self) -> str:
@@ -460,7 +460,17 @@ class Resource(Metadata):
         return helpers.normalize_path(self.basepath, self.path)
 
     @property
-    def normdata(self) -> str:
+    def normpaths(self) -> List[str]:
+        """Normalized paths of the resource or raise if not set"""
+        if self.path is None:
+            raise FrictionlessException("path is not set")
+        normpaths = []
+        for path in [self.path] + self.extrapaths:
+            normpaths.append(helpers.normalize_path(self.basepath, path))
+        return normpaths
+
+    @property
+    def normdata(self) -> Any:
         """Normalized data or raise if not set"""
         if self.data is None:
             raise FrictionlessException("data is not set")

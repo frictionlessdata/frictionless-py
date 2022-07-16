@@ -18,7 +18,7 @@ class PandasParser(Parser):
 
     def read_cell_stream_create(self):
         np = helpers.import_from_extras("numpy", name="pandas")
-        dataframe = self.resource.data
+        dataframe = self.resource.normdata
 
         # Schema
         schema = self.__read_convert_schema()
@@ -41,7 +41,7 @@ class PandasParser(Parser):
             yield cells
 
     def __read_convert_schema(self):
-        dataframe = self.resource.data
+        dataframe = self.resource.normdata
         schema = Schema()
 
         # Primary key

@@ -15,12 +15,12 @@ import platform
 import textwrap
 import jsonmerge
 import stringcase
+from typing import Optional, Union, Any
 from html.parser import HTMLParser
 from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
-from typing import Union, Any
 from . import settings
 
 
@@ -357,16 +357,18 @@ def parse_resource_hash(hash):
     return parts
 
 
-def md_to_html(md):
+def md_to_html(string: Optional[str]) -> str:
+    if not string:
+        return ""
     try:
-        html = marko.convert(md)
+        html = marko.convert(string)
         html = html.replace("\n", "")
         return html
     except Exception:
         return ""
 
 
-def html_to_text(html):
+def html_to_text(string: Optional[str]) -> str:
     class HTMLFilter(HTMLParser):
         text = ""
 
@@ -374,8 +376,10 @@ def html_to_text(html):
             self.text += data
             self.text += " "
 
+    if not string:
+        return ""
     parser = HTMLFilter()
-    parser.feed(html)
+    parser.feed(string)
     return parser.text.strip()
 
 

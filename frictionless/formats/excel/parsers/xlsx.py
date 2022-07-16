@@ -45,11 +45,11 @@ class XlsxParser(Parser):
         # For remote stream we need local copy (will be deleted on close by Python)
         # https://docs.python.org/3.5/library/tempfile.html#tempfile.TemporaryFile
         if loader.remote:
-            normpath = self.resource.normpath
+            path = self.resource.normpath
 
             # Cached
-            if control.workbook_cache is not None and normpath in control.workbook_cache:
-                resource = Resource(normpath, type="table", scheme="file", format="xlsx")
+            if control.workbook_cache is not None and path in control.workbook_cache:
+                resource = Resource(path, type="table", scheme="file", format="xlsx")
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -59,7 +59,7 @@ class XlsxParser(Parser):
                 shutil.copyfileobj(loader.byte_stream, target)
                 target.seek(0)
             if not target.delete:
-                control.workbook_cache[normpath] = target.name  # type: ignore
+                control.workbook_cache[path] = target.name  # type: ignore
                 atexit.register(os.remove, target.name)
             resource = Resource(target, type="table", scheme="stream", format="xlsx")
             loader = system.create_loader(resource)

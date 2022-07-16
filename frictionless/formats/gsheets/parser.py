@@ -18,28 +18,28 @@ class GsheetsParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        normpath = self.resource.normpath
-        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", normpath)
-        normpath = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
+        path = self.resource.normpath
+        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)
+        path = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
         key, gid = "", ""
         if match:
             key = match.group("key")
             gid = match.group("gid")
-        normpath = normpath % (key, key)
+        path = path % (key, key)
         if gid:
-            normpath = "%s&gid=%s" % (normpath, gid)
-        with Resource(path=normpath, stats=self.resource.stats) as resource:
+            path = "%s&gid=%s" % (path, gid)
+        with Resource(path=path, stats=self.resource.stats) as resource:
             yield from resource.cell_stream
 
     # Write
 
     def write_row_stream(self, source):
-        normpath = self.resource.normpath
+        path = self.resource.normpath
         pygsheets = helpers.import_from_extras("pygsheets", name="gsheets")
         control = GsheetsControl.from_dialect(self.resource.dialect)
-        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", normpath)
+        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)
         if not match:
-            error = errors.FormatError(note=f"Cannot save {normpath}")
+            error = errors.FormatError(note=f"Cannot save {path}")
             raise FrictionlessException(error)
         key = match.group("key")
         gid = match.group("gid")
@@ -52,4 +52,4 @@ class GsheetsParser(Parser):
             for row in source.row_stream:
                 data.append(row.to_list())
         wks.update_values("A1", data)
-        return normpath
+        return path

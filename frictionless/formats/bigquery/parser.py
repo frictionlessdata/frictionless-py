@@ -17,7 +17,7 @@ class BigqueryParser(Parser):
 
     def read_cell_stream_create(self):
         control = BigqueryControl.from_dialect(self.resource.dialect)
-        storage = BigqueryStorage(self.resource.data, control=control)
+        storage = BigqueryStorage(self.resource.normdata, control=control)
         resource = storage.read_resource(control.table)
         self.resource.schema = resource.schema
         with resource:
@@ -28,7 +28,7 @@ class BigqueryParser(Parser):
     # NOTE: this approach is questionable
     def write_row_stream(self, source):
         control = BigqueryControl.from_dialect(self.resource.dialect)
-        storage = BigqueryStorage(self.resource.data, control=control)
+        storage = BigqueryStorage(self.resource.normdata, control=control)
         if not control.table:
             note = 'Please provide "dialect.table" for writing'
             raise FrictionlessException(note)

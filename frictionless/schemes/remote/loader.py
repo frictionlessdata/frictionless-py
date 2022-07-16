@@ -13,11 +13,11 @@ class RemoteLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        normpath = requests.utils.requote_uri(self.resource.normpath)
+        path = requests.utils.requote_uri(self.resource.normpath)
         control = RemoteControl.from_dialect(self.resource.dialect)
         session = control.http_session
         timeout = control.http_timeout
-        byte_stream = RemoteByteStream(normpath, session=session, timeout=timeout).open()
+        byte_stream = RemoteByteStream(path, session=session, timeout=timeout).open()
         if control.http_preload:
             buffer = io.BufferedRandom(io.BytesIO())  # type: ignore
             buffer.write(byte_stream.read())

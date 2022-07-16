@@ -71,7 +71,6 @@ def test_multipart_loader_resource_remote():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Not suppored remote path and basepath")
 def test_multipart_loader_resource_remote_both_path_and_basepath():
     descriptor = {
         "name": "name",
