@@ -1,8 +1,10 @@
 import os
 import json
+from typing import Optional
 from ...exception import FrictionlessException
-from ...package import Package
 from .control import CkanControl
+from ...catalog import Catalog
+from ...package import Package
 from ...package import Manager
 from ...system import system
 from ... import helpers
@@ -12,13 +14,25 @@ class CkanManager(Manager[CkanControl]):
 
     # Read
 
-    def read_package(self):
+    def read_catalog(self):
+        assert self.control.baseurl
+        endpoint = f"{self.control.baseurl}/api/3/action/package_list"
+        response = make_ckan_request(endpoint)
+        catalog = Catalog()
+        for dataset in response["result"]:
+            package = self.read_package(dataset=dataset)
+            catalog.add_package(package)
+        return catalog
+
+    def read_package(self, *, dataset: Optional[str] = None):
         mapper = helpers.import_from_extras(
             "frictionless_ckan_mapper.ckan_to_frictionless", name="ckan"
         )
-        assert self.control.baseurl
-        assert self.control.dataset
-        params = {"id": self.control.dataset}
+        baseurl = self.control.baseurl
+        dataset = dataset or self.control.dataset
+        assert baseurl
+        assert dataset
+        params = {"id": dataset}
         endpoint = f"{self.control.baseurl}/api/3/action/package_show"
         response = make_ckan_request(endpoint, params=params)
         descriptor = mapper.dataset(response["result"])
@@ -28,6 +42,9 @@ class CkanManager(Manager[CkanControl]):
             if resource.format:
                 resource.format = resource.format.lower()
         return package
+
+    # Write
+    # TODO: implement
 
 
 # Internal

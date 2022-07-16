@@ -1,10 +1,14 @@
 from __future__ import annotations
-from typing import Optional, List
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..package import Package
+from ..system import system
 from .. import settings
 from .. import errors
+
+if TYPE_CHECKING:
+    from ..dialect import Control
 
 
 class Catalog(Metadata):
@@ -12,12 +16,15 @@ class Catalog(Metadata):
 
     def __init__(
         self,
+        source: Optional[Any] = None,
         *,
         # Standard
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
         packages: List[Package] = [],
+        # Software
+        control: Optional[Control] = None,
     ):
 
         # Store state
@@ -25,6 +32,21 @@ class Catalog(Metadata):
         self.title = title
         self.description = description
         self.packages = packages.copy()
+
+        # Handled by the create hook
+        assert source is None
+        assert control is None
+
+    @classmethod
+    def __create__(cls, source: Optional[Any] = None, **options):
+        if source is not None:
+
+            # Manager
+            control = options.pop("control", None)
+            manager = system.create_manager(source, control=control)
+            if manager:
+                catalog = manager.read_catalog()
+                return catalog
 
     # State
 

@@ -21,8 +21,9 @@ class CkanPlugin(Plugin):
         parsed = urlparse(source)
         if not control or isinstance(control, CkanControl):
             if parsed.path.startswith("/dataset/"):
-                baseurl, dataset = source.split("/dataset/")
                 control = control or CkanControl()
+                baseurl, dataset = source.split("/dataset/")
                 control.baseurl = baseurl
-                control.dataset = dataset
+                if dataset:
+                    control.dataset = dataset
                 return CkanManager(control)
