@@ -45,13 +45,13 @@ def make_ckan_request(endpoint, *, method="GET", headers=None, apikey=None, **op
             apikey = os.environ.get(apikey[4:])
         headers.update({"Authorization": apikey})
 
-    # Make a request
+    # Make request
     http_session = system.get_http_session()
     response = http_session.request(
         method=method, url=endpoint, headers=headers, allow_redirects=True, **options
     ).json()
 
-    # Get an error
+    # Handle error
     try:
         ckan_error = None
         if not response["success"] and response["error"]:

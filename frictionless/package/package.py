@@ -22,6 +22,7 @@ from . import methods
 
 if TYPE_CHECKING:
     from ..interfaces import IDescriptorSource, IOnerror
+    from ..dialect import Control
     from .. import portals
 
 
@@ -72,6 +73,7 @@ class Package(Metadata):
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
+        control: Optional[Control] = None,
     ):
 
         # Store state
@@ -101,6 +103,7 @@ class Package(Metadata):
 
         # Handled by the create hook
         assert source is None
+        assert control is None
 
     # TODO: support list of paths
     @classmethod
@@ -127,6 +130,13 @@ class Package(Metadata):
                 for path in helpers.expand_source(source, basepath=basepath):
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
+
+            # Manager
+            control = options.pop("control", None)
+            manager = system.create_manager(source, control=control)
+            if manager:
+                package = manager.read_package()
+                return package
 
             # Descriptor
             if helpers.is_descriptor_source(source):
