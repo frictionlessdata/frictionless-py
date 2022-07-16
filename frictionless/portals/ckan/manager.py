@@ -37,6 +37,9 @@ class CkanManager(Manager[CkanControl]):
         response = make_ckan_request(endpoint, params=params)
         descriptor = mapper.dataset(response["result"])
         package = Package.from_descriptor(descriptor)
+        for path in package.resource_paths:
+            if path.endswith(("/datapackage.json", "/datapackage.yaml")):
+                return Package.from_descriptor(path)
         for resource in package.resources:
             resource.name = helpers.slugify(resource.name)
             if resource.format:
