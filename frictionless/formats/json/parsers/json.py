@@ -6,7 +6,6 @@ from ....exception import FrictionlessException
 from ...inline import InlineControl
 from ..control import JsonControl
 from ....resource import Resource
-from ....dialect import Dialect
 from ....resource import Parser
 from ....system import system
 from .... import errors
@@ -35,21 +34,16 @@ class JsonParser(Parser):
             path = "%s.item" % control.property
         source = ijson.items(self.loader.byte_stream, path)
         inline_control = InlineControl(keys=control.keys)
-        resource = Resource(
-            data=source,
-            format="inline",
-            dialect=Dialect(controls=[inline_control]),
-        )
-        with system.create_parser(resource) as parser:
+        with Resource(data=source, format="inline", control=inline_control) as resource:
             try:
-                yield next(parser.cell_stream)  # type: ignore
+                yield next(resource.cell_stream)  # type: ignore
             except StopIteration:
                 note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
-            parser_control = InlineControl.from_dialect(parser.resource.dialect)
-            if parser_control.keyed:
+            inline_control = InlineControl.from_dialect(resource.dialect)
+            if inline_control.keyed:
                 control.keyed = True
-            yield from parser.cell_stream
+            yield from resource.cell_stream
 
     # Write
 

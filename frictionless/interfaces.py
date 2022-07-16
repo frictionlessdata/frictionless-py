@@ -17,6 +17,7 @@ IDescriptor = Dict[str, Any]
 IDescriptorSource = Union[str, dict]
 IByteStream = BinaryIO
 ITextStream = TextIO
+# TODO: fix streaming types (support next)
 ICellStream = Iterable[List[Any]]
 IRowStream = Iterable[Row]
 IBuffer = bytes
