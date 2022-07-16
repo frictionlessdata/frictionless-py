@@ -1,4 +1,4 @@
-.PHONY: all coverage docs install format github lint release test test-ci
+.PHONY: all coverage docker-setup docs install format github lint release test test-ci
 
 
 PACKAGE := $(shell grep '^PACKAGE =' setup.py | cut -d '"' -f2)
@@ -11,6 +11,9 @@ all:
 
 coverage:
 	sensible-browser coverage/index.html
+
+docker-setup:
+	docker build --rm -t frictionless-dev .
 
 docs:
 	python docs/build.py
