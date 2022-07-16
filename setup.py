@@ -46,6 +46,7 @@ EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
     "excel": ["tableschema-to-template>=0.0.12"],
+    "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],

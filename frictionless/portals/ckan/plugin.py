@@ -9,7 +9,7 @@ from .manager import CkanManager
 
 
 class CkanPlugin(Plugin):
-    """Plugin for CKAN"""
+    """Plugin for Ckan"""
 
     # Hooks
 
