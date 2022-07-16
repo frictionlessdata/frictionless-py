@@ -45,6 +45,7 @@ EXTRAS_REQUIRE = {
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
+    "dev": TESTS_REQUIRE,
     "excel": ["tableschema-to-template>=0.0.12"],
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
@@ -53,7 +54,7 @@ EXTRAS_REQUIRE = {
     "pandas": ["pandas>=1.0"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
-    "dev": TESTS_REQUIRE,
+    "zenodo": ["pyzenodo3>=1.0"],
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",
