@@ -204,35 +204,29 @@ def test_program_extract_invalid_rows_with_no_invalid_rows():
 
 
 def test_program_extract_valid_rows_from_datapackage_with_multiple_resources():
-    IS_UNIX = not helpers.is_platform("windows")
-    path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
-    path2 = "data/issue-1004-data2.csv" if IS_UNIX else "data\\issue-1004-data2.csv"
     actual = runner.invoke(program, "extract data/issue-1004.package.json --valid --json")
     assert actual.exit_code == 0
     assert json.loads(actual.stdout) == {
-        path1: [
+        "issue-1004-data1": [
             {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
             {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
             {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
         ],
-        path2: [],
+        "issue-1004-data2": [],
     }
 
 
 def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources():
-    IS_UNIX = not helpers.is_platform("windows")
-    path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
-    path2 = "data/issue-1004-data2.csv" if IS_UNIX else "data\\issue-1004-data2.csv"
     actual = runner.invoke(
         program, "extract data/issue-1004.package.json --invalid --json"
     )
     assert actual.exit_code == 0
     assert json.loads(actual.stdout) == {
-        path1: [
+        "issue-1004-data1": [
             {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
             {"id": 5, "neighbor_id": None, "name": None, "population": None},
         ],
-        path2: [
+        "issue-1004-data2": [
             {"id": 1, "name": "english", "country": None, "city": None},
             {"id": 1, "name": "english", "country": None, "city": None},
             {"id": None, "name": None, "country": None, "city": None},

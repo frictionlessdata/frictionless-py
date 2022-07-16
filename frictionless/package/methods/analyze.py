@@ -18,9 +18,13 @@ def analyze(self: Package, *, detailed=False):
         dict: dict of resource analysis
 
     """
-    results = {}
+
+    # Prepare package
+    self.infer(sample=False)
+
+    # Extract metrics
+    analisis = {}
     for resource in self.resources:
-        result = resource.analyze(detailed=detailed)
-        locate = resource.name or resource.place
-        results[locate] = result
-    return results
+        analisis[resource.name] = resource.analyze(detailed=detailed)
+
+    return analisis

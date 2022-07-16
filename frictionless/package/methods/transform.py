@@ -22,7 +22,7 @@ def transform(self: Package, pipeline: Pipeline):
     """
 
     # Prepare package
-    self.infer()
+    self.infer(sample=False)
 
     # Prepare pipeline
     if not pipeline.metadata_valid:

@@ -24,6 +24,8 @@ def analyze(self: Resource, *, detailed=False) -> dict:
         dict: resource analysis
 
     """
+
+    # Create state
     timer = helpers.Timer()
     self.infer()
 
@@ -34,6 +36,7 @@ def analyze(self: Resource, *, detailed=False) -> dict:
     analysis_report["rowsWithNullValues"] = 0
     analysis_report["fieldStats"] = {}
 
+    # Iterate rows
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
     for row in self:

@@ -18,6 +18,11 @@ def describe(cls: Type[Resource], source: Any, *, stats: bool = False, **options
         Resource: data resource
 
     """
+
+    # Create resource
     resource = cls.from_options(source, **options)
+
+    # Infer resource
     resource.infer(stats=stats)
+
     return resource

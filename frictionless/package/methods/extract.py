@@ -25,14 +25,18 @@ def extract(
         {path: Row[]}: a dictionary of arrays/streams of rows
 
     """
-    results = {}
+
+    # Prepare package
+    self.infer(sample=False)
+
+    # Extract tables
+    tables = {}
     for resource in self.resources:
-        result = resource.extract(
+        tables[resource.name] = resource.extract(
             limit_rows=limit_rows,
             process=process,
             filter=filter,
             stream=stream,
         )
-        locate = resource.name or resource.place
-        results[locate] = result
-    return results
+
+    return tables

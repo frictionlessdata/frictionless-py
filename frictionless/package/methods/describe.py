@@ -29,6 +29,8 @@ def describe(
         Package: data package
 
     """
+
+    # Create package
     package = cls.from_options(source, **options)
     if hashing:
         for resource in package.resources:
@@ -36,5 +38,8 @@ def describe(
     if dialect:
         for resource in package.resources:
             resource.dialect = dialect
+
+    # Infer package
     package.infer(stats=stats)
+
     return package
