@@ -18,8 +18,9 @@ def analyze(self: Package, *, detailed=False):
         dict: dict of resource analysis
 
     """
-    result = {}
-    for number, resource in enumerate(self.resources, start=1):
-        key = resource.fullpath if not resource.memory else f"memory{number}"
-        result[key] = resource.analyze(detailed=detailed)
-    return result
+    results = {}
+    for resource in self.resources:
+        result = resource.analyze(detailed=detailed)
+        locate = resource.name or resource.place
+        results[locate] = result
+    return results

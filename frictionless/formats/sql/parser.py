@@ -26,7 +26,7 @@ class SqlParser(Parser):
         if not control.table:
             note = 'Please provide "dialect.sql.table" for reading'
             raise FrictionlessException(note)
-        storage = SqlStorage(self.resource.fullpath, control=control)
+        storage = SqlStorage(self.resource.normpath, control=control)
         resource = storage.read_resource(
             control.table, order_by=control.order_by, where=control.where
         )
@@ -43,5 +43,5 @@ class SqlParser(Parser):
             note = 'Please provide "dialect.sql.table" for writing'
             raise FrictionlessException(note)
         source.name = control.table
-        storage = SqlStorage(self.resource.fullpath, control=control)
+        storage = SqlStorage(self.resource.normpath, control=control)
         storage.write_resource(source, force=True)

@@ -89,7 +89,7 @@ def test_json_parser_from_remote_keyed():
 def test_json_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(Resource(path=str(tmpdir.join("table.json"))))
-    with open(target.fullpath) as file:
+    with open(target.normpath) as file:
         assert json.load(file) == [
             ["id", "name"],
             [1, "english"],
@@ -101,7 +101,7 @@ def test_json_parser_write_decimal(tmpdir):
     control = formats.JsonControl(keyed=True)
     source = Resource([["id", "name"], [1.5, "english"], [2.5, "german"]])
     target = source.write(Resource(path=str(tmpdir.join("table.json")), control=control))
-    with open(target.fullpath) as file:
+    with open(target.normpath) as file:
         assert json.load(file) == [
             {"id": "1.5", "name": "english"},
             {"id": "2.5", "name": "german"},
@@ -112,7 +112,7 @@ def test_json_parser_write_keyed(tmpdir):
     control = formats.JsonControl(keyed=True)
     source = Resource("data/table.csv")
     target = source.write(Resource(path=str(tmpdir.join("table.json")), control=control))
-    with open(target.fullpath) as file:
+    with open(target.normpath) as file:
         assert json.load(file) == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

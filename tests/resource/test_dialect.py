@@ -28,6 +28,7 @@ def test_resource_dialect_header_false():
         "schema": "resource-schema.json",
     }
     resource = Resource(descriptor, basepath="data")
+    print(resource.normpath)
     assert resource.dialect.header is False
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},

@@ -42,7 +42,7 @@ class OdsParser(Parser):
                 sheet = book.sheets[control.sheet - 1]
         except (KeyError, IndexError):
             note = 'OpenOffice document "%s" does not have a sheet "%s"'
-            note = note % (self.resource.fullpath, control.sheet)
+            note = note % (self.resource.normpath, control.sheet)
             raise FrictionlessException(errors.FormatError(note=note))
 
         # Type cells

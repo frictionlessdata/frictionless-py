@@ -453,15 +453,15 @@ class Resource(Metadata):
         return helpers.html_to_text(self.description_html or "")
 
     @property
-    def fullpath(self) -> str:
-        """Full path of the resource or raise if not set"""
+    def normpath(self) -> str:
+        """Normalized path of the resource or raise if not set"""
         if self.path is None:
             raise FrictionlessException("path is not set")
-        return helpers.join_path(self.basepath, self.path)
+        return helpers.normalize_path(self.basepath, self.path)
 
     @property
-    def fulldata(self) -> str:
-        """Resource's data or raise if not set"""
+    def normdata(self) -> str:
+        """Normalized data or raise if not set"""
         if self.data is None:
             raise FrictionlessException("data is not set")
         return self.data

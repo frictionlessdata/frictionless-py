@@ -13,11 +13,11 @@ class RemoteLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        fullpath = requests.utils.requote_uri(self.resource.fullpath)
+        normpath = requests.utils.requote_uri(self.resource.normpath)
         control = RemoteControl.from_dialect(self.resource.dialect)
         session = control.http_session
         timeout = control.http_timeout
-        byte_stream = RemoteByteStream(fullpath, session=session, timeout=timeout).open()
+        byte_stream = RemoteByteStream(normpath, session=session, timeout=timeout).open()
         if control.http_preload:
             buffer = io.BufferedRandom(io.BytesIO())  # type: ignore
             buffer.write(byte_stream.read())
@@ -29,7 +29,7 @@ class RemoteLoader(Loader):
 
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
-        url = self.resource.fullpath.replace(file, "")
+        url = self.resource.normpath.replace(file, "")
         control = RemoteControl.from_dialect(self.resource.dialect)
         response = control.http_session.post(url, files={file: byte_stream})
         response.raise_for_status()

@@ -39,10 +39,10 @@ class MultipartLoader(Loader):
             if not bytes:
                 break
             number += 1
-            fullpath = self.resource.fullpath.format(number=number)
+            normpath = self.resource.normpath.format(number=number)
             with tempfile.NamedTemporaryFile(delete=False) as file:
                 file.write(bytes)
-            helpers.move_file(file.name, fullpath)
+            helpers.move_file(file.name, normpath)
 
 
 # Internal

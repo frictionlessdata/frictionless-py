@@ -507,24 +507,24 @@ class Package(Metadata):
 
                     # Multipart data
                     elif resource.multipart:
-                        for path, fullpath in zip(resource.path, resource.fullpath):  # type: ignore
-                            if os.path.isfile(fullpath):
-                                if not helpers.is_safe_path(fullpath):
-                                    note = f'Zipping usafe "{fullpath}" is not supported'
+                        for path, normpath in zip(resource.path, resource.normpath):  # type: ignore
+                            if os.path.isfile(normpath):
+                                if not helpers.is_safe_path(normpath):
+                                    note = f'Zipping usafe "{normpath}" is not supported'
                                     error = errors.PackageError(note=note)
                                     raise FrictionlessException(error)
-                                archive.write(fullpath, path)
+                                archive.write(normpath, path)
 
                     # Local Data
                     else:
                         path = resource.path
-                        fullpath = resource.fullpath
-                        if os.path.isfile(fullpath):
-                            if not helpers.is_safe_path(fullpath):
-                                note = f'Zipping usafe "{fullpath}" is not supported'
+                        normpath = resource.normpath
+                        if os.path.isfile(normpath):
+                            if not helpers.is_safe_path(normpath):
+                                note = f'Zipping usafe "{normpath}" is not supported'
                                 error = errors.PackageError(note=note)
                                 raise FrictionlessException(error)
-                            archive.write(fullpath, path)
+                            archive.write(normpath, path)
 
                 # Metadata
                 archive.writestr(

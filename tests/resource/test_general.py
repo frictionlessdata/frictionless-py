@@ -18,7 +18,7 @@ def test_resource():
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
     assert (
-        resource.fullpath == "data/table.csv"
+        resource.normpath == "data/table.csv"
         if not helpers.is_platform("windows")
         else "data\\table.csv"
     )
@@ -72,7 +72,7 @@ def test_resource_from_path_remote():
     resource = Resource(BASEURL % "data/resource.json")
     assert resource.path == "table.csv"
     assert resource.basepath == BASEURL % "data"
-    assert resource.fullpath == BASEURL % "data/table.csv"
+    assert resource.normpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -97,7 +97,7 @@ def test_resource_source_non_tabular():
         assert resource.basepath == ""
         assert resource.memory is False
         assert resource.multipart is False
-        assert resource.fullpath == path
+        assert resource.normpath == path
         if not helpers.is_platform("windows"):
             assert resource.read_bytes() == b"text\n"
             assert resource.stats == {
@@ -116,7 +116,7 @@ def test_resource_source_non_tabular_remote():
         assert resource.memory is False
         assert resource.multipart is False
         assert resource.basepath == ""
-        assert resource.fullpath == path
+        assert resource.normpath == path
         if not helpers.is_platform("windows"):
             assert resource.read_bytes() == b"text\n"
             assert resource.stats == {
@@ -145,7 +145,7 @@ def test_resource_source_path():
     assert resource.memory is False
     assert resource.multipart is False
     assert resource.basepath == ""
-    assert resource.fullpath == path
+    assert resource.normpath == path
     if not helpers.is_platform("windows"):
         assert (
             resource.read_bytes()
@@ -173,7 +173,7 @@ def test_resource_source_path_and_basepath():
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
     assert (
-        resource.fullpath == "data/table.csv"
+        resource.normpath == "data/table.csv"
         if not helpers.is_platform("windows")
         else "data\\table.csv"
     )
@@ -186,7 +186,7 @@ def test_resource_source_path_and_basepath():
 @pytest.mark.vcr
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASEURL % "data")
-    assert resource.fullpath == BASEURL % "data/table.csv"
+    assert resource.normpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -196,7 +196,7 @@ def test_resource_source_path_and_basepath_remote():
 @pytest.mark.vcr
 def test_resource_source_path_remote_and_basepath_remote():
     resource = Resource(path=BASEURL % "data/table.csv", basepath=BASEURL % "data")
-    assert resource.fullpath == BASEURL % "data/table.csv"
+    assert resource.normpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -266,7 +266,7 @@ def test_resource_source_path_and_data():
     resource = Resource({"data": data, "path": "path"})
     assert resource.path == "path"
     assert resource.data == data
-    assert resource.fullpath == "path"
+    assert resource.normpath == "path"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -278,7 +278,6 @@ def test_resource_source_no_path_and_no_data():
     resource = Resource({})
     assert resource.path is None
     assert resource.data is None
-    assert resource.fullpath is None
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error

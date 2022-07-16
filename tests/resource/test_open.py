@@ -9,13 +9,13 @@ def test_resource_open():
     with Resource("data/table.csv") as resource:
         assert resource.name == "table"
         assert resource.path == "data/table.csv"
+        assert resource.normpath == "data/table.csv"
         assert resource.scheme == "file"
         assert resource.format == "csv"
         assert resource.hashing == "md5"
         assert resource.encoding == "utf-8"
         assert resource.innerpath == None
         assert resource.compression == None
-        assert resource.fullpath == "data/table.csv"
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]

@@ -132,7 +132,6 @@ def test_resource_schema_from_path_remote():
     }
 
 
-@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:

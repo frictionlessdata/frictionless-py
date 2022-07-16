@@ -45,11 +45,11 @@ class XlsxParser(Parser):
         # For remote stream we need local copy (will be deleted on close by Python)
         # https://docs.python.org/3.5/library/tempfile.html#tempfile.TemporaryFile
         if loader.remote:
-            fullpath = self.resource.fullpath
+            normpath = self.resource.normpath
 
             # Cached
-            if control.workbook_cache is not None and fullpath in control.workbook_cache:
-                resource = Resource(fullpath, type="table", scheme="file", format="xlsx")
+            if control.workbook_cache is not None and normpath in control.workbook_cache:
+                resource = Resource(normpath, type="table", scheme="file", format="xlsx")
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -59,7 +59,7 @@ class XlsxParser(Parser):
                 shutil.copyfileobj(loader.byte_stream, target)
                 target.seek(0)
             if not target.delete:
-                control.workbook_cache[fullpath] = target.name  # type: ignore
+                control.workbook_cache[normpath] = target.name  # type: ignore
                 atexit.register(os.remove, target.name)
             resource = Resource(target, type="table", scheme="stream", format="xlsx")
             loader = system.create_loader(resource)
@@ -91,7 +91,7 @@ class XlsxParser(Parser):
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
-                note=note % (self.resource.fullpath, control.sheet)
+                note=note % (self.resource.normpath, control.sheet)
             )
             raise FrictionlessException(error)
 
@@ -122,12 +122,12 @@ class XlsxParser(Parser):
         # TODO: remove when the proper implementation is in-place:
         # https://github.com/frictionlessdata/frictionless-py/issues/438
         if self.resource.scheme == "file":
-            stat = os.stat(self.resource.fullpath)
+            stat = os.stat(self.resource.normpath)
             self.resource.stats["bytes"] = stat.st_size
             if self.resource.hashing:
                 try:
                     hasher = hashlib.new(self.resource.hashing)
-                    with open(self.resource.fullpath, "rb") as file:
+                    with open(self.resource.normpath, "rb") as file:
                         for chunk in iter(lambda: file.read(4096), b""):
                             hasher.update(chunk)
                         self.resource.stats["hash"] = hasher.hexdigest()

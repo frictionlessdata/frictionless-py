@@ -38,7 +38,7 @@ class JsonParser(Parser):
             try:
                 yield next(resource.cell_stream)  # type: ignore
             except StopIteration:
-                note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
+                note = f'cannot extract JSON tabular data from "{self.resource.normpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             inline_control = InlineControl.from_dialect(resource.dialect)
             if inline_control.keyed:

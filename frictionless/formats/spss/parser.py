@@ -21,14 +21,14 @@ class SpssParser(Parser):
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
 
         # Schema
-        with sav.SavHeaderReader(self.resource.fullpath, ioUtf8=True) as reader:
+        with sav.SavHeaderReader(self.resource.normpath, ioUtf8=True) as reader:
             spss_schema = reader.all()
         schema = self.__read_convert_schema(spss_schema)
         self.resource.schema = schema
 
         # Lists
         yield schema.field_names
-        with sav.SavReader(self.resource.fullpath, ioUtf8=True) as reader:
+        with sav.SavReader(self.resource.normpath, ioUtf8=True) as reader:
             for item in reader:
                 cells = []
                 for index, field in enumerate(schema.fields):
@@ -92,7 +92,7 @@ class SpssParser(Parser):
         spss_schema = self.__write_convert_schema(source)
 
         # Write rows
-        with sav.SavWriter(self.resource.fullpath, ioUtf8=True, **spss_schema) as writer:
+        with sav.SavWriter(self.resource.normpath, ioUtf8=True, **spss_schema) as writer:
             with source:
                 for row in source.row_stream:  # type: ignore
                     cells = []

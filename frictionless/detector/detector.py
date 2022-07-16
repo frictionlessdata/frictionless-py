@@ -177,14 +177,14 @@ class Detector(Metadata):
         compression = None
         innerpath = None
         if resource.path:
-            fullpath = resource.fullpath
-            scheme, format = helpers.parse_scheme_and_format(fullpath)
+            normpath = resource.normpath
+            scheme, format = helpers.parse_scheme_and_format(normpath)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
-                fullpath = fullpath[: -len(format) - 1]
+                normpath = normpath[: -len(format) - 1]
                 if resource.innerpath:
-                    fullpath = os.path.join(fullpath, resource.innerpath)
-                scheme, format = helpers.parse_scheme_and_format(fullpath)
+                    normpath = os.path.join(normpath, resource.innerpath)
+                scheme, format = helpers.parse_scheme_and_format(normpath)
                 if format:
                     name = os.path.splitext(name)[0]
 

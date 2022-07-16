@@ -16,7 +16,7 @@ class CkanParser(Parser):
 
     def read_cell_stream_create(self):
         control = CkanControl.from_dialect(self.resource.dialect)
-        storage = CkanStorage(self.resource.fullpath, control=control)
+        storage = CkanStorage(self.resource.normpath, control=control)
         resource = storage.read_resource(control.resource)
         self.resource.schema = resource.schema
         with resource:
@@ -27,7 +27,7 @@ class CkanParser(Parser):
     # NOTE: this approach is questionable
     def write_row_stream(self, source):
         control = CkanControl.from_dialect(self.resource.dialect)
-        storage = CkanStorage(self.resource.fullpath, control=control)
+        storage = CkanStorage(self.resource.normpath, control=control)
         if not control.resource:
             note = 'Please provide "dialect.resource" for writing'
             raise FrictionlessException(note)

@@ -56,7 +56,7 @@ class XlsParser(Parser):
         except (xlrd.XLRDError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
-                note=note % (self.resource.fullpath, control.sheet)
+                note=note % (self.resource.normpath, control.sheet)
             )
             raise FrictionlessException(error)
 
