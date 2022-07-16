@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, List, Any
 
 if TYPE_CHECKING:
     from .resource import Resource, Loader, Parser
-    from .package import Storage
+    from .package import Manager, Storage
     from .checklist import Check
     from .dialect import Control
     from .error import Error
@@ -85,11 +85,17 @@ class Plugin:
         """
         pass
 
-    def create_package(self, package: Resource) -> None:
-        """Hook into package creation
+    def create_manager(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+    ) -> Optional[Manager]:
+        """Create manager
 
         Parameters:
-            package (Package): package
+            source: source
+            control: control
 
         """
         pass

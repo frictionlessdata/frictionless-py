@@ -12,6 +12,9 @@ class CkanControl(Control):
 
     # State
 
+    baseurl: Optional[str] = None
+    """TODO: add docs"""
+
     dataset: Optional[str] = None
     """TODO: add docs"""
 
@@ -37,8 +40,9 @@ class CkanControl(Control):
 
     metadata_profile_patch = {
         "properties": {
-            "resource": {"type": "string"},
+            "baseurl": {"type": "string"},
             "dataset": {"type": "string"},
+            "resource": {"type": "string"},
             "apikey": {"type": "string"},
             "fields": {"type": "array", "items": {"type": "string"}},
             "limit": {"type": "integer"},

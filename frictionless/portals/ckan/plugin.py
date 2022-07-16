@@ -1,5 +1,6 @@
 from __future__ import annotations
 from ...plugin import Plugin
+from urllib.parse import urlparse
 from .control import CkanControl
 from .manager import CkanManager
 
@@ -16,6 +17,12 @@ class CkanPlugin(Plugin):
         if descriptor.get("type") == "ckan":
             return CkanControl.from_descriptor(descriptor)
 
-    def create_manager(self, name, source, **options):
-        if name == "ckan":
-            return CkanManager(source, **options)
+    def create_manager(self, source, *, control=None):
+        parsed = urlparse(source)
+        if not control or isinstance(control, CkanControl):
+            if parsed.path.startswith("/dataset/"):
+                baseurl, dataset = source.split("/dataset/")
+                control = control or CkanControl()
+                control.baseurl = baseurl
+                control.dataset = dataset
+                return CkanManager(control)

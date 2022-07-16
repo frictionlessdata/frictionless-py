@@ -22,6 +22,7 @@ from . import methods
 
 if TYPE_CHECKING:
     from ..interfaces import IDescriptorSource, IOnerror
+    from .. import portals
 
 
 # TODO: think about package/resource/schema/etc extension mechanism (e.g. FiscalPackage)
@@ -263,6 +264,11 @@ class Package(Metadata):
         """Return names of resources"""
         return [resource.name for resource in self.resources if resource.name is not None]
 
+    @property
+    def resource_paths(self) -> List[str]:
+        """Return names of resources"""
+        return [resource.path for resource in self.resources if resource.path is not None]
+
     # Resources
 
     def add_resource(self, resource: Resource) -> None:
@@ -391,7 +397,7 @@ class Package(Metadata):
         return storage
 
     @staticmethod
-    def from_ckan(source, *, control=None):
+    def from_ckan(source: Any, *, control: Optional[portals.CkanControl] = None):
         """Import package from CKAN
 
         Parameters:
@@ -401,8 +407,9 @@ class Package(Metadata):
         Returns:
             Package: package
         """
-        storage = system.create_storage("ckan", source, control=control)
-        return storage.read_package()
+        storage = system.create_manager(source, control=control)
+        package = storage.read_package()
+        return package
 
     def to_ckan(self, target, *, control=None):
         """Export package to CKAN

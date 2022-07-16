@@ -5,7 +5,7 @@ from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, List, Any, Dict
+from typing import TYPE_CHECKING, Optional, List, Any, Dict
 from .exception import FrictionlessException
 from .dialect import Control
 from . import settings
@@ -14,7 +14,7 @@ from . import errors
 if TYPE_CHECKING:
     from .interfaces import IStandardsVersion
     from .resource import Resource, Loader, Parser
-    from .package import Storage
+    from .package import Manager, Storage
     from .plugin import Plugin
     from .checklist import Check
     from .error import Error
@@ -44,6 +44,7 @@ class System:
         "create_field",
         "create_field_candidates",
         "create_loader",
+        "create_manager",
         "create_parser",
         "create_step",
         "create_storage",
@@ -74,7 +75,7 @@ class System:
             if item.name.startswith("frictionless_"):
                 module = import_module(item.name)
                 modules[item.name.replace("frictionless_", "")] = module
-        for group in ["schemes", "formats"]:
+        for group in ["schemes", "formats", "portals"]:
             module = import_module(f"frictionless.{group}")
             if module.__file__:
                 path = os.path.dirname(module.__file__)
@@ -222,6 +223,28 @@ class System:
                 return loader
         note = f'scheme "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.SchemeError(note=note))
+
+    def create_manager(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+    ) -> Manager:
+        """Create loader
+
+        Parameters:
+            resource (Resource): loader resource
+
+        Returns:
+            Loader: loader
+        """
+        manager = None
+        for func in self.methods["create_manager"].values():
+            manager = func(source, control=control)
+            if manager is not None:
+                return manager
+        note = f'source "{source}" is not supported'
+        raise FrictionlessException(note)
 
     def create_parser(self, resource: Resource) -> Parser:
         """Create parser
