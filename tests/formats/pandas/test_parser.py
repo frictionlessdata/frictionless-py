@@ -22,7 +22,7 @@ def test_pandas_parser():
 
 
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
-    df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
+    df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])  # type: ignore
     with Resource(df) as resource:
 
         # Assert meta
@@ -62,7 +62,7 @@ def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
 def test_pandas_parser_write():
     source = Resource("data/table.csv")
     target = source.write(format="pandas")
-    assert target.data.to_dict("records") == [
+    assert target.data.to_dict("records") == [  # type: ignore
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -79,14 +79,14 @@ def test_pandas_parser_nan_in_integer_resource_column():
         ]
     )
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
+    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
 def test_pandas_parser_nan_in_integer_csv_column():
     # see issue 1109
     res = Resource("data/issue-1109.csv")
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
+    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
 def test_pandas_parser_write_types():
@@ -211,7 +211,7 @@ def test_pandas_parser_write_timezone():
 def test_pandas_parser_write_bug_1100():
     datapackage = Package("data/issue-1100.package.json")
     target = datapackage.resources[0].to_pandas()
-    assert target.to_dict("records") == [
+    assert target.to_dict("records") == [  # type: ignore
         {"timestamp": pd.Timestamp(2022, 5, 25, 10, 39, 15)},
         {"timestamp": pd.Timestamp(2022, 5, 25, 10, 39, 15)},
     ]
@@ -220,7 +220,7 @@ def test_pandas_parser_write_bug_1100():
 def test_pandas_parser_write_bug_1105():
     datapackage = Package("data/issue-1105.package.json")
     target = datapackage.resources[0].to_pandas()
-    assert target.to_dict() == {
+    assert target.to_dict() == {  # type: ignore
         "id": {
             pd.Timestamp("2020-01-01 12:00:00+0000", tz="UTC"): 1,
             pd.Timestamp("2020-01-01 15:00:00+0000", tz="UTC"): 0,
@@ -243,7 +243,7 @@ def test_pandas_parser_nan_with_field_type_information_1143():
     }
     res = Resource(descriptor)
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
+    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
 def test_pandas_parser_nan_without_field_type_information_1143():
@@ -261,7 +261,7 @@ def test_pandas_parser_nan_without_field_type_information_1143():
     }
     res = Resource(descriptor)
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([object, object, object]))
+    assert all(df.dtypes.values == pd.array([object, object, object]))  # type: ignore
 
 
 def test_pandas_parser_preserve_datetime_field_type_1138():
@@ -281,7 +281,7 @@ def test_pandas_parser_preserve_datetime_field_type_1138():
     }
     resource = Resource(descriptor)
     df = resource.to_pandas()
-    assert is_datetime64_ns_dtype(df.dtypes.values[1])
+    assert is_datetime64_ns_dtype(df.dtypes.values[1])  # type: ignore
 
 
 def test_pandas_parser_test_issue_sample_data_1138():
@@ -308,4 +308,4 @@ def test_pandas_parser_test_issue_sample_data_1138():
     }
     resource = Resource(descriptor)
     df = resource.to_pandas()
-    assert is_datetime64_ns_dtype(df.dtypes.values[0])
+    assert is_datetime64_ns_dtype(df.dtypes.values[0])  # type: ignore

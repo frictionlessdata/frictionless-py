@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc

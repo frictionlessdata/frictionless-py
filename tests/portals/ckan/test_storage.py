@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 import datetime
 from frictionless import Package, Resource, formats

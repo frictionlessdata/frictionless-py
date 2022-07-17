@@ -225,7 +225,7 @@ def test_csv_parser_quotechar_is_empty_string():
     source = b'header1,header2",header3\nvalue1,value2",value3'
     control = formats.CsvControl(quote_char="")
     with Resource(source, format="csv", control=control) as resource:
-        resource.header == ["header1", 'header2"', "header3"]
+        assert resource.header == ["header1", 'header2"', "header3"]
         assert resource.read_rows() == [
             {"header1": "value1", 'header2"': 'value2"', "header3": "value3"},
         ]
