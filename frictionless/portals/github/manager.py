@@ -14,6 +14,7 @@ class GithubManager(Manager[GithubControl]):
     def read_catalog(self):
         pass
 
+    # TODO: improve
     def read_package(self, *, user: Optional[str] = None, repo: Optional[str] = None):
         github = helpers.import_from_extras("github", name="github")
         client = github.Github()

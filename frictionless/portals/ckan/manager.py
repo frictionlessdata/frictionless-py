@@ -14,6 +14,7 @@ class CkanManager(Manager[CkanControl]):
 
     # Read
 
+    # TODO: improve
     def read_catalog(self):
         assert self.control.baseurl
         endpoint = f"{self.control.baseurl}/api/3/action/package_list"
@@ -24,6 +25,7 @@ class CkanManager(Manager[CkanControl]):
             catalog.add_package(package)
         return catalog
 
+    # TODO: improve
     def read_package(self, *, dataset: Optional[str] = None):
         mapper = helpers.import_from_extras(
             "frictionless_ckan_mapper.ckan_to_frictionless", name="ckan"

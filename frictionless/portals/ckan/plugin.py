@@ -17,6 +17,7 @@ class CkanPlugin(Plugin):
         if descriptor.get("type") == "ckan":
             return CkanControl.from_descriptor(descriptor)
 
+    # TODO: improve
     def create_manager(self, source, *, control=None):
         parsed = urlparse(source)
         if not control or isinstance(control, CkanControl):

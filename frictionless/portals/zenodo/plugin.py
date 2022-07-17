@@ -17,13 +17,12 @@ class ZenodoPlugin(Plugin):
         if descriptor.get("type") == "zenodo":
             return ZenodoControl.from_descriptor(descriptor)
 
+    # TODO: improve
     def create_manager(self, source, *, control=None):
         parsed = urlparse(source)
         if not control or isinstance(control, ZenodoControl):
-            if parsed.netloc == "zenodo.com":
+            if parsed.netloc == "zenodo.org":
                 control = control or ZenodoControl()
-                user, repo = parsed.path.split("/")[1:]
-                control.user = user
-                if repo:
-                    control.repo = repo
+                if parsed.path.startswith("/record/"):
+                    control.record = parsed.path.replace("/record/", "")
                 return ZenodoManager(control)

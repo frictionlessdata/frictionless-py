@@ -10,17 +10,15 @@ class ZenodoControl(Control):
 
     type = "github"
 
-    user: Optional[str] = None
-    """TODO: add docs"""
+    # State
 
-    repo: Optional[str] = None
+    record: Optional[str] = None
     """TODO: add docs"""
 
     # Metadata
 
     metadata_profile_patch = {
         "properties": {
-            "user": {"type": "string"},
-            "repo": {"type": "string"},
+            "record": {"type": "string"},
         },
     }

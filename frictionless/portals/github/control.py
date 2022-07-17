@@ -10,6 +10,8 @@ class GithubControl(Control):
 
     type = "github"
 
+    # State
+
     user: Optional[str] = None
     """TODO: add docs"""
 
