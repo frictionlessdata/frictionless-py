@@ -20,4 +20,4 @@ class ParquetPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.format == "parq":
             resource.type = "table"
-            resource.mediatype = f"appliction/parquet"
+            resource.mediatype = "appliction/parquet"
