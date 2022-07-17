@@ -8,7 +8,6 @@ from ... import helpers
 class ParquetParser(Parser):
     """JSONL parser implementation."""
 
-    # TODO: review here and in pandas
     supported_types = [
         "string",
     ]
@@ -29,6 +28,6 @@ class ParquetParser(Parser):
 
     # Write
 
-    # TODO: implement
     def write_row_stream(self, source):
-        pass
+        parquet = helpers.import_from_extras("fastparquet", name="parquet")
+        parquet.write(self.resource.normpath, source.to_pandas())

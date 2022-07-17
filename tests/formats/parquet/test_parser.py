@@ -21,3 +21,19 @@ def test_parquet_parser_columns():
             {"id": 1},
             {"id": 2},
         ]
+
+
+# Write
+
+
+def test_parquet_parser_write(tmpdir):
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.parq")))
+    source.write(target)
+    with target:
+        assert target.format == "parq"
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
