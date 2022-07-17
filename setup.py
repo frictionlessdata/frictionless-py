@@ -59,6 +59,7 @@ EXTRAS_REQUIRE = {
     "html": ["pyquery>=1.4"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
+    "parquet": ["fastparquet>=0.8"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
     "zenodo": ["pyzenodo3>=1.0"],
