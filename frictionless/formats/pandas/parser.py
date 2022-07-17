@@ -24,7 +24,7 @@ class PandasParser(Parser):
         if not self.resource.has_schema:
             self.resource.schema = schema
 
-        # Table
+        # Lists
         yield schema.field_names
         for pk, item in dataframe.iterrows():  # type: ignore
             cells = []
