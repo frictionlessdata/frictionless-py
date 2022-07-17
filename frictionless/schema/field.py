@@ -22,8 +22,13 @@ class Field(Metadata):
     """Field representation"""
 
     type: ClassVar[str]
+    """TODO: add docs"""
+
     builtin: ClassVar[bool] = False
+    """TODO: add docs"""
+
     supported_constraints: ClassVar[List[str]] = []
+    """TODO: add docs"""
 
     # State
 
@@ -162,6 +167,7 @@ class Field(Metadata):
 
     # Metadata
 
+    metadata_type = "field"
     metadata_Error = errors.FieldError
     metadata_profile = {
         "type": "object",

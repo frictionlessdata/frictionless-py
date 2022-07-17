@@ -27,6 +27,7 @@ class Step(Metadata):
     """Step representation"""
 
     type: ClassVar[str] = "step"
+    """TODO: add docs"""
 
     # State
 
@@ -62,6 +63,7 @@ class Step(Metadata):
 
     # Metadata
 
+    metadata_type = "step"
     metadata_Error = errors.StepError
     metadata_profile = {
         "type": "object",

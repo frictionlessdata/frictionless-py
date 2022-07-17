@@ -213,6 +213,7 @@ class Report(Metadata):
 
     # Metadata
 
+    metadata_type = "report"
     metadata_Error = ReportError
     metadata_Types = dict(tasks=ReportTask)
     metadata_profile = {

@@ -428,6 +428,7 @@ class Detector(Metadata):
 
     # Metadata
 
+    metadata_type = "detector"
     metadata_Error = errors.DetectorError
     metadata_profile = {
         "properties": {

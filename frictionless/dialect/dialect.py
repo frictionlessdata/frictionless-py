@@ -189,6 +189,7 @@ class Dialect(Metadata):
 
     # Metadata
 
+    metadata_type = "dialect"
     metadata_Error = errors.DialectError
     metadata_Types = dict(controls=Control)
     metadata_profile = {

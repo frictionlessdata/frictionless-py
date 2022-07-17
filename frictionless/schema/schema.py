@@ -270,6 +270,7 @@ class Schema(Metadata):
 
     # Metadata
 
+    metadata_type = "schema"
     metadata_Error = errors.SchemaError
     metadata_Types = dict(fields=Field)
     metadata_profile = {

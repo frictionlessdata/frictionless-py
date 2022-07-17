@@ -615,6 +615,7 @@ class Package(Metadata):
 
     # Metadata
 
+    metadata_type = "package"
     metadata_Error = errors.PackageError
     metadata_Types = dict(resources=Resource)
     metadata_profile = {

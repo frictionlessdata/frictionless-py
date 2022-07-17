@@ -86,6 +86,7 @@ class Pipeline(Metadata):
 
     # Metadata
 
+    metadata_type = "pipeline"
     metadata_Error = errors.PipelineError
     metadata_Types = dict(steps=Step)
     metadata_profile = {

@@ -21,8 +21,11 @@ class Check(Metadata):
     """Check representation."""
 
     type: ClassVar[str] = "check"
+    """TODO: add docs"""
+
     # TODO: can it be just types not objects?
     Errors: ClassVar[List[Type[Error]]] = []
+    """TODO: add docs"""
 
     # State
 
@@ -84,6 +87,7 @@ class Check(Metadata):
 
     # Metadata
 
+    metadata_type = "check"
     metadata_Error = errors.CheckError
     metadata_profile = {
         "type": "object",

@@ -1129,6 +1129,7 @@ class Resource(Metadata):
 
     # Metadata
 
+    metadata_type = "resource"
     metadata_Error = errors.ResourceError
     metadata_Types = dict(
         dialect=Dialect,

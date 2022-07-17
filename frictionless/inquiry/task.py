@@ -104,6 +104,7 @@ class InquiryTask(Metadata):
 
     # Metadata
 
+    metadata_type = "inquiry-task"
     metadata_Error = errors.InquiryTaskError
     metadata_Types = dict(dialect=Dialect, schema=Schema, checklist=Checklist)
     metadata_profile = {

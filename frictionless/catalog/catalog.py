@@ -148,6 +148,7 @@ class Catalog(Metadata):
 
     # Metadata
 
+    metadata_type = "catalog"
     metadata_Error = errors.CatalogError
     metadata_Types = dict(packages=Package)
     metadata_profile = {

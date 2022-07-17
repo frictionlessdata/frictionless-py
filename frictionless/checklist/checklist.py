@@ -135,6 +135,7 @@ class Checklist(Metadata):
 
     # Metadata
 
+    metadata_type = "checklist"
     metadata_Error = errors.ChecklistError
     metadata_Types = dict(checks=Check)
     metadata_profile = {

@@ -41,6 +41,7 @@ class Error(Metadata):
 
     # Metadata
 
+    metadata_type = "error"
     metadata_profile = {
         "type": "object",
         "required": ["type", "title", "description", "message", "tags", "note"],

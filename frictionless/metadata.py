@@ -11,7 +11,8 @@ import stringcase
 from pathlib import Path
 from collections.abc import Mapping
 from importlib import import_module
-from typing import TYPE_CHECKING, Iterator, Optional, Union, List, Dict, Any, Set
+from typing import TYPE_CHECKING
+from typing import ClassVar, Iterator, Optional, Union, List, Dict, Any, Set
 from .exception import FrictionlessException
 from . import helpers
 
@@ -213,6 +214,7 @@ class Metadata(metaclass=Metaclass):
 
     # TODO: don't use uppercase?
     # TODO: add/improve types
+    metadata_type: ClassVar[str]
     metadata_Error = None
     metadata_Types = {}
     metadata_profile = {}

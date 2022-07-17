@@ -106,6 +106,7 @@ class ReportTask(Metadata):
 
     # Metadata
 
+    metadata_type = "report-task"
     metadata_Error = ReportTaskError
     metadata_Types = dict(errors=Error)
     metadata_profile = {

@@ -76,6 +76,7 @@ class Inquiry(Metadata):
 
     # Metadata
 
+    metadata_type = "inquiry"
     metadata_Error = InquiryError
     metadata_Types = dict(tasks=InquiryTask)
     metadata_profile = {

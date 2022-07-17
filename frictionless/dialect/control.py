@@ -15,6 +15,7 @@ class Control(Metadata):
     """Control representation"""
 
     type: ClassVar[str]
+    """TODO: add docs"""
 
     # State
 
@@ -36,6 +37,7 @@ class Control(Metadata):
 
     # Metadata
 
+    metadata_type = "control"
     metadata_Error = errors.ControlError
     metadata_profile = {
         "type": "object",
