@@ -109,6 +109,7 @@ def test_resource_dialect_json_property():
         ]
 
 
+@pytest.mark.skip
 def test_resource_dialect_bad_property():
     resource = Resource("data/table.csv", dialect={"bad": True})
     with pytest.raises(FrictionlessException) as excinfo:
