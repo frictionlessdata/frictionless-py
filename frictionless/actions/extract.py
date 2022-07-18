@@ -18,6 +18,7 @@ def extract(
     process: Optional[IProcessFunction] = None,
     filter: Optional[IFilterFunction] = None,
     stream: bool = False,
+    resource_name: Optional[str] = None,
     **options,
 ):
     """Extract resource rows
@@ -53,15 +54,23 @@ def extract(
             options.pop("pipeline", None)
             options.pop("stats", None)
             package = Package.from_options(package, **options)
-        return package.extract(
-            limit_rows=limit_rows,
-            process=process,
-            filter=filter,
-            stream=stream,
-        )
+
+        # Resource
+        if resource_name:
+            type = "resource"
+            source = package.get_resource(resource_name)
+
+        # Package
+        else:
+            return package.extract(
+                limit_rows=limit_rows,
+                process=process,
+                filter=filter,
+                stream=stream,
+            )
 
     # Extract resource
-    elif type == "resource":
+    if type == "resource":
         resource = source
         if not isinstance(resource, Resource):
             resource = Resource.from_options(resource, **options)
