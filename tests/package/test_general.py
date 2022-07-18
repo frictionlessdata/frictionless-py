@@ -186,6 +186,13 @@ def test_package_from_zip_innerpath():
     assert len(package.resources) == 10
 
 
+def test_package_from_zip_innerpath_yaml():
+    # for issue1174
+    package = Package("data/innerpath.package.zip")
+    assert package.name == "emissions"
+    assert len(package.resources) == 10
+
+
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_package_standard_specs_properties(create_descriptor):
     options = dict(

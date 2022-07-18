@@ -99,7 +99,7 @@ class Package(Metadata):
         innerpath? (str): A ZIP datapackage descriptor inner path.
             Path to the package descriptor inside the ZIP datapackage.
             Example: some/folder/datapackage.yaml
-            Default: datapackage.json
+            Default: datapackage.json, datapackage.yaml or datapackage.yml
 
         basepath? (str): A basepath of the resource
             The fullpath of the resource is joined `basepath` and /path`
@@ -154,7 +154,7 @@ class Package(Metadata):
         image=None,
         created=None,
         # Extra
-        innerpath="datapackage.json",
+        innerpath="",
         basepath="",
         detector=None,
         onerror="ignore",
