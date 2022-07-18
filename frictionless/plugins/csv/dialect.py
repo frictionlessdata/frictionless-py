@@ -141,7 +141,6 @@ class CsvDialect(Dialect):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "additionalProperties": False,
         "properties": {
             "delimiter": {"type": "string"},
             "lineTerminator": {"type": "string"},
