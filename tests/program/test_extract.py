@@ -260,3 +260,52 @@ def test_program_extract_invalid_rows_extract_dialect_sheet_option():
     )
     assert actual.exit_code == 0
     assert json.loads(actual.stdout) == []
+
+
+def test_program_extract_single_resource_1159():
+    actual = runner.invoke(
+        program, "extract data/datapackage.json --resource-name number-two --json"
+    )
+    assert actual.exit_code == 0
+    assert json.loads(actual.stdout) == [
+        {"id": 1, "name": "中国人"},
+        {"id": 2, "name": "english"},
+    ]
+
+
+def test_program_extract_single_invalid_resource_1159():
+    actual = runner.invoke(
+        program, "extract data/datapackage.json --resource-name number-twoo"
+    )
+    assert actual.exit_code == 1
+    assert actual.stdout.count(
+        'The data package has an error: resource "number-twoo" does not exist'
+    )
+
+
+def test_program_extract_single_valid_resource_invalid_package_1159():
+    actual = runner.invoke(
+        program, "extract data/datapackagees.json --resource-name number-two"
+    )
+    assert actual.exit_code == 1
+    assert actual.stdout.count("No such file or directory: 'data/datapackagees.json'")
+
+
+def test_program_extract_single_resource_yaml_1159():
+    actual = runner.invoke(
+        program, "extract data/datapackage.json --resource-name number-two --yaml"
+    )
+    expect = extract("data/datapackage.json", resource_name="number-two")
+    assert actual.exit_code == 0
+    assert yaml.safe_load(actual.stdout) == expect
+
+
+def test_program_extract_single_resource_csv_1159():
+    actual = runner.invoke(
+        program, "extract data/datapackage.json --resource-name number-two --csv"
+    )
+    assert actual.exit_code == 0
+    assert (
+        json.dumps(actual.stdout, ensure_ascii=False)
+        == '"id,name\\n1,中国人\\n2,english\\n"'
+    )

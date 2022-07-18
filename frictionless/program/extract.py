@@ -51,6 +51,7 @@ def program_extract(
     schema_sync: bool = common.schema_sync,
     # Software
     basepath: str = common.basepath,
+    resource_name: str = common.resource_name,
     valid: bool = common.valid_rows,
     invalid: bool = common.invalid_rows,
     limit_rows: int = common.limit_rows,
@@ -139,6 +140,7 @@ def program_extract(
             basepath=basepath,
             detector=prepare_detector(),
             # Action
+            resource_name=resource_name,
             limit_rows=limit_rows,
             process=prepare_process(),
             filter=prepare_filter(),
