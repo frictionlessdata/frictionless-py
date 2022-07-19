@@ -52,6 +52,7 @@ EXTRAS_REQUIRE = {
         "openpyxl>=3.0",
         "tableschema-to-template>=0.0.12",
     ],
+    "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
@@ -63,7 +64,6 @@ EXTRAS_REQUIRE = {
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",
-    "ijson>=3.0",
     "marko>=1.0",
     "attrs>=21.0",
     "jinja2>=3.0",
@@ -73,7 +73,6 @@ INSTALL_REQUIRES = [
     "chardet>=3.0",
     "fastapi>=0.78",
     "uvicorn>=0.17",
-    "jsonlines>=1.2",
     "jsonmerge>=1.8",
     "requests>=2.10",
     "humanize>=4.2",

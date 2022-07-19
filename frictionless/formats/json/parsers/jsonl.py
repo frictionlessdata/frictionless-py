@@ -1,6 +1,6 @@
 from __future__ import annotations
 import tempfile
-import jsonlines
+from ....platform import platform
 from ...inline import InlineControl
 from ....resource import Resource
 from ..control import JsonControl
@@ -27,7 +27,7 @@ class JsonlParser(Parser):
 
     def read_cell_stream_create(self):
         control = JsonControl.from_dialect(self.resource.dialect)
-        source = iter(jsonlines.Reader(self.loader.text_stream))
+        source = iter(platform.jsonlines.Reader(self.loader.text_stream))
         inline_control = InlineControl(keys=control.keys)
         with Resource(data=source, format="inline", control=inline_control) as resource:
             yield next(resource.cell_stream)  # type: ignore
@@ -41,7 +41,7 @@ class JsonlParser(Parser):
     def write_row_stream(self, source):
         control = JsonControl.from_dialect(self.resource.dialect)
         with tempfile.NamedTemporaryFile(delete=False) as file:
-            writer = jsonlines.Writer(file)
+            writer = platform.jsonlines.Writer(file)
             with source:
                 if not control.keyed:
                     writer.write(source.schema.field_names)

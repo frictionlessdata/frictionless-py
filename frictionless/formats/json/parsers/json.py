@@ -1,8 +1,8 @@
 from __future__ import annotations
 import json
-import ijson
 import tempfile
 from ....exception import FrictionlessException
+from ....platform import platform
 from ...inline import InlineControl
 from ..control import JsonControl
 from ....resource import Resource
@@ -32,7 +32,7 @@ class JsonParser(Parser):
         control = JsonControl.from_dialect(self.resource.dialect)
         if control.property is not None:
             path = "%s.item" % control.property
-        source = ijson.items(self.loader.byte_stream, path)
+        source = platform.ijson.items(self.loader.byte_stream, path)
         inline_control = InlineControl(keys=control.keys)
         with Resource(data=source, format="inline", control=inline_control) as resource:
             try:

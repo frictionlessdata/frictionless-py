@@ -69,6 +69,20 @@ class Platform:
         return tableschema_to_template
 
     @cached_property
+    @extras(name="json")
+    def ijson(self):
+        import ijson
+
+        return ijson
+
+    @cached_property
+    @extras(name="json")
+    def jsonlines(self):
+        import jsonlines
+
+        return jsonlines
+
+    @cached_property
     @extras(name="github")
     def github(self):
         import github
