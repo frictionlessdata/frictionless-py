@@ -1,6 +1,5 @@
 import pytest
 from datetime import datetime, time
-from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, Dialect, formats
 from frictionless import FrictionlessException
 
@@ -101,7 +100,6 @@ def test_sql_parser_write_where(database_url):
         ]
 
 
-@pytest.mark.xfail(reason="Timezone is not supported")
 def test_sql_parser_write_timezone(sqlite_url):
     source = Resource("data/timezone.csv")
     control = formats.SqlControl(table="timezone")
@@ -114,16 +112,16 @@ def test_sql_parser_write_timezone(sqlite_url):
                 "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-                "time": time(15, 0, tzinfo=tzutc()),
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+                "datetime": datetime(2020, 1, 1, 12),
+                "time": time(12),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+                "datetime": datetime(2020, 1, 1, 18),
+                "time": time(18),
             },
         ]
 

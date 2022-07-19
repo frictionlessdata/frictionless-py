@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 from functools import partial
+from datetime import datetime, date, timezone
 from urllib.parse import urlsplit, urlunsplit
 from ...exception import FrictionlessException
 from ...schema import Schema, Field
@@ -314,7 +315,14 @@ class SqlStorage(Storage):
                     row[field.name], notes = field.write_cell(row[field.name])
                 for field in timezone_fields:
                     if row[field.name] is not None:
-                        row[field.name] = row[field.name].replace(tzinfo=None)
+                        if row[field.name].tzinfo is not None:
+                            if field.type == "datetime":
+                                dt = row[field.name].astimezone(timezone.utc)
+                                row[field.name] = dt.replace(tzinfo=None)
+                            elif field.type == "time":
+                                dt = datetime.combine(date.min, row[field.name])
+                                dt = dt.astimezone(timezone.utc)
+                                row[field.name] = dt.time()
                 buffer.append(row)
                 if len(buffer) > buffer_size:
                     self.__connection.execute(sql_table.insert().values(buffer))

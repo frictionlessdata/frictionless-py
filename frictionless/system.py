@@ -229,8 +229,8 @@ class System:
         source: Any,
         *,
         control: Optional[Control] = None,
-    ) -> Manager:
-        """Create loader
+    ) -> Optional[Manager]:
+        """Create manager
 
         Parameters:
             resource (Resource): loader resource
@@ -243,8 +243,6 @@ class System:
             manager = func(source, control=control)
             if manager is not None:
                 return manager
-        note = f'source "{source}" is not supported'
-        raise FrictionlessException(note)
 
     def create_parser(self, resource: Resource) -> Parser:
         """Create parser
