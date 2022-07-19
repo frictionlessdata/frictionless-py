@@ -262,10 +262,6 @@ class Schema(Metadata):
 
     def to_summary(self) -> str:
         """Summary of the schema in table format"""
-        # Setting required property of the field which is included as custom fields
-        for field in self.fields:
-            if "required" in field.custom:
-                field.required = True
         content = [
             [field.name, field.type, True if field.required else ""]
             for field in self.fields

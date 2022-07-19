@@ -218,6 +218,13 @@ class Field(Metadata):
         return super().metadata_import(descriptor)
 
     def metadata_validate(self):
+        invalid_fields = {"required": "field->constraints"}
+        for invalid_field, target in invalid_fields.items():
+            if invalid_field in self.custom:
+                note = f'{invalid_field} should be part of "{target}" not field.'
+                error = errors.FieldError(note=note)
+                raise FrictionlessException(error)
+
         yield from super().metadata_validate()
 
         # Constraints

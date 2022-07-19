@@ -9,13 +9,11 @@ schema:
   fields:
     - type: integer
       name: id
-      constraints:
-        required: true
+      required: true
     - type: integer
       name: neighbor_id
     - type: string
       name: name
-      constraints:
-        required: true
+      required: true
     - type: integer
       name: population

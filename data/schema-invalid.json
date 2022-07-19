@@ -1,0 +1,13 @@
+{
+    "fields": [
+        {
+            "name": "id",
+            "type": "integer",
+            "required": true
+        },
+        {
+            "name": "name",
+            "type": "string"
+        }
+    ]
+}

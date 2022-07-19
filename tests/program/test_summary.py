@@ -16,6 +16,14 @@ def test_program_summary_error_not_found():
     )
 
 
+def test_program_summary_invalid():
+    result = runner.invoke(program, "summary data/countries-invalid.yaml")
+    assert result.exit_code == 1
+    assert result.stdout.count(
+        '[field-error] Field is not valid: required should be part of "field->constraints" not field'
+    )
+
+
 def test_program_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
