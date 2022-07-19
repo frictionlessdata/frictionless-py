@@ -27,7 +27,6 @@ def test_bigquery_parser_write(options):
 
 
 @pytest.mark.ci
-@pytest.mark.only
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
