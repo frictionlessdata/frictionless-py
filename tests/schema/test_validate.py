@@ -1,6 +1,5 @@
 import pytest
 from frictionless import Schema
-from frictionless import FrictionlessException
 
 
 # General
@@ -26,8 +25,10 @@ def test_validate_invalid():
 
 def test_validate_required_invalid():
     schema = Schema.from_descriptor("data/schema-invalid.json")
-    with pytest.raises(FrictionlessException) as exception:
-        schema.validate()
-    error = exception.value.error
-    assert error.type == "field-error"
-    assert error.note == 'required should be part of "field->constraints" not field.'
+    report = schema.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "field-error",
+            '"required" should be set as "constraints.required"',
+        ],
+    ]

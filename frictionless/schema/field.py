@@ -218,19 +218,18 @@ class Field(Metadata):
         return super().metadata_import(descriptor)
 
     def metadata_validate(self):
-        invalid_fields = {"required": "field->constraints"}
-        for invalid_field, target in invalid_fields.items():
-            if invalid_field in self.custom:
-                note = f'{invalid_field} should be part of "{target}" not field.'
-                error = errors.FieldError(note=note)
-                raise FrictionlessException(error)
-
         yield from super().metadata_validate()
 
         # Constraints
         for name in self.constraints.keys():
             if name not in self.supported_constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
+                yield errors.FieldError(note=note)
+
+        # Custom
+        for name in ["required"]:
+            if name in self.custom:
+                note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
 
 
