@@ -311,16 +311,6 @@ def test_resource_dialect_json_property():
         ]
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
-def test_resource_dialect_bad_property():
-    resource = Resource("data/table.csv", dialect={"bad": True})  # type: ignore
-    with pytest.raises(FrictionlessException) as excinfo:
-        resource.open()
-    error = excinfo.value.error
-    assert error.type == "dialect-error"
-    assert error.note.count("bad")
-
-
 def test_resource_dialect_header_false_official():
     descriptor = {
         "name": "name",

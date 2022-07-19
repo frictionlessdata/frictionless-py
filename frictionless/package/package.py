@@ -39,8 +39,6 @@ class Package(Metadata):
         {'id': 1, 'name': 'english'},
         {'id': 2, 'name': '中国人'},
 
-    ```
-
     """
 
     analyze = methods.analyze
@@ -68,7 +66,7 @@ class Package(Metadata):
         created: Optional[str] = None,
         resources: List[Resource] = [],
         # Software
-        innerpath: str = settings.DEFAULT_PACKAGE_INNERPATH,
+        innerpath: Optional[str] = None,
         basepath: str = settings.DEFAULT_BASEPATH,
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
@@ -77,8 +75,6 @@ class Package(Metadata):
     ):
 
         # Store state
-        self.resources = resources.copy()
-        self.id = id
         self.name = name
         self.title = title
         self.description = description
@@ -91,6 +87,7 @@ class Package(Metadata):
         self.image = image
         self.version = version
         self.created = created
+        self.resources = resources.copy()
         self.innerpath = innerpath
         self.basepath = basepath
         self.onerror = onerror
@@ -120,8 +117,8 @@ class Package(Metadata):
 
             # Compressed
             elif helpers.is_zip_descriptor(source):
-                innerpath = options.get("innerpath", settings.DEFAULT_PACKAGE_INNERPATH)
-                source = unzip_package(source, innerpath)
+                innerpath = options.get("innerpath")
+                source = unzip_package(source, innerpath=innerpath)
 
             # Expandable
             elif helpers.is_expandable_source(source):
@@ -231,12 +228,12 @@ class Package(Metadata):
     It can be dicts or Resource instances
     """
 
-    innerpath: str
+    innerpath: Optional[str]
     """
     A ZIP datapackage descriptor inner path.
     Path to the package descriptor inside the ZIP datapackage.
     Example: some/folder/datapackage.yaml
-    Default: datapackage.json
+    Default: datapackage.json, datapackage.yaml or datapackage.yml
     """
 
     basepath: str
@@ -761,7 +758,7 @@ class Package(Metadata):
 
 
 # NOTE: review if we can improve this code / move to a better place
-def unzip_package(path: str, innerpath: str) -> str:
+def unzip_package(path: str, *, innerpath: Optional[str] = None) -> str:
     with Resource(path=path, compression=None) as resource:
         byte_stream = resource.byte_stream
         if resource.remote:
@@ -772,5 +769,13 @@ def unzip_package(path: str, innerpath: str) -> str:
             tempdir = tempfile.mkdtemp()
             zip.extractall(tempdir)
             atexit.register(shutil.rmtree, tempdir)
+            if innerpath is None:
+                innerpath = "datapackage.json"
+                extensions = ("json", "yaml", "yml")
+                default_names = (f"datapackage.{ext}" for ext in extensions)
+                for name in default_names:
+                    if os.path.isfile(os.path.join(tempdir, name)):
+                        innerpath = name
+                        break
             descriptor = os.path.join(tempdir, innerpath)
     return descriptor
