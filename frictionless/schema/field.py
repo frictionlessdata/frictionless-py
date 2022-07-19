@@ -226,6 +226,12 @@ class Field(Metadata):
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
                 yield errors.FieldError(note=note)
 
+        # Custom
+        for name in ["required"]:
+            if name in self.custom:
+                note = f'"{name}" should be set as "constraints.{name}"'
+                yield errors.FieldError(note=note)
+
 
 # Internal
 

@@ -21,3 +21,14 @@ def test_validate_invalid():
             '"{} is not of type \'array\'" at "fields" in metadata and at "properties/fields/type" in profile',
         ],
     ]
+
+
+def test_validate_required_invalid():
+    schema = Schema.from_descriptor("data/schema-invalid.json")
+    report = schema.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "field-error",
+            '"required" should be set as "constraints.required"',
+        ],
+    ]
