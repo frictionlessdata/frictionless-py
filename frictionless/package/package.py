@@ -417,8 +417,10 @@ class Package(Metadata):
         Returns:
             Package: package
         """
-        storage = system.create_manager(source, control=control)
-        package = storage.read_package()
+        manager = system.create_manager(source, control=control)
+        if not manager:
+            raise FrictionlessException(f"not supported CKAN source: {source}")
+        package = manager.read_package()
         return package
 
     def to_ckan(self, target, *, control=None):

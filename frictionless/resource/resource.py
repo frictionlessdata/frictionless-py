@@ -1328,6 +1328,7 @@ class Resource(Metadata):
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.ResourceError(note=note)
+
         # Custom
         for name in ["missingValues", "fields"]:
             if name in self.custom:
