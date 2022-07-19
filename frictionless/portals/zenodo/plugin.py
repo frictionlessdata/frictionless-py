@@ -20,9 +20,10 @@ class ZenodoPlugin(Plugin):
     # TODO: improve
     def create_manager(self, source, *, control=None):
         parsed = urlparse(source)
-        if not control or isinstance(control, ZenodoControl):
-            if parsed.netloc == "zenodo.org":
-                control = control or ZenodoControl()
-                if parsed.path.startswith("/record/"):
-                    control.record = parsed.path.replace("/record/", "")
-                return ZenodoManager(control)
+        if isinstance(source, str):
+            if not control or isinstance(control, ZenodoControl):
+                if parsed.netloc == "zenodo.org":
+                    control = control or ZenodoControl()
+                    if parsed.path.startswith("/record/"):
+                        control.record = parsed.path.replace("/record/", "")
+                    return ZenodoManager(control)

@@ -20,11 +20,12 @@ class GithubPlugin(Plugin):
     # TODO: improve
     def create_manager(self, source, *, control=None):
         parsed = urlparse(source)
-        if not control or isinstance(control, GithubControl):
-            if parsed.netloc == "github.com":
-                control = control or GithubControl()
-                user, repo = parsed.path.split("/")[1:]
-                control.user = user
-                if repo:
-                    control.repo = repo
-                return GithubManager(control)
+        if isinstance(source, str):
+            if not control or isinstance(control, GithubControl):
+                if parsed.netloc == "github.com":
+                    control = control or GithubControl()
+                    user, repo = parsed.path.split("/")[1:]
+                    control.user = user
+                    if repo:
+                        control.repo = repo
+                    return GithubManager(control)
