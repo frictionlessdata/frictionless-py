@@ -1,6 +1,5 @@
 import pytest
 from datetime import datetime, time
-from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
 
@@ -28,29 +27,33 @@ def test_bigquery_parser_write(options):
 
 
 @pytest.mark.ci
-@pytest.mark.xfail(reason="Timezone is not supported")
+@pytest.mark.only
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     control = formats.BigqueryControl(table=prefix, **options)
-    source = Resource("data/timezone.csv")
+    source = Resource("data/timezone-with-id.csv")
     target = source.write(service, control=control)
     with target:
         assert target.read_rows() == [
             {
+                "id": 1,
                 "datetime": datetime(2020, 1, 1, 15),
                 "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-                "time": time(15, 0, tzinfo=tzutc()),
+                "id": 2,
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+                "id": 3,
+                "datetime": datetime(2020, 1, 1, 12),
+                "time": time(12),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+                "id": 4,
+                "datetime": datetime(2020, 1, 1, 18),
+                "time": time(18),
             },
         ]

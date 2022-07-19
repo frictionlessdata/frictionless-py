@@ -5,6 +5,7 @@ import csv
 import time
 from slugify import slugify
 from functools import partial
+from datetime import datetime, date, timezone
 from ...exception import FrictionlessException
 from ...schema import Schema, Field
 from ...resource import Resource
@@ -161,7 +162,7 @@ class BigqueryStorage(Storage):
 
         # Write resource
         for resource in package.resources:
-            if not resource.schema:
+            if not resource.has_schema:
                 resource.infer()
 
             # Write metadata
@@ -228,7 +229,15 @@ class BigqueryStorage(Storage):
                     row[field.name], _ = field.write_cell(row[field.name])
                 for field in timezone_fields:
                     if row[field.name] is not None:
-                        row[field.name] = row[field.name].replace(tzinfo=None)
+                        if row[field.name].tzinfo is not None:
+                            if field.type == "datetime":
+                                dt = row[field.name].astimezone(timezone.utc)
+                                row[field.name] = dt.replace(tzinfo=None)
+                            elif field.type == "time":
+                                dt = datetime.combine(date.min, row[field.name])
+                                dt = dt.astimezone(timezone.utc)
+                                row[field.name] = dt.time()
+                print(row)
                 buffer.append(row.to_list())
                 if len(buffer) > settings.BUFFER_SIZE:
                     self.__write_convert_data_start_job(resource.name, buffer)
