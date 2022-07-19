@@ -237,7 +237,6 @@ class BigqueryStorage(Storage):
                                 dt = datetime.combine(date.min, row[field.name])
                                 dt = dt.astimezone(timezone.utc)
                                 row[field.name] = dt.time()
-                print(row)
                 buffer.append(row.to_list())
                 if len(buffer) > settings.BUFFER_SIZE:
                     self.__write_convert_data_start_job(resource.name, buffer)
