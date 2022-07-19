@@ -1,9 +1,9 @@
 from typing import Optional
 from .control import GithubControl
+from ...platform import platform
 from ...resource import Resource
 from ...package import Package
 from ...package import Manager
-from ... import helpers
 
 
 class GithubManager(Manager[GithubControl]):
@@ -16,8 +16,7 @@ class GithubManager(Manager[GithubControl]):
 
     # TODO: improve
     def read_package(self, *, user: Optional[str] = None, repo: Optional[str] = None):
-        github = helpers.import_from_extras("github", name="github")
-        client = github.Github()
+        client = platform.github.Github()
         user = user or self.control.user
         repo = repo or self.control.repo
         assert user
@@ -28,9 +27,9 @@ class GithubManager(Manager[GithubControl]):
         contents = repository.get_contents("")
         paths = []
         while contents:
-            file_content = contents.pop(0)
+            file_content = contents.pop(0)  # type: ignore
             if file_content.type == "dir":
-                contents.extend(repository.get_contents(file_content.path))
+                contents.extend(repository.get_contents(file_content.path))  # type: ignore
             else:
                 paths.append(file_content.path)
         package = Package()

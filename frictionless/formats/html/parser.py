@@ -1,9 +1,9 @@
 from __future__ import annotations
 import tempfile
 from .control import HtmlControl
+from ...platform import platform
 from ...resource import Parser
 from ...system import system
-from ... import helpers
 
 
 class HtmlParser(Parser):
@@ -17,7 +17,7 @@ class HtmlParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        pq = helpers.import_from_extras("pyquery", name="html").PyQuery
+        pq = platform.pyquery.PyQuery
 
         # Get table
         page = pq(self.loader.text_stream.read(), parser="html")

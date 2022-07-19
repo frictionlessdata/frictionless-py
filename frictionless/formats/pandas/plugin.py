@@ -2,6 +2,7 @@ from __future__ import annotations
 from ...plugin import Plugin
 from .control import PandasControl
 from .parser import PandasParser
+from ...platform import platform
 from ... import helpers
 
 
@@ -31,5 +32,4 @@ class PandasPlugin(Plugin):
                 resource.format = "pandas"
                 resource.mediatype = "application/pandas"
         elif resource.format == "pandas":
-            pd = helpers.import_from_extras("pandas", name="pandas")
-            resource.data = pd.DataFrame()
+            resource.data = platform.pandas.DataFrame()

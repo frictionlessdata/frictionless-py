@@ -3,6 +3,7 @@ import json
 from typing import Optional
 from ...exception import FrictionlessException
 from .control import CkanControl
+from ...platform import platform
 from ...catalog import Catalog
 from ...package import Package
 from ...package import Manager
@@ -27,9 +28,7 @@ class CkanManager(Manager[CkanControl]):
 
     # TODO: improve
     def read_package(self, *, dataset: Optional[str] = None):
-        mapper = helpers.import_from_extras(
-            "frictionless_ckan_mapper.ckan_to_frictionless", name="ckan"
-        )
+        mapper = platform.frictionless_ckan_mapper_ckan_to_frictionless
         baseurl = self.control.baseurl
         dataset = dataset or self.control.dataset
         assert baseurl

@@ -11,7 +11,7 @@ from ...schema import Schema, Field
 from ...resource import Resource
 from ...package import Package
 from ...package import Storage
-from ... import helpers
+from ...platform import platform
 from .control import BigqueryControl
 from . import settings
 
@@ -49,7 +49,6 @@ class BigqueryStorage(Storage):
 
     def read_resource(self, name):
         bq_name = self.__write_convert_name(name)
-        bqerrors = helpers.import_from_extras("googleapiclient.errors", name="bigquery")
 
         # Get response
         try:
@@ -62,7 +61,7 @@ class BigqueryStorage(Storage):
                 )
                 .execute()
             )
-        except bqerrors.HttpError:
+        except platform.googleapiclient_errors.HttpError:
             raise FrictionlessException(f'Resource "{name}" does not exist')
 
         # Create resource
@@ -245,7 +244,6 @@ class BigqueryStorage(Storage):
                 self.__write_convert_data_start_job(resource.name, buffer)
 
     def __write_convert_data_start_job(self, name, buffer):
-        http = helpers.import_from_extras("apiclient.http", name="bigquery")
         bq_name = self.__write_convert_name(name)
 
         # Process buffer to byte stream csv
@@ -271,7 +269,9 @@ class BigqueryStorage(Storage):
 
         # Prepare job media body
         mimetype = "application/octet-stream"
-        media_body = http.MediaIoBaseUpload(bytes, mimetype=mimetype)
+        media_body = platform.googleapiclient_http.MediaIoBaseUpload(
+            bytes, mimetype=mimetype
+        )
 
         # Make request to Big Query
         response = (

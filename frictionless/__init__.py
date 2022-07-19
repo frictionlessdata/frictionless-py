@@ -8,6 +8,7 @@ from .exception import FrictionlessException
 from .inquiry import Inquiry, InquiryTask
 from .metadata import Metadata
 from .package import Package, Manager, Storage
+from .platform import platform
 from .plugin import Plugin
 from .pipeline import Pipeline, Step
 from .program import program

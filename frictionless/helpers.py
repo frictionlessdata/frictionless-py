@@ -89,14 +89,6 @@ def rows_to_data(rows):
     return data
 
 
-def import_from_extras(module, *, name):
-    try:
-        return import_module(module)
-    except ImportError:
-        module = import_module("frictionless.exception")
-        raise module.FrictionlessException(f'Please install "frictionless[{name}]"')
-
-
 @contextmanager
 def ensure_open(thing):
     if not thing.closed:
@@ -422,3 +414,22 @@ def get_current_memory_usage():
                     return int(parts[1]) / 1000
     except Exception:
         pass
+
+
+def extras(*, name: str):
+    """Decorator function to warp Frictionless extra dependency import
+    Provide name e.g. "sql" or "pandas"
+    """
+
+    def outer(func):
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception:
+                module = import_module("frictionless.exception")
+                note = f'Please install "frictionless[{name}]"'
+                raise module.FrictionlessException(note)
+
+        return inner
+
+    return outer

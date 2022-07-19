@@ -2,9 +2,9 @@ from __future__ import annotations
 import isodate
 import datetime
 import decimal
+from ...platform import platform
 from ...schema import Schema, Field
 from ...resource import Parser
-from ... import helpers
 
 
 class PandasParser(Parser):
@@ -17,7 +17,7 @@ class PandasParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        np = helpers.import_from_extras("numpy", name="pandas")
+        np = platform.numpy
         dataframe = self.resource.normdata
 
         # Schema
@@ -65,7 +65,7 @@ class PandasParser(Parser):
         return schema
 
     def __read_convert_type(self, dtype, sample=None):
-        pdc = helpers.import_from_extras("pandas.core.dtypes.api", name="pandas")
+        pdc = platform.pandas_core_dtypes_api
 
         # Pandas types
         if pdc.is_bool_dtype(dtype):
@@ -100,8 +100,8 @@ class PandasParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        np = helpers.import_from_extras("numpy", name="pandas")
-        pd = helpers.import_from_extras("pandas", name="pandas")
+        np = platform.numpy
+        pd = platform.pandas
 
         # Get data/index
         data_rows = []
@@ -133,7 +133,7 @@ class PandasParser(Parser):
                 data_rows.append(tuple(data_values))
 
         # Create index
-        pd = helpers.import_from_extras("pandas", name="pandas")
+        pd = platform.pandas
 
         index = None
         if source.schema.primary_key:
@@ -144,7 +144,7 @@ class PandasParser(Parser):
                 if index_field.type in ["datetime", "date"]:
                     index_class = pd.DatetimeIndex
                     index_rows = pd.to_datetime(index_rows, utc=True)
-                index = index_class(index_rows, name=index_field.name, dtype=index_dtype)
+                index = index_class(index_rows, name=index_field.name, dtype=index_dtype)  # type: ignore
 
             elif len(source.schema.primary_key) > 1:
                 index = pd.MultiIndex.from_tuples(
@@ -185,8 +185,8 @@ class PandasParser(Parser):
         self.resource.data = dataframe
 
     def __write_convert_type(self, type=None):
-        np = helpers.import_from_extras("numpy", name="pandas")
-        pd = helpers.import_from_extras("pandas", name="pandas")
+        np = platform.numpy
+        pd = platform.pandas
 
         # Mapping
         mapping = {

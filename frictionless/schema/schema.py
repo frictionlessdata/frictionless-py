@@ -5,6 +5,7 @@ from typing import Optional, List
 from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
+from ..platform import platform
 from .field import Field
 from .. import settings
 from .. import helpers
@@ -257,8 +258,7 @@ class Schema(Metadata):
         Returns:
             any: excel template
         """
-        backend = helpers.import_from_extras("tableschema_to_template", name="excel")
-        return backend.create_xlsx(self.to_descriptor(), path)
+        return platform.tableschema_to_template.create_xlsx(self.to_descriptor(), path)
 
     def to_summary(self) -> str:
         """Summary of the schema in table format"""

@@ -1,9 +1,9 @@
 from typing import Optional
 from .control import ZenodoControl
+from ...platform import platform
 from ...resource import Resource
 from ...package import Package
 from ...package import Manager
-from ... import helpers
 
 
 class ZenodoManager(Manager[ZenodoControl]):
@@ -16,8 +16,7 @@ class ZenodoManager(Manager[ZenodoControl]):
 
     # TODO: improve
     def read_package(self, *, record: Optional[str] = None):
-        pyzenodo3 = helpers.import_from_extras("pyzenodo3", name="zenodo")
-        client = pyzenodo3.Zenodo()
+        client = platform.pyzenodo3.Zenodo()
         record = record or self.control.record
         assert record
         dataset = client.get_record(record)

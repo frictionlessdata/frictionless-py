@@ -1,10 +1,10 @@
 from __future__ import annotations
 import re
+from ...platform import platform
 from ...resource import Parser
 from ...resource import Resource
 from ...exception import FrictionlessException
 from .control import GsheetsControl
-from ... import helpers
 from ... import errors
 
 
@@ -35,7 +35,6 @@ class GsheetsParser(Parser):
 
     def write_row_stream(self, source):
         path = self.resource.normpath
-        pygsheets = helpers.import_from_extras("pygsheets", name="gsheets")
         control = GsheetsControl.from_dialect(self.resource.dialect)
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)
         if not match:
@@ -43,13 +42,13 @@ class GsheetsParser(Parser):
             raise FrictionlessException(error)
         key = match.group("key")
         gid = match.group("gid")
-        gc = pygsheets.authorize(service_account_file=control.credentials)
+        gc = platform.pygsheets.authorize(service_account_file=control.credentials)
         sh = gc.open_by_key(key)
-        wks = sh.worksheet_by_id(gid) if gid else sh[0]
+        wks = sh.worksheet_by_id(gid) if gid else sh[0]  # type: ignore
         data = []
         with source:
             data.append(source.schema.field_names)
             for row in source.row_stream:
                 data.append(row.to_list())
-        wks.update_values("A1", data)
+        wks.update_values("A1", data)  # type: ignore
         return path

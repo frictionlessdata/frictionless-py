@@ -3,10 +3,10 @@ import io
 import tempfile
 from datetime import datetime
 from ...exception import FrictionlessException
+from ...platform import platform
 from .control import OdsControl
 from ...resource import Parser
 from ...system import system
-from ... import helpers
 from ... import errors
 
 
@@ -28,11 +28,10 @@ class OdsParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        ezodf = helpers.import_from_extras("ezodf", name="ods")
         control = OdsControl.from_dialect(self.resource.dialect)
 
         # Get book
-        book = ezodf.opendoc(io.BytesIO(self.loader.byte_stream.read()))
+        book = platform.ezodf.opendoc(io.BytesIO(self.loader.byte_stream.read()))
 
         # Get sheet
         try:
@@ -73,13 +72,12 @@ class OdsParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        ezodf = helpers.import_from_extras("ezodf", name="ods")
         control = OdsControl.from_dialect(self.resource.dialect)
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()
-        book = ezodf.newdoc(doctype="ods", filename=file.name)
+        book = platform.ezodf.newdoc(doctype="ods", filename=file.name)
         title = f"Sheet {control.sheet}"
-        book.sheets += ezodf.Sheet(title)
+        book.sheets += platform.ezodf.Sheet(title)
         sheet = book.sheets[title]
         with source:
             for field_index, name in enumerate(source.schema.field_names):

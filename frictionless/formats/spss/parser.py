@@ -1,9 +1,9 @@
 from __future__ import annotations
 import re
 import warnings
+from ...platform import platform
 from ...resource import Parser
 from ...schema import Schema, Field
-from ... import helpers
 from . import settings
 
 
@@ -17,18 +17,18 @@ class SpssParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        sav = helpers.import_from_extras("savReaderWriter", name="spss")
-        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
+        sav = platform.sav_reader_writer
+        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)  # type: ignore
 
         # Schema
-        with sav.SavHeaderReader(self.resource.normpath, ioUtf8=True) as reader:
+        with sav.SavHeaderReader(self.resource.normpath, ioUtf8=True) as reader:  # type: ignore
             spss_schema = reader.all()
         schema = self.__read_convert_schema(spss_schema)
         self.resource.schema = schema
 
         # Lists
         yield schema.field_names
-        with sav.SavReader(self.resource.normpath, ioUtf8=True) as reader:
+        with sav.SavReader(self.resource.normpath, ioUtf8=True) as reader:  # type: ignore
             for item in reader:
                 cells = []
                 for index, field in enumerate(schema.fields):
@@ -84,15 +84,15 @@ class SpssParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        sav = helpers.import_from_extras("savReaderWriter", name="spss")
-        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
+        sav = platform.sav_reader_writer
+        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)  # type: ignore
 
         # Convert schema
         mapping = self.__write_convert_type()
         spss_schema = self.__write_convert_schema(source)
 
         # Write rows
-        with sav.SavWriter(self.resource.normpath, ioUtf8=True, **spss_schema) as writer:
+        with sav.SavWriter(self.resource.normpath, ioUtf8=True, **spss_schema) as writer:  # type: ignore
             with source:
                 for row in source.row_stream:  # type: ignore
                     cells = []

@@ -5,18 +5,18 @@ from datetime import datetime, date, timezone
 from urllib.parse import urlsplit, urlunsplit
 from ...exception import FrictionlessException
 from ...schema import Schema, Field
+from ...platform import platform
 from ...resource import Resource
 from ...package import Storage
 from ...package import Package
 from .control import SqlControl
-from ... import helpers
 
 
 class SqlStorage(Storage):
     """SQL storage implementation"""
 
     def __init__(self, source, *, control=None):
-        sa = helpers.import_from_extras("sqlalchemy", name="sql")
+        sa = platform.sqlalchemy
 
         # Create engine
         if control and control.basepath:
@@ -37,7 +37,7 @@ class SqlStorage(Storage):
         # Add regex support
         # It will fail silently if this function already exists
         if self.__connection.engine.dialect.name.startswith("sqlite"):
-            self.__connection.connection.create_function("REGEXP", 2, regexp)
+            self.__connection.connection.create_function("REGEXP", 2, regexp)  # type: ignore
 
         # Create metadata and reflect
         self.__metadata = sa.MetaData(bind=self.__connection, schema=self.__namespace)
@@ -80,7 +80,7 @@ class SqlStorage(Storage):
         return None
 
     def __read_convert_schema(self, sql_table):
-        sa = helpers.import_from_extras("sqlalchemy", name="sql")
+        sa = platform.sqlalchemy
         schema = Schema()
 
         # Fields
@@ -118,7 +118,7 @@ class SqlStorage(Storage):
         return schema
 
     def __read_convert_data(self, name, *, order_by=None, where=None):
-        sa = helpers.import_from_extras("sqlalchemy", name="sql")
+        sa = platform.sqlalchemy
         sql_table = self.__read_sql_table(name)
         with self.__connection.begin():
             # Streaming could be not working for some backends:
@@ -135,9 +135,9 @@ class SqlStorage(Storage):
                 yield cells
 
     def __read_convert_type(self, sql_type=None):
-        sa = helpers.import_from_extras("sqlalchemy", name="sql")
-        sapg = helpers.import_from_extras("sqlalchemy.dialects.postgresql", name="sql")
-        sams = helpers.import_from_extras("sqlalchemy.dialects.mysql", name="sql")
+        sa = platform.sqlalchemy
+        sapg = platform.sqlalchemy_dialects_postgresql
+        sams = platform.sqlalchemy_dialects_mysql
 
         # Create mapping
         mapping = {
@@ -216,7 +216,7 @@ class SqlStorage(Storage):
         return self.__prefix + name
 
     def __write_convert_schema(self, resource):
-        sa = helpers.import_from_extras("sqlalchemy", name="sql")
+        sa = platform.sqlalchemy
 
         # Prepare
         columns = []
@@ -226,7 +226,7 @@ class SqlStorage(Storage):
 
         # Fields
         Check = sa.CheckConstraint
-        quote = engine.dialect.identifier_preparer.quote
+        quote = engine.dialect.identifier_preparer.quote  # type: ignore
         for field in resource.schema.fields:
             checks = []
             nullable = not field.required
@@ -296,7 +296,7 @@ class SqlStorage(Storage):
         fallback_fields = []
         mapping = self.__write_convert_type()
         for field in resource.schema.fields:
-            if not mapping.get(field.type):
+            if not mapping.get(field.type):  # type: ignore
                 fallback_fields.append(field)
 
         # Timezone fields
@@ -331,8 +331,8 @@ class SqlStorage(Storage):
                 self.__connection.execute(sql_table.insert().values(buffer))
 
     def __write_convert_type(self, type=None):
-        sa = helpers.import_from_extras("sqlalchemy", name="sql")
-        sapg = helpers.import_from_extras("sqlalchemy.dialects.postgresql", name="sql")
+        sa = platform.sqlalchemy
+        sapg = platform.sqlalchemy_dialects_postgresql
 
         # Default dialect
         mapping = {
