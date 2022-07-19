@@ -1,13 +1,10 @@
-import pytest
 from datetime import datetime, time
-from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
 
 # General
 
 
-@pytest.mark.xfail(reason="Timezone is not supported")
 def test_sql_parser_write_timezone_postgresql(postgresql_url):
     source = Resource("data/timezone.csv")
     control = formats.SqlControl(table="timezone")
@@ -20,16 +17,16 @@ def test_sql_parser_write_timezone_postgresql(postgresql_url):
                 "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-                "time": time(15, 0, tzinfo=tzutc()),
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+                "datetime": datetime(2020, 1, 1, 12),
+                "time": time(12),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+                "datetime": datetime(2020, 1, 1, 18),
+                "time": time(18),
             },
         ]
 
