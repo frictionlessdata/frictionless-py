@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import helpers
+from frictionless import platform, helpers
 
 
 # General
@@ -31,6 +31,6 @@ def test_ensure_dir(tmpdir):
         ("$UNKNOWN_VAR", False),
     ),
 )
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_is_safe_path(path, is_safe):
     assert helpers.is_safe_path(path) is is_safe

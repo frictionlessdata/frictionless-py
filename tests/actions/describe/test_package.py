@@ -1,11 +1,11 @@
 import pytest
-from frictionless import Package, Dialect, describe, helpers
+from frictionless import Package, Dialect, describe, platform
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package():
     package = describe("data/tables/chunk*.csv")
     assert isinstance(package, Package)
@@ -48,7 +48,7 @@ def test_describe_package():
     }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package_with_stats():
     package = describe("data/tables/chunk*.csv", stats=True)
     assert isinstance(package, Package)
@@ -112,7 +112,7 @@ def test_describe_package_basepath():
     assert package.get_resource("chunk2").basepath == "data"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package_hashing():
     package = describe("data/chunk*.csv", hashing="sha256", stats=True)
     assert isinstance(package, Package)

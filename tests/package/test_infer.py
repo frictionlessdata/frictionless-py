@@ -1,11 +1,11 @@
 import pytest
-from frictionless import Package, Resource, helpers
+from frictionless import Package, Resource, platform
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_infer():
     package = Package("data/infer/*.csv")
     package.infer(stats=True)

@@ -1,6 +1,6 @@
 import pytest
 from copy import deepcopy
-from frictionless import Package, helpers
+from frictionless import Package, platform
 
 
 # General
@@ -21,7 +21,7 @@ DESCRIPTOR_SH = {
 }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_package_stats():
     source = deepcopy(DESCRIPTOR_SH)
     package = Package(source)
@@ -41,7 +41,7 @@ def test_validate_package_stats_invalid():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
@@ -61,7 +61,7 @@ def test_validate_package_stats_size_invalid():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_package_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")

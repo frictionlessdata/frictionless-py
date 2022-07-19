@@ -1,5 +1,5 @@
 import pprint
-from frictionless import Resource, Checklist, helpers
+from frictionless import Resource, Checklist, platform
 
 
 # General
@@ -21,11 +21,11 @@ def test_report():
     assert report.task.tabular is True
     assert report.task.stats["time"]
     assert report.task.stats["errors"] == 0
-    if not helpers.is_platform("windows"):
+    if platform.type != "windows":
         assert report.task.stats["bytes"] == 30
     assert report.task.stats["fields"] == 2
     assert report.task.stats["rows"] == 2
-    if not helpers.is_platform("windows"):
+    if platform.type != "windows":
         assert report.task.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
     assert report.task.scope == [
         # File

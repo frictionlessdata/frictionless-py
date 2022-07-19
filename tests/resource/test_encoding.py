@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, FrictionlessException, helpers
+from frictionless import Resource, Dialect, FrictionlessException, platform
 
 
 # General
@@ -62,5 +62,5 @@ def test_resource_encoding_error_non_matching_encoding():
         resource.open()
     error = excinfo.value.error
     assert error.type == "encoding-error"
-    if not helpers.is_platform("windows"):
+    if not platform.type == "windows":
         assert error.note[:51] == "'ascii' codec can't decode byte 0xe4 in position 20"

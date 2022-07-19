@@ -1,11 +1,11 @@
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, FrictionlessException, platform
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_hashing():
     with Resource("data/table.csv") as resource:
         resource.read_rows()
@@ -13,7 +13,7 @@ def test_resource_hashing():
         assert resource.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_hashing_provided():
     with Resource("data/table.csv", hashing="sha1") as resource:
         resource.read_rows()

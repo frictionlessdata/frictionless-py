@@ -1,6 +1,6 @@
-from frictionless import Package, helpers
+from frictionless import Package, platform
 
-IS_UNIX = not helpers.is_platform("windows")
+IS_UNIX = platform.type != "windows"
 
 
 # General

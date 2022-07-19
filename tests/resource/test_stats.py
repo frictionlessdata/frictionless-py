@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, helpers
+from frictionless import Resource, Dialect, platform
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -8,7 +8,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
@@ -16,7 +16,7 @@ def test_resource_stats_hash():
         assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_md5():
     with Resource("data/doublequote.csv", hashing="md5") as resource:
         resource.read_rows()
@@ -24,7 +24,7 @@ def test_resource_stats_hash_md5():
         assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_sha1():
     with Resource("data/doublequote.csv", hashing="sha1") as resource:
         resource.read_rows()
@@ -32,7 +32,7 @@ def test_resource_stats_hash_sha1():
         assert resource.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_sha256():
     with Resource("data/doublequote.csv", hashing="sha256") as resource:
         resource.read_rows()
@@ -43,7 +43,7 @@ def test_resource_stats_hash_sha256():
         )
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_sha512():
     with Resource("data/doublequote.csv", hashing="sha512") as resource:
         resource.read_rows()
@@ -54,7 +54,7 @@ def test_resource_stats_hash_sha512():
         )
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
@@ -63,7 +63,7 @@ def test_resource_stats_hash_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
@@ -71,14 +71,14 @@ def test_resource_stats_hash_remote():
         assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_bytes():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.stats["bytes"] == 7346
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_bytes_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
@@ -86,7 +86,7 @@ def test_resource_stats_bytes_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_bytes_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()

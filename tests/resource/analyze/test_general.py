@@ -1,8 +1,10 @@
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource, platform
+
+IS_UNIX = platform.type != "windows"
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_analyze_resource():

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, Detector, helpers
+from frictionless import Resource, Dialect, Detector, platform
 
 
 # General
@@ -26,7 +26,7 @@ def test_describe_resource():
     }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_resource_with_stats():
     resource = Resource.describe("data/table.csv", stats=True)
     assert resource.metadata_valid

@@ -1,7 +1,7 @@
 import os
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, helpers
+from frictionless import program, platform
 
 runner = CliRunner()
 
@@ -131,7 +131,7 @@ def test_program_summary_validate_errors():
 def test_program_summary_without_command(tmpdir):
     output_file_path = f"{tmpdir}/output.txt"
     exit_code = os.system(f"frictionless data/countries.csv > {output_file_path}")
-    if not helpers.is_platform("windows"):
+    if platform.type != "windows":
         # A value of 256 means the spawned program terminated with exit code 1
         # https://stackoverflow.com/questions/47832180/os-system-returns-the-value-256-when-run-from-crontab
         assert exit_code == 256

@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Package, Resource, formats, helpers
+from frictionless import Package, Resource, formats, platform
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -101,7 +101,7 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
 
 
 @pytest.mark.xfail(reason="Doesn't work with function")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = lambda: [["id", "name"], [1, "english"], [2, "中国人"]]

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource, platform
 
 
 # General
@@ -11,7 +11,7 @@ def test_resource_validate_encoding():
     assert report.valid
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_encoding_invalid():
     resource = Resource("data/latin1.csv", encoding="utf-8")
     report = resource.validate()

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, formats, helpers
+from frictionless import Resource, formats, platform
 
 
 # General
@@ -27,7 +27,7 @@ def test_html_parser(source, selector):
 # Write
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_html_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.html")))

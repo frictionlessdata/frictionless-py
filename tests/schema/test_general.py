@@ -4,7 +4,8 @@ import pytest
 import textwrap
 import requests
 from decimal import Decimal
-from frictionless import Schema, Field, helpers
+from importlib import import_module
+from frictionless import Schema, Field
 from frictionless import FrictionlessException
 
 
@@ -313,6 +314,7 @@ def test_schema_invalid_example():
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_schema_standard_specs_properties(create_descriptor):
+    helpers = import_module("frictionless.helpers")
     options = dict(
         fields=[],
         missing_values=[],

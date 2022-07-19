@@ -2,7 +2,7 @@ import pytest
 import json
 import yaml
 from typer.testing import CliRunner
-from frictionless import program, extract, formats, Detector, helpers, Resource, Dialect
+from frictionless import program, extract, formats, Detector, platform, Resource, Dialect
 
 
 runner = CliRunner()
@@ -114,7 +114,7 @@ def test_program_extract_json():
     assert json.loads(actual.stdout) == expect
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_extract_csv():
     actual = runner.invoke(program, "extract data/table.csv --csv")
     with open("data/table.csv") as file:
@@ -133,7 +133,7 @@ def test_program_extract_dialect_sheet_option():
 
 
 @pytest.mark.xfail(reason="Not supported yet")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_extract_dialect_table_option_sql(database_url):
     table = "fruits"
     actual = runner.invoke(program, f"extract {database_url} --table {table} --json")

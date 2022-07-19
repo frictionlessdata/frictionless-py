@@ -1,6 +1,7 @@
 import pytest
 import textwrap
-from frictionless import Field, helpers
+from importlib import import_module
+from frictionless import Field
 
 
 # General
@@ -37,6 +38,7 @@ def test_field_defaults():
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_field_standard_specs_properties(create_descriptor):
+    helpers = import_module("frictionless.helpers")
     options = dict(
         name="name",
         title="title",

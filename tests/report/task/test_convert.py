@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource, platform
 
 
 # General
@@ -11,7 +11,7 @@ def test_report_task_to_summary_valid():
     output = report.tasks[0].to_summary()
     assert output.count("File Place   | data/capital-valid.csv")
     assert output.count("Total Time   |")
-    if not helpers.is_platform("windows"):
+    if platform.type != "windows":
         assert output.count("File Size    | 50 Bytes")
 
 
@@ -27,7 +27,7 @@ def test_report_task_to_summary_invalid():
     assert output.count("Blank Row       | 1")
     assert output.count("Type Error      | 1")
     assert output.count("Extra Cell      | 1")
-    if not helpers.is_platform("windows"):
+    if platform.type != "windows":
         assert output.count("File Size       | 171 Bytes")
 
 

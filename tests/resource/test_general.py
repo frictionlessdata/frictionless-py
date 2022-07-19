@@ -2,7 +2,8 @@ import os
 import sys
 import pytest
 import textwrap
-from frictionless import Package, Resource, Control, Schema, Field, Detector, helpers
+from importlib import import_module
+from frictionless import Package, Resource, Control, Schema, Field, Detector, platform
 from frictionless import Dialect, FrictionlessException
 
 
@@ -19,7 +20,7 @@ def test_resource():
     assert resource.basepath == "data"
     assert (
         resource.normpath == "data/table.csv"
-        if not helpers.is_platform("windows")
+        if not platform.type == "windows"
         else "data\\table.csv"
     )
     # TODO: recover
@@ -98,7 +99,7 @@ def test_resource_source_non_tabular():
         assert resource.memory is False
         assert resource.multipart is False
         assert resource.normpath == path
-        if not helpers.is_platform("windows"):
+        if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
             assert resource.stats == {
                 "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -117,7 +118,7 @@ def test_resource_source_non_tabular_remote():
         assert resource.multipart is False
         assert resource.basepath == ""
         assert resource.normpath == path
-        if not helpers.is_platform("windows"):
+        if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
             assert resource.stats == {
                 "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -146,7 +147,7 @@ def test_resource_source_path():
     assert resource.multipart is False
     assert resource.basepath == ""
     assert resource.normpath == path
-    if not helpers.is_platform("windows"):
+    if not platform.type == "windows":
         assert (
             resource.read_bytes()
             == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
@@ -159,7 +160,7 @@ def test_resource_source_path():
     assert resource.fragment == [["1", "english"], ["2", "中国人"]]
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
-    if not helpers.is_platform("windows"):
+    if not platform.type == "windows":
         assert resource.stats == {
             "hash": "6c2c61dd9b0e9c6876139a449ed87933",
             "bytes": 30,
@@ -174,7 +175,7 @@ def test_resource_source_path_and_basepath():
     assert resource.basepath == "data"
     assert (
         resource.normpath == "data/table.csv"
-        if not helpers.is_platform("windows")
+        if not platform.type == "windows"
         else "data\\table.csv"
     )
     assert resource.read_rows() == [
@@ -227,7 +228,7 @@ def test_resource_source_path_error_bad_path_not_safe_traversing():
         Resource(
             {
                 "path": "data/../data/table.csv"
-                if not helpers.is_platform("windows")
+                if not platform.type == "windows"
                 else "data\\..\\table.csv"
             }
         )
@@ -287,6 +288,7 @@ def test_resource_source_no_path_and_no_data():
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_resource_standard_specs_properties(create_descriptor):
+    helpers = import_module("frictionless.helpers")
     options = dict(
         path="path",
         name="name",
@@ -551,7 +553,7 @@ def test_resource_skip_rows_non_string_cell_issue_322():
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     path = (
         "data/../data/table.csv"
-        if not helpers.is_platform("windows")
+        if not platform.type == "windows"
         else "data\\..\\data\\table.csv"
     )
     # trusted=false (default)
@@ -568,7 +570,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)

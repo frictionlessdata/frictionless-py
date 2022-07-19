@@ -1,9 +1,10 @@
 import pytest
 import zipfile
 import textwrap
-from collections.abc import Mapping
 from pathlib import Path
-from frictionless import Package, Resource, system, helpers
+from importlib import import_module
+from collections.abc import Mapping
+from frictionless import Package, Resource, system
 from frictionless import FrictionlessException
 
 
@@ -206,6 +207,7 @@ def test_package_from_zip_innerpath_yaml():
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_package_standard_specs_properties(create_descriptor):
+    helpers = import_module("frictionless.helpers")
     options = dict(
         name="name",
         profiles=["profile"],

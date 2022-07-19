@@ -1,11 +1,11 @@
 import pytest
-from frictionless import Catalog, Package, helpers
+from frictionless import Catalog, Package, platform
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_catalog_infer():
     package = Package("data/infer/*.csv")
     catalog = Catalog(packages=[package])

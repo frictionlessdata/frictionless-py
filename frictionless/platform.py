@@ -1,3 +1,4 @@
+import sys
 from typing import ClassVar
 from functools import cached_property
 import platform as python_platform
@@ -8,6 +9,9 @@ class Platform:
     """Platform representation"""
 
     type: ClassVar[str] = python_platform.system()
+    """TODO: add docs"""
+
+    python: ClassVar[str] = f"{sys.version_info.major}.{sys.version_info.minor}"
     """TODO: add docs"""
 
     # Extras

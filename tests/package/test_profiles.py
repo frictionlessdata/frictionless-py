@@ -1,5 +1,5 @@
 import pytest
-from frictionless import FrictionlessException, Package, Resource, helpers
+from frictionless import FrictionlessException, Package, Resource, platform
 
 
 # General
@@ -38,7 +38,7 @@ def test_package_external_profile_invalid_local_from_descriptor():
 
 @pytest.mark.vcr
 @pytest.mark.xfail(reason="Profiles are not yet supported")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

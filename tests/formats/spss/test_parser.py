@@ -1,11 +1,11 @@
 import pytest
 from dateutil.tz import tzoffset, tzutc
 from datetime import datetime, date, time
-from frictionless import Package, Resource, helpers
+from frictionless import Package, Resource, platform
 
 
 pytestmark = pytest.mark.skipif(
-    helpers.is_platform("macos") or helpers.is_python("3.10"),
+    platform.type == "darwin" or platform.python >= "3.10",
     reason="Not supported MacOS and Python3.10+",
 )
 

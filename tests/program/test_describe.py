@@ -2,7 +2,7 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, describe, Dialect, Detector, helpers
+from frictionless import program, describe, Dialect, Detector, platform
 
 
 runner = CliRunner()
@@ -11,7 +11,7 @@ runner = CliRunner()
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_describe():
     actual = runner.invoke(program, "describe data/table.csv --stats")
     assert actual.exit_code == 0

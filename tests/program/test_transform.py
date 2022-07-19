@@ -1,12 +1,12 @@
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, helpers
+from frictionless import program, platform
 
 runner = CliRunner()
 
 
 @pytest.mark.xfail(reason="Rework for the new Pipeline")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")
     assert result.exit_code == 0

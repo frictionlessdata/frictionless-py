@@ -1,7 +1,7 @@
 import io
 import pytest
 from decimal import Decimal
-from frictionless import Resource, Dialect, Detector, formats, helpers
+from frictionless import Resource, Dialect, Detector, formats, platform
 from frictionless import FrictionlessException
 
 
@@ -115,7 +115,7 @@ def test_xlsx_parser_adjust_floating_point_error_default():
         assert resource.read_rows()[1].cells[2] == 274.65999999999997
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     control = formats.ExcelControl(preserve_formatting=True)

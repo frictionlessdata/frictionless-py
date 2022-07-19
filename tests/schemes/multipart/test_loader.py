@@ -1,7 +1,7 @@
 import os
 import json
 import pytest
-from frictionless import Resource, schemes, helpers
+from frictionless import Resource, schemes, platform
 from frictionless import FrictionlessException
 
 
@@ -51,7 +51,7 @@ def test_multipart_loader_resource():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_multipart_loader_resource_remote():
     descriptor = {
         "name": "name",
@@ -71,7 +71,7 @@ def test_multipart_loader_resource_remote():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_multipart_loader_resource_remote_both_path_and_basepath():
     descriptor = {
         "name": "name",
@@ -125,7 +125,7 @@ def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
     assert error.note.count("not safe")
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="Stats problem on Windows")
+@pytest.mark.skipif(platform.type == "windows", reason="Stats problem on Windows")
 def test_multipart_loader_resource_infer():
     descriptor = {"path": "data/chunk1.csv", "extrapaths": ["data/chunk2.csv"]}
     resource = Resource(descriptor)
