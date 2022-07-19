@@ -19,8 +19,8 @@ class ZenodoPlugin(Plugin):
 
     # TODO: improve
     def create_manager(self, source, *, control=None):
-        parsed = urlparse(source)
         if isinstance(source, str):
+            parsed = urlparse(source)
             if not control or isinstance(control, ZenodoControl):
                 if parsed.netloc == "zenodo.org":
                     control = control or ZenodoControl()

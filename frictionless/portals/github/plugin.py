@@ -19,8 +19,8 @@ class GithubPlugin(Plugin):
 
     # TODO: improve
     def create_manager(self, source, *, control=None):
-        parsed = urlparse(source)
         if isinstance(source, str):
+            parsed = urlparse(source)
             if not control or isinstance(control, GithubControl):
                 if parsed.netloc == "github.com":
                     control = control or GithubControl()

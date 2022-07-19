@@ -19,12 +19,13 @@ class CkanPlugin(Plugin):
 
     # TODO: improve
     def create_manager(self, source, *, control=None):
-        parsed = urlparse(source)
-        if not control or isinstance(control, CkanControl):
-            if parsed.path.startswith("/dataset/"):
-                control = control or CkanControl()
-                baseurl, dataset = source.split("/dataset/")
-                control.baseurl = baseurl
-                if dataset:
-                    control.dataset = dataset
-                return CkanManager(control)
+        if isinstance(source, str):
+            parsed = urlparse(source)
+            if not control or isinstance(control, CkanControl):
+                if parsed.path.startswith("/dataset/"):
+                    control = control or CkanControl()
+                    baseurl, dataset = source.split("/dataset/")
+                    control.baseurl = baseurl
+                    if dataset:
+                        control.dataset = dataset
+                    return CkanManager(control)

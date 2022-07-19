@@ -1052,13 +1052,14 @@ def test_validate_resource_header_row_has_first_number_issue_870():
 
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_array_path_issue_991():
-    report = validate("data/issue-991.resource.json")
-    assert report.flatten(["type", "note"]) == [
-        [
-            "scheme-error",
-            'Multipart resource requires "multipart" scheme but "file" is set',
-        ],
-    ]
+    with pytest.warns(UserWarning):
+        report = validate("data/issue-991.resource.json")
+        assert report.flatten(["type", "note"]) == [
+            [
+                "scheme-error",
+                'Multipart resource requires "multipart" scheme but "file" is set',
+            ],
+        ]
 
 
 @pytest.mark.xfail(reason="Decide on error type")
