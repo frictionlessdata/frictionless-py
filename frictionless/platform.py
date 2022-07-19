@@ -42,6 +42,27 @@ class Platform:
 
     @cached_property
     @extras(name="excel")
+    def xlrd(self):
+        import xlrd
+
+        return xlrd
+
+    @cached_property
+    @extras(name="excel")
+    def xlwt(self):
+        import xlwt
+
+        return xlwt
+
+    @cached_property
+    @extras(name="excel")
+    def openpyxl(self):
+        import openpyxl
+
+        return openpyxl
+
+    @cached_property
+    @extras(name="excel")
     def tableschema_to_template(self):
         import tableschema_to_template
 

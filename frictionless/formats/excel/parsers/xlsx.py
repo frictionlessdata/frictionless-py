@@ -6,9 +6,9 @@ import hashlib
 import tempfile
 import warnings
 import datetime
-import openpyxl
 from itertools import chain
 from ....exception import FrictionlessException
+from ....platform import platform
 from ..control import ExcelControl
 from ....resource import Resource
 from ....resource import Parser
@@ -73,7 +73,7 @@ class XlsxParser(Parser):
         # `sheet.merged_cell_ranges` is not available in this mode
         try:
             warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
-            book = openpyxl.load_workbook(
+            book = platform.openpyxl.load_workbook(
                 self.loader.byte_stream,
                 read_only=not control.fill_merged_cells,
                 data_only=True,
@@ -139,7 +139,7 @@ class XlsxParser(Parser):
 
     def write_row_stream(self, source):
         control = ExcelControl.from_dialect(self.resource.dialect)
-        book = openpyxl.Workbook(write_only=True)
+        book = platform.openpyxl.Workbook(write_only=True)
         title = control.sheet
         if isinstance(title, int):
             title = f"Sheet {control.sheet}"

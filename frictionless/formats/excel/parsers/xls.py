@@ -1,8 +1,7 @@
 from __future__ import annotations
 import sys
-import xlrd
-import xlwt
 import tempfile
+from ....platform import platform
 from ....exception import FrictionlessException
 from ..control import ExcelControl
 from ....resource import Parser
@@ -33,14 +32,14 @@ class XlsParser(Parser):
         # Get book
         bytes = self.loader.byte_stream.read()
         try:
-            book = xlrd.open_workbook(
+            book = platform.xlrd.open_workbook(
                 file_contents=bytes,
                 encoding_override=self.resource.encoding,
                 formatting_info=True,
                 logfile=sys.stderr,
             )
         except NotImplementedError:
-            book = xlrd.open_workbook(
+            book = platform.xlrd.open_workbook(
                 file_contents=bytes,
                 encoding_override=self.resource.encoding,
                 formatting_info=False,
@@ -53,7 +52,7 @@ class XlsParser(Parser):
                 sheet = book.sheet_by_name(control.sheet)
             else:
                 sheet = book.sheet_by_index(control.sheet - 1)
-        except (xlrd.XLRDError, IndexError):
+        except (platform.xlrd.XLRDError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
                 note=note % (self.resource.normpath, control.sheet)
@@ -64,17 +63,17 @@ class XlsParser(Parser):
             """Detects boolean value, int value, datetime"""
 
             # Boolean
-            if ctype == xlrd.XL_CELL_BOOLEAN:
+            if ctype == platform.xlrd.XL_CELL_BOOLEAN:
                 return bool(value)
 
             # Excel numbers are only float
             # Float with no decimals can be cast into int
-            if ctype == xlrd.XL_CELL_NUMBER and value == value // 1:
+            if ctype == platform.xlrd.XL_CELL_NUMBER and value == value // 1:
                 return int(value)
 
             # Datetime
-            if ctype == xlrd.XL_CELL_DATE:
-                return xlrd.xldate.xldate_as_datetime(value, book.datemode)
+            if ctype == platform.xlrd.XL_CELL_DATE:
+                return platform.xlrd.xldate.xldate_as_datetime(value, book.datemode)
 
             return value
 
@@ -97,7 +96,7 @@ class XlsParser(Parser):
 
     def write_row_stream(self, source):
         control = ExcelControl.from_dialect(self.resource.dialect)
-        book = xlwt.Workbook()
+        book = platform.xlwt.Workbook()
         title = control.sheet
         if isinstance(title, int):
             title = f"Sheet {control.sheet}"

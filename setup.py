@@ -46,7 +46,12 @@ EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
     "dev": TESTS_REQUIRE,
-    "excel": ["tableschema-to-template>=0.0.12"],
+    "excel": [
+        "xlrd>=1.2",
+        "xlwt>=1.2",
+        "openpyxl>=3.0",
+        "tableschema-to-template>=0.0.12",
+    ],
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
@@ -58,8 +63,6 @@ EXTRAS_REQUIRE = {
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",
-    "xlrd>=1.2",
-    "xlwt>=1.2",
     "ijson>=3.0",
     "marko>=1.0",
     "attrs>=21.0",
@@ -70,7 +73,6 @@ INSTALL_REQUIRES = [
     "chardet>=3.0",
     "fastapi>=0.78",
     "uvicorn>=0.17",
-    "openpyxl>=3.0",
     "jsonlines>=1.2",
     "jsonmerge>=1.8",
     "requests>=2.10",
