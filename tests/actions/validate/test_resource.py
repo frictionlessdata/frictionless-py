@@ -15,7 +15,7 @@ def test_validate():
 @pytest.mark.xfail(reason="Figure out how to handle errors like this")
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
-    assert report.stats["errors"] == 1
+    assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "resource-error"
     assert note.count("[Errno 2]") and note.count("bad.json")
@@ -24,7 +24,7 @@ def test_validate_invalid_source():
 @pytest.mark.xfail(reason="Figure out how to handle errors like this")
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
-    assert report.stats["errors"] == 1
+    assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
     assert note.count("[Errno 2]") and note.count("bad")
@@ -262,7 +262,7 @@ def test_validate_layout_none():
     resource = Resource("data/without-headers.csv", dialect=dialect)
     report = validate(resource)
     assert report.valid
-    assert report.task.stats["rows"] == 3
+    assert report.task.stats.rows == 3
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
@@ -272,7 +272,7 @@ def test_validate_layout_none_extra_cell():
     dialect = Dialect(header=False)
     resource = Resource("data/without-headers-extra.csv", dialect=dialect)
     report = validate(resource)
-    assert report.task.stats["rows"] == 3
+    assert report.task.stats.rows == 3
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
@@ -310,7 +310,7 @@ def test_validate_layout_skip_rows():
     resource = Resource("data/matrix.csv", dialect=dialect)
     report = validate(resource)
     assert resource.header == ["f1", "f2", "f3", "f4"]
-    assert report.task.stats["rows"] == 2
+    assert report.task.stats.rows == 2
     assert report.task.valid
 
 
@@ -318,7 +318,7 @@ def test_validate_dialect_delimiter():
     control = formats.CsvControl(delimiter=";")
     report = validate("data/delimiter.csv", control=control)
     assert report.valid
-    assert report.task.stats["rows"] == 2
+    assert report.task.stats.rows == 2
 
 
 # Schema
@@ -731,7 +731,7 @@ def test_validate_detector_infer_names():
     report = validate(resource)
     assert resource.schema.fields[0].name == "id"
     assert resource.schema.fields[1].name == "name"
-    assert report.task.stats["rows"] == 3
+    assert report.task.stats.rows == 3
     assert resource.labels == []
     assert resource.header == ["id", "name"]
     assert report.valid
@@ -946,7 +946,7 @@ def test_validate_order_fields_issue_313():
 
 def test_validate_missing_local_file_raises_scheme_error_issue_315():
     report = validate("bad-path.csv")
-    assert report.stats["errors"] == 1
+    assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "scheme-error"
     assert note.count("[Errno 2]") and note.count("bad-path.csv")

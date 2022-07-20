@@ -257,7 +257,7 @@ def test_validate_package_uppercase_format_issue_494():
     package = Package("data/issue-494.package.json")
     report = package.validate()
     assert report.valid
-    assert report.stats["tasks"] == 1
+    assert report.stats.tasks == 1
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
@@ -286,7 +286,7 @@ def test_validate_package_using_detector_schema_sync_issue_847():
 def test_validate_package_with_diacritic_symbol_issue_905():
     package = Package("data/issue-905/datapackage.json")
     report = package.validate()
-    assert report.stats["tasks"] == 3
+    assert report.stats.tasks == 3
 
 
 @pytest.mark.xfail(reason="Decide on behaviour")

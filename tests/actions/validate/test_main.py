@@ -35,7 +35,7 @@ def test_validate_from_resource_instance():
 
 def test_validate_multiple_files_issue_850():
     report = validate("data/package/*.csv")
-    assert report.stats["tasks"] == 2
+    assert report.stats.tasks == 2
 
 
 @pytest.mark.xfail(reason="Problem with the field")

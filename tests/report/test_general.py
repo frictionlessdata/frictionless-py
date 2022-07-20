@@ -10,24 +10,24 @@ def test_report():
     report = resource.validate()
     # Report
     assert report.valid is True
-    assert report.stats["time"]
-    assert report.stats["errors"] == 0
-    assert report.stats["tasks"] == 1
+    assert report.stats.time
+    assert report.stats.errors == 0
+    assert report.stats.tasks == 1
     assert report.errors == []
     # Task
     assert report.task.valid is True
     assert report.task.name == "table"
     assert report.task.place == "data/table.csv"
     assert report.task.tabular is True
-    assert report.task.stats["time"]
-    assert report.task.stats["errors"] == 0
+    assert report.task.stats.time
+    assert report.task.stats.errors == 0
     if platform.type != "windows":
-        assert report.task.stats["bytes"] == 30
-    assert report.task.stats["fields"] == 2
-    assert report.task.stats["rows"] == 2
+        assert report.task.stats.bytes == 30
+    assert report.task.stats.fields == 2
+    assert report.task.stats.rows == 2
     if platform.type != "windows":
         assert (
-            report.task.stats["hash"]
+            report.task.stats.hash
             == "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
         )
     assert report.task.scope == [

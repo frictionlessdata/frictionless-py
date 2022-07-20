@@ -158,7 +158,7 @@ def test_multipart_loader_resource_validate():
     resource = Resource({"path": "data/chunk1.csv", "extrapaths": ["data/chunk2.csv"]})
     report = resource.validate()
     assert report.valid
-    assert report.task.stats["rows"] == 2
+    assert report.task.stats.rows == 2
 
 
 # Write

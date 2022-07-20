@@ -22,6 +22,9 @@ class Stats(Metadata):
     rows: Optional[int] = None
     """TODO: add docs"""
 
+    tasks: Optional[int] = None
+    """TODO: add docs"""
+
     errors: Optional[int] = None
     """TODO: add docs"""
 

@@ -3,6 +3,7 @@ import attrs
 import humanize
 from typing import List
 from tabulate import tabulate
+from ..stats import Stats
 from ..metadata import Metadata
 from ..exception import FrictionlessException
 from ..errors import ReportTaskError
@@ -28,7 +29,7 @@ class ReportTask(Metadata):
     place: str
     """# TODO: add docs"""
 
-    stats: dict
+    stats: Stats
     """# TODO: add docs"""
 
     scope: List[str] = attrs.field(factory=list)
@@ -87,12 +88,12 @@ class ReportTask(Metadata):
             if error_title not in error_list:
                 error_list[error_title] = 0
             error_list[error_title] += 1
-        size = self.stats.get("bytes")
+        size = self.stats.bytes
         content = [
             ["File Place", self.place],
             ["File Size", humanize.naturalsize(size) if size else "(file not found)"],
-            ["Total Time", f'{self.stats.get("time")} Seconds'],
-            ["Rows Checked", self.stats.get("rows")],
+            ["Total Time", f"{self.stats.time} Seconds"],
+            ["Rows Checked", self.stats.rows],
         ]
         if error_list:
             content.append(["Total Errors", sum(error_list.values())])
@@ -108,7 +109,7 @@ class ReportTask(Metadata):
 
     metadata_type = "report-task"
     metadata_Error = ReportTaskError
-    metadata_Types = dict(errors=Error)
+    metadata_Types = dict(stats=Stats, errors=Error)
     metadata_profile = {
         "type": "object",
         "required": [

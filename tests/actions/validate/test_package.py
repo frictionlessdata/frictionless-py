@@ -82,10 +82,10 @@ def test_validate_package_invalid_descriptor_path():
 @pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
-    assert report.stats["errors"] == 1
-    error = report.stats["errors"][0]
-    assert error["type"] == "schema-error"
-    assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
+    assert report.stats.errors == 1
+    error = report.errors[0]
+    assert error.type == "schema-error"
+    assert error.note.count("[Errno 2]") and error.note.count("'bad'")
 
 
 @pytest.mark.xfail(reason="Decide on behaviour")
@@ -490,7 +490,7 @@ def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
         report = validate("data/issue-494.package.json")
         assert report.valid
-        assert report.stats["tasks"] == 1
+        assert report.stats.tasks == 1
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
@@ -512,7 +512,7 @@ def test_validate_package_using_detector_schema_sync_issue_847():
 
 def test_validate_package_with_diacritic_symbol_issue_905():
     report = validate("data/issue-905/datapackage.json")
-    assert report.stats["tasks"] == 3
+    assert report.stats.tasks == 3
 
 
 @pytest.mark.xfail(reason="Decide on behaviour")

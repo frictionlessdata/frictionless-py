@@ -2,6 +2,7 @@ from __future__ import annotations
 import attrs
 from tabulate import tabulate
 from typing import TYPE_CHECKING, List, Optional
+from ..stats import Stats
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
@@ -31,7 +32,7 @@ class Report(Metadata):
     valid: bool
     """# TODO: add docs"""
 
-    stats: dict
+    stats: Stats
     """# TODO: add docs"""
 
     warnings: List[str] = attrs.field(factory=list)
@@ -97,8 +98,8 @@ class Report(Metadata):
         tasks = tasks.copy()
         errors = errors.copy()
         warnings = warnings.copy()
-        error_count = len(errors) + sum(task.stats["errors"] for task in tasks)
-        stats = {"time": time, "tasks": len(tasks), "errors": error_count}
+        error_count = len(errors) + sum(task.stats.errors or 0 for task in tasks)
+        stats = Stats(time=time, tasks=len(tasks), errors=error_count)
         return Report(
             valid=not error_count,
             stats=stats,
@@ -120,10 +121,13 @@ class Report(Metadata):
         scope = scope.copy()
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = dict(time=time, errors=len(errors))
+        task_stats = Stats(time=time, errors=len(errors))
         if resource.has_stats:
-            task_stats.update(resource.stats.to_descriptor())
-        report_stats = {"time": time, "tasks": 1, "errors": len(errors)}
+            task_stats.hash = resource.stats.hash
+            task_stats.bytes = resource.stats.bytes
+            task_stats.fields = resource.stats.fields
+            task_stats.rows = resource.stats.rows
+        report_stats = Stats(time=time, tasks=1, errors=len(errors))
         return Report(
             valid=not errors,
             stats=report_stats,
@@ -217,7 +221,7 @@ class Report(Metadata):
 
     metadata_type = "report"
     metadata_Error = ReportError
-    metadata_Types = dict(tasks=ReportTask)
+    metadata_Types = dict(stats=Stats, tasks=ReportTask)
     metadata_profile = {
         "type": "object",
         "required": ["valid", "stats", "warnings", "errors", "tasks"],
