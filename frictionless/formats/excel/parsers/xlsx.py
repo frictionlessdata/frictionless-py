@@ -123,12 +123,12 @@ class XlsxParser(Parser):
         # https://github.com/frictionlessdata/frictionless-py/issues/438
         if self.resource.scheme == "file":
             stat = os.stat(self.resource.normpath)
-            self.resource.stats["bytes"] = stat.st_size
+            self.resource.stats.bytes = stat.st_size
             hasher = hashlib.new(settings.HASHING_ALGORITHM)
             with open(self.resource.normpath, "rb") as file:
                 for chunk in iter(lambda: file.read(4096), b""):
                     hasher.update(chunk)
-                self.resource.stats["hash"] = hasher.hexdigest()
+                self.resource.stats.hash = hasher.hexdigest()
 
     # Write
 

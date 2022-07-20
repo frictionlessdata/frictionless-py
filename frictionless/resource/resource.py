@@ -15,6 +15,7 @@ from ..metadata import Metadata
 from ..pipeline import Pipeline
 from ..schema import Schema
 from ..system import system
+from ..stats import Stats
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -80,7 +81,7 @@ class Resource(Metadata):
         schema: Optional[Union[Schema, str]] = None,
         checklist: Optional[Union[Checklist, str]] = None,
         pipeline: Optional[Union[Pipeline, str]] = None,
-        stats: dict = {},
+        stats: Optional[Stats] = None,
         # Software
         basepath: Optional[str] = None,
         onerror: Optional[IOnerror] = None,
@@ -108,7 +109,6 @@ class Resource(Metadata):
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
-        self.stats = stats.copy()
         self.package = package
 
         # Store dereferenced state
@@ -117,6 +117,7 @@ class Resource(Metadata):
         self.__schema = schema
         self.__checklist = checklist
         self.__pipeline = pipeline
+        self.__stats = stats
 
         # Store inherited state
         self.__basepath = basepath
@@ -279,12 +280,6 @@ class Resource(Metadata):
     It defaults to the first file in the archive (if the source is an archive).
     """
 
-    stats: dict
-    """
-    Stats dictionary.
-    A dict with the following possible properties: hash, bytes, fields, rows.
-    """
-
     package: Optional[Package]
     """
     Parental to this resource package.
@@ -364,6 +359,24 @@ class Resource(Metadata):
     @pipeline.setter
     def pipeline(self, value: Optional[Union[Pipeline, str]]):
         self.__pipeline = value
+
+    @property
+    def stats(self) -> Stats:
+        """
+        Stats object.
+        An object with the following possible properties: hash, bytes, fields, rows.
+        """
+        if self.__stats is None:
+            raise FrictionlessException("stats is not set or inferred")
+        return self.__stats
+
+    @stats.setter
+    def stats(self, value: Optional[Stats]):
+        self.__stats = value
+
+    @property
+    def has_stats(self) -> bool:
+        return self.__stats is not None
 
     @property
     def basepath(self) -> str:
@@ -628,9 +641,7 @@ class Resource(Metadata):
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
-                # TODO: rework in v6
-                self.stats = {}
-                self.metadata_assigned.remove("stats")
+                self.stats = None
                 return
             stream = self.__row_stream or self.byte_stream
             helpers.pass_through(stream)
@@ -640,9 +651,10 @@ class Resource(Metadata):
     def open(self, *, as_file: bool = False):
         """Open the resource as "io.open" does"""
 
-        # Prepare
+        # General
         self.close()
         self.__prepare_file()
+        self.__prepare_stats()
 
         # Open
         try:
@@ -705,6 +717,11 @@ class Resource(Metadata):
         if not self.metadata_valid:
             raise FrictionlessException(self.metadata_errors[0])
 
+    def __prepare_stats(self):
+
+        # Initiate
+        self.stats = Stats()
+
     def __prepare_loader(self):
 
         # Create/open
@@ -736,7 +753,7 @@ class Resource(Metadata):
     def __prepare_dialect(self):
 
         # Detect
-        self.__dialect = self.detector.detect_dialect(
+        self.dialect = self.detector.detect_dialect(
             self.sample,
             dialect=self.dialect if self.has_dialect else None,
         )
@@ -759,7 +776,7 @@ class Resource(Metadata):
     def __prepare_schema(self):
 
         # Detect
-        self.__schema = self.detector.detect_schema(
+        self.schema = self.detector.detect_schema(
             self.fragment,
             labels=self.labels,
             schema=self.schema if self.has_schema else None,
@@ -767,9 +784,11 @@ class Resource(Metadata):
         )
 
         # Validate
-        self.metadata_assigned.add("schema")
         if not self.schema.metadata_valid:
             raise FrictionlessException(self.schema.metadata_errors[0])
+
+        # Update stats
+        self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
 
@@ -871,9 +890,9 @@ class Resource(Metadata):
 
         # Create row stream
         def row_stream():
-            row_count = 0
+            self.stats.rows = 0
             for row_number, cells in enumerated_content_stream:
-                row_count += 1
+                self.stats.rows += 1
 
                 # Create row
                 row = Row(
@@ -943,10 +962,6 @@ class Resource(Metadata):
 
                 # Yield row
                 yield row
-
-            # Update stats
-            self.stats["fields"] = len(self.schema.fields)
-            self.stats["rows"] = row_count
 
         # Crreate row stream
         self.__row_stream = row_stream()
@@ -1128,6 +1143,7 @@ class Resource(Metadata):
         schema=Schema,
         checklist=Checklist,
         pipeline=Pipeline,
+        stats=Stats,
     )
     metadata_profile = {
         "type": "object",
@@ -1312,6 +1328,10 @@ class Resource(Metadata):
         # Pipeline
         if self.pipeline:
             yield from self.pipeline.metadata_errors
+
+        # Stats
+        if self.has_stats:
+            yield from self.stats.metadata_errors
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:

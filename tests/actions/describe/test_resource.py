@@ -177,10 +177,10 @@ def test_describe_resource_compression_gzip_issue_606():
     assert isinstance(resource, Resource)
     assert resource.name == "table"
     assert (
-        resource.stats["hash"]
+        resource.stats.hash
         == "574bb747a97cf4352fb69398a8ed58e12143f6537c9eb19e85d289443e55b084"
     )
-    assert resource.stats["bytes"] == 61
+    assert resource.stats.bytes == 61
 
 
 @pytest.mark.xfail(reason="Decide on behaviour")

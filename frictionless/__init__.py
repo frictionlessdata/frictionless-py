@@ -15,5 +15,6 @@ from .report import Report, ReportTask
 from .resource import Resource, Loader, Parser
 from .schema import Schema, Field
 from .settings import VERSION as __version__
+from .stats import Stats
 from .system import system
 from .table import Header, Lookup, Row

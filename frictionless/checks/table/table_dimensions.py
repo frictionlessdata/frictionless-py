@@ -35,7 +35,7 @@ class table_dimensions(Check):
     # Validate
 
     def validate_start(self):
-        number_fields = len(self.resource.schema.fields)  # type: ignore
+        number_fields = len(self.resource.schema.fields)
 
         # Check if there is a different number of fields as required
         if self.num_fields and number_fields != self.num_fields:
@@ -59,7 +59,7 @@ class table_dimensions(Check):
             )
 
     def validate_end(self):
-        number_rows = self.resource.stats["rows"]
+        number_rows = self.resource.stats.rows or 0
 
         # Check if doesn't have the exact number of rows
         if self.num_rows and number_rows != self.num_rows:

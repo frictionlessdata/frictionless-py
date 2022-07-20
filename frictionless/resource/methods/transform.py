@@ -52,6 +52,7 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
             self.extrapaths = []
             self.innerpath = None
             self.dialect = None
+            self.stats = None
 
     return self
 

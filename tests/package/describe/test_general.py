@@ -109,11 +109,11 @@ def test_describe_package_basepath():
 def test_describe_package_hashing():
     package = Package.describe("data/chunk*.csv", stats=True)
     assert (
-        package.get_resource("chunk1").stats["hash"]
+        package.get_resource("chunk1").stats.hash
         == "3872c98bd72eb4a91ac666f7758cd83da904c61a35178ca1ce9e10d6b009cd21"
     )
     assert (
-        package.get_resource("chunk2").stats["hash"]
+        package.get_resource("chunk2").stats.hash
         == "556e92cdacfc46c2338ab0b88daf9d560c6760eac2d4cb6f7df589c108fc07ce"
     )
 

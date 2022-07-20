@@ -120,7 +120,9 @@ class Report(Metadata):
         scope = scope.copy()
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = helpers.copy_merge(resource.stats, time=time, errors=len(errors))
+        task_stats = dict(time=time, errors=len(errors))
+        if resource.has_stats:
+            task_stats.update(resource.stats.to_descriptor())
         report_stats = {"time": time, "tasks": 1, "errors": len(errors)}
         return Report(
             valid=not errors,

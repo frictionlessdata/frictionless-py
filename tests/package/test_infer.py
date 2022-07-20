@@ -92,7 +92,7 @@ def test_package_infer_empty_file():
     package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 1
-    assert package.resources[0].stats["bytes"] == 0
+    assert package.resources[0].stats.bytes == 0
 
 
 # Bugs

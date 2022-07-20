@@ -113,8 +113,8 @@ def test_resource_validate_detector_infer_names():
     resource = Resource("data/without-headers.csv", dialect=dialect, detector=detector)
     report = resource.validate()
     assert report.valid
-    assert resource.schema.fields[0].name == "id"  # type: ignore
-    assert resource.schema.fields[1].name == "name"  # type: ignore
-    assert resource.stats["rows"] == 3  # type: ignore
+    assert resource.schema.fields[0].name == "id"
+    assert resource.schema.fields[1].name == "name"
+    assert resource.stats.rows == 3
     assert resource.labels == []
     assert resource.header == ["id", "name"]

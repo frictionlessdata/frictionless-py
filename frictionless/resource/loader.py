@@ -338,6 +338,6 @@ class ByteStreamWithStatsHandling:
         # End of file
         if size == -1 or not chunk:
             if self.__hasher:
-                self.__resource.stats["hash"] = self.__hasher.hexdigest()
-            self.__resource.stats["bytes"] = self.__counter
+                self.__resource.stats.hash = self.__hasher.hexdigest()
+            self.__resource.stats.bytes = self.__counter
         return chunk

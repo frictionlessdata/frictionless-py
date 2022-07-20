@@ -44,7 +44,7 @@ class baseline(Check):
 
     def connect(self, resource):
         super().connect(resource)
-        self.__stats = resource.stats.copy()
+        self.__stats = resource.stats.to_descriptor() if resource.has_stats else {}
 
     # Validate
 
@@ -66,28 +66,28 @@ class baseline(Check):
 
         # Hash
         if hash:
-            if hash != self.resource.stats["hash"]:  # type: ignore
+            if hash != self.resource.stats.hash:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (hash, self.resource.stats["hash"])  # type: ignore
+                note = note % (hash, self.resource.stats.hash)  # type: ignore
                 yield errors.HashCountError(note=note)
 
         # Bytes
         if bytes:
-            if bytes != self.resource.stats["bytes"]:  # type: ignore
+            if bytes != self.resource.stats.bytes:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (bytes, self.resource.stats["bytes"])  # type: ignore
+                note = note % (bytes, self.resource.stats.bytes)  # type: ignore
                 yield errors.ByteCountError(note=note)
 
         # Fields
         if fields:
-            if fields != self.resource.stats["fields"]:  # type: ignore
+            if fields != self.resource.stats.fields:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (fields, self.resource.stats["fields"])  # type: ignore
+                note = note % (fields, self.resource.stats.fields)  # type: ignore
                 yield errors.FieldCountError(note=note)
 
         # Rows
         if rows:
-            if rows != self.resource.stats["rows"]:  # type: ignore
+            if rows != self.resource.stats.rows:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (rows, self.resource.stats["rows"])  # type: ignore
+                note = note % (rows, self.resource.stats.rows)  # type: ignore
                 yield errors.RowCountError(note=note)

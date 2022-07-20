@@ -101,7 +101,7 @@ def test_resource_source_non_tabular():
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
-            assert resource.stats == {
+            assert resource.stats.to_descriptor() == {
                 "hash": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
                 "bytes": 5,
             }
@@ -120,7 +120,7 @@ def test_resource_source_non_tabular_remote():
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
-            assert resource.stats == {
+            assert resource.stats.to_descriptor() == {
                 "hash": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
                 "bytes": 5,
             }
@@ -161,7 +161,7 @@ def test_resource_source_path():
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
     if not platform.type == "windows":
-        assert resource.stats == {
+        assert resource.stats.to_descriptor() == {
             "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
             "bytes": 30,
             "fields": 2,
@@ -255,7 +255,7 @@ def test_resource_source_data():
         assert resource.fragment == data[1:]
         assert resource.labels == ["id", "name"]
         assert resource.header == ["id", "name"]
-        assert resource.stats == {
+        assert resource.stats.to_descriptor() == {
             "fields": 2,
             "rows": 2,
         }

@@ -27,7 +27,6 @@ def analyze(self: Resource, *, detailed=False) -> dict:
 
     # Create state
     timer = helpers.Timer()
-    self.infer()
 
     # Row stats
     analysis_report = {}
@@ -39,23 +38,23 @@ def analyze(self: Resource, *, detailed=False) -> dict:
     # Iterate rows
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
-    for row in self:
-        null_columns = 0
-        for field_name in row:
-            field = self.schema.get_field(field_name)
-            cell = field.read_cell(row.get(field_name))[0]
-            if field.name not in columns_data:
-                columns_data[field.name] = []
-            if cell is None:
-                if field.type in numeric:
-                    cell = nan
-                null_columns += 1
-            if isinstance(cell, Decimal):
-                cell = float(cell)
-            columns_data[field.name].append(cell)
-
-        if null_columns > 0:
-            analysis_report["rowsWithNullValues"] += 1
+    with self:
+        for row in self.row_stream:
+            null_columns = 0
+            for field_name in row:
+                field = self.schema.get_field(field_name)
+                cell = field.read_cell(row.get(field_name))[0]
+                if field.name not in columns_data:
+                    columns_data[field.name] = []
+                if cell is None:
+                    if field.type in numeric:
+                        cell = nan
+                    null_columns += 1
+                if isinstance(cell, Decimal):
+                    cell = float(cell)
+                columns_data[field.name].append(cell)
+            if null_columns > 0:
+                analysis_report["rowsWithNullValues"] += 1
 
     # Field/Column Stats
     if columns_data and detailed:
@@ -89,9 +88,7 @@ def analyze(self: Resource, *, detailed=False) -> dict:
                     _statistics(rows_without_nan_values)  # type: ignore
                 )
                 analysis_report["fieldStats"][field.name]["outliers"] = []
-                analysis_report["fieldStats"][field.name]["missingValues"] = self.stats[
-                    "rows"
-                ] - len(rows_without_nan_values)
+                analysis_report["fieldStats"][field.name]["missingValues"] = self.stats.rows - len(rows_without_nan_values)  # type: ignore
 
                 # calculate correlation between variables(columns/fields)
                 for field_y in self.schema.fields:
@@ -129,16 +126,12 @@ def analyze(self: Resource, *, detailed=False) -> dict:
                                 cell
                             )
 
-    analysis_report["notNullRows"] = (
-        self.stats["rows"] - analysis_report["rowsWithNullValues"]
-    )
+    analysis_report["notNullRows"] = self.stats.rows - analysis_report["rowsWithNullValues"]  # type: ignore
     analysis_report["averageRecordSizeInBytes"] = 0
-    if self.stats["rows"]:
-        analysis_report["averageRecordSizeInBytes"] = (
-            self.stats["bytes"] / self.stats["rows"]
-        )
+    if self.stats.rows:
+        analysis_report["averageRecordSizeInBytes"] = self.stats.bytes / self.stats.rows  # type: ignore
     analysis_report["timeTaken"] = timer.time
-    return {**analysis_report, **self.stats}
+    return {**analysis_report, **self.stats.to_descriptor()}
 
 
 # TODO:This is a temporary function to use with statistics library as

@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Schema, Detector, Dialect, Checklist, Check
+from frictionless import Resource, Schema, Detector, Dialect, Checklist, Check, Stats
 from frictionless import validate, formats, errors, platform
 
 
@@ -572,14 +572,14 @@ def test_validate_schema_primary_key_error_composite():
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_hash():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", stats={"hash": hash})
+    report = validate("data/table.csv", stats=Stats(hash=hash))
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_hash_invalid():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", stats={"hash": "bad"})
+    report = validate("data/table.csv", stats=Stats(hash="bad"))
     assert report.flatten(["type", "note"]) == [
         [
             "hash-count",
@@ -590,13 +590,13 @@ def test_validate_stats_hash_invalid():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_bytes():
-    report = validate("data/table.csv", stats={"bytes": 30})
+    report = validate("data/table.csv", stats=Stats(bytes=30))
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_bytes_invalid():
-    report = validate("data/table.csv", stats={"bytes": 40})
+    report = validate("data/table.csv", stats=Stats(bytes=40))
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
     assert report.flatten(["type", "note"]) == [
@@ -606,13 +606,13 @@ def test_validate_stats_bytes_invalid():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_rows():
-    report = validate("data/table.csv", stats={"rows": 2})
+    report = validate("data/table.csv", stats=Stats(rows=2))
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_rows_invalid():
-    report = validate("data/table.csv", stats={"rows": 3})
+    report = validate("data/table.csv", stats=Stats(rows=3))
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
     assert report.flatten(["type", "note"]) == [

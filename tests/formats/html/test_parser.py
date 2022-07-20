@@ -59,4 +59,4 @@ def test_html_parser_newline_in_cell_construction_file_issue_865(tmpdir):
     source = Resource("data/construction.html")
     target = source.write(str(tmpdir.join("table.csv")))
     target.infer(stats=True)
-    assert target.stats["rows"] == 226
+    assert target.stats.rows == 226

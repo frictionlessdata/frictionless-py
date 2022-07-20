@@ -3,6 +3,7 @@ import sys
 import typer
 from typing import List
 from tabulate import tabulate
+from ..stats import Stats
 from ..actions import validate
 from ..detector import Detector
 from ..checklist import Checklist, Check
@@ -134,7 +135,7 @@ def program_validate(
 
     # Prepare stats
     def prepare_stats():
-        return helpers.cleaned_dict(
+        return Stats.from_options(
             hash=stats_hash,
             bytes=stats_bytes,
             fields=stats_fields,
