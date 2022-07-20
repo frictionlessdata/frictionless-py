@@ -9,7 +9,6 @@ from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -60,16 +59,6 @@ class Field(Metadata):
     """TODO: add docs"""
 
     # Props
-
-    @property
-    def description_html(self):
-        """TODO: add docs"""
-        return helpers.md_to_html(self.description)
-
-    @property
-    def description_text(self):
-        """TODO: add docs"""
-        return helpers.html_to_text(self.description_html)
 
     @property
     def required(self):

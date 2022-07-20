@@ -6,18 +6,16 @@ import csv
 import ast
 import json
 import glob
-import marko
 import shutil
 import tempfile
 import datetime
 import textwrap
 import stringcase
 from copy import deepcopy
-from html.parser import HTMLParser
+from typing import Union, Any
 from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
-from typing import Optional, Union, Any
 from urllib.parse import urlparse, parse_qs
 from . import settings
 
@@ -333,32 +331,6 @@ def parse_resource_hash(hash):
     if len(parts) == 1:
         return (settings.DEFAULT_HASHING, parts[0])
     return parts
-
-
-def md_to_html(string: Optional[str]) -> str:
-    if not string:
-        return ""
-    try:
-        html = marko.convert(string)
-        html = html.replace("\n", "")
-        return html
-    except Exception:
-        return ""
-
-
-def html_to_text(string: Optional[str]) -> str:
-    class HTMLFilter(HTMLParser):
-        text = ""
-
-        def handle_data(self, data):
-            self.text += data
-            self.text += " "
-
-    if not string:
-        return ""
-    parser = HTMLFilter()
-    parser.feed(string)
-    return parser.text.strip()
 
 
 class Timer:

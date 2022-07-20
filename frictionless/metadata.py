@@ -78,13 +78,28 @@ class Metadata(metaclass=Metaclass):
     @property
     def description_html(self) -> str:
         """Description in HTML"""
-        description = getattr(self, "description", None)
-        return helpers.md_to_html(description)
+        description = getattr(self, "description", "")
+        try:
+            html = platform.marko.convert(description)
+            html = html.replace("\n", "")
+            return html
+        except Exception:
+            return ""
 
     @property
     def description_text(self) -> str:
         """Description in Text"""
-        return helpers.html_to_text(self.description_html)
+
+        class HTMLFilter(platform.html_parser.HTMLParser):
+            text = ""
+
+            def handle_data(self, data):
+                self.text += data
+                self.text += " "
+
+        parser = HTMLFilter()
+        parser.feed(self.description_html)
+        return parser.text.strip()
 
     # Defined
 

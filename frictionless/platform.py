@@ -35,6 +35,12 @@ class Platform:
         return gzip
 
     @cached_property
+    def html_parser(self):
+        import html.parser
+
+        return html.parser
+
+    @cached_property
     def isodate(self):
         import isodate
 
@@ -57,6 +63,12 @@ class Platform:
         import jsonschema.validators
 
         return jsonschema.validators
+
+    @cached_property
+    def marko(self):
+        import marko
+
+        return marko
 
     @cached_property
     def petl(self):
