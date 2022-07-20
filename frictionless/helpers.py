@@ -4,14 +4,12 @@ import re
 import os
 import csv
 import ast
-import sys
 import json
 import glob
 import marko
 import shutil
 import tempfile
 import datetime
-import platform
 import textwrap
 import stringcase
 from copy import deepcopy
@@ -274,25 +272,6 @@ def is_descriptor_source(source):
 
 def is_type(object, name):
     return type(object).__name__ == name
-
-
-# TODO: move to system (public API)?
-def is_platform(name):
-    current = platform.system()
-    if name == "linux":
-        return current == "Linux"
-    elif name == "macos":
-        return current == "Darwin"
-    elif name == "windows":
-        return current == "Windows"
-    return False
-
-
-# TODO: move to system (public API)?
-def is_python(version):
-    current = sys.version_info
-    minimal = tuple(map(int, version.split(".")))
-    return current >= minimal
 
 
 def parse_json_string(string):
