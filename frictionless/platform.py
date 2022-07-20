@@ -47,6 +47,12 @@ class Platform:
         return jsonschema
 
     @cached_property
+    def jsonschema_validators(self):
+        import jsonschema.validators
+
+        return jsonschema.validators
+
+    @cached_property
     def petl(self):
         import petl
 

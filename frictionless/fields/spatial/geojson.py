@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import attrs
-from jsonschema.validators import validator_for
+from ...platform import platform
 from ...schema import Field
 from ... import settings
 
@@ -17,7 +17,15 @@ class GeojsonField(Field):
 
     # Read
 
+    # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
+        validator_for = platform.jsonschema_validators.validator_for
+        validators = {
+            "default": validator_for(settings.GEOJSON_PROFILE)(settings.GEOJSON_PROFILE),
+            "topojson": validator_for(settings.TOPOJSON_PROFILE)(
+                settings.TOPOJSON_PROFILE
+            ),
+        }
 
         # Create reader
         def value_reader(cell):
@@ -57,12 +65,3 @@ class GeojsonField(Field):
             },
         }
     }
-
-
-# Internal
-
-
-validators = {
-    "default": validator_for(settings.GEOJSON_PROFILE)(settings.GEOJSON_PROFILE),
-    "topojson": validator_for(settings.TOPOJSON_PROFILE)(settings.TOPOJSON_PROFILE),
-}
