@@ -75,7 +75,7 @@ def test_s3_loader_big_file(bucket_name):
     with Resource("s3://%s/table1.csv" % bucket_name, dialect=dialect) as resource:
         assert resource.read_rows()
         assert resource.stats == {
-            "hash": "78ea269458be04a0e02816c56fc684ef",
+            "hash": "aced987247a03e01acde64aa6b40980350b785e3aedc417ff2e09bbeacbfbf2b",
             "bytes": 1000000,
             "fields": 10,
             "rows": 10000,
