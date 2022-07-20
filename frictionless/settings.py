@@ -1,8 +1,6 @@
 from __future__ import annotations
 import os
 import json
-import gzip
-import zipfile
 
 
 # Helpers
@@ -98,13 +96,3 @@ ENTITY_TRAITS = {
     "inquiry": ["tasks"],
     "detector": ["bufferSize", "sampleSize"],
 }
-
-# Backports
-
-# TODO: drop for v5
-# It can be removed after dropping support for Python 3.6 and Python 3.7
-COMPRESSION_EXCEPTIONS = (
-    (zipfile.BadZipFile, gzip.BadGzipFile)
-    if hasattr(gzip, "BadGzipFile")
-    else (zipfile.BadZipFile)
-)

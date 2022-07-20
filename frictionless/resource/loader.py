@@ -143,7 +143,7 @@ class Loader:
         except (LookupError, UnicodeDecodeError) as exception:
             error = errors.EncodingError(note=str(exception))
             raise FrictionlessException(error) from exception
-        except settings.COMPRESSION_EXCEPTIONS as exception:
+        except (zipfile.BadZipFile, gzip.BadGzipFile) as exception:
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except IOError as exception:
