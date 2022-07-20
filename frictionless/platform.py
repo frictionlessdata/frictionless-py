@@ -41,6 +41,18 @@ class Platform:
         return petl
 
     @cached_property
+    def rfc3986(self):
+        import rfc3986
+
+        return rfc3986
+
+    @cached_property
+    def validators(self):
+        import validators
+
+        return validators
+
+    @cached_property
     def yaml(self):
         import yaml
 
