@@ -1,7 +1,7 @@
 from __future__ import annotations
 import io
-import requests.utils
 from .control import RemoteControl
+from ...platform import platform
 from ...resource import Loader
 
 
@@ -13,7 +13,7 @@ class RemoteLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        path = requests.utils.requote_uri(self.resource.normpath)
+        path = platform.requests_utils.requote_uri(self.resource.normpath)
         control = RemoteControl.from_dialect(self.resource.dialect)
         session = control.http_session
         timeout = control.http_timeout

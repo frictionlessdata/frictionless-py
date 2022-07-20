@@ -65,6 +65,18 @@ class Platform:
         return petl
 
     @cached_property
+    def requests(self):
+        import requests
+
+        return requests
+
+    @cached_property
+    def requests_utils(self):
+        import requests.utils
+
+        return requests.utils
+
+    @cached_property
     def rfc3986(self):
         import rfc3986
 
