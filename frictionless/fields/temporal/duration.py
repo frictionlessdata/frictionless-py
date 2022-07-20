@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
-import isodate
 import datetime
 from ...schema import Field
+from ...platform import platform
 
 
 @attrs.define(kw_only=True)
@@ -20,11 +20,11 @@ class DurationField(Field):
 
         # Create reader
         def value_reader(cell):
-            if not isinstance(cell, (isodate.Duration, datetime.timedelta)):
+            if not isinstance(cell, (platform.isodate.Duration, datetime.timedelta)):
                 if not isinstance(cell, str):
                     return None
                 try:
-                    cell = isodate.parse_duration(cell)
+                    cell = platform.isodate.parse_duration(cell)
                 except Exception:
                     return None
             return cell
@@ -37,6 +37,6 @@ class DurationField(Field):
 
         # Create writer
         def value_writer(cell):
-            return isodate.duration_isoformat(cell)
+            return platform.isodate.duration_isoformat(cell)
 
         return value_writer

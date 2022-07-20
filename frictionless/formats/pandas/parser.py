@@ -1,5 +1,4 @@
 from __future__ import annotations
-import isodate
 import datetime
 import decimal
 from ...platform import platform
@@ -85,7 +84,7 @@ class PandasParser(Parser):
                 return "datetime"
             elif isinstance(sample, datetime.date):
                 return "date"
-            elif isinstance(sample, isodate.Duration):
+            elif isinstance(sample, platform.isodate.Duration):
                 return "duration"
             elif isinstance(sample, dict):
                 return "object"

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
-from dateutil import parser
 from datetime import datetime
+from ...platform import platform
 from ...schema import Field
 from ... import settings
 
@@ -19,6 +19,7 @@ class DatetimeField(Field):
 
     # Read
 
+    # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
 
         # Create reader
@@ -31,9 +32,9 @@ class DatetimeField(Field):
                         # Guard against shorter formats supported by dateutil
                         assert cell[16] == ":"
                         assert len(cell) >= 19
-                        cell = parser.isoparse(cell)
+                        cell = platform.dateutil_parser.isoparse(cell)
                     elif self.format == "any":
-                        cell = parser.parse(cell)
+                        cell = platform.dateutil_parser.parse(cell)
                     else:
                         cell = datetime.strptime(cell, self.format)
                 except Exception:

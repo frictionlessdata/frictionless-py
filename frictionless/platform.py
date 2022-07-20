@@ -23,6 +23,18 @@ class Platform:
         return chardet
 
     @cached_property
+    def dateutil_parser(self):
+        import dateutil.parser
+
+        return dateutil.parser
+
+    @cached_property
+    def isodate(self):
+        import isodate
+
+        return isodate
+
+    @cached_property
     def jinja2(self):
         import jinja2
 
