@@ -197,10 +197,7 @@ def test_validate_scheme():
 def test_validate_scheme_invalid():
     report = validate("bad://data/table.csv")
     assert report.flatten(["type", "note"]) == [
-        [
-            "scheme-error",
-            'scheme "bad" is not supported. Try installing "frictionless-bad"',
-        ],
+        ["scheme-error", 'scheme "bad" is not supported'],
     ]
 
 

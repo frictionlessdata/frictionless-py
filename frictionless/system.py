@@ -134,7 +134,7 @@ class System:
         for Class in vars(import_module("frictionless.checks")).values():
             if getattr(Class, "type", None) == type:
                 return Class.from_descriptor(descriptor)
-        note = f'check "{type}" is not supported. Try installing "frictionless-{type}"'
+        note = f'check "{type}" is not supported'
         raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, descriptor: dict) -> Control:
@@ -170,7 +170,7 @@ class System:
         for Class in vars(import_module("frictionless.errors")).values():
             if getattr(Class, "type", None) == type:
                 return Class(descriptor)
-        note = f'error "{type}" is not supported. Try installing "frictionless-{type}"'
+        note = f'error "{type}" is not supported'
         raise FrictionlessException(note)
 
     def create_field(self, descriptor: dict) -> Field:
@@ -192,7 +192,7 @@ class System:
         for Class in vars(import_module("frictionless.fields")).values():
             if getattr(Class, "type", None) == type:
                 return Class.from_descriptor(descriptor)
-        note = f'field "{type}" is not supported. Try installing "frictionless-{type}"'
+        note = f'field "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
 
     def create_field_candidates(self) -> List[dict]:
@@ -221,7 +221,7 @@ class System:
             loader = func(resource)
             if loader is not None:
                 return loader
-        note = f'scheme "{name}" is not supported. Try installing "frictionless-{name}"'
+        note = f'scheme "{name}" is not supported'
         raise FrictionlessException(errors.SchemeError(note=note))
 
     def create_manager(
@@ -259,7 +259,7 @@ class System:
             parser = func(resource)
             if parser is not None:
                 return parser
-        note = f'format "{name}" is not supported. Try installing "frictionless-{name}"'
+        note = f'format "{name}" is not supported'
         raise FrictionlessException(errors.FormatError(note=note))
 
     def create_step(self, descriptor: dict) -> Step:
@@ -279,7 +279,7 @@ class System:
         for Class in vars(import_module("frictionless.steps")).values():
             if getattr(Class, "type", None) == type:
                 return Class.from_descriptor(descriptor)
-        note = f'step "{type}" is not supported. Try installing "frictionless-{type}"'
+        note = f'step "{type}" is not supported'
         raise FrictionlessException(errors.StepError(note=note))
 
     def create_storage(self, name: str, source: Any, **options) -> Storage:
@@ -296,7 +296,7 @@ class System:
             storage = func(name, source, **options)
             if storage is not None:
                 return storage
-        note = f'storage "{name}" is not supported. Try installing "frictionless-{name}"'
+        note = f'storage "{name}" is not supported'
         raise FrictionlessException(note)
 
     def detect_resource(self, resource: Resource) -> None:

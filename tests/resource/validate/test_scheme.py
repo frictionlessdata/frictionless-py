@@ -14,8 +14,5 @@ def test_resource_validate_scheme_invalid():
     resource = Resource("bad://data/table.csv")
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        [
-            "scheme-error",
-            'scheme "bad" is not supported. Try installing "frictionless-bad"',
-        ],
+        ["scheme-error", 'scheme "bad" is not supported'],
     ]
