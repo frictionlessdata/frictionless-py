@@ -17,6 +17,12 @@ class Platform:
     # Core
 
     @cached_property
+    def chardet(self):
+        import chardet
+
+        return chardet
+
+    @cached_property
     def jinja2(self):
         import jinja2
 

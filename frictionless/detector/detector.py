@@ -2,13 +2,13 @@ from __future__ import annotations
 import os
 import attrs
 import codecs
-import chardet
 from pathlib import Path
 from copy import copy, deepcopy
 from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List, Any
-from ..metadata import Metadata
 from ..schema import Schema, Field
+from ..platform import platform
+from ..metadata import Metadata
 from ..fields import AnyField
 from ..dialect import Dialect
 from .. import settings
@@ -214,7 +214,7 @@ class Detector(Metadata):
 
         # Detect encoding
         if not encoding:
-            detector = chardet.UniversalDetector()
+            detector = platform.chardet.UniversalDetector()
             for line in buffer.splitlines():
                 detector.feed(line)
             detector.close()
