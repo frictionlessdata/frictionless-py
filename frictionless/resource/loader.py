@@ -1,14 +1,13 @@
 from __future__ import annotations
 import io
 import os
-import gzip
 import shutil
 import atexit
 import hashlib
-import zipfile
 import tempfile
 from typing import TYPE_CHECKING, Optional, Any
 from ..exception import FrictionlessException
+from ..platform import platform
 from .. import settings
 from .. import errors
 
@@ -143,7 +142,7 @@ class Loader:
         except (LookupError, UnicodeDecodeError) as exception:
             error = errors.EncodingError(note=str(exception))
             raise FrictionlessException(error) from exception
-        except (zipfile.BadZipFile, gzip.BadGzipFile) as exception:
+        except (platform.zipfile.BadZipFile, platform.gzip.BadGzipFile) as exception:
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except IOError as exception:
@@ -199,7 +198,7 @@ class Loader:
                     bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
                 byte_stream.seek(0)
             # Unzip
-            with zipfile.ZipFile(byte_stream) as archive:
+            with platform.zipfile.ZipFile(byte_stream) as archive:
                 name = self.resource.innerpath or archive.namelist()[0]
                 if not name:
                     error = errors.Error(note="the arhive is empty")
@@ -221,7 +220,7 @@ class Loader:
                 while bytes:
                     bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
                 byte_stream.seek(0)
-            byte_stream = gzip.open(byte_stream)  # type: ignore
+            byte_stream = platform.gzip.open(byte_stream)  # type: ignore
             return byte_stream
 
         # No compression

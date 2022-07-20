@@ -29,6 +29,12 @@ class Platform:
         return dateutil.parser
 
     @cached_property
+    def gzip(self):
+        import gzip
+
+        return gzip
+
+    @cached_property
     def isodate(self):
         import isodate
 
@@ -75,6 +81,12 @@ class Platform:
         import yaml
 
         return yaml
+
+    @cached_property
+    def zipfile(self):
+        import zipfile
+
+        return zipfile
 
     # Extras
 

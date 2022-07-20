@@ -1,9 +1,8 @@
 from __future__ import annotations
-import gzip
-import zipfile
 from itertools import chain
 from typing import TYPE_CHECKING, ClassVar, Optional, List
 from ..exception import FrictionlessException
+from ..platform import platform
 from ..system import system
 from .. import errors
 
@@ -194,7 +193,7 @@ class CellStreamWithErrorHandling:
             raise
         except FrictionlessException:
             raise
-        except (zipfile.BadZipFile, gzip.BadGzipFile) as exception:
+        except (platform.zipfile.BadZipFile, platform.gzip.BadGzipFile) as exception:
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except UnicodeDecodeError as exception:

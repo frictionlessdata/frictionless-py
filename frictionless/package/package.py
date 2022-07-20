@@ -3,7 +3,6 @@ import os
 import json
 import atexit
 import shutil
-import zipfile
 import tempfile
 from pathlib import Path
 from collections.abc import Mapping
@@ -472,7 +471,7 @@ class Package(Metadata):
         """
         return Package(path, **options)
 
-    def to_zip(self, path, *, encoder_class=None, compression=zipfile.ZIP_DEFLATED):
+    def to_zip(self, path, *, encoder_class=None, compression=None):
         """Save package to a zip
 
         Parameters:
@@ -480,7 +479,7 @@ class Package(Metadata):
             encoder_class (object): json encoder class
             compression (int): the ZIP compression method to use when
                 writing the archive. Possible values are the ones supported
-                by Python's `zipfile` module.
+                by Python's `zipfile` module. Defaults: zipfile.ZIP_DEFLATED
 
         Raises:
             FrictionlessException: on any error
@@ -491,7 +490,8 @@ class Package(Metadata):
 
         # Save
         try:
-            with zipfile.ZipFile(path, "w", compression=compression) as archive:
+            compression = compression or platform.zipfile.ZIP_DEFLATED
+            with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
@@ -765,7 +765,7 @@ def unzip_package(path: str, *, innerpath: Optional[str] = None) -> str:
             byte_stream = tempfile.TemporaryFile()
             shutil.copyfileobj(resource.byte_stream, byte_stream)
             byte_stream.seek(0)
-        with zipfile.ZipFile(byte_stream, "r") as zip:
+        with platform.zipfile.ZipFile(byte_stream, "r") as zip:
             tempdir = tempfile.mkdtemp()
             zip.extractall(tempdir)
             atexit.register(shutil.rmtree, tempdir)
