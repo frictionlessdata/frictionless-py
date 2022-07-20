@@ -17,10 +17,3 @@ from .schema import Schema, Field
 from .settings import VERSION as __version__
 from .system import system
 from .table import Header, Lookup, Row
-from . import checks
-from . import errors
-from . import fields
-from . import formats
-from . import portals
-from . import schemes
-from . import steps
