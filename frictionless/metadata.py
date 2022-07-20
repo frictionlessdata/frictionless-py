@@ -3,17 +3,15 @@ import os
 import io
 import re
 import json
-import yaml
 import pprint
-import jsonschema
 import stringcase
 from pathlib import Path
 from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING
 from typing import ClassVar, Iterator, Optional, Union, List, Dict, Any, Set
-from .platform import platform
 from .exception import FrictionlessException
+from .platform import platform
 from . import helpers
 
 if TYPE_CHECKING:
@@ -172,9 +170,14 @@ class Metadata(metaclass=Metaclass):
         Parameters:
             path (str): target path
         """
+
+        class IndentDumper(platform.yaml.SafeDumper):
+            def increase_indent(self, flow=False, indentless=False):
+                return super().increase_indent(flow, False)
+
         frictionless = import_module("frictionless")
         Error = self.metadata_Error or frictionless.errors.MetadataError
-        text = yaml.dump(
+        text = platform.yaml.dump(
             self.to_dict(),
             sort_keys=False,
             allow_unicode=True,
@@ -292,7 +295,7 @@ class Metadata(metaclass=Metaclass):
         if self.metadata_profile:
             frictionless = import_module("frictionless")
             Error = self.metadata_Error or frictionless.errors.MetadataError
-            validator_class = jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
+            validator_class = platform.jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
             validator = validator_class(self.metadata_profile)
             for error in validator.iter_errors(self.to_descriptor()):
                 # Withouth this resource with both path/data is invalid
@@ -327,7 +330,7 @@ class Metadata(metaclass=Metaclass):
                     with open(descriptor, encoding="utf-8") as file:
                         content = file.read()
                 if descriptor.endswith((".yaml", ".yml")):
-                    metadata = yaml.safe_load(io.StringIO(content))
+                    metadata = platform.yaml.safe_load(io.StringIO(content))
                 else:
                     metadata = json.loads(content)
                 assert isinstance(metadata, dict)
@@ -341,11 +344,6 @@ class Metadata(metaclass=Metaclass):
 
 
 # Internal
-
-
-class IndentDumper(yaml.SafeDumper):
-    def increase_indent(self, flow=False, indentless=False):
-        return super().increase_indent(flow, False)
 
 
 def render_markdown(path: str, data: dict) -> str:

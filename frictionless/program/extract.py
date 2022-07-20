@@ -2,7 +2,6 @@ from __future__ import annotations
 import sys
 import typer
 import json as pyjson
-import yaml as pyyaml
 from typing import List
 from ..platform import platform
 from ..detector import Detector
@@ -168,7 +167,7 @@ def program_extract(
 
     # Return YAML
     if yaml:
-        content = pyyaml.safe_dump(data, allow_unicode=True).strip()
+        content = platform.yaml.safe_dump(data, allow_unicode=True).strip()
         typer.secho(content)
         raise typer.Exit()
 

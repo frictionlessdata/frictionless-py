@@ -29,10 +29,22 @@ class Platform:
         return jinja2
 
     @cached_property
+    def jsonschema(self):
+        import jsonschema
+
+        return jsonschema
+
+    @cached_property
     def petl(self):
         import petl
 
         return petl
+
+    @cached_property
+    def yaml(self):
+        import yaml
+
+        return yaml
 
     # Extras
 
