@@ -13,7 +13,6 @@ def describe(
     cls: Type[Package],
     source: Any,
     *,
-    hashing: Optional[str] = None,
     dialect: Optional[Dialect] = None,
     stats: bool = False,
     **options,
@@ -32,9 +31,6 @@ def describe(
 
     # Create package
     package = cls.from_options(source, **options)
-    if hashing:
-        for resource in package.resources:
-            resource.hashing = hashing
     if dialect:
         for resource in package.resources:
             resource.dialect = dialect

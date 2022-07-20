@@ -31,6 +31,7 @@ def validate(
     """
 
     # Create state
+    partial = False
     timer = helpers.Timer()
     errors: List[Error] = []
     warnings: List[str] = []
@@ -47,6 +48,9 @@ def validate(
     if metadata_errors:
         errors = metadata_errors
         return Report.from_validation_task(self, time=timer.time, errors=errors)
+    if self.custom.get("hash"):
+        warning = f"hash is ignored; required algorithm: {settings.HASHING_ALGORITHM}"
+        warnings.append(warning)
 
     # Prepare resource
     try:
@@ -67,7 +71,11 @@ def validate(
                 if checklist.match(error):
                     errors.append(error)
 
-        # Validate rows
+        # Validate file
+        if not self.tabular:
+            helpers.pass_through(self.byte_stream)
+
+        # Validate table
         if self.tabular:
             row_count = 0
             while True:
@@ -93,6 +101,7 @@ def validate(
                     if row_count >= limit_rows:
                         warning = f"reached row limit: {limit_rows}"
                         warnings.append(warning)
+                        partial = True
                         break
 
                 # Limit errors
@@ -101,12 +110,11 @@ def validate(
                         errors = errors[:limit_errors]
                         warning = f"reached error limit: {limit_errors}"
                         warnings.append(warning)
+                        partial = True
                         break
 
         # Validate end
-        if not warnings:
-            if not self.tabular:
-                helpers.pass_through(self.byte_stream)
+        if not partial:
             for check in checks:
                 for error in check.validate_end():
                     if checklist.match(error):

@@ -17,7 +17,9 @@ def test_program_describe():
     actual = runner.invoke(program, "describe data/table.csv --stats")
     assert actual.exit_code == 0
     assert actual.stdout.count("metadata: data/table.csv")
-    assert actual.stdout.count("hash: 6c2c61dd9b0e9c6876139a449ed87933")
+    assert actual.stdout.count(
+        "hash: a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    )
 
 
 def test_program_describe_type_schema():

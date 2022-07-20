@@ -247,5 +247,8 @@ def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():
 def test_xlsx_parser_stats_no_bytes_and_hash_issue_938():
     resource = Resource("data/table.xlsx")
     resource.infer(stats=True)
-    assert resource.stats["hash"] == "dddeae0cad9b46e8d7a2d157774dcf5b"
+    assert (
+        resource.stats["hash"]
+        == "43a92d9620e900ef0b2f43fa3b8b5d123eb61716610940c8c498ce1e60a9c42a"
+    )
     assert resource.stats["bytes"] == 6230

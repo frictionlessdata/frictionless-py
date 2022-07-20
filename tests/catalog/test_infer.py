@@ -21,7 +21,6 @@ def test_catalog_infer():
                         "path": "data/infer/data.csv",
                         "scheme": "file",
                         "format": "csv",
-                        "hashing": "md5",
                         "mediatype": "text/csv",
                     },
                     {
@@ -30,7 +29,6 @@ def test_catalog_infer():
                         "path": "data/infer/data2.csv",
                         "scheme": "file",
                         "format": "csv",
-                        "hashing": "md5",
                         "mediatype": "text/csv",
                     },
                 ],

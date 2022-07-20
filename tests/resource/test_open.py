@@ -12,7 +12,6 @@ def test_resource_open():
         assert resource.normpath == "data/table.csv"
         assert resource.scheme == "file"
         assert resource.format == "csv"
-        assert resource.hashing == "md5"
         assert resource.encoding == "utf-8"
         assert resource.innerpath == None
         assert resource.compression == None

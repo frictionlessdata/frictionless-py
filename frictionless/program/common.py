@@ -33,11 +33,6 @@ format = Option(
     help="Specify format  [default: inferred]",
 )
 
-hashing = Option(
-    default=None,
-    help="Specify hashing algorithm  [default: inferred]",
-)
-
 encoding = Option(
     default=None,
     help="Specify encoding  [default: inferred]",
@@ -172,7 +167,7 @@ stats = Option(
 
 stats_hash = Option(
     default=None,
-    help="Expected hash based on hashing option",
+    help="Expected SHA-256 hash",
 )
 
 stats_bytes = Option(

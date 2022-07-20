@@ -124,16 +124,11 @@ class XlsxParser(Parser):
         if self.resource.scheme == "file":
             stat = os.stat(self.resource.normpath)
             self.resource.stats["bytes"] = stat.st_size
-            if self.resource.hashing:
-                try:
-                    hasher = hashlib.new(self.resource.hashing)
-                    with open(self.resource.normpath, "rb") as file:
-                        for chunk in iter(lambda: file.read(4096), b""):
-                            hasher.update(chunk)
-                        self.resource.stats["hash"] = hasher.hexdigest()
-                except Exception as exception:
-                    error = errors.HashingError(note=str(exception))
-                    raise FrictionlessException(error)
+            hasher = hashlib.new(settings.HASHING_ALGORITHM)
+            with open(self.resource.normpath, "rb") as file:
+                for chunk in iter(lambda: file.read(4096), b""):
+                    hasher.update(chunk)
+                self.resource.stats["hash"] = hasher.hexdigest()
 
     # Write
 

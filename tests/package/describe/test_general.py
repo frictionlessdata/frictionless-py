@@ -17,7 +17,6 @@ def test_describe_package():
                 "type": "table",
                 "scheme": "file",
                 "format": "csv",
-                "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
                 "schema": {
@@ -33,7 +32,6 @@ def test_describe_package():
                 "type": "table",
                 "scheme": "file",
                 "format": "csv",
-                "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
                 "schema": {
@@ -59,7 +57,6 @@ def test_describe_package_with_stats():
                 "type": "table",
                 "scheme": "file",
                 "format": "csv",
-                "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
                 "schema": {
@@ -69,7 +66,7 @@ def test_describe_package_with_stats():
                     ]
                 },
                 "stats": {
-                    "hash": "8fff9d97e5c0cb77b7c469ec37c8e766",
+                    "hash": "3872c98bd72eb4a91ac666f7758cd83da904c61a35178ca1ce9e10d6b009cd21",
                     "bytes": 18,
                     "fields": 2,
                     "rows": 1,
@@ -81,7 +78,6 @@ def test_describe_package_with_stats():
                 "type": "table",
                 "scheme": "file",
                 "format": "csv",
-                "hashing": "md5",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
                 "schema": {
@@ -91,7 +87,7 @@ def test_describe_package_with_stats():
                     ]
                 },
                 "stats": {
-                    "hash": "ebfa07d04a148a92a18078f78468694d",
+                    "hash": "556e92cdacfc46c2338ab0b88daf9d560c6760eac2d4cb6f7df589c108fc07ce",
                     "bytes": 20,
                     "fields": 2,
                     "rows": 1,
@@ -111,9 +107,7 @@ def test_describe_package_basepath():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package_hashing():
-    package = Package.describe("data/chunk*.csv", hashing="sha256", stats=True)
-    assert package.get_resource("chunk1").hashing == "sha256"
-    assert package.get_resource("chunk2").hashing == "sha256"
+    package = Package.describe("data/chunk*.csv", stats=True)
     assert (
         package.get_resource("chunk1").stats["hash"]
         == "3872c98bd72eb4a91ac666f7758cd83da904c61a35178ca1ce9e10d6b009cd21"

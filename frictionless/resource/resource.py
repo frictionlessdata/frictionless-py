@@ -71,7 +71,6 @@ class Resource(Metadata):
         data: Optional[Any] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
-        hashing: Optional[str] = None,
         encoding: Optional[str] = None,
         mediatype: Optional[str] = None,
         compression: Optional[str] = None,
@@ -104,7 +103,6 @@ class Resource(Metadata):
         self.data = data
         self.scheme = scheme
         self.format = format
-        self.hashing = hashing
         self.encoding = encoding
         self.mediatype = mediatype
         self.compression = compression
@@ -250,12 +248,6 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
-    hashing: Optional[str]
-    """
-    An algorithm to hash data.
-    It defaults to 'md5'.
-    """
-
     encoding: Optional[str]
     """
     Source encoding.
@@ -315,7 +307,7 @@ class Resource(Metadata):
         return self.__dialect
 
     @dialect.setter
-    def dialect(self, value: Union[Dialect, str]):
+    def dialect(self, value: Optional[Union[Dialect, str]]):
         self.__dialect = value
 
     @property
@@ -1172,7 +1164,6 @@ class Resource(Metadata):
             "data": {"type": ["object", "array"]},
             "scheme": {"type": "string"},
             "format": {"type": "string"},
-            "hashing": {"type": "string"},
             "encoding": {"type": "string"},
             "mediatype": {"type": "string"},
             "compression": {"type": "string"},
@@ -1214,16 +1205,20 @@ class Resource(Metadata):
             descriptor.setdefault("profiles", [])
             descriptor["profiles"].append(profile)
 
-        # Stats (v1)
-        for name in ["hash", "bytes"]:
-            value = descriptor.pop(name, None)
-            if value:
-                if name == "hash":
-                    hashing, value = helpers.parse_resource_hash(value)
-                    if hashing != settings.DEFAULT_HASHING:
-                        descriptor["hashing"] = hashing
-                descriptor.setdefault("stats", {})
-                descriptor["stats"][name] = value
+        # Bytes (v1)
+        value = descriptor.pop("bytes", None)
+        if value:
+            descriptor.setdefault("stats", {})
+            descriptor["stats"]["bytes"] = value
+
+        # Hash (v1)
+        value = descriptor.get("hash", None)
+        if value and value.startswith(f"{settings.HASHING_ALGORITHM}:"):
+            descriptor.pop("hash")
+            descriptor.setdefault("stats", {})
+            descriptor["stats"]["hash"] = value.replace(
+                f"{settings.HASHING_ALGORITHM}:", ""
+            )
 
         # Compression (v1.5)
         compression = descriptor.get("compression")
@@ -1278,7 +1273,7 @@ class Resource(Metadata):
                 hash = stats.get("hash")
                 bytes = stats.get("bytes")
                 if hash is not None:
-                    descriptor["hash"] = hash
+                    descriptor["hash"] = f"{settings.HASHING_ALGORITHM}:{hash}"
                 if bytes is not None:
                     descriptor["bytes"] = bytes
 
@@ -1294,8 +1289,7 @@ class Resource(Metadata):
 
         # Requried (strict)
         if strict:
-            names = ["name", "type", "scheme", "format", "hashing", "encoding"]
-            names.append("mediatype")
+            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
             if self.tabular:
                 names.append("schema")
             for name in names:

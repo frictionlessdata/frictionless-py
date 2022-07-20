@@ -9,34 +9,9 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_resource_stats_hash():
+def test_resource_stats_hash_sha256():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_resource_stats_hash_md5():
-    with Resource("data/doublequote.csv", hashing="md5") as resource:
-        resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_resource_stats_hash_sha1():
-    with Resource("data/doublequote.csv", hashing="sha1") as resource:
-        resource.read_rows()
-        assert resource.hashing == "sha1"
-        assert resource.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_resource_stats_hash_sha256():
-    with Resource("data/doublequote.csv", hashing="sha256") as resource:
-        resource.read_rows()
-        assert resource.hashing == "sha256"
         assert (
             resource.stats["hash"]
             == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
@@ -44,22 +19,13 @@ def test_resource_stats_hash_sha256():
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_resource_stats_hash_sha512():
-    with Resource("data/doublequote.csv", hashing="sha512") as resource:
-        resource.read_rows()
-        assert resource.hashing == "sha512"
-        assert (
-            resource.stats["hash"]
-            == "fa555b28a01959c8b03996cd4757542be86293fd49641d61808e4bf9fe4115619754aae9ae6af6a0695585eaade4488ce00dfc40fc4394b6376cd20d6967769c"
-        )
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
+        assert (
+            resource.stats["hash"]
+            == "88d0ef9887dcd7d7800bff2981f8cc496fbfcd8704a17c2aa12a434ce7d88b13"
+        )
 
 
 @pytest.mark.vcr
@@ -67,8 +33,10 @@ def test_resource_stats_hash_compressed():
 def test_resource_stats_hash_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+        assert (
+            resource.stats["hash"]
+            == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
+        )
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")

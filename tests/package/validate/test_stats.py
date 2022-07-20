@@ -11,7 +11,6 @@ DESCRIPTOR_SH = {
         {
             "name": "resource1",
             "path": "data/table.csv",
-            "hashing": "sha256",
             "stats": {
                 "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
                 "bytes": 30,
@@ -78,15 +77,4 @@ def test_check_file_package_stats_hash_invalid():
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "hash-count"],
-    ]
-
-
-def test_check_file_package_stats_hash_not_supported_algorithm():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["hashing"] = "bad"
-    source["resources"][0]["stats"].pop("bytes")
-    package = Package(source)
-    report = package.validate()
-    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "hashing-error"],
     ]

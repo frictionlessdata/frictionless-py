@@ -186,7 +186,6 @@ def test_resource_to_descriptor_infer_dereferencing_issue_904():
         "type": "table",
         "scheme": "file",
         "format": "csv",
-        "hashing": "md5",
         "encoding": "utf-8",
         "mediatype": "text/csv",
         "dialect": {

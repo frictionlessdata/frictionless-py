@@ -37,13 +37,6 @@ class EncodingError(ResourceError):
     template = "The data source could not be successfully decoded: {note}"
 
 
-class HashingError(ResourceError):
-    type = "hashing-error"
-    title = "Hashing Error"
-    description = "Data reading error because of a hashing problem."
-    template = "The data source could not be successfully hashed: {note}"
-
-
 class CompressionError(ResourceError):
     type = "compression-error"
     title = "Compression Error"

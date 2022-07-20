@@ -1,7 +1,9 @@
 from __future__ import annotations
+from ... import settings
 
 # General
 
+HASHING_ALGORITHM = settings.HASHING_ALGORITHM
 DEFAULT_SHEET = 1
 EXCEL_CODES = {
     "yyyy": "%Y",

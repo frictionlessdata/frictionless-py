@@ -14,7 +14,6 @@ def test_describe_resource():
         "type": "table",
         "scheme": "file",
         "format": "csv",
-        "hashing": "md5",
         "encoding": "utf-8",
         "mediatype": "text/csv",
         "schema": {
@@ -36,7 +35,6 @@ def test_describe_resource_with_stats():
         "type": "table",
         "scheme": "file",
         "format": "csv",
-        "hashing": "md5",
         "encoding": "utf-8",
         "mediatype": "text/csv",
         "schema": {
@@ -46,7 +44,7 @@ def test_describe_resource_with_stats():
             ]
         },
         "stats": {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
             "bytes": 30,
             "fields": 2,
             "rows": 2,
@@ -185,7 +183,10 @@ def test_describe_file_with_different_characters_name_issue_600():
 def test_describe_resource_compression_gzip_issue_606():
     resource = Resource.describe("data/table.csv.gz", stats=True)
     assert resource.name == "table"
-    assert resource.stats["hash"] == "edf56ce48e402d83eb08d5dac6aa2ad9"
+    assert (
+        resource.stats["hash"]
+        == "574bb747a97cf4352fb69398a8ed58e12143f6537c9eb19e85d289443e55b084"
+    )
     assert resource.stats["bytes"] == 61
 
 

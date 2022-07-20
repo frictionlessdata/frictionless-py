@@ -313,11 +313,7 @@ class ByteStreamWithStatsHandling:
         self.__byte_stream = byte_stream
         self.__resource = resource
         self.__counter = 0
-        try:
-            self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None
-        except Exception as exception:
-            error = errors.HashingError(note=str(exception))
-            raise FrictionlessException(error)
+        self.__hasher = hashlib.new(settings.HASHING_ALGORITHM)
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)

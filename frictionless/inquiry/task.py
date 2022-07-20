@@ -35,9 +35,6 @@ class InquiryTask(Metadata):
     format: Optional[str] = None
     """# TODO: add docs"""
 
-    hashing: Optional[str] = None
-    """# TODO: add docs"""
-
     encoding: Optional[str] = None
     """# TODO: add docs"""
 
@@ -99,7 +96,6 @@ class InquiryTask(Metadata):
             path=self.path,
             scheme=self.scheme,
             format=self.format,
-            hashing=self.hashing,
             encoding=self.encoding,
             compression=self.compression,
             extrapaths=self.extrapaths,
@@ -124,7 +120,6 @@ class InquiryTask(Metadata):
             "path": {"type": "string"},
             "scheme": {"type": "string"},
             "format": {"type": "string"},
-            "hashing": {"type": "string"},
             "encoding": {"type": "string"},
             "mediatype": {"type": "string"},
             "compression": {"type": "string"},

@@ -66,10 +66,9 @@ class baseline(Check):
 
         # Hash
         if hash:
-            hashing = self.resource.hashing
             if hash != self.resource.stats["hash"]:  # type: ignore
-                note = 'expected %s is "%s" and actual is "%s"'
-                note = note % (hashing, hash, self.resource.stats["hash"])  # type: ignore
+                note = 'expected is "%s" and actual is "%s"'
+                note = note % (hash, self.resource.stats["hash"])  # type: ignore
                 yield errors.HashCountError(note=note)
 
         # Bytes

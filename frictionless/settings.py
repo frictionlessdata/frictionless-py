@@ -16,12 +16,13 @@ def read_asset(*paths, encoding="utf-8"):
 
 
 UNDEFINED = object()
+HASHING_ALGORITHM = "sha256"
+NAME_PATTERN = "^([-a-z0-9._/])+$"
+TYPE_PATTERN = "^([-a-z])+$"
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
-NAME_PATTERN = "^([-a-z0-9._/])+$"
-TYPE_PATTERN = "^([-a-z])+$"
 
 
 # Defaults
@@ -31,7 +32,6 @@ DEFAULT_STANDARDS_VERSION = "v2"
 DEFAULT_TYPE = "file"
 DEFAULT_SCHEME = "file"
 DEFAULT_FORMAT = "csv"
-DEFAULT_HASHING = "md5"
 DEFAULT_ENCODING = "utf-8"
 DEFAULT_INNERPATH = ""
 DEFAULT_PACKAGE_INNERPATH = "datapackage.json"

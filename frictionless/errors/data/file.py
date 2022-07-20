@@ -1,5 +1,6 @@
 from __future__ import annotations
 from .data import DataError
+from ... import settings
 
 
 class FileError(DataError):
@@ -14,7 +15,10 @@ class HashCountError(FileError):
     type = "hash-count"
     title = "Hash Count Error"
     description = "This error can happen if the data is corrupted."
-    template = "The data source does not match the expected hash count: {note}"
+    template = (
+        "The data source does not match the expected %s hash count: {note}"
+        % settings.HASHING_ALGORITHM
+    )
 
 
 class ByteCountError(FileError):

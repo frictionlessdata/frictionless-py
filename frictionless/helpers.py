@@ -324,12 +324,12 @@ def stringify_csv_string(cells):
     return result
 
 
-def parse_resource_hash(hash):
+def parse_resource_hash_v1(hash):
     if not hash:
-        return (settings.DEFAULT_HASHING, "")
+        return ("md5", "")
     parts = hash.split(":", maxsplit=1)
     if len(parts) == 1:
-        return (settings.DEFAULT_HASHING, parts[0])
+        return ("md5", parts[0])
     return parts
 
 

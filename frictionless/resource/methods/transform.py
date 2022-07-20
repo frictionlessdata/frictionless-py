@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
-from ...dialect import Dialect
 from ...pipeline import Pipeline
 from ...exception import FrictionlessException
 from ...helpers import get_name
@@ -48,11 +47,11 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
             self.data = DataWithErrorHandling(self.data, step=step)
             self.scheme = ""
             self.format = "inline"
-            self.hashing = None
             self.encoding = None
             self.compression = None
+            self.extrapaths = []
             self.innerpath = None
-            self.dialect = Dialect()
+            self.dialect = None
 
     return self
 
