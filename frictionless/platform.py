@@ -22,6 +22,12 @@ class Platform:
 
         return jinja2
 
+    @cached_property
+    def petl(self):
+        import petl
+
+        return petl
+
     # Extras
 
     @cached_property

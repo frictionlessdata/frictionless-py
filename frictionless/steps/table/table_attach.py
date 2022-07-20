@@ -1,7 +1,7 @@
 # type: ignore
 from __future__ import annotations
-import petl
 from ...pipeline import Step
+from ...platform import platform
 from ...resource import Resource
 
 
@@ -39,7 +39,7 @@ class table_attach(Step):
         view2 = source.to_petl()  # type: ignore
         for field in source.schema.fields:  # type: ignore
             target.schema.fields.append(field.to_copy())
-        resource.data = petl.annex(view1, view2)  # type: ignore
+        resource.data = platform.petl.annex(view1, view2)  # type: ignore
 
     # Metadata
 

@@ -1,16 +1,16 @@
 from __future__ import annotations
 import sys
-import petl
 import typer
 import json as pyjson
 import yaml as pyyaml
 from typing import List
+from ..platform import platform
 from ..detector import Detector
+from ..dialect import Dialect
 from ..actions import extract
 from .main import program
 from .. import helpers
 from . import common
-from frictionless import Dialect
 
 
 @program.command(name="extract")
@@ -198,6 +198,6 @@ def program_extract(
             valid_text = "valid" if valid else "invalid"
             typer.secho(str(f"No {valid_text} rows"))
             continue
-        typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))  # type: ignore
+        typer.secho(str(platform.petl.util.vis.lookall(subdata, vrepr=str, style="simple")))  # type: ignore
         if number < len(normdata):  # type: ignore
             typer.secho("")

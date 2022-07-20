@@ -1,7 +1,7 @@
 # type: ignore
 from __future__ import annotations
-import petl
 from ...pipeline import Step
+from ...platform import platform
 from ...resource import Resource
 
 
@@ -56,20 +56,22 @@ class table_join(Step):
                 if field.name != field_name:
                     target.schema.fields.append(field.to_copy())
         if mode == "inner":
-            join = petl.hashjoin if use_hash else petl.join
+            join = platform.petl.hashjoin if use_hash else platform.petl.join
             resource.data = join(view1, view2, field_name)  # type: ignore
         elif mode == "left":
-            leftjoin = petl.hashleftjoin if use_hash else petl.leftjoin
+            leftjoin = platform.petl.hashleftjoin if use_hash else platform.petl.leftjoin
             resource.data = leftjoin(view1, view2, field_name)  # type: ignore
         elif mode == "right":
-            rightjoin = petl.hashrightjoin if use_hash else petl.rightjoin
+            rightjoin = (
+                platform.petl.hashrightjoin if use_hash else platform.petl.rightjoin
+            )
             resource.data = rightjoin(view1, view2, field_name)  # type: ignore
         elif mode == "outer":
-            resource.data = petl.outerjoin(view1, view2, field_name)  # type: ignore
+            resource.data = platform.petl.outerjoin(view1, view2, field_name)  # type: ignore
         elif mode == "cross":
-            resource.data = petl.crossjoin(view1, view2)  # type: ignore
+            resource.data = platform.petl.crossjoin(view1, view2)  # type: ignore
         elif mode == "negate":
-            antijoin = petl.hashantijoin if use_hash else petl.antijoin
+            antijoin = platform.petl.hashantijoin if use_hash else platform.petl.antijoin
             resource.data = antijoin(view1, view2, field_name)  # type: ignore
 
     # Metadata

@@ -1,8 +1,8 @@
 # type: ignore
 from __future__ import annotations
 import attrs
-import petl
 from typing import Optional, List
+from ...platform import platform
 from ...pipeline import Step
 from ...schema import Field
 
@@ -40,10 +40,10 @@ class field_split(Step):
             resource.schema.add_field(Field(name=to_name, type="string"))
         if not self.preserve:
             resource.schema.remove_field(self.name)
-        processor = petl.split
+        processor = platform.petl.split
         # NOTE: this condition needs to be improved
         if "(" in self.pattern:  # type: ignore
-            processor = petl.capture
+            processor = platform.petl.capture
         resource.data = processor(  # type: ignore
             table,
             self.name,

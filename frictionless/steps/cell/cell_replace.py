@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
-import petl
 from typing import Optional
+from ...platform import platform
 from ...pipeline import Step
 
 
@@ -35,10 +35,10 @@ class cell_replace(Step):
             resource.data = table.replaceall(self.pattern, self.replace)  # type: ignore
         else:
             pattern = self.pattern
-            function = petl.replace
+            function = platform.petl.replace
             if pattern.startswith("<regex>"):  # type: ignore
                 pattern = pattern.replace("<regex>", "")  # type: ignore
-                function = petl.sub
+                function = platform.petl.sub
             resource.data = function(table, self.field_name, pattern, self.replace)  # type: ignore
 
     # Metadata

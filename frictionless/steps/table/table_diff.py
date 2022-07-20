@@ -1,7 +1,7 @@
 # type: ignore
 from __future__ import annotations
-import petl
 from ...pipeline import Step
+from ...platform import platform
 from ...resource import Resource
 
 
@@ -48,10 +48,12 @@ class table_diff(Step):
         source.infer()  # type: ignore
         view1 = target.to_petl()
         view2 = source.to_petl()  # type: ignore
-        function = petl.recordcomplement if ignore_order else petl.complement
+        function = (
+            platform.petl.recordcomplement if ignore_order else platform.petl.complement
+        )
         # NOTE: we might raise an error for ignore/hash
         if use_hash and not ignore_order:
-            function = petl.hashcomplement
+            function = platform.petl.hashcomplement
         resource.data = function(view1, view2)  # type: ignore
 
     # Metadata

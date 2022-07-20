@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
-import petl
 from typing import Optional
+from ...platform import platform
 from ...pipeline import Step
 
 
@@ -31,7 +31,7 @@ class row_search(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        search = petl.searchcomplement if self.negate else petl.search
+        search = platform.petl.searchcomplement if self.negate else platform.petl.search
         if self.field_name:
             resource.data = search(table, self.field_name, self.regex)  # type: ignore
         else:

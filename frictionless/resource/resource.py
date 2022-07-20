@@ -1,7 +1,6 @@
 from __future__ import annotations
 import os
 import json
-import petl
 import warnings
 from pathlib import Path
 from collections.abc import Mapping
@@ -10,6 +9,7 @@ from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
 from ..checklist import Checklist
+from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
 from ..pipeline import Pipeline
@@ -1065,7 +1065,7 @@ class Resource(Metadata):
         """Create a view from the resource
 
         See PETL's docs for more information:
-        https://petl.readthedocs.io/en/stable/util.html#visualising-tables
+        https://platform.petl.readthedocs.io/en/stable/util.html#visualising-tables
 
         Parameters:
             type (look|lookall|see|display|displayall): view's type
@@ -1114,7 +1114,7 @@ class Resource(Metadata):
         resource = self.to_copy()
 
         # Define view
-        class ResourceView(petl.Table):
+        class ResourceView(platform.petl.Table):
             def __iter__(self):
                 with resource:
                     if normalize:

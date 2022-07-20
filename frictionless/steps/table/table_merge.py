@@ -1,7 +1,7 @@
 # type: ignore
 from __future__ import annotations
-import petl
 from ...pipeline import Step
+from ...platform import platform
 from ...resource import Resource
 
 
@@ -56,7 +56,7 @@ class table_merge(Step):
         if ignore_fields:
             for field in source.schema.fields[len(target.schema.fields) :]:  # type: ignore
                 target.schema.add_field(field)
-            resource.data = petl.stack(view1, view2)  # type: ignore
+            resource.data = platform.petl.stack(view1, view2)
 
         # Default
         else:
@@ -69,9 +69,11 @@ class table_merge(Step):
                         target.schema.remove_field(field.name)
             if sort_by_field:
                 key = sort_by_field
-                resource.data = petl.mergesort(view1, view2, key=key, header=field_names)  # type: ignore
+                resource.data = platform.petl.mergesort(
+                    view1, view2, key=key, header=field_names
+                )
             else:
-                resource.data = petl.cat(view1, view2, header=field_names)  # type: ignore
+                resource.data = platform.petl.cat(view1, view2, header=field_names)
 
     # Metadata
 

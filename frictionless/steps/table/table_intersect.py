@@ -1,7 +1,7 @@
 # type: ignore
 from __future__ import annotations
-import petl
 from ...pipeline import Step
+from ...platform import platform
 from ...resource import Resource
 
 
@@ -39,7 +39,9 @@ class table_intersect(Step):
         source.infer()  # type: ignore
         view1 = target.to_petl()
         view2 = source.to_petl()  # type: ignore
-        function = petl.hashintersection if use_hash else petl.intersection
+        function = (
+            platform.petl.hashintersection if use_hash else platform.petl.intersection
+        )
         resource.data = function(view1, view2)  # type: ignore
 
     # Metadata

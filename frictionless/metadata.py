@@ -417,16 +417,16 @@ def json_to_markdown(
                 else:
                     if isinstance(value, str):
                         # Indent to align following lines with '- '
-                        value = jinja2.filters.do_indent(value, width=2, first=False)  # type: ignore
+                        value = platform.jinja2.filters.do_indent(value, width=2, first=False)  # type: ignore
                     lines.append(f"{label} {value}")
             txt = "\n".join(lines)
         else:
             txt = str(x)
         if level > 0:
-            txt = jinja2.filters.do_indent(txt, width=tab, first=True, blank=False)  # type: ignore
+            txt = platform.jinja2.filters.do_indent(txt, width=tab, first=True, blank=False)  # type: ignore
         return txt
 
-    return jinja2.filters.do_indent(  # type: ignore
+    return platform.jinja2.filters.do_indent(  # type: ignore
         _iter(x, level=0), width=tab * level, first=True, blank=False
     )
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
-import petl
 from typing import Optional
+from ...platform import platform
 from ...pipeline import Step
 
 
@@ -29,7 +29,7 @@ class row_ungroup(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        function = getattr(petl, f"groupselect{self.selection}")
+        function = getattr(platform.petl, f"groupselect{self.selection}")
         if self.selection in ["first", "last"]:
             resource.data = function(table, self.group_name)
         else:
