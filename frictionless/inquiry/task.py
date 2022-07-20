@@ -20,10 +20,13 @@ class InquiryTask(Metadata):
 
     # State
 
-    path: Optional[str] = None
+    name: Optional[str] = None
     """# TODO: add docs"""
 
     type: Optional[str] = None
+    """# TODO: add docs"""
+
+    path: Optional[str] = None
     """# TODO: add docs"""
 
     scheme: Optional[str] = None
@@ -36,6 +39,9 @@ class InquiryTask(Metadata):
     """# TODO: add docs"""
 
     encoding: Optional[str] = None
+    """# TODO: add docs"""
+
+    mediatype: Optional[str] = None
     """# TODO: add docs"""
 
     compression: Optional[str] = None
@@ -62,6 +68,9 @@ class InquiryTask(Metadata):
     package: Optional[str] = None
     """# TODO: add docs"""
 
+    strict: bool = False
+    """# TODO: add docs"""
+
     # Validate
 
     def validate(self, *, metadata=True):
@@ -75,19 +84,19 @@ class InquiryTask(Metadata):
         # Validate package
         if self.package:
             package = Package.from_descriptor(self.package)
-            report = package.validate()
+            report = package.validate(strict=self.strict)
             return report
 
         # Validate resource
         if self.resource:
             resource = Resource.from_descriptor(self.resource)
-            report = resource.validate()
+            report = resource.validate(strict=self.strict)
             return report
 
         # Validate default
         resource = Resource.from_options(
-            path=self.path,
             type=self.type,
+            path=self.path,
             scheme=self.scheme,
             format=self.format,
             hashing=self.hashing,
@@ -99,7 +108,7 @@ class InquiryTask(Metadata):
             schema=self.schema,
             checklist=self.checklist,
         )
-        report = resource.validate()
+        report = resource.validate(strict=self.strict)
         return report
 
     # Metadata
@@ -110,12 +119,14 @@ class InquiryTask(Metadata):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "path": {"type": "string"},
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "path": {"type": "string"},
             "scheme": {"type": "string"},
             "format": {"type": "string"},
             "hashing": {"type": "string"},
             "encoding": {"type": "string"},
+            "mediatype": {"type": "string"},
             "compression": {"type": "string"},
             "extrapaths": {"type": "array"},
             "innerpath": {"type": "string"},
@@ -124,6 +135,7 @@ class InquiryTask(Metadata):
             "checklist": {"type": ["object", "string"]},
             "resource": {"type": ["object", "string"]},
             "package": {"type": ["object", "string"]},
+            "strict": {"type": "boolean"},
         },
     }
 
