@@ -263,7 +263,7 @@ def is_descriptor_source(source):
     if isinstance(source, Mapping):
         return True
     if isinstance(source, str):
-        if source.endswith((".json", ".yaml", ".yml")):
+        if source.endswith((".json", ".yaml")):
             return True
     return False
 

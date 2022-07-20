@@ -151,7 +151,7 @@ class Detector(Metadata):
                 if set(trait).intersection(source.keys()):
                     return name
             elif isinstance(source, str):
-                if source.endswith((f"{name}.json", f"{name}.yaml", f"{name}.yml")):
+                if source.endswith((f"{name}.json", f"{name}.yaml")):
                     return name
 
     def detect_resource(self, resource: Resource) -> None:

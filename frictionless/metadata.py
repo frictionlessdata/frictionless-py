@@ -344,7 +344,7 @@ class Metadata(metaclass=Metaclass):
                 else:
                     with open(descriptor, encoding="utf-8") as file:
                         content = file.read()
-                if descriptor.endswith((".yaml", ".yml")):
+                if descriptor.endswith(".yaml"):
                     metadata = platform.yaml.safe_load(io.StringIO(content))
                 else:
                     metadata = json.loads(content)

@@ -232,7 +232,7 @@ class Package(Metadata):
     A ZIP datapackage descriptor inner path.
     Path to the package descriptor inside the ZIP datapackage.
     Example: some/folder/datapackage.yaml
-    Default: datapackage.json, datapackage.yaml or datapackage.yml
+    Default: datapackage.json or datapackage.yaml
     """
 
     basepath: str
@@ -771,7 +771,7 @@ def unzip_package(path: str, *, innerpath: Optional[str] = None) -> str:
             atexit.register(shutil.rmtree, tempdir)
             if innerpath is None:
                 innerpath = "datapackage.json"
-                extensions = ("json", "yaml", "yml")
+                extensions = ("json", "yaml")
                 default_names = (f"datapackage.{ext}" for ext in extensions)
                 for name in default_names:
                     if os.path.isfile(os.path.join(tempdir, name)):
