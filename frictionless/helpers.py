@@ -13,13 +13,13 @@ import tempfile
 import datetime
 import platform
 import textwrap
-import jsonmerge
 import stringcase
-from typing import Optional, Union, Any
+from copy import deepcopy
 from html.parser import HTMLParser
 from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
+from typing import Optional, Union, Any
 from urllib.parse import urlparse, parse_qs
 from . import settings
 
@@ -148,9 +148,16 @@ def parse_scheme_and_format(source):
 
 
 def merge_jsonschema(base, head):
-    strategy = {"properties": {"required": {"mergeStrategy": "append"}}}
-    merger = jsonmerge.Merger(strategy)
-    return merger.merge(base, head)
+    result = deepcopy(base)
+    base_required = base.get("required", [])
+    head_required = head.get("required", [])
+    if base_required or head_required:
+        result["required"] = base_required + head_required
+    result["properties"] = copy_merge(
+        base.get("properties", {}),
+        head.get("properties", {}),
+    )
+    return result
 
 
 def ensure_dir(path):

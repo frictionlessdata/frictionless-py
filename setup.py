@@ -72,7 +72,6 @@ INSTALL_REQUIRES = [
     "isodate>=0.6",
     "rfc3986>=1.4",
     "chardet>=3.0",
-    "jsonmerge>=1.8",
     "requests>=2.10",
     "humanize>=4.2",
     "tabulate>=0.8.10",
