@@ -265,7 +265,8 @@ class Metadata(metaclass=Metaclass):
             if value is None or value == {}:
                 continue
             if name == "type":
-                if getattr(cls, "type", None):
+                type = getattr(cls, "type", None)
+                if isinstance(type, str):
                     continue
             if Type:
                 if isinstance(value, list):
