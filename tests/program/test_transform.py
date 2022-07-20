@@ -1,6 +1,7 @@
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, platform
+from frictionless import platform
+from frictionless.program import program
 
 runner = CliRunner()
 

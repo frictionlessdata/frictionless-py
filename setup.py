@@ -42,6 +42,7 @@ TESTS_REQUIRE = [
     "docstring-parser",
 ]
 EXTRAS_REQUIRE = {
+    "api": ["fastapi>=0.78", "uvicorn>=0.17"],
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
@@ -71,8 +72,6 @@ INSTALL_REQUIRES = [
     "isodate>=0.6",
     "rfc3986>=1.4",
     "chardet>=3.0",
-    "fastapi>=0.78",
-    "uvicorn>=0.17",
     "jsonmerge>=1.8",
     "requests>=2.10",
     "humanize>=4.2",

@@ -1,5 +1,6 @@
 from typer.testing import CliRunner
-from frictionless import program, __version__
+from frictionless import __version__
+from frictionless.program import program
 
 runner = CliRunner()
 

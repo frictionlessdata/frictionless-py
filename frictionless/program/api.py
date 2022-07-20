@@ -1,6 +1,5 @@
 from __future__ import annotations
-import uvicorn
-from ..server import server
+from ..platform import platform
 from .main import program
 from . import common
 
@@ -12,4 +11,6 @@ def program_api(
     """
     Start API server
     """
-    uvicorn.run(server, port=port)  # type: ignore
+    from ..server import server
+
+    platform.uvicorn.run(server, port=port)  # type: ignore

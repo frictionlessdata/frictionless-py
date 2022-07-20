@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import FastAPI
+from ..platform import platform
 
 
-server = FastAPI()
+server = platform.fastapi.FastAPI()

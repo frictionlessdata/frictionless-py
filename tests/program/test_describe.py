@@ -2,7 +2,8 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, describe, Dialect, Detector, platform
+from frictionless import describe, Dialect, Detector, platform
+from frictionless.program import program
 
 
 runner = CliRunner()

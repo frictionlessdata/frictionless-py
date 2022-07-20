@@ -17,6 +17,20 @@ class Platform:
     # Extras
 
     @cached_property
+    @extras(name="api")
+    def fastapi(self):
+        import fastapi
+
+        return fastapi
+
+    @cached_property
+    @extras(name="api")
+    def uvicorn(self):
+        import uvicorn
+
+        return uvicorn
+
+    @cached_property
     @extras(name="aws")
     def boto3(self):
         import boto3
