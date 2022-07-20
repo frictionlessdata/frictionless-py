@@ -3,13 +3,13 @@ import os
 import json
 import atexit
 import shutil
-import jinja2
 import zipfile
 import tempfile
 from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
+from ..platform import platform
 from ..metadata import Metadata
 from ..detector import Detector
 from ..resource import Resource
@@ -569,8 +569,8 @@ class Package(Metadata):
 
         # Render
         template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
-        environ = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(template_dir),
+        environ = platform.jinja2.Environment(
+            loader=platform.jinja2.FileSystemLoader(template_dir),
             lstrip_blocks=True,
             trim_blocks=True,
         )

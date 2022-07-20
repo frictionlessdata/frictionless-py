@@ -14,6 +14,14 @@ class Platform:
     python: ClassVar[str] = f"{sys.version_info.major}.{sys.version_info.minor}"
     """TODO: add docs"""
 
+    # Core
+
+    @cached_property
+    def jinja2(self):
+        import jinja2
+
+        return jinja2
+
     # Extras
 
     @cached_property

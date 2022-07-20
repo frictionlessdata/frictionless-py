@@ -4,7 +4,6 @@ import io
 import re
 import json
 import yaml
-import jinja2
 import pprint
 import jsonschema
 import stringcase
@@ -13,6 +12,7 @@ from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING
 from typing import ClassVar, Iterator, Optional, Union, List, Dict, Any, Set
+from .platform import platform
 from .exception import FrictionlessException
 from . import helpers
 
@@ -352,8 +352,10 @@ def render_markdown(path: str, data: dict) -> str:
     """Render any JSON-like object as Markdown, using jinja2 template"""
 
     template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
-    environ = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(template_dir), lstrip_blocks=True, trim_blocks=True
+    environ = platform.jinja2.Environment(
+        loader=platform.jinja2.FileSystemLoader(template_dir),
+        lstrip_blocks=True,
+        trim_blocks=True,
     )
     environ.filters["filter_dict"] = filter_dict
     environ.filters["dict_to_markdown"] = json_to_markdown
