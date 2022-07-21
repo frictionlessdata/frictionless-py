@@ -15,7 +15,8 @@ class baseline(Check):
     type = "baseline"
     Errors = [
         # File
-        errors.HashCountError,
+        errors.Md5CountError,
+        errors.Sha256CountError,
         errors.ByteCountError,
         # Table
         errors.FieldCountError,
@@ -68,16 +69,16 @@ class baseline(Check):
         # Md5
         if md5:
             if md5 != self.resource.stats.md5:
-                note = 'expected md5 is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (md5, self.resource.stats.md5)
-                yield errors.HashCountError(note=note)
+                yield errors.Md5CountError(note=note)
 
         # Sha256
         if sha256:
             if sha256 != self.resource.stats.sha256:
-                note = 'expected sha256 is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (sha256, self.resource.stats.sha256)
-                yield errors.HashCountError(note=note)
+                yield errors.Sha256CountError(note=note)
 
         # Bytes
         if bytes:

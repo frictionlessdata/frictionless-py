@@ -298,7 +298,7 @@ def test_validate_package_stats_invalid():
     source["resources"][0]["stats"]["bytes"] += 1
     report = validate(source)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "hash-count"],
+        [None, None, "sha256-count"],
         [None, None, "byte-count"],
     ]
 
@@ -335,7 +335,7 @@ def test_check_file_package_stats_hash_invalid():
     source["resources"][0]["stats"]["sha256"] += "a"
     report = validate(source)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "hash-count"],
+        [None, None, "sha256-count"],
     ]
 
 

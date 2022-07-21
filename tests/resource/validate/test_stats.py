@@ -20,8 +20,8 @@ def test_resource_validate_stats_hash_invalid():
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
         [
-            "hash-count",
-            'expected sha256 is "bad" and actual is "%s"' % sha256,
+            "sha256-count",
+            'expected is "bad" and actual is "%s"' % sha256,
         ],
     ]
 

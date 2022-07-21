@@ -10,7 +10,8 @@ def test_checklist():
     assert checklist.pick_errors == []
     assert checklist.skip_errors == []
     assert checklist.scope == [
-        "hash-count",
+        "md5-count",
+        "sha256-count",
         "byte-count",
         "field-count",
         "row-count",
@@ -42,15 +43,15 @@ def test_checklist_from_descriptor():
 
 
 def test_checklist_pick_errors():
-    checklist = Checklist(pick_errors=["hash-count", "byte-count"])
+    checklist = Checklist(pick_errors=["sha256-count", "byte-count"])
     assert checklist.scope == [
-        "hash-count",
+        "sha256-count",
         "byte-count",
     ]
 
 
 def test_checklist_skip_errors():
-    checklist = Checklist(skip_errors=["hash-count", "byte-count"])
+    checklist = Checklist(skip_errors=["md5-count", "sha256-count", "byte-count"])
     assert checklist.scope == [
         "field-count",
         "row-count",
@@ -73,11 +74,11 @@ def test_checklist_skip_errors():
 
 def test_checklist_pick_errors_and_skip_errors():
     checklist = Checklist(
-        pick_errors=["hash-count", "byte-count"],
+        pick_errors=["sha256-count", "byte-count"],
         skip_errors=["byte-count"],
     )
     assert checklist.scope == [
-        "hash-count",
+        "sha256-count",
     ]
 
 
@@ -95,7 +96,8 @@ def test_checklist_pick_errors_tag():
 def test_checklist_skip_errors_tag():
     checklist = Checklist(skip_errors=["#row"])
     assert checklist.scope == [
-        "hash-count",
+        "md5-count",
+        "sha256-count",
         "byte-count",
         "field-count",
         "row-count",

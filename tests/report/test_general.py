@@ -33,7 +33,8 @@ def test_report():
         )
     assert report.task.scope == [
         # File
-        "hash-count",
+        "md5-count",
+        "sha256-count",
         "byte-count",
         # Table
         "field-count",

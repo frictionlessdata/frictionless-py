@@ -13,7 +13,6 @@ from ..control import ExcelControl
 from ....resource import Resource
 from ....resource import Parser
 from ....system import system
-from ....stats import Stats
 from .... import errors
 from .. import settings
 

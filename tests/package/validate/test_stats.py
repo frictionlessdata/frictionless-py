@@ -35,7 +35,7 @@ def test_validate_package_stats_invalid():
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "hash-count"],
+        [None, None, "sha256-count"],
         [None, None, "byte-count"],
     ]
 
@@ -76,5 +76,5 @@ def test_check_file_package_stats_hash_invalid():
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "hash-count"],
+        [None, None, "sha256-count"],
     ]
