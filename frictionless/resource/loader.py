@@ -8,6 +8,7 @@ import tempfile
 from typing import TYPE_CHECKING, Optional, Any
 from ..exception import FrictionlessException
 from ..platform import platform
+from ..stats import Stats
 from .. import settings
 from .. import errors
 
@@ -170,7 +171,7 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
-        return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
+        return ByteStreamWithStatsHandling(byte_stream, stats=self.resource.stats)
 
     def read_byte_stream_decompress(self, byte_stream: IByteStream) -> IByteStream:
         """Decompress byte stream
@@ -309,11 +310,11 @@ class Loader:
 
 
 class ByteStreamWithStatsHandling:
-    def __init__(self, byte_stream, *, resource):
+    def __init__(self, byte_stream: IByteStream, *, stats: Stats):
         self.__byte_stream = byte_stream
-        self.__resource = resource
-        self.__counter = 0
+        self.__stats = stats
         self.__hasher = hashlib.new(settings.HASHING_ALGORITHM)
+        self.__stats.bytes = 0
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)
@@ -331,13 +332,10 @@ class ByteStreamWithStatsHandling:
 
     def read1(self, size=-1):
         size = -1 if size is None else size
-        chunk = self.__byte_stream.read1(size)
-        self.__counter += len(chunk)
-        if self.__hasher:
-            self.__hasher.update(chunk)
+        chunk = self.__byte_stream.read1(size)  # type: ignore
+        self.__stats.bytes += len(chunk)  # type: ignore
+        self.__hasher.update(chunk)
         # End of file
         if size == -1 or not chunk:
-            if self.__hasher:
-                self.__resource.stats.hash = self.__hasher.hexdigest()
-            self.__resource.stats.bytes = self.__counter
+            self.__stats.hash = self.__hasher.hexdigest()
         return chunk
