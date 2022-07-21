@@ -635,6 +635,7 @@ class Resource(Metadata):
         """
         if sample is False:
             self.__prepare_file()
+            self.__prepare_stats()
             return
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
@@ -1222,19 +1223,30 @@ class Resource(Metadata):
             descriptor["profiles"].append(profile)
 
         # Bytes (v1)
-        value = descriptor.pop("bytes", None)
-        if value:
+        bytes = descriptor.pop("bytes", None)
+        if bytes:
             descriptor.setdefault("stats", {})
-            descriptor["stats"]["bytes"] = value
+            descriptor["stats"]["bytes"] = bytes
+
+        # Hash (v1.5)
+        hashing = descriptor.get("hashing", None)
+        stats = descriptor.get("stats", None)
+        if hashing and stats:
+            hash = stats.pop("hash", None)
+            if hash:
+                descriptor[hashing] = hash
+            note = 'Resource "stats.hash" is deprecated in favor of "stats.sha256/md5"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
 
         # Hash (v1)
-        value = descriptor.get("hash", None)
-        if value and value.startswith(f"{settings.HASHING_ALGORITHM}:"):
-            descriptor.pop("hash")
-            descriptor.setdefault("stats", {})
-            descriptor["stats"]["hash"] = value.replace(
-                f"{settings.HASHING_ALGORITHM}:", ""
-            )
+        hash = descriptor.get("hash", None)
+        if hash:
+            algo, hash = helpers.parse_resource_hash_v1(hash)
+            if algo in ["md5", "sha256"]:
+                descriptor.pop("hash")
+                descriptor.setdefault("stats", {})
+                descriptor["stats"][algo] = hash
 
         # Compression (v1.5)
         compression = descriptor.get("compression")
@@ -1286,10 +1298,13 @@ class Resource(Metadata):
         if system.standards_version == "v1":
             stats = descriptor.pop("stats", None)
             if stats:
-                hash = stats.get("hash")
+                sha256 = stats.get("sha256")
+                md5 = stats.get("md5")
                 bytes = stats.get("bytes")
-                if hash is not None:
-                    descriptor["hash"] = f"{settings.HASHING_ALGORITHM}:{hash}"
+                if sha256 is not None:
+                    descriptor["hash"] = f"sha256:{sha256}"
+                if md5 is not None:
+                    descriptor["hash"] = md5
                 if bytes is not None:
                     descriptor["bytes"] = bytes
 

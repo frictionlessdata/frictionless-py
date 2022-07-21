@@ -12,7 +12,7 @@ DESCRIPTOR_SH = {
             "name": "resource1",
             "path": "data/table.csv",
             "stats": {
-                "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+                "sha256": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
                 "bytes": 30,
             },
         }
@@ -30,7 +30,7 @@ def test_validate_package_stats():
 
 def test_validate_package_stats_invalid():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"]["hash"] += "a"
+    source["resources"][0]["stats"]["sha256"] += "a"
     source["resources"][0]["stats"]["bytes"] += 1
     package = Package(source)
     report = package.validate()
@@ -43,7 +43,7 @@ def test_validate_package_stats_invalid():
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"].pop("hash")
+    source["resources"][0]["stats"].pop("sha256")
     package = Package(source)
     report = package.validate()
     assert report.valid
@@ -52,7 +52,7 @@ def test_validate_package_stats_size():
 def test_validate_package_stats_size_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"]["bytes"] += 1
-    source["resources"][0]["stats"].pop("hash")
+    source["resources"][0]["stats"].pop("sha256")
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
@@ -72,7 +72,7 @@ def test_validate_package_stats_hash():
 def test_check_file_package_stats_hash_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
-    source["resources"][0]["stats"]["hash"] += "a"
+    source["resources"][0]["stats"]["sha256"] += "a"
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [

@@ -13,6 +13,7 @@ from ..control import ExcelControl
 from ....resource import Resource
 from ....resource import Parser
 from ....system import system
+from ....stats import Stats
 from .... import errors
 from .. import settings
 
@@ -49,7 +50,9 @@ class XlsxParser(Parser):
 
             # Cached
             if control.workbook_cache is not None and path in control.workbook_cache:
-                resource = Resource(path, type="table", scheme="file", format="xlsx")
+                # TODO: rebase on using resource without system?
+                resource = Resource(path, scheme="file", format="xlsx")
+                resource.infer(sample=False)
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -61,7 +64,9 @@ class XlsxParser(Parser):
             if not target.delete:
                 control.workbook_cache[path] = target.name  # type: ignore
                 atexit.register(os.remove, target.name)
-            resource = Resource(target, type="table", scheme="stream", format="xlsx")
+            # TODO: rebase on using resource without system?
+            resource = Resource(target, scheme="stream", format="xlsx")
+            resource.infer(sample=False)
             loader = system.create_loader(resource)
             return loader.open()
 
@@ -124,11 +129,14 @@ class XlsxParser(Parser):
         if self.resource.scheme == "file":
             stat = os.stat(self.resource.normpath)
             self.resource.stats.bytes = stat.st_size
-            hasher = hashlib.new(settings.HASHING_ALGORITHM)
+            md5 = hashlib.new("md5")
+            sha256 = hashlib.new("sha256")
             with open(self.resource.normpath, "rb") as file:
                 for chunk in iter(lambda: file.read(4096), b""):
-                    hasher.update(chunk)
-                self.resource.stats.hash = hasher.hexdigest()
+                    md5.update(chunk)
+                    sha256.update(chunk)
+                self.resource.stats.md5 = md5.hexdigest()
+                self.resource.stats.sha256 = sha256.hexdigest()
 
     # Write
 

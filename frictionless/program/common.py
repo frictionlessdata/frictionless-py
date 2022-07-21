@@ -165,9 +165,14 @@ stats = Option(
     help="Infer stats",
 )
 
-stats_hash = Option(
+stats_md5 = Option(
     default=None,
-    help="Expected SHA-256 hash",
+    help="Expected MD5 hash",
+)
+
+stats_sha256 = Option(
+    default=None,
+    help="Expected SHA256 hash",
 )
 
 stats_bytes = Option(

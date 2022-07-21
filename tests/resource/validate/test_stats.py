@@ -7,21 +7,21 @@ from frictionless import Resource, Stats, platform
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_hash():
-    hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    resource = Resource("data/table.csv", stats=Stats(hash=hash))
+    sha256 = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    resource = Resource("data/table.csv", stats=Stats(sha256=sha256))
     report = resource.validate()
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_hash_invalid():
-    hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    resource = Resource("data/table.csv", stats=Stats(hash="bad"))
+    sha256 = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    resource = Resource("data/table.csv", stats=Stats(sha256="bad"))
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
         [
             "hash-count",
-            'expected is "bad" and actual is "%s"' % hash,
+            'expected sha256 is "bad" and actual is "%s"' % sha256,
         ],
     ]
 
@@ -66,8 +66,8 @@ def test_resource_validate_stats_not_supported_hash_algorithm():
     resource = Resource.from_descriptor(
         {
             "path": "data/table.csv",
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "hash": "sha1:db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e",
         }
     )
     report = resource.validate()
-    assert report.task.warnings == ["hash is ignored; required algorithm: sha256"]
+    assert report.task.warnings == ["hash is ignored; supported algorithms: md5/sha256"]

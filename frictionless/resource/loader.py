@@ -313,8 +313,9 @@ class ByteStreamWithStatsHandling:
     def __init__(self, byte_stream: IByteStream, *, stats: Stats):
         self.__byte_stream = byte_stream
         self.__stats = stats
-        self.__hasher = hashlib.new(settings.HASHING_ALGORITHM)
-        self.__stats.bytes = 0
+        self.__md5 = hashlib.new("md5")
+        self.__sha256 = hashlib.new("sha256")
+        self.__bytes = 0
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)
@@ -333,9 +334,16 @@ class ByteStreamWithStatsHandling:
     def read1(self, size=-1):
         size = -1 if size is None else size
         chunk = self.__byte_stream.read1(size)  # type: ignore
-        self.__stats.bytes += len(chunk)  # type: ignore
-        self.__hasher.update(chunk)
-        # End of file
+
+        # Calculate
+        self.__md5.update(chunk)
+        self.__sha256.update(chunk)
+        self.__bytes += len(chunk)
+
+        # Store (hash on EOF)
         if size == -1 or not chunk:
-            self.__stats.hash = self.__hasher.hexdigest()
+            self.__stats.md5 = self.__md5.hexdigest()
+            self.__stats.sha256 = self.__sha256.hexdigest()
+        self.__stats.bytes = self.__bytes
+
         return chunk

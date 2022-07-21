@@ -81,11 +81,11 @@ def test_program_validate_field_missing_values():
 def test_program_validate_chucksum_hash():
     actual = runner.invoke(
         program,
-        "validate data/table.csv --json --stats-hash 6c2c61dd9b0e9c6876139a449ed87933",
+        "validate data/table.csv --json --stats-md5 6c2c61dd9b0e9c6876139a449ed87933",
     )
     expect = validate(
         "data/table.csv",
-        stats=Stats(hash="6c2c61dd9b0e9c6876139a449ed87933"),
+        stats=Stats(md5="6c2c61dd9b0e9c6876139a449ed87933"),
     )
     assert actual.exit_code == 0
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())

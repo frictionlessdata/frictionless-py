@@ -46,7 +46,8 @@ def program_validate(
     skip_errors: str = common.skip_errors,
     # TODO: add checks
     # Stats
-    stats_hash: str = common.stats_hash,
+    stats_md5: str = common.stats_md5,
+    stats_sha256: str = common.stats_sha256,
     stats_bytes: int = common.stats_bytes,
     stats_fields: int = common.stats_fields,
     stats_rows: int = common.stats_rows,
@@ -136,7 +137,8 @@ def program_validate(
     # Prepare stats
     def prepare_stats():
         return Stats.from_options(
-            hash=stats_hash,
+            md5=stats_md5,
+            sha256=stats_sha256,
             bytes=stats_bytes,
             fields=stats_fields,
             rows=stats_rows,

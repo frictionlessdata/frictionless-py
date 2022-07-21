@@ -49,7 +49,7 @@ def validate(
         errors = metadata_errors
         return Report.from_validation_task(self, time=timer.time, errors=errors)
     if self.custom.get("hash"):
-        warning = f"hash is ignored; required algorithm: {settings.HASHING_ALGORITHM}"
+        warning = "hash is ignored; supported algorithms: md5/sha256"
         warnings.append(warning)
 
     # Prepare resource

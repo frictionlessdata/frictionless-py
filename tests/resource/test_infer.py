@@ -25,7 +25,8 @@ def test_resource_infer():
             ]
         },
         "stats": {
-            "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+            "md5": "6c2c61dd9b0e9c6876139a449ed87933",
+            "sha256": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
             "bytes": 30,
             "fields": 2,
             "rows": 2,
@@ -48,7 +49,8 @@ def test_resource_infer_source_non_tabular():
         # TODO: improve in detector.detect_resource
         "mediatype": "application/txt",
         "stats": {
-            "hash": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
+            "md5": "e1cbb0c3879af8347246f12c559a86b5",
+            "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
             "bytes": 5,
         },
     }

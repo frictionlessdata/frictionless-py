@@ -9,11 +9,11 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_resource_stats_hash_sha256():
+def test_resource_stats_hash():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
         assert (
-            resource.stats.hash
+            resource.stats.sha256
             == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
         )
 
@@ -23,7 +23,7 @@ def test_resource_stats_hash_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
         assert (
-            resource.stats.hash
+            resource.stats.sha256
             == "88d0ef9887dcd7d7800bff2981f8cc496fbfcd8704a17c2aa12a434ce7d88b13"
         )
 
@@ -34,7 +34,7 @@ def test_resource_stats_hash_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
         assert (
-            resource.stats.hash
+            resource.stats.sha256
             == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
         )
 

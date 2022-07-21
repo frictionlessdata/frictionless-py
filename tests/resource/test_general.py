@@ -102,7 +102,8 @@ def test_resource_source_non_tabular():
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
             assert resource.stats.to_descriptor() == {
-                "hash": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
+                "md5": "e1cbb0c3879af8347246f12c559a86b5",
+                "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
                 "bytes": 5,
             }
 
@@ -121,7 +122,8 @@ def test_resource_source_non_tabular_remote():
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
             assert resource.stats.to_descriptor() == {
-                "hash": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
+                "md5": "e1cbb0c3879af8347246f12c559a86b5",
+                "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
                 "bytes": 5,
             }
 
@@ -162,7 +164,8 @@ def test_resource_source_path():
     assert resource.header == ["id", "name"]
     if not platform.type == "windows":
         assert resource.stats.to_descriptor() == {
-            "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+            "md5": "6c2c61dd9b0e9c6876139a449ed87933",
+            "sha256": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
             "bytes": 30,
             "fields": 2,
             "rows": 2,
@@ -313,11 +316,11 @@ def test_resource_standard_specs_properties(create_descriptor):
 
 
 def test_resource_official_hash_bytes_rows():
-    resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1})
+    resource = Resource({"path": "path", "hash": "hash", "bytes": 1})
     assert resource.to_descriptor() == {
         "path": "path",
         "stats": {
-            "hash": "hash",
+            "md5": "hash",
             "bytes": 1,
         },
     }
@@ -328,7 +331,7 @@ def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
     assert resource.to_descriptor() == {
         "path": "path",
         "stats": {
-            "hash": "hash",
+            "sha256": "hash",
             "bytes": 1,
         },
     }
@@ -578,7 +581,8 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
             ]
         },
         "stats": {
-            "hash": "350e813ea15d84c697a7b03446a8fa9d7fca9883167ad70986a173c29f8253fd",
+            "md5": "f71969080b27963b937ca28cdd5f63b9",
+            "sha256": "350e813ea15d84c697a7b03446a8fa9d7fca9883167ad70986a173c29f8253fd",
             "bytes": 58,
             "fields": 2,
             "rows": 3,

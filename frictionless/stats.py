@@ -10,7 +10,10 @@ class Stats(Metadata):
 
     # State
 
-    hash: Optional[str] = None
+    md5: Optional[str] = None
+    """TODO: add docs"""
+
+    sha256: Optional[str] = None
     """TODO: add docs"""
 
     bytes: Optional[int] = None
@@ -38,7 +41,8 @@ class Stats(Metadata):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "hash": {"type": "string"},
+            "md5": {"type": "string"},
+            "sha256": {"type": "string"},
             "bytes": {"type": "integer"},
             "fields": {"type": "integer"},
             "rows": {"type": "integer"},

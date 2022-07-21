@@ -16,7 +16,6 @@ def read_asset(*paths, encoding="utf-8"):
 
 
 UNDEFINED = object()
-HASHING_ALGORITHM = "sha256"
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z])+$"
 VERSION = read_asset("VERSION")

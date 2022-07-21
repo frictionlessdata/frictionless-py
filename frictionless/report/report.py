@@ -121,12 +121,9 @@ class Report(Metadata):
         scope = scope.copy()
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = Stats(time=time, errors=len(errors))
-        if resource.has_stats:
-            task_stats.hash = resource.stats.hash
-            task_stats.bytes = resource.stats.bytes
-            task_stats.fields = resource.stats.fields
-            task_stats.rows = resource.stats.rows
+        task_stats = resource.stats.to_copy() if resource.has_stats else Stats()
+        task_stats.time = time
+        task_stats.errors = len(errors)
         report_stats = Stats(time=time, tasks=1, errors=len(errors))
         return Report(
             valid=not errors,

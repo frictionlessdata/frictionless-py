@@ -571,19 +571,19 @@ def test_validate_schema_primary_key_error_composite():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_hash():
-    hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", stats=Stats(hash=hash))
+    sha256 = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    report = validate("data/table.csv", stats=Stats(sha256=sha256))
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_hash_invalid():
-    hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", stats=Stats(hash="bad"))
+    sha256 = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    report = validate("data/table.csv", stats=Stats(sha256="bad"))
     assert report.flatten(["type", "note"]) == [
         [
             "hash-count",
-            'expected is "bad" and actual is "%s"' % hash,
+            'expected sha256 is "bad" and actual is "%s"' % sha256,
         ],
     ]
 

@@ -29,7 +29,8 @@ def test_package_infer():
                     ]
                 },
                 "stats": {
-                    "hash": "08b4645fd105c74fbb752c4cf6a1a995452178953bb874697830002474f9538f",
+                    "md5": "c028f525f314c49ea48ed09e82292ed2",
+                    "sha256": "08b4645fd105c74fbb752c4cf6a1a995452178953bb874697830002474f9538f",
                     "bytes": 114,
                     "fields": 4,
                     "rows": 2,
@@ -50,7 +51,8 @@ def test_package_infer():
                     ]
                 },
                 "stats": {
-                    "hash": "c58f34fe7961113baf24fb45f4b9fcfff9ceae6274373fd9d3c84be540075406",
+                    "md5": "cb4a683d8eecb72c9ac9beea91fd592e",
+                    "sha256": "c58f34fe7961113baf24fb45f4b9fcfff9ceae6274373fd9d3c84be540075406",
                     "bytes": 60,
                     "fields": 2,
                     "rows": 3,

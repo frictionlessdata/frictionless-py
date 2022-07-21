@@ -59,35 +59,43 @@ class baseline(Check):
         yield from row.errors  # type: ignore
 
     def validate_end(self):
-        hash = self.__stats.get("hash")
+        md5 = self.__stats.get("md5")
+        sha256 = self.__stats.get("sha256")
         bytes = self.__stats.get("bytes")
         fields = self.__stats.get("fields")
         rows = self.__stats.get("rows")
 
-        # Hash
-        if hash:
-            if hash != self.resource.stats.hash:
-                note = 'expected is "%s" and actual is "%s"'
-                note = note % (hash, self.resource.stats.hash)  # type: ignore
+        # Md5
+        if md5:
+            if md5 != self.resource.stats.md5:
+                note = 'expected md5 is "%s" and actual is "%s"'
+                note = note % (md5, self.resource.stats.md5)
+                yield errors.HashCountError(note=note)
+
+        # Sha256
+        if sha256:
+            if sha256 != self.resource.stats.sha256:
+                note = 'expected sha256 is "%s" and actual is "%s"'
+                note = note % (sha256, self.resource.stats.sha256)
                 yield errors.HashCountError(note=note)
 
         # Bytes
         if bytes:
             if bytes != self.resource.stats.bytes:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (bytes, self.resource.stats.bytes)  # type: ignore
+                note = note % (bytes, self.resource.stats.bytes)
                 yield errors.ByteCountError(note=note)
 
         # Fields
         if fields:
             if fields != self.resource.stats.fields:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (fields, self.resource.stats.fields)  # type: ignore
+                note = note % (fields, self.resource.stats.fields)
                 yield errors.FieldCountError(note=note)
 
         # Rows
         if rows:
             if rows != self.resource.stats.rows:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (rows, self.resource.stats.rows)  # type: ignore
+                note = note % (rows, self.resource.stats.rows)
                 yield errors.RowCountError(note=note)

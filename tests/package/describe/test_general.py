@@ -66,7 +66,8 @@ def test_describe_package_with_stats():
                     ]
                 },
                 "stats": {
-                    "hash": "3872c98bd72eb4a91ac666f7758cd83da904c61a35178ca1ce9e10d6b009cd21",
+                    "md5": "8fff9d97e5c0cb77b7c469ec37c8e766",
+                    "sha256": "3872c98bd72eb4a91ac666f7758cd83da904c61a35178ca1ce9e10d6b009cd21",
                     "bytes": 18,
                     "fields": 2,
                     "rows": 1,
@@ -87,7 +88,8 @@ def test_describe_package_with_stats():
                     ]
                 },
                 "stats": {
-                    "hash": "556e92cdacfc46c2338ab0b88daf9d560c6760eac2d4cb6f7df589c108fc07ce",
+                    "md5": "ebfa07d04a148a92a18078f78468694d",
+                    "sha256": "556e92cdacfc46c2338ab0b88daf9d560c6760eac2d4cb6f7df589c108fc07ce",
                     "bytes": 20,
                     "fields": 2,
                     "rows": 1,
@@ -109,11 +111,11 @@ def test_describe_package_basepath():
 def test_describe_package_hashing():
     package = Package.describe("data/chunk*.csv", stats=True)
     assert (
-        package.get_resource("chunk1").stats.hash
+        package.get_resource("chunk1").stats.sha256
         == "3872c98bd72eb4a91ac666f7758cd83da904c61a35178ca1ce9e10d6b009cd21"
     )
     assert (
-        package.get_resource("chunk2").stats.hash
+        package.get_resource("chunk2").stats.sha256
         == "556e92cdacfc46c2338ab0b88daf9d560c6760eac2d4cb6f7df589c108fc07ce"
     )
 
