@@ -32,7 +32,8 @@ def test_remote_loader_big_file():
     with Resource(BASEURL % "data/table1.csv", dialect=dialect) as resource:
         assert resource.read_rows()
         assert resource.stats.to_descriptor() == {
-            "hash": "aced987247a03e01acde64aa6b40980350b785e3aedc417ff2e09bbeacbfbf2b",
+            "md5": "78ea269458be04a0e02816c56fc684ef",
+            "sha256": "aced987247a03e01acde64aa6b40980350b785e3aedc417ff2e09bbeacbfbf2b",
             "bytes": 1000000,
             "fields": 10,
             "rows": 10000,
