@@ -10,7 +10,7 @@ def test_report():
     report = resource.validate()
     # Report
     assert report.valid is True
-    assert report.stats.time
+    assert report.stats.seconds
     assert report.stats.errors == 0
     assert report.stats.tasks == 1
     assert report.errors == []
@@ -19,7 +19,7 @@ def test_report():
     assert report.task.name == "table"
     assert report.task.place == "data/table.csv"
     assert report.task.tabular is True
-    assert report.task.stats.time
+    assert report.task.stats.seconds
     assert report.task.stats.errors == 0
     if platform.type != "windows":
         assert report.task.stats.bytes == 30

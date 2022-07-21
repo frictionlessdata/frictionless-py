@@ -31,7 +31,7 @@ class Stats(Metadata):
     errors: Optional[int] = None
     """TODO: add docs"""
 
-    time: Optional[float] = None
+    seconds: Optional[float] = None
     """TODO: add docs"""
 
     # Metadata
@@ -47,6 +47,6 @@ class Stats(Metadata):
             "fields": {"type": "integer"},
             "rows": {"type": "integer"},
             "errors": {"type": "integer"},
-            "time": {"type": "float"},
+            "seconds": {"type": "float"},
         },
     }

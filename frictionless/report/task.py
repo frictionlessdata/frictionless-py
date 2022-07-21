@@ -92,7 +92,7 @@ class ReportTask(Metadata):
         content = [
             ["File Place", self.place],
             ["File Size", humanize.naturalsize(size) if size else "(file not found)"],
-            ["Total Time", f"{self.stats.time} Seconds"],
+            ["Total Time", f"{self.stats.seconds} Seconds"],
             ["Rows Checked", self.stats.rows],
         ]
         if error_list:

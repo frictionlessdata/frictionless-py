@@ -99,7 +99,7 @@ class Report(Metadata):
         errors = errors.copy()
         warnings = warnings.copy()
         error_count = len(errors) + sum(task.stats.errors or 0 for task in tasks)
-        stats = Stats(time=time, tasks=len(tasks), errors=error_count)
+        stats = Stats(tasks=len(tasks), errors=error_count, seconds=time)
         return Report(
             valid=not error_count,
             stats=stats,
@@ -122,9 +122,9 @@ class Report(Metadata):
         errors = errors.copy()
         warnings = warnings.copy()
         task_stats = resource.stats.to_copy() if resource.has_stats else Stats()
-        task_stats.time = time
         task_stats.errors = len(errors)
-        report_stats = Stats(time=time, tasks=1, errors=len(errors))
+        task_stats.seconds = time
+        report_stats = Stats(tasks=1, errors=len(errors), seconds=time)
         return Report(
             valid=not errors,
             stats=report_stats,

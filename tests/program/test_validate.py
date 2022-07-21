@@ -241,6 +241,6 @@ def test_program_validate_multipart_zipped_resource_1140():
 
 def no_time(descriptor):
     for task in descriptor.get("tasks", []):
-        task["stats"].pop("time", None)
-    descriptor["stats"].pop("time", None)
+        task["stats"].pop("seconds", None)
+    descriptor["stats"].pop("seconds", None)
     return descriptor

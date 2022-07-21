@@ -10,9 +10,9 @@ def test_report_task():
         name="name",
         type="table",
         place="place",
-        stats=Stats(time=1),
+        stats=Stats(seconds=1),
     )
     assert task.name == "name"
     assert task.type == "table"
     assert task.place == "place"
-    assert task.stats.time == 1
+    assert task.stats.seconds == 1
