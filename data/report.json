@@ -1,0 +1,31 @@
+{
+    "valid": true,
+    "stats": {
+      "time": 0.025,
+      "tasks": 1,
+      "errors": 0
+    },
+    "warnings": [],
+    "errors": [],
+    "tasks": [
+      {
+        "valid": true,
+        "name": "country-1",
+        "type": "table",
+        "place": "1170/country-1.csv",
+        "stats": {
+          "hash": "7810ee057180296008e9747b12171a1f",
+          "bytes": 101,
+          "fields": 4,
+          "rows": 6,
+          "time": 0.025,
+          "errors": 0
+        },
+        "scope": [
+          "duplicate-label"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ]
+}

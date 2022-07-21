@@ -1,0 +1,5 @@
+{"tasks": [
+    {"source": "data/capital-valid.csv"},
+    {"source": "data/capital-invalid.csv"}
+  ]
+}

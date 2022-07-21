@@ -1,5 +1,6 @@
+import json
 import pytest
-from frictionless import Resource
+from frictionless import Resource, Report
 
 
 # General
@@ -65,3 +66,35 @@ def test_report_to_yaml_with_bytes_serialization_issue_836():
     report = resource.validate()
     descriptor = report.to_yaml()
     assert "binary" not in descriptor
+
+
+# Yaml
+
+
+def test_report_to_yaml():
+    report = Report.from_descriptor("data/report.json")
+    output_file_path = "data/fixtures/convert/report.yaml"
+    with open(output_file_path) as file:
+        assert report.to_yaml().strip() == file.read().strip()
+
+
+# Json
+
+
+def test_report_to_json():
+    report = Report.from_descriptor("data/report.yaml")
+
+    # Read
+    output_file_path = "data/fixtures/convert/report.json"
+    with open(output_file_path) as file:
+        assert json.loads(report.to_json()) == json.loads(file.read())
+
+
+# Markdown
+
+
+def test_report_to_markdown():
+    report = Report.from_descriptor("data/report.json")
+    output_file_path = "data/fixtures/convert/report.md"
+    with open(output_file_path) as file:
+        assert report.to_markdown().strip() == file.read()

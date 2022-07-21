@@ -1,0 +1,12 @@
+{
+    "tasks": [
+        {
+            "type": "resource",
+            "source": {"path": "data/transform.csv"},
+            "steps": [
+                {"code": "table-normalize"},
+                {"code": "table-melt", "fieldName": "name"}
+            ]
+        }
+    ]
+}
