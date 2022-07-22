@@ -48,21 +48,6 @@ compression = Option(
     help="Specify compression  [default: inferred]",
 )
 
-output_file_path = Option(
-    default=None,
-    help="Specify the output file path explicitly (e.g. package.yaml)",
-)
-
-er_diagram = Option(
-    default=False,
-    help="Return er diagram. It is only available for package",
-)
-
-markdown = Option(
-    default=False,
-    help="Return markdown",
-)
-
 # Dialect
 
 header_rows = Option(
@@ -297,6 +282,11 @@ strict = Option(
     help="Validate against strict version of the standards",
 )
 
+output_path = Option(
+    default=None,
+    help="Specify the output file path explicitly (e.g. package.yaml)",
+)
+
 yaml = Option(
     default=False,
     help="Return in pure YAML format",
@@ -315,6 +305,11 @@ csv = Option(
 markdown = Option(
     default=False,
     help="Return in Markdown format",
+)
+
+er_diagram = Option(
+    default=False,
+    help="Return er diagram. It is only available for package",
 )
 
 port = Option(

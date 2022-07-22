@@ -1,3 +1,3 @@
 ## `inquiry`
-### `task` - `resource` data/capital-valid.csv
-### `task` - `resource` data/capital-invalid.csv
+### `task` - `path` data/capital-valid.csv
+### `task` - `path` data/capital-invalid.csv

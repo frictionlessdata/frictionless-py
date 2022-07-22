@@ -1,8 +1,6 @@
 ## `pipeline`
-        
+
 ### `step`
-- `type` table-normalize
-        
-### `step`
-- `type` table-melt
+- `type` cell-set
 - `fieldName` name
+- `value` 100

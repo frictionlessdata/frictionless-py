@@ -16,8 +16,8 @@ from . import common
 def program_convert(
     # Source
     source: str = common.source,
-    path: str = common.output_file_path,
     # Command
+    path: str = common.output_path,
     json: bool = common.json,
     yaml: bool = common.yaml,
     er_diagram: bool = common.er_diagram,
@@ -31,13 +31,8 @@ def program_convert(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
-    metadata_type = Detector.detect_descriptor(source)
-    if not metadata_type:
-        message = "File not found"
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
     # Initialize metadata
+    metadata_type = Detector.detect_descriptor(source)
     try:
         if metadata_type == "package":
             metadata = Package.from_descriptor(source)
@@ -57,6 +52,10 @@ def program_convert(
             metadata = Detector.from_descriptor(source)
         elif metadata_type == "pipeline":
             metadata = Pipeline.from_descriptor(source)
+        else:
+            message = "File not found or not supported type of metadata"
+            typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
@@ -75,14 +74,13 @@ def program_convert(
 
     # Return ER Diagram
     if er_diagram:
-        if metadata_type == "package":
-            content = metadata.to_er_diagram(path)
-            typer.secho(content)
-            raise typer.Exit()
-        else:
-            message = "This feature is only available for package"
+        if not isinstance(metadata, Package):
+            message = "ER-diagram format is only available for package"
             typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
             raise typer.Exit(1)
+        content = metadata.to_er_diagram(path)
+        typer.secho(content)
+        raise typer.Exit()
 
     # Return markdown
     if markdown:
@@ -91,6 +89,6 @@ def program_convert(
         raise typer.Exit()
 
     # Return retcode
-    message = "No target specified. For example --yaml"
+    message = "No format specified. For example --yaml"
     typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
     raise typer.Exit(1)

@@ -1,4 +1,5 @@
+name: pipeline
 steps:
-  - type: table-normalize
-  - type: table-melt
-    fieldName: name
+  - code: cell-set
+    fieldName: population
+    value: 100

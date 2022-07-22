@@ -1,5 +1,5 @@
 {"tasks": [
-    {"source": "data/capital-valid.csv"},
-    {"source": "data/capital-invalid.csv"}
+    {"path": "data/capital-valid.csv"},
+    {"path": "data/capital-invalid.csv"}
   ]
 }
