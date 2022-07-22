@@ -10,7 +10,16 @@ class PandasParser(Parser):
     """Pandas parser implementation."""
 
     supported_types = [
+        "array",
+        "boolean",
+        "datetime",
+        "date",
+        "duration",
+        "integer",
+        "number",
+        "object",
         "string",
+        "time",
     ]
 
     # Read

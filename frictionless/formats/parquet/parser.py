@@ -1,23 +1,31 @@
 from __future__ import annotations
+from ...platform import platform
 from ...resource import Resource
 from .control import ParquetControl
 from ...resource import Parser
-from ... import helpers
 
 
 class ParquetParser(Parser):
     """JSONL parser implementation."""
 
     supported_types = [
+        "array",
+        "boolean",
+        "datetime",
+        "date",
+        "duration",
+        "integer",
+        "number",
+        "object",
         "string",
+        "time",
     ]
 
     # Read
 
     def read_cell_stream_create(self):
-        parquet = helpers.import_from_extras("fastparquet", name="parquet")
         control = ParquetControl.from_dialect(self.resource.dialect)
-        file = parquet.ParquetFile(self.resource.normpath)
+        file = platform.fastparquet.ParquetFile(self.resource.normpath)
         for group, df in enumerate(file.iter_row_groups(**control.to_python()), start=1):
             with Resource(data=df, format="pandas") as resource:
                 for line, cells in enumerate(resource.cell_stream, start=1):
@@ -29,5 +37,4 @@ class ParquetParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        parquet = helpers.import_from_extras("fastparquet", name="parquet")
-        parquet.write(self.resource.normpath, source.to_pandas())
+        platform.fastparquet.write(self.resource.normpath, source.to_pandas())

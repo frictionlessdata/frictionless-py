@@ -248,6 +248,13 @@ class Platform:
         return numpy
 
     @cached_property
+    @extras(name="parquet")
+    def fastparquet(self):
+        import fastparquet
+
+        return fastparquet
+
+    @cached_property
     @extras(name="spss")
     def sav_reader_writer(self):
         import savReaderWriter
