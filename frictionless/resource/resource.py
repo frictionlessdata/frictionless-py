@@ -1195,7 +1195,9 @@ class Resource(Metadata):
 
         # Url (v0)
         url = descriptor.pop("url", None)
-        if url is not None:
+        path = descriptor.get("path")
+        data = descriptor.get("data")
+        if not path and not data and url:
             descriptor.setdefault("path", url)
 
         # Path (v1)
