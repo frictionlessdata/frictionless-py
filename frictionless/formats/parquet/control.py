@@ -36,6 +36,7 @@ class ParquetControl(Control):
 
     metadata_profile_patch = {
         "properties": {
+            "columns": {"type": "array", "items": {"type": "string"}},
             "categories": {},
             "filters": {},
         },
