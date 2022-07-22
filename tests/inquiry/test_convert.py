@@ -1,4 +1,5 @@
 import json
+import pytest
 from frictionless import Inquiry, InquiryTask
 
 
@@ -37,8 +38,8 @@ def test_inquiry_to_json():
     inquiry = Inquiry.from_descriptor("data/inquiry.yaml")
     assert json.loads(inquiry.to_json()) == {
         "tasks": [
-            {"resource": "data/capital-valid.csv"},
-            {"resource": "data/capital-invalid.csv"},
+            {"path": "data/capital-valid.csv"},
+            {"path": "data/capital-invalid.csv"},
         ]
     }
 
@@ -46,6 +47,7 @@ def test_inquiry_to_json():
 # Markdown
 
 
+@pytest.mark.xfail
 def test_inquiry_to_markdown():
     inquiry = Inquiry.from_descriptor("data/inquiry.json")
     output_file_path = "data/fixtures/convert/inquiry.md"

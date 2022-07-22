@@ -153,7 +153,6 @@ def test_resource_to_markdown_file(tmpdir):
 # Bugs
 
 
-@pytest.mark.xfail(reason="Recover")
 def test_to_json_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
@@ -161,7 +160,6 @@ def test_to_json_with_resource_data_is_not_a_list_issue_693():
     assert json.loads(text) == {}
 
 
-@pytest.mark.xfail(reason="Recover")
 def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)

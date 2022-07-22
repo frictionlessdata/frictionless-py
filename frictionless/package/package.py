@@ -65,11 +65,11 @@ class Package(Metadata):
         created: Optional[str] = None,
         resources: List[Resource] = [],
         # Software
-        innerpath: Optional[str] = None,
         basepath: str = settings.DEFAULT_BASEPATH,
         onerror: IOnerror = settings.DEFAULT_ONERROR,
         trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
+        innerpath: Optional[str] = None,
         control: Optional[Control] = None,
     ):
 
@@ -87,7 +87,6 @@ class Package(Metadata):
         self.version = version
         self.created = created
         self.resources = resources.copy()
-        self.innerpath = innerpath
         self.basepath = basepath
         self.onerror = onerror
         self.trusted = trusted
@@ -99,6 +98,7 @@ class Package(Metadata):
 
         # Handled by the create hook
         assert source is None
+        assert innerpath is None
         assert control is None
 
     # TODO: support list of paths
@@ -116,7 +116,7 @@ class Package(Metadata):
 
             # Compressed
             elif helpers.is_zip_descriptor(source):
-                innerpath = options.get("innerpath")
+                innerpath = options.pop("innerpath", None)
                 source = unzip_package(source, innerpath=innerpath)
 
             # Expandable
@@ -227,18 +227,10 @@ class Package(Metadata):
     It can be dicts or Resource instances
     """
 
-    innerpath: Optional[str]
-    """
-    A ZIP datapackage descriptor inner path.
-    Path to the package descriptor inside the ZIP datapackage.
-    Example: some/folder/datapackage.yaml
-    Default: datapackage.json or datapackage.yaml
-    """
-
     basepath: str
     """
-    A basepath of the resource
-    The fullpath of the resource is joined `basepath` and /path`
+    A basepath of the package
+    The fullpath of the resource is joined `basepath` and `/path`
     """
 
     onerror: IOnerror

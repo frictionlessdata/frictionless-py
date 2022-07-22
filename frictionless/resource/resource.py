@@ -1029,13 +1029,8 @@ class Resource(Metadata):
 
     # Convert
 
-    # TODO: review
     def to_copy(self, **options):
-        """Create a copy from the resource
-
-        Returns
-            Resource: resource copy
-        """
+        """Create a copy from the resource"""
         return super().to_copy(
             data=self.data,
             basepath=self.basepath,
@@ -1043,7 +1038,6 @@ class Resource(Metadata):
             trusted=self.trusted,
             detector=self.detector,
             package=self.package,
-            # TODO: rework with dialect rework
             control=self.__control,
             **options,
         )
@@ -1254,7 +1248,7 @@ class Resource(Metadata):
         # Data
         data = descriptor.get("data")
         if data is not None and not isinstance(data, (list, dict)):
-            descriptor["data"] = []
+            descriptor.pop("data")
 
         # Path (v1)
         if system.standards_version == "v1":

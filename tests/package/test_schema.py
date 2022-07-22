@@ -125,7 +125,6 @@ def test_package_schema_foreign_key_self_reference_invalid():
     assert rows[2].errors[0].type == "foreign-key"
 
 
-@pytest.mark.xfail(reason="Fix it")
 def test_package_schema_foreign_key_multifield():
     package = Package(DESCRIPTOR_FK)
     package.resources[0].schema.foreign_keys = [

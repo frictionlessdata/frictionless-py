@@ -6,6 +6,7 @@ import json
 import pprint
 import stringcase
 from pathlib import Path
+from copy import deepcopy
 from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING
@@ -133,7 +134,6 @@ class Metadata(metaclass=Metaclass):
 
     # Convert
 
-    # TODO: review
     def to_copy(self, **options):
         """Create a copy of the metadata"""
         return type(self).from_descriptor(self.to_descriptor(), **options)
@@ -301,6 +301,8 @@ class Metadata(metaclass=Metaclass):
                     value = value.to_descriptor_source()  # type: ignore
                     if not value:
                         continue
+            if isinstance(value, (list, dict)):
+                value = deepcopy(value)
             descriptor[name] = value
         descriptor.update(self.custom)
         return descriptor
@@ -332,7 +334,7 @@ class Metadata(metaclass=Metaclass):
         """Extract metadata"""
         try:
             if isinstance(descriptor, Mapping):
-                return dict(descriptor)
+                return deepcopy(descriptor)
             if isinstance(descriptor, (str, Path)):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)

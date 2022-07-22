@@ -93,6 +93,7 @@ def test_report_to_json():
 # Markdown
 
 
+@pytest.mark.xfail
 def test_report_to_markdown():
     report = Report.from_descriptor("data/report.json")
     output_file_path = "data/fixtures/convert/report.md"
