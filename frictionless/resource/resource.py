@@ -168,14 +168,6 @@ class Resource(Metadata):
     def __exit__(self, type, value, traceback):
         self.close()
 
-    # TODO: iter cell stream to be PETL-compatible?
-    def __iter__(self):
-        with helpers.ensure_open(self):
-            # TODO: rebase on Inferred/OpenResource?
-            # (here and in other places like this)
-            assert self.__row_stream
-            yield from self.__row_stream
-
     # State
 
     name: Optional[str]
