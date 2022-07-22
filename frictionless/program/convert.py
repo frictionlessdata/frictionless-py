@@ -32,6 +32,7 @@ def program_convert(
         raise typer.Exit(1)
 
     # Initialize metadata
+    metadata = None
     metadata_type = Detector.detect_descriptor(source)
     try:
         if metadata_type == "package":
@@ -52,12 +53,14 @@ def program_convert(
             metadata = Detector.from_descriptor(source)
         elif metadata_type == "pipeline":
             metadata = Pipeline.from_descriptor(source)
-        else:
-            message = "File not found or not supported type of metadata"
-            typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
+
+    # Not found/supported
+    if not metadata:
+        message = "File not found or not supported type of metadata"
+        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
     # Return json
