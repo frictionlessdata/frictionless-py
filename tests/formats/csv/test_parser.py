@@ -80,7 +80,7 @@ def test_csv_parser_escaping():
 def test_csv_parser_doublequote():
     with Resource("data/doublequote.csv") as resource:
         assert len(resource.header) == 17
-        for row in resource:
+        for row in resource.row_stream:
             assert len(row) == 17
 
 

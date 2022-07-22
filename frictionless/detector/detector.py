@@ -311,7 +311,7 @@ class Detector(Metadata):
         """
 
         # Create schema
-        if not schema or not schema.fields:
+        if not schema:
             schema = Schema()
 
             # Missing values

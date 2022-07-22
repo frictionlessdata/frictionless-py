@@ -287,7 +287,11 @@ class Resource(Metadata):
         For more information, please check the Dialect documentation.
         """
         if self.__dialect is None:
-            raise FrictionlessException("dialect is not set or inferred")
+            self.metadata_assigned.add("dialect")
+            if self.__dialect is None:
+                self.__dialect = Dialect()
+                if self.__control:
+                    self.__dialect.set_control(self.__control)
         if isinstance(self.__dialect, str):
             path = os.path.join(self.basepath, self.__dialect)
             self.__dialect = Dialect.from_descriptor(path)
@@ -296,10 +300,6 @@ class Resource(Metadata):
     @dialect.setter
     def dialect(self, value: Optional[Union[Dialect, str]]):
         self.__dialect = value
-
-    @property
-    def has_dialect(self) -> bool:
-        return self.__dialect is not None
 
     @property
     def schema(self) -> Schema:
@@ -359,7 +359,8 @@ class Resource(Metadata):
         An object with the following possible properties: hash, bytes, fields, rows.
         """
         if self.__stats is None:
-            raise FrictionlessException("stats is not set or inferred")
+            self.metadata_assigned.add("stats")
+            self.__stats = Stats()
         return self.__stats
 
     @stats.setter
@@ -627,7 +628,6 @@ class Resource(Metadata):
         """
         if sample is False:
             self.__prepare_file()
-            self.__prepare_stats()
             return
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
@@ -647,7 +647,6 @@ class Resource(Metadata):
         # General
         self.close()
         self.__prepare_file()
-        self.__prepare_stats()
 
         # Open
         try:
@@ -700,20 +699,10 @@ class Resource(Metadata):
         # Detect
         self.detector.detect_resource(self)
         system.detect_resource(self)
-        if self.__dialect is None:
-            self.__dialect = Dialect()
-            if self.__control:
-                self.__dialect.set_control(self.__control)
 
         # Validate
-        self.metadata_assigned.add("dialect")
         if not self.metadata_valid:
             raise FrictionlessException(self.metadata_errors[0])
-
-    def __prepare_stats(self):
-
-        # Initiate
-        self.stats = Stats()
 
     def __prepare_loader(self):
 
@@ -746,13 +735,10 @@ class Resource(Metadata):
     def __prepare_dialect(self):
 
         # Detect
-        self.dialect = self.detector.detect_dialect(
-            self.sample,
-            dialect=self.dialect if self.has_dialect else None,
-        )
+        self.metadata_assigned.add("dialect")
+        self.__dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
 
         # Validate
-        self.metadata_assigned.add("dialect")
         if not self.dialect.metadata_valid:
             raise FrictionlessException(self.dialect.metadata_errors[0])
 
@@ -769,7 +755,8 @@ class Resource(Metadata):
     def __prepare_schema(self):
 
         # Detect
-        self.schema = self.detector.detect_schema(
+        self.metadata_assigned.add("schema")
+        self.__schema = self.detector.detect_schema(
             self.fragment,
             labels=self.labels,
             schema=self.schema if self.has_schema else None,
@@ -1323,7 +1310,7 @@ class Resource(Metadata):
                     yield errors.ResourceError(note=note)
 
         # Dialect
-        if self.has_dialect:
+        if self.dialect:
             yield from self.dialect.metadata_errors
 
         # Schema
