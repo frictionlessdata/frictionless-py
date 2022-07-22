@@ -1,0 +1,13 @@
+{
+    "checks": [
+        {
+            "type": "deviated-cell",
+            "ignoreFields": [
+                "Latitudine",
+                "Longitudine"
+            ],
+            "interval": 3
+        },
+        {"type": "ascii-value"}
+    ]
+}

@@ -1,0 +1,3 @@
+tasks:
+  - resource: data/capital-valid.csv
+  - resource: data/capital-invalid.csv

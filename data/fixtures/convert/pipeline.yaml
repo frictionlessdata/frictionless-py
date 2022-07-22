@@ -1,0 +1,4 @@
+steps:
+  - type: table-normalize
+  - type: table-melt
+    fieldName: name
