@@ -1,38 +1,27 @@
 import pytest
-from frictionless import Resource, Schema, Checklist
+from frictionless import Resource, Schema, Checklist, Detector
 
 
 # General
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
-def test_resource_validate_schema_invalid():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {
-            "fields": [
-                {"name": "name"},
-                {"name": "age", "type": "bad"},
-            ]
-        }
-    )
-    resource = Resource(source, schema=schema)
-    report = resource.validate()
-    assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
-    ]
-
-
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_resource_validate_schema_invalid_json():
     resource = Resource("data/table.csv", schema="data/invalid.json")
     report = resource.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "schema-error"],
     ]
+
+
+@pytest.mark.xfail(reason="error-catching")
+def test_resource_validate_invalid_resource():
+    resource = Resource({"path": "data/table.csv", "schema": "bad"})
+    report = resource.validate()
+    assert report.stats.errors == 1
+    [[type, note]] = report.flatten(["type", "note"])
+    assert type == "schema-error"
+    assert note.count("[Errno 2]") and note.count("bad")
 
 
 def test_resource_validate_schema_extra_headers_and_cells():
@@ -258,4 +247,45 @@ def test_resource_validate_schema_primary_key_error_composite():
         [5, None, "primary-key"],
         [6, None, "blank-row"],
         [6, None, "primary-key"],
+    ]
+
+
+# Bugs
+
+
+@pytest.mark.xfail(reason="error-catching")
+def test_resource_validate_invalid_table_schema_issue_304():
+    source = [["name", "age"], ["Alex", "33"]]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "name"},
+                {"name": "age", "type": "bad"},
+            ]
+        }
+    )
+    resource = Resource(source, schema=schema)
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "field-error",
+            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
+        ],
+    ]
+
+
+@pytest.mark.xfail(reason="error-catching")
+def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910():
+    detector = Detector(schema_sync=True)
+    resource = Resource(
+        "data/duplicate-column.csv",
+        schema="data/duplicate-column-schema.json",
+        detector=detector,
+    )
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "schema-error",
+            'Duplicate labels in header is not supported with "schema_sync"',
+        ],
     ]

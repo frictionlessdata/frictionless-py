@@ -69,3 +69,23 @@ def test_resource_schema_from_path_error_path_not_safe():
     error = excinfo.value.error
     assert error.type == "resource-error"
     assert error.note.count("schema.json")
+
+
+@pytest.mark.xfail(reason="Not suppored path safety checking")
+def test_resource_extrapaths_error_bad_path_not_safe_absolute():
+    bad_path = os.path.abspath("data/chunk1.csv")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": bad_path, "extrapaths": ["data/chunk2.csv"]})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("not safe")
+
+
+@pytest.mark.xfail(reason="Not suppored path safety checking")
+def test_resource_extrapaths_error_bad_path_not_safe_traversing():
+    bad_path = os.path.abspath("data/../chunk2.csv")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "data/chunk1.csv", "extrapaths": [bad_path]})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("not safe")

@@ -105,26 +105,6 @@ def test_multipart_loader_resource_error_bad_path():
     assert error.note.count("[Errno 2]") and error.note.count("chunk1.csv")
 
 
-@pytest.mark.xfail(reason="Not suppored path safety checking")
-def test_multipart_loader_resource_error_bad_path_not_safe_absolute():
-    bad_path = os.path.abspath("data/chunk1.csv")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": bad_path, "extrapaths": ["data/chunk2.csv"]})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("not safe")
-
-
-@pytest.mark.xfail(reason="Not suppored path safety checking")
-def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
-    bad_path = os.path.abspath("data/../chunk2.csv")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "data/chunk1.csv", "extrapaths": [bad_path]})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("not safe")
-
-
 @pytest.mark.skipif(platform.type == "windows", reason="Stats problem on Windows")
 def test_multipart_loader_resource_infer():
     descriptor = {"path": "data/chunk1.csv", "extrapaths": ["data/chunk2.csv"]}

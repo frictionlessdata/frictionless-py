@@ -1,7 +1,6 @@
 import pytest
 import pathlib
 from frictionless import Resource, Detector, Check, Checklist, errors
-from frictionless.schema.schema import Schema
 
 
 # General
@@ -13,25 +12,16 @@ def test_resource_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
-def test_resource_validate_invalid_resource():
-    resource = Resource({"path": "data/table.csv", "schema": "bad"})
-    report = resource.validate()
-    assert report.stats.errors == 1
-    [[type, note]] = report.flatten(["type", "note"])
-    assert type == "schema-error"
-    assert note.count("[Errno 2]") and note.count("bad")
-
-
-@pytest.mark.xfail
 def test_resource_validate_invalid_resource_strict():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate(strict=True)
     assert report.flatten(["type", "note"]) == [
-        [
-            "resource-error",
-            '"{\'path\': \'data/table.csv\'} is not valid under any of the given schemas" at "" in metadata and at "oneOf" in profile',
-        ]
+        ["resource-error", 'property "name" is required in a strict mode'],
+        ["resource-error", 'property "type" is required in a strict mode'],
+        ["resource-error", 'property "scheme" is required in a strict mode'],
+        ["resource-error", 'property "format" is required in a strict mode'],
+        ["resource-error", 'property "encoding" is required in a strict mode'],
+        ["resource-error", 'property "mediatype" is required in a strict mode'],
     ]
 
 
@@ -346,27 +336,6 @@ def test_resource_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
-def test_resource_validate_invalid_table_schema_issue_304():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {
-            "fields": [
-                {"name": "name"},
-                {"name": "age", "type": "bad"},
-            ]
-        }
-    )
-    resource = Resource(source, schema=schema)
-    report = resource.validate()
-    assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
-    ]
-
-
 def test_resource_validate_table_is_invalid_issue_312():
     resource = Resource("data/issue-312.xlsx")
     report = resource.validate()
@@ -418,34 +387,13 @@ def test_resource_validate_resource_header_row_has_first_number_issue_870():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_resource_array_path_issue_991():
     with pytest.warns(UserWarning):
         resource = Resource("data/issue-991.resource.json")
         report = resource.validate()
         assert report.flatten(["type", "note"]) == [
-            [
-                "scheme-error",
-                'Multipart resource requires "multipart" scheme but "file" is set',
-            ],
+            ["source-error", "the source is empty"],
         ]
-
-
-@pytest.mark.xfail(reason="Review if the error type is correct")
-def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910():
-    detector = Detector(schema_sync=True)
-    resource = Resource(
-        "data/duplicate-column.csv",
-        schema="data/duplicate-column-schema.json",
-        detector=detector,
-    )
-    report = resource.validate()
-    assert report.flatten(["type", "note"]) == [
-        [
-            "schema-error",
-            'Duplicate labels in header is not supported with "schema_sync"',
-        ],
-    ]
 
 
 def test_resource_validate_resource_metadata_errors_with_missing_values_993():

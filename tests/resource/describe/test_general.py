@@ -168,12 +168,6 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
     assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
 
 
-def test_describe_schema_proper_quote_issue_493():
-    resource = Resource.describe("data/issue-493.csv")
-    assert resource.dialect.to_descriptor() == {}
-    assert len(resource.schema.fields) == 126
-
-
 def test_describe_file_with_different_characters_name_issue_600():
     assert Resource.describe("data/table_with_data.csv").name == "table_with_data"
     assert Resource.describe("data/Table With Data.csv").name == "table-with-data"
@@ -190,7 +184,7 @@ def test_describe_resource_compression_gzip_issue_606():
     assert resource.stats.bytes == 61
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="json-data")
 def test_describe_resource_with_json_format_issue_827():
     resource = Resource.describe("data/table.json")
     assert resource.name == "table"

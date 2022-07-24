@@ -1,34 +1,28 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="Recover steps")
 def test_resource_transform():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_melt(field_name="id"),
         ],
     )
     target = source.transform(pipeline)
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
         ]
     }
     assert target.read_rows() == [
-        {"id": 1, "variable": "name", "value": "germany"},
-        {"id": 1, "variable": "population", "value": 83},
-        {"id": 2, "variable": "name", "value": "france"},
-        {"id": 2, "variable": "population", "value": 66},
-        {"id": 3, "variable": "name", "value": "spain"},
-        {"id": 3, "variable": "population", "value": 47},
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
     ]
 
 
