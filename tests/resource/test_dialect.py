@@ -206,7 +206,6 @@ def test_resource_layout_skip_rows_with_headers_example_from_readme():
         ]
 
 
-@pytest.mark.xfail(reason="Support v1 dialect")
 def test_resource_dialect_from_descriptor():
     dialect = {
         "delimiter": "|",
@@ -223,43 +222,42 @@ def test_resource_dialect_from_descriptor():
         "dialect": dialect,
     }
     resource = Resource(descriptor, basepath="data")
-    assert resource.dialect == dialect
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": " |##"},
     ]
 
 
-@pytest.mark.xfail(reason="Support v1 dialect")
+@pytest.mark.xfail(reason="dereferencing")
 def test_resource_dialect_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
-    assert resource == {
+    assert resource.to_descriptor() == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
         "schema": "schema.json",
     }
-    assert resource.dialect == {
+    assert resource.dialect.to_descriptor() == {
         "delimiter": ";",
     }
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Support v1 dialect")
+@pytest.mark.xfail(reason="dereferencing")
 def test_resource_dialect_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
-    assert resource == {
+    assert resource.to_descriptor() == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
         "schema": "schema.json",
     }
-    assert resource.dialect == {
+    assert resource.dialect.to_descriptor() == {
         "delimiter": ";",
     }
 
 
-@pytest.mark.xfail(reason="Support safety checks")
+@pytest.mark.xfail(reason="safety")
 def test_resource_dialect_from_path_error_path_not_safe():
     dialect = os.path.abspath("data/dialect.json")
     with pytest.raises(FrictionlessException) as excinfo:

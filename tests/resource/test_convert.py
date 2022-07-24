@@ -174,7 +174,7 @@ def test_to_yaml_allow_unicode_issue_844():
     assert "età" in text
 
 
-@pytest.mark.xfail(reason="Fix metadata_descriptor_path / normalization problem")
+@pytest.mark.xfail(reason="dereferencing")
 def test_resource_to_descriptor_infer_dereferencing_issue_904():
     resource = Resource(path="data/table.csv", schema="data/schema.json")
     resource.infer(stats=True)
