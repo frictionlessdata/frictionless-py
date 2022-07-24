@@ -89,7 +89,7 @@ def test_resource_to_markdown_path_schema():
     assert resource.to_markdown().strip() == expected
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_path_schema_table():
     descriptor = {
         "name": "main",
