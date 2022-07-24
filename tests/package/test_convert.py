@@ -100,7 +100,7 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
     ]
 
 
-@pytest.mark.xfail(reason="Doesn't work with function")
+@pytest.mark.xfail(reason="package-zip")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
@@ -115,20 +115,7 @@ def test_package_to_zip_resource_memory_function(tmpdir):
     ]
 
 
-def test_package_to_zip_resource_sql(tmpdir, database_url):
-    path = os.path.join(tmpdir, "package.zip")
-    control = formats.SqlControl(table="table")
-    source = Package(resources=[Resource(database_url, name="table", control=control)])
-    source.to_zip(path)
-    target = Package.from_zip(path)
-    assert target.get_resource("table").path == database_url
-    assert target.get_resource("table").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.xfail(reason="Doesn't work with multipart")
+@pytest.mark.xfail(reason="package-zip")
 def test_package_to_zip_resource_multipart(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     resource = Resource(path="data/chunk1.csv", extrapaths=["data/chunk2.csv"])
@@ -138,6 +125,19 @@ def test_package_to_zip_resource_multipart(tmpdir):
     assert target.get_resource("chunk").path == "data/chunk1.csv"
     assert target.get_resource("chunk").extrapaths == ["data/chunk2.csv"]
     assert target.get_resource("chunk").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_to_zip_resource_sql(tmpdir, database_url):
+    path = os.path.join(tmpdir, "package.zip")
+    control = formats.SqlControl(table="table")
+    source = Package(resources=[Resource(database_url, name="table", control=control)])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").path == database_url
+    assert target.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -208,69 +208,6 @@ def test_package_to_markdown():
     assert package.to_markdown().strip() == expected
 
 
-@pytest.mark.xfail
-def test_package_to_markdown_table():
-    descriptor = {
-        "name": "package",
-        "resources": [
-            {
-                "name": "main",
-                "schema": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "description": "Any positive integer",
-                            "type": "integer",
-                            "constraints": {"minimum": 1},
-                        },
-                        {
-                            "name": "integer_minmax",
-                            "description": "An integer between 1 and 10",
-                            "type": "integer",
-                            "constraints": {"minimum": 1, "maximum": 10},
-                        },
-                        {
-                            "name": "boolean",
-                            "description": "Any boolean",
-                            "type": "boolean",
-                        },
-                    ],
-                    "primaryKey": ["id"],
-                },
-            },
-            {
-                "name": "secondary",
-                "schema": {
-                    "fields": [
-                        {
-                            "name": "main_id",
-                            "description": "Any value in main.id",
-                            "type": "integer",
-                        },
-                        {
-                            "name": "string",
-                            "description": "Any string of up to 3 characters",
-                            "type": "string",
-                            "constraints": {"maxLength": 3},
-                        },
-                    ],
-                    "foreignKeys": [
-                        {
-                            "fields": ["main_id"],
-                            "reference": {"resource": "main", "fields": ["id"]},
-                        }
-                    ],
-                },
-            },
-        ],
-    }
-    package = Package(descriptor)
-    md_file_path = "data/fixtures/output-markdown/package-table.md"
-    with open(md_file_path, encoding="utf-8") as file:
-        expected = file.read()
-    assert package.to_markdown(table=True).strip() == expected
-
-
 def test_package_to_markdown_file(tmpdir):
     descriptor = descriptor = descriptor = {
         "name": "package",
@@ -337,10 +274,73 @@ def test_package_to_markdown_file(tmpdir):
     assert expected == output
 
 
+@pytest.mark.xfail(reason="issue-1205")
+def test_package_to_markdown_table():
+    descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    package = Package(descriptor)
+    md_file_path = "data/fixtures/output-markdown/package-table.md"
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert package.to_markdown(table=True).strip() == expected
+
+
 # ER Diagram
 
 
-@pytest.mark.xfail(reason="This ER-diagram export doesn't work")
+@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_erd():
     package = Package("data/package-storage.json")
     with open("data/fixtures/dot-files/package.dot") as file:

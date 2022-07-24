@@ -6,7 +6,7 @@ from frictionless import FrictionlessException, Package, Resource, platform
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 def test_package_external_profile():
     profile = "frictionless/assets/profiles/package/general.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -15,7 +15,7 @@ def test_package_external_profile():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 def test_package_external_profile_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -26,7 +26,7 @@ def test_package_external_profile_invalid_local():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 def test_package_external_profile_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -37,7 +37,7 @@ def test_package_external_profile_invalid_local_from_descriptor():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
@@ -48,7 +48,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -60,7 +60,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted()
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 def test_package_external_profile_invalid_remote():
     profile = (
         "https://raw.githubusercontent.com/tdwg/camtrap-dp/main/camtrap-dp-profile.json"
@@ -73,7 +73,7 @@ def test_package_external_profile_invalid_remote():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Profiles are not yet supported")
+@pytest.mark.xfail(reason="profiles")
 def test_package_external_profile_invalid_remote_from_descriptor():
     profile = (
         "https://raw.githubusercontent.com/tdwg/camtrap-dp/main/camtrap-dp-profile.json"

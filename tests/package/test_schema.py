@@ -1,4 +1,3 @@
-import pytest
 from frictionless import Package
 
 
@@ -98,11 +97,10 @@ def test_package_schema_foreign_key_invalid():
     }
 
 
-@pytest.mark.xfail(reason="Self-reference doesn't work")
 def test_package_schema_foreign_key_self_reference():
     package = Package(DESCRIPTOR_FK)
     package.resources[0].schema.foreign_keys = [
-        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
+        {"fields": ["parent_id"], "reference": {"resource": "", "fields": ["id"]}}
     ]
     resource = package.get_resource("main")
     rows = resource.read_rows()
@@ -111,12 +109,11 @@ def test_package_schema_foreign_key_self_reference():
     assert rows[2].valid
 
 
-@pytest.mark.xfail(reason="Self-reference doesn't work")
 def test_package_schema_foreign_key_self_reference_invalid():
     package = Package(DESCRIPTOR_FK)
     package.resources[0].data[2][0] = "0"  # type: ignore
     package.resources[0].schema.foreign_keys = [
-        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
+        {"fields": ["parent_id"], "reference": {"resource": "", "fields": ["id"]}}
     ]
     resource = package.get_resource("main")
     rows = resource.read_rows()

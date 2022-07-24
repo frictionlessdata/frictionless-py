@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Resource, Schema, Detector, Checklist, fields
+from frictionless import Package, Checklist
 
 
 # General
@@ -76,15 +76,16 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package_strict():
     package = Package({"resources": [{"path": "data/table.csv"}]})
     report = package.validate(strict=True)
     assert report.flatten(["type", "note"]) == [
-        [
-            "resource-error",
-            "\"{'path': 'data/table.csv', 'stats': {}} is not valid under any of the given schemas\" at \"\" in metadata and at \"oneOf\" in profile",
-        ]
+        ["resource-error", 'property "name" is required in a strict mode'],
+        ["resource-error", 'property "type" is required in a strict mode'],
+        ["resource-error", 'property "scheme" is required in a strict mode'],
+        ["resource-error", 'property "format" is required in a strict mode'],
+        ["resource-error", 'property "encoding" is required in a strict mode'],
+        ["resource-error", 'property "mediatype" is required in a strict mode'],
     ]
 
 
@@ -205,12 +206,11 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     ]
 
 
-@pytest.mark.xfail
 def test_validate_package_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
     package = Package("data/geopoint/datapackage.json")
     report = package.validate()
-    assert not report.valid
+    assert report.valid
 
 
 def test_validate_package_number_test_issue_232():
@@ -252,35 +252,11 @@ def test_validate_package_with_schema_issue_348():
 
 @pytest.mark.ci
 @pytest.mark.vcr
-@pytest.mark.xfail
 def test_validate_package_uppercase_format_issue_494():
     package = Package("data/issue-494.package.json")
     report = package.validate()
     assert report.valid
     assert report.stats.tasks == 1
-
-
-# See also: https://github.com/frictionlessdata/project/discussions/678
-@pytest.mark.xfail(reason="Recover sync schema validation")
-def test_validate_package_using_detector_schema_sync_issue_847():
-    package = Package(
-        resources=[
-            Resource(
-                data=[["f1"], ["v1"], ["v2"], ["v3"]],
-                schema=Schema(
-                    fields=[
-                        fields.AnyField(name="f1"),
-                        fields.AnyField(name="f2"),
-                    ]
-                ),
-            ),
-        ]
-    )
-    report = package.validate()
-    for resource in package.resources:  # type: ignore
-        resource.detector = Detector(schema_sync=True)
-    package = Package(package)
-    assert report.valid
 
 
 def test_validate_package_with_diacritic_symbol_issue_905():
@@ -289,7 +265,7 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats.tasks == 3
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     package = Package("data/issue-977.json")
     report = package.validate()

@@ -5,7 +5,7 @@ from frictionless import Package, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail(reason="Recover steps")
+@pytest.mark.xfail(reason="steps")
 def test_transform_package():
     source = Package("data/tables/chunk*.csv")
     pipeline = Pipeline(

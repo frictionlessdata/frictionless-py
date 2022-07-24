@@ -1,5 +1,6 @@
+import pytest
 from copy import deepcopy
-from frictionless import Package
+from frictionless import Package, Resource, Schema, Detector, fields
 
 
 # General
@@ -129,3 +130,29 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
             'for "from, to": values "1, 2" not found in the lookup table "cities" as "id, next_id"',
         ],
     ]
+
+
+# Bugs
+
+
+# See also: https://github.com/frictionlessdata/project/discussions/678
+@pytest.mark.xfail(reason="sync-schema")
+def test_validate_package_using_detector_schema_sync_issue_847():
+    package = Package(
+        resources=[
+            Resource(
+                data=[["f1"], ["v1"], ["v2"], ["v3"]],
+                schema=Schema(
+                    fields=[
+                        fields.AnyField(name="f1"),
+                        fields.AnyField(name="f2"),
+                    ]
+                ),
+            ),
+        ]
+    )
+    report = package.validate()
+    for resource in package.resources:  # type: ignore
+        resource.detector = Detector(schema_sync=True)
+    package = Package(package)
+    assert report.valid
