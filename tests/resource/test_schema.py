@@ -84,19 +84,6 @@ def test_resource_schema_source_remote():
     ]
 
 
-@pytest.mark.xfail(reason="Recover")
-def test_resource_schema_from_path_with_basepath():
-    descriptor = {"name": "name", "path": "table.csv", "schema": "schema.json"}
-    resource = Resource(descriptor, basepath="data")
-    assert resource.to_descriptor() == descriptor
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ]
-    }
-
-
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -104,16 +91,6 @@ def test_resource_schema_from_path_error_bad_path():
     error = excinfo.value.error
     assert error.type == "schema-error"
     assert error.note.count("bad.json")
-
-
-@pytest.mark.xfail(reason="Recover")
-def test_resource_schema_from_path_error_path_not_safe():
-    schema = os.path.abspath("data/schema.json")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "path", "schema": schema})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("schema.json")
 
 
 def test_resource_schema_inferred():

@@ -216,30 +216,6 @@ def test_resource_source_path_error_bad_path():
     assert error.note.count("[Errno 2]") and error.note.count("table.csv")
 
 
-@pytest.mark.xfail(reason="Recover safety checks")
-def test_resource_source_path_error_bad_path_not_safe_absolute():
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": os.path.abspath("data/table.csv")})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("table.csv")
-
-
-@pytest.mark.xfail(reason="Recover safety checks")
-def test_resource_source_path_error_bad_path_not_safe_traversing():
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource(
-            {
-                "path": "data/../data/table.csv"
-                if not platform.type == "windows"
-                else "data\\..\\table.csv"
-            }
-        )
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("table.csv")
-
-
 def test_resource_source_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     with Resource({"data": data}) as resource:
@@ -277,16 +253,15 @@ def test_resource_source_path_and_data():
     ]
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_source_no_path_and_no_data():
-    resource = Resource({})
+    resource = Resource.from_descriptor({})
     assert resource.path is None
     assert resource.data is None
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
     assert error.type == "resource-error"
-    assert error.note.count("is not valid")
+    assert error.note.count('one of the properties "path" or "data" is required')
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
@@ -349,10 +324,9 @@ def test_resource_description_html_multiline():
     assert resource.description_html == "<p><strong>test</strong></p><p>line</p>"
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_description_html_not_set():
     resource = Resource()
-    assert resource.description == ""
+    assert resource.description is None
     assert resource.description_html == ""
 
 
@@ -528,38 +502,6 @@ def test_resource_skip_rows_non_string_cell_issue_320():
     )
     with Resource(source, dialect=dialect) as resource:
         assert resource.header[7] == "Current Population Analysed % of total county Pop"
-
-
-@pytest.mark.xfail(reason="Drop in v5?")
-def test_resource_skip_rows_non_string_cell_issue_322():
-    dialect = Dialect(comment_char="1")
-    source = [["id", "name"], [1, "english"], [2, "spanish"]]
-    with Resource(source, dialect=dialect) as resource:
-        assert resource.header == ["id", "name"]
-        assert resource.read_rows() == [
-            {"id": 2, "name": "spanish"},
-        ]
-
-
-@pytest.mark.xfail(reason="Recover safety checks")
-def test_resource_relative_parent_path_with_trusted_option_issue_171():
-    path = (
-        "data/../data/table.csv"
-        if not platform.type == "windows"
-        else "data\\..\\data\\table.csv"
-    )
-    # trusted=false (default)
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": path})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("table.csv")
-    # trusted=true
-    resource = Resource({"path": path}, trusted=True)
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")

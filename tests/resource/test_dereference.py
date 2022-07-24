@@ -98,3 +98,16 @@ def test_resource_dialect_from_path_remote():
     assert resource.dialect.to_descriptor() == {
         "delimiter": ";",
     }
+
+
+@pytest.mark.xfail(reason="dereference")
+def test_resource_schema_from_path_with_basepath():
+    descriptor = {"name": "name", "path": "table.csv", "schema": "schema.json"}
+    resource = Resource(descriptor, basepath="data")
+    assert resource.to_descriptor() == descriptor
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }

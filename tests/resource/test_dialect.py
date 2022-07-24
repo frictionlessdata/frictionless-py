@@ -228,16 +228,6 @@ def test_resource_dialect_from_descriptor():
     ]
 
 
-@pytest.mark.xfail(reason="safety")
-def test_resource_dialect_from_path_error_path_not_safe():
-    dialect = os.path.abspath("data/dialect.json")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "path", "dialect": dialect})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("dialect.json")
-
-
 def test_resource_dialect_csv_default():
     with Resource("data/table.csv") as resource:
         control = resource.dialect.get_control("csv")
