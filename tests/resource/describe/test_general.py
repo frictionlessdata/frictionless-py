@@ -168,10 +168,9 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
     assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
 
 
-@pytest.mark.xfail(reason="Fix quote char detection")
 def test_describe_schema_proper_quote_issue_493():
     resource = Resource.describe("data/issue-493.csv")
-    assert resource.dialect.to_descriptor() == {"csv": {"quoteChar": '"'}}
+    assert resource.dialect.to_descriptor() == {}
     assert len(resource.schema.fields) == 126
 
 

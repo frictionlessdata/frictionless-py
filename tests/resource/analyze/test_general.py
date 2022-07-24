@@ -162,7 +162,7 @@ def test_analyze_resource_detailed_non_numeric_summary():
     assert analysis["fieldStats"]["gender"]["values"] == {"Male", "Female"}
 
 
-@pytest.mark.xfail(reason="Fails because of stats.bytes not set")
+@pytest.mark.xfail(reason="issue-1205")
 def test_analyze_resource_detailed_non_numeric_data_identification():
     data = [
         ["gender", "country"],
@@ -180,7 +180,7 @@ def test_analyze_resource_detailed_non_numeric_data_identification():
     assert analysis["fieldStats"]["country"]["values"] == {"usa", "italy"}
 
 
-@pytest.mark.xfail(reason="Fails because of stats.bytes not set")
+@pytest.mark.xfail(reason="issue-1205")
 def test_analyze_resource_with_empty_rows():
     data = [["a", "b"]]
     resource = Resource(data)
@@ -200,7 +200,7 @@ def test_analyze_resource_with_empty_rows():
     assert analysis["rows"] == 0
 
 
-@pytest.mark.xfail(reason="Fails because of stats.bytes not set")
+@pytest.mark.xfail(reason="issue-1205")
 def test_analyze_resource_detailed_with_empty_rows():
     data = [["a", "b"]]
     resource = Resource(data)

@@ -1,4 +1,3 @@
-import os
 import pytest
 from frictionless import Resource, Schema, Detector, FrictionlessException, platform
 

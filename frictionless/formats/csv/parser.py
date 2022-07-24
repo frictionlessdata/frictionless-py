@@ -33,6 +33,10 @@ class CsvParser(Parser):
             config = csv.Sniffer().sniff("".join(sample), delimiter)  # type: ignore
         except csv.Error:
             config = csv.excel()
+        # We can't rely on this guess as it's can be confused with embeded JSON
+        # https://github.com/frictionlessdata/frictionless-py/issues/493
+        if config.quotechar == "'":
+            config.quotechar = '"'
         control.set_not_defined("delimiter", config.delimiter, distinct=True)
         control.set_not_defined("line_terminator", config.lineterminator, distinct=True)
         control.set_not_defined("escape_char", config.escapechar, distinct=True)

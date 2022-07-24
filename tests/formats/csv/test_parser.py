@@ -317,3 +317,12 @@ def test_csv_parser_write_newline_crlf(tmpdir):
         assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\r\n"}}
     with open(target.normpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\r\n1,english\r\n2,中国人\r\n"
+
+
+# Bugs
+
+
+def test_csv_parser_proper_quote_issue_493():
+    resource = Resource.describe("data/issue-493.csv")
+    assert resource.dialect.to_descriptor() == {}
+    assert len(resource.schema.fields) == 126

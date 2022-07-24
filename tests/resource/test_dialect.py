@@ -1,7 +1,4 @@
-import os
-import pytest
 from frictionless import Resource, Dialect, Control, Schema, fields, formats
-from frictionless import FrictionlessException
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
