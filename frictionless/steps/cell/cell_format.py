@@ -13,12 +13,12 @@ from ...pipeline import Step
 class cell_format(Step):
     """Format cell
 
-    Formats all values in the given or all string fields using the `template` format string. 
+    Formats all values in the given or all string fields using the `template` format string.
 
     Parameters
     ----------
         type : step identifier
-        template: template to apply format string.        
+        template: template to apply format string.
         field_name : field name to apply the format.
 
     Methods
@@ -47,7 +47,7 @@ class cell_format(Step):
             ],
         )
     >>> target = source.transform(pipeline)
-    >>> print(target.to_view()) 
+    >>> print(target.to_view())
         +-------------------+--------------+--------------+
         | name              | country_code | city         |
         +===================+==============+==============+

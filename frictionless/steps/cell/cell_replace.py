@@ -14,19 +14,19 @@ from ...pipeline import Step
 class cell_replace(Step):
     """Replace cell
 
-    Replace cell values in a given field or all fields using user defined pattern. 
-    
+    Replace cell values in a given field or all fields using user defined pattern.
+
     Parameters
     ----------
         type : step identifier.
-        pattern: pattern to search. 
-        replace: string to replace with. 
+        pattern: pattern to search.
+        replace: string to replace with.
         field_name : field name to apply the pattern.
 
     Methods
     -------
         transform_resource(resource):
-            search cells with the given pattern in one or more fields and replace it with 
+            search cells with the given pattern in one or more fields and replace it with
             the user defined value.
 
     Examples
@@ -50,7 +50,7 @@ class cell_replace(Step):
         ],
     )
     >>> target = source.transform(pipeline)
-    >>> print(target.to_view()) 
+    >>> print(target.to_view())
         +-----------+--------------+--------------+
         | name      | country_code | city         |
         +===========+==============+==============+

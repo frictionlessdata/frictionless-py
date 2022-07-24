@@ -12,9 +12,9 @@ from ...pipeline import Step
 @attrs.define(kw_only=True)
 class cell_convert(Step):
     """Convert cell
-    
+
     Converts cell values of one or more fields using arbitrary functions, method
-    invocations or dictionary translations. 
+    invocations or dictionary translations.
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ class cell_convert(Step):
     Methods
     -------
         transform_resource(resource):
-            converts cell value of a resource using arbitrary function, data method 
+            converts cell value of a resource using arbitrary function, data method
             or dictionary translations
 
     Examples
@@ -49,7 +49,7 @@ class cell_convert(Step):
             ],
         )
     >>> target = source.transform(pipeline)
-    >>> print(target.to_view()) 
+    >>> print(target.to_view())
         +----+-----------+------------+
         | id | name      | population |
         +====+===========+============+
@@ -77,7 +77,7 @@ class cell_convert(Step):
         +----+-----------+------------+
         |  3 | 'spain'   |     100100 |
         +----+-----------+------------+
-    
+
     >>> # using method of data value
     >>> pipeline = Pipeline(
             steps=[
@@ -95,7 +95,7 @@ class cell_convert(Step):
         +----+-----------+------------+
         |  3 | 'SPAIN'   |     100100 |
         +----+-----------+------------+
-    
+
     >>> # using a dictionary
     >>> pipeline = Pipeline(
             steps=[

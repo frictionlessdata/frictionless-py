@@ -13,12 +13,12 @@ from ...pipeline import Step
 class cell_interpolate(Step):
     """Interpolate cell
 
-    Interpolate all values in a given or all string fields using the `template` string. 
+    Interpolate all values in a given or all string fields using the `template` string.
 
     Parameters
     ----------
         type : step identifier.
-        template: template string to apply to the string fields.        
+        template: template string to apply to the string fields.
         field_name : field name to apply the format.
 
     Methods
@@ -47,7 +47,7 @@ class cell_interpolate(Step):
             ],
         )
     >>> target = source.transform(pipeline)
-    >>> print(target.to_view()) 
+    >>> print(target.to_view())
         +-------------------+--------------+--------------+
         | name              | country_code | city         |
         +===================+==============+==============+

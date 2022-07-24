@@ -13,15 +13,15 @@ from ...pipeline import Step
 class cell_fill(Step):
     """Fill cell
 
-    Replaces missing values with non-missing values from the adjacent row/column. 
+    Replaces missing values with non-missing values from the adjacent row/column.
 
     Parameters
     ----------
         type : step identifier
-        value : value to replace in cells.        
+        value : value to replace in cells.
         field_name : field name to apply function to.
         direction: column/row direction from where to copy the non-missing value.
-                   for column cells, it also checks for the field types and only works 
+                   for column cells, it also checks for the field types and only works
                    if the two columns are of same types.
 
 
@@ -52,7 +52,7 @@ class cell_fill(Step):
             ],
         )
     >>> target = source.transform(pipeline)
-    >>> print(target.to_view()) 
+    >>> print(target.to_view())
         +----+-----------+-----------+-----------------+-----------------+
         | id | name      | title     | population      | avg_age         |
         +====+===========+===========+=================+=================+
@@ -81,7 +81,7 @@ class cell_fill(Step):
         +----+-----------+-----------+-----------------+-----------------+
         |  3 | 'spain'   | 'spain'   | Decimal('50.0') | Decimal('35.0') |
         +----+-----------+-----------+-----------------+-----------------+
-    
+
     >>> # using non-missing value from the right column
     >>> pipeline = Pipeline(
             steps=[
@@ -100,7 +100,7 @@ class cell_fill(Step):
         +----+-----------+-----------+-----------------+-----------------+
         |  3 | 'spain'   | 'spain'   | Decimal('50.0') | Decimal('35.0') |
         +----+-----------+-----------+-----------------+-----------------+
-    
+
     >>> # using non-missing value from the left column
     >>> pipeline = Pipeline(
             steps=[
@@ -119,7 +119,7 @@ class cell_fill(Step):
         +----+-----------+-----------+-----------------+-----------------+
         |  3 | 'spain'   | 'spain'   | Decimal('50.0') | Decimal('35.0') |
         +----+-----------+-----------+-----------------+-----------------+
-    
+
     """
 
     type = "cell-fill"
