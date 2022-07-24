@@ -312,7 +312,7 @@ class Detector(Metadata):
 
         # Create schema
         if not schema:
-            schema = Schema()
+            schema = Schema(fields=[])
 
             # Missing values
             if self.field_missing_values != settings.DEFAULT_MISSING_VALUES:

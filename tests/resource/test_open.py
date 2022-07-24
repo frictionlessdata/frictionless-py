@@ -132,12 +132,11 @@ def test_resource_open_cell_stream_iterate():
                 assert cells == ["2", "中国人"]
 
 
-@pytest.mark.xfail(reason="Recover")
 def test_resource_open_empty():
     with Resource("data/empty.csv") as resource:
         assert resource.header.missing
         assert resource.header == []
-        assert resource.schema.to_descriptor() == {}
+        assert resource.schema.to_descriptor() == {"fields": []}
         assert resource.read_rows() == []
 
 

@@ -146,7 +146,6 @@ def test_validate_blank_cell_not_required():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Figure out how to handle errors like this")
 def test_validate_no_data():
     report = validate("data/empty.csv")
     assert report.flatten(["type", "note"]) == [

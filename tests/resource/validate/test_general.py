@@ -135,7 +135,6 @@ def test_resource_validate_blank_cell_not_required():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_resource_validate_no_data():
     resource = Resource("data/empty.csv")
     report = resource.validate()
