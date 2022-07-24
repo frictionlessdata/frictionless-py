@@ -85,45 +85,10 @@ def test_resource_schema_source_remote():
 
 
 @pytest.mark.xfail(reason="Recover")
-def test_resource_schema_from_path():
-    resource = Resource("data/resource-with-dereferencing.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "dialect": "dialect.json",
-        "schema": "schema.json",
-    }
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ]
-    }
-
-
-@pytest.mark.xfail(reason="Recover")
 def test_resource_schema_from_path_with_basepath():
     descriptor = {"name": "name", "path": "table.csv", "schema": "schema.json"}
     resource = Resource(descriptor, basepath="data")
     assert resource.to_descriptor() == descriptor
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ]
-    }
-
-
-@pytest.mark.vcr
-@pytest.mark.xfail(reason="Recover")
-def test_resource_schema_from_path_remote():
-    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "dialect": "dialect.json",
-        "schema": "schema.json",
-    }
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},

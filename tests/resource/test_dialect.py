@@ -228,35 +228,6 @@ def test_resource_dialect_from_descriptor():
     ]
 
 
-@pytest.mark.xfail(reason="dereferencing")
-def test_resource_dialect_from_path():
-    resource = Resource("data/resource-with-dereferencing.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "dialect": "dialect.json",
-        "schema": "schema.json",
-    }
-    assert resource.dialect.to_descriptor() == {
-        "delimiter": ";",
-    }
-
-
-@pytest.mark.vcr
-@pytest.mark.xfail(reason="dereferencing")
-def test_resource_dialect_from_path_remote():
-    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "dialect": "dialect.json",
-        "schema": "schema.json",
-    }
-    assert resource.dialect.to_descriptor() == {
-        "delimiter": ";",
-    }
-
-
 @pytest.mark.xfail(reason="safety")
 def test_resource_dialect_from_path_error_path_not_safe():
     dialect = os.path.abspath("data/dialect.json")

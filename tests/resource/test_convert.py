@@ -172,31 +172,3 @@ def test_to_yaml_allow_unicode_issue_844():
     resource.infer()
     text = resource.to_yaml()
     assert "età" in text
-
-
-@pytest.mark.xfail(reason="dereferencing")
-def test_resource_to_descriptor_infer_dereferencing_issue_904():
-    resource = Resource(path="data/table.csv", schema="data/schema.json")
-    resource.infer(stats=True)
-    assert resource.to_descriptor() == {
-        "name": "table",
-        "path": "data/table.csv",
-        "type": "table",
-        "scheme": "file",
-        "format": "csv",
-        "encoding": "utf-8",
-        "mediatype": "text/csv",
-        "dialect": {
-            "controls": [
-                {"code": "local"},
-                {"code": "csv"},
-            ]
-        },
-        "schema": "data/schema.json",
-        "stats": {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        },
-    }
