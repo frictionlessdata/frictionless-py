@@ -172,7 +172,7 @@ def test_program_validate_summary():
 # Bugs
 
 
-@pytest.mark.xfail(reason="Fix")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_zipped_resources_979():
     actual = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
     output_file_path = "data/fixtures/cli/zipped-resources-979.txt"
@@ -185,7 +185,7 @@ def test_program_validate_zipped_resources_979():
     assert actual.stdout.count(expect.strip())
 
 
-@pytest.mark.xfail(reason="Fix")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_long_error_messages_976():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     output_file_path = "data/fixtures/cli/long-error-messages-976.txt"
@@ -195,7 +195,7 @@ def test_program_validate_long_error_messages_976():
     assert actual.stdout.count(expected.strip())
 
 
-@pytest.mark.xfail(reason="Fix")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_partial_validation_info_933():
     actual = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
     assert actual.exit_code == 1
@@ -213,7 +213,7 @@ def test_program_validate_single_resource_221():
     assert actual.stdout.count("valid: table-reverse.csv")
 
 
-@pytest.mark.xfail(reason="Fix")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_single_invalid_resource_221():
     actual = runner.invoke(
         program, "validate data/datapackage.json --resource-name number-twoo"
@@ -222,14 +222,14 @@ def test_program_validate_single_invalid_resource_221():
     assert actual.stdout.count("invalid: data/datapackage.json")
 
 
-@pytest.mark.xfail(reason="Fix")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_multipart_resource_1140():
     actual = runner.invoke(program, "validate data/multipart.package.json")
     assert actual.exit_code == 0
     assert actual.stdout.count("chunk1.csv,chunk2.csv")
 
 
-@pytest.mark.xfail(reason="Fix")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_multipart_zipped_resource_1140():
     actual = runner.invoke(program, "validate data/multipart-zipped.package.json")
     assert actual.exit_code == 0

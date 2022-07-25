@@ -5,7 +5,7 @@ from frictionless import system, Plugin, Resource, Schema, Field, describe
 # General
 
 
-@pytest.mark.xfail(reason="Custom field types are not yet supported")
+@pytest.mark.xfail(reason="custom-field")
 def test_type_custom(custom_plugin):
     schema = Schema.from_descriptor(
         {
@@ -22,7 +22,7 @@ def test_type_custom(custom_plugin):
         ]
 
 
-@pytest.mark.xfail(reason="Custom field types are not yet supported")
+@pytest.mark.xfail(reason="custom-field")
 def test_type_custom_detect(custom_plugin):
     resource = describe("data/table.csv")
     assert isinstance(resource, Resource)

@@ -124,7 +124,7 @@ def test_program_extract_csv():
     assert actual.stdout == expect
 
 
-@pytest.mark.xfail(reason="Not supported yet")
+@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_dialect_sheet_option():
     file = "data/sheet2.xls"
     sheet = "Sheet2"
@@ -133,7 +133,7 @@ def test_program_extract_dialect_sheet_option():
     assert json.loads(actual.stdout) == extract(file, dialect={"sheet": sheet})
 
 
-@pytest.mark.xfail(reason="Not supported yet")
+@pytest.mark.xfail(reason="extract-dialect")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_extract_dialect_table_option_sql(database_url):
     table = "fruits"
@@ -144,7 +144,7 @@ def test_program_extract_dialect_table_option_sql(database_url):
         assert json.loads(actual.stdout) == extract(resource)
 
 
-@pytest.mark.xfail(reason="Not supported yet")
+@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_dialect_keyed_option():
     file = "data/table.keyed.json"
     keyed = True
@@ -153,7 +153,7 @@ def test_program_extract_dialect_keyed_option():
     assert json.loads(actual.stdout) == extract(path=file, dialect={"keyed": keyed})  # type: ignore
 
 
-@pytest.mark.xfail(reason="Not supported yet")
+@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_dialect_keys_option():
     file = "data/table.keyed.json"
     actual = runner.invoke(program, f"extract --path {file} --keys 'name,id' --json")
@@ -236,7 +236,7 @@ def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources()
     }
 
 
-@pytest.mark.xfail(reason="Not supported yet")
+@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_valid_rows_extract_dialect_sheet_option():
     actual = runner.invoke(
         program, "extract data/sheet2.xls --sheet Sheet2 --json --valid"
@@ -248,7 +248,7 @@ def test_program_extract_valid_rows_extract_dialect_sheet_option():
     ]
 
 
-@pytest.mark.xfail(reason="Not supported yet")
+@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_invalid_rows_extract_dialect_sheet_option():
     actual = runner.invoke(
         program, "extract data/sheet2.xls --sheet Sheet2 --json --invalid"

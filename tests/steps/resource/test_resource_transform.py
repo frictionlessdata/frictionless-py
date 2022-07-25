@@ -5,7 +5,7 @@ from frictionless import Package, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_resource_transform():
     source = Package("data/package/datapackage.json")
     pipeline = Pipeline(

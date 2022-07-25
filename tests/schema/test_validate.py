@@ -11,7 +11,7 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Not yet decided how to handle these situations")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid():
     schema = Schema.from_descriptor({"fields": "bad"})
     report = schema.validate()

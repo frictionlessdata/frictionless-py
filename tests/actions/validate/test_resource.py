@@ -850,7 +850,7 @@ def test_validate_custom_check_with_arguments():
     ]
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_custom_check_bad_name():
     report = validate("data/table.csv", checks=[{"type": "bad"}])  # type: ignore
     assert report.flatten(["type", "note"]) == [

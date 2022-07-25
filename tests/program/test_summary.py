@@ -106,7 +106,7 @@ def test_program_summary_validate():
     assert result.stdout.count("# invalid:")
 
 
-@pytest.mark.xfail(reason="Update")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_summary_validate_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
@@ -119,7 +119,7 @@ def test_program_summary_validate_summary():
     assert result.stdout.count("Missing Cell (missing-cell) | 3")
 
 
-@pytest.mark.xfail(reason="Update")
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_summary_validate_errors():
     result = runner.invoke(program, "summary data/countries.csv")
     output_file_path = "data/fixtures/summary/multiline-errors.txt"

@@ -162,7 +162,7 @@ def test_program_convert_detector_yaml():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_pipeline_yaml():
     result = runner.invoke(program, "convert data/pipeline.json --yaml")
     assert result.exit_code == 0
@@ -327,7 +327,7 @@ def test_program_convert_dialect_markdown():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_report_markdown():
     result = runner.invoke(program, "convert data/report.json --markdown")
     assert result.exit_code == 0
@@ -358,7 +358,7 @@ def test_program_convert_detector_markdown():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_pipeline_markdown():
     result = runner.invoke(program, "convert data/pipeline.json --markdown")
     assert result.exit_code == 0
