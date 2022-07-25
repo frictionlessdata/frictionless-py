@@ -5,7 +5,7 @@ from frictionless import Resource, Step, transform, steps
 # General
 
 
-@pytest.mark.xfail(reason="Recover steps")
+@pytest.mark.xfail(reason="steps")
 def test_transform():
     target = transform(
         "data/transform.csv",
