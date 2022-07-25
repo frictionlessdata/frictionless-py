@@ -131,14 +131,14 @@ def test_describe_non_tabular_resource_issue_641():
     }
 
 
-@pytest.mark.xfail(reason="Not supported non tabular html")
 def test_describe_non_tabular_html_issue_715():
     resource = describe("data/text.html")
     assert resource.to_descriptor() == {
-        "path": "data/text.html",
+        "type": "file",
         "name": "text",
-        "profile": "data-resource",
+        "path": "data/text.html",
         "scheme": "file",
         "format": "html",
         "encoding": "utf-8",
+        "mediatype": "text/html",
     }
