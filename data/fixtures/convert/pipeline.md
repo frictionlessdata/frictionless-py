@@ -1,6 +1,7 @@
 ## `pipeline`
-
+- `name` pipeline
+        
 ### `step`
 - `type` cell-set
-- `fieldName` name
+- `fieldName` population
 - `value` 100

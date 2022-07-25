@@ -274,7 +274,6 @@ def test_package_to_markdown_file(tmpdir):
     assert expected == output
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown_table():
     descriptor = {
         "name": "package",
@@ -340,13 +339,12 @@ def test_package_to_markdown_table():
 # ER Diagram
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_erd():
     package = Package("data/package-storage.json")
+
+    # Read
     with open("data/fixtures/dot-files/package.dot") as file:
-        expected = file.read()
-    output = package.to_er_diagram()
-    assert expected.strip() == output.strip()
+        assert package.to_er_diagram().strip() == file.read().strip()
 
 
 def test_package_to_erd_table_names_with_dash(tmpdir):
@@ -354,11 +352,17 @@ def test_package_to_erd_table_names_with_dash(tmpdir):
     # wrap names with quotes ""
     package = Package("data/datapackage.json")
     output_file = os.path.join(tmpdir, "output.dot")
+
+    # Read - expected
     with open(
         "data/fixtures/dot-files/package-resource-names-including-dash.dot"
     ) as file:
         expected = file.read()
+
+    # Write
     package.to_er_diagram(output_file)
+
+    # Read output
     with open(output_file) as file:
         output = file.read()
     assert expected.strip() == output.strip()
