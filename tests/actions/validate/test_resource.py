@@ -12,7 +12,7 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Figure out how to handle errors like this")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
     assert report.stats.errors == 1
@@ -21,7 +21,7 @@ def test_validate_invalid_source():
     assert note.count("[Errno 2]") and note.count("bad.json")
 
 
-@pytest.mark.xfail(reason="Figure out how to handle errors like this")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
     assert report.stats.errors == 1
@@ -30,7 +30,7 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
-@pytest.mark.xfail(reason="Figure out how to handle errors like this")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_forbidden_value_task_error():
     checklist = Checklist.from_descriptor(
         {
@@ -45,14 +45,15 @@ def test_validate_forbidden_value_task_error():
     ]
 
 
-@pytest.mark.xfail
 def test_validate_invalid_resource_strict():
     report = validate({"path": "data/table.csv"}, strict=True)
     assert report.flatten(["type", "note"]) == [
-        [
-            "resource-error",
-            '"{\'path\': \'data/table.csv\'} is not valid under any of the given schemas" at "" in metadata and at "oneOf" in profile',
-        ]
+        ["resource-error", 'property "name" is required in a strict mode'],
+        ["resource-error", 'property "type" is required in a strict mode'],
+        ["resource-error", 'property "scheme" is required in a strict mode'],
+        ["resource-error", 'property "format" is required in a strict mode'],
+        ["resource-error", 'property "encoding" is required in a strict mode'],
+        ["resource-error", 'property "mediatype" is required in a strict mode'],
     ]
 
 
@@ -163,7 +164,7 @@ def test_validate_no_rows_with_compression():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_task_error():
     report = validate("data/table.csv", limit_rows="bad")  # type: ignore
     assert report.flatten(["type"]) == [
@@ -323,7 +324,7 @@ def test_validate_dialect_delimiter():
 # Schema
 
 
-@pytest.mark.xfail(reason="Not support bad field types validateion")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_schema_invalid():
     source = [["name", "age"], ["Alex", "33"]]
     schema = Schema.from_descriptor(
@@ -343,7 +344,7 @@ def test_validate_schema_invalid():
     ]
 
 
-@pytest.mark.xfail(reason="Catch errors like this")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_schema_invalid_json():
     report = validate("data/table.csv", schema="data/invalid.json")
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
@@ -849,7 +850,7 @@ def test_validate_custom_check_with_arguments():
     ]
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_custom_check_bad_name():
     report = validate("data/table.csv", checks=[{"type": "bad"}])  # type: ignore
     assert report.flatten(["type", "note"]) == [
@@ -857,7 +858,7 @@ def test_validate_custom_check_bad_name():
     ]
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_resource_descriptor_type_invalid():
     report = validate(descriptor="data/table.csv")  # type: ignore
     assert report.flatten() == [[1, None, None, "resource-error"]]
@@ -900,7 +901,7 @@ def test_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
-@pytest.mark.xfail(reason="Bad type validation is not yet supported")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_table_schema_issue_304():
     source = [["name", "age"], ["Alex", "33"]]
     schema = Schema.from_descriptor(
@@ -925,24 +926,6 @@ def test_validate_table_is_invalid_issue_312():
     ]
 
 
-@pytest.mark.xfail(reason="Review the issue")
-def test_validate_order_fields_issue_313():
-    source = "data/issue-313.xlsx"
-    layout = Dialect(pick_fields=[1, 2, 3, 4, 5])  # type: ignore
-    schema = {
-        "fields": [
-            {"name": "Column_1", "type": "string"},
-            {"name": "Column_2", "type": "string", "constraints": {"required": True}},
-            {"name": "Column_3", "type": "string"},
-            {"name": "Column_4", "type": "string"},
-            {"name": "Column_5", "type": "string"},
-        ]
-    }
-    detector = Detector(schema_sync=True)
-    report = validate(source, layout=layout, schema=schema, detector=detector)
-    assert report.valid
-
-
 def test_validate_missing_local_file_raises_scheme_error_issue_315():
     report = validate("bad-path.csv")
     assert report.stats.errors == 1
@@ -962,7 +945,7 @@ def test_validate_newline_inside_label_issue_811():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="json-data")
 def test_validate_resource_from_json_format_issue_827():
     report = validate(path="data/table.json")  # type: ignore
     assert report.valid
@@ -973,25 +956,20 @@ def test_validate_resource_none_is_not_iterable_enum_constraint_issue_833():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_header_row_has_first_number_issue_870():
-    report = validate("data/issue-870.xlsx", layout={"limitRows": 5})
+    report = validate("data/issue-870.xlsx", limit_rows=5)
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_resource_array_path_issue_991():
     with pytest.warns(UserWarning):
         report = validate("data/issue-991.resource.json")
         assert report.flatten(["type", "note"]) == [
-            [
-                "scheme-error",
-                'Multipart resource requires "multipart" scheme but "file" is set',
-            ],
+            ["source-error", "the source is empty"],
         ]
 
 
-@pytest.mark.xfail(reason="Decide on error type")
+@pytest.mark.xfail(reason="sync-schema")
 def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     report = validate(

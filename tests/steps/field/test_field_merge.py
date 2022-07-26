@@ -1,10 +1,11 @@
 import pytest
 from frictionless import Resource, Pipeline, steps
 
+
 # General
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_field_merge_907():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -25,7 +26,7 @@ def test_step_field_merge_907():
     }
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_field_merge_preserve_907():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

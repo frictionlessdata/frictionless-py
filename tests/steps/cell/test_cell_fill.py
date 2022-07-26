@@ -51,7 +51,7 @@ def test_step_cell_fill_direction_down():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -77,7 +77,7 @@ def test_step_cell_fill_direction_right():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

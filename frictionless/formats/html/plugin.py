@@ -19,5 +19,4 @@ class HtmlPlugin(Plugin):
 
     def detect_resource(self, resource):
         if resource.format == "html":
-            resource.type = "table"
             resource.mediatype = "text/html"

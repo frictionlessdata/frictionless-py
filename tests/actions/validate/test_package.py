@@ -79,7 +79,7 @@ def test_validate_package_invalid_descriptor_path():
     assert error.note.count("bad/datapackage.json")
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
     assert report.stats.errors == 1
@@ -88,14 +88,15 @@ def test_validate_package_invalid_package():
     assert error.note.count("[Errno 2]") and error.note.count("'bad'")
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
 def test_validate_package_invalid_package_strict():
     report = validate({"resources": [{"path": "data/table.csv"}]}, strict=True)
     assert report.flatten(["type", "note"]) == [
-        [
-            "resource-error",
-            "\"{'path': 'data/table.csv', 'stats': {}} is not valid under any of the given schemas\" at \"\" in metadata and at \"oneOf\" in profile",
-        ]
+        ["resource-error", 'property "name" is required in a strict mode'],
+        ["resource-error", 'property "type" is required in a strict mode'],
+        ["resource-error", 'property "scheme" is required in a strict mode'],
+        ["resource-error", 'property "format" is required in a strict mode'],
+        ["resource-error", 'property "encoding" is required in a strict mode'],
+        ["resource-error", 'property "mediatype" is required in a strict mode'],
     ]
 
 
@@ -343,12 +344,10 @@ def test_check_file_package_stats_hash_invalid():
 
 
 @pytest.mark.ci
-@pytest.mark.xfail
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
-        with pytest.warns(UserWarning):
-            report = validate(json.load(file), basepath="data/package", parallel=True)
-            assert report.valid
+        report = validate(json.load(file), basepath="data/package", parallel=True)
+        assert report.valid
 
 
 @pytest.mark.ci
@@ -394,7 +393,7 @@ def test_validate_package_mixed_issue_170():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Handle errors like this (wrap?)")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_invalid_json_issue_192():
     report = validate("data/invalid.json", type="package")
     assert report.flatten(["type", "note"]) == [
@@ -441,11 +440,10 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     ]
 
 
-@pytest.mark.xfail
 def test_validate_package_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
     report = validate("data/geopoint/datapackage.json")
-    assert not report.valid
+    assert report.valid
 
 
 def test_validate_package_number_test_issue_232():
@@ -485,16 +483,14 @@ def test_validate_package_with_schema_issue_348():
 
 @pytest.mark.ci
 @pytest.mark.vcr
-@pytest.mark.xfail
 def test_validate_package_uppercase_format_issue_494():
-    with pytest.warns(UserWarning):
-        report = validate("data/issue-494.package.json")
-        assert report.valid
-        assert report.stats.tasks == 1
+    report = validate("data/issue-494.package.json")
+    assert report.valid
+    assert report.stats.tasks == 1
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
-@pytest.mark.xfail(reason="Problems with schema_sync")
+@pytest.mark.xfail(reason="sync-schema")
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
@@ -515,7 +511,7 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats.tasks == 3
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = validate("data/issue-977.json", type="package")
     assert report.flatten() == [
@@ -528,7 +524,7 @@ def test_validate_package_single_resource_221():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_single_resource_wrong_resource_name_221():
     report = validate("data/datapackage.json", resource_name="number-twoo")
     assert report.flatten(["type", "message"]) == [

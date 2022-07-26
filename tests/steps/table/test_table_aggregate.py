@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_table_aggregate():
     source = Resource("data/transform-groups.csv")
     pipeline = Pipeline(
@@ -30,7 +30,7 @@ def test_step_table_aggregate():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_table_aggregate_multiple():
     source = Resource("data/transform-groups.csv")
     pipeline = Pipeline(

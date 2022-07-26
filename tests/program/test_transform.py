@@ -6,7 +6,7 @@ from frictionless.program import program
 runner = CliRunner()
 
 
-@pytest.mark.xfail(reason="Rework for the new Pipeline")
+@pytest.mark.xfail(reason="steps")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")
@@ -20,7 +20,7 @@ def test_program_transform_error_not_found():
     assert result.stdout.count("[Errno 2]") and result.stdout.count("data/bad.yaml")
 
 
-@pytest.mark.xfail(reason="Rework for the new Pipeline")
+@pytest.mark.xfail(reason="steps")
 def test_program_transform_error_not_found_source_issue_814():
     result = runner.invoke(program, "transform data/issue-814.yaml")
     assert result.exit_code == 1

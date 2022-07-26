@@ -6,7 +6,7 @@ from frictionless import Resource, Report
 # General
 
 
-@pytest.mark.xfail(reason="Recover")
+@pytest.mark.xfail(reason="issue-1205")
 def test_report_to_summary_error_not_found():
     resource = Resource("data/countriess.csv")
     report = resource.validate()
@@ -36,7 +36,7 @@ def test_report_to_summary_invalid():
     assert output.count("Errors")
 
 
-@pytest.mark.xfail(reason="Recover")
+@pytest.mark.xfail(reason="issue-1205")
 def test_report_to_summary_validate_multiline_errors():
     resource = Resource("data/countries.csv")
     report = resource.validate()
@@ -93,7 +93,7 @@ def test_report_to_json():
 # Markdown
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_report_to_markdown():
     report = Report.from_descriptor("data/report.json")
     output_file_path = "data/fixtures/convert/report.md"

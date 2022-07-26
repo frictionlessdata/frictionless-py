@@ -10,9 +10,9 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="Decide on behaviour")
+@pytest.mark.xfail(reason="error-cathing")
 def test_validate_invalid():
-    report = validate({"fields": {}})
+    report = validate({"fields": "bad"})
     assert report.flatten(["type", "note"]) == [
         [
             "schema-error",

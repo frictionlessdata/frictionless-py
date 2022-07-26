@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_field_update():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -28,7 +28,7 @@ def test_step_field_update():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_field_update_with_exact_value():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -51,7 +51,7 @@ def test_step_field_update_with_exact_value():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_field_update_new_name():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

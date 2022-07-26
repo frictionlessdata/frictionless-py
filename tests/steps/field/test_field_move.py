@@ -30,7 +30,7 @@ def test_step_field_move():
 # Bugs
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_transform_rename_move_field_issue_953():
     source = Resource(
         [

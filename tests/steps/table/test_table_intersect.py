@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_table_intersect():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -37,7 +37,7 @@ def test_step_table_intersect():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_table_intersect_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -69,7 +69,7 @@ def test_step_table_intersect_from_dict():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

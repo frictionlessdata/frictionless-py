@@ -149,7 +149,7 @@ def test_schema_to_markdown():
     assert schema.to_markdown().strip() == expected
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_schema_to_markdown_table():
     descriptor = {
         "fields": [

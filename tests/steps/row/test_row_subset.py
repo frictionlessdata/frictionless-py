@@ -23,7 +23,7 @@ def test_step_row_subset_conflicts():
     assert target.read_rows() == []
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_conflicts_with_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -69,7 +69,7 @@ def test_step_row_subset_distinct():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_distinct_with_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -91,7 +91,7 @@ def test_step_row_subset_distinct_with_duplicates():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -110,7 +110,7 @@ def test_step_row_subset_duplicates():
     assert target.read_rows() == []
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_duplicates_with_name():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -134,7 +134,7 @@ def test_step_row_subset_duplicates_with_name():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_unique():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -157,7 +157,7 @@ def test_step_row_subset_unique():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_unique_with_name():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -180,7 +180,7 @@ def test_step_row_subset_unique_with_name():
 # Bugs
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_conflicts_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
