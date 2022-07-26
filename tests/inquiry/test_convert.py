@@ -1,5 +1,4 @@
 import json
-import pytest
 import yaml
 from frictionless import Inquiry, InquiryTask
 
@@ -50,7 +49,6 @@ def test_inquiry_to_json():
 # Markdown
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_inquiry_to_markdown():
     inquiry = Inquiry.from_descriptor("data/inquiry.json")
     expected_file_path = "data/fixtures/convert/inquiry.md"
