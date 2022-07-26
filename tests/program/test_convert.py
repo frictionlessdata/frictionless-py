@@ -1,5 +1,4 @@
 import json
-import pytest
 import yaml
 from typer.testing import CliRunner
 from frictionless.program import program
@@ -304,7 +303,6 @@ def test_program_convert_dialect_markdown():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_report_markdown():
     result = runner.invoke(program, "convert data/report.json --markdown")
     assert result.exit_code == 0
@@ -335,7 +333,6 @@ def test_program_convert_detector_markdown():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_pipeline_markdown():
     result = runner.invoke(program, "convert data/pipeline.json --markdown")
     assert result.exit_code == 0

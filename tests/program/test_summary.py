@@ -1,5 +1,4 @@
 import os
-import pytest
 from typer.testing import CliRunner
 from frictionless import platform
 from frictionless.program import program
@@ -119,14 +118,14 @@ def test_program_summary_validate_summary():
     assert result.stdout.count("| Missing Cell | 3                  |")
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_summary_validate_errors():
     result = runner.invoke(program, "summary data/countries.csv")
-    output_file_path = "data/fixtures/summary/multiline-errors.txt"
-    with open(output_file_path, encoding="utf-8") as file:
-        expected = file.read()
     assert result.exit_code == 1
-    assert result.stdout.count(expected.strip())
+
+    # Read
+    expected_file_path = "data/fixtures/summary/multiline-errors.txt"
+    with open(expected_file_path, encoding="utf-8") as file:
+        assert result.stdout.count(file.read().strip())
 
 
 def test_program_summary_without_command(tmpdir):
