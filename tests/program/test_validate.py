@@ -209,20 +209,20 @@ def test_program_validate_single_resource_221():
     assert actual.stdout.count("valid: table-reverse.csv")
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_single_invalid_resource_221():
     actual = runner.invoke(
         program, "validate data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("invalid: data/datapackage.json")
+    assert actual.stdout.count(
+        '[package-error] The data package has an error: resource "number-twoo" does not exist'
+    )
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_multipart_resource_1140():
     actual = runner.invoke(program, "validate data/multipart.package.json")
     assert actual.exit_code == 0
-    assert actual.stdout.count("chunk1.csv,chunk2.csv")
+    assert actual.stdout.count("valid: chunk1.csv (multipart)")
 
 
 @pytest.mark.xfail(reason="issue-1205")
