@@ -1,5 +1,6 @@
 import json
 import pytest
+import yaml
 from frictionless import Pipeline, steps
 
 
@@ -23,11 +24,11 @@ def test_pipeline_from_descriptor_tasks_v1x5():
 
 def test_pipeline_to_yaml():
     pipeline = Pipeline.from_descriptor("data/pipeline.json")
-    expected_file_path = "data/fixtures/convert/pipeline.yaml"
+    expected_file_path = "data/pipeline.yaml"
 
     # Read
     with open(expected_file_path) as file:
-        assert pipeline.to_yaml().strip() == file.read().strip()
+        assert yaml.safe_load(pipeline.to_yaml()) == yaml.safe_load(file.read())
 
 
 # Json

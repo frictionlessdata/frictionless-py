@@ -1,7 +1,0 @@
-checks:
-  - type: deviated-cell
-    interval: 3
-    ignoreFields:
-      - Latitudine
-      - Longitudine
-  - type: ascii-value

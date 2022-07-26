@@ -1,4 +1,5 @@
 import json
+import yaml
 from frictionless import Checklist, checks
 
 
@@ -20,9 +21,11 @@ def test_checklist():
 
 def test_checklist_to_yaml():
     checklist = Checklist.from_descriptor("data/checklist.json")
-    output_file_path = "data/fixtures/convert/checklist.yaml"
-    with open(output_file_path) as file:
-        assert checklist.to_yaml().strip() == file.read().strip()
+    expected_file_path = "data/checklist.yaml"
+
+    # Read
+    with open(expected_file_path) as file:
+        assert yaml.safe_load(checklist.to_yaml()) == yaml.safe_load(file.read())
 
 
 # Json
@@ -36,7 +39,8 @@ def test_checklist_to_json():
                 "type": "deviated-cell",
                 "interval": 3,
                 "ignoreFields": ["Latitudine", "Longitudine"],
-            }
+            },
+            {"type": "ascii-value"},
         ]
     }
 

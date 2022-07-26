@@ -73,7 +73,7 @@ def test_report_to_yaml_with_bytes_serialization_issue_836():
 
 def test_report_to_yaml():
     report = Report.from_descriptor("data/report.json")
-    output_file_path = "data/fixtures/convert/report.yaml"
+    output_file_path = "data/report.yaml"
     with open(output_file_path) as file:
         assert report.to_yaml().strip() == file.read().strip()
 
@@ -85,7 +85,7 @@ def test_report_to_json():
     report = Report.from_descriptor("data/report.yaml")
 
     # Read
-    output_file_path = "data/fixtures/convert/report.json"
+    output_file_path = "data/report.json"
     with open(output_file_path) as file:
         assert json.loads(report.to_json()) == json.loads(file.read())
 
