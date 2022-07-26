@@ -1,6 +1,6 @@
 ## `schema`
 
-| name   | description          | type    | constraints    | title   |
-|:-------|:---------------------|:--------|:---------------|:--------|
-| id     | Any positive integer | integer | {'minimum': 1} |         |
-| age    | Any number >= 1      | number  | {'minimum': 1} | Age     |
+| name   | type    | description          | constraints    | title   |
+|:-------|:--------|:---------------------|:---------------|:--------|
+| id     | integer | Any positive integer | {'minimum': 1} |         |
+| age    | number  | Any number >= 1      | {'minimum': 1} | Age     |

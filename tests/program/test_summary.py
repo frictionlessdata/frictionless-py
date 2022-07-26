@@ -106,17 +106,17 @@ def test_program_summary_validate():
     assert result.stdout.count("# invalid:")
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_summary_validate_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
-    assert result.stdout.count("Description                 | Size/Name/Count")
-    assert result.stdout.count("File name                   | data/countries.csv")
-    assert result.stdout.count("File size (bytes)           | 143")
-    assert result.stdout.count("Total Time Taken (sec)      |")
-    assert result.stdout.count("Total Errors                | 4")
-    assert result.stdout.count("Extra Cell (extra-cell)     | 1")
-    assert result.stdout.count("Missing Cell (missing-cell) | 3")
+    assert result.stdout.count("| Name         | Value              |")
+    assert result.stdout.count("| File Place   | data/countries.csv |")
+    assert result.stdout.count("| File Size    | 143 Bytes          |")
+    assert result.stdout.count("| Total Time   |")
+    assert result.stdout.count("| Rows Checked | 5                  |")
+    assert result.stdout.count("| Total Errors | 4                  |")
+    assert result.stdout.count("| Extra Cell   | 1                  |")
+    assert result.stdout.count("| Missing Cell | 3                  |")
 
 
 @pytest.mark.xfail(reason="issue-1205")
