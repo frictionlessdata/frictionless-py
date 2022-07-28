@@ -119,7 +119,7 @@ def test_step_table_merge_with_sort():
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),
-                sort_by_field=["population"],
+                sort_by_field=["population"],  # type: ignore
             ),
         ],
     )
