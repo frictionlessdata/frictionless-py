@@ -1,6 +1,8 @@
 import json
 import yaml
+import pytest
 from typer.testing import CliRunner
+from frictionless import platform
 from frictionless.program import program
 
 runner = CliRunner()
@@ -46,6 +48,7 @@ def test_program_convert_yaml_with_path(tmpdir):
         assert result.stdout.count(file.read().strip())
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_convert_er_diagram(tmpdir):
 
     # Write
