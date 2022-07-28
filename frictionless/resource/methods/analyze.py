@@ -128,7 +128,7 @@ def analyze(self: Resource, *, detailed=False) -> dict:
 
     analysis_report["notNullRows"] = self.stats.rows - analysis_report["rowsWithNullValues"]  # type: ignore
     analysis_report["averageRecordSizeInBytes"] = 0
-    if self.stats.rows:
+    if self.stats.rows and self.stats.bytes:
         analysis_report["averageRecordSizeInBytes"] = self.stats.bytes / self.stats.rows  # type: ignore
     analysis_report["timeTaken"] = timer.time
     return {**analysis_report, **self.stats.to_descriptor()}

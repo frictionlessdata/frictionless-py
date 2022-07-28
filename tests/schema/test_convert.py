@@ -9,6 +9,23 @@ from frictionless import Schema
 
 
 UNZIPPED_DIR = "data/fixtures/output-unzipped"
+DESCRIPTOR = {
+    "fields": [
+        {
+            "name": "id",
+            "description": "Any positive integer",
+            "type": "integer",
+            "constraints": {"minimum": 1},
+        },
+        {
+            "name": "age",
+            "title": "Age",
+            "description": "Any number >= 1",
+            "type": "number",
+            "constraints": {"minimum": 1},
+        },
+    ]
+}
 DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
 DESCRIPTOR_MAX = {
     "fields": [
@@ -37,18 +54,18 @@ def test_schema_to_copy():
 
 
 def test_schema_to_json(tmpdir):
-    target = str(tmpdir.join("schema.json"))
+    output_file_path = str(tmpdir.join("schema.json"))
     schema = Schema.from_descriptor(DESCRIPTOR_MIN)
-    schema.to_json(target)
-    with open(target, encoding="utf-8") as file:
+    schema.to_json(output_file_path)
+    with open(output_file_path, encoding="utf-8") as file:
         assert schema.to_descriptor() == json.load(file)
 
 
 def test_schema_to_yaml(tmpdir):
-    target = str(tmpdir.join("schema.yaml"))
+    output_file_path = str(tmpdir.join("schema.yaml"))
     schema = Schema.from_descriptor(DESCRIPTOR_MIN)
-    schema.to_yaml(target)
-    with open(target, encoding="utf-8") as file:
+    schema.to_yaml(output_file_path)
+    with open(output_file_path, encoding="utf-8") as file:
         assert schema.to_descriptor() == yaml.safe_load(file)
 
 
@@ -125,83 +142,37 @@ def test_schema_to_summary_with_name_missing_for_some_fields():
 
 
 def test_schema_to_markdown():
-    descriptor = {
-        "fields": [
-            {
-                "name": "id",
-                "description": "Any positive integer",
-                "type": "integer",
-                "constraints": {"minimum": 1},
-            },
-            {
-                "name": "age",
-                "title": "Age",
-                "description": "Any number >= 1",
-                "type": "number",
-                "constraints": {"minimum": 1},
-            },
-        ]
-    }
-    schema = Schema.from_descriptor(descriptor)
+    schema = Schema.from_descriptor(DESCRIPTOR)
     md_file_path = "data/fixtures/output-markdown/schema.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert schema.to_markdown().strip() == expected
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_schema_to_markdown_table():
-    descriptor = {
-        "fields": [
-            {
-                "name": "id",
-                "description": "Any positive integer",
-                "type": "integer",
-                "constraints": {"minimum": 1},
-            },
-            {
-                "name": "age",
-                "title": "Age",
-                "description": "Any number >= 1",
-                "type": "number",
-                "constraints": {"minimum": 1},
-            },
-        ]
-    }
-    schema = Schema.from_descriptor(descriptor)
-    md_file_path = "data/fixtures/output-markdown/schema-table.md"
-    with open(md_file_path, encoding="utf-8") as file:
-        expected = file.read()
-    assert schema.to_markdown(table=True).strip() == expected
+    schema = Schema.from_descriptor(DESCRIPTOR)
+
+    # Read
+    expected_file_path = "data/fixtures/output-markdown/schema-table.md"
+    with open(expected_file_path, encoding="utf-8") as file:
+        assert schema.to_markdown(table=True).strip() == file.read().strip()
 
 
 def test_schema_to_markdown_file(tmpdir):
-    descriptor = {
-        "fields": [
-            {
-                "name": "id",
-                "description": "Any positive integer",
-                "type": "integer",
-                "constraints": {"minimum": 1},
-            },
-            {
-                "name": "age",
-                "title": "Age",
-                "description": "Any number >= 1",
-                "type": "number",
-                "constraints": {"minimum": 1},
-            },
-        ]
-    }
-    md_file_path = "data/fixtures/output-markdown/schema.md"
-    with open(md_file_path, encoding="utf-8") as file:
+    schema = Schema.from_descriptor(DESCRIPTOR)
+
+    # Read - expected
+    expected_file_path = "data/fixtures/output-markdown/schema.md"
+    with open(expected_file_path, encoding="utf-8") as file:
         expected = file.read()
-    target = str(tmpdir.join("schema.md"))
-    schema = Schema.from_descriptor(descriptor)
-    schema.to_markdown(path=target).strip()
-    with open(target, encoding="utf-8") as file:
-        output = file.read()
-    assert expected == output
+
+    # Write
+    output_file_path = str(tmpdir.join("schema.md"))
+    schema.to_markdown(path=output_file_path).strip()
+
+    # Read - output
+    with open(output_file_path, encoding="utf-8") as file:
+        assert expected == file.read()
 
 
 # JSONSchema

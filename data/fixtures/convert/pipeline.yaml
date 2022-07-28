@@ -1,5 +1,0 @@
-name: pipeline
-steps:
-  - code: cell-set
-    fieldName: population
-    value: 100

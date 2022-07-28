@@ -1,5 +1,5 @@
 import json
-import pytest
+import yaml
 from frictionless import Inquiry, InquiryTask
 
 
@@ -26,9 +26,11 @@ def test_inquiry_to_descriptor():
 
 def test_inquiry_to_yaml():
     inquiry = Inquiry.from_descriptor("data/inquiry.json")
-    output_file_path = "data/fixtures/convert/inquiry.yaml"
-    with open(output_file_path) as file:
-        assert inquiry.to_yaml().strip() == file.read().strip()
+    expected_file_path = "data/inquiry.yaml"
+
+    # Read
+    with open(expected_file_path) as file:
+        assert yaml.safe_load(inquiry.to_yaml()) == yaml.safe_load(file.read())
 
 
 # Json
@@ -47,9 +49,10 @@ def test_inquiry_to_json():
 # Markdown
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_inquiry_to_markdown():
     inquiry = Inquiry.from_descriptor("data/inquiry.json")
-    output_file_path = "data/fixtures/convert/inquiry.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/inquiry.md"
+
+    # Read
+    with open(expected_file_path) as file:
         assert inquiry.to_markdown().strip() == file.read()

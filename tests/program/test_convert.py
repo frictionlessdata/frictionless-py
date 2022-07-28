@@ -1,5 +1,5 @@
 import json
-import pytest
+import yaml
 from typer.testing import CliRunner
 from frictionless.program import program
 
@@ -8,12 +8,12 @@ runner = CliRunner()
 
 def test_program_convert_yaml():
     result = runner.invoke(program, "convert data/datapackage.json --yaml")
-    assert result.exit_code == 0
+    expected_file_path = "data/package.yaml"
 
     # Read
-    output_file_path = "data/fixtures/convert/package.yaml"
-    with open(output_file_path, encoding="utf-8") as file:
-        assert result.stdout.count(file.read().strip())
+    with open(expected_file_path) as file:
+        assert yaml.safe_load(result.stdout) == yaml.safe_load(file.read())
+    assert result.exit_code == 0
 
 
 def test_program_convert_markdown_with_path(tmpdir):
@@ -26,8 +26,8 @@ def test_program_convert_markdown_with_path(tmpdir):
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/package.md"
-    with open(output_file_path, encoding="utf-8") as file:
+    expected_file_path = "data/fixtures/convert/package.md"
+    with open(expected_file_path, encoding="utf-8") as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -41,8 +41,8 @@ def test_program_convert_yaml_with_path(tmpdir):
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/package.yaml"
-    with open(output_file_path, encoding="utf-8") as file:
+    expected_file_path = "data/package.yaml"
+    with open(expected_file_path, encoding="utf-8") as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -55,10 +55,12 @@ def test_program_convert_er_diagram(tmpdir):
     )
     assert result.exit_code == 0
 
-    # Read
+    # Read - expected
     expected_file_path = "data/fixtures/convert/package.dot"
     with open(expected_file_path, encoding="utf-8") as file:
         expected = file.read()
+
+    # Read - output
     with open(output_file_path, encoding="utf-8") as file:
         assert expected.strip() == file.read().strip()
 
@@ -97,8 +99,8 @@ def test_program_convert_resource_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/resource.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/resource.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -107,8 +109,8 @@ def test_program_convert_schema_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/schema.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/schema.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -117,8 +119,8 @@ def test_program_convert_checklist_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/checklist.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/checklist.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -127,8 +129,8 @@ def test_program_convert_dialect_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/dialect.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/dialect.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -137,8 +139,8 @@ def test_program_convert_report_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/report.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/report.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -147,8 +149,8 @@ def test_program_convert_inquiry_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/inquiry.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/inquiry.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -157,50 +159,28 @@ def test_program_convert_detector_yaml():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/detector.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/detector.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_pipeline_yaml():
     result = runner.invoke(program, "convert data/pipeline.json --yaml")
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/pipeline.yaml"
-    with open(output_file_path) as file:
+    expected_file_path = "data/pipeline.yaml"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
 def test_program_convert_json():
     result = runner.invoke(program, "convert data/package.yaml --json")
-    assert result.exit_code == 0
-    assert json.loads(result.stdout) == {
-        "name": "test-tabulator",
-        "resources": [
-            {
-                "name": "first-resource",
-                "path": "table.xls",
-                "schema": {
-                    "fields": [
-                        {"name": "id", "type": "number"},
-                        {"name": "name", "type": "string"},
-                    ]
-                },
-            },
-            {
-                "name": "number-two",
-                "path": "table-reverse.csv",
-                "schema": {
-                    "fields": [
-                        {"name": "id", "type": "integer"},
-                        {"name": "name", "type": "string"},
-                    ]
-                },
-            },
-        ],
-    }
+    expected_file_path = "data/datapackage.json"
+
+    # Read
+    with open(expected_file_path) as file:
+        assert json.loads(result.stdout) == json.loads(file.read())
 
 
 def test_program_convert_resource_json():
@@ -220,15 +200,11 @@ def test_program_convert_schema_json():
 def test_program_convert_checklist_json():
     result = runner.invoke(program, "convert data/checklist.yaml --json")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == {
-        "checks": [
-            {
-                "type": "deviated-cell",
-                "interval": 3,
-                "ignoreFields": ["Latitudine", "Longitudine"],
-            }
-        ]
-    }
+
+    # Read
+    expected_file_path = "data/checklist.json"
+    with open(expected_file_path) as file:
+        assert json.loads(result.stdout) == json.loads(file.read())
 
 
 def test_program_convert_dialect_json():
@@ -242,8 +218,8 @@ def test_program_convert_report_json():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/report.json"
-    with open(output_file_path) as file:
+    expected_file_path = "data/report.json"
+    with open(expected_file_path) as file:
         assert json.loads(result.stdout) == json.loads(file.read())
 
 
@@ -282,8 +258,8 @@ def test_program_convert_package_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/package.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/package.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -292,8 +268,8 @@ def test_program_convert_resource_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/resource.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/resource.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -302,8 +278,8 @@ def test_program_convert_schema_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/schema.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/schema.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -312,8 +288,8 @@ def test_program_convert_checklist_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/checklist.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/checklist.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -322,19 +298,18 @@ def test_program_convert_dialect_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/dialect.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/dialect.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_report_markdown():
     result = runner.invoke(program, "convert data/report.json --markdown")
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/report.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/report.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -343,8 +318,8 @@ def test_program_convert_inquiry_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/inquiry.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/inquiry.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
@@ -353,17 +328,16 @@ def test_program_convert_detector_markdown():
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/detector.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/detector.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_pipeline_markdown():
     result = runner.invoke(program, "convert data/pipeline.json --markdown")
     assert result.exit_code == 0
 
     # Read
-    output_file_path = "data/fixtures/convert/pipeline.md"
-    with open(output_file_path) as file:
+    expected_file_path = "data/fixtures/convert/pipeline.md"
+    with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())

@@ -3,8 +3,8 @@
 - `stats` {'errors': 0, 'time': 0.025, 'tasks': 1}
 - `warnings` []
 - `errors` []
-
-- `tasks`
+    
+- `tasks` 
     - `task`  country-1
         - `valid` True
         - `name` country-1
@@ -14,4 +14,3 @@
         - `scope` ['duplicate-label']
         - `warnings` []
         - `errors` []
-

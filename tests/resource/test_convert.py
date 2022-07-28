@@ -5,6 +5,28 @@ import pytest
 from frictionless import Resource
 
 
+DESCRIPTOR = {
+    "name": "main",
+    "schema": {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "integer_minmax",
+                "description": "An integer between 1 and 10",
+                "type": "integer",
+                "constraints": {"minimum": 1, "maximum": 10},
+            },
+        ],
+        "primaryKey": ["id"],
+    },
+}
+
+
 # General
 
 
@@ -62,92 +84,36 @@ def test_resource_to_yaml(tmpdir):
 
 
 def test_resource_to_markdown_path_schema():
-    descriptor = {
-        "name": "main",
-        "schema": {
-            "fields": [
-                {
-                    "name": "id",
-                    "description": "Any positive integer",
-                    "type": "integer",
-                    "constraints": {"minimum": 1},
-                },
-                {
-                    "name": "integer_minmax",
-                    "description": "An integer between 1 and 10",
-                    "type": "integer",
-                    "constraints": {"minimum": 1, "maximum": 10},
-                },
-            ],
-            "primaryKey": ["id"],
-        },
-    }
-    resource = Resource(descriptor)
-    md_file_path = "data/fixtures/output-markdown/resource.md"
-    with open(md_file_path, encoding="utf-8") as file:
-        expected = file.read()
-    assert resource.to_markdown().strip() == expected
+    resource = Resource(DESCRIPTOR)
+    expected_file_path = "data/fixtures/output-markdown/resource.md"
+
+    # Read
+    with open(expected_file_path, encoding="utf-8") as file:
+        assert resource.to_markdown().strip() == file.read()
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_path_schema_table():
-    descriptor = {
-        "name": "main",
-        "schema": {
-            "fields": [
-                {
-                    "name": "id",
-                    "description": "Any positive integer",
-                    "type": "integer",
-                    "constraints": {"minimum": 1},
-                },
-                {
-                    "name": "integer_minmax",
-                    "description": "An integer between 1 and 10",
-                    "type": "integer",
-                    "constraints": {"minimum": 1, "maximum": 10},
-                },
-            ],
-            "primaryKey": ["id"],
-        },
-    }
-    resource = Resource(descriptor)
-    md_file_path = "data/fixtures/output-markdown/resource-table.md"
-    with open(md_file_path, encoding="utf-8") as file:
-        expected = file.read()
-    assert resource.to_markdown(table=True).strip() == expected
+    resource = Resource(DESCRIPTOR)
+    expected_file_path = "data/fixtures/output-markdown/resource-table.md"
+
+    # Read
+    with open(expected_file_path, encoding="utf-8") as file:
+        assert resource.to_markdown(table=True).strip() == file.read().strip()
 
 
 def test_resource_to_markdown_file(tmpdir):
-    descriptor = descriptor = {
-        "name": "main",
-        "schema": {
-            "fields": [
-                {
-                    "name": "id",
-                    "description": "Any positive integer",
-                    "type": "integer",
-                    "constraints": {"minimum": 1},
-                },
-                {
-                    "name": "integer_minmax",
-                    "description": "An integer between 1 and 10",
-                    "type": "integer",
-                    "constraints": {"minimum": 1, "maximum": 10},
-                },
-            ],
-            "primaryKey": ["id"],
-        },
-    }
-    md_file_path = "data/fixtures/output-markdown/resource.md"
-    with open(md_file_path, encoding="utf-8") as file:
-        expected = file.read()
+    resource = Resource(DESCRIPTOR)
+    expected_file_path = "data/fixtures/output-markdown/resource.md"
     target = str(tmpdir.join("resource.md"))
-    resource = Resource(descriptor)
     resource.to_markdown(path=target).strip()
+
+    # Read - expected
+    with open(expected_file_path, encoding="utf-8") as file:
+        expected = file.read()
+
+    # Read - output
     with open(target, encoding="utf-8") as file:
-        output = file.read()
-    assert expected == output
+        assert expected == file.read()
 
 
 # Bugs

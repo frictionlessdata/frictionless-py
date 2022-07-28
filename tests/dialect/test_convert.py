@@ -1,4 +1,5 @@
 import json
+import yaml
 from frictionless import Dialect
 
 
@@ -12,9 +13,11 @@ def test_dialect_from_descriptor_v1():
 
 def test_dialect_to_yaml():
     dialect = Dialect.from_descriptor("data/dialect.json")
-    output_file_path = "data/fixtures/convert/dialect.yaml"
-    with open(output_file_path) as file:
-        assert dialect.to_yaml().strip() == file.read().strip()
+    expected_file_path = "data/dialect.yaml"
+
+    # Read
+    with open(expected_file_path) as file:
+        assert yaml.safe_load(dialect.to_yaml()) == yaml.safe_load(file.read())
 
 
 # Json

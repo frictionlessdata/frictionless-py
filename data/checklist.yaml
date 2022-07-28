@@ -4,3 +4,4 @@ checks:
     ignoreFields:
       - Latitudine
       - Longitudine
+  - type: ascii-value

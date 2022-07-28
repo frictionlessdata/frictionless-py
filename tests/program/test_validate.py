@@ -172,37 +172,33 @@ def test_program_validate_summary():
 # Bugs
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_zipped_resources_979():
     actual = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
-    output_file_path = "data/fixtures/cli/zipped-resources-979.txt"
-    with open(output_file_path, encoding="utf-8") as file:
-        expect = file.read()
     assert actual.exit_code == 1
+
+    # Read
+    expected_file_path = "data/fixtures/cli/zipped-resources-979.txt"
+    with open(expected_file_path, encoding="utf-8") as file:
+        assert actual.stdout.count(file.read().strip())
     assert actual.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
-    assert actual.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
-    assert actual.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
-    assert actual.stdout.count(expect.strip())
+    assert actual.stdout.count("valid: ogd10_catalogs.zip -> finanzquellen.csv")
+    assert actual.stdout.count("invalid: ogd10_catalogs.zip -> capital-invalid.csv")
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_long_error_messages_976():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
-    output_file_path = "data/fixtures/cli/long-error-messages-976.txt"
-    with open(output_file_path, encoding="utf-8") as file:
-        expected = file.read()
     assert actual.exit_code == 1
-    assert actual.stdout.count(expected.strip())
+
+    # Read
+    expected_file_path = "data/fixtures/cli/long-error-messages-976.txt"
+    with open(expected_file_path, encoding="utf-8") as file:
+        assert actual.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_partial_validation_info_933():
     actual = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
     assert actual.exit_code == 1
-    assert actual.stdout.count(
-        "The document was partially validated because of one of the limits"
-    )
-    assert actual.stdout.count("Rows Checked(Partial)")
+    assert actual.stdout.count("reached error limit: 2")
 
 
 def test_program_validate_single_resource_221():
@@ -213,20 +209,20 @@ def test_program_validate_single_resource_221():
     assert actual.stdout.count("valid: table-reverse.csv")
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_single_invalid_resource_221():
     actual = runner.invoke(
         program, "validate data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("invalid: data/datapackage.json")
+    assert actual.stdout.count(
+        '[package-error] The data package has an error: resource "number-twoo" does not exist'
+    )
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_multipart_resource_1140():
     actual = runner.invoke(program, "validate data/multipart.package.json")
     assert actual.exit_code == 0
-    assert actual.stdout.count("chunk1.csv,chunk2.csv")
+    assert actual.stdout.count("valid: chunk1.csv (multipart)")
 
 
 @pytest.mark.xfail(reason="issue-1205")
