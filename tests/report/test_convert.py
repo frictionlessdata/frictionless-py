@@ -1,21 +1,21 @@
 import json
-import pytest
 from frictionless import Resource, Report
 
 
 # General
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_report_to_summary_error_not_found():
     resource = Resource("data/countriess.csv")
     report = resource.validate()
     output = report.to_summary()
-    path = "data/fixtures/summary/multiline-scheme-error.txt"
-    with open(path, encoding="utf-8") as file:
+
+    # Read
+    expected_file_path = "data/fixtures/summary/multiline-scheme-error.txt"
+    with open(expected_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert output.count(expected.strip())
-    assert output.count("File Size    | (file not found)")
+    assert output.count("(file not found)")
 
 
 def test_report_to_summary_valid():
