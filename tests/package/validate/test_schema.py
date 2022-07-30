@@ -1,4 +1,3 @@
-import pytest
 from copy import deepcopy
 from frictionless import Package, Resource, Schema, Detector, fields
 
@@ -135,8 +134,6 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
 # Bugs
 
 
-# See also: https://github.com/frictionlessdata/project/discussions/678
-@pytest.mark.xfail(reason="sync-schema")
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
@@ -151,8 +148,7 @@ def test_validate_package_using_detector_schema_sync_issue_847():
             ),
         ]
     )
-    report = package.validate()
-    for resource in package.resources:  # type: ignore
+    for resource in package.resources:
         resource.detector = Detector(schema_sync=True)
-    package = Package(package)
+    report = package.validate()
     assert report.valid

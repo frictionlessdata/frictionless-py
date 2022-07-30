@@ -90,7 +90,7 @@ def test_pandas_parser_nan_in_integer_csv_column():
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
-@pytest.mark.xfail(reason="Pandas warning")
+@pytest.mark.skip(reason="issue-1210")
 def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")

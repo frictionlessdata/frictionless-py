@@ -489,8 +489,6 @@ def test_validate_package_uppercase_format_issue_494():
     assert report.stats.tasks == 1
 
 
-# See also: https://github.com/frictionlessdata/project/discussions/678
-@pytest.mark.xfail(reason="sync-schema")
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
@@ -502,7 +500,7 @@ def test_validate_package_using_detector_schema_sync_issue_847():
     )
     for resource in package.resources:  # type: ignore
         resource.detector = Detector(schema_sync=True)
-    report = validate(package)
+    report = package.validate()
     assert report.valid
 
 

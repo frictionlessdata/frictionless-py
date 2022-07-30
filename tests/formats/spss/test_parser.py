@@ -106,7 +106,7 @@ def test_spss_storage_constraints(tmpdir):
         ]
 
 
-@pytest.mark.xfail(reason="Timezone is not supported")
+@pytest.mark.skip(reason="issue-1212")
 def test_spss_parser_write_timezone(tmpdir):
     source = Resource("data/timezone.csv")
     target = source.write(str(tmpdir.join("table.sav")))

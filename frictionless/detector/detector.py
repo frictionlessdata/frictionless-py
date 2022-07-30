@@ -6,6 +6,7 @@ from pathlib import Path
 from copy import copy, deepcopy
 from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List, Any
+from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..platform import platform
 from ..metadata import Metadata
@@ -403,6 +404,9 @@ class Detector(Metadata):
         # Sync schema
         if self.schema_sync:
             if labels:
+                if len(labels) != len(set(labels)):
+                    note = '"schema_sync" requires unique labels in the header'
+                    raise FrictionlessException(note)
                 mapping = {field.name: field for field in schema.fields}  # type: ignore
                 schema.clear_fields()
                 for name in labels:

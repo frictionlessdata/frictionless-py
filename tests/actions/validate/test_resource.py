@@ -969,7 +969,6 @@ def test_validate_resource_array_path_issue_991():
         ]
 
 
-@pytest.mark.xfail(reason="sync-schema")
 def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     report = validate(
@@ -978,8 +977,5 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
         detector=detector,
     )
     assert report.flatten(["type", "note"]) == [
-        [
-            "schema-error",
-            'Duplicate labels in header is not supported with "schema_sync"',
-        ],
+        ["error", '"schema_sync" requires unique labels in the header'],
     ]
