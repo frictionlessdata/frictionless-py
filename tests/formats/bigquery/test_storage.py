@@ -5,7 +5,7 @@ import pytest
 import datetime
 from apiclient.discovery import build  # type: ignore
 from oauth2client.client import GoogleCredentials
-from frictionless import Package, Resource, formats
+from frictionless import Package, Resource, Dialect, formats
 from frictionless import FrictionlessException
 
 
@@ -203,12 +203,11 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
-@pytest.mark.xfail
 def test_storage_big_file(options):
     service = options.pop("service")
     control = formats.BigqueryControl(**options)
     storage = formats.BigqueryStorage(service, control=control)
-    resource = Resource(name="table", data=[[1]] * 1500)
+    resource = Resource(name="table", data=[[1]] * 1500, dialect=Dialect(header=False))
     storage.write_resource(resource, force=True)
     target = storage.read_resource("table")
     assert len(target.read_rows()) == 1500
