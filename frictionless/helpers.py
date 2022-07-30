@@ -168,18 +168,11 @@ def validate_descriptor(
     notes = []
     frictionless = import_module("frictionless")
     if isinstance(profile, str):
-        profile = frictionless.Metadata(profile).to_dict()
+        profile = frictionless.Metadata.metadata_normalize(profile)
     validator_class = frictionless.platform.jsonschema.validators.validator_for(profile)  # type: ignore
     validator = validator_class(profile)
     for error in validator.iter_errors(descriptor):
-        # TODO: remove
-        # Withouth this resource with both path/data is invalid
-        #  if "is valid under each of" in error.message:
-        #  continue
         metadata_path = "/".join(map(str, error.path))
-        # TODO: remove
-        #  profile_path = "/".join(map(str, error.schema_path))
-        # We need it because of the metadata.__repr__ overriding
         message = re.sub(r"\s+", " ", error.message)
         note = message
         if metadata_path:

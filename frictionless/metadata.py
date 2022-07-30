@@ -439,13 +439,7 @@ def json_to_markdown(
 
 def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
     """Tabulate dictionaries and render as a Markdown table"""
-
     if kwargs:
         dicts = [filter_dict(x, **kwargs) for x in dicts]
-    try:
-        pandas = import_module("pandas")
-        df = pandas.DataFrame(dicts)
-    except ImportError:
-        module = import_module("frictionless.exception")
-        raise module.FrictionlessException("Please install `pandas` package")
-    return df.where(df.notnull(), None).to_markdown(index=False)
+    df = platform.pandas.DataFrame(dicts)
+    return df.where(df.notnull(), None).to_markdown(index=False)  # type: ignore
