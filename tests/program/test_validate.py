@@ -225,7 +225,7 @@ def test_program_validate_multipart_resource_1140():
     assert actual.stdout.count("valid: chunk1.csv (multipart)")
 
 
-@pytest.mark.xfail(reason="issue-1205")
+@pytest.mark.skip(reason="issue-1215")
 def test_program_validate_multipart_zipped_resource_1140():
     actual = runner.invoke(program, "validate data/multipart-zipped.package.json")
     assert actual.exit_code == 0
