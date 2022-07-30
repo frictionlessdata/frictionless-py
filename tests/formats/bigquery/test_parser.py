@@ -3,6 +3,8 @@ from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
+pytestmark = pytest.mark.skip(reason="issue-1217")
+
 
 # We don't use VCR for this module testing because
 # HTTP requests can contain secrets from Google Credentials. Consider using:
@@ -28,7 +30,6 @@ def test_bigquery_parser_write(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skip(reason="issue-1213")
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")

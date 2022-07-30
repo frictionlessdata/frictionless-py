@@ -3,6 +3,8 @@ import datetime
 from frictionless import Package, Resource, Dialect, formats
 from frictionless import FrictionlessException
 
+pytestmark = pytest.mark.skip(reason="issue-1217")
+
 
 # We don't use VCR for this module testing because
 # HTTP requests can contain secrets from Google Credentials. Consider using:
@@ -198,7 +200,6 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skip(reason="issue-1216")
 def test_storage_big_file(options):
     service = options.pop("service")
     control = formats.BigqueryControl(**options)
