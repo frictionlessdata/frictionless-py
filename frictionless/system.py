@@ -169,7 +169,7 @@ class System:
                 return error
         for Class in vars(import_module("frictionless.errors")).values():
             if getattr(Class, "type", None) == type:
-                return Class(descriptor)
+                return Class.from_descriptor(descriptor)
         note = f'error "{type}" is not supported'
         raise FrictionlessException(note)
 

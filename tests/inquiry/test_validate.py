@@ -116,14 +116,13 @@ def test_inquiry_validate_with_multiple_packages():
 # Parallel
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_parallel_multiple():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"source": "data/table.csv"},
-                {"source": "data/matrix.csv"},
+                {"path": "data/table.csv"},
+                {"path": "data/matrix.csv"},
             ]
         },
     )
@@ -131,14 +130,13 @@ def test_inquiry_validate_parallel_multiple():
     assert report.valid
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_parallel_multiple_invalid():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"source": "data/table.csv"},
-                {"source": "data/invalid.csv"},
+                {"path": "data/table.csv"},
+                {"path": "data/invalid.csv"},
             ]
         },
     )
@@ -155,14 +153,13 @@ def test_inquiry_validate_parallel_multiple_invalid():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_with_multiple_packages_with_parallel():
     inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"source": "data/package/datapackage.json"},
-                {"source": "data/invalid/datapackage.json"},
+                {"package": "data/package/datapackage.json"},
+                {"package": "data/invalid/datapackage.json"},
             ]
         },
     )
