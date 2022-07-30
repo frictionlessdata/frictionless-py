@@ -36,8 +36,6 @@ jobs:
       - name: Prepare secrets
         if: env.GOOGLE_CREDENTIALS_DATA != null
         run: echo $GOOGLE_CREDENTIALS_DATA > .google.json
-        env:
-          GOOGLE_CREDENTIALS_PATH: .google.json
       - name: Test software
         run: make test-ci
       - name: Report coverage
