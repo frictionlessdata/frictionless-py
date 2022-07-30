@@ -5,7 +5,6 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_melt():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -32,7 +31,6 @@ def test_step_table_melt():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_melt_with_variables():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -56,7 +54,6 @@ def test_step_table_melt_with_variables():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_melt_with_to_field_names():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

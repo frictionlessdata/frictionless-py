@@ -248,7 +248,6 @@ def test_program_extract_valid_rows_extract_dialect_sheet_option():
     ]
 
 
-@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_invalid_rows_extract_dialect_sheet_option():
     actual = runner.invoke(
         program, "extract data/sheet2.xls --sheet Sheet2 --json --invalid"
