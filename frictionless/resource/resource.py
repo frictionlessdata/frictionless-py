@@ -1288,12 +1288,10 @@ class Resource(Metadata):
     def metadata_validate(self, *, strict=False):
         yield from super().metadata_validate()
 
-        # Required (normal)
+        # Required
         if self.path is None and self.data is None:
             note = 'one of the properties "path" or "data" is required'
             yield errors.ResourceError(note=note)
-
-        # Requried (strict)
         if strict:
             names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
             if self.tabular:
@@ -1302,6 +1300,11 @@ class Resource(Metadata):
                 if getattr(self, name, None) is None:
                     note = f'property "{name}" is required in a strict mode'
                     yield errors.ResourceError(note=note)
+
+        # Path/Data
+        if self.path is not None and self.data is not None:
+            note = 'properties "path" and "data" is mutually exclusive'
+            yield errors.ResourceError(note=note)
 
         # Dialect
         if self.dialect:

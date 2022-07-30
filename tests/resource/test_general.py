@@ -15,15 +15,15 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
+    assert resource.type == "table"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
+    assert resource.tabular
     assert (
         resource.normpath == "data/table.csv"
         if not platform.type == "windows"
         else "data\\table.csv"
     )
-    # TODO: recover
-    #  assert resource.profile == "tabular-data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -239,19 +239,6 @@ def test_resource_source_data():
         }
 
 
-# TODO: shall it fail on read_rows (metadata validation)?
-def test_resource_source_path_and_data():
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    resource = Resource({"data": data, "path": "path"})
-    assert resource.path == "path"
-    assert resource.data == data
-    assert resource.normpath == "path"
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
 def test_resource_source_no_path_and_no_data():
     resource = Resource.from_descriptor({})
     assert resource.path is None
@@ -260,7 +247,17 @@ def test_resource_source_no_path_and_no_data():
         resource.read_rows()
     error = excinfo.value.error
     assert error.type == "resource-error"
-    assert error.note.count('one of the properties "path" or "data" is required')
+    assert error.note == 'one of the properties "path" or "data" is required'
+
+
+def test_resource_source_both_path_and_data():
+    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
+    resource = Resource({"data": data, "path": "path"})
+    with pytest.raises(FrictionlessException) as excinfo:
+        assert resource.read_rows()
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note == 'properties "path" and "data" is mutually exclusive'
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
