@@ -5,8 +5,8 @@ from frictionless import Package, Resource, platform
 
 
 pytestmark = pytest.mark.skipif(
-    platform.type == "darwin" or platform.python >= "3.10",
-    reason="Not supported MacOS and Python3.10+",
+    platform.type == "darwin" or platform.python == "3.10",
+    reason="Not supported MacOS and Python3.10",
 )
 
 

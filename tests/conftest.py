@@ -22,8 +22,8 @@ def google_credentials_path():
     path = os.environ.get("GOOGLE_CREDENTIALS_PATH")
     if not path or not os.path.isfile(path):
         pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is not available')
-    elif platform.type != "linux" or platform.python < "3.8":
-        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is Linux/Python3.8')
+    elif platform.type != "linux":
+        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is Linux only')
     return path
 
 
