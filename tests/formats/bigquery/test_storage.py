@@ -1,10 +1,5 @@
-import os
-import json
-import uuid
 import pytest
 import datetime
-from apiclient.discovery import build  # type: ignore
-from oauth2client.client import GoogleCredentials
 from frictionless import Package, Resource, Dialect, formats
 from frictionless import FrictionlessException
 
