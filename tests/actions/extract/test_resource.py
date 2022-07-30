@@ -1,6 +1,5 @@
 import os
 import types
-import pytest
 from pathlib import Path
 from frictionless import extract
 
@@ -83,9 +82,8 @@ def test_extract_resource_from_file_process_and_stream():
     ]
 
 
-@pytest.mark.xfail(reason="json-data")
 def test_extract_resource_from_json_format_issue_827():
-    rows = extract(path="data/table.json")  # type: ignore
+    rows = extract(path="data/table.json")
     assert rows == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

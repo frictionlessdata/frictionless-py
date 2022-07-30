@@ -138,20 +138,18 @@ def test_program_extract_dialect_table_option_sql(database_url):
     assert json.loads(actual.stdout) == expect
 
 
-@pytest.mark.xfail(reason="json-data")
 def test_program_extract_dialect_keyed_option():
     path = "data/table.keyed.json"
-    actual = runner.invoke(program, f"extract {path} --keyed --json")
-    expect = extract(path, control=formats.JsonControl(keyed=True))
+    actual = runner.invoke(program, f"extract --path {path} --keyed --json")
+    expect = extract(path=path, control=formats.JsonControl(keyed=True))
     assert actual.exit_code == 0
     assert json.loads(actual.stdout) == expect
 
 
-@pytest.mark.xfail(reason="json-data")
 def test_program_extract_dialect_keys_option():
     path = "data/table.keyed.json"
-    actual = runner.invoke(program, f"extract {path} --keys 'name,id' --json")
-    expect = extract(path, control=formats.JsonControl(keys=["name", "id"]))
+    actual = runner.invoke(program, f"extract --path {path} --keys 'name,id' --json")
+    expect = extract(path=path, control=formats.JsonControl(keys=["name", "id"]))
     assert actual.exit_code == 0
     assert json.loads(actual.stdout) == expect
 

@@ -15,7 +15,7 @@ from .. import helpers
 
 # TODO: shall we accept dialect/schema/checklist in a form of descriptors?
 def validate(
-    source: Any,
+    source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
     # Checklist
@@ -58,6 +58,18 @@ def validate(
             skip_errors=skip_errors,
         )
 
+    # Validate resource
+    if type == "resource":
+        resource = source
+        if not isinstance(resource, Resource):
+            resource = Resource.from_options(resource, **options)
+        return resource.validate(
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            strict=strict,
+        )
+
     # Validate package
     if type == "package":
         package = source
@@ -72,8 +84,13 @@ def validate(
 
         # Resource
         if resource_name:
-            type = "resource"
-            source = package.get_resource(resource_name)
+            resource = package.get_resource(resource_name)
+            return resource.validate(
+                checklist,
+                limit_errors=limit_errors,
+                limit_rows=limit_rows,
+                strict=strict,
+            )
 
         # Package
         else:
@@ -85,6 +102,11 @@ def validate(
                 parallel=parallel,
             )
 
+    # Ensure source
+    if source is None:
+        note = f'"source" is required for "{type}" validation'
+        raise FrictionlessException(note)
+
     # Validate checklist
     if type == "checklist":
         checklist = source
@@ -93,54 +115,42 @@ def validate(
         return checklist.validate()
 
     # Validate detector
-    elif type == "detector":
+    if type == "detector":
         detector = source
         if not isinstance(detector, Detector):
             detector = Detector.from_descriptor(detector)
         return detector.validate()
 
     # Validate dialect
-    elif type == "dialect":
+    if type == "dialect":
         dialect = source
         if not isinstance(dialect, Dialect):
             dialect = Dialect.from_descriptor(dialect)
         return dialect.validate()
 
     # Validate inquiry
-    elif type == "inquiry":
+    if type == "inquiry":
         inquiry = source
         if not isinstance(inquiry, Inquiry):
             inquiry = Inquiry.from_descriptor(inquiry)
         return inquiry.validate()
 
     # Validate pipeline
-    elif type == "pipeline":
+    if type == "pipeline":
         pipeline = source
         if not isinstance(pipeline, Pipeline):
             pipeline = Pipeline.from_descriptor(pipeline)
         return pipeline.validate()
 
     # Validate report
-    elif type == "report":
+    if type == "report":
         report = source
         if not isinstance(report, Report):
             report = Report.from_descriptor(report)
         return report.validate()
 
-    # Validate resource
-    elif type == "resource":
-        resource = source
-        if not isinstance(resource, Resource):
-            resource = Resource.from_options(resource, **options)
-        return resource.validate(
-            checklist,
-            limit_errors=limit_errors,
-            limit_rows=limit_rows,
-            strict=strict,
-        )
-
     # Validate schema
-    elif type == "schema":
+    if type == "schema":
         schema = source
         if not isinstance(schema, Schema):
             schema = Schema.from_descriptor(schema)

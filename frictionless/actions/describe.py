@@ -8,7 +8,7 @@ from .. import helpers
 
 
 def describe(
-    source: Any,
+    source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
     stats: bool = False,
@@ -32,20 +32,20 @@ def describe(
         if helpers.is_expandable_source(source):
             type = "package"
 
+    # Describe resource
+    if type == "resource":
+        return Resource.describe(source, stats=stats, **options)
+
+    # Describe package
+    if type == "package":
+        return Package.describe(source, stats=stats, **options)
+
     # Describe dialect
     if type == "dialect":
         return Dialect.describe(source, **options)
 
-    # Describe package
-    elif type == "package":
-        return Package.describe(source, stats=stats, **options)
-
-    # Describe resource
-    elif type == "resource":
-        return Resource.describe(source, stats=stats, **options)
-
     # Describe schema
-    elif type == "schema":
+    if type == "schema":
         return Schema.describe(source, **options)
 
     # Not supported

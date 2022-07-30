@@ -93,7 +93,12 @@ def program_extract(
         elif table:
             controls.append(formats.SqlControl(table=table))
         elif keys or keyed:
-            controls.append(formats.JsonControl.from_options(keys=keys, keyed=keyed))
+            controls.append(
+                formats.JsonControl.from_options(
+                    keys=helpers.parse_csv_string(keys),
+                    keyed=keyed,
+                )
+            )
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,

@@ -945,9 +945,8 @@ def test_validate_newline_inside_label_issue_811():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="json-data")
 def test_validate_resource_from_json_format_issue_827():
-    report = validate(path="data/table.json")  # type: ignore
+    report = validate(path="data/table.json")
     assert report.valid
 
 

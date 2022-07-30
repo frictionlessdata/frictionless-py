@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 def extract(
-    source: Any,
+    source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
     limit_rows: Optional[int] = None,
@@ -43,32 +43,6 @@ def extract(
             if helpers.is_expandable_source(source):
                 type = "package"
 
-    # Extract package
-    if type == "package":
-        package = source
-        if not isinstance(package, Package):
-            # TODO: remove when we add these to names kwargs
-            options.pop("schema", None)
-            options.pop("dialect", None)
-            options.pop("checklist", None)
-            options.pop("pipeline", None)
-            options.pop("stats", None)
-            package = Package.from_options(package, **options)
-
-        # Resource
-        if resource_name:
-            type = "resource"
-            source = package.get_resource(resource_name)
-
-        # Package
-        else:
-            return package.extract(
-                limit_rows=limit_rows,
-                process=process,
-                filter=filter,
-                stream=stream,
-            )
-
     # Extract resource
     if type == "resource":
         resource = source
@@ -80,6 +54,37 @@ def extract(
             filter=filter,
             stream=stream,
         )
+
+    # Extract package
+    if type == "package":
+        package = source
+        if not isinstance(package, Package):
+            # TODO: remove when we add these to named kwargs
+            options.pop("schema", None)
+            options.pop("dialect", None)
+            options.pop("checklist", None)
+            options.pop("pipeline", None)
+            options.pop("stats", None)
+            package = Package.from_options(package, **options)
+
+        # Resource
+        if resource_name:
+            resource = package.get_resource(resource_name)
+            return resource.extract(
+                limit_rows=limit_rows,
+                process=process,
+                filter=filter,
+                stream=stream,
+            )
+
+        # Package
+        else:
+            return package.extract(
+                limit_rows=limit_rows,
+                process=process,
+                filter=filter,
+                stream=stream,
+            )
 
     # Not supported
     raise FrictionlessException(f"Not supported extract type: {type}")

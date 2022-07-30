@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, List
+from typing import Optional, List, Any
 from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -50,7 +50,7 @@ class Dialect(Metadata):
     # Describe
 
     @staticmethod
-    def describe(source, **options):
+    def describe(source: Optional[Any] = None, **options):
         """Describe the given source as a dialect
 
         Parameters:

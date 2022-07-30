@@ -183,9 +183,8 @@ def test_describe_resource_compression_gzip_issue_606():
     assert resource.stats.bytes == 61
 
 
-@pytest.mark.xfail(reason="json-data")
 def test_describe_resource_with_json_format_issue_827():
-    resource = describe(path="data/table.json")  # type: ignore
+    resource = describe(path="data/table.json")
     assert isinstance(resource, Resource)
     assert resource.name == "table"
 
