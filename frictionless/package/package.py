@@ -20,7 +20,7 @@ from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IOnerror
+    from ..interfaces import IDescriptor, IProfile, IOnerror
     from ..dialect import Control
     from .. import portals
 
@@ -55,7 +55,7 @@ class Package(Metadata):
         title: Optional[str] = None,
         description: Optional[str] = None,
         homepage: Optional[str] = None,
-        profiles: List[str] = [],
+        profiles: List[Union[IProfile, str]] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
         contributors: List[dict] = [],
@@ -169,7 +169,7 @@ class Package(Metadata):
     For example, github repository or ckan dataset address.
     """
 
-    profiles: List[str]
+    profiles: List[Union[IProfile, str]]
     """
     A strings identifying the profiles of this descriptor.
     For example, `fiscal-data-package`.
@@ -677,8 +677,9 @@ class Package(Metadata):
         # Profile (v1)
         profile = descriptor.pop("profile", None)
         if profile:
-            descriptor.setdefault("profiles", [])
-            descriptor["profiles"].append(profile)
+            if profile not in ["data-package", "tabular-data-package"]:
+                descriptor.setdefault("profiles", [])
+                descriptor["profiles"].append(profile)
 
         return super().metadata_import(descriptor, **options)
 
@@ -688,6 +689,7 @@ class Package(Metadata):
         # Profile (v1)
         if system.standards_version == "v1":
             profiles = descriptor.pop("profiles", None)
+            descriptor["profile"] = "data-package"
             if profiles:
                 descriptor["profile"] = profiles[0]
 
@@ -695,27 +697,9 @@ class Package(Metadata):
 
     def metadata_validate(self):
 
-        # Package
-        #  if self.profile == "data-package":
-        #  yield from super().metadata_validate()
-        #  elif self.profile == "fiscal-data-package":
-        #  yield from super().metadata_validate(settings.FISCAL_PACKAGE_PROFILE)
-        #  elif self.profile == "tabular-data-package":
-        #  yield from super().metadata_validate(settings.TABULAR_PACKAGE_PROFILE)
-        #  else:
-        #  if not self.trusted:
-        #  if not helpers.is_safe_path(self.profile):
-        #  note = f'path "{self.profile}" is not safe'
-        #  error = errors.PackageError(note=note)
-        #  raise FrictionlessException(error)
-        #  profile = Metadata(self.profile).to_dict()
-        #  yield from super().metadata_validate(profile)
-
         # Resources
         for resource in self.resources:
             yield from resource.metadata_errors
-
-        # Resource Names
         resource_names = list(filter(lambda name: name, self.resource_names))
         if len(resource_names) != len(set(resource_names)):
             note = "names of the resources are not unique"
@@ -744,6 +728,14 @@ class Package(Metadata):
             if name in self.custom:
                 note = f'"{name}" should be set as "resource.schema.{name}"'
                 yield errors.PackageError(note=note)
+
+        # Profiles
+        if self.profiles:
+            descriptor = self.to_descriptor()
+            for profile in self.profiles:
+                notes = helpers.validate_descriptor(descriptor, profile=profile)
+                for note in notes:
+                    yield errors.PackageError(note=note)
 
 
 # Internal

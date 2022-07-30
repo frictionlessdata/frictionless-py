@@ -31,10 +31,7 @@ def test_package():
 
 def test_package_from_dict():
     package = Package({"name": "name", "profile": "data-package"})
-    assert package.to_descriptor() == {
-        "name": "name",
-        "profiles": ["data-package"],
-    }
+    assert package.to_descriptor() == {"name": "name"}
     with system.use_standards_version("v1"):
         assert package.to_descriptor() == {
             "name": "name",

@@ -1264,6 +1264,7 @@ class Resource(Metadata):
         if system.standards_version == "v1":
             type = descriptor.pop("type", None)
             profiles = descriptor.pop("profiles", None)
+            descriptor["profile"] = "data-resource"
             if type == "table":
                 descriptor["profile"] = "tabular-data-profile"
             elif profiles:
