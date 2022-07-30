@@ -15,10 +15,8 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
-    assert resource.type == "table"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.tabular
     assert (
         resource.normpath == "data/table.csv"
         if not platform.type == "windows"

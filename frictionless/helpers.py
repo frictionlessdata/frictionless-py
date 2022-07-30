@@ -17,7 +17,11 @@ from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
+from typing import TYPE_CHECKING, List
 from . import settings
+
+if TYPE_CHECKING:
+    from .interfaces import IDescriptor, IProfile
 
 
 # General
@@ -154,6 +158,34 @@ def merge_jsonschema(base, head):
         head.get("properties", {}),
     )
     return result
+
+
+def validate_descriptor(
+    descriptor: IDescriptor,
+    *,
+    profile: Union[IProfile, str],
+) -> List[str]:
+    notes = []
+    frictionless = import_module("frictionless")
+    if isinstance(profile, str):
+        profile = frictionless.Metadata(profile).to_dict()
+    validator_class = frictionless.platform.jsonschema.validators.validator_for(profile)  # type: ignore
+    validator = validator_class(profile)
+    for error in validator.iter_errors(descriptor):
+        # TODO: remove
+        # Withouth this resource with both path/data is invalid
+        #  if "is valid under each of" in error.message:
+        #  continue
+        metadata_path = "/".join(map(str, error.path))
+        # TODO: remove
+        #  profile_path = "/".join(map(str, error.schema_path))
+        # We need it because of the metadata.__repr__ overriding
+        message = re.sub(r"\s+", " ", error.message)
+        note = message
+        if metadata_path:
+            note = f"{note} of {metadata_path}"
+        notes.append(note)
+    return notes
 
 
 def ensure_dir(path):

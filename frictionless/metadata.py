@@ -1,7 +1,6 @@
 from __future__ import annotations
 import os
 import io
-import re
 import json
 import pprint
 import stringcase
@@ -16,8 +15,8 @@ from .platform import platform
 from . import helpers
 
 if TYPE_CHECKING:
-    from .interfaces import IDescriptor, IDescriptorSource
     from .error import Error
+    from .interfaces import IDescriptor
 
 
 # NOTE: review and clean this class
@@ -147,7 +146,7 @@ class Metadata(metaclass=Metaclass):
         return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptorSource, **options):
+    def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options):
         """Import metadata from a descriptor source"""
         return cls.metadata_import(descriptor, **options)
 
@@ -155,7 +154,7 @@ class Metadata(metaclass=Metaclass):
         """Export metadata as a descriptor"""
         return self.metadata_export()
 
-    def to_descriptor_source(self) -> IDescriptorSource:
+    def to_descriptor_source(self) -> Union[IDescriptor, str]:
         """Export metadata as a descriptor or a path to the descriptor"""
         descriptor = self.metadata_export()
         if self.metadata_descriptor_path:
@@ -255,7 +254,7 @@ class Metadata(metaclass=Metaclass):
         return list(self.metadata_validate())
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptorSource, **options):
+    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
         """Import metadata from a descriptor source"""
         target = {}
         source = cls.metadata_normalize(descriptor)
@@ -307,30 +306,8 @@ class Metadata(metaclass=Metaclass):
         descriptor.update(self.custom)
         return descriptor
 
-    # TODO: automate metadata_validate of the children using metadata_profile?
-    def metadata_validate(self) -> Iterator[Error]:
-        """Validate metadata and emit validation errors"""
-        if self.metadata_profile:
-            frictionless = import_module("frictionless")
-            Error = self.metadata_Error or frictionless.errors.MetadataError
-            validator_class = platform.jsonschema.validators.validator_for(self.metadata_profile)  # type: ignore
-            validator = validator_class(self.metadata_profile)
-            for error in validator.iter_errors(self.to_descriptor()):
-                # Withouth this resource with both path/data is invalid
-                if "is valid under each of" in error.message:
-                    continue
-                metadata_path = "/".join(map(str, error.path))
-                #  profile_path = "/".join(map(str, error.schema_path))
-                # We need it because of the metadata.__repr__ overriding
-                message = re.sub(r"\s+", " ", error.message)
-                note = message
-                if metadata_path:
-                    note = f"{note} of {metadata_path}"
-                yield Error(note=note)
-        yield from []
-
     @classmethod
-    def metadata_normalize(cls, descriptor: IDescriptorSource) -> IDescriptor:
+    def metadata_normalize(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
         """Extract metadata"""
         try:
             if isinstance(descriptor, Mapping):
@@ -359,6 +336,19 @@ class Metadata(metaclass=Metaclass):
             Error = cls.metadata_Error or frictionless.errors.MetadataError
             note = f'cannot normalize metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
+
+    # TODO: automate metadata_validate of the children using metadata_profile?
+    def metadata_validate(self) -> Iterator[Error]:
+        """Validate metadata and emit validation errors"""
+        if self.metadata_profile:
+            profile = self.metadata_profile
+            descriptor = self.to_descriptor()
+            frictionless = import_module("frictionless")
+            Error = self.metadata_Error or frictionless.errors.MetadataError
+            notes = helpers.validate_descriptor(descriptor, profile=profile)
+            for note in notes:
+                yield Error(note=note)
+        yield from []
 
 
 # Internal

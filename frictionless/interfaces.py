@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 IStandardsVersion = Literal["v1", "v2"]
 IDescriptor = Dict[str, Any]
-IDescriptorSource = Union[str, dict]
+IProfile = Dict[str, Any]
 IByteStream = BinaryIO
 ITextStream = TextIO
 # TODO: fix streaming types (support next)

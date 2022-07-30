@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from .loader import Loader
     from .parser import Parser
     from ..package import Package
-    from ..interfaces import IDescriptorSource, IOnerror, IBuffer, ISample, IFragment
+    from ..interfaces import IDescriptor, IOnerror, IBuffer, ISample, IFragment, IProfile
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 
 
@@ -65,7 +65,7 @@ class Resource(Metadata):
         title: Optional[str] = None,
         description: Optional[str] = None,
         homepage: Optional[str] = None,
-        profiles: List[str] = [],
+        profiles: List[Union[IProfile, str]] = [],
         licenses: List[dict] = [],
         sources: List[dict] = [],
         path: Optional[str] = None,
@@ -199,7 +199,7 @@ class Resource(Metadata):
     For example, github repository or ckan dataset address.
     """
 
-    profiles: List[str]
+    profiles: List[Union[IProfile, str]]
     """
     Strings identifying the profile of this descriptor.
     For example, `tabular-data-resource`.
@@ -1168,7 +1168,7 @@ class Resource(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptorSource, **options):
+    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
         options.setdefault("trusted", False)
         if isinstance(descriptor, str):
             options.setdefault("basepath", helpers.parse_basepath(descriptor))
@@ -1341,3 +1341,11 @@ class Resource(Metadata):
             if name in self.custom:
                 note = f'"{name}" should be set as "schema.{name}"'
                 yield errors.ResourceError(note=note)
+
+        # Profiles
+        if self.profiles:
+            descriptor = self.to_descriptor()
+            for profile in self.profiles:
+                notes = helpers.validate_descriptor(descriptor, profile=profile)
+                for note in notes:
+                    yield errors.ResourceError(note=note)

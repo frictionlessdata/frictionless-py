@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -20,7 +20,7 @@ from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptorSource, IOnerror
+    from ..interfaces import IDescriptor, IOnerror
     from ..dialect import Control
     from .. import portals
 
@@ -668,7 +668,7 @@ class Package(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptorSource, **options):
+    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
         options.setdefault("trusted", False)
         if isinstance(descriptor, str):
             options.setdefault("basepath", helpers.parse_basepath(descriptor))
