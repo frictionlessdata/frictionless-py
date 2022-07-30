@@ -5,8 +5,7 @@ from frictionless import system, Plugin, Resource, Schema, Field, describe
 # General
 
 
-@pytest.mark.xfail(reason="custom-field")
-def test_type_custom(custom_plugin):
+def test_type_custom(enable_custom_plugin):
     schema = Schema.from_descriptor(
         {
             "fields": [
@@ -22,8 +21,7 @@ def test_type_custom(custom_plugin):
         ]
 
 
-@pytest.mark.xfail(reason="custom-field")
-def test_type_custom_detect(custom_plugin):
+def test_type_custom_detect(enable_custom_plugin):
     resource = describe("data/table.csv")
     assert isinstance(resource, Resource)
     assert resource.schema.fields[0].type == "custom"
@@ -34,10 +32,12 @@ def test_type_custom_detect(custom_plugin):
 
 
 @pytest.fixture
-def custom_plugin():
+def enable_custom_plugin():
 
     # Field
     class CustomField(Field):
+        type = "custom"
+
         def create_cell_reader(self):
             def cell_reader(cell):
                 return [cell], None

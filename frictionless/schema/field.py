@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from .schema import Schema
 
 
-# TODO: make abstract?
 @attrs.define(kw_only=True)
 class Field(Metadata):
     """Field representation"""
@@ -118,7 +117,12 @@ class Field(Metadata):
         return cell_reader
 
     def create_value_reader(self):
-        raise NotImplementedError()
+
+        # Create reader
+        def value_reader(cell):
+            return cell
+
+        return value_reader
 
     # Write
 
@@ -152,7 +156,12 @@ class Field(Metadata):
         return cell_writer
 
     def create_value_writer(self):
-        raise NotImplementedError()
+
+        # Create writer
+        def value_writer(cell):
+            return str(cell)
+
+        return value_writer
 
     # Metadata
 
