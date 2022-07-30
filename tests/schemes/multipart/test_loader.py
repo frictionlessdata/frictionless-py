@@ -19,7 +19,7 @@ def test_multipart_loader():
         ]
 
 
-@pytest.mark.xfail(reason="Not suppored compressed multipart")
+@pytest.mark.skip(reason="issue-1215")
 def test_multipart_loader_with_compressed_parts():
     with Resource(
         path="data/chunk1.csv.zip", extrapaths=["data/chunk2.csv.zip"]

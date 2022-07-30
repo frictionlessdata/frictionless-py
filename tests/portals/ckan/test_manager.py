@@ -4,7 +4,7 @@ from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc
 from frictionless import Resource, formats
 
-pytestmark = pytest.mark.xfail
+pytestmark = pytest.mark.skip(reason="issue-475")
 
 
 # Write
@@ -25,7 +25,6 @@ def test_ckan_parser(options):
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="Timezone is not supported")
 def test_ckan_parser_timezone(options):
     url = options.pop("url")
     control = formats.CkanControl(resource="timezone", **options)

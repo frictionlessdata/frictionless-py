@@ -4,7 +4,8 @@ import datetime
 from frictionless import Package, Resource, formats
 from frictionless import FrictionlessException
 
-pytestmark = pytest.mark.xfail
+# TODO: merge this tests with manager tests
+pytestmark = pytest.mark.skip(reason="issue-475")
 
 
 # General
