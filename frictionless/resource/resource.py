@@ -281,6 +281,71 @@ class Resource(Metadata):
     # Props
 
     @property
+    def normpath(self) -> str:
+        """Normalized path of the resource or raise if not set"""
+        if self.path is None:
+            raise FrictionlessException("path is not set")
+        return helpers.normalize_path(self.basepath, self.path)
+
+    @property
+    def normdata(self) -> Any:
+        """Normalized data or raise if not set"""
+        if self.data is None:
+            raise FrictionlessException("data is not set")
+        return self.data
+
+    @property
+    def paths(self) -> List[str]:
+        """All paths of the resource"""
+        paths = []
+        if self.path is not None:
+            paths.append(self.path)
+        paths.extend(self.extrapaths)
+        return paths
+
+    @property
+    def normpaths(self) -> List[str]:
+        """Normalized paths of the resource"""
+        normpaths = []
+        for path in self.paths:
+            normpaths.append(helpers.normalize_path(self.basepath, path))
+        return normpaths
+
+    # TODO: add asteriks for user/pass in url
+    @property
+    def place(self) -> str:
+        """Stringified resource location"""
+        if self.data:
+            return "<memory>"
+        elif self.extrapaths:
+            return f"{self.path} (multipart)"
+        elif self.innerpath:
+            return f"{self.path} -> {self.innerpath}"
+        elif self.path:
+            return self.path
+        return ""
+
+    @property
+    def memory(self) -> bool:
+        """Whether resource is not path based"""
+        return self.data is not None
+
+    @property
+    def remote(self) -> bool:
+        """Whether resource is remote"""
+        return helpers.is_remote_path(self.basepath or self.path)
+
+    @property
+    def multipart(self) -> bool:
+        """Whether resource is multipart"""
+        return not self.memory and bool(self.extrapaths)
+
+    @property
+    def tabular(self) -> bool:
+        """Whether resource is tabular"""
+        return self.type == "table"
+
+    @property
     def dialect(self) -> Dialect:
         """
         File Dialect object.
@@ -439,64 +504,6 @@ class Resource(Metadata):
     @detector.setter
     def detector(self, value: Detector):
         self.__detector = value
-
-    @property
-    def normpath(self) -> str:
-        """Normalized path of the resource or raise if not set"""
-        if self.path is None:
-            raise FrictionlessException("path is not set")
-        return helpers.normalize_path(self.basepath, self.path)
-
-    @property
-    def normpaths(self) -> List[str]:
-        """Normalized paths of the resource or raise if not set"""
-        if self.path is None:
-            raise FrictionlessException("path is not set")
-        normpaths = []
-        for path in [self.path] + self.extrapaths:
-            normpaths.append(helpers.normalize_path(self.basepath, path))
-        return normpaths
-
-    @property
-    def normdata(self) -> Any:
-        """Normalized data or raise if not set"""
-        if self.data is None:
-            raise FrictionlessException("data is not set")
-        return self.data
-
-    # TODO: add asteriks for user/pass in url
-    @property
-    def place(self) -> str:
-        """Stringified resource location"""
-        if self.data:
-            return "<memory>"
-        elif self.extrapaths:
-            return f"{self.path} (multipart)"
-        elif self.innerpath:
-            return f"{self.path} -> {self.innerpath}"
-        elif self.path:
-            return self.path
-        return ""
-
-    @property
-    def memory(self) -> bool:
-        """Whether resource is not path based"""
-        return self.data is not None
-
-    @property
-    def remote(self) -> bool:
-        """Whether resource is remote"""
-        return helpers.is_remote_path(self.basepath or self.path)
-
-    @property
-    def multipart(self) -> bool:
-        """Whether resource is multipart"""
-        return not self.memory and bool(self.extrapaths)
-
-    @property
-    def tabular(self) -> bool:
-        """Whether resource is tabular"""
-        return self.type == "table"
 
     @property
     def buffer(self) -> IBuffer:

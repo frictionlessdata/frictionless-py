@@ -156,7 +156,6 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
     ]
 
 
-@pytest.mark.xfail(reason="package-zip")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
@@ -171,7 +170,6 @@ def test_package_to_zip_resource_memory_function(tmpdir):
     ]
 
 
-@pytest.mark.xfail(reason="package-zip")
 def test_package_to_zip_resource_multipart(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     resource = Resource(path="data/chunk1.csv", extrapaths=["data/chunk2.csv"])

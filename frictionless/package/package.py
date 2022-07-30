@@ -496,8 +496,11 @@ class Package(Metadata):
                     elif resource.memory:
                         if not isinstance(resource.data, list):
                             path = f"{resource.name}.csv"
-                            descriptor["path"] = path
                             descriptor.pop("data", None)
+                            descriptor["path"] = path
+                            descriptor["scheme"] = "file"
+                            descriptor["format"] = "csv"
+                            descriptor["mediatype"] = "text/csv"
                             with tempfile.NamedTemporaryFile() as file:
                                 tgt = Resource(path=file.name, format="csv", trusted=True)
                                 resource.write(tgt)
@@ -505,7 +508,7 @@ class Package(Metadata):
 
                     # Multipart data
                     elif resource.multipart:
-                        for path, normpath in zip(resource.path, resource.normpath):  # type: ignore
+                        for path, normpath in zip(resource.paths, resource.normpaths):
                             if os.path.isfile(normpath):
                                 if not helpers.is_safe_path(normpath):
                                     note = f'Zipping usafe "{normpath}" is not supported'
