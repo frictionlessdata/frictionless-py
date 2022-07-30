@@ -1,4 +1,3 @@
-import pytest
 from frictionless import Resource, platform
 
 
