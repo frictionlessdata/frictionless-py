@@ -34,3 +34,4 @@ class SqlPlugin(Plugin):
                     resource.type = "table"
                     resource.scheme = ""
                     resource.format = "sql"
+                    resource.mediatype = "application/sql"

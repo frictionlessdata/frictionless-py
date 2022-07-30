@@ -62,15 +62,16 @@ def test_sql_parser_table_is_required_error(database_url):
     assert error.note.count('Please provide "dialect.sql.table" for reading')
 
 
-@pytest.mark.xfail(reason="It should ignore header set to false")
-def test_sql_parser_headers_false(database_url):
+@pytest.mark.skip(reason="issue-1214")
+def test_sql_parser_header_false(database_url):
     control = formats.SqlControl(table="table")
     dialect = Dialect(header=False, controls=[control])
     with Resource(database_url, dialect=dialect) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.missing
         assert resource.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
+            {"field1": None, "field2": "name"},
+            {"field1": 1, "field2": "english"},
+            {"field1": 2, "field2": "中国人"},
         ]
 
 

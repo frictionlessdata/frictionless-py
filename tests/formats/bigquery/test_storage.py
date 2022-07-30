@@ -212,19 +212,3 @@ def test_storage_big_file(options):
     target = storage.read_resource("table")
     assert len(target.read_rows()) == 1500
     storage.delete_package(list(storage))
-
-
-# Fixtures
-
-
-@pytest.fixture
-def options(google_credentials_path):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credentials_path
-    credentials = GoogleCredentials.get_application_default()
-    with open(google_credentials_path) as file:
-        return {
-            "service": build("bigquery", "v2", credentials=credentials),
-            "project": json.load(file)["project_id"],
-            "dataset": "python",
-            "prefix": "%s_" % uuid.uuid4().hex,
-        }
