@@ -8,6 +8,7 @@ from ..detector import Detector
 from ..dialect import Dialect
 from ..actions import extract
 from .main import program
+from .. import formats
 from .. import helpers
 from . import common
 
@@ -30,7 +31,6 @@ def program_extract(
     header_join: str = common.header_join,
     comment_char: str = common.comment_char,
     comment_rows: str = common.skip_rows,
-    control: str = common.control,
     sheet: str = common.sheet,
     table: str = common.table,
     keys: str = common.keys,
@@ -87,11 +87,19 @@ def program_extract(
         descriptor = helpers.parse_json_string(dialect)
         if descriptor:
             return Dialect.from_descriptor(descriptor)
+        controls = []
+        if sheet:
+            controls.append(formats.ExcelControl(sheet=sheet))
+        elif table:
+            controls.append(formats.SqlControl(table=table))
+        elif keys or keyed:
+            controls.append(formats.JsonControl.from_options(keys=keys, keyed=keyed))
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
             comment_char=comment_char,
             comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
+            controls=controls,
         )
 
     # Prepare detector

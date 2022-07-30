@@ -9,6 +9,7 @@ from ..detector import Detector
 from ..checklist import Checklist, Check
 from ..dialect import Dialect
 from .main import program
+from .. import formats
 from .. import helpers
 from . import common
 
@@ -31,8 +32,6 @@ def program_validate(
     header_join: str = common.header_join,
     comment_char: str = common.comment_char,
     comment_rows: str = common.comment_rows,
-    # TODO: return support
-    control: str = common.control,
     sheet: str = common.sheet,
     table: str = common.table,
     keys: str = common.keys,
@@ -44,7 +43,6 @@ def program_validate(
     checks: str = common.checks,
     pick_errors: str = common.pick_errors,
     skip_errors: str = common.skip_errors,
-    # TODO: add checks
     # Stats
     stats_md5: str = common.stats_md5,
     stats_sha256: str = common.stats_sha256,
@@ -100,11 +98,19 @@ def program_validate(
         descriptor = helpers.parse_json_string(dialect)
         if descriptor:
             return Dialect.from_descriptor(descriptor)
+        controls = []
+        if sheet:
+            controls.append(formats.ExcelControl(sheet=sheet))
+        elif table:
+            controls.append(formats.SqlControl(table=table))
+        elif keys or keyed:
+            controls.append(formats.JsonControl.from_options(keys=keys, keyed=keyed))
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
             comment_char=comment_char,
             comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
+            controls=controls,
         )
 
     # Prepare checklist

@@ -29,7 +29,6 @@ def program_describe(
     header_join: str = common.header_join,
     comment_char: str = common.comment_char,
     comment_rows: str = common.comment_rows,
-    control: str = common.control,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,

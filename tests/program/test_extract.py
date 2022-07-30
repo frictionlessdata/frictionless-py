@@ -2,7 +2,7 @@ import pytest
 import json
 import yaml
 from typer.testing import CliRunner
-from frictionless import extract, formats, Detector, platform, Resource, Dialect
+from frictionless import extract, formats, Detector, platform, Dialect
 from frictionless.program import program
 
 
@@ -124,43 +124,36 @@ def test_program_extract_csv():
     assert actual.stdout == expect
 
 
-@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_dialect_sheet_option():
-    file = "data/sheet2.xls"
-    sheet = "Sheet2"
-    actual = runner.invoke(program, f"extract {file} --sheet {sheet} --json")
+    actual = runner.invoke(program, "extract data/sheet2.xls --sheet Sheet2 --json")
+    expect = extract("data/sheet2.xls", control=formats.ExcelControl(sheet="Sheet2"))
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == extract(file, dialect={"sheet": sheet})
+    assert json.loads(actual.stdout) == expect
 
 
-@pytest.mark.xfail(reason="extract-dialect")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_extract_dialect_table_option_sql(database_url):
-    table = "fruits"
-    actual = runner.invoke(program, f"extract {database_url} --table {table} --json")
-    assert actual.exit_code == 0
-    control = formats.SqlControl(table=table)
-    with Resource(database_url, control=control) as resource:
-        assert json.loads(actual.stdout) == extract(resource)
+    actual = runner.invoke(program, f"extract {database_url} --table fruits --json")
+    expect = extract(database_url, control=formats.SqlControl(table="fruits"))
+    assert json.loads(actual.stdout) == expect
 
 
-@pytest.mark.xfail(reason="extract-dialect")
+@pytest.mark.xfail(reason="json-data")
 def test_program_extract_dialect_keyed_option():
-    file = "data/table.keyed.json"
-    keyed = True
-    actual = runner.invoke(program, f"extract --path {file} --keyed {keyed} --json")
+    path = "data/table.keyed.json"
+    actual = runner.invoke(program, f"extract {path} --keyed --json")
+    expect = extract(path, control=formats.JsonControl(keyed=True))
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == extract(path=file, dialect={"keyed": keyed})  # type: ignore
+    assert json.loads(actual.stdout) == expect
 
 
-@pytest.mark.xfail(reason="extract-dialect")
+@pytest.mark.xfail(reason="json-data")
 def test_program_extract_dialect_keys_option():
-    file = "data/table.keyed.json"
-    actual = runner.invoke(program, f"extract --path {file} --keys 'name,id' --json")
+    path = "data/table.keyed.json"
+    actual = runner.invoke(program, f"extract {path} --keys 'name,id' --json")
+    expect = extract(path, control=formats.JsonControl(keys=["name", "id"]))
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == extract(
-        path=file, dialect={"keys": ["name", "id"]}  # type: ignore
-    )
+    assert json.loads(actual.stdout) == expect
 
 
 def test_program_extract_valid_rows():
@@ -236,7 +229,6 @@ def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources()
     }
 
 
-@pytest.mark.xfail(reason="extract-dialect")
 def test_program_extract_valid_rows_extract_dialect_sheet_option():
     actual = runner.invoke(
         program, "extract data/sheet2.xls --sheet Sheet2 --json --valid"
@@ -256,7 +248,7 @@ def test_program_extract_invalid_rows_extract_dialect_sheet_option():
     assert json.loads(actual.stdout) == []
 
 
-def test_program_extract_single_resource_1159():
+def test_program_extract_single_resource():
     actual = runner.invoke(
         program, "extract data/datapackage.json --resource-name number-two --json"
     )
@@ -267,7 +259,7 @@ def test_program_extract_single_resource_1159():
     ]
 
 
-def test_program_extract_single_invalid_resource_1159():
+def test_program_extract_single_invalid_resource():
     actual = runner.invoke(
         program, "extract data/datapackage.json --resource-name number-twoo"
     )
@@ -277,7 +269,7 @@ def test_program_extract_single_invalid_resource_1159():
     )
 
 
-def test_program_extract_single_valid_resource_invalid_package_1159():
+def test_program_extract_single_valid_resource_invalid_package():
     actual = runner.invoke(
         program, "extract data/datapackagees.json --resource-name number-two"
     )
@@ -285,7 +277,7 @@ def test_program_extract_single_valid_resource_invalid_package_1159():
     assert actual.stdout.count("No such file or directory: 'data/datapackagees.json'")
 
 
-def test_program_extract_single_resource_yaml_1159():
+def test_program_extract_single_resource_yaml():
     actual = runner.invoke(
         program, "extract data/datapackage.json --resource-name number-two --yaml"
     )
@@ -294,7 +286,7 @@ def test_program_extract_single_resource_yaml_1159():
     assert yaml.safe_load(actual.stdout) == expect
 
 
-def test_program_extract_single_resource_csv_1159():
+def test_program_extract_single_resource_csv():
     actual = runner.invoke(
         program, "extract data/datapackage.json --resource-name number-two --csv"
     )
