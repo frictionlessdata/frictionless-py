@@ -1176,7 +1176,6 @@ class Resource(Metadata):
 
     @classmethod
     def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
-        options.setdefault("trusted", False)
         if isinstance(descriptor, str):
             options.setdefault("basepath", helpers.parse_basepath(descriptor))
         descriptor = super().metadata_normalize(descriptor)
@@ -1246,6 +1245,20 @@ class Resource(Metadata):
             note = 'Resource "layout" is deprecated in favor of "dialect"'
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
+
+        # Security
+        trusted = options.setdefault("trusted", False)
+        if not trusted:
+            keys = ["path"]
+            keys += ["extrapaths", "profiles"]
+            keys += ["dialect", "schema", "checklist", "pipeline"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        error = errors.ResourceError(note=f'path "{item}" is not safe')
+                        raise FrictionlessException(error)
 
         return super().metadata_import(descriptor, **options)
 

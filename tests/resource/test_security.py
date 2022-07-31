@@ -6,17 +6,6 @@ from frictionless import Resource, FrictionlessException, platform
 # General
 
 
-@pytest.mark.xfail(reason="safety")
-def test_resource_dialect_from_path_error_path_not_safe():
-    dialect = os.path.abspath("data/dialect.json")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "path", "dialect": dialect})
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("dialect.json")
-
-
-@pytest.mark.xfail(reason="safety")
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": os.path.abspath("data/table.csv")})
@@ -25,7 +14,6 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
     assert error.note.count("table.csv")
 
 
-@pytest.mark.xfail(reason="safety")
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(
@@ -40,7 +28,6 @@ def test_resource_source_path_error_bad_path_not_safe_traversing():
     assert error.note.count("table.csv")
 
 
-@pytest.mark.xfail(reason="safety")
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     path = (
         "data/../data/table.csv"
@@ -61,7 +48,15 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     ]
 
 
-@pytest.mark.xfail(reason="safety")
+def test_resource_dialect_from_path_error_path_not_safe():
+    dialect = os.path.abspath("data/dialect.json")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "path", "dialect": dialect})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("dialect.json")
+
+
 def test_resource_schema_from_path_error_path_not_safe():
     schema = os.path.abspath("data/schema.json")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -71,21 +66,55 @@ def test_resource_schema_from_path_error_path_not_safe():
     assert error.note.count("schema.json")
 
 
-@pytest.mark.xfail(reason="safety")
-def test_resource_extrapaths_error_bad_path_not_safe_absolute():
-    bad_path = os.path.abspath("data/chunk1.csv")
+def test_resource_checklist_from_path_error_path_not_safe():
+    checklist = os.path.abspath("data/checklist.json")
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": bad_path, "extrapaths": ["data/chunk2.csv"]})
+        Resource({"name": "name", "path": "path", "checklist": checklist})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("checklist.json")
+
+
+def test_resource_pipeline_from_path_error_path_not_safe():
+    pipeline = os.path.abspath("data/pipeline.json")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "path", "pipeline": pipeline})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("pipeline.json")
+
+
+def test_resource_extrapaths_error_bad_path_not_safe_absolute():
+    extrapath = os.path.abspath("data/chunk2.csv")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "path", "extrapaths": [extrapath]})
     error = excinfo.value.error
     assert error.type == "resource-error"
     assert error.note.count("not safe")
 
 
-@pytest.mark.xfail(reason="safety")
 def test_resource_extrapaths_error_bad_path_not_safe_traversing():
-    bad_path = os.path.abspath("data/../chunk2.csv")
+    extrapath = os.path.abspath("data/../chunk2.csv")
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "data/chunk1.csv", "extrapaths": [bad_path]})
+        Resource({"name": "name", "path": "path", "extrapaths": [extrapath]})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("not safe")
+
+
+def test_resource_profiles_error_bad_path_not_safe_absolute():
+    profile = os.path.abspath("data/profiles/camtrap.json")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "path", "profiles": [profile]})
+    error = excinfo.value.error
+    assert error.type == "resource-error"
+    assert error.note.count("not safe")
+
+
+def test_resource_profiles_error_bad_path_not_safe_traversing():
+    profile = os.path.abspath("data/../camtrap.json")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "path", "profiles": [profile]})
     error = excinfo.value.error
     assert error.type == "resource-error"
     assert error.note.count("not safe")
