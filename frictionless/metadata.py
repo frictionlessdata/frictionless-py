@@ -268,8 +268,15 @@ class Metadata(metaclass=Metaclass):
                 if isinstance(type, str):
                     continue
             if Type:
+                # TODO: it is a hack to make Package(trusted=True) work for resources
+                trusted = options.get("trusted")
                 if isinstance(value, list):
-                    value = [Type.from_descriptor(item) for item in value]
+                    value = [
+                        Type.from_descriptor(item)
+                        if trusted is None
+                        else Type.from_descriptor(item, trusted=trusted)
+                        for item in value
+                    ]
                 elif isinstance(value, dict):
                     value = Type.from_descriptor(value)
             target[stringcase.snakecase(name)] = value
