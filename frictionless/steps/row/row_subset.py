@@ -17,10 +17,10 @@ class row_subset(Step):
     # State
 
     subset: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

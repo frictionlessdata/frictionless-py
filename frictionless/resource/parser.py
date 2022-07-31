@@ -21,10 +21,10 @@ class Parser:
     """
 
     requires_loader: ClassVar[bool] = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     supported_types: ClassVar[List[str]] = []
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource

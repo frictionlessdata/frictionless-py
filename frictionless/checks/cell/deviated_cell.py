@@ -23,10 +23,10 @@ class deviated_cell(Check):
     # State
 
     interval: int = DEFAULT_INTERVAL
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     ignore_fields: List[str] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Connect
 

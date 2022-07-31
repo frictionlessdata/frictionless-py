@@ -19,16 +19,16 @@ class field_pack(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     from_names: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_type: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     preserve: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

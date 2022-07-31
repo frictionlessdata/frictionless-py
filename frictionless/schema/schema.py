@@ -34,25 +34,25 @@ class Schema(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     fields: List[Field] = attrs.field(factory=list)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     primary_key: List[str] = attrs.field(factory=list)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     foreign_keys: List[dict] = attrs.field(factory=list)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Props
 

@@ -17,10 +17,10 @@ class RowError(ContentError):
     # State
 
     cells: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     row_number: int
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Convert
 

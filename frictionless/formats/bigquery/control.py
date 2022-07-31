@@ -13,16 +13,16 @@ class BigqueryControl(Control):
     # State
 
     table: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     dataset: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     project: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     prefix: Optional[str] = ""
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

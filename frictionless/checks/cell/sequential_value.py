@@ -14,7 +14,7 @@ class sequential_value(Check):
     # State
 
     field_name: str
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Connect
 

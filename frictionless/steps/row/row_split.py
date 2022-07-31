@@ -17,10 +17,10 @@ class row_split(Step):
     # State
 
     pattern: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

@@ -17,13 +17,13 @@ class CellError(RowError):
     # State
 
     cell: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_number: int
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Convert
 

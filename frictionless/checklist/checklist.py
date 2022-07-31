@@ -22,22 +22,22 @@ class Checklist(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     checks: List[Check] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     pick_errors: List[str] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     skip_errors: List[str] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Props
 

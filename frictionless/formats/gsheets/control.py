@@ -13,7 +13,7 @@ class GsheetsControl(Control):
     # State
 
     credentials: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

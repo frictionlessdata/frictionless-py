@@ -18,7 +18,7 @@ class field_filter(Step):
     # State
 
     names: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

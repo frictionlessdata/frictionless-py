@@ -23,10 +23,10 @@ class table_recast(Step):
     # State
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     from_field_names: List[str] = attrs.field(factory=lambda: ["variable", "value"])
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

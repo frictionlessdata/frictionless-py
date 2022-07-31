@@ -15,28 +15,28 @@ class CsvControl(Control):
     # State
 
     delimiter: str = settings.DEFAULT_DELIMITER
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     line_terminator: str = settings.DEFAULT_LINE_TERMINATOR
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     quote_char: str = settings.DEFAULT_QUOTE_CHAR
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     double_quote: bool = settings.DEFAULT_DOUBLE_QUOTE
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     escape_char: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     null_sequence: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     skip_initial_space: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     comment_char: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Convert
 

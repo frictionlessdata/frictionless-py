@@ -18,10 +18,10 @@ class field_move(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     position: int
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

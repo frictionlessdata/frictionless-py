@@ -14,7 +14,7 @@ class OdsControl(Control):
     # State
 
     sheet: Union[str, int] = settings.DEFAULT_SHEET
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

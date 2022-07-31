@@ -16,7 +16,7 @@ class Manager(Generic[ControlType]):
     # State
 
     control: ControlType
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Read
 

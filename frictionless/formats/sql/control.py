@@ -14,22 +14,22 @@ class SqlControl(Control):
     # State
 
     table: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     prefix: str = settings.DEFAULT_PREFIX
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     order_by: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     where: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     namespace: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     basepath: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

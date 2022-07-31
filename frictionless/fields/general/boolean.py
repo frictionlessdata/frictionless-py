@@ -17,10 +17,10 @@ class BooleanField(Field):
     # Properties
 
     true_values: List[str] = attrs.field(factory=settings.DEFAULT_TRUE_VALUES.copy)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     false_values: List[str] = attrs.field(factory=settings.DEFAULT_FALSE_VALUES.copy)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Read
 

@@ -15,22 +15,22 @@ class table_dimensions(Check):
     # State
 
     num_rows: Optional[int] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     min_rows: Optional[int] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     max_rows: Optional[int] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     num_fields: Optional[int] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     min_fields: Optional[int] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     max_fields: Optional[int] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Validate
 

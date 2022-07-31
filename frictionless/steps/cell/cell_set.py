@@ -18,10 +18,10 @@ class cell_set(Step):
     # State
 
     value: Any
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

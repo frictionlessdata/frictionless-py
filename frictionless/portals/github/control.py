@@ -13,10 +13,10 @@ class GithubControl(Control):
     # State
 
     user: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     repo: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

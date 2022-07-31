@@ -16,13 +16,13 @@ class LabelError(HeaderError):
     # State
 
     label: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_number: int
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

@@ -19,13 +19,13 @@ class row_search(Step):
     # State
 
     regex: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     negate: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

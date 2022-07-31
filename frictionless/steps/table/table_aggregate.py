@@ -24,10 +24,10 @@ class table_aggregate(Step):
     # State
 
     aggregation: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     group_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

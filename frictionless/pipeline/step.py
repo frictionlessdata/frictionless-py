@@ -27,15 +27,15 @@ class Step(Metadata):
     """Step representation"""
 
     type: ClassVar[str] = "step"
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # State
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

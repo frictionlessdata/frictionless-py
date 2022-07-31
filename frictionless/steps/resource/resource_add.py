@@ -27,10 +27,10 @@ class resource_add(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     descriptor: dict
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

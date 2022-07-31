@@ -9,10 +9,10 @@ class Platform:
     """Platform representation"""
 
     type: ClassVar[str] = python_platform.system().lower()
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     python: ClassVar[str] = f"{sys.version_info.major}.{sys.version_info.minor}"
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Core
 

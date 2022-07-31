@@ -19,7 +19,7 @@ class field_remove(Step):
     # State
 
     names: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

@@ -43,28 +43,28 @@ class field_add(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     value: Optional[Any]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     formula: Optional[Any]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     function: Optional[Any]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     field_name: Optional[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     position: Optional[int]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     incremental: bool
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     descriptor: dict
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

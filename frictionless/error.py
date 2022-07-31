@@ -34,10 +34,10 @@ class Error(Metadata):
     # State
 
     message: str = attrs.field(init=False)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     note: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

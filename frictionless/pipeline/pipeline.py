@@ -19,13 +19,13 @@ class Pipeline(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     steps: List[Step] = attrs.field(factory=list)
     """List of transform steps"""

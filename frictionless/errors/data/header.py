@@ -17,10 +17,10 @@ class HeaderError(TableError):
     # State
 
     labels: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     row_numbers: List[int]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

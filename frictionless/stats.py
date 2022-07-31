@@ -11,28 +11,28 @@ class Stats(Metadata):
     # State
 
     md5: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     sha256: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     bytes: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     fields: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     rows: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     tasks: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     errors: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     seconds: Optional[float] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

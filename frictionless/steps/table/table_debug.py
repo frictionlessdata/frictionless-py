@@ -23,7 +23,7 @@ class table_debug(Step):
     # State
 
     function: Any
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

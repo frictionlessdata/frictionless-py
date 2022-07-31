@@ -24,13 +24,13 @@ class deviated_value(Check):
     # State
 
     field_name: str
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     interval: int = DEFAULT_INTERVAL
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     average: str = DEFAULT_AVERAGE
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Connect
 

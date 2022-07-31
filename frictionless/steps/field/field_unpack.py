@@ -20,13 +20,13 @@ class field_unpack(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     to_names: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     preserve: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

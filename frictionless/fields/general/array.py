@@ -19,7 +19,7 @@ class ArrayField(Field):
     # Properties
 
     array_item: Optional[dict] = attrs.field(factory=dict)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Read
 

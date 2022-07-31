@@ -20,16 +20,16 @@ class NumberField(Field):
     # Properties
 
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     float_number: bool = settings.DEFAULT_FLOAT_NUMBER
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     decimal_char: str = settings.DEFAULT_DECIMAL_CHAR
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     group_char: str = settings.DEFAULT_GROUP_CHAR
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Read
 

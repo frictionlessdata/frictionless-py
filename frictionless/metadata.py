@@ -47,7 +47,7 @@ class Metadata(metaclass=Metaclass):
     """Metadata represenation"""
 
     custom: dict[str, Any] = {}
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)

@@ -15,10 +15,10 @@ class RemoteControl(Control):
     # State
 
     http_session: Any = attrs.field(factory=system.get_http_session)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     http_timeout: int = settings.DEFAULT_HTTP_TIMEOUT
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     http_preload: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""

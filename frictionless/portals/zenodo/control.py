@@ -13,7 +13,7 @@ class ZenodoControl(Control):
     # State
 
     record: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

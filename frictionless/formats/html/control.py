@@ -13,7 +13,7 @@ class HtmlControl(Control):
     # State
 
     selector: str = settings.DEFAULT_SELECTOR
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

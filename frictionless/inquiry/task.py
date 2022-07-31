@@ -21,52 +21,52 @@ class InquiryTask(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     type: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     path: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     scheme: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     format: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     encoding: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     mediatype: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     compression: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     extrapaths: Optional[List[str]] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     innerpath: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     dialect: Optional[Dialect] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     schema: Optional[Schema] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     checklist: Optional[Checklist] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     resource: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     package: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     strict: bool = False
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Validate
 

@@ -19,10 +19,10 @@ class row_filter(Step):
     # State
 
     formula: Optional[Any] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     function: Optional[Any] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

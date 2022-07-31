@@ -20,10 +20,10 @@ class resource_transform(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     steps: List[Step]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

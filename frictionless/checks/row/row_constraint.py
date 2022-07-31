@@ -15,7 +15,7 @@ class row_constraint(Check):
     # Properties
 
     formula: str
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Validate
 

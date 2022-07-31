@@ -14,13 +14,13 @@ class ParquetControl(Control):
     # State
 
     columns: Optional[List[str]] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     categories: Optional[Any] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     filters: Optional[Any] = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Convert
 

@@ -14,19 +14,19 @@ class ExcelControl(Control):
     # State
 
     sheet: Union[str, int] = settings.DEFAULT_SHEET
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     workbook_cache: Optional[Any] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     fill_merged_cells: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     preserve_formatting: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     adjust_floating_point_error: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

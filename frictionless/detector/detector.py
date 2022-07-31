@@ -28,13 +28,13 @@ class Detector(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
     """

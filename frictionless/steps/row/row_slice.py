@@ -18,19 +18,19 @@ class row_slice(Step):
     # State
 
     start: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     stop: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     step: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     head: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     tail: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

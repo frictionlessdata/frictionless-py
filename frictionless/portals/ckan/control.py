@@ -13,28 +13,28 @@ class CkanControl(Control):
     # State
 
     baseurl: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     dataset: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     resource: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     apikey: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     fields: Optional[List[str]] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     limit: Optional[int] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     sort: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     filters: Optional[dict] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

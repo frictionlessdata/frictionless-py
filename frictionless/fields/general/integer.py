@@ -20,7 +20,7 @@ class IntegerField(Field):
     # Properties
 
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Read
 

@@ -18,10 +18,10 @@ class row_sort(Step):
     # State
 
     field_names: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     reverse: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

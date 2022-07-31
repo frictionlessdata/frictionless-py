@@ -13,10 +13,10 @@ class InlineControl(Control):
     # State
 
     keys: Optional[List[str]] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     keyed: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Metadata
 

@@ -19,13 +19,13 @@ class row_ungroup(Step):
     # State
 
     selection: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     group_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     value_name: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     def transform_resource(self, resource):
         table = resource.to_petl()

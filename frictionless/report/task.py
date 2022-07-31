@@ -18,28 +18,28 @@ class ReportTask(Metadata):
     # State
 
     valid: bool
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     name: str
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     type: str
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     place: str
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     stats: Stats
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     scope: List[str] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     warnings: List[str] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     errors: List[Error] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Props
 

@@ -25,13 +25,13 @@ class table_melt(Step):
     # State
 
     field_name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     variables: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     to_field_names: List[str] = attrs.field(factory=lambda: ["variable", "value"])
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

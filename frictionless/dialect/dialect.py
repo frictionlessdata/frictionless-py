@@ -18,34 +18,34 @@ class Dialect(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     header: bool = settings.DEFAULT_HEADER
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     header_rows: List[int] = attrs.field(factory=settings.DEFAULT_HEADER_ROWS.copy)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     header_join: str = settings.DEFAULT_HEADER_JOIN
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     header_case: bool = settings.DEFAULT_HEADER_CASE
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     comment_char: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     comment_rows: List[int] = attrs.field(factory=list)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     controls: List[Control] = attrs.field(factory=list)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Describe
 

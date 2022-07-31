@@ -21,19 +21,19 @@ class Check(Metadata):
     """Check representation."""
 
     type: ClassVar[str] = "check"
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # TODO: can it be just types not objects?
     Errors: ClassVar[List[Type[Error]]] = []
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # State
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Props
 

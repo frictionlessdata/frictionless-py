@@ -19,7 +19,7 @@ class resource_remove(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

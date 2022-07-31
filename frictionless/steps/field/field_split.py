@@ -21,16 +21,16 @@ class field_split(Step):
     # State
 
     name: str
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     to_names: List[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     pattern: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     preserve: bool = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Transform
 

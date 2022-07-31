@@ -21,28 +21,28 @@ class Report(Metadata):
     # State
 
     name: Optional[str] = None
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     valid: bool
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     stats: Stats
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     warnings: List[str] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     errors: List[Error] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     tasks: List[ReportTask] = attrs.field(factory=list)
-    """# TODO: add docs"""
+    """NOTE: add docs"""
 
     # Props
 

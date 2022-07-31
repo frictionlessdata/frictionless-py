@@ -20,42 +20,42 @@ class Field(Metadata):
     """Field representation"""
 
     type: ClassVar[str]
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     builtin: ClassVar[bool] = False
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     supported_constraints: ClassVar[List[str]] = []
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # State
 
     name: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     title: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     description: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     format: str = settings.DEFAULT_FIELD_FORMAT
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     constraints: dict = attrs.field(factory=dict)
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     rdf_type: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     example: Optional[str] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     schema: Optional[Schema] = None
-    """TODO: add docs"""
+    """NOTE: add docs"""
 
     # Props
 
