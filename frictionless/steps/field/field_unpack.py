@@ -6,11 +6,6 @@ from ...pipeline import Step
 from ...schema import Field
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
 @attrs.define(kw_only=True)
 class field_unpack(Step):
     """Unpack field"""

@@ -6,11 +6,6 @@ from ...exception import FrictionlessException
 from ... import errors
 
 
-# NOTE:
-# Some of the following step use **options - we need to review/fix it
-# The step updating resource might benefit from having schema_patch argument
-
-
 @attrs.define(kw_only=True)
 class resource_transform(Step):
     """Transform resource"""

@@ -4,11 +4,6 @@ from ...resource import Resource
 from ... import helpers
 
 
-# NOTE:
-# Some of the following step use **options - we need to review/fix it
-# The step updating resource might benefit from having schema_patch argument
-
-
 # TODO: migrate to dataclass
 class resource_add(Step):
     """Add resource"""

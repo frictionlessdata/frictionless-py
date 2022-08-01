@@ -5,11 +5,6 @@ from ...platform import platform
 from ...pipeline import Step
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
 @attrs.define(kw_only=True)
 class cell_replace(Step):
     """Replace cell

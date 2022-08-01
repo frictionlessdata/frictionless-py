@@ -3,11 +3,6 @@ import attrs
 from ...pipeline import Step
 
 
-# NOTE:
-# We need to review simpleeval perfomance for using it with row_filter
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
 @attrs.define(kw_only=True)
 class row_subset(Step):
     """Subset rows"""

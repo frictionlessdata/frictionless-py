@@ -7,11 +7,6 @@ from ...schema import Field
 from ... import helpers
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
 # TODO: rebase on dataclass?
 # TODO: proper support for options/descriptor/extra
 class field_add(Step):

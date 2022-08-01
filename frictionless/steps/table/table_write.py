@@ -4,16 +4,6 @@ from ...pipeline import Step
 from ...resource import Resource
 
 
-# NOTE:
-# We might consider implementing table_preload/cache step
-# Some of the following step use **options - we need to review/fix it
-# Currently, metadata profiles are not fully finished; will require improvements
-# We need to review table_pivot step as it's not fully implemented/tested
-# We need to review table_validate step as it's not fully implemented/tested
-# We need to review table_write step as it's not fully implemented/tested
-# We need to review how we use "target.schema.fields.clear()"
-
-
 # TODO: migrate
 class table_write(Step):
     """Write table"""

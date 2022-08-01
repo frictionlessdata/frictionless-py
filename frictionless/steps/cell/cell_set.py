@@ -4,11 +4,6 @@ from typing import Any
 from ...pipeline import Step
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
 @attrs.define(kw_only=True)
 class cell_set(Step):
     """Set cell"""

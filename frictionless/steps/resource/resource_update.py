@@ -5,11 +5,6 @@ from ...pipeline import Step
 from ... import helpers
 
 
-# NOTE:
-# Some of the following step use **options - we need to review/fix it
-# The step updating resource might benefit from having schema_patch argument
-
-
 # TODO: rebase on dataclass
 class resource_update(Step):
     """Update resource"""
