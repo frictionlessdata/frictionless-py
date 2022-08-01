@@ -1,16 +1,14 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_update():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string", function=str),
+            steps.field_update(name="id", function=str, metadata={"type": "string"}),
         ],
     )
     target = source.transform(pipeline)
@@ -28,12 +26,11 @@ def test_step_field_update():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_update_with_exact_value():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string", value="x"),
+            steps.field_update(name="id", value="x", metadata={"type": "string"}),
         ],
     )
     target = source.transform(pipeline)
@@ -51,12 +48,11 @@ def test_step_field_update_with_exact_value():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_update_new_name():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", new_name="new-name"),
+            steps.field_update(name="id", metadata={"name": "new-name"}),
         ],
     )
     target = source.transform(pipeline)

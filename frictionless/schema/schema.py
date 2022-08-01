@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any
 from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -10,6 +10,9 @@ from .field import Field
 from .. import settings
 from .. import helpers
 from .. import errors
+
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
 
 @attrs.define
@@ -125,11 +128,17 @@ class Schema(Metadata):
 
     def set_field_type(self, name: str, type: str) -> Field:
         """Set field type"""
+        return self.update_field(name, {"type": type})
+
+    def update_field(self, name: str, descriptor: IDescriptor) -> Field:
+        """Update field"""
         prev_field = self.get_field(name)
-        descriptor = prev_field.to_descriptor()
-        descriptor.update({"type": type})
-        next_field = Field.from_descriptor(descriptor)
-        self.set_field(next_field)
+        field_index = self.fields.index(prev_field)
+        field_descriptor = prev_field.to_descriptor()
+        field_descriptor.update(descriptor)
+        new_field = Field.from_descriptor(field_descriptor)
+        new_field.schema = self
+        self.fields[field_index] = new_field
         return prev_field
 
     def remove_field(self, name: str) -> Field:
