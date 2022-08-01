@@ -1,4 +1,3 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
@@ -51,13 +50,12 @@ def test_step_cell_fill_direction_down():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string"),
-            steps.field_update(name="population", type="string"),
+            steps.field_update(name="id", metadata={"type": "string"}),
+            steps.field_update(name="population", metadata={"type": "string"}),
             steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="right"),
         ],
@@ -77,13 +75,12 @@ def test_step_cell_fill_direction_right():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string"),
-            steps.field_update(name="population", type="string"),
+            steps.field_update(name="id", metadata={"type": "string"}),
+            steps.field_update(name="population", metadata={"type": "string"}),
             steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="left"),
         ],

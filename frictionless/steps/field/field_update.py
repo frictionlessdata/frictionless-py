@@ -1,8 +1,11 @@
 from __future__ import annotations
 import attrs
 import simpleeval
-from typing import Optional, Any
+from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...interfaces import IDescriptor
 
 
 @attrs.define(kw_only=True)
@@ -25,7 +28,7 @@ class field_update(Step):
     function: Optional[Any] = None
     """NOTE: add docs"""
 
-    metadata: Optional[dict] = None
+    metadata: Optional[IDescriptor] = None
     """NOTE: add docs"""
 
     # Transform

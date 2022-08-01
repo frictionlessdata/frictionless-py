@@ -1,17 +1,15 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_cell_format():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string"),
-            steps.field_update(name="population", type="string"),
+            steps.field_update(name="id", metadata={"type": "string"}),
+            steps.field_update(name="population", metadata={"type": "string"}),
             steps.cell_format(template="Prefix: {0}"),
         ],
     )

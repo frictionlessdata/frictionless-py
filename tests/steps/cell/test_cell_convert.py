@@ -1,17 +1,15 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_cell_convert():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string"),
-            steps.field_update(name="population", type="string"),
+            steps.field_update(name="id", metadata={"type": "string"}),
+            steps.field_update(name="population", metadata={"type": "string"}),
             steps.cell_convert(value="n/a"),
         ],
     )
@@ -34,7 +32,7 @@ def test_step_cell_convert_with_field_name():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.cell_convert(value="n/a", field_name="name"),
+            steps.cell_convert(field_name="name", value="n/a"),
         ],
     )
     target = source.transform(pipeline)

@@ -1,16 +1,14 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_unpack():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="array", value=[1, 1]),
+            steps.field_update(name="id", value=[1, 1], metadata={"type": "array"}),
             steps.field_unpack(name="id", to_names=["id2", "id3"]),
         ],
     )
@@ -30,12 +28,11 @@ def test_step_field_unpack():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_unpack_with_preserve():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="array", value=[1, 1]),
+            steps.field_update(name="id", value=[1, 1], metadata={"type": "array"}),
             steps.field_unpack(name="id", to_names=["id2", "id3"], preserve=True),
         ],
     )
@@ -56,12 +53,15 @@ def test_step_field_unpack_with_preserve():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_unpack_source_is_object():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="object", value={"note": "eu"}),
+            steps.field_update(
+                name="id",
+                value={"note": "eu"},
+                metadata={"type": "object"},
+            ),
             steps.field_unpack(name="id", to_names=["note"]),
         ],
     )
