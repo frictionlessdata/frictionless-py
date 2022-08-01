@@ -1,16 +1,14 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_add():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_add(name="note", type="string", value="eu"),
+            steps.field_add(name="note", value="eu", metadata={"type": "string"}),
         ],
     )
     target = source.transform(pipeline)
@@ -29,7 +27,6 @@ def test_step_field_add():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_add_with_position():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -40,7 +37,7 @@ def test_step_field_add_with_position():
     target = source.transform(pipeline)
     assert target.schema.to_descriptor() == {
         "fields": [
-            {"name": "note"},
+            {"name": "note", "type": "any"},
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
@@ -53,7 +50,6 @@ def test_step_field_add_with_position():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_add_with_formula():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -68,7 +64,7 @@ def test_step_field_add_with_formula():
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "calc"},
+            {"name": "calc", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -78,7 +74,6 @@ def test_step_field_add_with_formula():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_add_with_function():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -95,7 +90,7 @@ def test_step_field_add_with_function():
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "calc"},
+            {"name": "calc", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -105,7 +100,6 @@ def test_step_field_add_with_function():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_add_with_incremental():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -116,7 +110,7 @@ def test_step_field_add_with_incremental():
     target = source.transform(pipeline)
     assert target.schema.to_descriptor() == {
         "fields": [
-            {"name": "number"},
+            {"name": "number", "type": "integer"},
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},

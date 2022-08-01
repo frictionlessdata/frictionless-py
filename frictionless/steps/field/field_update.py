@@ -1,6 +1,7 @@
 from __future__ import annotations
 import attrs
 import simpleeval
+from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 
@@ -36,7 +37,7 @@ class field_update(Step):
     def transform_resource(self, resource):
         function = self.function
         table = resource.to_petl()
-        descriptor = self.metadata or {}
+        descriptor = deepcopy(self.metadata) or {}
         new_name = descriptor.get("name")
         resource.schema.update_field(self.name, descriptor)
         if self.formula:

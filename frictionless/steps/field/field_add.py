@@ -1,78 +1,61 @@
-# type: ignore
 from __future__ import annotations
+import attrs
 import simpleeval
-from typing import Optional, Any
+from copy import deepcopy
+from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 from ...schema import Field
-from ... import helpers
+
+if TYPE_CHECKING:
+    from ...interfaces import IDescriptor
 
 
-# TODO: rebase on dataclass?
-# TODO: proper support for options/descriptor/extra
+@attrs.define(kw_only=True)
 class field_add(Step):
     """Add field"""
 
     type = "field-add"
-
-    def __init__(
-        self,
-        *,
-        name: str,
-        value: Optional[Any] = None,
-        formula: Optional[Any] = None,
-        function: Optional[Any] = None,
-        field_name: Optional[str] = None,
-        position: Optional[int] = None,
-        incremental: bool = False,
-        **options,
-    ):
-        self.name = name
-        self.value = value
-        self.formula = formula
-        self.function = function
-        self.field_name = field_name
-        self.position = position
-        self.incremental = incremental
-        self.descriptor = helpers.create_descriptor(**options)
 
     # State
 
     name: str
     """NOTE: add docs"""
 
-    value: Optional[Any]
+    value: Optional[Any] = None
     """NOTE: add docs"""
 
-    formula: Optional[Any]
+    formula: Optional[Any] = None
     """NOTE: add docs"""
 
-    function: Optional[Any]
+    function: Optional[Any] = None
     """NOTE: add docs"""
 
-    field_name: Optional[str]
+    position: Optional[int] = None
     """NOTE: add docs"""
 
-    position: Optional[int]
+    metadata: Optional[IDescriptor] = None
     """NOTE: add docs"""
 
-    incremental: bool
-    """NOTE: add docs"""
-
-    descriptor: dict
+    incremental: bool = False
     """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         value = self.value
+        position = self.position
         function = self.function
         table = resource.to_petl()
-        field = Field(self.descriptor, name=self.name)
-        index = self.position - 1 if self.position else None
-        if index is None:
-            resource.schema.add_field(field)
-        else:
-            resource.schema.fields.insert(index, field)
+        descriptor = deepcopy(self.metadata) or {}
+        if self.name:
+            descriptor["name"] = self.name
+        descriptor.setdefault("type", "any")
+        if self.incremental:
+            position = position or 1
+            descriptor["type"] = "integer"
+        field = Field.from_descriptor(descriptor)
+        index = position - 1 if position else None
+        resource.schema.add_field(field, position=position)
         if self.incremental:
             resource.data = table.addrownumbers(field=self.name)  # type: ignore
         else:
@@ -88,9 +71,9 @@ class field_add(Step):
         "properties": {
             "name": {"type": "string"},
             "value": {},
-            "formula": {},
-            "fieldName": {},
-            "position": {},
-            "incremental": {},
+            "formula": {"type": "string"},
+            "position": {"type": "integer"},
+            "metadata": {"type": "object"},
+            "incremental": {"type": "boolean"},
         },
     }
