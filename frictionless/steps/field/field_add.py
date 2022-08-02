@@ -33,7 +33,7 @@ class field_add(Step):
     position: Optional[int] = None
     """NOTE: add docs"""
 
-    metadata: Optional[IDescriptor] = None
+    descriptor: Optional[IDescriptor] = None
     """NOTE: add docs"""
 
     incremental: bool = False
@@ -46,7 +46,7 @@ class field_add(Step):
         position = self.position
         function = self.function
         table = resource.to_petl()
-        descriptor = deepcopy(self.metadata) or {}
+        descriptor = deepcopy(self.descriptor) or {}
         if self.name:
             descriptor["name"] = self.name
         descriptor.setdefault("type", "any")
@@ -73,7 +73,7 @@ class field_add(Step):
             "value": {},
             "formula": {"type": "string"},
             "position": {"type": "integer"},
-            "metadata": {"type": "object"},
+            "descriptor": {"type": "object"},
             "incremental": {"type": "boolean"},
         },
     }

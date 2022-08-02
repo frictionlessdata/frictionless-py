@@ -8,8 +8,8 @@ def test_step_cell_convert():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", metadata={"type": "string"}),
-            steps.field_update(name="population", metadata={"type": "string"}),
+            steps.field_update(name="id", descriptor={"type": "string"}),
+            steps.field_update(name="population", descriptor={"type": "string"}),
             steps.cell_convert(value="n/a"),
         ],
     )

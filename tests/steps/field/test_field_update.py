@@ -8,7 +8,7 @@ def test_step_field_update():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", function=str, metadata={"type": "string"}),
+            steps.field_update(name="id", function=str, descriptor={"type": "string"}),
         ],
     )
     target = source.transform(pipeline)
@@ -30,7 +30,7 @@ def test_step_field_update_with_exact_value():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", value="x", metadata={"type": "string"}),
+            steps.field_update(name="id", value="x", descriptor={"type": "string"}),
         ],
     )
     target = source.transform(pipeline)
@@ -52,7 +52,7 @@ def test_step_field_update_new_name():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", metadata={"name": "new-name"}),
+            steps.field_update(name="id", descriptor={"name": "new-name"}),
         ],
     )
     target = source.transform(pipeline)

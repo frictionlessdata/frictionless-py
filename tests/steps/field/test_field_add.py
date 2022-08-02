@@ -8,7 +8,7 @@ def test_step_field_add():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.field_add(name="note", value="eu", metadata={"type": "string"}),
+            steps.field_add(name="note", value="eu", descriptor={"type": "string"}),
         ],
     )
     target = source.transform(pipeline)

@@ -29,7 +29,7 @@ class field_update(Step):
     function: Optional[Any] = None
     """NOTE: add docs"""
 
-    metadata: Optional[IDescriptor] = None
+    descriptor: Optional[IDescriptor] = None
     """NOTE: add docs"""
 
     # Transform
@@ -37,7 +37,7 @@ class field_update(Step):
     def transform_resource(self, resource):
         function = self.function
         table = resource.to_petl()
-        descriptor = deepcopy(self.metadata) or {}
+        descriptor = deepcopy(self.descriptor) or {}
         new_name = descriptor.get("name")
         resource.schema.update_field(self.name, descriptor)
         if self.formula:
@@ -57,6 +57,6 @@ class field_update(Step):
             "name": {"type": "string"},
             "value": {},
             "formula": {"type": "string"},
-            "metadata": {"type": "object"},
+            "descriptor": {"type": "object"},
         },
     }

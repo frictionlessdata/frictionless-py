@@ -40,7 +40,7 @@ def test_transform_rename_move_field_issue_953():
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.field_update(name="name", metadata={"name": "country"}),
+            steps.field_update(name="name", descriptor={"name": "country"}),
             steps.field_move(name="country", position=3),
         ],
     )
