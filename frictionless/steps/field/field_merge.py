@@ -1,13 +1,14 @@
-# type: ignore
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, List, Any, Optional
+from typing import TYPE_CHECKING, List, Any
 from petl.compat import next, text_type
-from ...schema import Field
 from ...pipeline import Step
+from ... import fields
 
 if TYPE_CHECKING:
     from ...resource import Resource
+
+DEFAULT_SEPARATOR = "-"
 
 
 @attrs.define(kw_only=True)
@@ -29,10 +30,7 @@ class field_merge(Step):
     from_names: List[str]
     """NOTE: add docs"""
 
-    field_type: Optional[str] = None
-    """NOTE: add docs"""
-
-    separator: Optional[str] = None
+    separator: str = DEFAULT_SEPARATOR
     """NOTE: add docs"""
 
     preserve: bool = False
@@ -42,12 +40,17 @@ class field_merge(Step):
 
     def transform_resource(self, resource: Resource) -> None:
         table = resource.to_petl()
-        resource.schema.add_field(Field(name=self.name, type=self.field_type))
+        field = fields.StringField(name=self.name)
+        resource.schema.add_field(field)
         if not self.preserve:
             for name in self.from_names:
                 resource.schema.remove_field(name)
-        resource.data = merge(  # type: ignore
-            table, self.name, self.from_names, self.separator, self.preserve  # type: ignore
+        resource.data = merge(
+            table,
+            self.name,
+            self.from_names,
+            self.separator,
+            self.preserve,
         )
 
     # Metadata
