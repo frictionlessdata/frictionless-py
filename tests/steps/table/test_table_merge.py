@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail(reason="steps")
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -32,13 +32,13 @@ def test_step_table_merge():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.table_merge(
-                resource=dict(data=[["id", "name", "note"], [4, "malta", "island"]])
+            steps.table_merge.from_descriptor(
+                {"resource": dict(data=[["id", "name", "note"], [4, "malta", "island"]])}
             ),
         ],
     )
@@ -59,7 +59,7 @@ def test_step_table_merge_from_dict():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_field_names():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -85,7 +85,7 @@ def test_step_table_merge_with_field_names():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
+@pytest.mark.skip(reason="issue-1221")
 def test_step_merge_ignore_fields():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -112,7 +112,7 @@ def test_step_merge_ignore_fields():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_sort():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

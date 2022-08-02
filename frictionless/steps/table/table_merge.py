@@ -1,78 +1,79 @@
-# type: ignore
 from __future__ import annotations
+import attrs
+from typing import Union, List, Optional
 from ...pipeline import Step
 from ...platform import platform
 from ...resource import Resource
 
 
-# TODO: migrate
+@attrs.define(kw_only=True)
 class table_merge(Step):
     """Merge tables"""
 
     type = "table-merge"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        resource=None,
-        field_names=None,
-        ignore_fields=False,
-        sort_by_field=False,
-    ):
-        self.setinitial("resource", resource)
-        self.setinitial("fieldNames", field_names)
-        self.setinitial("ignoreFields", ignore_fields)
-        self.setinitial("sortByField", sort_by_field)
-        super().__init__(descriptor)
+    # State
+
+    resource: Union[Resource, str]
+    """NOTE: add docs
+    """
+
+    field_names: List[str] = attrs.field(factory=list)
+    """NOTE: add docs
+    """
+
+    sort_by_field: Optional[str] = None
+    """NOTE: add docs
+    """
+
+    ignore_fields: bool = False
+    """NOTE: add docs
+    """
 
     # Transform
 
     def transform_resource(self, resource):
         target = resource
-        source = self.get("resource")
-        field_names = self.get("fieldNames")
-        ignore_fields = self.get("ignoreFields")
-        sort_by_field = self.get("sortByField")
+        source = self.resource
         if isinstance(source, str):
+            assert target.package
             source = target.package.get_resource(source)
-        elif isinstance(source, dict):
-            source = Resource(source)
-        source.infer()  # type: ignore
+        source.infer()
         view1 = target.to_petl()
-        view2 = source.to_petl()  # type: ignore
+        view2 = source.to_petl()
 
         # Ignore fields
-        if ignore_fields:
-            for field in source.schema.fields[len(target.schema.fields) :]:  # type: ignore
+        if self.ignore_fields:
+            for field in source.schema.fields[len(target.schema.fields) :]:
                 target.schema.add_field(field)
             resource.data = platform.petl.stack(view1, view2)
 
         # Default
         else:
-            for field in source.schema.fields:  # type: ignore
-                if field.name not in target.schema.field_names:
-                    target.schema.add_field(field)
-            if field_names:
+            for field in source.schema.fields:
+                if not target.schema.has_field(field.name):  # type: ignore
+                    target.schema.add_field(field.to_copy())
+            if self.field_names:
                 for field in list(target.schema.fields):
-                    if field.name not in field_names:
-                        target.schema.remove_field(field.name)
-            if sort_by_field:
-                key = sort_by_field
+                    if field.name not in self.field_names:
+                        target.schema.remove_field(field.name)  # type: ignore
+            if self.sort_by_field:
+                key = self.sort_by_field
                 resource.data = platform.petl.mergesort(
-                    view1, view2, key=key, header=field_names
+                    view1, view2, key=key, header=self.field_names
                 )
             else:
-                resource.data = platform.petl.cat(view1, view2, header=field_names)
+                resource.data = platform.petl.cat(view1, view2, header=self.field_names)
 
     # Metadata
 
+    metadata_Types = dict(resource=Resource)
     metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
-            "resource": {},
+            "resource": {"type": ["object", "string"]},
             "fieldNames": {"type": "array"},
-            "ignoreFields": {},
-            "sortByField": {},
+            "sortByField": {"type": "string"},
+            "ignoreFields": {"type": "boolean"},
         },
     }
