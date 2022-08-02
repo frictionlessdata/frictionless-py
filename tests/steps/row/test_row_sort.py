@@ -52,12 +52,11 @@ def test_step_row_sort_with_reverse():
 # Bugs
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_row_sort_with_reverse_in_desriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_sort({"fieldNames": ["id"], "reverse": True}),  # type: ignore
+            steps.row_sort.from_descriptor({"fieldNames": ["id"], "reverse": True}),
         ],
     )
     target = source.transform(pipeline)
