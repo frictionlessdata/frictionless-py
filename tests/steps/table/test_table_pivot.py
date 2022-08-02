@@ -5,7 +5,7 @@ from frictionless import Resource, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail(reason="steps")
+@pytest.mark.skip(reason="issue-1220")
 def test_step_table_pivot():
     source = Resource("data/transform-pivot.csv")
     pipeline = Pipeline(
