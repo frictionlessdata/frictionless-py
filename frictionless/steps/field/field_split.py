@@ -1,10 +1,9 @@
-# type: ignore
 from __future__ import annotations
 import attrs
-from typing import Optional, List
+from typing import List
 from ...platform import platform
 from ...pipeline import Step
-from ...schema import Field
+from ... import fields
 
 
 @attrs.define(kw_only=True)
@@ -21,7 +20,7 @@ class field_split(Step):
     to_names: List[str]
     """NOTE: add docs"""
 
-    pattern: Optional[str] = None
+    pattern: str
     """NOTE: add docs"""
 
     preserve: bool = False
@@ -31,15 +30,16 @@ class field_split(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        for to_name in self.to_names:  # type: ignore
-            resource.schema.add_field(Field(name=to_name, type="string"))
+        for to_name in self.to_names:
+            field = fields.StringField(name=to_name)
+            resource.schema.add_field(field)
         if not self.preserve:
             resource.schema.remove_field(self.name)
         processor = platform.petl.split
         # NOTE: this condition needs to be improved
-        if "(" in self.pattern:  # type: ignore
+        if "(" in self.pattern:
             processor = platform.petl.capture
-        resource.data = processor(  # type: ignore
+        resource.data = processor(
             table,
             self.name,
             self.pattern,
@@ -53,8 +53,8 @@ class field_split(Step):
         "required": ["name", "toNames", "pattern"],
         "properties": {
             "name": {"type": "string"},
-            "toNames": {},
-            "pattern": {},
-            "preserve": {},
+            "toNames": {"type": "array"},
+            "pattern": {"type": "string"},
+            "preserve": {"type": "boolean"},
         },
     }

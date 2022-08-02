@@ -39,8 +39,8 @@ class field_pack(Step):
         if not self.preserve:
             for name in self.from_names:
                 resource.schema.remove_field(name)
-        packer = iterpackdict if self.as_object else iterpack
-        resource.data = packer(table, self.name, self.from_names, self.preserve)
+        processor = iterpackdict if self.as_object else iterpack
+        resource.data = processor(table, self.name, self.from_names, self.preserve)
 
     # Metadata
 
