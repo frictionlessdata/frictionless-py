@@ -303,6 +303,17 @@ class Package(Metadata):
             return prev_resource
         self.add_resource(resource)
 
+    def update_resource(self, name: str, descriptor: IDescriptor) -> Resource:
+        """Update resource"""
+        prev_resource = self.get_resource(name)
+        resource_index = self.resources.index(prev_resource)
+        resource_descriptor = prev_resource.to_descriptor()
+        resource_descriptor.update(descriptor)
+        new_resource = Resource.from_descriptor(resource_descriptor)
+        new_resource.package = self
+        self.resources[resource_index] = new_resource
+        return prev_resource
+
     def remove_resource(self, name: str) -> Resource:
         """Remove resource by name"""
         resource = self.get_resource(name)

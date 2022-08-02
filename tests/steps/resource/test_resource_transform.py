@@ -1,16 +1,14 @@
-import pytest
 from frictionless import Package, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_resource_transform():
     source = Package("data/package/datapackage.json")
     pipeline = Pipeline(
         steps=[
-            steps.resource_update(name="data", title="It's our data"),
+            steps.resource_update(name="data", descriptor={"title": "It's our data"}),
             steps.resource_remove(name="data2"),
             steps.resource_add(name="data2", path="data2.csv"),
             steps.resource_transform(
