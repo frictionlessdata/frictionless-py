@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_diff():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -36,21 +34,22 @@ def test_step_table_diff():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_diff_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_diff(
-                resource=dict(
-                    data=[
-                        ["id", "name", "population"],
-                        [1, "germany", 83],
-                        [2, "france", 50],
-                        [3, "spain", 47],
-                    ]
-                )
+            steps.table_diff.from_descriptor(
+                {
+                    "resource": dict(
+                        data=[
+                            ["id", "name", "population"],
+                            [1, "germany", 83],
+                            [2, "france", 50],
+                            [3, "spain", 47],
+                        ]
+                    )
+                }
             ),
         ],
     )
@@ -67,7 +66,6 @@ def test_step_table_diff_from_dict():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_diff_with_ignore_order():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -98,7 +96,6 @@ def test_step_table_diff_with_ignore_order():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_diff_with_use_hash():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

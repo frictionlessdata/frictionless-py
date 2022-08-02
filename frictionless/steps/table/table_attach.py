@@ -15,6 +15,8 @@ class table_attach(Step):
     # State
 
     resource: Union[Resource, str]
+    """NOTE: add docs
+    """
 
     # Transform
 
