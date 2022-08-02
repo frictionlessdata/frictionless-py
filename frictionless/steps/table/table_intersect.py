@@ -1,45 +1,52 @@
-# type: ignore
 from __future__ import annotations
+import attrs
+from typing import Union
 from ...pipeline import Step
 from ...platform import platform
 from ...resource import Resource
 
 
-# TODO: migrate
+@attrs.define(kw_only=True)
 class table_intersect(Step):
     """Intersect tables"""
 
     type = "table-intersect"
 
-    def __init__(self, descriptor=None, *, resource=None, use_hash=False):
-        self.setinitial("resource", resource)
-        self.setinitial("useHash", use_hash)
-        super().__init__(descriptor)
+    # State
+
+    resource: Union[Resource, str]
+    """NOTE: add docs
+    """
+
+    use_hash: bool = False
+    """NOTE: add docs
+    """
 
     # Transform
 
     def transform_resource(self, resource):
         target = resource
-        source = self.get("resource")
-        use_hash = self.get("useHash")
+        source = self.resource
         if isinstance(source, str):
+            assert target.package
             source = target.package.get_resource(source)
-        elif isinstance(source, dict):
-            source = Resource(source)
-        source.infer()  # type: ignore
+        source.infer()
         view1 = target.to_petl()
-        view2 = source.to_petl()  # type: ignore
+        view2 = source.to_petl()
         function = (
-            platform.petl.hashintersection if use_hash else platform.petl.intersection
+            platform.petl.hashintersection
+            if self.use_hash
+            else platform.petl.intersection
         )
-        resource.data = function(view1, view2)  # type: ignore
+        resource.data = function(view1, view2)
 
     # Metadata
 
+    metadata_Types = dict(resource=Resource)
     metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
-            "resource": {},
-            "useHash": {},
+            "resource": {"type": ["object", "string"]},
+            "useHash": {"type": "boolean"},
         },
     }

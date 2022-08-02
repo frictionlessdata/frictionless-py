@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_intersect():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -37,21 +35,22 @@ def test_step_table_intersect():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_intersect_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_intersect(
-                resource=dict(
-                    data=[
-                        ["id", "name", "population"],
-                        [1, "germany", 83],
-                        [2, "france", 50],
-                        [3, "spain", 47],
-                    ]
-                )
+            steps.table_intersect.from_descriptor(
+                {
+                    "resource": dict(
+                        data=[
+                            ["id", "name", "population"],
+                            [1, "germany", 83],
+                            [2, "france", 50],
+                            [3, "spain", 47],
+                        ]
+                    )
+                }
             ),
         ],
     )
@@ -69,7 +68,6 @@ def test_step_table_intersect_from_dict():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
