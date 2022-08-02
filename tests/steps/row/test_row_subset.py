@@ -1,4 +1,3 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
@@ -89,12 +88,11 @@ def test_step_row_subset_distinct_with_duplicates():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_duplicates():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset(subset="duplicates"),  # type: ignore
+            steps.row_subset(subset="duplicates"),
         ],
     )
     target = source.transform(pipeline)
@@ -131,12 +129,11 @@ def test_step_row_subset_duplicates_with_name():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_unique():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset(subset="unique"),  # type: ignore
+            steps.row_subset(subset="unique"),
         ],
     )
     target = source.transform(pipeline)
@@ -176,12 +173,11 @@ def test_step_row_subset_unique_with_name():
 # Bugs
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_row_subset_conflicts_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset({"subset": "conflicts", "fieldName": "id"}),  # type: ignore
+            steps.row_subset.from_descriptor({"subset": "conflicts", "fieldName": "id"}),
         ],
     )
     target = source.transform(pipeline)

@@ -3,7 +3,6 @@ import attrs
 from copy import deepcopy
 from typing import TYPE_CHECKING
 from ...pipeline import Step
-from ... import helpers
 
 if TYPE_CHECKING:
     from ...interfaces import IDescriptor

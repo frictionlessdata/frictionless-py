@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+from typing import Optional
 from ...pipeline import Step
 
 
@@ -14,7 +15,7 @@ class row_subset(Step):
     subset: str
     """NOTE: add docs"""
 
-    field_name: str
+    field_name: Optional[str] = None
     """NOTE: add docs"""
 
     # Transform
