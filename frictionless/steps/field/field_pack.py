@@ -1,10 +1,9 @@
-# type: ignore
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, Any, List, Iterator, Optional
+from typing import TYPE_CHECKING, Any, List, Iterator
 from petl.compat import next, text_type
-from ...schema import Field
 from ...pipeline import Step
+from ... import fields
 
 if TYPE_CHECKING:
     from ...resource import Resource
@@ -24,7 +23,7 @@ class field_pack(Step):
     from_names: List[str]
     """NOTE: add docs"""
 
-    field_type: Optional[str] = None
+    as_object: bool = False
     """NOTE: add docs"""
 
     preserve: bool = False
@@ -34,16 +33,14 @@ class field_pack(Step):
 
     def transform_resource(self, resource: Resource) -> None:
         table = resource.to_petl()
-        resource.schema.add_field(Field(name=self.name, type=self.field_type))
+        Field = fields.ObjectField if self.as_object else fields.ArrayField
+        field = Field(name=self.name)
+        resource.schema.add_field(field)
         if not self.preserve:
-            for name in self.from_names:  # type: ignore
+            for name in self.from_names:
                 resource.schema.remove_field(name)
-        if self.field_type == "object":
-            resource.data = iterpackdict(  # type: ignore
-                table, self.name, self.from_names, self.preserve  # type: ignore
-            )
-        else:
-            resource.data = iterpack(table, self.name, self.from_names, self.preserve)  # type: ignore
+        packer = iterpackdict if self.as_object else iterpack
+        resource.data = packer(table, self.name, self.from_names, self.preserve)
 
     # Metadata
 
@@ -52,7 +49,7 @@ class field_pack(Step):
         "properties": {
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
-            "fieldType": {"type": "string"},
+            "asObject": {"type": "boolean"},
             "preserve": {"type": "boolean"},
         },
     }

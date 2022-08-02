@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_pack():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -26,7 +24,6 @@ def test_step_field_pack():
     }
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_field_pack_header_preserve():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -53,7 +50,6 @@ def test_step_field_pack_header_preserve():
     }
 
 
-@pytest.mark.xfail
 def test_step_field_pack_object():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -61,7 +57,7 @@ def test_step_field_pack_object():
             steps.field_pack(
                 name="details",
                 from_names=["name", "population"],
-                field_type="object",
+                as_object=True,
                 preserve=True,
             )
         ],
