@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
