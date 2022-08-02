@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
-@pytest.mark.xfail(reason="steps")
 def test_step_table_attach():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -29,12 +27,13 @@ def test_step_table_attach():
     ]
 
 
-@pytest.mark.xfail(reason="steps")
-def test_step_table_attach_from_dict():
+def test_step_table_attach_from_descriptor():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.table_attach(resource=dict(data=[["note"], ["large"], ["mid"]])),
+            steps.table_attach.from_descriptor(
+                {"resource": dict(data=[["note"], ["large"], ["mid"]])}
+            ),
         ],
     )
     target = source.transform(pipeline)
