@@ -101,7 +101,7 @@ class Package(Metadata):
         assert innerpath is None
         assert control is None
 
-    # TODO: support list of paths
+    # TODO: support list of paths as resource paths?
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
         if source is not None:
@@ -118,6 +118,13 @@ class Package(Metadata):
             elif helpers.is_zip_descriptor(source):
                 innerpath = options.pop("innerpath", None)
                 source = unzip_package(source, innerpath=innerpath)
+
+            # Directory
+            elif helpers.is_directory_source(source):
+                for name in ["datapackage.json", "datapackage.yaml"]:
+                    path = os.path.join(source, name)
+                    if os.path.isfile(path):
+                        return Package.from_descriptor(path)
 
             # Expandable
             elif helpers.is_expandable_source(source):

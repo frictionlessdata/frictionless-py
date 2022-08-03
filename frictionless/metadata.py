@@ -159,6 +159,7 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
+    # TODO: can we support expand/dereference (a method?)
     def to_descriptor(self) -> IDescriptor:
         """Export metadata as a descriptor"""
         return self.metadata_export()
@@ -238,7 +239,6 @@ class Metadata(metaclass=Metaclass):
 
     # Metadata
 
-    # TODO: don't use uppercase?
     # TODO: add/improve types
     metadata_type: ClassVar[str]
     metadata_Error = None
@@ -262,6 +262,7 @@ class Metadata(metaclass=Metaclass):
         """List of metadata errors"""
         return list(self.metadata_validate())
 
+    # TODO: can we not accept options here / move to from_descriptor?
     @classmethod
     def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
         """Import metadata from a descriptor source"""
@@ -277,13 +278,14 @@ class Metadata(metaclass=Metaclass):
                 if isinstance(type, str):
                     continue
             if Type:
-                # TODO: it is a hack to make Package(trusted=True) work for resources
+                # TODO: it is a hack to make Package work for resources
                 trusted = options.get("trusted")
+                basepath = options.get("basepath")
                 if isinstance(value, list):
                     value = [
-                        Type.from_descriptor(item)
-                        if trusted is None
-                        else Type.from_descriptor(item, trusted=trusted)
+                        Type.from_descriptor(item, trusted=trusted, basepath=basepath)
+                        if name == "resources"
+                        else Type.from_descriptor(item)
                         for item in value
                     ]
                 elif isinstance(value, dict):
@@ -294,6 +296,7 @@ class Metadata(metaclass=Metaclass):
         metadata.custom = source.copy()
         return metadata
 
+    # TODO: can we move exlude to to_descriptor?
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         """Export metadata as a descriptor"""
         descriptor = {}

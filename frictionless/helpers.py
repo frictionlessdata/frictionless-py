@@ -261,6 +261,16 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
+def is_directory_source(source: Any):
+    if not isinstance(source, str):
+        return False
+    if is_remote_path(source):
+        return False
+    if not os.path.isdir(source):
+        return False
+    return True
+
+
 def is_expandable_source(source: Any):
     if isinstance(source, list):
         if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):
