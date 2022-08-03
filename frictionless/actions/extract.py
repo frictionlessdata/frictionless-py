@@ -47,7 +47,7 @@ def extract(
     if type == "resource":
         resource = source
         if not isinstance(resource, Resource):
-            resource = Resource.from_options(resource, **options)
+            resource = Resource.from_options(resource, type="table", **options)
         return resource.extract(
             limit_rows=limit_rows,
             process=process,

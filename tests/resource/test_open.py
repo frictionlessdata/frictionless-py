@@ -172,7 +172,7 @@ def test_resource_open_without_headers():
 
 
 def test_resource_open_source_error_data():
-    resource = Resource(b"[1,2]", format="json")
+    resource = Resource(b"[1,2]", type="table", format="json")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error

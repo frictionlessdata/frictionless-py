@@ -95,7 +95,7 @@ def test_extract_resource_from_file_process_and_stream():
 
 
 def test_extract_resource_from_json_format_issue_827():
-    resource = Resource(path="data/table.json")
+    resource = Resource(path="data/table.json", type="table")
     rows = resource.extract()
     assert rows == [
         {"id": 1, "name": "english"},

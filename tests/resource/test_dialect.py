@@ -67,7 +67,7 @@ def test_resource_dialect_header_inline():
 def test_resource_dialect_header_json_keyed():
     source = "[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
     source = source.encode("utf-8")
-    with Resource(source, format="json") as resource:
+    with Resource(source, type="table", format="json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -260,7 +260,7 @@ def test_resource_dialect_csv_delimiter():
 def test_resource_dialect_json_property():
     source = b'{"root": [["header1", "header2"], ["value1", "value2"]]}'
     dialect = Dialect.from_descriptor({"json": {"property": "root"}})
-    with Resource(source, format="json", dialect=dialect) as resource:
+    with Resource(source, type="table", format="json", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},

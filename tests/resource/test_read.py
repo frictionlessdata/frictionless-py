@@ -22,7 +22,7 @@ def test_resource_read_text():
 
 
 def test_resource_read_data():
-    resource = Resource(path="data/table.json")
+    resource = Resource(path="data/table.json", type="table")
     assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
@@ -31,7 +31,7 @@ def test_resource_read_data():
 
 
 def test_resource_read_cells():
-    resource = Resource(path="data/table.json")
+    resource = Resource(path="data/table.json", type="table")
     assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
@@ -40,7 +40,7 @@ def test_resource_read_cells():
 
 
 def test_resource_read_rows():
-    resource = Resource(path="data/table.json")
+    resource = Resource(path="data/table.json", type="table")
     rows = resource.read_rows()
     assert rows == [
         {"id": 1, "name": "english"},
