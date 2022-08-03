@@ -148,16 +148,16 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options):
         """Import metadata from a descriptor source"""
-        return cls.metadata_import(descriptor, **options)
+        metadata = cls.metadata_import(descriptor, **options)
+        if isinstance(descriptor, str):
+            metadata.metadata_descriptor_path = descriptor
+            metadata.metadata_descriptor_initial = metadata.to_descriptor()
+        return metadata
 
-    def to_descriptor(self) -> IDescriptor:
+    def to_descriptor(self, as_path: bool = False) -> IDescriptor:
         """Export metadata as a descriptor"""
-        return self.metadata_export()
-
-    def to_descriptor_source(self) -> Union[IDescriptor, str]:
-        """Export metadata as a descriptor or a path to the descriptor"""
         descriptor = self.metadata_export()
-        if self.metadata_descriptor_path:
+        if as_path and self.metadata_descriptor_path:
             if self.metadata_descriptor_initial == descriptor:
                 return self.metadata_descriptor_path
         return descriptor
@@ -283,9 +283,6 @@ class Metadata(metaclass=Metaclass):
         target.update(options)
         metadata = cls(**target)
         metadata.custom = source.copy()
-        if isinstance(descriptor, str):
-            metadata.metadata_descriptor_path = descriptor
-            metadata.metadata_descriptor_initial = source
         return metadata
 
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
@@ -302,9 +299,9 @@ class Metadata(metaclass=Metaclass):
                 continue
             if Type:
                 if isinstance(value, list):
-                    value = [item.to_descriptor_source() for item in value]  # type: ignore
+                    value = [item.to_descriptor(as_path=True) for item in value]  # type: ignore
                 else:
-                    value = value.to_descriptor_source()  # type: ignore
+                    value = value.to_descriptor(as_path=True)  # type: ignore
                     if not value:
                         continue
             if isinstance(value, (list, dict)):
