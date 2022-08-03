@@ -159,10 +159,14 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self, as_path: bool = False) -> IDescriptor:
+    def to_descriptor(self) -> IDescriptor:
         """Export metadata as a descriptor"""
+        return self.metadata_export()
+
+    def to_descriptor_source(self) -> Union[IDescriptor, str]:
+        """Export metadata as a descriptor or a descriptor path"""
         descriptor = self.metadata_export()
-        if as_path and self.metadata_descriptor_path:
+        if self.metadata_descriptor_path:
             if self.metadata_descriptor_initial == descriptor:
                 return self.metadata_descriptor_path
         return descriptor
@@ -245,8 +249,8 @@ class Metadata(metaclass=Metaclass):
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
-    metadata_descriptor_path = None
-    metadata_descriptor_initial = None
+    metadata_descriptor_path: Optional[str] = None
+    metadata_descriptor_initial: Optional[IDescriptor] = None
 
     @property
     def metadata_valid(self) -> bool:
@@ -304,9 +308,9 @@ class Metadata(metaclass=Metaclass):
                 continue
             if Type:
                 if isinstance(value, list):
-                    value = [item.to_descriptor(as_path=True) for item in value]  # type: ignore
+                    value = [item.to_descriptor_source() for item in value]  # type: ignore
                 else:
-                    value = value.to_descriptor(as_path=True)  # type: ignore
+                    value = value.to_descriptor_source()  # type: ignore
                     if not value:
                         continue
             if isinstance(value, (list, dict)):
