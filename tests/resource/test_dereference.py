@@ -8,7 +8,6 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
-@pytest.mark.xfail(reason="dereference")
 def test_resource_dereference():
     resource = Resource(path="data/table.csv", schema="data/schema.json")
     resource.infer(stats=True)
@@ -31,14 +30,16 @@ def test_resource_dereference():
     }
 
 
-@pytest.mark.xfail(reason="dereference")
-def test_resource_schema_from_path():
+def test_resource_dialect_schema_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
     assert resource.to_descriptor() == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
         "schema": "schema.json",
+    }
+    assert resource.dialect.to_descriptor() == {
+        "csv": {"delimiter": ";"},
     }
     assert resource.schema.to_descriptor() == {
         "fields": [
@@ -49,14 +50,16 @@ def test_resource_schema_from_path():
 
 
 @pytest.mark.vcr
-@pytest.mark.xfail(reason="dereference")
-def test_resource_schema_from_path_remote():
+def test_resource_dialect_schema_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource.to_descriptor() == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
         "schema": "schema.json",
+    }
+    assert resource.dialect.to_descriptor() == {
+        "csv": {"delimiter": ";"},
     }
     assert resource.schema.to_descriptor() == {
         "fields": [
@@ -66,36 +69,6 @@ def test_resource_schema_from_path_remote():
     }
 
 
-@pytest.mark.xfail(reason="dereference")
-def test_resource_dialect_from_path():
-    resource = Resource("data/resource-with-dereferencing.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "dialect": "dialect.json",
-        "schema": "schema.json",
-    }
-    assert resource.dialect.to_descriptor() == {
-        "delimiter": ";",
-    }
-
-
-@pytest.mark.vcr
-@pytest.mark.xfail(reason="dereference")
-def test_resource_dialect_from_path_remote():
-    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
-    assert resource.to_descriptor() == {
-        "name": "name",
-        "path": "table.csv",
-        "dialect": "dialect.json",
-        "schema": "schema.json",
-    }
-    assert resource.dialect.to_descriptor() == {
-        "delimiter": ";",
-    }
-
-
-@pytest.mark.xfail(reason="dereference")
 def test_resource_schema_from_path_with_basepath():
     descriptor = {"name": "name", "path": "table.csv", "schema": "schema.json"}
     resource = Resource(descriptor, basepath="data")

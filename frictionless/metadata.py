@@ -148,9 +148,14 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options):
         """Import metadata from a descriptor source"""
-        metadata = cls.metadata_import(descriptor, **options)
+        descriptor_path = None
         if isinstance(descriptor, str):
-            metadata.metadata_descriptor_path = descriptor
+            descriptor_path = descriptor
+            basepath = options.pop("basepath", None)
+            descriptor = helpers.join_basepath(descriptor, basepath)
+        metadata = cls.metadata_import(descriptor, **options)
+        if descriptor_path:
+            metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 

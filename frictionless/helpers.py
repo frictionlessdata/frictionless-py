@@ -12,7 +12,7 @@ import datetime
 import textwrap
 import stringcase
 from copy import deepcopy
-from typing import Union, Any
+from typing import Union, Any, Optional
 from collections.abc import Mapping
 from importlib import import_module
 from contextlib import contextmanager
@@ -128,12 +128,20 @@ def parse_basepath(descriptor):
     return basepath
 
 
-def parse_scheme_and_format(source):
-    parsed = urlparse(source)
-    if re.search(r"\+.*://", source):
+def join_basepath(path: str, basepath: Optional[str] = None):
+    if not basepath:
+        return path
+    if is_remote_path(path):
+        return path
+    return os.path.join(basepath, path)
+
+
+def parse_scheme_and_format(path: str):
+    parsed = urlparse(path)
+    if re.search(r"\+.*://", path):
         # For sources like: db2+ibm_db://username:password@host:port/database
-        scheme, source = source.split("://", maxsplit=1)
-        parsed = urlparse(f"//{source}", scheme=scheme)
+        scheme, path = path.split("://", maxsplit=1)
+        parsed = urlparse(f"//{path}", scheme=scheme)
     scheme = parsed.scheme.lower()
     if len(scheme) < 2:
         scheme = settings.DEFAULT_SCHEME

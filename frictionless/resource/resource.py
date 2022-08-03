@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 import json
 import warnings
 from pathlib import Path
@@ -358,8 +357,9 @@ class Resource(Metadata):
                 if self.__control:
                     self.__dialect.set_control(self.__control)
         if isinstance(self.__dialect, str):
-            path = os.path.join(self.basepath, self.__dialect)
-            self.__dialect = Dialect.from_descriptor(path)
+            self.__dialect = Dialect.from_descriptor(
+                self.__dialect, basepath=self.basepath
+            )
         return self.__dialect
 
     @dialect.setter
@@ -375,8 +375,7 @@ class Resource(Metadata):
         if self.__schema is None:
             raise FrictionlessException("schema is not set or inferred")
         if isinstance(self.__schema, str):
-            path = os.path.join(self.basepath, self.__schema)
-            self.__schema = Schema.from_descriptor(path)
+            self.__schema = Schema.from_descriptor(self.__schema, basepath=self.basepath)
         return self.__schema
 
     @schema.setter
@@ -394,8 +393,9 @@ class Resource(Metadata):
         For more information, please check the Checklist documentation.
         """
         if isinstance(self.__checklist, str):
-            path = os.path.join(self.basepath, self.__checklist)
-            self.__checklist = Checklist.from_descriptor(path)
+            self.__checklist = Checklist.from_descriptor(
+                self.__checklist, basepath=self.basepath
+            )
         return self.__checklist
 
     @checklist.setter
@@ -409,8 +409,9 @@ class Resource(Metadata):
         For more information, please check the Pipeline documentation.
         """
         if isinstance(self.__pipeline, str):
-            path = os.path.join(self.basepath, self.__pipeline)
-            self.__pipeline = Pipeline.from_descriptor(path)
+            self.__pipeline = Pipeline.from_descriptor(
+                self.__pipeline, basepath=self.basepath
+            )
         return self.__pipeline
 
     @pipeline.setter
