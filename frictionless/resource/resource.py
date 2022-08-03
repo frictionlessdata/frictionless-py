@@ -652,8 +652,10 @@ class Resource(Metadata):
     def open(self, *, as_file: bool = False):
         """Open the resource as "io.open" does"""
         self.close()
-        self.__prepare_file()
         try:
+
+            # General
+            self.__prepare_file()
 
             # Table
             if self.type == "table" and not as_file:
