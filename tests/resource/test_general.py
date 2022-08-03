@@ -78,6 +78,16 @@ def test_resource_from_path_remote():
 
 
 @pytest.mark.vcr
+def test_resource_from_url_standards_v0():
+    resource = Resource.from_descriptor({"url": BASEURL % "data/table.csv"})
+    assert resource.path == BASEURL % "data/table.csv"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.vcr
 def test_resource_from_path_remote_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(BASEURL % "data/bad.resource.json")

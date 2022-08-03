@@ -1150,20 +1150,20 @@ class Resource(Metadata):
             options.setdefault("basepath", helpers.parse_basepath(descriptor))
         descriptor = super().metadata_normalize(descriptor)
 
-        # Url (v0)
+        # Url (standards_v0)
         url = descriptor.pop("url", None)
         path = descriptor.get("path")
         data = descriptor.get("data")
         if not path and not data and url:
             descriptor.setdefault("path", url)
 
-        # Path (v1)
+        # Path (standards_v1)
         path = descriptor.get("path")
         if path and isinstance(path, list):
             descriptor["path"] = path[0]
             descriptor["extrapaths"] = path[1:]
 
-        # Profile (v1)
+        # Profile (standards_v1)
         profile = descriptor.pop("profile", None)
         if profile == "data-resource":
             descriptor["type"] = "file"
@@ -1173,13 +1173,13 @@ class Resource(Metadata):
             descriptor.setdefault("profiles", [])
             descriptor["profiles"].append(profile)
 
-        # Bytes (v1)
+        # Bytes (standards_v1)
         bytes = descriptor.pop("bytes", None)
         if bytes:
             descriptor.setdefault("stats", {})
             descriptor["stats"]["bytes"] = bytes
 
-        # Hash (v1.5)
+        # Hash (framework_v4)
         hashing = descriptor.get("hashing", None)
         stats = descriptor.get("stats", None)
         if hashing and stats:
@@ -1190,7 +1190,7 @@ class Resource(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        # Hash (v1)
+        # Hash (standards_v1)
         hash = descriptor.get("hash", None)
         if hash:
             algo, hash = helpers.parse_resource_hash_v1(hash)
@@ -1199,7 +1199,7 @@ class Resource(Metadata):
                 descriptor.setdefault("stats", {})
                 descriptor["stats"][algo] = hash
 
-        # Compression (v1.5)
+        # Compression (framework_v4)
         compression = descriptor.get("compression")
         if compression == "no":
             descriptor.pop("compression")
@@ -1207,7 +1207,7 @@ class Resource(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        # Layout (v1.5)
+        # Layout (framework_v4)
         layout = descriptor.pop("layout", None)
         if layout:
             descriptor.setdefault("dialect", {})
@@ -1240,7 +1240,7 @@ class Resource(Metadata):
         if data is not None and not isinstance(data, (list, dict)):
             descriptor.pop("data")
 
-        # Path (v1)
+        # Path (standards_v1)
         if system.standards_version == "v1":
             path = descriptor.get("path")
             extrapaths = descriptor.pop("extrapaths", None)
@@ -1250,7 +1250,7 @@ class Resource(Metadata):
                     descriptor["path"].append(path)
                 descriptor["path"].extend(extrapaths)
 
-        # Profile (v1)
+        # Profile (standards_v1)
         if system.standards_version == "v1":
             type = descriptor.pop("type", None)
             profiles = descriptor.pop("profiles", None)
@@ -1260,7 +1260,7 @@ class Resource(Metadata):
             elif profiles:
                 descriptor["profile"] = profiles[0]
 
-        # Stats (v1)
+        # Stats (standards_v1)
         if system.standards_version == "v1":
             stats = descriptor.pop("stats", None)
             if stats:

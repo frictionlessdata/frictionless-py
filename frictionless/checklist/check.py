@@ -103,7 +103,7 @@ class Check(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = cls.metadata_normalize(descriptor)
 
-        # Type (v1.5)
+        # Type (framework_v4)
         code = descriptor.pop("code", None)
         if code:
             descriptor.setdefault("type", code)

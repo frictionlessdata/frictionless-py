@@ -104,7 +104,7 @@ class Pipeline(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = cls.metadata_normalize(descriptor)
 
-        # Tasks (v1.5)
+        # Tasks (framework_v4)
         tasks = descriptor.pop("tasks", [])
         if tasks and isinstance(tasks[0], dict):
             descriptor.setdefault("steps", tasks[0].get("steps"))

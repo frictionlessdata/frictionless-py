@@ -12,7 +12,7 @@ def test_pipeline_to_descriptor():
     assert pipeline.to_descriptor() == {"steps": [{"type": "table-normalize"}]}
 
 
-def test_pipeline_from_descriptor_tasks_v1x5():
+def test_pipeline_from_descriptor_tasks_framework_v4():
     with pytest.warns(UserWarning):
         descriptor = {"tasks": [{"steps": [{"type": "table-normalize"}]}]}
         pipeline = Pipeline.from_descriptor(descriptor)

@@ -139,7 +139,7 @@ class InquiryTask(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = cls.metadata_normalize(descriptor)
 
-        # Source (v1.5)
+        # Source (framework_v4)
         source = descriptor.pop("source", None)
         if source:
             type = descriptor.pop("type", "resource")

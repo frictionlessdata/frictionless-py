@@ -50,7 +50,7 @@ def test_package_external_profile_invalid_remote_from_descriptor():
 # Legacy
 
 
-def test_package_profiles_from_descriptor_v1():
+def test_package_profiles_from_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package({"resources": [resource.to_descriptor()], "profile": profile})
@@ -59,7 +59,7 @@ def test_package_profiles_from_descriptor_v1():
         assert "required" in error.message
 
 
-def test_package_profiles_to_descriptor_v1():
+def test_package_profiles_to_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profiles=[profile])

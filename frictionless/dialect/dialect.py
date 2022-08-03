@@ -211,7 +211,7 @@ class Dialect(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = super().metadata_normalize(descriptor)
 
-        # Csv (v1)
+        # Csv (standards@1)
         for name in CSV_PROPS_V1:
             value = descriptor.pop(name, None)
             if value is not None:
@@ -238,7 +238,7 @@ class Dialect(Metadata):
             if control_descriptor:
                 descriptor[type] = control_descriptor
 
-        # Csv (v1)
+        # Csv (standards_v1)
         if system.standards_version == "v1":
             for name, value in descriptor.pop("csv", {}).items():
                 descriptor[name] = value

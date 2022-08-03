@@ -136,7 +136,7 @@ def test_resource_compression_error_invalid_gz():
 # Bugs
 
 
-def test_resource_compression_legacy_no_value_v1x5_issue_616():
+def test_resource_compression_legacy_no_value_framework_v4_issue_616():
     descriptor = {"path": "data/table.csv", "compression": "no"}
     with pytest.warns(UserWarning):
         with Resource.from_descriptor(descriptor) as resource:

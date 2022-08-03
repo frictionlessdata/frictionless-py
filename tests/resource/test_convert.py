@@ -41,7 +41,7 @@ def test_resource_to_view():
     assert resource.to_view()
 
 
-def test_resource_from_descriptor_layout_v1x5():
+def test_resource_from_descriptor_layout_framework_v4():
     with pytest.warns(UserWarning):
         resource = Resource.from_descriptor(
             {

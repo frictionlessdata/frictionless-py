@@ -29,7 +29,7 @@ def test_package():
     }
 
 
-def test_package_from_dict():
+def test_package_from_dict_to_standards_v1():
     package = Package({"name": "name", "profile": "data-package"})
     assert package.to_descriptor() == {"name": "name"}
     with system.use_standards_version("v1"):
