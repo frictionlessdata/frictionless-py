@@ -18,7 +18,7 @@ def test_step_table_write(tmpdir):
     source.transform(pipeline)
 
     # Read
-    resource = Resource(path=path)
+    resource = Resource(path=path, type="table")
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

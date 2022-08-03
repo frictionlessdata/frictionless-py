@@ -651,12 +651,8 @@ class Resource(Metadata):
 
     def open(self, *, as_file: bool = False):
         """Open the resource as "io.open" does"""
-
-        # General
         self.close()
         self.__prepare_file()
-
-        # Open
         try:
 
             # Table
@@ -671,18 +667,16 @@ class Resource(Metadata):
                 self.__prepare_header()
                 self.__prepare_lookup()
                 self.__prepare_row_stream()
-                return self
 
             # File
-            else:
+            elif self.scheme:
                 self.__prepare_loader()
                 self.__prepare_buffer()
-                return self
 
-        # Error
         except Exception:
             self.close()
             raise
+        return self
 
     def close(self) -> None:
         """Close the resource as "filelike.close" does"""

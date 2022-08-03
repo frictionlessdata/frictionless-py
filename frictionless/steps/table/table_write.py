@@ -19,7 +19,7 @@ class table_write(Step):
     # Transform
 
     def transform_resource(self, resource):
-        target = Resource(path=self.path)
+        target = Resource(path=self.path, type="table")
         resource.write(target)
 
     # Metadata
