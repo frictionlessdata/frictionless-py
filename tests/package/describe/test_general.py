@@ -8,7 +8,7 @@ from frictionless import Package, Dialect, platform
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package():
     package = Package.describe("data/tables/chunk*.csv")
-    assert package.metadata_valid
+    assert package.check_metadata_valid()
     assert package.to_descriptor() == {
         "resources": [
             {
@@ -48,7 +48,7 @@ def test_describe_package():
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package_with_stats():
     package = Package.describe("data/tables/chunk*.csv", stats=True)
-    assert package.metadata_valid
+    assert package.check_metadata_valid()
     assert package.to_descriptor() == {
         "resources": [
             {

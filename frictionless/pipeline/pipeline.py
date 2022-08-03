@@ -40,7 +40,7 @@ class Pipeline(Metadata):
 
     def validate(self):
         timer = helpers.Timer()
-        errors = self.metadata_errors
+        errors = self.list_metadata_errors()
         Report = import_module("frictionless").Report
         return Report.from_validation(time=timer.time, errors=errors)
 
@@ -119,4 +119,4 @@ class Pipeline(Metadata):
 
         # Steps
         for step in self.steps:
-            yield from step.metadata_errors
+            yield from step.metadata_validate()

@@ -68,7 +68,7 @@ class Checklist(Metadata):
 
     def validate(self):
         timer = helpers.Timer()
-        errors = self.metadata_errors
+        errors = self.list_metadata_errors()
         Report = import_module("frictionless").Report
         return Report.from_validation(time=timer.time, errors=errors)
 
@@ -118,7 +118,7 @@ class Checklist(Metadata):
         checks = []
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
-            if check.metadata_valid:
+            if check.check_metadata_valid():
                 # TODO: review
                 #  check = check.to_copy()
                 check.connect(resource)
@@ -155,4 +155,4 @@ class Checklist(Metadata):
 
         # Checks
         for check in self.checks:
-            yield from check.metadata_errors
+            yield from check.metadata_validate()

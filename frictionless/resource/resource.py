@@ -703,66 +703,40 @@ class Resource(Metadata):
         return self.__parser is None and self.__loader is None
 
     def __prepare_file(self):
-
-        # Detect
         self.detector.detect_resource(self)
         system.detect_resource(self)
-
-        # Validate
-        if not self.metadata_valid:
-            raise FrictionlessException(self.metadata_errors[0])
+        self.assert_metadata_valid()
 
     def __prepare_loader(self):
-
-        # Create/open
         self.__loader = system.create_loader(self)
         self.__loader.open()
 
     def __prepare_buffer(self):
-
-        # From parser
         if self.__parser and self.__parser.requires_loader:
             self.__buffer = self.__parser.loader.buffer
-
-        # From loader
         elif self.__loader:
             self.__buffer = self.__loader.buffer
 
     def __prepare_parser(self):
-
-        # Create/open
         self.__parser = system.create_parser(self)
         self.__parser.open()
 
     def __prepare_sample(self):
-
-        # From parser
         if self.__parser:
             self.__sample = self.__parser.sample
 
     def __prepare_dialect(self):
-
-        # Detect
         self.metadata_assigned.add("dialect")
         self.__dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
-
-        # Validate
-        if not self.dialect.metadata_valid:
-            raise FrictionlessException(self.dialect.metadata_errors[0])
+        self.__dialect.assert_metadata_valid()
 
     def __prepare_labels(self):
-
-        # From sample
         self.__labels = self.dialect.read_labels(self.sample)
 
     def __prepare_fragment(self):
-
-        # From sample
         self.__fragment = self.dialect.read_fragment(self.sample)
 
     def __prepare_schema(self):
-
-        # Detect
         self.metadata_assigned.add("schema")
         self.__schema = self.detector.detect_schema(
             self.fragment,
@@ -770,12 +744,7 @@ class Resource(Metadata):
             schema=self.schema if self.has_schema else None,
             field_candidates=system.create_field_candidates(),
         )
-
-        # Validate
-        if not self.schema.metadata_valid:
-            raise FrictionlessException(self.schema.metadata_errors[0])
-
-        # Update stats
+        self.__schema.assert_metadata_valid()
         self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
@@ -1330,23 +1299,23 @@ class Resource(Metadata):
 
         # Dialect
         if self.dialect:
-            yield from self.dialect.metadata_errors
+            yield from self.dialect.metadata_validate()
 
         # Schema
         if self.has_schema:
-            yield from self.schema.metadata_errors
+            yield from self.schema.metadata_validate()
 
         # Checklist
         if self.checklist:
-            yield from self.checklist.metadata_errors
+            yield from self.checklist.metadata_validate()
 
         # Pipeline
         if self.pipeline:
-            yield from self.pipeline.metadata_errors
+            yield from self.pipeline.metadata_validate()
 
         # Stats
         if self.has_stats:
-            yield from self.stats.metadata_errors
+            yield from self.stats.metadata_validate()
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:

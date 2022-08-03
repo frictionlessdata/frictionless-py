@@ -25,8 +25,7 @@ def transform(self: Package, pipeline: Pipeline):
     self.infer(sample=False)
 
     # Prepare pipeline
-    if not pipeline.metadata_valid:
-        raise FrictionlessException(pipeline.metadata_errors[0])
+    pipeline.assert_metadata_valid()
 
     # Run transforms
     for step in pipeline.steps:

@@ -42,13 +42,13 @@ def validate(
 
     # Prepare checklist
     checklist = checklist or Checklist()
-    if not checklist.metadata_valid:
-        errors = checklist.metadata_errors
-        return Report.from_validation(time=timer.time, errors=errors)
+    checklist_errors = checklist.list_metadata_errors()
+    if checklist_errors:
+        return Report.from_validation(time=timer.time, errors=checklist_errors)
 
     # Validate metadata
     metadata_errors = []
-    for error in self.metadata_errors:
+    for error in self.list_metadata_errors():
         if error.type == "package-error":
             metadata_errors.append(error)
     if metadata_errors:

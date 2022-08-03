@@ -19,7 +19,7 @@ def test_package_resource_unsafe_schema_trusted():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
     package = Package({"resources": [{"path": path, "schema": schema}]}, trusted=True)
-    assert package.metadata_valid
+    assert package.check_metadata_valid()
 
 
 def test_package_resource_from_path_error_unsafe():
@@ -47,6 +47,6 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted()
     package = Package(
         {"resources": [resource.to_descriptor()], "profiles": [profile]}, trusted=True
     )
-    assert len(package.metadata_errors) == 5
-    for error in package.metadata_errors:
+    assert len(package.list_metadata_errors()) == 5
+    for error in package.list_metadata_errors():
         assert "required" in error.message

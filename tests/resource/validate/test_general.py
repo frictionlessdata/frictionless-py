@@ -398,17 +398,16 @@ def test_resource_validate_resource_array_path_issue_991():
 
 def test_resource_validate_resource_metadata_errors_with_missing_values_993():
     resource = Resource("data/resource-with-missingvalues-993.json")
-    assert resource.metadata_errors[0].type == "resource-error"
-    assert (
-        resource.metadata_errors[0].note
-        == '"missingValues" should be set as "schema.missingValues"'
-    )
+    error = resource.list_metadata_errors()[0]
+    assert error.type == "resource-error"
+    assert error.note == '"missingValues" should be set as "schema.missingValues"'
 
 
 def test_resource_validate_resource_metadata_errors_with_fields_993():
     resource = Resource("data/resource-with-fields-993.json")
-    assert resource.metadata_errors[0].type == "resource-error"
-    assert resource.metadata_errors[0].note == '"fields" should be set as "schema.fields"'
+    error = resource.list_metadata_errors()[0]
+    assert error.type == "resource-error"
+    assert error.note == '"fields" should be set as "schema.fields"'
 
 
 def test_resource_validate_resource_errors_with_missing_values_993():

@@ -25,8 +25,7 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
 
     # Prepare pipeline
     pipeline = pipeline or self.pipeline or Pipeline()
-    if not pipeline.metadata_valid:
-        raise FrictionlessException(pipeline.metadata_errors[0])
+    pipeline.assert_metadata_valid()
 
     # Run transforms
     for step in pipeline.steps:

@@ -9,7 +9,7 @@ from frictionless import Resource, platform
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
     resource.infer(stats=True)
-    assert resource.metadata_valid
+    assert resource.check_metadata_valid()
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
@@ -38,7 +38,7 @@ def test_resource_infer():
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
     resource.infer(stats=True)
-    assert resource.metadata_valid
+    assert resource.check_metadata_valid()
     assert resource.to_descriptor() == {
         "name": "text",
         "path": "data/text.txt",
@@ -59,7 +59,7 @@ def test_resource_infer_source_non_tabular():
 def test_resource_infer_from_path():
     resource = Resource("data/table.csv")
     resource.infer(stats=True)
-    assert resource.metadata_valid
+    assert resource.check_metadata_valid()
     assert resource.path == "data/table.csv"
 
 
@@ -69,5 +69,5 @@ def test_resource_infer_from_path():
 def test_resource_infer_not_slugified_name_issue_531():
     resource = Resource("data/Table With Data.csv")
     resource.infer(stats=True)
-    assert resource.metadata_valid
+    assert resource.check_metadata_valid()
     assert resource.name == "table-with-data"

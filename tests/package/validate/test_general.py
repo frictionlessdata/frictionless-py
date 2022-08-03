@@ -276,20 +276,18 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
 
 def test_validate_package_metadata_errors_with_missing_values_993():
     package = Package("data/package-with-missingvalues-993.json")
-    assert package.metadata_errors[0].type == "package-error"
+    error = package.list_metadata_errors()[0]
+    assert error.type == "package-error"
     assert (
-        package.metadata_errors[0].note
-        == '"missingValues" should be set as "resource.schema.missingValues"'
+        error.note == '"missingValues" should be set as "resource.schema.missingValues"'
     )
 
 
 def test_validate_package_metadata_errors_with_fields_993():
     package = Package("data/package-with-fields-993.json")
-    assert package.metadata_errors[0].type == "package-error"
-    assert (
-        package.metadata_errors[0].note
-        == '"fields" should be set as "resource.schema.fields"'
-    )
+    error = package.list_metadata_errors()[0]
+    assert error.type == "package-error"
+    assert error.note == '"fields" should be set as "resource.schema.fields"'
 
 
 def test_validate_package_errors_with_missing_values_993():

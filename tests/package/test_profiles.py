@@ -9,8 +9,8 @@ def test_package_profiles_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profiles=[profile])
-    assert len(package.metadata_errors) == 5
-    for error in package.metadata_errors:
+    assert len(package.list_metadata_errors()) == 5
+    for error in package.list_metadata_errors():
         assert "required" in error.message
 
 
@@ -18,8 +18,8 @@ def test_package_profiles_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package({"resources": [resource.to_descriptor()], "profiles": [profile]})
-    assert len(package.metadata_errors) == 5
-    for error in package.metadata_errors:
+    assert len(package.list_metadata_errors()) == 5
+    for error in package.list_metadata_errors():
         assert "required" in error.message
 
 
@@ -30,8 +30,8 @@ def test_package_external_profile_invalid_remote():
     )
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profiles=[profile])
-    assert len(package.metadata_errors) == 5
-    for error in package.metadata_errors:
+    assert len(package.list_metadata_errors()) == 5
+    for error in package.list_metadata_errors():
         assert "required" in error.message
 
 
@@ -42,8 +42,8 @@ def test_package_external_profile_invalid_remote_from_descriptor():
     )
     resource = Resource(name="table", path="data/table.csv")
     package = Package({"resources": [resource.to_dict()], "profiles": [profile]})
-    assert len(package.metadata_errors) == 5
-    for error in package.metadata_errors:
+    assert len(package.list_metadata_errors()) == 5
+    for error in package.list_metadata_errors():
         assert "required" in error.message
 
 
@@ -54,8 +54,8 @@ def test_package_profiles_from_descriptor_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package({"resources": [resource.to_descriptor()], "profile": profile})
-    assert len(package.metadata_errors) == 5
-    for error in package.metadata_errors:
+    assert len(package.list_metadata_errors()) == 5
+    for error in package.list_metadata_errors():
         assert "required" in error.message
 
 

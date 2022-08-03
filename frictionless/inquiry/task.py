@@ -74,9 +74,10 @@ class InquiryTask(Metadata):
         timer = helpers.Timer()
 
         # Validate metadata
-        if metadata and self.metadata_errors:
-            errors = self.metadata_errors
-            return Report.from_validation(time=timer.time, errors=errors)
+        if metadata:
+            metadata_errors = self.list_metadata_errors()
+            if metadata_errors:
+                return Report.from_validation(time=timer.time, errors=metadata_errors)
 
         # Validate package
         if self.package:

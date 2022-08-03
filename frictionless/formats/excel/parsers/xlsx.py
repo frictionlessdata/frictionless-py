@@ -226,7 +226,7 @@ def convert_excel_number_format_string(excel_number, value):
         # the number should be truncated
         number_hash = 0
         for i in reversed(range(len(decimal_section))):
-            if decimal_section[i] == "#":
+            if decimal_section[i] == "#":  # type: ignore
                 number_hash += 1
             else:
                 break

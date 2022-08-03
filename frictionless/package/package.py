@@ -731,7 +731,7 @@ class Package(Metadata):
 
         # Resources
         for resource in self.resources:
-            yield from resource.metadata_errors
+            yield from resource.metadata_validate()
         resource_names = list(filter(lambda name: name, self.resource_names))
         if len(resource_names) != len(set(resource_names)):
             note = "names of the resources are not unique"

@@ -98,7 +98,7 @@ def test_field_constraint_field_type(constraints, type, valid):
             "type": type,
         }
     )
-    assert field.metadata_valid == valid
+    assert field.check_metadata_valid() is valid
 
 
 def test_field_read_cell_required():

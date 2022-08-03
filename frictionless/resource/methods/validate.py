@@ -39,9 +39,9 @@ def validate(
     # Prepare checklist
     checklist = checklist or self.checklist or Checklist()
     checks = checklist.connect(self)
-    if not checklist.metadata_valid:
-        errors = checklist.metadata_errors
-        return Report.from_validation(time=timer.time, errors=errors)
+    checklist_errors = checklist.list_metadata_errors()
+    if checklist_errors:
+        return Report.from_validation(time=timer.time, errors=checklist_errors)
 
     # Validate metadata
     metadata_errors = list(self.metadata_validate(strict=strict))

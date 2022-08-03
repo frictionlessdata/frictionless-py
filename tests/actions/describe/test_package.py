@@ -9,7 +9,7 @@ from frictionless import Package, Dialect, describe, platform
 def test_describe_package():
     package = describe("data/tables/chunk*.csv")
     assert isinstance(package, Package)
-    assert package.metadata_valid
+    assert package.check_metadata_valid()
     assert package.to_descriptor() == {
         "resources": [
             {
@@ -50,7 +50,7 @@ def test_describe_package():
 def test_describe_package_with_stats():
     package = describe("data/tables/chunk*.csv", stats=True)
     assert isinstance(package, Package)
-    assert package.metadata_valid
+    assert package.check_metadata_valid()
     assert package.to_descriptor() == {
         "resources": [
             {

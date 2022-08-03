@@ -86,7 +86,7 @@ class Schema(Metadata):
 
     def validate(self):
         timer = helpers.Timer()
-        errors = self.metadata_errors
+        errors = self.list_metadata_errors()
         Report = import_module("frictionless").Report
         return Report.from_validation(time=timer.time, errors=errors)
 
@@ -353,7 +353,7 @@ class Schema(Metadata):
         # Fields
         for field in self.fields:
             if field.builtin:
-                yield from field.metadata_errors
+                yield from field.metadata_validate()
 
         # Field Names
         field_names = list(filter(lambda name: name, self.field_names))

@@ -221,46 +221,52 @@ def test_schema_primary_foreign_keys_as_string():
     ]
 
 
-def test_schema_metadata_valid():
-    assert Schema.from_descriptor("data/schema-valid-simple.json").metadata_valid
-    assert Schema.from_descriptor("data/schema-valid-full.json").metadata_valid
-    assert Schema.from_descriptor("data/schema-valid-pk-array.json").metadata_valid
-    assert Schema.from_descriptor("data/schema-valid-fk-array.json").metadata_valid
+@pytest.mark.parametrize(
+    "source",
+    [
+        "data/schema-valid-simple.json",
+        "data/schema-valid-full.json",
+        "data/schema-valid-pk-array.json",
+        "data/schema-valid-fk-array.json",
+    ],
+)
+def test_schema_metadata_valid(source):
+    assert Schema.from_descriptor(source).check_metadata_valid()
 
 
-def test_schema_metadata_not_valid():
-    assert not Schema.from_descriptor("data/schema-invalid-empty.json").metadata_valid
-    assert not Schema.from_descriptor("data/schema-invalid-pk-string.json").metadata_valid
-    assert not Schema.from_descriptor("data/schema-invalid-pk-array.json").metadata_valid
-    assert not Schema.from_descriptor("data/schema-invalid-fk-string.json").metadata_valid
-    assert not Schema.from_descriptor(
-        "data/schema-invalid-fk-no-reference.json"
-    ).metadata_valid
-    assert not Schema.from_descriptor("data/schema-invalid-fk-array.json").metadata_valid
-    assert not Schema.from_descriptor(
-        "data/schema-invalid-fk-string-array-ref.json"
-    ).metadata_valid
-    assert not Schema.from_descriptor(
-        "data/schema-invalid-fk-array-string-ref.json"
-    ).metadata_valid
+@pytest.mark.parametrize(
+    "source",
+    [
+        "data/schema-invalid-empty.json",
+        "data/schema-invalid-pk-string.json",
+        "data/schema-invalid-pk-array.json",
+        "data/schema-invalid-fk-string.json",
+        "data/schema-invalid-fk-no-reference.json",
+        "data/schema-invalid-fk-array.json",
+        "data/schema-invalid-fk-string-array-ref.json",
+        "data/schema-invalid-fk-array-string-ref.json",
+    ],
+)
+def test_schema_metadata_not_valid(source):
+    assert not Schema.from_descriptor(source).check_metadata_valid()
 
 
 @pytest.mark.xfail(reason="error-catching")
 def test_schema_metadata_not_valid_multiple_errors():
     schema = Schema.from_descriptor("data/schema-invalid-multiple-errors.json")
-    assert len(schema.metadata_errors) == 5
+    assert len(schema.list_metadata_errors()) == 5
 
 
 def test_schema_metadata_not_valid_multiple_errors_with_pk():
     schema = Schema.from_descriptor("data/schema-invalid-pk-is-wrong-type.json")
-    assert len(schema.metadata_errors) == 3
+    assert len(schema.list_metadata_errors()) == 3
 
 
 @pytest.mark.xfail(reason="error-catching")
 def test_schema_metadata_error_message():
     schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
-    note = schema.metadata_errors[0].note
-    assert len(schema.metadata_errors) == 1
+    note = schema.list_metadata_errors()[0].note
+    assert len(schema.list_metadata_errors()) == 1
     assert "is not valid" in note
     assert "{'name': 'name', 'type': 'other'}" in note
     assert "is not valid under any of the given schema" in note
@@ -278,8 +284,8 @@ def test_schema_metadata_error_bad_schema_format():
             )
         ]
     )
-    assert schema.metadata_valid is False
-    assert schema.metadata_errors[0].type == "field-error"
+    assert schema.check_metadata_valid() is False
+    assert schema.list_metadata_errors()[0].type == "field-error"
 
 
 def test_schema_valid_examples():
@@ -292,7 +298,7 @@ def test_schema_valid_examples():
         }
     )
     assert schema.get_field("name").example == "John"
-    assert len(schema.metadata_errors) == 0
+    assert len(schema.list_metadata_errors()) == 0
 
 
 def test_schema_invalid_example():
@@ -307,8 +313,8 @@ def test_schema_invalid_example():
             ]
         }
     )
-    note = schema.metadata_errors[0].note
-    assert len(schema.metadata_errors) == 1
+    note = schema.list_metadata_errors()[0].note
+    assert len(schema.list_metadata_errors()) == 1
     assert 'example value for field "name" is not valid' == note
 
 
@@ -409,5 +415,5 @@ def test_schema_not_supported_type_issue_goodatbles_304():
     schema = Schema.from_descriptor(
         {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
     )
-    assert schema.metadata_valid is False
+    assert schema.check_metadata_valid() is False
     assert schema.fields[1].to_descriptor == {"name": "age", "type": "bad"}

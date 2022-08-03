@@ -49,9 +49,10 @@ class Inquiry(Metadata):
         reports: List[Report] = []
 
         # Validate inquiry
-        if self.metadata_errors:
-            errors = self.metadata_errors
-            reports.append(Report.from_validation(time=timer.time, errors=errors))
+        metadata_errors = self.list_metadata_errors()
+        if metadata_errors:
+            report = Report.from_validation(time=timer.time, errors=metadata_errors)
+            reports.append(report)
 
         # Validate sequential
         elif not parallel:
@@ -93,7 +94,7 @@ class Inquiry(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
         for task in self.tasks:
-            yield from task.metadata_errors
+            yield from task.metadata_validate()
 
 
 # Internal

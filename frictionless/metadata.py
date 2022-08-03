@@ -131,6 +131,22 @@ class Metadata(metaclass=Metaclass):
                 return
             setattr(self, name, value)
 
+    # Validate
+
+    def check_metadata_valid(self) -> bool:
+        """Whether metadata is valid"""
+        return not self.list_metadata_errors()
+
+    def assert_metadata_valid(self) -> None:
+        """List of metadata errors"""
+        errors = self.list_metadata_errors()
+        if errors:
+            raise FrictionlessException(errors[0])
+
+    def list_metadata_errors(self) -> List[Error]:
+        """List of metadata errors"""
+        return list(self.metadata_validate())
+
     # Convert
 
     def to_copy(self, **options):
@@ -252,16 +268,6 @@ class Metadata(metaclass=Metaclass):
     metadata_descriptor_path: Optional[str] = None
     metadata_descriptor_initial: Optional[IDescriptor] = None
 
-    @property
-    def metadata_valid(self) -> bool:
-        """Whether metadata is valid"""
-        return not len(self.metadata_errors)
-
-    @property
-    def metadata_errors(self) -> List[Error]:
-        """List of metadata errors"""
-        return list(self.metadata_validate())
-
     # TODO: can we not accept options here / move to from_descriptor?
     @classmethod
     def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
@@ -322,6 +328,7 @@ class Metadata(metaclass=Metaclass):
         descriptor.update(self.custom)
         return descriptor
 
+    # TODO: move to helpers?
     @classmethod
     def metadata_normalize(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
         """Extract metadata"""
@@ -353,6 +360,7 @@ class Metadata(metaclass=Metaclass):
             note = f'cannot normalize metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
 
+    # TODO: optimize to not call to_descriptor on every nesting level?
     # TODO: automate metadata_validate of the children using metadata_profile?
     def metadata_validate(self) -> Iterator[Error]:
         """Validate metadata and emit validation errors"""

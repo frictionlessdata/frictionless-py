@@ -349,8 +349,8 @@ def test_resource_metadata_bad_schema_format():
         ]
     )
     resource = Resource(name="name", path="data/table.csv", schema=schema)
-    assert resource.metadata_valid is False
-    assert resource.metadata_errors[0].type == "field-error"
+    assert resource.check_metadata_valid() is False
+    assert resource.list_metadata_errors()[0].type == "field-error"
 
 
 def test_resource_set_base_path():

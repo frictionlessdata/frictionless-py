@@ -58,7 +58,7 @@ class Report(Metadata):
 
     def validate(self):
         timer = helpers.Timer()
-        errors = self.metadata_errors
+        errors = self.list_metadata_errors()
         return Report.from_validation(time=timer.time, errors=errors)
 
     # Flatten
@@ -242,4 +242,4 @@ class Report(Metadata):
 
         # Tasks
         for task in self.tasks:
-            yield from task.metadata_errors
+            yield from task.metadata_validate()
