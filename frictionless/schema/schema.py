@@ -308,7 +308,7 @@ class Schema(Metadata):
                         "fields": {"type": "array", "items": {"type": "string"}},
                         "reference": {
                             "type": "object",
-                            "required": ["fields"],
+                            "required": ["resource", "fields"],
                             "properties": {
                                 "resource": {"type": "string"},
                                 "fields": {"type": "array", "items": {"type": "string"}},

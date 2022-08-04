@@ -251,7 +251,7 @@ def test_schema_metadata_not_valid(source):
     assert not Schema.from_descriptor(source).check_metadata_valid()
 
 
-@pytest.mark.xfail(reason="error-catching")
+@pytest.mark.skip(reason="issue-1222")
 def test_schema_metadata_not_valid_multiple_errors():
     schema = Schema.from_descriptor("data/schema-invalid-multiple-errors.json")
     assert len(schema.list_metadata_errors()) == 5
