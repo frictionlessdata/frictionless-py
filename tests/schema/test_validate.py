@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Schema
+from frictionless import Schema, FrictionlessException
 
 
 # General
@@ -11,16 +11,12 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid():
-    schema = Schema.from_descriptor({"fields": "bad"})
-    report = schema.validate()
-    assert report.flatten(["code", "note"]) == [
-        [
-            "schema-error",
-            '"{} is not of type \'array\'" at "fields" in metadata and at "properties/fields/type" in profile',
-        ],
-    ]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor({"fields": "bad"})
+    error = excinfo.value.error
+    assert error.type == "schema-error"
+    assert error.note == '"fields" is required to be an array'
 
 
 def test_validate_required_invalid():

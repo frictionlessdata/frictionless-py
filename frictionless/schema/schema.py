@@ -325,6 +325,12 @@ class Schema(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = super().metadata_normalize(descriptor)
 
+        # Fields
+        fields = descriptor.get("fields")
+        if fields and not isinstance(fields, list):
+            error = errors.SchemaError(note='"fields" is required to be an array')
+            raise FrictionlessException(error)
+
         # Primary Key (standards_v1)
         primary_key = descriptor.get("primaryKey")
         if primary_key and not isinstance(primary_key, list):
