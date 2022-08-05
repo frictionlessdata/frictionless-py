@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 import os
 import io
 import json
@@ -385,6 +386,136 @@ class Metadata(metaclass=Metaclass):
             for note in notes:
                 yield Error(note=note)
         yield from []
+
+    # API@2
+
+    @classmethod
+    def from_descriptor2(cls, descriptor):
+        frictionless = import_module("frictionless")
+        Error = cls.metadata_Error or frictionless.errors.MetadataError
+        descriptor = cls.metadata_retrieve2(descriptor)
+        cls.metadata_transform2(descriptor)
+        errors = list(cls.metadata_validate2(descriptor))
+        if errors:
+            error = Error(note="Descriptor is not valid")
+            raise FrictionlessException(error, errors=errors)
+        metadata = cls.metadata_import2(descriptor)
+        return metadata
+
+    def to_descriptor2(self):
+        return self.metadata_export2()
+
+    @classmethod
+    def metadata_retrieve2(cls, descriptor):
+        try:
+            if isinstance(descriptor, Mapping):
+                return deepcopy(descriptor)
+            if isinstance(descriptor, (str, Path)):
+                if isinstance(descriptor, Path):
+                    descriptor = str(descriptor)
+                if helpers.is_remote_path(descriptor):
+                    system = import_module("frictionless.system").system
+                    http_session = system.get_http_session()
+                    response = http_session.get(descriptor)
+                    response.raise_for_status()
+                    content = response.text
+                else:
+                    with open(descriptor, encoding="utf-8") as file:
+                        content = file.read()
+                if descriptor.endswith(".yaml"):
+                    metadata = platform.yaml.safe_load(io.StringIO(content))
+                else:
+                    metadata = json.loads(content)
+                assert isinstance(metadata, dict)
+                return metadata
+            raise TypeError("descriptor type is not supported")
+        except Exception as exception:
+            frictionless = import_module("frictionless")
+            Error = cls.metadata_Error or frictionless.errors.MetadataError
+            note = f'cannot retrieve metadata "{descriptor}" because "{exception}"'
+            raise FrictionlessException(Error(note=note)) from exception
+
+    @classmethod
+    def metadata_transform2(cls, descriptor):
+        pass
+
+    @classmethod
+    def metadata_validate2(cls, descriptor, *, profile=None):
+        frictionless = import_module("frictionless")
+        Error = cls.metadata_Error or frictionless.errors.MetadataError
+        profile = profile or cls.metadata_profile
+        if isinstance(profile, str):
+            profile = cls.metadata_normalize(profile)
+        validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
+        validator = validator_class(profile)
+        for error in validator.iter_errors(descriptor):
+            metadata_path = "/".join(map(str, error.path))
+            message = re.sub(r"\s+", " ", error.message)
+            note = message
+            if metadata_path:
+                note = f"{note} at property '{metadata_path}'"
+            yield Error(note=note)
+        for name, Type in cls.metadata_Types.items():
+            value = descriptor.get(name)
+            if value is not None:
+                items = value if isinstance(value, list) else [value]
+                yield from (Type.metadata_validate2(item) for item in items)
+
+    @classmethod
+    def metadata_import2(cls, descriptor, **options):
+        target = {}
+        source = descriptor
+        for name in cls.metadata_profile.get("properties", {}):
+            value = source.pop(name, None)
+            Type = cls.metadata_Types.get(name)
+            if value is None or value == {}:
+                continue
+            if name == "type":
+                type = getattr(cls, "type", None)
+                if isinstance(type, str):
+                    continue
+            if Type:
+                trusted = options.get("trusted")
+                basepath = options.get("basepath")
+                if isinstance(value, list):
+                    value = [
+                        # TODO: it is a hack to make Package work for resources
+                        Type.from_descriptor(item, trusted=trusted, basepath=basepath)
+                        if name == "resources"
+                        else Type.from_descriptor(item)
+                        for item in value
+                    ]
+                else:
+                    value = Type.from_descriptor(value)
+            target[stringcase.snakecase(name)] = value
+        target.update(options)
+        metadata = cls(**target)
+        metadata.custom = source.copy()
+        return metadata
+
+    def metadata_export2(self, *, exclude: List[str] = []) -> IDescriptor:
+        descriptor = {}
+        for name in self.metadata_profile.get("properties", []):
+            if name in exclude:
+                continue
+            if name != "type" and not self.has_defined(stringcase.snakecase(name)):
+                continue
+            value = getattr(self, stringcase.snakecase(name), None)
+            Type = self.metadata_Types.get(name)
+            if value is None or (isinstance(value, dict) and value == {}):
+                continue
+            if Type:
+                if isinstance(value, list):
+                    value = [item.to_descriptor_source() for item in value]  # type: ignore
+                else:
+                    value = value.to_descriptor_source()  # type: ignore
+                    if not value:
+                        continue
+            if isinstance(value, (list, dict)):
+                value = deepcopy(value)
+            descriptor[name] = value
+        descriptor.update(self.custom)
+        return descriptor
 
 
 # Internal

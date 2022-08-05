@@ -224,6 +224,36 @@ class Field(Metadata):
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
 
+    # API@2
+
+    @classmethod
+    def metadata_transform2(cls, descriptor):
+
+        # Format (standards_v1)
+        format = descriptor.get("format")
+        if format and isinstance(format, str) and format.startswith("fmt:"):
+            descriptor["format"] = format.replace("fmt:", "")
+
+    def metadata_validate2(self, descriptor):
+
+        # Structure
+        metadata_errors = list(super().metadata_validate2(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
+
+        # Constraints
+        for name in descriptor.get("constraints", {}):
+            if name not in self.supported_constraints + ["unique"]:
+                note = f'constraint "{name}" is not supported by type "{self.type}"'
+                yield errors.FieldError(note=note)
+
+        # Misleading
+        for name in ["required"]:
+            if name in descriptor:
+                note = f'"{name}" should be set as "constraints.{name}"'
+                yield errors.FieldError(note=note)
+
 
 # Internal
 

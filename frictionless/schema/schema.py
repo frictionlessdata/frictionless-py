@@ -350,10 +350,6 @@ class Schema(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
 
-        # Fields
-        for field in self.fields:
-            yield from field.metadata_validate()
-
         # Field Names
         field_names = list(filter(lambda name: name, self.field_names))
         if len(field_names) != len(set(field_names)):
@@ -380,6 +376,71 @@ class Schema(Metadata):
                 if name not in self.field_names:
                     note = 'foreign key "%s" does not match the fields "%s"'
                     note = note % (fk, self.field_names)
+                    yield errors.SchemaError(note=note)
+            if len(fk["fields"]) != len(fk["reference"]["fields"]):
+                note = 'foreign key fields "%s" does not match the reference fields "%s"'
+                note = note % (fk["fields"], fk["reference"]["fields"])
+                yield errors.SchemaError(note=note)
+
+    # API@2
+
+    # TODO: handle invalid structure
+    @classmethod
+    def metadata_transform2(cls, descriptor):
+
+        # Primary Key (standards_v1)
+        primary_key = descriptor.get("primaryKey")
+        if primary_key and not isinstance(primary_key, list):
+            descriptor["primaryKey"] = [primary_key]
+
+        # Foreign Keys (standards_v1)
+        foreign_keys = descriptor.get("foreignKeys")
+        if foreign_keys:
+            for fk in foreign_keys:
+                if not isinstance(fk, dict):
+                    continue
+                fk.setdefault("fields", [])
+                fk.setdefault("reference", {})
+                fk["reference"].setdefault("resource", "")
+                fk["reference"].setdefault("fields", [])
+                if not isinstance(fk["fields"], list):
+                    fk["fields"] = [fk["fields"]]
+                if not isinstance(fk["reference"]["fields"], list):
+                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
+
+    @classmethod
+    def metadata_validate2(cls, descriptor):
+
+        # Structure
+        metadata_errors = list(super().metadata_validate2(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
+
+        # Field Names
+        field_names = list(field["name"] for field in descriptor["fields"])
+        if len(field_names) != len(set(field_names)):
+            note = "names of the fields are not unique"
+            yield errors.SchemaError(note=note)
+
+        # Examples
+        # TODO: implement
+
+        # Primary Key
+        pk = descriptor.get("primaryKey", [])
+        for name in pk:
+            if name not in field_names:
+                note = 'primary key "%s" does not match the fields "%s"'
+                note = note % (pk, field_names)
+                yield errors.SchemaError(note=note)
+
+        # Foreign Keys
+        fks = descriptor.get("foreignKeys", [])
+        for fk in fks:
+            for name in fk["fields"]:
+                if name not in field_names:
+                    note = 'foreign key "%s" does not match the fields "%s"'
+                    note = note % (fk, field_names)
                     yield errors.SchemaError(note=note)
             if len(fk["fields"]) != len(fk["reference"]["fields"]):
                 note = 'foreign key fields "%s" does not match the reference fields "%s"'

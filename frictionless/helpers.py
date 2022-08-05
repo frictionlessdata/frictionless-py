@@ -184,7 +184,7 @@ def validate_descriptor(
         message = re.sub(r"\s+", " ", error.message)
         note = message
         if metadata_path:
-            note = f"{note} of {metadata_path}"
+            note = f"{note} at property '{metadata_path}'"
         notes.append(note)
     return notes
 
