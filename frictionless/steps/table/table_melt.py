@@ -1,9 +1,8 @@
-# type: ignore
 from __future__ import annotations
 import attrs
 from typing import Optional, List
 from ...pipeline import Step
-from ...schema import Field
+from ... import fields
 
 
 @attrs.define(kw_only=True)
@@ -30,8 +29,8 @@ class table_melt(Step):
         field = resource.schema.get_field(self.field_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)
-        for name in self.to_field_names:
-            resource.schema.add_field(Field(name=name))
+        resource.schema.add_field(fields.StringField(name=self.to_field_names[0]))
+        resource.schema.add_field(fields.AnyField(name=self.to_field_names[1]))
         resource.data = table.melt(  # type: ignore
             key=self.field_name,
             variables=self.variables,

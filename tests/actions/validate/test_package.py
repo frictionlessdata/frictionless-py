@@ -2,7 +2,7 @@ import json
 import pytest
 import pathlib
 from copy import deepcopy
-from frictionless import Package, Resource, Schema, Field, Detector, validate, platform
+from frictionless import Package, Resource, Schema, Detector, fields, validate, platform
 from frictionless import FrictionlessException
 
 
@@ -494,7 +494,9 @@ def test_validate_package_using_detector_schema_sync_issue_847():
         resources=[
             Resource(
                 data=[["f1"], ["v1"], ["v2"], ["v3"]],
-                schema=Schema(fields=[Field(name="f1"), Field(name="f2")]),
+                schema=Schema(
+                    fields=[fields.StringField(name="f1"), fields.StringField(name="f2")],
+                ),
             ),
         ]
     )

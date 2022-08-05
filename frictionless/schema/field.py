@@ -208,7 +208,7 @@ class Field(Metadata):
                 fields = import_module("frictionless").fields
                 return fields.AnyField.from_descriptor(descriptor)
 
-        # Format (v0)
+        # Format (standards_v1)
         format = descriptor.get("format")
         if format and isinstance(format, str) and format.startswith("fmt:"):
             descriptor["format"] = format.replace("fmt:", "")

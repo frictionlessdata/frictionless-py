@@ -16,8 +16,8 @@ def test_transform_resource():
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
         ]
     }
     assert target.read_rows() == [

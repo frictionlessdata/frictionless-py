@@ -3,7 +3,7 @@ from __future__ import annotations
 import attrs
 from typing import List
 from ...pipeline import Step
-from ...schema import Field
+from ... import fields
 
 
 @attrs.define(kw_only=True)
@@ -28,20 +28,16 @@ class field_unpack(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         field = resource.schema.get_field(self.name)
-        for to_name in self.to_names:  # type: ignore
-            resource.schema.add_field(Field(name=to_name))
+        for to_name in self.to_names:
+            resource.schema.add_field(fields.AnyField(name=to_name))
         if not self.preserve:
             resource.schema.remove_field(self.name)
+        processor = table.unpack
+        options = dict(include_original=self.preserve)
         if field.type == "object":
-            processor = table.unpackdict  # type: ignore
-            resource.data = processor(
-                self.name, self.to_names, includeoriginal=self.preserve
-            )
-        else:
-            processor = table.unpack  # type: ignore
-            resource.data = processor(
-                self.name, self.to_names, include_original=self.preserve
-            )
+            processor = table.unpackdict
+            options = dict(includeoriginal=self.preserve)
+        resource.data = processor(self.name, self.to_names, **options)
 
     # Metadata
 

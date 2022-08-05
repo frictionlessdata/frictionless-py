@@ -18,7 +18,7 @@ def test_step_table_aggregate():
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "sum"},
+            {"name": "sum", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -47,9 +47,9 @@ def test_step_table_aggregate_multiple():
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "sum"},
-            {"name": "min"},
-            {"name": "max"},
+            {"name": "sum", "type": "any"},
+            {"name": "min", "type": "any"},
+            {"name": "max", "type": "any"},
         ]
     }
     assert target.read_rows() == [

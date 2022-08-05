@@ -16,8 +16,8 @@ def test_step_table_melt():
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -42,8 +42,8 @@ def test_step_table_melt_with_variables():
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -67,8 +67,8 @@ def test_step_table_melt_with_to_field_names():
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "key"},
-            {"name": "val"},
+            {"name": "key", "type": "string"},
+            {"name": "val", "type": "any"},
         ]
     }
     assert target.read_rows() == [

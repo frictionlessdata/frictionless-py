@@ -352,8 +352,7 @@ class Schema(Metadata):
 
         # Fields
         for field in self.fields:
-            if field.builtin:
-                yield from field.metadata_validate()
+            yield from field.metadata_validate()
 
         # Field Names
         field_names = list(filter(lambda name: name, self.field_names))
