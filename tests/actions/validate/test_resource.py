@@ -164,14 +164,6 @@ def test_validate_no_rows_with_compression():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
-def test_validate_task_error():
-    report = validate("data/table.csv", limit_rows="bad")  # type: ignore
-    assert report.flatten(["type"]) == [
-        ["task-error"],
-    ]
-
-
 def test_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
@@ -856,12 +848,6 @@ def test_validate_custom_check_bad_name():
     assert report.flatten(["type", "note"]) == [
         ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
     ]
-
-
-@pytest.mark.xfail(reason="error-catching")
-def test_validate_resource_descriptor_type_invalid():
-    report = validate(descriptor="data/table.csv")  # type: ignore
-    assert report.flatten() == [[1, None, None, "resource-error"]]
 
 
 # Bugs
