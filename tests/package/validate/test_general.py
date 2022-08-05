@@ -265,12 +265,11 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats.tasks == 3
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     package = Package("data/issue-977.json")
     report = package.validate()
     assert report.flatten() == [
-        [None, None, None, "package-error"],
+        [1, None, None, "resource-error"],
     ]
 
 

@@ -1233,7 +1233,7 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if data is not None and not isinstance(data, (list, dict)):
+        if data is not None and not isinstance(data, (str, bool, int, float, list, dict)):
             descriptor.pop("data")
 
         # Path (standards_v1)
