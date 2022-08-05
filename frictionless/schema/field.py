@@ -161,6 +161,14 @@ class Field(Metadata):
 
         return value_writer
 
+    # Convert
+
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        if cls is Field:
+            return system.create_field(descriptor)
+        return super().from_descriptor(descriptor)
+
     # Metadata
 
     metadata_type = "field"
@@ -197,55 +205,26 @@ class Field(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
-        if cls is Field:
-            return system.create_field(descriptor)
+    def metadata_transform(cls, descriptor):
 
         # Format (standards_v1)
         format = descriptor.get("format")
         if format and isinstance(format, str) and format.startswith("fmt:"):
             descriptor["format"] = format.replace("fmt:", "")
-
-        return super().metadata_import(descriptor)
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Constraints
-        for name in self.constraints.keys():
-            if name not in self.supported_constraints + ["unique"]:
-                note = f'constraint "{name}" is not supported by type "{self.type}"'
-                yield errors.FieldError(note=note)
-
-        # Custom
-        for name in ["required"]:
-            if name in self.custom:
-                note = f'"{name}" should be set as "constraints.{name}"'
-                yield errors.FieldError(note=note)
-
-    # API@2
 
     @classmethod
-    def metadata_transform2(cls, descriptor):
-
-        # Format (standards_v1)
-        format = descriptor.get("format")
-        if format and isinstance(format, str) and format.startswith("fmt:"):
-            descriptor["format"] = format.replace("fmt:", "")
-
-    def metadata_validate2(self, descriptor):
+    def metadata_validate(cls, descriptor):
 
         # Structure
-        metadata_errors = list(super().metadata_validate2(descriptor))
+        metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
             return
 
         # Constraints
         for name in descriptor.get("constraints", {}):
-            if name not in self.supported_constraints + ["unique"]:
-                note = f'constraint "{name}" is not supported by type "{self.type}"'
+            if name not in cls.supported_constraints + ["unique"]:
+                note = f'constraint "{name}" is not supported by type "{cls.type}"'
                 yield errors.FieldError(note=note)
 
         # Misleading

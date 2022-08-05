@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Union
 from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -12,6 +12,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..report import Report
     from ..interfaces import IDescriptor
 
 
@@ -81,14 +82,6 @@ class Schema(Metadata):
         resource = Resource.describe(source, **options)
         schema = resource.schema
         return schema
-
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
 
     # Fields
 
@@ -228,7 +221,7 @@ class Schema(Metadata):
             Schema: schema instance
         """
         schema = Schema()
-        profile = cls.metadata_normalize(profile)
+        profile = cls.metadata_retrieve(profile)
         required = profile.get("required", [])
         assert isinstance(required, list)
         properties = profile.get("properties", {})
@@ -320,73 +313,9 @@ class Schema(Metadata):
         },
     }
 
-    # TODO: handle edge cases like wrong descriptor's prop types
-    @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = super().metadata_normalize(descriptor)
-
-        # Primary Key (standards_v1)
-        primary_key = descriptor.get("primaryKey")
-        if primary_key and not isinstance(primary_key, list):
-            descriptor["primaryKey"] = [primary_key]
-
-        # Foreign Keys (standards_v1)
-        foreign_keys = descriptor.get("foreignKeys")
-        if foreign_keys:
-            for fk in foreign_keys:
-                if not isinstance(fk, dict):
-                    continue
-                fk.setdefault("fields", [])
-                fk.setdefault("reference", {})
-                fk["reference"].setdefault("resource", "")
-                fk["reference"].setdefault("fields", [])
-                if not isinstance(fk["fields"], list):
-                    fk["fields"] = [fk["fields"]]
-                if not isinstance(fk["reference"]["fields"], list):
-                    fk["reference"]["fields"] = [fk["reference"]["fields"]]
-
-        return super().metadata_import(descriptor)
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Field Names
-        field_names = list(filter(lambda name: name, self.field_names))
-        if len(field_names) != len(set(field_names)):
-            note = "names of the fields are not unique"
-            yield errors.SchemaError(note=note)
-
-        # Examples
-        for field in [field for field in self.fields if field.example]:
-            _, notes = field.read_cell(field.example)
-            if notes is not None:
-                note = 'example value for field "%s" is not valid' % field.name
-                yield errors.SchemaError(note=note)
-
-        # Primary Key
-        for name in self.primary_key:
-            if name not in self.field_names:
-                note = 'primary key "%s" does not match the fields "%s"'
-                note = note % (self.primary_key, self.field_names)
-                yield errors.SchemaError(note=note)
-
-        # Foreign Keys
-        for fk in self.foreign_keys:
-            for name in fk["fields"]:
-                if name not in self.field_names:
-                    note = 'foreign key "%s" does not match the fields "%s"'
-                    note = note % (fk, self.field_names)
-                    yield errors.SchemaError(note=note)
-            if len(fk["fields"]) != len(fk["reference"]["fields"]):
-                note = 'foreign key fields "%s" does not match the reference fields "%s"'
-                note = note % (fk["fields"], fk["reference"]["fields"])
-                yield errors.SchemaError(note=note)
-
-    # API@2
-
     # TODO: handle invalid structure
     @classmethod
-    def metadata_transform2(cls, descriptor):
+    def metadata_transform(cls, descriptor):
 
         # Primary Key (standards_v1)
         primary_key = descriptor.get("primaryKey")
@@ -409,10 +338,10 @@ class Schema(Metadata):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
     @classmethod
-    def metadata_validate2(cls, descriptor):
+    def metadata_validate(cls, descriptor):
 
         # Structure
-        metadata_errors = list(super().metadata_validate2(descriptor))
+        metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
             return
@@ -424,7 +353,12 @@ class Schema(Metadata):
             yield errors.SchemaError(note=note)
 
         # Examples
-        # TODO: implement
+        # TODO: recover
+        #  for field in [field for field in self.fields if field.example]:
+        #  _, notes = field.read_cell(field.example)
+        #  if notes is not None:
+        #  note = 'example value for field "%s" is not valid' % field.name
+        #  yield errors.SchemaError(note=note)
 
         # Primary Key
         pk = descriptor.get("primaryKey", [])

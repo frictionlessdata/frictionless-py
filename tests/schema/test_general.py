@@ -10,7 +10,12 @@ from frictionless import FrictionlessException
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
+DESCRIPTOR_MIN = {
+    "fields": [
+        {"name": "id", "type": "string"},
+        {"name": "height", "type": "integer"},
+    ]
+}
 DESCRIPTOR_MAX = {
     "fields": [
         {"name": "id", "type": "string", "constraints": {"required": True}},
@@ -19,11 +24,11 @@ DESCRIPTOR_MAX = {
         {"name": "name", "type": "string"},
         {"name": "occupation", "type": "string"},
     ],
+    "missingValues": ["", "-", "null"],
     "primaryKey": ["id"],
     "foreignKeys": [
         {"fields": ["name"], "reference": {"resource": "", "fields": ["id"]}}
     ],
-    "missingValues": ["", "-", "null"],
 }
 
 

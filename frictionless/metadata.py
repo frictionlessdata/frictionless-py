@@ -4,20 +4,19 @@ import os
 import io
 import json
 import pprint
-import inspect
 import stringcase
 from pathlib import Path
 from copy import deepcopy
 from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING
-from typing import ClassVar, Iterator, Optional, Union, List, Dict, Any, Set
+from typing import ClassVar, Optional, Union, List, Dict, Any, Set
 from .exception import FrictionlessException
 from .platform import platform
 from . import helpers
 
 if TYPE_CHECKING:
-    from .error import Error
+    from .report import Report
     from .interfaces import IDescriptor
 
 
@@ -135,19 +134,16 @@ class Metadata(metaclass=Metaclass):
 
     # Validate
 
-    def check_metadata_valid(self) -> bool:
-        """Whether metadata is valid"""
-        return not self.list_metadata_errors()
-
-    def assert_metadata_valid(self) -> None:
-        """List of metadata errors"""
-        errors = self.list_metadata_errors()
-        if errors:
-            raise FrictionlessException(errors[0])
-
-    def list_metadata_errors(self) -> List[Error]:
-        """List of metadata errors"""
-        return list(self.metadata_validate())
+    @classmethod
+    def validate_descriptor(cls, descriptor: Union[IDescriptor, str]) -> Report:
+        errors = []
+        timer = helpers.Timer()
+        try:
+            cls.from_descriptor(descriptor)
+        except FrictionlessException as exception:
+            errors = exception.errors if exception.errors else [exception.error]
+        Report = import_module("frictionless").Report
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Convert
 
@@ -164,24 +160,19 @@ class Metadata(metaclass=Metaclass):
         return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod
-    def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options):
-        """Import metadata from a descriptor source"""
-        descriptor_path = None
-        if isinstance(descriptor, str):
-            descriptor_path = descriptor
-            basepath = options.pop("basepath", None)
-            descriptor = helpers.join_basepath(descriptor, basepath)
-            if "basepath" in inspect.signature(cls.__init__).parameters:
-                options["basepath"] = helpers.parse_basepath(descriptor)
-        metadata = cls.metadata_import(descriptor, **options)
-        if descriptor_path:
-            metadata.metadata_descriptor_path = descriptor_path
-            metadata.metadata_descriptor_initial = metadata.to_descriptor()
+    def from_descriptor(cls, descriptor):
+        frictionless = import_module("frictionless")
+        Error = cls.metadata_Error or frictionless.errors.MetadataError
+        descriptor = cls.metadata_retrieve(descriptor)
+        cls.metadata_transform(descriptor)
+        errors = list(cls.metadata_validate(descriptor))
+        if errors:
+            error = Error(note='Descriptor is not valid (see "exception.errors")')
+            raise FrictionlessException(error, errors=errors)
+        metadata = cls.metadata_import(descriptor)
         return metadata
 
-    # TODO: can we support expand/dereference (a method?)
-    def to_descriptor(self) -> IDescriptor:
-        """Export metadata as a descriptor"""
+    def to_descriptor(self):
         return self.metadata_export()
 
     def to_descriptor_source(self) -> Union[IDescriptor, str]:
@@ -272,141 +263,8 @@ class Metadata(metaclass=Metaclass):
     metadata_descriptor_path: Optional[str] = None
     metadata_descriptor_initial: Optional[IDescriptor] = None
 
-    # TODO: can we not accept options here / move to from_descriptor?
     @classmethod
-    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
-        """Import metadata from a descriptor source"""
-        target = {}
-        source = cls.metadata_normalize(descriptor)
-        frictionless = import_module("frictionless")
-        Error = cls.metadata_Error or frictionless.errors.MetadataError
-        for name, prop in cls.metadata_profile.get("properties", {}).items():
-            value = source.pop(name, None)
-            Type = cls.metadata_Types.get(name)
-            if value is None or value == {}:
-                continue
-            if name == "type":
-                type = getattr(cls, "type", None)
-                if isinstance(type, str):
-                    continue
-            if Type:
-                type = prop["type"]
-                types = type if isinstance(type, list) else [type]
-                trusted = options.get("trusted")
-                basepath = options.get("basepath")
-                if isinstance(value, list) and "array" in types:
-                    value = [
-                        # TODO: it is a hack to make Package work for resources
-                        Type.from_descriptor(item, trusted=trusted, basepath=basepath)
-                        if name == "resources"
-                        else Type.from_descriptor(item)
-                        for item in value
-                    ]
-                elif isinstance(value, dict) and "object" in types:
-                    value = Type.from_descriptor(value)
-                elif isinstance(value, str) and "string" in types:
-                    pass
-                else:
-                    error = Error(note=f'"{name}" is required to be "{type}"')
-                    raise FrictionlessException(error)
-            target[stringcase.snakecase(name)] = value
-        target.update(options)
-        metadata = cls(**target)
-        metadata.custom = source.copy()
-        return metadata
-
-    # TODO: can we move exlude to to_descriptor?
-    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
-        """Export metadata as a descriptor"""
-        descriptor = {}
-        for name in self.metadata_profile.get("properties", []):
-            if name in exclude:
-                continue
-            if name != "type" and not self.has_defined(stringcase.snakecase(name)):
-                continue
-            value = getattr(self, stringcase.snakecase(name), None)
-            Type = self.metadata_Types.get(name)
-            if value is None or (isinstance(value, dict) and value == {}):
-                continue
-            if Type:
-                if isinstance(value, list):
-                    value = [item.to_descriptor_source() for item in value]  # type: ignore
-                else:
-                    value = value.to_descriptor_source()  # type: ignore
-                    if not value:
-                        continue
-            if isinstance(value, (list, dict)):
-                value = deepcopy(value)
-            descriptor[name] = value
-        descriptor.update(self.custom)
-        return descriptor
-
-    # TODO: move to helpers?
-    @classmethod
-    def metadata_normalize(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
-        """Extract metadata"""
-        try:
-            if isinstance(descriptor, Mapping):
-                return deepcopy(descriptor)
-            if isinstance(descriptor, (str, Path)):
-                if isinstance(descriptor, Path):
-                    descriptor = str(descriptor)
-                if helpers.is_remote_path(descriptor):
-                    system = import_module("frictionless.system").system
-                    http_session = system.get_http_session()
-                    response = http_session.get(descriptor)
-                    response.raise_for_status()
-                    content = response.text
-                else:
-                    with open(descriptor, encoding="utf-8") as file:
-                        content = file.read()
-                if descriptor.endswith(".yaml"):
-                    metadata = platform.yaml.safe_load(io.StringIO(content))
-                else:
-                    metadata = json.loads(content)
-                assert isinstance(metadata, dict)
-                return metadata
-            raise TypeError("descriptor type is not supported")
-        except Exception as exception:
-            frictionless = import_module("frictionless")
-            Error = cls.metadata_Error or frictionless.errors.MetadataError
-            note = f'cannot normalize metadata "{descriptor}" because "{exception}"'
-            raise FrictionlessException(Error(note=note)) from exception
-
-    # TODO: optimize to not call to_descriptor on every nesting level?
-    # TODO: automate metadata_validate of the children using metadata_profile?
-    def metadata_validate(self) -> Iterator[Error]:
-        """Validate metadata and emit validation errors"""
-        if self.metadata_profile:
-            profile = self.metadata_profile
-            descriptor = self.to_descriptor()
-            frictionless = import_module("frictionless")
-            Error = self.metadata_Error or frictionless.errors.MetadataError
-            notes = helpers.validate_descriptor(descriptor, profile=profile)
-            for note in notes:
-                yield Error(note=note)
-        yield from []
-
-    # API@2
-
-    @classmethod
-    def from_descriptor2(cls, descriptor):
-        frictionless = import_module("frictionless")
-        Error = cls.metadata_Error or frictionless.errors.MetadataError
-        descriptor = cls.metadata_retrieve2(descriptor)
-        cls.metadata_transform2(descriptor)
-        errors = list(cls.metadata_validate2(descriptor))
-        if errors:
-            error = Error(note="Descriptor is not valid")
-            raise FrictionlessException(error, errors=errors)
-        metadata = cls.metadata_import2(descriptor)
-        return metadata
-
-    def to_descriptor2(self):
-        return self.metadata_export2()
-
-    @classmethod
-    def metadata_retrieve2(cls, descriptor):
+    def metadata_retrieve(cls, descriptor):
         try:
             if isinstance(descriptor, Mapping):
                 return deepcopy(descriptor)
@@ -436,16 +294,16 @@ class Metadata(metaclass=Metaclass):
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
-    def metadata_transform2(cls, descriptor):
+    def metadata_transform(cls, descriptor):
         pass
 
     @classmethod
-    def metadata_validate2(cls, descriptor, *, profile=None):
+    def metadata_validate(cls, descriptor, *, profile=None):
         frictionless = import_module("frictionless")
         Error = cls.metadata_Error or frictionless.errors.MetadataError
         profile = profile or cls.metadata_profile
         if isinstance(profile, str):
-            profile = cls.metadata_normalize(profile)
+            profile = cls.metadata_retrieve(profile)
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
         validator = validator_class(profile)
         for error in validator.iter_errors(descriptor):
@@ -459,10 +317,12 @@ class Metadata(metaclass=Metaclass):
             value = descriptor.get(name)
             if value is not None:
                 items = value if isinstance(value, list) else [value]
-                yield from (Type.metadata_validate2(item) for item in items)
+                for item in items:
+                    if isinstance(item, dict):
+                        yield from Type.metadata_validate(item)
 
     @classmethod
-    def metadata_import2(cls, descriptor, **options):
+    def metadata_import(cls, descriptor, **options):
         target = {}
         source = descriptor
         for name in cls.metadata_profile.get("properties", {}):
@@ -493,7 +353,7 @@ class Metadata(metaclass=Metaclass):
         metadata.custom = source.copy()
         return metadata
 
-    def metadata_export2(self, *, exclude: List[str] = []) -> IDescriptor:
+    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         descriptor = {}
         for name in self.metadata_profile.get("properties", []):
             if name in exclude:
