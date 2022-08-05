@@ -16,7 +16,7 @@ def test_validate_invalid():
         Schema.from_descriptor({"fields": "bad"})
     error = excinfo.value.error
     assert error.type == "schema-error"
-    assert error.note == '"fields" is required to be an array'
+    assert error.note == '"fields" is required to be "array"'
 
 
 def test_validate_required_invalid():

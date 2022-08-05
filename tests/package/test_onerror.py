@@ -28,7 +28,7 @@ def test_resource_onerror_header_warn():
 def test_resource_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = Schema.from_descriptor({"fields": [{"name": "bad", "type": "integer"}]})
-    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
+    package = Package(resources=[Resource(data=data, schema=schema)], onerror="raise")
     resource = package.resources[0]
     assert package.onerror == "raise"
     assert resource.onerror == "raise"
@@ -50,7 +50,7 @@ def test_resource_onerror_row_warn():
 def test_resource_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})
-    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
+    package = Package(resources=[Resource(data=data, schema=schema)], onerror="raise")
     resource = package.resources[0]
     assert package.onerror == "raise"
     assert resource.onerror == "raise"

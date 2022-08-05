@@ -3,6 +3,7 @@ import os
 import io
 import json
 import pprint
+import inspect
 import stringcase
 from pathlib import Path
 from copy import deepcopy
@@ -169,6 +170,8 @@ class Metadata(metaclass=Metaclass):
             descriptor_path = descriptor
             basepath = options.pop("basepath", None)
             descriptor = helpers.join_basepath(descriptor, basepath)
+            if "basepath" in inspect.signature(cls.__init__).parameters:
+                options["basepath"] = helpers.parse_basepath(descriptor)
         metadata = cls.metadata_import(descriptor, **options)
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
@@ -274,7 +277,9 @@ class Metadata(metaclass=Metaclass):
         """Import metadata from a descriptor source"""
         target = {}
         source = cls.metadata_normalize(descriptor)
-        for name in cls.metadata_profile.get("properties", []):
+        frictionless = import_module("frictionless")
+        Error = cls.metadata_Error or frictionless.errors.MetadataError
+        for name, prop in cls.metadata_profile.get("properties", {}).items():
             value = source.pop(name, None)
             Type = cls.metadata_Types.get(name)
             if value is None or value == {}:
@@ -284,18 +289,25 @@ class Metadata(metaclass=Metaclass):
                 if isinstance(type, str):
                     continue
             if Type:
-                # TODO: it is a hack to make Package work for resources
+                type = prop["type"]
+                types = type if isinstance(type, list) else [type]
                 trusted = options.get("trusted")
                 basepath = options.get("basepath")
-                if isinstance(value, list):
+                if isinstance(value, list) and "array" in types:
                     value = [
+                        # TODO: it is a hack to make Package work for resources
                         Type.from_descriptor(item, trusted=trusted, basepath=basepath)
                         if name == "resources"
                         else Type.from_descriptor(item)
                         for item in value
                     ]
-                elif isinstance(value, dict):
+                elif isinstance(value, dict) and "object" in types:
                     value = Type.from_descriptor(value)
+                elif isinstance(value, str) and "string" in types:
+                    pass
+                else:
+                    error = Error(note=f'"{name}" is required to be "{type}"')
+                    raise FrictionlessException(error)
             target[stringcase.snakecase(name)] = value
         target.update(options)
         metadata = cls(**target)
