@@ -26,7 +26,7 @@ def test_field_set_schema():
     field = Field(schema=test_schema_init)
     assert field.schema == test_schema_init
     test_schema_property = Schema.from_descriptor(
-        {"fields": [{"name": "name", "type": "other"}]}
+        {"fields": [{"name": "name", "type": "string"}]}
     )
     field.schema = test_schema_property
     assert field.schema == test_schema_property

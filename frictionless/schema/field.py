@@ -3,9 +3,7 @@ import re
 import attrs
 import decimal
 from functools import partial
-from importlib import import_module
 from typing import TYPE_CHECKING, ClassVar, Optional, List
-from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
@@ -202,11 +200,7 @@ class Field(Metadata):
     def metadata_import(cls, descriptor):
         descriptor = cls.metadata_normalize(descriptor)
         if cls is Field:
-            try:
-                return system.create_field(descriptor)
-            except FrictionlessException:
-                fields = import_module("frictionless").fields
-                return fields.AnyField.from_descriptor(descriptor)
+            return system.create_field(descriptor)
 
         # Format (standards_v1)
         format = descriptor.get("format")

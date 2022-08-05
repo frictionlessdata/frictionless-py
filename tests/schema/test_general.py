@@ -262,14 +262,12 @@ def test_schema_metadata_not_valid_multiple_errors_with_pk():
     assert len(schema.list_metadata_errors()) == 3
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_schema_metadata_error_message():
-    schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
-    note = schema.list_metadata_errors()[0].note
-    assert len(schema.list_metadata_errors()) == 1
-    assert "is not valid" in note
-    assert "{'name': 'name', 'type': 'other'}" in note
-    assert "is not valid under any of the given schema" in note
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
+    error = excinfo.value.error
+    assert error.type == "field-error"
+    assert error.note == 'field "other" is not supported'
 
 
 def test_schema_metadata_error_bad_schema_format():
@@ -410,10 +408,16 @@ def test_schema_add_remove_field_issue_218():
     )
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_schema_not_supported_type_issue_goodatbles_304():
-    schema = Schema.from_descriptor(
-        {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
-    )
-    assert schema.check_metadata_valid() is False
-    assert schema.fields[1].to_descriptor == {"name": "age", "type": "bad"}
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor(
+            {
+                "fields": [
+                    {"name": "name"},
+                    {"name": "age", "type": "bad"},
+                ]
+            }
+        )
+    error = excinfo.value.error
+    assert error.type == "field-error"
+    assert error.note == 'field "bad" is not supported'
