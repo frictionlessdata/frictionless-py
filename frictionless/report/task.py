@@ -135,7 +135,3 @@ class ReportTask(Metadata):
     }
 
     # TODO: validate valid/errors count
-    # TODO: validate stats when the class is added
-    # TODO: validate errors when metadata is reworked
-    def metadata_validate(self):
-        yield from super().metadata_validate()

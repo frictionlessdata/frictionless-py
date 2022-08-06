@@ -303,7 +303,7 @@ def test_schema_metadata_error_bad_schema_format():
         )
     error = excinfo.value.error
     reasons = excinfo.value.reasons
-    assert error.type == "field-error"
+    assert error.type == "schema-error"
     assert error.note == "descriptor is not valid"
     assert reasons[0].type == "field-error"
     assert reasons[0].note.count("is not of type 'string' at property 'format'")
@@ -336,7 +336,7 @@ def test_schema_invalid_example():
         )
     error = excinfo.value.error
     reasons = excinfo.value.reasons
-    assert error.type == "field-error"
+    assert error.type == "schema-error"
     assert error.note == "descriptor is not valid"
     assert reasons[0].type == "field-error"
     assert reasons[0].note == 'example value "bad" for field "name" is not valid'

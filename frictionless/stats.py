@@ -47,6 +47,6 @@ class Stats(Metadata):
             "fields": {"type": "integer"},
             "rows": {"type": "integer"},
             "errors": {"type": "integer"},
-            "seconds": {"type": "float"},
+            "seconds": {"type": "number"},
         },
     }

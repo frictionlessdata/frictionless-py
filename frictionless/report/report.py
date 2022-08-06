@@ -54,13 +54,6 @@ class Report(Metadata):
             raise FrictionlessException(error)
         return self.tasks[0]
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Flatten
 
     def flatten(self, spec=["taskNumber", "rowNumber", "fieldNumber", "type"]):
@@ -235,11 +228,3 @@ class Report(Metadata):
     }
 
     # TODO: validate valid/errors count
-    # TODO: validate stats when the class is added
-    # TODO: validate errors when metadata is reworked
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Tasks
-        for task in self.tasks:
-            yield from task.metadata_validate()

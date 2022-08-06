@@ -184,7 +184,7 @@ def test_resource_validate_schema_unique_error_and_type_error():
     schema = Schema.from_descriptor(
         {
             "fields": [
-                {"name": "id"},
+                {"name": "id", "type": "string"},
                 {
                     "name": "unique_number",
                     "type": "number",

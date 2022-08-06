@@ -110,7 +110,6 @@ class Checklist(Metadata):
         checks = []
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
-            check = check.to_copy()
             check.connect(resource)
             checks.append(check)
         return checks
