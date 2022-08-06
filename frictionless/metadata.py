@@ -4,6 +4,7 @@ import os
 import io
 import json
 import pprint
+import inspect
 import stringcase
 from pathlib import Path
 from copy import deepcopy
@@ -160,9 +161,16 @@ class Metadata(metaclass=Metaclass):
         return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod
-    def from_descriptor(cls, descriptor):
+    def from_descriptor(cls, descriptor, **options):
         frictionless = import_module("frictionless")
         Error = cls.metadata_Error or frictionless.errors.MetadataError
+        descriptor_path = None
+        if isinstance(descriptor, str):
+            descriptor_path = descriptor
+            basepath = options.pop("basepath", None)
+            descriptor = helpers.join_basepath(descriptor, basepath)
+            if "basepath" in inspect.signature(cls.__init__).parameters:
+                options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
         cls.metadata_transform(descriptor)
         # TODO: catch here to improve error type (root descriptor?)
@@ -171,6 +179,9 @@ class Metadata(metaclass=Metaclass):
             error = Error(note="descriptor is not valid")
             raise FrictionlessException(error, reasons=errors)
         metadata = cls.metadata_import(descriptor)
+        if descriptor_path:
+            metadata.metadata_descriptor_path = descriptor_path
+            metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
     def to_descriptor(self):

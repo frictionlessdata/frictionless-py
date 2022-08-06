@@ -701,7 +701,6 @@ class Resource(Metadata):
     def __prepare_file(self):
         self.detector.detect_resource(self)
         system.detect_resource(self)
-        self.assert_metadata_valid()
 
     def __prepare_loader(self):
         self.__loader = system.create_loader(self)
@@ -724,7 +723,6 @@ class Resource(Metadata):
     def __prepare_dialect(self):
         self.metadata_assigned.add("dialect")
         self.__dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
-        self.__dialect.assert_metadata_valid()
 
     def __prepare_labels(self):
         self.__labels = self.dialect.read_labels(self.sample)
@@ -740,7 +738,6 @@ class Resource(Metadata):
             schema=self.schema if self.has_schema else None,
             field_candidates=system.create_field_candidates(),
         )
-        self.__schema.assert_metadata_valid()
         self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
