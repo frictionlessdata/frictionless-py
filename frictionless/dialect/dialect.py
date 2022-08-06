@@ -202,6 +202,9 @@ class Dialect(Metadata):
     @classmethod
     def metadata_transform(cls, descriptor):
 
+        # Default
+        super().metadata_transform(descriptor)
+
         # Csv (standards@1)
         for name in CSV_PROPS_V1:
             value = descriptor.pop(name, None)

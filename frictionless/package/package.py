@@ -767,7 +767,11 @@ class Package(Metadata):
         if self.profiles:
             descriptor = self.to_descriptor()
             for profile in self.profiles:
-                yield from Metadata.metadata_validate(descriptor, profile=profile)
+                yield from Metadata.metadata_validate(
+                    descriptor,
+                    profile=profile,
+                    error_class=cls.metadata_Error,
+                )
 
 
 # Internal

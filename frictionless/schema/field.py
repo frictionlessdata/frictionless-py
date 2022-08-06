@@ -161,19 +161,6 @@ class Field(Metadata):
 
         return value_writer
 
-    # Convert
-
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Field:
-            Class = system.select_field_class(type)
-            return Class.from_descriptor(descriptor)
-
-        return super().from_descriptor(descriptor)
-
     # Metadata
 
     metadata_type = "field"
@@ -211,6 +198,15 @@ class Field(Metadata):
 
     @classmethod
     def metadata_transform(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Field:
+            Class = system.select_field_class(type)
+            Class.metadata_transform(descriptor)
+
+        # Default
+        super().metadata_transform(descriptor)
 
         # Format (standards_v1)
         format = descriptor.get("format")
@@ -226,7 +222,7 @@ class Field(Metadata):
             Class = system.select_field_class(type)
             return Class.metadata_validate(descriptor)
 
-        # Structure
+        # Default
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -258,6 +254,17 @@ class Field(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Field:
+            Class = system.select_field_class(type)
+            return Class.metadata_import(descriptor)
+
+        return super().metadata_import(descriptor)
 
 
 # Internal

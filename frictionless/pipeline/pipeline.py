@@ -36,14 +36,6 @@ class Pipeline(Metadata):
     def step_types(self) -> List[str]:
         return [step.type for step in self.steps]
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Steps
 
     def add_step(self, step: Step) -> None:
@@ -101,8 +93,10 @@ class Pipeline(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
+    def metadata_transform(cls, descriptor):
+
+        # Default
+        super().metadata_transform(descriptor)
 
         # Tasks (framework_v4)
         tasks = descriptor.pop("tasks", [])
@@ -111,12 +105,3 @@ class Pipeline(Metadata):
             note = 'Pipeline "tasks[].steps" is deprecated in favor of "steps"'
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
-
-        return super().metadata_import(descriptor)
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Steps
-        for step in self.steps:
-            yield from step.metadata_validate()

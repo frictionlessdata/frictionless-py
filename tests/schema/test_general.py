@@ -269,7 +269,7 @@ def test_schema_metadata_not_valid(source):
 @pytest.mark.skip(reason="issue-1222")
 def test_schema_metadata_not_valid_multiple_errors():
     schema = Schema.from_descriptor("data/schema-invalid-multiple-errors.json")
-    assert len(schema.list_metadata_errors()) == 5
+    assert len(schema.list_metadata_errors()) == 5  # type: ignore
 
 
 @pytest.mark.skip(reason="issue-1222")

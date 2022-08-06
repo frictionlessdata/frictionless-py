@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class Step(Metadata):
     """Step representation"""
 
-    type: ClassVar[str] = "step"
+    type: ClassVar[str]
     """NOTE: add docs"""
 
     # State
@@ -76,8 +76,7 @@ class Step(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
+    def metadata_transform(cls, descriptor):
 
         # Type (framework_v4)
         code = descriptor.pop("code", None)
@@ -87,6 +86,22 @@ class Step(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        if cls is Step:
-            return system.create_step(descriptor)  # type: ignore
+        # Routing
+        type = descriptor.get("type")
+        if type and cls is Step:
+            Class = system.select_step_class(type)
+            return Class.metadata_transform(descriptor)
+
+        # Default
+        super().metadata_transform(descriptor)
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Step:
+            Class = system.select_step_class(type)
+            return Class.metadata_import(descriptor)
+
         return super().metadata_import(descriptor)

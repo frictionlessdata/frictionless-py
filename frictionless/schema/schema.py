@@ -317,6 +317,9 @@ class Schema(Metadata):
     @classmethod
     def metadata_transform(cls, descriptor):
 
+        # Default
+        super().metadata_transform(descriptor)
+
         # Primary Key (standards_v1)
         primary_key = descriptor.get("primaryKey")
         if primary_key and not isinstance(primary_key, list):
@@ -340,7 +343,7 @@ class Schema(Metadata):
     @classmethod
     def metadata_validate(cls, descriptor):
 
-        # Structure
+        # Default
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors

@@ -149,10 +149,3 @@ class Checklist(Metadata):
             "pickErrors": {"type": "array"},
         },
     }
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Checks
-        for check in self.checks:
-            yield from check.metadata_validate()

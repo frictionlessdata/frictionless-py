@@ -49,8 +49,11 @@ class System:
         "create_step",
         "create_storage",
         "detect_resource",
+        "select_check_class",
         "select_control_class",
+        "select_error_class",
         "select_field_class",
+        "select_step_class",
     ]
 
     def __init__(self):
@@ -322,6 +325,28 @@ class System:
         note = f'control type "{type}" is not supported'
         raise FrictionlessException(errors.ControlError(note=note))
 
+    def select_check_class(self, type: str) -> Type[Check]:
+        for func in self.methods["select_check_class"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(import_module("frictionless.checks")).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'check type "{type}" is not supported'
+        raise FrictionlessException(errors.CheckError(note=note))
+
+    def select_error_class(self, type: str) -> Type[Error]:
+        for func in self.methods["select_error_class"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(import_module("frictionless.errors")).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'error type "{type}" is not supported'
+        raise FrictionlessException(errors.Error(note=note))
+
     def select_field_class(self, type: str) -> Type[Field]:
         for func in self.methods["select_field_class"].values():
             Class = func(type)
@@ -332,6 +357,17 @@ class System:
                 return Class
         note = f'field type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
+
+    def select_step_class(self, type: str) -> Type[Step]:
+        for func in self.methods["select_step_class"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(import_module("frictionless.steps")).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'step type "{type}" is not supported'
+        raise FrictionlessException(errors.StepError(note=note))
 
     # Context
 

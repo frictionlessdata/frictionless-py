@@ -11,12 +11,13 @@ from copy import deepcopy
 from collections.abc import Mapping
 from importlib import import_module
 from typing import TYPE_CHECKING
-from typing import ClassVar, Optional, Union, List, Dict, Any, Set
+from typing import ClassVar, Optional, Union, List, Dict, Any, Set, Type
 from .exception import FrictionlessException
 from .platform import platform
 from . import helpers
 
 if TYPE_CHECKING:
+    from .error import Error
     from .report import Report
     from .interfaces import IDescriptor
 
@@ -315,7 +316,13 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
-        pass
+        for name, Type in cls.metadata_Types.items():
+            value = descriptor.get(name)
+            if value is not None:
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if isinstance(item, dict):
+                        Type.metadata_transform(item)
 
     @classmethod
     def metadata_validate(
@@ -323,9 +330,10 @@ class Metadata(metaclass=Metaclass):
         descriptor: IDescriptor,
         *,
         profile: Optional[Union[IDescriptor, str]] = None,
+        error_class: Optional[Type[Error]] = None,
     ):
         frictionless = import_module("frictionless")
-        Error = cls.metadata_Error or frictionless.errors.MetadataError
+        Error = error_class or cls.metadata_Error or frictionless.errors.MetadataError
         profile = profile or cls.metadata_profile
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
@@ -370,7 +378,7 @@ class Metadata(metaclass=Metaclass):
                         else Type.from_descriptor(item)
                         for item in value
                     ]
-                else:
+                elif isinstance(value, dict):
                     value = Type.from_descriptor(value)
             target[stringcase.snakecase(name)] = value
         target.update(options)

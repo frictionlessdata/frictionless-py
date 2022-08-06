@@ -1140,6 +1140,9 @@ class Resource(Metadata):
     @classmethod
     def metadata_transform(cls, descriptor):
 
+        # Default
+        super().metadata_transform(descriptor)
+
         # Url (standards_v0)
         url = descriptor.pop("url", None)
         path = descriptor.get("path")
@@ -1210,7 +1213,7 @@ class Resource(Metadata):
     def metadata_validate(cls, descriptor: IDescriptor, *, strict=False):
         type = descriptor.get("type")
 
-        # Structure
+        # Default
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -1251,7 +1254,11 @@ class Resource(Metadata):
         # Profiles
         profiles = descriptor.get("profiles", [])
         for profile in profiles:
-            yield from Metadata.metadata_validate(descriptor, profile=profile)
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=cls.metadata_Error,
+            )
 
         # Misleading
         for name in ["missingValues", "fields"]:

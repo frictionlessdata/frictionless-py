@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class Check(Metadata):
     """Check representation."""
 
-    type: ClassVar[str] = "check"
+    type: ClassVar[str]
     """NOTE: add docs"""
 
     # TODO: can it be just types not objects?
@@ -100,8 +100,7 @@ class Check(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
+    def metadata_transform(cls, descriptor):
 
         # Type (framework_v4)
         code = descriptor.pop("code", None)
@@ -111,6 +110,24 @@ class Check(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        if cls is Check:
-            return system.create_check(descriptor)
+        # Routing
+        type = descriptor.get("type")
+        if type and cls is Check:
+            Class = system.select_check_class(type)
+            return Class.metadata_transform(descriptor)
+
+        # Default
+        super().metadata_transform(descriptor)
+
+    # Convert
+
+    @classmethod
+    def metadata_import(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Check:
+            Class = system.select_check_class(type)
+            return Class.metadata_import(descriptor)
+
         return super().metadata_import(descriptor)
