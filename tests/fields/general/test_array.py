@@ -34,28 +34,30 @@ def test_array_read_cell(format, source, target, options):
 
 
 def test_array_read_cell_array_item():
-    field = fields.ArrayField(array_item={"type": "integer"})
+    field = fields.ArrayField(name="name", array_item={"type": "integer"})
     cell, notes = field.read_cell('["1", "2", "3"]')
     assert cell == [1, 2, 3]
     assert notes is None
 
 
 def test_array_read_cell_array_item_type_error():
-    field = fields.ArrayField(array_item={"type": "integer"})
+    field = fields.ArrayField(name="name", array_item={"type": "integer"})
     cell, notes = field.read_cell('["1", "2", "bad"]')
     assert cell == [1, 2, None]
     assert notes == {"type": 'array item type is "integer/default"'}
 
 
 def test_array_read_cell_array_item_with_constraint():
-    field = fields.ArrayField(array_item={"constraints": {"enum": ["val1", "val2"]}})
+    field = fields.ArrayField(
+        name="name", array_item={"constraints": {"enum": ["val1", "val2"]}}
+    )
     cell, notes = field.read_cell('["val1", "val2"]')
     assert cell == ["val1", "val2"]
     assert notes is None
 
 
 def test_array_read_cell_array_item_with_constraint_error():
-    field = fields.ArrayField(array_item={"constraints": {"enum": ["val1"]}})
+    field = fields.ArrayField(name="name", array_item={"constraints": {"enum": ["val1"]}})
     cell, notes = field.read_cell('["val1", "val2"]')
     assert cell == ["val1", "val2"]
     assert notes == {"enum": 'array item constraint "enum" is "[\'val1\']"'}

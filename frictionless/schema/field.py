@@ -165,8 +165,13 @@ class Field(Metadata):
 
     @classmethod
     def from_descriptor(cls, descriptor):
-        if cls is Field:
-            return system.create_field(descriptor)
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Field:
+            Type = system.select_field_class(type)
+            return Type.from_descriptor(descriptor)
+
         return super().from_descriptor(descriptor)
 
     # Metadata
@@ -214,6 +219,12 @@ class Field(Metadata):
 
     @classmethod
     def metadata_validate(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Field:
+            Type = system.select_field_class(type)
+            return Type.metadata_validate(descriptor)
 
         # Structure
         metadata_errors = list(super().metadata_validate(descriptor))
@@ -221,10 +232,25 @@ class Field(Metadata):
             yield from metadata_errors
             return
 
+        # Type
+        if type != cls.type:
+            note = f'type "{type}" is not supported by class "{cls}"'
+            yield errors.FieldError(note=note)
+
         # Constraints
         for name in descriptor.get("constraints", {}):
             if name not in cls.supported_constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{cls.type}"'
+                yield errors.FieldError(note=note)
+
+        # Examples
+        example = descriptor.get("example")
+        if example:
+            Type = system.select_field_class(type)
+            field = Type(name=descriptor["name"])
+            _, notes = field.read_cell(example)
+            if notes is not None:
+                note = f'example value "{example}" for field "{field.name}" is not valid'
                 yield errors.FieldError(note=note)
 
         # Misleading

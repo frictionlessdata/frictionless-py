@@ -188,14 +188,17 @@ def test_schema_foreign_keys():
 
 def test_schema_add_then_remove_field():
     schema = Schema()
-    schema.add_field(Field.from_descriptor({"name": "name"}))
+    schema.add_field(Field.from_descriptor({"name": "name", "type": "string"}))
     field = schema.remove_field("name")
     assert field.name == "name"
 
 
 def test_schema_primary_foreign_keys_as_array():
     descriptor = {
-        "fields": [{"name": "name"}],
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "parent_id", "type": "string"},
+        ],
         "primaryKey": ["name"],
         "foreignKeys": [
             {
@@ -213,7 +216,10 @@ def test_schema_primary_foreign_keys_as_array():
 
 def test_schema_primary_foreign_keys_as_string():
     descriptor = {
-        "fields": [{"name": "name"}],
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "parent_id", "type": "string"},
+        ],
         "primaryKey": "name",
         "foreignKeys": [
             {"fields": "parent_id", "reference": {"resource": "resource", "fields": "id"}}
@@ -236,7 +242,7 @@ def test_schema_primary_foreign_keys_as_string():
     ],
 )
 def test_schema_metadata_valid(source):
-    assert Schema.from_descriptor(source).check_metadata_valid()
+    assert Schema.from_descriptor(source)
 
 
 @pytest.mark.parametrize(
@@ -253,7 +259,11 @@ def test_schema_metadata_valid(source):
     ],
 )
 def test_schema_metadata_not_valid(source):
-    assert not Schema.from_descriptor(source).check_metadata_valid()
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor(source)
+    error = excinfo.value.error
+    assert error.type == "schema-error"
+    assert error.note == "descriptor is not valid"
 
 
 @pytest.mark.skip(reason="issue-1222")
@@ -262,9 +272,12 @@ def test_schema_metadata_not_valid_multiple_errors():
     assert len(schema.list_metadata_errors()) == 5
 
 
+@pytest.mark.skip(reason="issue-1222")
 def test_schema_metadata_not_valid_multiple_errors_with_pk():
-    schema = Schema.from_descriptor("data/schema-invalid-pk-is-wrong-type.json")
-    assert len(schema.list_metadata_errors()) == 3
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor("data/schema-invalid-pk-is-wrong-type.json")
+    reasons = excinfo.value.reasons
+    assert len(reasons) == 3
 
 
 def test_schema_metadata_error_message():
@@ -272,23 +285,28 @@ def test_schema_metadata_error_message():
         Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
     error = excinfo.value.error
     assert error.type == "field-error"
-    assert error.note == 'field "other" is not supported'
+    assert error.note == 'field type "other" is not supported'
 
 
 def test_schema_metadata_error_bad_schema_format():
-    schema = Schema(
-        fields=[
-            Field.from_descriptor(
-                {
-                    "name": "name",
-                    "type": "boolean",
-                    "format": {"trueValues": "Yes", "falseValues": "No"},
-                }
-            )
-        ]
-    )
-    assert schema.check_metadata_valid() is False
-    assert schema.list_metadata_errors()[0].type == "field-error"
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor(
+            {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "boolean",
+                        "format": {"trueValues": "Yes", "falseValues": "No"},
+                    }
+                ]
+            }
+        )
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert error.type == "field-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "field-error"
+    assert reasons[0].note.count("is not of type 'string' at property 'format'")
 
 
 def test_schema_valid_examples():
@@ -301,24 +319,27 @@ def test_schema_valid_examples():
         }
     )
     assert schema.get_field("name").example == "John"
-    assert len(schema.list_metadata_errors()) == 0
 
 
 def test_schema_invalid_example():
-    schema = Schema.from_descriptor(
-        {
-            "fields": [
-                {
-                    "name": "name",
-                    "type": "number",
-                    "example": "bad",
-                }
-            ]
-        }
-    )
-    note = schema.list_metadata_errors()[0].note
-    assert len(schema.list_metadata_errors()) == 1
-    assert 'example value for field "name" is not valid' == note
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor(
+            {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "number",
+                        "example": "bad",
+                    }
+                ]
+            }
+        )
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert error.type == "field-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "field-error"
+    assert reasons[0].note == 'example value "bad" for field "name" is not valid'
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
@@ -425,4 +446,4 @@ def test_schema_not_supported_type_issue_goodatbles_304():
         )
     error = excinfo.value.error
     assert error.type == "field-error"
-    assert error.note == 'field "bad" is not supported'
+    assert error.note == 'field type "bad" is not supported'

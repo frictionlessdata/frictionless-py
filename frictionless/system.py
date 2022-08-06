@@ -5,7 +5,7 @@ from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional, List, Any, Dict
+from typing import TYPE_CHECKING, Optional, List, Any, Dict, Type
 from .exception import FrictionlessException
 from .dialect import Control
 from . import settings
@@ -49,6 +49,7 @@ class System:
         "create_step",
         "create_storage",
         "detect_resource",
+        "select_field_class",
     ]
 
     def __init__(self):
@@ -308,6 +309,17 @@ class System:
         """
         for func in self.methods["detect_resource"].values():
             func(resource)
+
+    def select_field_class(self, type: str) -> Type[Field]:
+        for func in self.methods["select_field_class"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(import_module("frictionless.fields")).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'field type "{type}" is not supported'
+        raise FrictionlessException(errors.FieldError(note=note))
 
     # Context
 

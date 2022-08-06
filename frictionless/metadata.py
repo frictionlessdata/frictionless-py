@@ -141,7 +141,7 @@ class Metadata(metaclass=Metaclass):
         try:
             cls.from_descriptor(descriptor)
         except FrictionlessException as exception:
-            errors = exception.errors if exception.errors else [exception.error]
+            errors = exception.reasons if exception.reasons else [exception.error]
         Report = import_module("frictionless").Report
         return Report.from_validation(time=timer.time, errors=errors)
 
@@ -165,10 +165,11 @@ class Metadata(metaclass=Metaclass):
         Error = cls.metadata_Error or frictionless.errors.MetadataError
         descriptor = cls.metadata_retrieve(descriptor)
         cls.metadata_transform(descriptor)
+        # TODO: catch here to improve error type (root descriptor?)
         errors = list(cls.metadata_validate(descriptor))
         if errors:
-            error = Error(note='Descriptor is not valid (see "exception.errors")')
-            raise FrictionlessException(error, errors=errors)
+            error = Error(note="descriptor is not valid")
+            raise FrictionlessException(error, reasons=errors)
         metadata = cls.metadata_import(descriptor)
         return metadata
 

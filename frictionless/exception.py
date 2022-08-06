@@ -14,16 +14,18 @@ class FrictionlessException(Exception):
 
     """
 
-    def __init__(self, error: Union[str, Error], *, errors: List[Error] = []):
+    def __init__(self, error: Union[str, Error], *, reasons: List[Error] = []):
         ErrorClass: Type[Error] = import_module("frictionless").Error
         self.__error = error if isinstance(error, ErrorClass) else ErrorClass(note=error)  # type: ignore
-        self.__errors = errors
-        super().__init__(f"[{self.error.type}] {self.error.message}")
+        self.__reasons = reasons
+        message = f"[{self.error.type}] {self.error.message}"
+        message += " " + " ".join(f"({reason.message})" for reason in reasons)
+        super().__init__(message)
 
     @property
     def error(self) -> Error:
         return self.__error
 
     @property
-    def errors(self) -> List[Error]:
-        return self.__errors
+    def reasons(self) -> List[Error]:
+        return self.__reasons

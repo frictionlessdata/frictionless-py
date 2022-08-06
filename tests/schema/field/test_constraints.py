@@ -1,5 +1,6 @@
 import pytest
 from frictionless import Field
+from frictionless.exception import FrictionlessException
 
 
 # General
@@ -91,14 +92,11 @@ from frictionless import Field
     ],
 )
 def test_field_constraint_field_type(constraints, type, valid):
-    field = Field.from_descriptor(
-        {
-            "name": "field",
-            "constraints": constraints,
-            "type": type,
-        }
-    )
-    assert field.check_metadata_valid() is valid
+    try:
+        Field.from_descriptor({"name": "field", "type": type, "constraints": constraints})
+        assert valid
+    except FrictionlessException:
+        assert not valid
 
 
 def test_field_read_cell_required():

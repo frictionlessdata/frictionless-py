@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
     from .resource import Resource, Loader, Parser
@@ -141,4 +141,7 @@ class Plugin:
             resource (Resource): resource
 
         """
+        pass
+
+    def select_field_class(self, type: str) -> Optional[Type[Field]]:
         pass
