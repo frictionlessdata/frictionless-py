@@ -217,7 +217,7 @@ class Dialect(Metadata):
         for type, item in dialect.custom.items():
             if isinstance(item, dict):
                 item["type"] = type
-                control = Control.from_descriptor(descriptor)
+                control = Control.from_descriptor(item)
                 dialect.add_control(control)
 
         return dialect

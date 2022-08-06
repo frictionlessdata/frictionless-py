@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, FrictionlessException
+from frictionless import Dialect, FrictionlessException
 
 
 # General
@@ -13,10 +13,11 @@ def test_dialect():
 
 
 def test_dialect_bad_property():
-    dialect = Dialect.from_descriptor({"headerRows": "bad"})
-    resource = Resource("data/table.csv", dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
-        resource.open()
+        Dialect.from_descriptor({"headerRows": "bad"})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "dialect-error"
-    assert error.note.count("bad")
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "dialect-error"
+    assert reasons[0].note == "'bad' is not of type 'array' at property 'headerRows'"

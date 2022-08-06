@@ -27,7 +27,7 @@ def test_field():
 
 
 def test_field_defaults():
-    field = Field.from_descriptor({"name": "id"})
+    field = Field.from_descriptor({"name": "id", "type": "any"})
     assert field.name == "id"
     assert field.type == "any"
     assert field.format == "default"
@@ -44,8 +44,8 @@ def test_field_standard_specs_properties(create_descriptor):
         title="title",
         description="description",
         type="string",
-        format="format",
-        missing_values="missing",
+        format="default",
+        missing_values=["na"],
         constraints={},
         rdf_type="rdf",
     )
@@ -58,8 +58,8 @@ def test_field_standard_specs_properties(create_descriptor):
     assert field.title == "title"
     assert field.description == "description"
     assert field.type == "string"
-    assert field.format == "format"
-    assert field.missing_values == "missing"
+    assert field.format == "default"
+    assert field.missing_values == ["na"]
     assert field.constraints == {}
     assert field.rdf_type == "rdf"
 
@@ -108,7 +108,7 @@ def test_field_pprint():
     assert repr(field) == textwrap.dedent(expected).strip()
 
 
-@pytest.mark.parametrize("example_value", [(None), (42), ("foo")])
+@pytest.mark.parametrize("example_value", [(None), ("42"), ("foo")])
 def test_field_with_example_set(example_value):
     field = Field.from_descriptor(
         {
