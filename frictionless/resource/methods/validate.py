@@ -39,15 +39,15 @@ def validate(
     # Prepare checklist
     checklist = checklist or self.checklist or Checklist()
     checks = checklist.connect(self)
-    checklist_errors = checklist.list_metadata_errors()
-    if checklist_errors:
-        return Report.from_validation(time=timer.time, errors=checklist_errors)
 
     # Validate metadata
-    metadata_errors = list(self.metadata_validate(strict=strict))
-    if metadata_errors:
-        errors = metadata_errors
+    try:
+        self.to_descriptor()
+    except FrictionlessException as exception:
+        errors = exception.reasons
         return Report.from_validation_task(self, time=timer.time, errors=errors)
+
+    # Ignore other hashings
     if self.custom.get("hash"):
         warning = "hash is ignored; supported algorithms: md5/sha256"
         warnings.append(warning)

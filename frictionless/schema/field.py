@@ -165,6 +165,7 @@ class Field(Metadata):
 
     metadata_type = "field"
     metadata_Error = errors.FieldError
+    metadata_class_selector = system.select_field_class
     metadata_profile = {
         "type": "object",
         "required": ["name", "type"],
@@ -198,14 +199,6 @@ class Field(Metadata):
 
     @classmethod
     def metadata_transform(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Field:
-            Class = system.select_field_class(type)
-            Class.metadata_transform(descriptor)
-
-        # Default
         super().metadata_transform(descriptor)
 
         # Format (standards_v1)
@@ -215,23 +208,10 @@ class Field(Metadata):
 
     @classmethod
     def metadata_validate(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Field:
-            Class = system.select_field_class(type)
-            return Class.metadata_validate(descriptor)
-
-        # Default
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
             return
-
-        # Type
-        if type != cls.type:
-            note = f'type "{type}" is not supported by class "{cls}"'
-            yield errors.FieldError(note=note)
 
         # Constraints
         for name in descriptor.get("constraints", {}):
@@ -242,6 +222,7 @@ class Field(Metadata):
         # Examples
         example = descriptor.get("example")
         if example:
+            type = descriptor.get("type")
             Class = system.select_field_class(type)
             field = Class(name=descriptor["name"])
             _, notes = field.read_cell(example)
@@ -254,17 +235,6 @@ class Field(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
-
-    @classmethod
-    def metadata_import(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Field:
-            Class = system.select_field_class(type)
-            return Class.metadata_import(descriptor)
-
-        return super().metadata_import(descriptor)
 
 
 # Internal

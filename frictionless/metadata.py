@@ -156,7 +156,6 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def from_descriptor(cls, descriptor, **options):
         frictionless = import_module("frictionless")
-        Error = cls.metadata_Error or frictionless.errors.MetadataError
         descriptor_path = None
         if isinstance(descriptor, str):
             descriptor_path = descriptor
@@ -165,6 +164,9 @@ class Metadata(metaclass=Metaclass):
             if "basepath" in inspect.signature(cls.__init__).parameters:
                 options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
+        if cls.metadata_class_selector:
+            cls = cls.metadata_class_selector(descriptor["type"])
+        Error = cls.metadata_Error or frictionless.errors.MetadataError
         cls.metadata_transform(descriptor)
         # TODO: catch here to improve error type (root descriptor?)
         errors = list(cls.metadata_validate(descriptor))
@@ -189,7 +191,7 @@ class Metadata(metaclass=Metaclass):
 
     def to_descriptor_source(self) -> Union[IDescriptor, str]:
         """Export metadata as a descriptor or a descriptor path"""
-        descriptor = self.metadata_export()
+        descriptor = self.to_descriptor()
         if self.metadata_descriptor_path:
             if self.metadata_descriptor_initial == descriptor:
                 return self.metadata_descriptor_path
@@ -278,6 +280,7 @@ class Metadata(metaclass=Metaclass):
     metadata_profile = {}
     metadata_profile_patch = {}
     metadata_profile_merged = {}
+    metadata_class_selector = None
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
@@ -322,6 +325,9 @@ class Metadata(metaclass=Metaclass):
                 items = value if isinstance(value, list) else [value]
                 for item in items:
                     if isinstance(item, dict):
+                        type = item.get("type")
+                        if type and Type.metadata_class_selector:
+                            Type = Type.metadata_class_selector(type)
                         Type.metadata_transform(item)
 
     @classmethod
@@ -352,6 +358,9 @@ class Metadata(metaclass=Metaclass):
                 items = value if isinstance(value, list) else [value]
                 for item in items:
                     if isinstance(item, dict):
+                        type = item.get("type")
+                        if type and Type.metadata_class_selector:
+                            Type = Type.metadata_class_selector(type)
                         yield from Type.metadata_validate(item)
 
     @classmethod

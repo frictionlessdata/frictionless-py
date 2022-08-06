@@ -2,12 +2,10 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List
-from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
 from .. import settings
-from .. import helpers
 from .. import errors
 
 
@@ -94,8 +92,6 @@ class Pipeline(Metadata):
 
     @classmethod
     def metadata_transform(cls, descriptor):
-
-        # Default
         super().metadata_transform(descriptor)
 
         # Tasks (framework_v4)

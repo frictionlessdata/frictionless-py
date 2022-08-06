@@ -25,20 +25,6 @@ class Control(Metadata):
     description: Optional[str] = None
     """NOTE: add docs"""
 
-    # Convert
-
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Control:
-            system = import_module("frictionless").system
-            Class = system.select_control_class(type)
-            return Class.from_descriptor(descriptor)
-
-        return super().from_descriptor(descriptor)
-
     @classmethod
     def from_dialect(cls, dialect: Dialect):
 
@@ -54,6 +40,9 @@ class Control(Metadata):
 
     metadata_type = "control"
     metadata_Error = errors.ControlError
+    metadata_class_selector = lambda type: import_module(
+        "frictionless"
+    ).system.select_control_class(type)
     metadata_profile = {
         "type": "object",
         "required": ["type"],
@@ -63,15 +52,3 @@ class Control(Metadata):
             "description": {"type": "string"},
         },
     }
-
-    @classmethod
-    def metadata_validate(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Control:
-            system = import_module("frictionless").system
-            Class = system.select_control_class(type)
-            return Class.metadata_validate(descriptor)
-
-        return super().metadata_validate(descriptor)

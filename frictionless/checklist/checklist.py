@@ -64,14 +64,6 @@ class Checklist(Metadata):
                 scope.append(Error.type)
         return scope
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Checks
 
     def add_check(self, check: Check) -> None:
@@ -118,11 +110,9 @@ class Checklist(Metadata):
         checks = []
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
-            if check.check_metadata_valid():
-                # TODO: review
-                #  check = check.to_copy()
-                check.connect(resource)
-                checks.append(check)
+            check = check.to_copy()
+            check.connect(resource)
+            checks.append(check)
         return checks
 
     # Match

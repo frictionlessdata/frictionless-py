@@ -12,6 +12,7 @@ def test_resource_validate():
     assert report.valid
 
 
+@pytest.mark.xfail
 def test_resource_validate_invalid_resource_strict():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate(strict=True)
@@ -254,6 +255,8 @@ def test_resource_validate_custom_check():
 
     # Create check
     class custom(Check):
+        type = "custom"
+
         def validate_row(self, row):
             yield errors.BlankRowError(
                 note="",

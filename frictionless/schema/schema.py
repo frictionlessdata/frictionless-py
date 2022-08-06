@@ -316,8 +316,6 @@ class Schema(Metadata):
     # TODO: handle invalid structure
     @classmethod
     def metadata_transform(cls, descriptor):
-
-        # Default
         super().metadata_transform(descriptor)
 
         # Primary Key (standards_v1)
@@ -342,8 +340,6 @@ class Schema(Metadata):
 
     @classmethod
     def metadata_validate(cls, descriptor):
-
-        # Default
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors

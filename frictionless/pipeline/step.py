@@ -61,22 +61,10 @@ class Step(Metadata):
         """
         pass
 
-    # Metadata
-
-    metadata_type = "step"
-    metadata_Error = errors.StepError
-    metadata_profile = {
-        "type": "object",
-        "required": ["type"],
-        "properties": {
-            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-        },
-    }
+    # Convert
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def from_descriptor(cls, descriptor):
 
         # Type (framework_v4)
         code = descriptor.pop("code", None)
@@ -86,22 +74,19 @@ class Step(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        # Routing
-        type = descriptor.get("type")
-        if type and cls is Step:
-            Class = system.select_step_class(type)
-            return Class.metadata_transform(descriptor)
+        return super().from_descriptor(descriptor)
 
-        # Default
-        super().metadata_transform(descriptor)
+    # Metadata
 
-    @classmethod
-    def metadata_import(cls, descriptor):
-        type = descriptor.get("type")
-
-        # Routing
-        if type and cls is Step:
-            Class = system.select_step_class(type)
-            return Class.metadata_import(descriptor)
-
-        return super().metadata_import(descriptor)
+    metadata_type = "step"
+    metadata_Error = errors.StepError
+    metadata_class_selector = system.select_step_class
+    metadata_profile = {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+        },
+    }

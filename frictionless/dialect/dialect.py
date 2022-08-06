@@ -201,8 +201,6 @@ class Dialect(Metadata):
 
     @classmethod
     def metadata_transform(cls, descriptor):
-
-        # Default
         super().metadata_transform(descriptor)
 
         # Csv (standards@1)
