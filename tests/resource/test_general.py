@@ -248,24 +248,26 @@ def test_resource_source_data():
 
 
 def test_resource_source_no_path_and_no_data():
-    resource = Resource.from_descriptor({})
-    assert resource.path is None
-    assert resource.data is None
     with pytest.raises(FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource.from_descriptor({})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == 'one of the properties "path" or "data" is required'
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == 'one of the properties "path" or "data" is required'
 
 
 def test_resource_source_both_path_and_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    resource = Resource({"data": data, "path": "path"})
     with pytest.raises(FrictionlessException) as excinfo:
-        assert resource.read_rows()
+        Resource({"data": data, "path": "path"})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == 'properties "path" and "data" is mutually exclusive'
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == 'properties "path" and "data" is mutually exclusive'
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
@@ -276,7 +278,7 @@ def test_resource_standard_specs_properties(create_descriptor):
         name="name",
         title="title",
         description="description",
-        profiles=["profile"],
+        profiles=[],
         licenses=[],
         sources=[],
     )
@@ -289,7 +291,7 @@ def test_resource_standard_specs_properties(create_descriptor):
     assert resource.name == "name"
     assert resource.title == "title"
     assert resource.description == "description"
-    assert resource.profiles == ["profile"]
+    assert resource.profiles == []
     assert resource.licenses == []
     assert resource.sources == []
 
@@ -344,23 +346,6 @@ def test_resource_description_text_plain():
     resource = Resource(description="It's just a plain text. Another sentence")
     assert resource.description == "It's just a plain text. Another sentence"
     assert resource.description_text == "It's just a plain text. Another sentence"
-
-
-def test_resource_metadata_bad_schema_format():
-    schema = Schema(
-        fields=[
-            Field.from_descriptor(
-                dict(
-                    name="name",
-                    type="boolean",
-                    format={"trueValues": "Yes", "falseValues": "No"},
-                )
-            )
-        ]
-    )
-    resource = Resource(name="name", path="data/table.csv", schema=schema)
-    assert resource.check_metadata_valid() is False
-    assert resource.list_metadata_errors()[0].type == "field-error"
 
 
 def test_resource_set_base_path():

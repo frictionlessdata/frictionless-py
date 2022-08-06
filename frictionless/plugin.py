@@ -143,5 +143,8 @@ class Plugin:
         """
         pass
 
+    def select_control_class(self, type: str) -> Optional[Type[Control]]:
+        pass
+
     def select_field_class(self, type: str) -> Optional[Type[Field]]:
         pass

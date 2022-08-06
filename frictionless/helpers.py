@@ -168,39 +168,18 @@ def merge_jsonschema(base, head):
     return result
 
 
-def validate_descriptor(
-    descriptor: IDescriptor,
-    *,
-    profile: Union[IProfile, str],
-) -> List[str]:
-    notes = []
-    frictionless = import_module("frictionless")
-    if isinstance(profile, str):
-        profile = frictionless.Metadata.metadata_normalize(profile)
-    validator_class = frictionless.platform.jsonschema.validators.validator_for(profile)  # type: ignore
-    validator = validator_class(profile)
-    for error in validator.iter_errors(descriptor):
-        metadata_path = "/".join(map(str, error.path))
-        message = re.sub(r"\s+", " ", error.message)
-        note = message
-        if metadata_path:
-            note = f"{note} at property '{metadata_path}'"
-        notes.append(note)
-    return notes
-
-
 def ensure_dir(path):
     dirpath = os.path.dirname(path)
     if dirpath and not os.path.exists(dirpath):
         os.makedirs(dirpath)
 
 
-def move_file(source, target):
+def move_file(source: str, target: str):
     ensure_dir(target)
     shutil.move(source, target)
 
 
-def copy_file(source, target):
+def copy_file(source: str, target: str):
     if isinstance(source, (tuple, list)):
         source = os.path.join(*source)
     if isinstance(target, (tuple, list)):
@@ -209,7 +188,7 @@ def copy_file(source, target):
     shutil.copy(source, target)
 
 
-def write_file(path, text):
+def write_file(path: str, text: str):
     with tempfile.NamedTemporaryFile("wt", delete=False, encoding="utf-8") as file:
         file.write(text)
         file.flush()

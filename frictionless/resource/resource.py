@@ -1138,10 +1138,7 @@ class Resource(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
-        if isinstance(descriptor, str):
-            options.setdefault("basepath", helpers.parse_basepath(descriptor))
-        descriptor = super().metadata_normalize(descriptor)
+    def metadata_transform(cls, descriptor):
 
         # Url (standards_v0)
         url = descriptor.pop("url", None)
@@ -1209,6 +1206,62 @@ class Resource(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
+    @classmethod
+    def metadata_validate(cls, descriptor: IDescriptor, *, strict=False):
+        type = descriptor.get("type")
+
+        # Structure
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
+
+        # Required
+        path = descriptor.get("path")
+        data = descriptor.get("data")
+        if path is None and data is None:
+            note = 'one of the properties "path" or "data" is required'
+            yield errors.ResourceError(note=note)
+
+        # Required (strict)
+        if strict:
+            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
+            if type == "table":
+                names.append("schema")
+            for name in names:
+                if name not in descriptor:
+                    note = f'property "{name}" is required in a strict mode'
+                    yield errors.ResourceError(note=note)
+
+        # Path/Data
+        if path is not None and data is not None:
+            note = 'properties "path" and "data" is mutually exclusive'
+            yield errors.ResourceError(note=note)
+
+        # Contributors/Sources
+        for name in ["contributors", "sources"]:
+            for item in descriptor.get(name, []):
+                if item.get("email"):
+                    field = fields.StringField(format="email")
+                    _, note = field.read_cell(item.get("email"))
+                    if note:
+                        note = f'property "{name}[].email" is not valid "email"'
+                        yield errors.ResourceError(note=note)
+
+        # Profiles
+        profiles = descriptor.get("profiles", [])
+        for profile in profiles:
+            yield from Metadata.metadata_validate(descriptor, profile=profile)
+
+        # Misleading
+        for name in ["missingValues", "fields"]:
+            if name in descriptor:
+                note = f'"{name}" should be set as "schema.{name}"'
+                yield errors.ResourceError(note=note)
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+
         # Security
         trusted = options.setdefault("trusted", False)
         if not trusted:
@@ -1230,8 +1283,9 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if data is not None and not isinstance(data, (str, bool, int, float, list, dict)):
-            descriptor.pop("data")
+        if data and not isinstance(data, (str, bool, int, float, list, dict)):
+            note = 'property "data" is not serializable'
+            raise FrictionlessException(errors.ResourceError(note=note))
 
         # Path (standards_v1)
         if system.standards_version == "v1":
@@ -1268,68 +1322,3 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
-
-    def metadata_validate(self, *, strict=False):
-        yield from super().metadata_validate()
-
-        # Required
-        if self.path is None and self.data is None:
-            note = 'one of the properties "path" or "data" is required'
-            yield errors.ResourceError(note=note)
-        if strict:
-            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
-            if self.tabular:
-                names.append("schema")
-            for name in names:
-                if getattr(self, name, None) is None:
-                    note = f'property "{name}" is required in a strict mode'
-                    yield errors.ResourceError(note=note)
-
-        # Path/Data
-        if self.path is not None and self.data is not None:
-            note = 'properties "path" and "data" is mutually exclusive'
-            yield errors.ResourceError(note=note)
-
-        # Dialect
-        if self.dialect:
-            yield from self.dialect.metadata_validate()
-
-        # Schema
-        if self.has_schema:
-            yield from self.schema.metadata_validate()
-
-        # Checklist
-        if self.checklist:
-            yield from self.checklist.metadata_validate()
-
-        # Pipeline
-        if self.pipeline:
-            yield from self.pipeline.metadata_validate()
-
-        # Stats
-        if self.has_stats:
-            yield from self.stats.metadata_validate()
-
-        # Contributors/Sources
-        for name in ["contributors", "sources"]:
-            for item in getattr(self, name, []):
-                if item.get("email"):
-                    field = fields.StringField(format="email")
-                    _, note = field.read_cell(item.get("email"))
-                    if note:
-                        note = f'property "{name}[].email" is not valid "email"'
-                        yield errors.ResourceError(note=note)
-
-        # Custom
-        for name in ["missingValues", "fields"]:
-            if name in self.custom:
-                note = f'"{name}" should be set as "schema.{name}"'
-                yield errors.ResourceError(note=note)
-
-        # Profiles
-        if self.profiles:
-            descriptor = self.to_descriptor()
-            for profile in self.profiles:
-                notes = helpers.validate_descriptor(descriptor, profile=profile)
-                for note in notes:
-                    yield errors.ResourceError(note=note)

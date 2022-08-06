@@ -148,14 +148,6 @@ class Metadata(metaclass=Metaclass):
 
     # Convert
 
-    def to_copy(self, **options):
-        """Create a copy of the metadata"""
-        return type(self).from_descriptor(self.to_descriptor(), **options)
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert metadata to a plain dict"""
-        return self.to_descriptor()
-
     @classmethod
     def from_options(cls, *args, **options):
         return cls(*args, **helpers.remove_non_values(options))
@@ -178,14 +170,21 @@ class Metadata(metaclass=Metaclass):
         if errors:
             error = Error(note="descriptor is not valid")
             raise FrictionlessException(error, reasons=errors)
-        metadata = cls.metadata_import(descriptor)
+        metadata = cls.metadata_import(descriptor, **options)
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
     def to_descriptor(self):
-        return self.metadata_export()
+        descriptor = self.metadata_export()
+        frictionless = import_module("frictionless")
+        Error = self.metadata_Error or frictionless.errors.MetadataError
+        errors = list(self.metadata_validate(descriptor))
+        if errors:
+            error = Error(note="descriptor is not valid")
+            raise FrictionlessException(error, reasons=errors)
+        return descriptor
 
     def to_descriptor_source(self) -> Union[IDescriptor, str]:
         """Export metadata as a descriptor or a descriptor path"""
@@ -195,6 +194,10 @@ class Metadata(metaclass=Metaclass):
                 return self.metadata_descriptor_path
         return descriptor
 
+    def to_copy(self, **options):
+        """Create a copy of the metadata"""
+        return type(self).from_descriptor(self.to_descriptor(), **options)
+
     def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
 
@@ -203,7 +206,12 @@ class Metadata(metaclass=Metaclass):
         """
         frictionless = import_module("frictionless")
         Error = self.metadata_Error or frictionless.errors.MetadataError
-        text = json.dumps(self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class)
+        text = json.dumps(
+            self.to_descriptor(),
+            indent=2,
+            ensure_ascii=False,
+            cls=encoder_class,
+        )
         if path:
             try:
                 helpers.write_file(path, text)
@@ -225,7 +233,7 @@ class Metadata(metaclass=Metaclass):
         frictionless = import_module("frictionless")
         Error = self.metadata_Error or frictionless.errors.MetadataError
         text = platform.yaml.dump(
-            self.to_dict(),
+            self.to_descriptor(),
             sort_keys=False,
             allow_unicode=True,
             Dumper=IndentDumper,
@@ -276,7 +284,7 @@ class Metadata(metaclass=Metaclass):
     metadata_descriptor_initial: Optional[IDescriptor] = None
 
     @classmethod
-    def metadata_retrieve(cls, descriptor):
+    def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]):
         try:
             if isinstance(descriptor, Mapping):
                 return deepcopy(descriptor)
@@ -306,11 +314,16 @@ class Metadata(metaclass=Metaclass):
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: IDescriptor):
         pass
 
     @classmethod
-    def metadata_validate(cls, descriptor, *, profile=None):
+    def metadata_validate(
+        cls,
+        descriptor: IDescriptor,
+        *,
+        profile: Optional[Union[IDescriptor, str]] = None,
+    ):
         frictionless = import_module("frictionless")
         Error = cls.metadata_Error or frictionless.errors.MetadataError
         profile = profile or cls.metadata_profile
@@ -334,7 +347,7 @@ class Metadata(metaclass=Metaclass):
                         yield from Type.metadata_validate(item)
 
     @classmethod
-    def metadata_import(cls, descriptor, **options):
+    def metadata_import(cls, descriptor: IDescriptor, **options):
         target = {}
         source = descriptor
         for name in cls.metadata_profile.get("properties", {}):

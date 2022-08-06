@@ -65,14 +65,6 @@ class Dialect(Metadata):
         dialect = resource.dialect
         return dialect
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Controls
 
     def add_control(self, control: Control) -> None:
@@ -208,8 +200,7 @@ class Dialect(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = super().metadata_normalize(descriptor)
+    def metadata_transform(cls, descriptor):
 
         # Csv (standards@1)
         for name in CSV_PROPS_V1:
@@ -218,11 +209,14 @@ class Dialect(Metadata):
                 descriptor.setdefault("csv", {})
                 descriptor["csv"][name] = value
 
-        # Controls
+    @classmethod
+    def metadata_import(cls, descriptor):
         dialect = super().metadata_import(descriptor)
-        for type, descriptor in dialect.custom.items():
-            if isinstance(descriptor, dict):
-                descriptor["type"] = type
+
+        # Controls
+        for type, item in dialect.custom.items():
+            if isinstance(item, dict):
+                item["type"] = type
                 control = Control.from_descriptor(descriptor)
                 dialect.add_control(control)
 

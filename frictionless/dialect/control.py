@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, ClassVar, Optional
 from importlib import import_module
+from typing import TYPE_CHECKING, ClassVar, Optional
 from ..metadata import Metadata
 from .. import settings
 from .. import errors
@@ -28,9 +28,24 @@ class Control(Metadata):
     # Convert
 
     @classmethod
+    def from_descriptor(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Control:
+            system = import_module("frictionless").system
+            Class = system.select_control_class(type)
+            return Class.from_descriptor(descriptor)
+
+        return super().from_descriptor(descriptor)
+
+    @classmethod
     def from_dialect(cls, dialect: Dialect):
+
+        # Add control
         if not dialect.has_control(cls.type):
             dialect.add_control(cls())
+
         control = dialect.get_control(cls.type)
         assert isinstance(control, cls)
         return control
@@ -50,9 +65,13 @@ class Control(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        if cls is Control:
-            descriptor = cls.metadata_normalize(descriptor)
+    def metadata_validate(cls, descriptor):
+        type = descriptor.get("type")
+
+        # Routing
+        if type and cls is Control:
             system = import_module("frictionless").system
-            return system.create_control(descriptor)  # type: ignore
-        return super().metadata_import(descriptor)
+            Class = system.select_control_class(type)
+            return Class.metadata_validate(descriptor)
+
+        return super().metadata_validate(descriptor)

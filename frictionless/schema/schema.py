@@ -352,14 +352,6 @@ class Schema(Metadata):
             note = "names of the fields are not unique"
             yield errors.SchemaError(note=note)
 
-        # Examples
-        # TODO: recover
-        #  for field in [field for field in self.fields if field.example]:
-        #  _, notes = field.read_cell(field.example)
-        #  if notes is not None:
-        #  note = 'example value for field "%s" is not valid' % field.name
-        #  yield errors.SchemaError(note=note)
-
         # Primary Key
         pk = descriptor.get("primaryKey", [])
         for name in pk:

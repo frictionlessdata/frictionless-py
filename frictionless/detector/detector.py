@@ -131,14 +131,6 @@ class Detector(Metadata):
     For more information, please check "Extracting Data" guide.
     """
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Detect
 
     # TODO: support loading descriptor for detection?
@@ -353,7 +345,9 @@ class Detector(Metadata):
             runners = []
             runner_fields = []  # we use shared fields
             for candidate in field_candidates:
-                field = Field.from_descriptor(candidate)
+                descriptor = candidate.copy()
+                descriptor["name"] = "shared"
+                field = Field.from_descriptor(descriptor)
                 if field.type == "number" and self.field_float_numbers:
                     field.float_number = True  # type: ignore
                 elif field.type == "boolean":

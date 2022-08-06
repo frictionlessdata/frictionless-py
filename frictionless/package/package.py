@@ -502,7 +502,7 @@ class Package(Metadata):
         try:
             compression = compression or platform.zipfile.ZIP_DEFLATED
             with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
-                package_descriptor = self.to_dict()
+                package_descriptor = self.to_descriptor()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
@@ -767,9 +767,7 @@ class Package(Metadata):
         if self.profiles:
             descriptor = self.to_descriptor()
             for profile in self.profiles:
-                notes = helpers.validate_descriptor(descriptor, profile=profile)
-                for note in notes:
-                    yield errors.PackageError(note=note)
+                yield from Metadata.metadata_validate(descriptor, profile=profile)
 
 
 # Internal

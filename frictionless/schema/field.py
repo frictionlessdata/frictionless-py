@@ -169,8 +169,8 @@ class Field(Metadata):
 
         # Routing
         if type and cls is Field:
-            Type = system.select_field_class(type)
-            return Type.from_descriptor(descriptor)
+            Class = system.select_field_class(type)
+            return Class.from_descriptor(descriptor)
 
         return super().from_descriptor(descriptor)
 
@@ -223,8 +223,8 @@ class Field(Metadata):
 
         # Routing
         if type and cls is Field:
-            Type = system.select_field_class(type)
-            return Type.metadata_validate(descriptor)
+            Class = system.select_field_class(type)
+            return Class.metadata_validate(descriptor)
 
         # Structure
         metadata_errors = list(super().metadata_validate(descriptor))
@@ -246,8 +246,8 @@ class Field(Metadata):
         # Examples
         example = descriptor.get("example")
         if example:
-            Type = system.select_field_class(type)
-            field = Type(name=descriptor["name"])
+            Class = system.select_field_class(type)
+            field = Class(name=descriptor["name"])
             _, notes = field.read_cell(example)
             if notes is not None:
                 note = f'example value "{example}" for field "{field.name}" is not valid'

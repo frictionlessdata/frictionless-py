@@ -49,6 +49,7 @@ class System:
         "create_step",
         "create_storage",
         "detect_resource",
+        "select_control_class",
         "select_field_class",
     ]
 
@@ -309,6 +310,17 @@ class System:
         """
         for func in self.methods["detect_resource"].values():
             func(resource)
+
+    def select_control_class(self, type: str) -> Type[Control]:
+        for func in self.methods["select_control_class"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(import_module("frictionless.formats")).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'control type "{type}" is not supported'
+        raise FrictionlessException(errors.ControlError(note=note))
 
     def select_field_class(self, type: str) -> Type[Field]:
         for func in self.methods["select_field_class"].values():
