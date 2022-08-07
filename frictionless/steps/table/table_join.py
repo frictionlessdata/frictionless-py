@@ -73,7 +73,6 @@ class table_join(Step):
 
     # Metadata
 
-    metadata_Types = dict(resource=Resource)
     metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
@@ -86,3 +85,8 @@ class table_join(Step):
             "hash": {},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "resource":
+            return Resource

@@ -629,7 +629,6 @@ class Package(Metadata):
 
     metadata_type = "package"
     metadata_Error = errors.PackageError
-    metadata_Types = dict(resources=Resource)
     metadata_profile = {
         "type": "object",
         "required": ["resources"],
@@ -689,10 +688,55 @@ class Package(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
-        if isinstance(descriptor, str):
-            options.setdefault("basepath", helpers.parse_basepath(descriptor))
-        descriptor = super().metadata_normalize(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "resources":
+            return Resource
+
+    @classmethod
+    def metadata_validate(cls, descriptor: IDescriptor):
+
+        # Resoruce Names
+        names = list(filter(None, (r.get("name") for r in descriptor["resources"])))
+        if len(names) != len(set(names)):
+            note = "names of the resources are not unique"
+            yield errors.PackageError(note=note)
+
+        # Created
+        created = descriptor.get("created")
+        if created:
+            field = fields.DatetimeField(name="created")
+            _, note = field.read_cell(created)
+            if note:
+                note = 'property "created" is not valid "datetime"'
+                yield errors.PackageError(note=note)
+
+        # Contributors/Sources
+        for name in ["contributors", "sources"]:
+            for item in descriptor.get(name, []):
+                if item.get("email"):
+                    field = fields.StringField(format="email")
+                    _, note = field.read_cell(item.get("email"))
+                    if note:
+                        note = f'property "{name}[].email" is not valid "email"'
+                        yield errors.PackageError(note=note)
+
+        # Profiles
+        profiles = descriptor.get("profiles", [])
+        for profile in profiles:
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=errors.PackageError,
+            )
+
+        # Misleading
+        for name in ["missingValues", "fields"]:
+            if name in descriptor:
+                note = f'"{name}" should be set as "resource.schema.{name}"'
+                yield errors.PackageError(note=note)
+
+    @classmethod
+    def metadata_transform(cls, descriptor: IDescriptor):
 
         # Profile (standards_v1)
         profile = descriptor.pop("profile", None)
@@ -700,6 +744,9 @@ class Package(Metadata):
             if profile not in ["data-package", "tabular-data-package"]:
                 descriptor.setdefault("profiles", [])
                 descriptor["profiles"].append(profile)
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
 
         # Security
         trusted = options.setdefault("trusted", False)
@@ -726,52 +773,6 @@ class Package(Metadata):
                 descriptor["profile"] = profiles[0]
 
         return descriptor
-
-    def metadata_validate(self):
-
-        # Resources
-        for resource in self.resources:
-            yield from resource.metadata_validate()
-
-        # Resoruce Names
-        resource_names = list(filter(lambda name: name, self.resource_names))
-        if len(resource_names) != len(set(resource_names)):
-            note = "names of the resources are not unique"
-            yield errors.PackageError(note=note)
-
-        # Created
-        if self.created:
-            field = fields.DatetimeField()
-            _, note = field.read_cell(self.created)
-            if note:
-                note = 'property "created" is not valid "datetime"'
-                yield errors.PackageError(note=note)
-
-        # Contributors/Sources
-        for name in ["contributors", "sources"]:
-            for item in getattr(self, name, []):
-                if item.get("email"):
-                    field = fields.StringField(format="email")
-                    _, note = field.read_cell(item.get("email"))
-                    if note:
-                        note = f'property "{name}[].email" is not valid "email"'
-                        yield errors.PackageError(note=note)
-
-        # Custom
-        for name in ["missingValues", "fields"]:
-            if name in self.custom:
-                note = f'"{name}" should be set as "resource.schema.{name}"'
-                yield errors.PackageError(note=note)
-
-        # Profiles
-        if self.profiles:
-            descriptor = self.to_descriptor()
-            for profile in self.profiles:
-                yield from Metadata.metadata_validate(
-                    descriptor,
-                    profile=profile,
-                    error_class=cls.metadata_Error,
-                )
 
 
 # Internal

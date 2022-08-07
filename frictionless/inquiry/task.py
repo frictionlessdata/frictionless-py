@@ -105,7 +105,6 @@ class InquiryTask(Metadata):
 
     metadata_type = "inquiry-task"
     metadata_Error = errors.InquiryTaskError
-    metadata_Types = dict(dialect=Dialect, schema=Schema, checklist=Checklist)
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -127,6 +126,15 @@ class InquiryTask(Metadata):
             "strict": {"type": "boolean"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "dialect":
+            return Dialect
+        elif property == "schema":
+            return Schema
+        elif property == "checklist":
+            return Checklist
 
     @classmethod
     def metadata_transform(cls, descriptor):
