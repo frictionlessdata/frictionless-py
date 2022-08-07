@@ -29,8 +29,6 @@ TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
 
 DEFAULT_STANDARDS_VERSION = "v2"
 DEFAULT_TYPE = "file"
-DEFAULT_SCHEME = "file"
-DEFAULT_FORMAT = "csv"
 DEFAULT_ENCODING = "utf-8"
 DEFAULT_INNERPATH = ""
 DEFAULT_PACKAGE_INNERPATH = "datapackage.json"
