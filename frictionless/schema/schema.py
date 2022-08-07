@@ -276,7 +276,6 @@ class Schema(Metadata):
 
     metadata_type = "schema"
     metadata_Error = errors.SchemaError
-    metadata_Types = dict(fields=Field)
     metadata_profile = {
         "type": "object",
         "required": ["fields"],
@@ -312,6 +311,11 @@ class Schema(Metadata):
             },
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "fields":
+            return Field
 
     # TODO: handle invalid structure
     @classmethod

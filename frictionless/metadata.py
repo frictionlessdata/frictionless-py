@@ -164,16 +164,14 @@ class Metadata(metaclass=Metaclass):
             if "basepath" in inspect.signature(cls.__init__).parameters:
                 options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
-        if cls.metadata_class_selector:
-            cls = cls.metadata_class_selector(descriptor["type"])
-        Error = cls.metadata_Error or frictionless.errors.MetadataError
-        cls.metadata_transform(descriptor)
-        # TODO: catch here to improve error type (root descriptor?)
-        errors = list(cls.metadata_validate(descriptor))
+        Class = cls.metadata_specify(type=descriptor.get("type")) or cls
+        Error = Class.metadata_Error or frictionless.errors.MetadataError
+        Class.metadata_transform(descriptor)
+        errors = list(Class.metadata_validate(descriptor))
         if errors:
             error = Error(note="descriptor is not valid")
             raise FrictionlessException(error, reasons=errors)
-        metadata = cls.metadata_import(descriptor, **options)
+        metadata = Class.metadata_import(descriptor, **options)
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
@@ -276,11 +274,9 @@ class Metadata(metaclass=Metaclass):
     # TODO: add/improve types
     metadata_type: ClassVar[str]
     metadata_Error = None
-    metadata_Types = {}
     metadata_profile = {}
     metadata_profile_patch = {}
     metadata_profile_merged = {}
-    metadata_class_selector = None
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
@@ -318,17 +314,25 @@ class Metadata(metaclass=Metaclass):
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
+    def metadata_specify(cls, *, type=None, property=None) -> Optional[Type[Metadata]]:
+        pass
+
+    @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
-        for name, Type in cls.metadata_Types.items():
+        for name in cls.metadata_profile["properties"]:
             value = descriptor.get(name)
-            if value is not None:
-                items = value if isinstance(value, list) else [value]
-                for item in items:
-                    if isinstance(item, dict):
-                        type = item.get("type")
-                        if type and Type.metadata_class_selector:
-                            Type = Type.metadata_class_selector(type)
-                        Type.metadata_transform(item)
+            Class = cls.metadata_specify(property=name)
+            if Class:
+                if isinstance(value, list):
+                    for item in value:
+                        if not isinstance(item, dict):
+                            continue
+                        ItemClass = Class.metadata_specify(type=item.get("type"))
+                        if not ItemClass:
+                            continue
+                        ItemClass.metadata_transform(item)
+                elif isinstance(value, dict):
+                    Class.metadata_transform(value)
 
     @classmethod
     def metadata_validate(
@@ -338,8 +342,10 @@ class Metadata(metaclass=Metaclass):
         profile: Optional[Union[IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
     ):
-        frictionless = import_module("frictionless")
-        Error = error_class or cls.metadata_Error or frictionless.errors.MetadataError
+        Error = error_class
+        if not Error:
+            frictionless = import_module("frictionless")
+            Error = cls.metadata_Error or frictionless.errors.MetadataError
         profile = profile or cls.metadata_profile
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
@@ -352,47 +358,46 @@ class Metadata(metaclass=Metaclass):
             if metadata_path:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
-        for name, Type in cls.metadata_Types.items():
+        for name in cls.metadata_profile["properties"]:
             value = descriptor.get(name)
-            if value is not None:
-                items = value if isinstance(value, list) else [value]
-                for item in items:
-                    if isinstance(item, dict):
-                        type = item.get("type")
-                        if type and Type.metadata_class_selector:
-                            Type = Type.metadata_class_selector(type)
-                        yield from Type.metadata_validate(item)
+            Class = cls.metadata_specify(property=name)
+            if Class:
+                if isinstance(value, list):
+                    for item in value:
+                        if not isinstance(item, dict):
+                            continue
+                        ItemClass = Class.metadata_specify(type=item.get("type"))
+                        if not ItemClass:
+                            continue
+                        yield from ItemClass.metadata_validate(item)
+                elif isinstance(value, dict):
+                    yield from Class.metadata_validate(value)
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptor, **options):
-        target = {}
-        source = descriptor
-        for name in cls.metadata_profile.get("properties", {}):
-            value = source.pop(name, None)
-            Type = cls.metadata_Types.get(name)
+        custom = deepcopy(descriptor)
+        is_typed_class = isinstance(getattr(cls, "type", None), str)
+        for name in cls.metadata_profile["properties"]:
+            value = custom.pop(name, None)
             if value is None or value == {}:
                 continue
-            if name == "type":
-                type = getattr(cls, "type", None)
-                if isinstance(type, str):
-                    continue
-            if Type:
-                trusted = options.get("trusted")
-                basepath = options.get("basepath")
+            if name == "type" and is_typed_class:
+                continue
+            Class = cls.metadata_specify(property=name)
+            if Class:
                 if isinstance(value, list):
-                    value = [
-                        # TODO: it is a hack to make Package work for resources
-                        Type.from_descriptor(item, trusted=trusted, basepath=basepath)
-                        if name == "resources"
-                        else Type.from_descriptor(item)
-                        for item in value
-                    ]
+                    for index, item in enumerate(value):
+                        if not isinstance(item, dict):
+                            continue
+                        ItemClass = Class.metadata_specify(type=item.get("type"))
+                        if not ItemClass:
+                            continue
+                        value[index] = ItemClass.metadata_import(item, **options)
                 elif isinstance(value, dict):
-                    value = Type.from_descriptor(value)
-            target[stringcase.snakecase(name)] = value
-        target.update(options)
-        metadata = cls(**target)
-        metadata.custom = source.copy()
+                    value = Class.metadata_import(value)
+            options.setdefault(stringcase.snakecase(name), value)
+        metadata = cls(**options)
+        metadata.custom = custom
         return metadata
 
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
@@ -403,10 +408,10 @@ class Metadata(metaclass=Metaclass):
             if name != "type" and not self.has_defined(stringcase.snakecase(name)):
                 continue
             value = getattr(self, stringcase.snakecase(name), None)
-            Type = self.metadata_Types.get(name)
+            Class = self.metadata_specify(property=name)
             if value is None or (isinstance(value, dict) and value == {}):
                 continue
-            if Type:
+            if Class:
                 if isinstance(value, list):
                     value = [item.to_descriptor_source() for item in value]  # type: ignore
                 else:

@@ -78,7 +78,6 @@ class Pipeline(Metadata):
 
     metadata_type = "pipeline"
     metadata_Error = errors.PipelineError
-    metadata_Types = dict(steps=Step)
     metadata_profile = {
         "type": "object",
         "required": ["steps"],
@@ -89,6 +88,11 @@ class Pipeline(Metadata):
             "steps": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "steps":
+            return Step
 
     @classmethod
     def metadata_transform(cls, descriptor):

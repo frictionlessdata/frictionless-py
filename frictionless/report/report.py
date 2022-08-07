@@ -211,7 +211,6 @@ class Report(Metadata):
 
     metadata_type = "report"
     metadata_Error = ReportError
-    metadata_Types = dict(stats=Stats, tasks=ReportTask)
     metadata_profile = {
         "type": "object",
         "required": ["valid", "stats", "warnings", "errors", "tasks"],
@@ -226,5 +225,12 @@ class Report(Metadata):
             "tasks": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "stats":
+            return Stats
+        elif property == "tasks":
+            return ReportTask
 
     # TODO: validate valid/errors count

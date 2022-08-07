@@ -40,9 +40,6 @@ class Control(Metadata):
 
     metadata_type = "control"
     metadata_Error = errors.ControlError
-    metadata_class_selector = lambda type: import_module(
-        "frictionless"
-    ).system.select_control_class(type)
     metadata_profile = {
         "type": "object",
         "required": ["type"],
@@ -52,3 +49,9 @@ class Control(Metadata):
             "description": {"type": "string"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            system = import_module("frictionless").system
+            return system.select_Control(type)

@@ -183,7 +183,6 @@ class Dialect(Metadata):
 
     metadata_type = "dialect"
     metadata_Error = errors.DialectError
-    metadata_Types = dict(controls=Control)
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -198,6 +197,11 @@ class Dialect(Metadata):
             "commentRows": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "controls":
+            return Control
 
     @classmethod
     def metadata_transform(cls, descriptor):

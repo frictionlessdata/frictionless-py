@@ -1082,13 +1082,6 @@ class Resource(Metadata):
 
     metadata_type = "resource"
     metadata_Error = errors.ResourceError
-    metadata_Types = dict(
-        dialect=Dialect,
-        schema=Schema,
-        checklist=Checklist,
-        pipeline=Pipeline,
-        stats=Stats,
-    )
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -1138,9 +1131,20 @@ class Resource(Metadata):
     }
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "dialect":
+            return Dialect
+        elif property == "schema":
+            return Schema
+        elif property == "checklist":
+            return Checklist
+        elif property == "pipeline":
+            return Pipeline
+        elif property == "stats":
+            return Pipeline
 
-        # Default
+    @classmethod
+    def metadata_transform(cls, descriptor):
         super().metadata_transform(descriptor)
 
         # Url (standards_v0)

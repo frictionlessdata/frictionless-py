@@ -48,16 +48,10 @@ class Inquiry(Metadata):
         timer = helpers.Timer()
         reports: List[Report] = []
 
-        # Validate inquiry
-        metadata_errors = self.list_metadata_errors()
-        if metadata_errors:
-            report = Report.from_validation(time=timer.time, errors=metadata_errors)
-            reports.append(report)
-
         # Validate sequential
-        elif not parallel:
+        if not parallel:
             for task in self.tasks:
-                report = task.validate(metadata=False)
+                report = task.validate()
                 reports.append(report)
 
         # Validate parallel
@@ -79,7 +73,6 @@ class Inquiry(Metadata):
 
     metadata_type = "inquiry"
     metadata_Error = InquiryError
-    metadata_Types = dict(tasks=InquiryTask)
     metadata_profile = {
         "type": "object",
         "required": ["tasks"],
@@ -91,10 +84,10 @@ class Inquiry(Metadata):
         },
     }
 
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-        for task in self.tasks:
-            yield from task.metadata_validate()
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "tasks":
+            return InquiryTask
 
 
 # Internal

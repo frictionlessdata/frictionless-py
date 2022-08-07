@@ -80,7 +80,6 @@ class Step(Metadata):
 
     metadata_type = "step"
     metadata_Error = errors.StepError
-    metadata_class_selector = system.select_step_class
     metadata_profile = {
         "type": "object",
         "required": ["type"],
@@ -90,3 +89,8 @@ class Step(Metadata):
             "description": {"type": "string"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Step(type)

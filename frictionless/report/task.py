@@ -109,7 +109,6 @@ class ReportTask(Metadata):
 
     metadata_type = "report-task"
     metadata_Error = ReportTaskError
-    metadata_Types = dict(stats=Stats, errors=Error)
     metadata_profile = {
         "type": "object",
         "required": [
@@ -133,5 +132,12 @@ class ReportTask(Metadata):
             "errors": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "stats":
+            return Stats
+        elif property == "errors":
+            return Error
 
     # TODO: validate valid/errors count

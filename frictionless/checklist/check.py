@@ -23,7 +23,6 @@ class Check(Metadata):
     type: ClassVar[str]
     """NOTE: add docs"""
 
-    # TODO: can it be just types not objects?
     Errors: ClassVar[List[Type[Error]]] = []
     """NOTE: add docs"""
 
@@ -104,7 +103,6 @@ class Check(Metadata):
 
     metadata_type = "check"
     metadata_Error = errors.CheckError
-    metadata_class_selector = system.select_check_class
     metadata_profile = {
         "type": "object",
         "required": ["type"],
@@ -114,3 +112,8 @@ class Check(Metadata):
             "description": {"type": "string"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Check(type)

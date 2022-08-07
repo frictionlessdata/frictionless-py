@@ -70,14 +70,7 @@ class InquiryTask(Metadata):
 
     # Validate
 
-    def validate(self, *, metadata=True):
-        timer = helpers.Timer()
-
-        # Validate metadata
-        if metadata:
-            metadata_errors = self.list_metadata_errors()
-            if metadata_errors:
-                return Report.from_validation(time=timer.time, errors=metadata_errors)
+    def validate(self):
 
         # Validate package
         if self.package:
@@ -136,8 +129,7 @@ class InquiryTask(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
+    def metadata_transform(cls, descriptor):
 
         # Source (framework_v4)
         source = descriptor.pop("source", None)
@@ -149,12 +141,13 @@ class InquiryTask(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        return super().metadata_import(descriptor)
+    @classmethod
+    def metadata_validate(cls, descriptor):
 
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Required (normal)
-        if self.path is None and self.resource is None and self.package is None:
+        # Required
+        path = descriptor.get("path")
+        resource = descriptor.get("resource")
+        package = descriptor.get("package")
+        if path is None and resource is None and package is None:
             note = 'one of the properties "path", "resource", or "package" is required'
             yield errors.InquiryTaskError(note=note)

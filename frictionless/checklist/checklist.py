@@ -126,7 +126,6 @@ class Checklist(Metadata):
 
     metadata_type = "checklist"
     metadata_Error = errors.ChecklistError
-    metadata_Types = dict(checks=Check)
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -138,3 +137,8 @@ class Checklist(Metadata):
             "pickErrors": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "checks":
+            return Check

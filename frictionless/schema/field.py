@@ -165,7 +165,6 @@ class Field(Metadata):
 
     metadata_type = "field"
     metadata_Error = errors.FieldError
-    metadata_class_selector = system.select_field_class
     metadata_profile = {
         "type": "object",
         "required": ["name", "type"],
@@ -198,6 +197,11 @@ class Field(Metadata):
     }
 
     @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Field(type)
+
+    @classmethod
     def metadata_transform(cls, descriptor):
         super().metadata_transform(descriptor)
 
@@ -223,7 +227,7 @@ class Field(Metadata):
         example = descriptor.get("example")
         if example:
             type = descriptor.get("type")
-            Class = system.select_field_class(type)
+            Class = system.select_Field(type)
             field = Class(name=descriptor["name"])
             _, notes = field.read_cell(example)
             if notes is not None:
