@@ -519,3 +519,11 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
             "rows": 3,
         },
     }
+
+
+def test_resource_path_with_brackets_issue_1206():
+    resource = Resource.from_descriptor({"path": "data/[table].csv"})
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
