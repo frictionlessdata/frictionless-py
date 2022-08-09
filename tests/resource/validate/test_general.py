@@ -13,7 +13,7 @@ def test_resource_validate():
     assert report.valid
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="strict")
 def test_resource_validate_invalid_resource_strict():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate(strict=True)

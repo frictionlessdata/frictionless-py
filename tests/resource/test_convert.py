@@ -83,7 +83,7 @@ def test_resource_to_yaml(tmpdir):
 # Markdown
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_path_schema():
     resource = Resource(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/resource.md"
@@ -93,7 +93,7 @@ def test_resource_to_markdown_path_schema():
         assert resource.to_markdown().strip() == file.read()
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_path_schema_table():
     resource = Resource(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/resource-table.md"
@@ -103,7 +103,7 @@ def test_resource_to_markdown_path_schema_table():
         assert resource.to_markdown(table=True).strip() == file.read().strip()
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_file(tmpdir):
     resource = Resource(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/resource.md"
@@ -125,21 +125,15 @@ def test_resource_to_markdown_file(tmpdir):
 def test_to_json_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
-    with pytest.raises(FrictionlessException) as excinfo:
-        resource.to_json()
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note == 'property "data" is not serializable'
+    text = resource.to_json()
+    assert json.loads(text) == {"data": []}
 
 
 def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
-    with pytest.raises(FrictionlessException) as excinfo:
-        resource.to_yaml()
-    error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note == 'property "data" is not serializable'
+    text = resource.to_yaml()
+    assert yaml.safe_load(text) == {"data": []}
 
 
 def test_to_yaml_allow_unicode_issue_844():

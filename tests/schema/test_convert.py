@@ -107,7 +107,7 @@ def test_schema_to_summary_without_required():
     )
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_schema_to_summary_without_type_missing_for_some_fields():
     descriptor = {
         "fields": [
@@ -126,7 +126,7 @@ def test_schema_to_summary_without_type_missing_for_some_fields():
     )
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_schema_to_summary_with_name_missing_for_some_fields():
     descriptor = {
         "fields": [
@@ -185,7 +185,7 @@ def test_schema_to_markdown_file(tmpdir):
 # JSONSchema
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 def test_schema_from_jsonschema():
     schema = Schema.from_jsonschema("data/ecrin.json")
     assert schema.to_descriptor() == {
@@ -261,7 +261,7 @@ def test_schema_from_jsonschema():
 # Excel template
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="issue-1205")
 @pytest.mark.parametrize(
     "zip_path",
     [

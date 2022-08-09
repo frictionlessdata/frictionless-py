@@ -102,7 +102,7 @@ def test_resource_extrapaths_error_bad_path_not_safe_traversing():
     assert error.note.count("not safe")
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="security")
 def test_resource_profiles_error_bad_path_not_safe_absolute():
     profile = os.path.abspath("data/profiles/camtrap.json")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -115,7 +115,7 @@ def test_resource_profiles_error_bad_path_not_safe_absolute():
     assert reasons[0].note.count("not safe")
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="security")
 def test_resource_profiles_error_bad_path_not_safe_traversing():
     profile = os.path.abspath("data/../camtrap.json")
     with pytest.raises(FrictionlessException) as excinfo:
