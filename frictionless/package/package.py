@@ -693,12 +693,30 @@ class Package(Metadata):
             return Resource
 
     @classmethod
+    def metadata_transform(cls, descriptor: IDescriptor):
+        super().metadata_transform(descriptor)
+
+        # Profile (standards_v1)
+        profile = descriptor.pop("profile", None)
+        if profile:
+            if profile not in ["data-package", "tabular-data-package"]:
+                descriptor.setdefault("profiles", [])
+                descriptor["profiles"].append(profile)
+
+    @classmethod
     def metadata_validate(cls, descriptor: IDescriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
 
         # Resoruce Names
-        names = list(filter(None, (r.get("name") for r in descriptor["resources"])))
-        if len(names) != len(set(names)):
-            note = "names of the resources are not unique"
+        resource_names = []
+        for resource in descriptor["resources"]:
+            if isinstance(resource, dict) and "name" in resource:
+                resource_names.append(resource["name"])
+        if len(resource_names) != len(set(resource_names)):
+            note = "resource_names of the resources are not unique"
             yield errors.PackageError(note=note)
 
         # Created
@@ -734,16 +752,6 @@ class Package(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "resource.schema.{name}"'
                 yield errors.PackageError(note=note)
-
-    @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
-
-        # Profile (standards_v1)
-        profile = descriptor.pop("profile", None)
-        if profile:
-            if profile not in ["data-package", "tabular-data-package"]:
-                descriptor.setdefault("profiles", [])
-                descriptor["profiles"].append(profile)
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptor, **options):

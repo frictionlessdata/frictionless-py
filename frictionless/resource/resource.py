@@ -1215,9 +1215,6 @@ class Resource(Metadata):
 
     @classmethod
     def metadata_validate(cls, descriptor: IDescriptor, *, strict=False):
-        type = descriptor.get("type")
-
-        # Default
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -1231,6 +1228,7 @@ class Resource(Metadata):
             yield errors.ResourceError(note=note)
 
         # Required (strict)
+        type = descriptor.get("type")
         if strict:
             names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
             if type == "table":

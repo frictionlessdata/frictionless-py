@@ -18,8 +18,7 @@ def test_package_resource_unsafe_schema():
 def test_package_resource_unsafe_schema_trusted():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
-    package = Package({"resources": [{"path": path, "schema": schema}]}, trusted=True)
-    assert package.check_metadata_valid()
+    Package({"resources": [{"path": path, "schema": schema}]}, trusted=True)
 
 
 def test_package_resource_from_path_error_unsafe():

@@ -350,7 +350,10 @@ class Schema(Metadata):
             return
 
         # Field Names
-        field_names = list(filter(None, (f.get("name") for f in descriptor["fields"])))
+        field_names = []
+        for field in descriptor["fields"]:
+            if "name" in field:
+                field_names.append(field["name"])
         if len(field_names) != len(set(field_names)):
             note = "names of the fields are not unique"
             yield errors.SchemaError(note=note)

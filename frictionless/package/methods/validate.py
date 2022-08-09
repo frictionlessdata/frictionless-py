@@ -1,6 +1,7 @@
 from __future__ import annotations
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Optional, List
+from ...exception import FrictionlessException
 from ...checklist import Checklist
 from ...resource import Resource
 from ...report import Report
@@ -42,17 +43,13 @@ def validate(
 
     # Prepare checklist
     checklist = checklist or Checklist()
-    checklist_errors = checklist.list_metadata_errors()
-    if checklist_errors:
-        return Report.from_validation(time=timer.time, errors=checklist_errors)
 
     # Validate metadata
-    metadata_errors = []
-    for error in self.list_metadata_errors():
-        if error.type == "package-error":
-            metadata_errors.append(error)
-    if metadata_errors:
-        return Report.from_validation(time=timer.time, errors=metadata_errors)
+    try:
+        self.to_descriptor()
+    except FrictionlessException as exception:
+        errors = exception.reasons
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Validate sequential
     if not parallel or with_fks:

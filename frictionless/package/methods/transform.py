@@ -24,9 +24,6 @@ def transform(self: Package, pipeline: Pipeline):
     # Prepare package
     self.infer(sample=False)
 
-    # Prepare pipeline
-    pipeline.assert_metadata_valid()
-
     # Run transforms
     for step in pipeline.steps:
 

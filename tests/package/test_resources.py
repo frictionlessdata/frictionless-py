@@ -40,7 +40,7 @@ def test_package_resources_empty():
 
 
 def test_package_add_resource():
-    package = Package({})
+    package = Package()
     package.add_resource(Resource.from_descriptor({"name": "name", "data": []}))
     assert len(package.resources) == 1
     assert package.resources[0].name == "name"

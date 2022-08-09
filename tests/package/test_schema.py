@@ -16,10 +16,10 @@ DESCRIPTOR_FK = {
             ],
             "schema": {
                 "fields": [
-                    {"name": "id"},
-                    {"name": "name"},
-                    {"name": "surname"},
-                    {"name": "parent_id"},
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                    {"name": "surname", "type": "string"},
+                    {"name": "parent_id", "type": "integer"},
                 ],
                 "foreignKeys": [
                     {
@@ -50,22 +50,22 @@ def test_package_schema_foreign_key():
     assert rows[1].valid
     assert rows[2].valid
     assert rows[0].to_dict() == {
-        "id": "1",
+        "id": 1,
         "name": "Alex",
         "surname": "Martin",
         "parent_id": None,
     }
     assert rows[1].to_dict() == {
-        "id": "2",
+        "id": 2,
         "name": "John",
         "surname": "Dockins",
-        "parent_id": "1",
+        "parent_id": 1,
     }
     assert rows[2].to_dict() == {
-        "id": "3",
+        "id": 3,
         "name": "Walter",
         "surname": "White",
-        "parent_id": "2",
+        "parent_id": 2,
     }
 
 
@@ -78,22 +78,22 @@ def test_package_schema_foreign_key_invalid():
     assert rows[1].valid
     assert rows[2].errors[0].type == "foreign-key"
     assert rows[0].to_dict() == {
-        "id": "1",
+        "id": 1,
         "name": "Alex",
         "surname": "Martin",
         "parent_id": None,
     }
     assert rows[1].to_dict() == {
-        "id": "2",
+        "id": 2,
         "name": "John",
         "surname": "Dockins",
-        "parent_id": "1",
+        "parent_id": 1,
     }
     assert rows[2].to_dict() == {
-        "id": "3",
+        "id": 3,
         "name": "Walter",
         "surname": "White",
-        "parent_id": "2",
+        "parent_id": 2,
     }
 
 

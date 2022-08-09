@@ -319,12 +319,10 @@ class Metadata(metaclass=Metaclass):
             if Class:
                 if isinstance(value, list):
                     for item in value:
-                        if not isinstance(item, dict):
-                            continue
-                        ItemClass = Class.metadata_specify(type=item.get("type"))
-                        if not ItemClass:
-                            continue
-                        ItemClass.metadata_transform(item)
+                        if isinstance(item, dict):
+                            type = item.get("type")
+                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass.metadata_transform(item)
                 elif isinstance(value, dict):
                     Class.metadata_transform(value)
 
@@ -358,21 +356,19 @@ class Metadata(metaclass=Metaclass):
             if Class:
                 if isinstance(value, list):
                     for item in value:
-                        if not isinstance(item, dict):
-                            continue
-                        ItemClass = Class.metadata_specify(type=item.get("type"))
-                        if not ItemClass:
-                            continue
-                        yield from ItemClass.metadata_validate(item)
+                        if isinstance(item, dict):
+                            type = item.get("type")
+                            ItemClass = Class.metadata_specify(type=type) or Class
+                            yield from ItemClass.metadata_validate(item)
                 elif isinstance(value, dict):
                     yield from Class.metadata_validate(value)
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptor, **options):
-        custom = deepcopy(descriptor)
+        merged_options = {}
         is_typed_class = isinstance(getattr(cls, "type", None), str)
         for name in cls.metadata_profile.get("properties", {}):
-            value = custom.pop(name, None)
+            value = descriptor.pop(name, None)
             if value is None or value == {}:
                 continue
             if name == "type" and is_typed_class:
@@ -381,17 +377,16 @@ class Metadata(metaclass=Metaclass):
             if Class:
                 if isinstance(value, list):
                     for index, item in enumerate(value):
-                        if not isinstance(item, dict):
-                            continue
-                        ItemClass = Class.metadata_specify(type=item.get("type"))
-                        if not ItemClass:
-                            continue
-                        value[index] = ItemClass.metadata_import(item, **options)
+                        if isinstance(item, dict):
+                            type = item.get("type")
+                            ItemClass = Class.metadata_specify(type=type) or Class
+                            value[index] = ItemClass.metadata_import(item, **options)
                 elif isinstance(value, dict):
                     value = Class.metadata_import(value)
-            options.setdefault(stringcase.snakecase(name), value)
-        metadata = cls(**options)
-        metadata.custom = custom
+            merged_options.setdefault(stringcase.snakecase(name), value)
+        merged_options.update(options)
+        metadata = cls(**merged_options)
+        metadata.custom = descriptor
         return metadata
 
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
