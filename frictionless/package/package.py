@@ -409,7 +409,7 @@ class Package(Metadata):
             BigqueryStorage: storage
         """
         storage = system.create_storage("bigquery", target, control=control)
-        storage.write_package(self.to_copy(), force=True)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
@@ -440,7 +440,7 @@ class Package(Metadata):
             CkanStorage: storage
         """
         storage = system.create_storage("ckan", target, control=control)
-        storage.write_package(self.to_copy(), force=True)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
@@ -468,7 +468,7 @@ class Package(Metadata):
             SqlStorage: storage
         """
         storage = system.create_storage("sql", target, control=control)
-        storage.write_package(self.to_copy(), force=True)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
