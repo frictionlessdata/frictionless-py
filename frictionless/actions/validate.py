@@ -109,52 +109,33 @@ def validate(
 
     # Validate checklist
     if type == "checklist":
-        checklist = source
-        if not isinstance(checklist, Checklist):
-            checklist = Checklist.from_descriptor(checklist)  # type: ignore
-        return checklist.validate()
+        return Checklist.validate_descriptor(source)
 
     # Validate detector
     if type == "detector":
-        detector = source
-        if not isinstance(detector, Detector):
-            detector = Detector.from_descriptor(detector)
-        return detector.validate()
+        return Detector.validate_descriptor(source)
 
     # Validate dialect
     if type == "dialect":
-        dialect = source
-        if not isinstance(dialect, Dialect):
-            dialect = Dialect.from_descriptor(dialect)
-        return dialect.validate()
+        return Dialect.validate_descriptor(source)
 
     # Validate inquiry
     if type == "inquiry":
-        inquiry = source
-        if not isinstance(inquiry, Inquiry):
-            inquiry = Inquiry.from_descriptor(inquiry)
+        inquiry = Inquiry.from_descriptor(source)
         return inquiry.validate()
 
     # Validate pipeline
     if type == "pipeline":
-        pipeline = source
-        if not isinstance(pipeline, Pipeline):
-            pipeline = Pipeline.from_descriptor(pipeline)
+        pipeline = Pipeline.from_descriptor(source)
         return pipeline.validate()
 
     # Validate report
     if type == "report":
-        report = source
-        if not isinstance(report, Report):
-            report = Report.from_descriptor(report)
-        return report.validate()
+        return Report.validate_descriptor(source)
 
     # Validate schema
     if type == "schema":
-        schema = source
-        if not isinstance(schema, Schema):
-            schema = Schema.from_descriptor(schema)
-        return schema.validate()
+        return Schema.validate_descriptor(source)
 
     # Not supported
     raise FrictionlessException(f"Not supported validate type: {type}")

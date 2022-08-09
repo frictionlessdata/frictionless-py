@@ -45,22 +45,18 @@ def transform(
 
     # Transform resource
     if type == "resource":
-        resource = source
-        if not isinstance(resource, Resource):
-            resource = Resource(resource, **options)
+        resource = Resource.from_options(source, **options)
         return resource.transform(pipeline)
 
     # Transform package
     if type == "package":
-        package = source
-        if not isinstance(package, Package):
-            # TODO: remove when we add these to names kwargs
-            options.pop("schema", None)
-            options.pop("dialect", None)
-            options.pop("checklist", None)
-            options.pop("pipeline", None)
-            options.pop("stats", None)
-            package = Package(package, **options)
+        # TODO: remove when we add these to names kwargs
+        options.pop("schema", None)
+        options.pop("dialect", None)
+        options.pop("checklist", None)
+        options.pop("pipeline", None)
+        options.pop("stats", None)
+        package = Package.from_options(source, **options)
         return package.transform(pipeline)
 
     # Not supported
