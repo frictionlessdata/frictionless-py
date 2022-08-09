@@ -313,7 +313,7 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
-        for name in cls.metadata_profile["properties"]:
+        for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_specify(property=name)
             if Class:
@@ -352,7 +352,7 @@ class Metadata(metaclass=Metaclass):
             if metadata_path:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
-        for name in cls.metadata_profile["properties"]:
+        for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_specify(property=name)
             if Class:
@@ -371,7 +371,7 @@ class Metadata(metaclass=Metaclass):
     def metadata_import(cls, descriptor: IDescriptor, **options):
         custom = deepcopy(descriptor)
         is_typed_class = isinstance(getattr(cls, "type", None), str)
-        for name in cls.metadata_profile["properties"]:
+        for name in cls.metadata_profile.get("properties", {}):
             value = custom.pop(name, None)
             if value is None or value == {}:
                 continue
@@ -396,7 +396,7 @@ class Metadata(metaclass=Metaclass):
 
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         descriptor = {}
-        for name in self.metadata_profile.get("properties", []):
+        for name in self.metadata_profile.get("properties", {}):
             if name in exclude:
                 continue
             if name != "type" and not self.has_defined(stringcase.snakecase(name)):

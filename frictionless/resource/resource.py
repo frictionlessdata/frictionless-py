@@ -1141,7 +1141,7 @@ class Resource(Metadata):
         elif property == "pipeline":
             return Pipeline
         elif property == "stats":
-            return Pipeline
+            return Stats
 
     @classmethod
     def metadata_transform(cls, descriptor):
