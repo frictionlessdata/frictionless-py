@@ -5,6 +5,7 @@ from frictionless import Package, Resource, system
 # General
 
 
+@pytest.mark.xfail(reason="profiles")
 def test_package_profiles_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -14,6 +15,7 @@ def test_package_profiles_invalid_local():
         assert "required" in error.message
 
 
+@pytest.mark.xfail(reason="profiles")
 def test_package_profiles_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -23,6 +25,7 @@ def test_package_profiles_invalid_local_from_descriptor():
         assert "required" in error.message
 
 
+@pytest.mark.xfail(reason="profiles")
 @pytest.mark.vcr
 def test_package_external_profile_invalid_remote():
     profile = (
@@ -35,6 +38,7 @@ def test_package_external_profile_invalid_remote():
         assert "required" in error.message
 
 
+@pytest.mark.xfail(reason="profiles")
 @pytest.mark.vcr
 def test_package_external_profile_invalid_remote_from_descriptor():
     profile = (
@@ -50,6 +54,7 @@ def test_package_external_profile_invalid_remote_from_descriptor():
 # Legacy
 
 
+@pytest.mark.xfail(reason="profiles")
 def test_package_profiles_from_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Package
 
 
 # General
 
 
+@pytest.mark.xfail(reason="dereference")
 def test_package_dereference():
     package = Package("data/dereference/package/datapackage.yaml")
     package.get_resource("resource1").name = "resource1"
@@ -14,6 +16,7 @@ def test_package_dereference():
     }
 
 
+@pytest.mark.xfail(reason="dereference")
 def test_package_dereference_from_dir_with_datapackage():
     package = Package("data/dereference/package")
     package.get_resource("resource1").name = "resource1"

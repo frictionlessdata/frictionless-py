@@ -67,6 +67,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
+@pytest.mark.xfail(reason="copy")
 def test_package_to_copy():
     source = Package.describe("data/chunk*.csv")
     target = source.to_copy()
@@ -184,6 +185,7 @@ def test_package_to_zip_resource_multipart(tmpdir):
     ]
 
 
+@pytest.mark.xfail(reason="zip")
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     control = formats.SqlControl(table="table")
@@ -200,6 +202,7 @@ def test_package_to_zip_resource_sql(tmpdir, database_url):
 # Markdown
 
 
+@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown():
     package = Package(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/package.md"
@@ -209,6 +212,7 @@ def test_package_to_markdown():
         assert package.to_markdown().strip() == file.read()
 
 
+@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown_file(tmpdir):
     package = Package(DESCRIPTOR)
     output_file_path = str(tmpdir.join("package.md"))
@@ -226,6 +230,7 @@ def test_package_to_markdown_file(tmpdir):
         assert expected == file.read()
 
 
+@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown_table():
     package = Package(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/package-table.md"

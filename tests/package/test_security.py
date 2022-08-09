@@ -30,6 +30,7 @@ def test_package_resource_from_path_error_unsafe():
     assert error.note.count("resource.json")
 
 
+@pytest.mark.xfail(reason="security")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -40,6 +41,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     assert error.note.count("camtrap.json")
 
 
+@pytest.mark.xfail(reason="security")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

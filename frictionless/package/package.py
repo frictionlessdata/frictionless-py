@@ -716,7 +716,7 @@ class Package(Metadata):
             if isinstance(resource, dict) and "name" in resource:
                 resource_names.append(resource["name"])
         if len(resource_names) != len(set(resource_names)):
-            note = "resource_names of the resources are not unique"
+            note = "names of the resources are not unique"
             yield errors.PackageError(note=note)
 
         # Created
