@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Resource, FrictionlessException
+from frictionless import Resource
 
 
 DESCRIPTOR = {

@@ -1,18 +1,16 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any
 from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
 from .field import Field
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..report import Report
     from ..interfaces import IDescriptor
 
 

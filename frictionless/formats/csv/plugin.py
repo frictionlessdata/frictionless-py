@@ -14,7 +14,7 @@ class CsvPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor: IDescriptor):
+    def create_control(self, descriptor: IDescriptor):  # type: ignore
         if descriptor.get("type") == "csv":
             return CsvControl.from_descriptor(descriptor)  # type: ignore
 

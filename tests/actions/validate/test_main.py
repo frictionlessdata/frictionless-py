@@ -1,4 +1,4 @@
-from frictionless import Resource, Schema, validate, fields
+from frictionless import Schema, validate, fields
 
 
 # Table

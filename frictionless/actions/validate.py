@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Union
 from ..stats import Stats
 from ..schema import Schema
 from ..report import Report
@@ -18,8 +18,8 @@ def validate(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
-    dialect: Optional[Dialect] = None,
-    schema: Optional[Schema] = None,
+    dialect: Optional[Union[Dialect, str]] = None,
+    schema: Optional[Union[Schema, str]] = None,
     stats: Optional[Stats] = None,
     # Checklist
     checklist: Optional[Checklist] = None,

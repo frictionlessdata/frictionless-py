@@ -4,7 +4,6 @@ import attrs
 import codecs
 from pathlib import Path
 from copy import copy, deepcopy
-from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
@@ -421,7 +420,7 @@ class Detector(Metadata):
                 field_descriptor.update(field_patch)
             schema = Schema.from_descriptor(descriptor)
 
-        return schema
+        return schema  # type: ignore
 
     # Metadata
 

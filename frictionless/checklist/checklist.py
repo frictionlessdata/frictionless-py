@@ -1,13 +1,11 @@
 from __future__ import annotations
 import attrs
-from importlib import import_module
 from typing import TYPE_CHECKING, List, Optional
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checks import baseline
 from .check import Check
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:

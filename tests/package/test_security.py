@@ -48,6 +48,6 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted()
     package = Package(
         {"resources": [resource.to_descriptor()], "profiles": [profile]}, trusted=True
     )
-    assert len(package.list_metadata_errors()) == 5
-    for error in package.list_metadata_errors():
+    assert len(package.list_metadata_errors()) == 5  # type: ignore
+    for error in package.list_metadata_errors():  # type: ignore
         assert "required" in error.message

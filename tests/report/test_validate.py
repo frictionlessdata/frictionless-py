@@ -7,5 +7,4 @@ from frictionless import Resource
 def test_report_validate():
     resource = Resource("data/table.csv")
     report = resource.validate()
-    report = report.validate()
-    assert report.valid
+    assert report.to_descriptor()

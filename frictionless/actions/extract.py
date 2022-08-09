@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, Union
 from ..detector import Detector
 from ..resource import Resource
 from ..package import Package
@@ -16,8 +16,8 @@ def extract(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
-    dialect: Optional[Dialect] = None,
-    schema: Optional[Schema] = None,
+    dialect: Optional[Union[Dialect, str]] = None,
+    schema: Optional[Union[Schema, str]] = None,
     limit_rows: Optional[int] = None,
     process: Optional[IProcessFunction] = None,
     filter: Optional[IFilterFunction] = None,

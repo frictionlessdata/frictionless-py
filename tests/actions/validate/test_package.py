@@ -3,7 +3,6 @@ import pytest
 import pathlib
 from copy import deepcopy
 from frictionless import Package, Resource, Schema, Detector, fields, validate, platform
-from frictionless import FrictionlessException
 
 
 # General

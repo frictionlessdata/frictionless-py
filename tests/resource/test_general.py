@@ -2,7 +2,7 @@ import sys
 import pytest
 import textwrap
 from importlib import import_module
-from frictionless import Package, Resource, Control, Schema, Field, Detector, platform
+from frictionless import Package, Resource, Control, Detector, platform
 from frictionless import Dialect, FrictionlessException
 
 
