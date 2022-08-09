@@ -7,6 +7,8 @@ from ..exception import FrictionlessException
 from .. import helpers
 
 if TYPE_CHECKING:
+    from ..schema import Schema
+    from ..dialect import Dialect
     from ..interfaces import IFilterFunction, IProcessFunction
 
 
@@ -14,6 +16,8 @@ def extract(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
+    dialect: Optional[Dialect] = None,
+    schema: Optional[Schema] = None,
     limit_rows: Optional[int] = None,
     process: Optional[IProcessFunction] = None,
     filter: Optional[IFilterFunction] = None,
@@ -51,7 +55,13 @@ def extract(
             package = Package.from_options(source, **options)
             resource = package.get_resource(resource_name)
         else:
-            resource = Resource.from_options(source, type="table", **options)
+            resource = Resource.from_options(
+                source,
+                type="table",
+                dialect=dialect,
+                schema=schema,
+                **options,
+            )
         return resource.extract(
             limit_rows=limit_rows,
             process=process,

@@ -1,4 +1,5 @@
 from typing import Optional, List, Any
+from ..stats import Stats
 from ..schema import Schema
 from ..report import Report
 from ..dialect import Dialect
@@ -13,11 +14,13 @@ from .. import settings
 from .. import helpers
 
 
-# TODO: shall we accept dialect/schema/checklist in a form of descriptors?
 def validate(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
+    dialect: Optional[Dialect] = None,
+    schema: Optional[Schema] = None,
+    stats: Optional[Stats] = None,
     # Checklist
     checklist: Optional[Checklist] = None,
     checks: List[Check] = [],
@@ -68,7 +71,13 @@ def validate(
                 package = Package.from_options(source, **options)
                 resource = package.get_resource(resource_name)
             else:
-                resource = Resource.from_options(source, **options)
+                resource = Resource.from_options(
+                    source,
+                    dialect=dialect,
+                    schema=schema,
+                    stats=stats,
+                    **options,
+                )
         except FrictionlessException as exception:
             return Report.from_validation(time=timer.time, errors=exception.errors)
         return resource.validate(

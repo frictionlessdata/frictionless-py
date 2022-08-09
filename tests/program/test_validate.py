@@ -163,15 +163,15 @@ def test_program_validate_error_not_found():
 def test_program_validate_summary():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     assert actual.exit_code == 1
-    assert actual.stdout.count("Summary")
-    assert actual.stdout.count("File Place")
-    assert actual.stdout.count("File Size")
-    assert actual.stdout.count("Total Time")
+    assert actual.stdout.count(
+        'The data resource has an error: one of the properties "path" or "data" is required'
+    )
 
 
 # Bugs
 
 
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_zipped_resources_979():
     actual = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
     assert actual.exit_code == 1
@@ -185,6 +185,7 @@ def test_program_validate_zipped_resources_979():
     assert actual.stdout.count("invalid: ogd10_catalogs.zip -> capital-invalid.csv")
 
 
+@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_long_error_messages_976():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     assert actual.exit_code == 1
@@ -215,7 +216,7 @@ def test_program_validate_single_invalid_resource_221():
     )
     assert actual.exit_code == 1
     assert actual.stdout.count(
-        '[package-error] The data package has an error: resource "number-twoo" does not exist'
+        'The data package has an error: resource "number-twoo" does not exist'
     )
 
 
