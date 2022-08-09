@@ -52,7 +52,12 @@ def test_inquiry_validate_multiple_invalid_with_schema():
             "tasks": [
                 {
                     "path": "data/table.csv",
-                    "schema": {"fields": [{"name": "bad"}, {"name": "name"}]},
+                    "schema": {
+                        "fields": [
+                            {"name": "bad", "type": "integer"},
+                            {"name": "name", "type": "string"},
+                        ]
+                    },
                 },
                 {"path": "data/invalid.csv"},
             ],
