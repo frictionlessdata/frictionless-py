@@ -1,4 +1,4 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -39,8 +39,9 @@ def test_step_table_diff_from_dict():
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_diff.from_descriptor(
+            Step.from_descriptor(
                 {
+                    "type": "table-diff",
                     "resource": dict(
                         data=[
                             ["id", "name", "population"],
@@ -48,7 +49,7 @@ def test_step_table_diff_from_dict():
                             [2, "france", 50],
                             [3, "spain", 47],
                         ]
-                    )
+                    ),
                 }
             ),
         ],

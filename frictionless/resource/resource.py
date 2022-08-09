@@ -1293,8 +1293,7 @@ class Resource(Metadata):
         # Data
         data = descriptor.get("data")
         if data and not isinstance(data, (str, bool, int, float, list, dict)):
-            note = 'property "data" is not serializable'
-            raise FrictionlessException(errors.ResourceError(note=note))
+            descriptor["data"] = []
 
         # Path (standards_v1)
         if system.standards_version == "v1":

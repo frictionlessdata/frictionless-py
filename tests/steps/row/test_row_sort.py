@@ -1,4 +1,4 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -55,7 +55,9 @@ def test_step_row_sort_with_reverse_in_desriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_sort.from_descriptor({"fieldNames": ["id"], "reverse": True}),
+            Step.from_descriptor(
+                {"type": "row-sort", "fieldNames": ["id"], "reverse": True}
+            ),
         ],
     )
     target = source.transform(pipeline)
