@@ -1,0 +1,34 @@
+{
+    "resources":[
+       {
+          "name":"capitals",
+          "type":"table",
+          "path":"capitals.csv",
+          "scheme":"file",
+          "format":"csv",
+          "encoding":"utf-8",
+          "mediatype":"text/csv",
+          "dialect":{
+             "csv":{
+                "skipInitialSpace":true
+             }
+          },
+          "schema":{
+             "fields":[
+                {
+                   "name":"id",
+                   "type":"integer"
+                },
+                {
+                   "name":"cid",
+                   "type":"integer"
+                },
+                {
+                   "name":"name",
+                   "type":"string"
+                }
+             ]
+          }
+       }
+    ]
+}
