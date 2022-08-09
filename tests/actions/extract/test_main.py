@@ -1,4 +1,4 @@
-from frictionless import Resource, extract
+from frictionless import extract
 
 
 # General
@@ -18,11 +18,3 @@ def test_extract_type_package():
             {"id": 2, "name": "中国人"},
         ]
     }
-
-
-def test_extract_source_resource_instance():
-    resource = Resource("data/table.csv")
-    assert extract(resource) == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]

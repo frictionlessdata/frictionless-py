@@ -28,18 +28,19 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
-@pytest.mark.xfail(reason="error-catching")
+@pytest.mark.xfail(reason="why two identical errors?")
 def test_validate_forbidden_value_task_error():
-    checklist = Checklist.from_descriptor(
-        {
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
             "checks": [
                 {"type": "forbidden-value", "fieldName": "bad", "forbidden": [2]},
             ]
-        }
-    )
-    report = validate("data/table.csv", checklist=checklist)
-    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "task-error"],
+        },
+    }
+    report = validate(descriptor)
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", "'values' is a required property"],
     ]
 
 
@@ -300,26 +301,6 @@ def test_validate_dialect_delimiter():
 
 
 # Schema
-
-
-@pytest.mark.xfail(reason="error-catching")
-def test_validate_schema_invalid():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {
-            "fields": [
-                {"name": "name"},
-                {"name": "age", "type": "bad"},
-            ]
-        }
-    )
-    report = validate(source, schema=schema)
-    assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
-    ]
 
 
 def test_validate_schema_invalid_json():
@@ -809,11 +790,16 @@ def test_validate_custom_check_with_arguments():
     ]
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_custom_check_bad_name():
-    report = validate("data/table.csv", checks=[{"type": "bad"}])  # type: ignore
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
+            "checks": [{"type": "bad"}],
+        },
+    }
+    report = validate(descriptor)
     assert report.flatten(["type", "note"]) == [
-        ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
+        ["check-error", 'check type "bad" is not supported'],
     ]
 
 
@@ -854,18 +840,19 @@ def test_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_table_schema_issue_304():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
-    )
-    report = validate(source, schema=schema)
+    descriptor = {
+        "data": [["name", "age"], ["Alex", "33"]],
+        "schema": {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "age", "type": "bad"},
+            ]
+        },
+    }
+    report = validate(descriptor)
     assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
+        ["field-error", 'field type "bad" is not supported'],
     ]
 
 

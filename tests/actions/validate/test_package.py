@@ -78,7 +78,7 @@ def test_validate_package_invalid_descriptor_path():
     assert error.note.count("bad/datapackage.json")
 
 
-@pytest.mark.xfail(reason="error-catching")
+@pytest.mark.xfail(reason="dereference")
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
     assert report.stats.errors == 1
@@ -396,13 +396,12 @@ def test_validate_package_mixed_issue_170():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_invalid_json_issue_192():
     report = validate("data/invalid.json", type="package")
     assert report.flatten(["type", "note"]) == [
         [
             "package-error",
-            'cannot extract metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
+            'cannot retrieve metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
         ]
     ]
 
@@ -520,11 +519,13 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats.tasks == 3
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = validate("data/issue-977.json", type="package")
-    assert report.flatten() == [
-        [None, None, None, "package-error"],
+    assert report.flatten(["type", "note"]) == [
+        [
+            "resource-error",
+            "'MY_INLINE_DATA' is not of type 'object', 'array' at property 'data'",
+        ],
     ]
 
 
