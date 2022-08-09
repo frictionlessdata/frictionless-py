@@ -60,9 +60,7 @@ def validate(
 
     # Validate resource
     if type == "resource":
-        resource = source
-        if not isinstance(resource, Resource):
-            resource = Resource.from_options(resource, **options)
+        resource = Resource.from_options(source, **options)
         return resource.validate(
             checklist,
             limit_errors=limit_errors,
@@ -72,15 +70,13 @@ def validate(
 
     # Validate package
     if type == "package":
-        package = source
-        if not isinstance(package, Package):
-            # TODO: remove when we add these to names kwargs
-            options.pop("schema", None)
-            options.pop("dialect", None)
-            options.pop("checklist", None)
-            options.pop("pipeline", None)
-            options.pop("stats", None)
-            package = Package.from_options(package, **options)
+        # TODO: remove when we add these to names kwargs
+        options.pop("schema", None)
+        options.pop("dialect", None)
+        options.pop("checklist", None)
+        options.pop("pipeline", None)
+        options.pop("stats", None)
+        package = Package.from_options(source, **options)
 
         # Resource
         if resource_name:

@@ -23,12 +23,6 @@ def test_validate_invalid():
     ]
 
 
-def test_validate_from_resource_instance():
-    resource = Resource("data/table.csv")
-    report = validate(resource)
-    assert report.valid
-
-
 # Bugs
 
 

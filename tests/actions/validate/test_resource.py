@@ -252,23 +252,15 @@ def test_validate_compression_invalid():
 
 def test_validate_layout_none():
     dialect = Dialect(header=False)
-    resource = Resource("data/without-headers.csv", dialect=dialect)
-    report = validate(resource)
+    report = validate("data/without-headers.csv", dialect=dialect)
     assert report.valid
     assert report.task.stats.rows == 3
-    assert resource.dialect.header is False
-    assert resource.labels == []
-    assert resource.header == ["field1", "field2"]
 
 
 def test_validate_layout_none_extra_cell():
     dialect = Dialect(header=False)
-    resource = Resource("data/without-headers-extra.csv", dialect=dialect)
-    report = validate(resource)
+    report = validate("data/without-headers-extra.csv", dialect=dialect)
     assert report.task.stats.rows == 3
-    assert resource.dialect.header is False
-    assert resource.labels == []
-    assert resource.header == ["field1", "field2"]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [3, 3, "extra-cell"],
     ]
@@ -276,33 +268,28 @@ def test_validate_layout_none_extra_cell():
 
 def test_validate_layout_number():
     dialect = Dialect(header_rows=[2])
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["11", "12", "13", "14"]
+    report = validate("data/matrix.csv", dialect=dialect)
+    assert report.task.stats.rows == 3
     assert report.valid
 
 
 def test_validate_layout_list_of_numbers():
     dialect = Dialect(header_rows=[2, 3, 4])
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["11 21 31", "12 22 32", "13 23 33", "14 24 34"]
+    report = validate("data/matrix.csv", dialect=dialect)
+    assert report.task.stats.rows == 1
     assert report.valid
 
 
 def test_validate_layout_list_of_numbers_and_headers_join():
     dialect = Dialect(header_rows=[2, 3, 4], header_join=".")
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["11.21.31", "12.22.32", "13.23.33", "14.24.34"]
+    report = validate("data/matrix.csv", dialect=dialect)
+    assert report.task.stats.rows == 1
     assert report.valid
 
 
 def test_validate_layout_skip_rows():
     dialect = Dialect(comment_char="41", comment_rows=[2])
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["f1", "f2", "f3", "f4"]
+    report = validate("data/matrix.csv", dialect=dialect)
     assert report.task.stats.rows == 2
     assert report.task.valid
 
@@ -629,15 +616,9 @@ def test_validate_detector_sync_schema():
         }
     )
     detector = Detector(schema_sync=True)
-    resource = Resource("data/sync-schema.csv", schema=schema, detector=detector)
-    report = validate(resource)
+    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ],
-    }
 
 
 def test_validate_detector_sync_schema_invalid():
@@ -681,61 +662,40 @@ def test_validate_detector_headers_errors():
 
 def test_validate_detector_patch_schema():
     detector = Detector(schema_patch={"missingValues": ["-"]})
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "missingValues": ["-"],
-    }
 
 
 def test_validate_detector_patch_schema_fields():
     detector = Detector(
         schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
     )
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-        "missingValues": ["-"],
-    }
 
 
 def test_validate_detector_infer_type_string():
     detector = Detector(field_type="string")
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-    }
 
 
 def test_validate_detector_infer_type_any():
     detector = Detector(field_type="any")
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
-    }
 
 
 def test_validate_detector_infer_names():
     dialect = Dialect(header=False)
     detector = Detector(field_names=["id", "name"])
-    resource = Resource("data/without-headers.csv", dialect=dialect, detector=detector)
-    report = validate(resource)
-    assert resource.schema.fields[0].name == "id"
-    assert resource.schema.fields[1].name == "name"
+    report = validate("data/without-headers.csv", dialect=dialect, detector=detector)
+    assert report.task.stats.fields == 2
     assert report.task.stats.rows == 3
-    assert resource.labels == []
-    assert resource.header == ["id", "name"]
     assert report.valid
 
 
