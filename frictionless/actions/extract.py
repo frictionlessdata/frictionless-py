@@ -36,6 +36,8 @@ def extract(
     """
 
     # Detect type
+    if resource_name:
+        type = "resource"
     if not type:
         type = Detector.detect_descriptor(source)
         if not type:
@@ -45,9 +47,11 @@ def extract(
 
     # Extract resource
     if type == "resource":
-        resource = source
-        if not isinstance(resource, Resource):
-            resource = Resource.from_options(resource, type="table", **options)
+        if resource_name:
+            package = Package.from_options(source, **options)
+            resource = package.get_resource(resource_name)
+        else:
+            resource = Resource.from_options(source, type="table", **options)
         return resource.extract(
             limit_rows=limit_rows,
             process=process,
@@ -57,34 +61,13 @@ def extract(
 
     # Extract package
     if type == "package":
-        package = source
-        if not isinstance(package, Package):
-            # TODO: remove when we add these to named kwargs
-            options.pop("schema", None)
-            options.pop("dialect", None)
-            options.pop("checklist", None)
-            options.pop("pipeline", None)
-            options.pop("stats", None)
-            package = Package.from_options(package, **options)
-
-        # Resource
-        if resource_name:
-            resource = package.get_resource(resource_name)
-            return resource.extract(
-                limit_rows=limit_rows,
-                process=process,
-                filter=filter,
-                stream=stream,
-            )
-
-        # Package
-        else:
-            return package.extract(
-                limit_rows=limit_rows,
-                process=process,
-                filter=filter,
-                stream=stream,
-            )
+        package = Package.from_options(source, **options)
+        return package.extract(
+            limit_rows=limit_rows,
+            process=process,
+            filter=filter,
+            stream=stream,
+        )
 
     # Not supported
     raise FrictionlessException(f"Not supported extract type: {type}")

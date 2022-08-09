@@ -44,10 +44,9 @@ def validate(
     try:
         self.to_descriptor()
     except FrictionlessException as exception:
-        errors = exception.reasons
-        return Report.from_validation_task(self, time=timer.time, errors=errors)
+        return Report.from_validation_task(self, time=timer.time, errors=exception.errors)
 
-    # Ignore other hashings
+    # Ignore not-supported hashings
     if self.custom.get("hash"):
         warning = "hash is ignored; supported algorithms: md5/sha256"
         warnings.append(warning)

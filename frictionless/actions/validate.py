@@ -41,8 +41,11 @@ def validate(
     Returns:
         Report: validation report
     """
+    timer = helpers.Timer()
 
     # Detect type
+    if resource_name:
+        type = "resource"
     if not type:
         type = Detector.detect_descriptor(source)
         if not type:
@@ -60,7 +63,14 @@ def validate(
 
     # Validate resource
     if type == "resource":
-        resource = Resource.from_options(source, **options)
+        try:
+            if resource_name:
+                package = Package.from_options(source, **options)
+                resource = package.get_resource(resource_name)
+            else:
+                resource = Resource.from_options(source, **options)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.errors)
         return resource.validate(
             checklist,
             limit_errors=limit_errors,
@@ -70,33 +80,17 @@ def validate(
 
     # Validate package
     if type == "package":
-        # TODO: remove when we add these to names kwargs
-        options.pop("schema", None)
-        options.pop("dialect", None)
-        options.pop("checklist", None)
-        options.pop("pipeline", None)
-        options.pop("stats", None)
-        package = Package.from_options(source, **options)
-
-        # Resource
-        if resource_name:
-            resource = package.get_resource(resource_name)
-            return resource.validate(
-                checklist,
-                limit_errors=limit_errors,
-                limit_rows=limit_rows,
-                strict=strict,
-            )
-
-        # Package
-        else:
-            return package.validate(
-                checklist,
-                limit_errors=limit_errors,
-                limit_rows=limit_rows,
-                strict=strict,
-                parallel=parallel,
-            )
+        try:
+            package = Package.from_options(source, **options)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.errors)
+        return package.validate(
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            strict=strict,
+            parallel=parallel,
+        )
 
     # Ensure source
     if source is None:
@@ -117,12 +111,18 @@ def validate(
 
     # Validate inquiry
     if type == "inquiry":
-        inquiry = Inquiry.from_descriptor(source)
+        try:
+            inquiry = Inquiry.from_descriptor(source)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.errors)
         return inquiry.validate()
 
     # Validate pipeline
     if type == "pipeline":
-        pipeline = Pipeline.from_descriptor(source)
+        try:
+            pipeline = Pipeline.from_descriptor(source)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.errors)
         return pipeline.validate()
 
     # Validate report

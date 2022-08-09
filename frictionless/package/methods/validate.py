@@ -48,7 +48,7 @@ def validate(
     try:
         self.to_descriptor()
     except FrictionlessException as exception:
-        errors = exception.reasons
+        errors = exception.reasons if exception.reasons else [exception.error]
         return Report.from_validation(time=timer.time, errors=errors)
 
     # Validate sequential

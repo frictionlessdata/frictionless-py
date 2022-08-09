@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Schema, Detector, Dialect, Checklist, Check, Stats
+from frictionless import Schema, Detector, Dialect, Checklist, Check, Stats
 from frictionless import validate, formats, errors, platform
 
 
@@ -12,7 +12,6 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
     assert report.stats.errors == 1
@@ -21,7 +20,6 @@ def test_validate_invalid_source():
     assert note.count("[Errno 2]") and note.count("bad.json")
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
     assert report.stats.errors == 1
@@ -324,7 +322,6 @@ def test_validate_schema_invalid():
     ]
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_schema_invalid_json():
     report = validate("data/table.csv", schema="data/invalid.json")
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [

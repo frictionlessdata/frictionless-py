@@ -71,9 +71,8 @@ def test_validate_package_with_non_tabular():
 
 
 def test_validate_package_invalid_descriptor_path():
-    with pytest.raises(FrictionlessException) as excinfo:
-        validate("bad/datapackage.json")
-    error = excinfo.value.error
+    report = validate("bad/datapackage.json")
+    error = report.errors[0]
     assert error.type == "package-error"
     assert error.note.count("[Errno 2]")
     assert error.note.count("bad/datapackage.json")
@@ -534,7 +533,6 @@ def test_validate_package_single_resource_221():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_single_resource_wrong_resource_name_221():
     report = validate("data/datapackage.json", resource_name="number-twoo")
     assert report.flatten(["type", "message"]) == [

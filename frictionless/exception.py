@@ -27,5 +27,9 @@ class FrictionlessException(Exception):
         return self.__error
 
     @property
+    def errors(self) -> List[Error]:
+        return self.__reasons if self.__reasons else [self.__error]
+
+    @property
     def reasons(self) -> List[Error]:
         return self.__reasons
