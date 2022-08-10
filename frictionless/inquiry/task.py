@@ -10,6 +10,7 @@ from ..dialect import Dialect
 from ..schema import Schema
 from ..resource import Resource
 from ..package import Package
+from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -161,6 +162,21 @@ class InquiryTask(Metadata):
 
     @classmethod
     def metadata_validate(cls, descriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
+
+        # Security
+        if not system.trusted:
+            keys = ["path", "resource", "package"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        yield errors.InquiryTaskError(note=f'path "{item}" is not safe')
+                        return
 
         # Required
         path = descriptor.get("path")

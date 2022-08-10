@@ -35,6 +35,7 @@ class System:
 
     """
 
+    trusted: bool = settings.DEFAULT_TRUSTED
     standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
     supported_hooks = [
         "create_loader",
@@ -305,6 +306,13 @@ class System:
         self.standards_version = version
         yield version
         self.standards_version = current
+
+    @contextmanager
+    def use_trusted(self, trusted: bool):
+        current = self.trusted
+        self.trusted = trusted
+        yield trusted
+        self.trusted = current
 
 
 system = System()

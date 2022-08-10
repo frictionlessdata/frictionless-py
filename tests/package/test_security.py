@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Package, Resource, FrictionlessException
+from frictionless import Package, Resource, FrictionlessException, system
 
 
 # General
@@ -11,14 +11,19 @@ def test_package_resource_unsafe_schema():
     with pytest.raises(FrictionlessException) as excinfo:
         Package({"resources": [{"path": path, "schema": schema}]})
     error = excinfo.value.error
-    assert error.type == "resource-error"
-    assert error.note.count("schema.json")
+    reasons = excinfo.value.reasons
+    assert len(reasons) == 1
+    assert error.type == "package-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note.count('schema.json" is not safe')
 
 
 def test_package_resource_unsafe_schema_trusted():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
-    Package({"resources": [{"path": path, "schema": schema}]}, trusted=True)
+    with system.use_trusted(True):
+        Package({"resources": [{"path": path, "schema": schema}]})
 
 
 def test_package_resource_from_path_error_unsafe():
@@ -26,28 +31,32 @@ def test_package_resource_from_path_error_unsafe():
     with pytest.raises(FrictionlessException) as excinfo:
         Package({"resources": [resource]})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert len(reasons) == 1
     assert error.type == "package-error"
-    assert error.note.count("resource.json")
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "package-error"
+    assert reasons[0].note.count('resource.json" is not safe')
 
 
-@pytest.mark.xfail(reason="security")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     with pytest.raises(FrictionlessException) as excinfo:
         Package({"resources": [resource.to_descriptor()], "profile": profile})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert len(reasons) == 1
     assert error.type == "package-error"
-    assert error.note.count("camtrap.json")
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "package-error"
+    assert reasons[0].note.count('camtrap.json" is not safe')
 
 
-@pytest.mark.xfail(reason="security")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
-    package = Package(
-        {"resources": [resource.to_descriptor()], "profiles": [profile]}, trusted=True
-    )
-    assert len(package.list_metadata_errors()) == 5  # type: ignore
-    for error in package.list_metadata_errors():  # type: ignore
-        assert "required" in error.message
+    with system.use_trusted(True):
+        package = Package(resources=[resource], profiles=[profile])
+        report = package.validate()
+        assert report.stats.errors == 5

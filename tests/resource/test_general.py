@@ -371,13 +371,6 @@ def test_resource_set_onerror():
     assert resource.onerror == "ignore"
 
 
-def test_resource_set_trusted():
-    resource = Resource(trusted=True)
-    assert resource.trusted is True
-    resource.trusted = False
-    assert resource.trusted is False
-
-
 def test_resource_set_package():
     test_package_1 = Package()
     resource = Resource(package=test_package_1)

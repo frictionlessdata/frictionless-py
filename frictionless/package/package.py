@@ -67,7 +67,6 @@ class Package(Metadata):
         # Software
         basepath: str = settings.DEFAULT_BASEPATH,
         onerror: IOnerror = settings.DEFAULT_ONERROR,
-        trusted: bool = settings.DEFAULT_TRUSTED,
         detector: Optional[Detector] = None,
         innerpath: Optional[str] = None,
         control: Optional[Control] = None,
@@ -89,7 +88,6 @@ class Package(Metadata):
         self.resources = resources.copy()
         self.basepath = basepath
         self.onerror = onerror
-        self.trusted = trusted
         self.detector = detector or Detector()
 
         # Connect resources
@@ -248,14 +246,6 @@ class Package(Metadata):
     being available in Header and Row objects.
     """
 
-    trusted: bool
-    """
-    Don't raise an exception on unsafe paths.
-    A path provided as a part of the descriptor considered unsafe
-    if there are path traversing or the path is absolute.
-    A path provided as `source` or `path` is alway trusted.
-    """
-
     detector: Detector
     """
     File/table detector.
@@ -380,7 +370,6 @@ class Package(Metadata):
             resources=[resource.to_copy() for resource in self.resources],
             basepath=self.basepath,
             onerror=self.onerror,
-            trusted=self.trusted,
             detector=self.detector,
         )
 
@@ -517,8 +506,9 @@ class Package(Metadata):
                             descriptor["format"] = "csv"
                             descriptor["mediatype"] = "text/csv"
                             with tempfile.NamedTemporaryFile() as file:
-                                tgt = Resource(path=file.name, format="csv", trusted=True)
-                                resource.write(tgt)
+                                with system.use_trusted(True):
+                                    target = Resource(path=file.name, format="csv")
+                                    resource.write(target)
                                 archive.write(file.name, path)
 
                     # Multipart data
@@ -707,6 +697,17 @@ class Package(Metadata):
             yield from metadata_errors
             return
 
+        # Security
+        if not system.trusted:
+            keys = ["resources", "profiles"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        yield errors.PackageError(note=f'path "{item}" is not safe')
+                        return
+
         # Resoruce Names
         resource_names = []
         for resource in descriptor["resources"]:
@@ -749,23 +750,6 @@ class Package(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "resource.schema.{name}"'
                 yield errors.PackageError(note=note)
-
-    @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
-
-        # Security
-        trusted = options.setdefault("trusted", False)
-        if not trusted:
-            keys = ["resources", "profiles"]
-            for key in keys:
-                value = descriptor.get(key)
-                items = value if isinstance(value, list) else [value]
-                for item in items:
-                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
-                        error = errors.PackageError(note=f'path "{item}" is not safe')
-                        raise FrictionlessException(error)
-
-        return super().metadata_import(descriptor, **options)
 
     def metadata_export(self):
         descriptor = super().metadata_export()

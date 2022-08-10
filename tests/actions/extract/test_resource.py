@@ -1,7 +1,7 @@
 import os
 import types
 from pathlib import Path
-from frictionless import extract
+from frictionless import extract, system
 
 
 # General
@@ -92,8 +92,9 @@ def test_extract_resource_from_json_format_issue_827():
 
 def test_extract_resource_basepath_and_abspath_issue_856():
     descriptor = {"path": os.path.abspath("data/table.csv")}
-    rows = extract(descriptor, basepath="data", trusted=True)
-    assert rows == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    with system.use_trusted(True):
+        rows = extract(descriptor, basepath="data")
+        assert rows == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

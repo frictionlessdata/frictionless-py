@@ -67,7 +67,6 @@ def validate(
                 options["resource"] = {}
                 options["resource"]["descriptor"] = resource.to_descriptor()
                 options["resource"]["basepath"] = resource.basepath
-                options["resource"]["trusted"] = resource.trusted
                 options["validate"] = {}
                 options["validate"]["limit_rows"] = limit_rows
                 options["validate"]["limit_errors"] = limit_errors

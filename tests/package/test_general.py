@@ -231,13 +231,6 @@ def test_package_set_onerror():
     assert package.onerror == "ignore"
 
 
-def test_package_set_trusted():
-    package = Package(trusted=True)
-    assert package.trusted is True
-    package.trusted = False
-    assert package.trusted is False
-
-
 def test_package_pprint():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})

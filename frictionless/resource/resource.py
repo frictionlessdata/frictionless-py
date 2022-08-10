@@ -84,7 +84,6 @@ class Resource(Metadata):
         # Software
         basepath: Optional[str] = None,
         onerror: Optional[IOnerror] = None,
-        trusted: Optional[bool] = None,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
         control: Optional[Control] = None,
@@ -121,7 +120,6 @@ class Resource(Metadata):
         # Store inherited state
         self.__basepath = basepath
         self.__onerror = onerror
-        self.__trusted = trusted
         self.__detector = detector
 
         # Store internal state
@@ -474,24 +472,6 @@ class Resource(Metadata):
     @onerror.setter
     def onerror(self, value: IOnerror):
         self.__onerror = value
-
-    @property
-    def trusted(self) -> bool:
-        """
-        Don't raise an exception on unsafe paths.
-        A path provided as a part of the descriptor considered unsafe
-        if there are path traversing or the path is absolute.
-        A path provided as `source` or `path` is alway trusted.
-        """
-        if self.__trusted is not None:
-            return self.__trusted
-        elif self.package:
-            return self.package.trusted
-        return settings.DEFAULT_TRUSTED
-
-    @trusted.setter
-    def trusted(self, value: bool):
-        self.__trusted = value
 
     @property
     def detector(self) -> Detector:
@@ -1009,7 +989,6 @@ class Resource(Metadata):
             data=self.data,
             basepath=self.basepath,
             onerror=self.onerror,
-            trusted=self.trusted,
             detector=self.detector,
             package=self.package,
             control=self.__control,
@@ -1224,6 +1203,19 @@ class Resource(Metadata):
             yield from metadata_errors
             return
 
+        # Security
+        if not system.trusted:
+            keys = ["path"]
+            keys += ["extrapaths", "profiles"]
+            keys += ["dialect", "schema", "checklist", "pipeline"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        yield errors.ResourceError(note=f'path "{item}" is not safe')
+                        return
+
         # Required
         path = descriptor.get("path")
         data = descriptor.get("data")
@@ -1271,25 +1263,6 @@ class Resource(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "schema.{name}"'
                 yield errors.ResourceError(note=note)
-
-    @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
-
-        # Security
-        trusted = options.setdefault("trusted", False)
-        if not trusted:
-            keys = ["path"]
-            keys += ["extrapaths", "profiles"]
-            keys += ["dialect", "schema", "checklist", "pipeline"]
-            for key in keys:
-                value = descriptor.get(key)
-                items = value if isinstance(value, list) else [value]
-                for item in items:
-                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
-                        error = errors.ResourceError(note=f'path "{item}" is not safe')
-                        raise FrictionlessException(error)
-
-        return super().metadata_import(descriptor, **options)
 
     def metadata_export(self):
         descriptor = super().metadata_export()
