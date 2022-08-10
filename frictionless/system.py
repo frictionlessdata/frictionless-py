@@ -23,8 +23,7 @@ if TYPE_CHECKING:
 
 
 # NOTE:
-# On the next iteration we can improve the plugin system to provide prioritization
-# Also, we might cosider having plugin.name although module based naming might be enough
+# Shall we add plugin.identity/priority/etc as we do in Livemark?
 
 
 # TODO: finish typing
