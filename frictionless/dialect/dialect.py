@@ -237,7 +237,7 @@ class Dialect(Metadata):
             if control_descriptor:
                 descriptor[type] = control_descriptor
 
-        # Csv (standards_v1)
+        # Csv (standards/v1)
         if system.standards_version == "v1":
             for name, value in descriptor.pop("csv", {}).items():
                 descriptor[name] = value

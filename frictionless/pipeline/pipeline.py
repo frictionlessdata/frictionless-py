@@ -98,7 +98,7 @@ class Pipeline(Metadata):
     def metadata_transform(cls, descriptor):
         super().metadata_transform(descriptor)
 
-        # Tasks (framework_v4)
+        # Tasks (framework/v4)
         tasks = descriptor.pop("tasks", [])
         if tasks and isinstance(tasks[0], dict):
             descriptor.setdefault("steps", tasks[0].get("steps"))

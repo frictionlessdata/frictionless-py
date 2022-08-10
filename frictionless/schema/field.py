@@ -205,7 +205,7 @@ class Field(Metadata):
     def metadata_transform(cls, descriptor):
         super().metadata_transform(descriptor)
 
-        # Format (standards_v1)
+        # Format (standards/v1)
         format = descriptor.get("format")
         if format and isinstance(format, str) and format.startswith("fmt:"):
             descriptor["format"] = format.replace("fmt:", "")

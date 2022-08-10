@@ -320,12 +320,12 @@ class Schema(Metadata):
     def metadata_transform(cls, descriptor):
         super().metadata_transform(descriptor)
 
-        # Primary Key (standards_v1)
+        # Primary Key (standards/v1)
         primary_key = descriptor.get("primaryKey")
         if primary_key and not isinstance(primary_key, list):
             descriptor["primaryKey"] = [primary_key]
 
-        # Foreign Keys (standards_v1)
+        # Foreign Keys (standards/v1)
         foreign_keys = descriptor.get("foreignKeys")
         if foreign_keys:
             for fk in foreign_keys:

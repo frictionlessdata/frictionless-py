@@ -696,7 +696,7 @@ class Package(Metadata):
     def metadata_transform(cls, descriptor: IDescriptor):
         super().metadata_transform(descriptor)
 
-        # Profile (standards_v1)
+        # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
         if profile:
             if profile not in ["data-package", "tabular-data-package"]:
@@ -773,7 +773,7 @@ class Package(Metadata):
     def metadata_export(self):
         descriptor = super().metadata_export()
 
-        # Profile (standards_v1)
+        # Profile (standards/v1)
         if system.standards_version == "v1":
             profiles = descriptor.pop("profiles", None)
             descriptor["profile"] = "data-package"
