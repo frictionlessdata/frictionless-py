@@ -21,18 +21,6 @@ class Plugin:
 
     # Hooks
 
-    def create_check(self, descriptor: dict) -> Optional[Check]:
-        """Create check
-
-        Parameters:
-            name (str): check name
-            descriptor (dict): check descriptor
-
-        Returns:
-            Check: check
-        """
-        pass
-
     def create_control(self, descriptor: dict) -> Optional[Control]:
         """Create control
 

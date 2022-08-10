@@ -38,7 +38,6 @@ class System:
 
     standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
     supported_hooks = [
-        "create_check",
         "create_control",
         "create_field_candidates",
         "create_loader",
@@ -118,26 +117,6 @@ class System:
             del self.__dict__["methods"]
 
     # Hooks
-
-    def create_check(self, descriptor: dict) -> Check:
-        """Create check
-
-        Parameters:
-            descriptor (dict): check descriptor
-
-        Returns:
-            Check: check
-        """
-        type = descriptor.get("type", "")
-        for func in self.methods["create_check"].values():
-            check = func(descriptor)
-            if check is not None:
-                return check
-        for Class in vars(import_module("frictionless.checks")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'check "{type}" is not supported'
-        raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, descriptor: dict) -> Control:
         """Create control
