@@ -19,6 +19,7 @@ def program_transform(
     steps: str = common.steps,
     # Command
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
     """Transform data using a provided pipeline.
@@ -27,9 +28,11 @@ def program_transform(
     that can be accepted by this function.
     """
 
-    # Standards version
+    # Setup system
+    if trusted:
+        system.trusted = trusted
     if standards:
-        system.standards_version = standards  # type: ignore
+        system.standards = standards  # type: ignore
 
     # Support stdin
     is_stdin = False

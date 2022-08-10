@@ -12,7 +12,7 @@ from . import settings
 from . import errors
 
 if TYPE_CHECKING:
-    from .interfaces import IStandardsVersion
+    from .interfaces import IStandards
     from .resource import Resource, Loader, Parser
     from .package import Manager, Storage
     from .plugin import Plugin
@@ -36,7 +36,7 @@ class System:
     """
 
     trusted: bool = settings.DEFAULT_TRUSTED
-    standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
+    standards: IStandards = settings.DEFAULT_STANDARDS
     supported_hooks = [
         "create_loader",
         "create_manager",
@@ -301,11 +301,11 @@ class System:
         self.__http_session = None
 
     @contextmanager
-    def use_standards_version(self, version: IStandardsVersion):
-        current = self.standards_version
-        self.standards_version = version
+    def use_standards(self, version: IStandards):
+        current = self.standards
+        self.standards = version
         yield version
-        self.standards_version = current
+        self.standards = current
 
     @contextmanager
     def use_trusted(self, trusted: bool):

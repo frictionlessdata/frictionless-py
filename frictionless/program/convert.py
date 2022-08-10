@@ -24,13 +24,16 @@ def program_convert(
     er_diagram: bool = common.er_diagram,
     markdown: bool = common.markdown,
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
     """Convert metadata to various output"""
 
-    # Standards version
+    # Setup system
+    if trusted:
+        system.trusted = trusted
     if standards:
-        system.standards_version = standards  # type: ignore
+        system.standards = standards  # type: ignore
 
     # Validate input
     if not source:

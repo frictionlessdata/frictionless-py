@@ -68,6 +68,7 @@ def program_validate(
     yaml: bool = common.yaml,
     json: bool = common.json,
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
     """
@@ -77,9 +78,11 @@ def program_validate(
     Default output format is YAML with a front matter.
     """
 
-    # Standards version
+    # Setup system
+    if trusted:
+        system.trusted = trusted
     if standards:
-        system.standards_version = standards  # type: ignore
+        system.standards = standards  # type: ignore
 
     # Support stdin
     is_stdin = False

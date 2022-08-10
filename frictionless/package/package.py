@@ -755,7 +755,7 @@ class Package(Metadata):
         descriptor = super().metadata_export()
 
         # Profile (standards/v1)
-        if system.standards_version == "v1":
+        if system.standards == "v1":
             profiles = descriptor.pop("profiles", None)
             descriptor["profile"] = "data-package"
             if profiles:

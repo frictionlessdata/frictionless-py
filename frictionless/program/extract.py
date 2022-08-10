@@ -53,11 +53,11 @@ def program_extract(
     valid: bool = common.valid_rows,
     invalid: bool = common.invalid_rows,
     limit_rows: int = common.limit_rows,
-    trusted: bool = common.trusted,
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
     """
@@ -67,9 +67,11 @@ def program_extract(
     Default output format is tabulated with a front matter.
     """
 
-    # Standards version
+    # Setup system
+    if trusted:
+        system.trusted = trusted
     if standards:
-        system.standards_version = standards  # type: ignore
+        system.standards = standards  # type: ignore
 
     # Support stdin
     is_stdin = False
@@ -159,7 +161,6 @@ def program_extract(
             limit_rows=limit_rows,
             process=prepare_process(),
             filter=prepare_filter(),
-            trusted=trusted,
         )
 
     # Extract data

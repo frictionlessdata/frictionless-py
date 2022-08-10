@@ -1224,7 +1224,7 @@ class Resource(Metadata):
             yield errors.ResourceError(note=note)
 
         # Required (standards/v2-strict)
-        if system.standards_version == "v2-strict":
+        if system.standards == "v2-strict":
             type = descriptor.get("type")
             names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
             if type == "table":
@@ -1273,7 +1273,7 @@ class Resource(Metadata):
             descriptor["data"] = []
 
         # Path (standards/v1)
-        if system.standards_version == "v1":
+        if system.standards == "v1":
             path = descriptor.get("path")
             extrapaths = descriptor.pop("extrapaths", None)
             if extrapaths:
@@ -1283,7 +1283,7 @@ class Resource(Metadata):
                 descriptor["path"].extend(extrapaths)
 
         # Profile (standards/v1)
-        if system.standards_version == "v1":
+        if system.standards == "v1":
             type = descriptor.pop("type", None)
             profiles = descriptor.pop("profiles", None)
             descriptor["profile"] = "data-resource"
@@ -1293,7 +1293,7 @@ class Resource(Metadata):
                 descriptor["profile"] = profiles[0]
 
         # Stats (standards/v1)
-        if system.standards_version == "v1":
+        if system.standards == "v1":
             stats = descriptor.pop("stats", None)
             if stats:
                 sha256 = stats.get("sha256")

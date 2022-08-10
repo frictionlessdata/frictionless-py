@@ -12,6 +12,6 @@ def test_inquiry_task_validate():
 
 def test_inquiry_task_validate_standards_v2_strict():
     inquiry = InquiryTask(resource="data/resource.json")
-    with system.use_standards_version("v2-strict"):
+    with system.use_standards("v2-strict"):
         report = inquiry.validate()
     assert not report.valid

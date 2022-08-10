@@ -15,7 +15,7 @@ def test_resource_validate():
 
 def test_resource_validate_invalid_resource_standards_v2_strict():
     resource = Resource({"path": "data/table.csv"})
-    with system.use_standards_version("v2-strict"):
+    with system.use_standards("v2-strict"):
         report = resource.validate()
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],

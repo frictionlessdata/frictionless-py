@@ -11,6 +11,7 @@ def program_summary(
     source: str = common.source,
     # Command
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
     """Summary of data source.
@@ -18,9 +19,11 @@ def program_summary(
     It will return schema, sample of the data and validation report for the resource.
     """
 
-    # Standards version
+    # Setup system
+    if trusted:
+        system.trusted = trusted
     if standards:
-        system.standards_version = standards  # type: ignore
+        system.standards = standards  # type: ignore
 
     # Validate input
     if not source:

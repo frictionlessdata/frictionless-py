@@ -75,6 +75,6 @@ def test_package_profiles_to_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profiles=[profile])
-    with system.use_standards_version("v1"):
+    with system.use_standards("v1"):
         descriptor = package.to_descriptor()
         assert descriptor["profile"] == profile

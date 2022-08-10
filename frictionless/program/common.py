@@ -242,11 +242,6 @@ basepath = Option(
     help="Basepath of the resource/package",
 )
 
-trusted = Option(
-    default=None,
-    help="Follow unsafe paths",
-)
-
 resource_name = Option(
     default=None,
     help="Name of resource to validate",
@@ -315,6 +310,11 @@ port = Option(
 debug = Option(
     default=False,
     help="Enable debug mode",
+)
+
+trusted = Option(
+    default=False,
+    help="Follow unsafe paths",
 )
 
 standards = Option(
