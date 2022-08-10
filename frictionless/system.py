@@ -44,7 +44,6 @@ class System:
         "create_loader",
         "create_manager",
         "create_parser",
-        "create_step",
         "create_storage",
         "detect_resource",
         "select_Check",
@@ -222,26 +221,6 @@ class System:
                 return parser
         note = f'format "{name}" is not supported'
         raise FrictionlessException(errors.FormatError(note=note))
-
-    def create_step(self, descriptor: dict) -> Step:
-        """Create step
-
-        Parameters:
-            descriptor (dict): step descriptor
-
-        Returns:
-            Step: step
-        """
-        type = descriptor.get("type", "")
-        for func in self.methods["create_step"].values():
-            step = func(descriptor)
-            if step is not None:
-                return step
-        for Class in vars(import_module("frictionless.steps")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'step "{type}" is not supported'
-        raise FrictionlessException(errors.StepError(note=note))
 
     def create_storage(self, name: str, source: Any, **options) -> Storage:
         """Create storage

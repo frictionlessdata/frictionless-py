@@ -89,17 +89,6 @@ class Plugin:
         """
         pass
 
-    def create_step(self, descriptor: dict) -> Optional[Step]:
-        """Create step
-
-        Parameters:
-            descriptor (dict): step descriptor
-
-        Returns:
-            Step: step
-        """
-        pass
-
     def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
         """Create storage
 
