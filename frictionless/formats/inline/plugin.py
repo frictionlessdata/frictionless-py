@@ -10,10 +10,6 @@ class InlinePlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "inline":
-            return InlineControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "inline":
             return InlineParser(resource)
@@ -29,3 +25,7 @@ class InlinePlugin(Plugin):
                     resource.mediatype = "application/inline"
         elif resource.format == "inline":
             resource.data = []
+
+    def select_Control(self, type):
+        if type == "inline":
+            return InlineControl

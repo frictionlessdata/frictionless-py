@@ -9,10 +9,6 @@ class OdsPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "ods":
-            return OdsControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "ods":
             return OdsParser(resource)
@@ -21,3 +17,7 @@ class OdsPlugin(Plugin):
         if resource.format == "ods":
             resource.type = "table"
             resource.mediatype = "application/vnd.oasis.opendocument.spreadsheet"
+
+    def select_Control(self, type):
+        if type == "ods":
+            return OdsControl

@@ -11,13 +11,13 @@ class RemotePlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "remote":
-            return RemoteControl.from_descriptor(descriptor)
-
     def create_loader(self, resource):
         if resource.scheme in settings.DEFAULT_SCHEMES:
             return RemoteLoader(resource)
+
+    def select_Control(self, type):
+        if type == "remote":
+            return RemoteControl
 
     # Helpers
 

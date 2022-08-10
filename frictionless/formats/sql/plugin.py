@@ -15,10 +15,6 @@ class SqlPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "sql":
-            return SqlControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "sql":
             return SqlParser(resource)
@@ -35,3 +31,7 @@ class SqlPlugin(Plugin):
                     resource.scheme = ""
                     resource.format = "sql"
                     resource.mediatype = "application/sql"
+
+    def select_Control(self, type):
+        if type == "sql":
+            return SqlControl

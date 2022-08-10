@@ -10,10 +10,6 @@ class StreamPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "stream":
-            return StreamControl.from_descriptor(descriptor)
-
     def create_loader(self, resource):
         if resource.scheme == "stream":
             return StreamLoader(resource)
@@ -24,3 +20,7 @@ class StreamPlugin(Plugin):
                 resource.scheme = "stream"
         elif resource.scheme == "stream":
             resource.data = io.BufferedRandom(io.BytesIO())  # type: ignore
+
+    def select_Control(self, type):
+        if type == "stream":
+            return StreamControl

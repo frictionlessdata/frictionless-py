@@ -9,10 +9,6 @@ class JsonPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "json":
-            return JsonControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "json":
             return JsonParser(resource)
@@ -24,3 +20,7 @@ class JsonPlugin(Plugin):
             resource.mediatype = f"text/{resource.format}"
             if resource.format in ["jsonl", "ndjson"]:
                 resource.type = "table"
+
+    def select_Control(self, type):
+        if type == "json":
+            return JsonControl

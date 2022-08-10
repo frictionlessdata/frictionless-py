@@ -13,10 +13,6 @@ class ZenodoPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "zenodo":
-            return ZenodoControl.from_descriptor(descriptor)
-
     # TODO: improve
     def create_manager(self, source, *, control=None):
         if isinstance(source, str):
@@ -27,3 +23,7 @@ class ZenodoPlugin(Plugin):
                     if parsed.path.startswith("/record/"):
                         control.record = parsed.path.replace("/record/", "")
                     return ZenodoManager(control)
+
+    def select_Control(self, type):
+        if type == "zenodo":
+            return ZenodoControl

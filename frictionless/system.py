@@ -38,11 +38,12 @@ class System:
 
     standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
     supported_hooks = [
-        "create_control",
+        # TODO: rename?
         "create_field_candidates",
         "create_loader",
         "create_manager",
         "create_parser",
+        # TODO: remove after rebase on Manager API
         "create_storage",
         "detect_resource",
         "select_Check",
@@ -117,22 +118,6 @@ class System:
             del self.__dict__["methods"]
 
     # Hooks
-
-    def create_control(self, descriptor: dict) -> Control:
-        """Create control
-
-        Parameters:
-            descriptor (dict): control descriptor
-
-        Returns:
-            Control: control
-        """
-        control = None
-        for func in self.methods["create_control"].values():
-            control = func(descriptor)
-            if control is not None:
-                return control
-        return Control.from_descriptor(descriptor)
 
     def create_field_candidates(self) -> List[dict]:
         """Create candidates
@@ -243,9 +228,6 @@ class System:
         for func in self.methods["select_Control"].values():
             Class = func(type)
             if Class is not None:
-                return Class
-        for Class in vars(import_module("frictionless.formats")).values():
-            if getattr(Class, "type", None) == type:
                 return Class
         note = f'control type "{type}" is not supported'
         raise FrictionlessException(errors.ControlError(note=note))

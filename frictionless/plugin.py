@@ -21,17 +21,6 @@ class Plugin:
 
     # Hooks
 
-    def create_control(self, descriptor: dict) -> Optional[Control]:
-        """Create control
-
-        Parameters:
-            descriptor (dict): control descriptor
-
-        Returns:
-            Control: control
-        """
-        pass
-
     def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
         """Create candidates
 

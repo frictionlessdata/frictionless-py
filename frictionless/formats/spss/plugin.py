@@ -9,10 +9,6 @@ class SpssPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "spss":
-            return SpssControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format in ["sav", "zsav"]:
             return SpssParser(resource)
@@ -20,3 +16,7 @@ class SpssPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.format in ["sav", "zsav"]:
             resource.type = "table"
+
+    def select_Control(self, type):
+        if type == "spss":
+            return SpssControl

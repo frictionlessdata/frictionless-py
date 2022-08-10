@@ -16,10 +16,6 @@ class BigqueryPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "bigquery":
-            return BigqueryControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "bigquery":
             return BigqueryParser(resource)
@@ -34,3 +30,7 @@ class BigqueryPlugin(Plugin):
                 resource.type = "table"
                 resource.scheme = ""
                 resource.format = "bigquery"
+
+    def select_Control(self, type):
+        if type == "bigquery":
+            return BigqueryControl

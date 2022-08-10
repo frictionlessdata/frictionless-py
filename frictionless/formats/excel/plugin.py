@@ -9,10 +9,6 @@ class ExcelPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "excel":
-            return ExcelControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "xlsx":
             return XlsxParser(resource)
@@ -23,3 +19,7 @@ class ExcelPlugin(Plugin):
         if resource.format in ["xlsx", "xls"]:
             resource.type = "table"
             resource.mediatype = "application/vnd.ms-excel"
+
+    def select_Control(self, type):
+        if type == "excel":
+            return ExcelControl

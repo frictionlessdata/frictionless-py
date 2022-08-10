@@ -9,10 +9,6 @@ class ParquetPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "parquet":
-            return ParquetControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "parq":
             return ParquetParser(resource)
@@ -21,3 +17,7 @@ class ParquetPlugin(Plugin):
         if resource.format == "parq":
             resource.type = "table"
             resource.mediatype = "appliction/parquet"
+
+    def select_Control(self, type):
+        if type == "parquet":
+            return ParquetControl

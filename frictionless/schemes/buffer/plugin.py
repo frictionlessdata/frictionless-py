@@ -9,10 +9,6 @@ class BufferPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "buffer":
-            return BufferControl.from_descriptor(descriptor)
-
     def create_loader(self, resource):
         if resource.scheme == "buffer":
             return BufferLoader(resource)
@@ -23,3 +19,7 @@ class BufferPlugin(Plugin):
                 resource.scheme = "buffer"
         elif resource.scheme == "buffer":
             resource.data = b""
+
+    def select_Control(self, type):
+        if type == "buffer":
+            return BufferControl
