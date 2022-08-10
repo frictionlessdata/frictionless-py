@@ -259,7 +259,7 @@ def test_package_dialect_no_header_issue_167():
     assert rows[1]["score"] == 1
 
 
-def test_package_validation_is_not_strict_enough_issue_869():
+def test_package_validation_does_not_catch_errors_issue_869():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/issue-869.json")
     error = excinfo.value.error

@@ -31,7 +31,6 @@ def validate(
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
     parallel: bool = False,
-    strict: bool = False,
     **options,
 ):
     """Validate resource
@@ -84,7 +83,6 @@ def validate(
             checklist,
             limit_errors=limit_errors,
             limit_rows=limit_rows,
-            strict=strict,
         )
 
     # Validate package
@@ -97,7 +95,6 @@ def validate(
             checklist,
             limit_errors=limit_errors,
             limit_rows=limit_rows,
-            strict=strict,
             parallel=parallel,
         )
 

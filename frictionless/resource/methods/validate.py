@@ -17,13 +17,11 @@ def validate(
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
-    strict: bool = False,
 ):
     """Validate resource
 
     Parameters:
         checklist? (checklist): a Checklist object
-        strict? (bool): validate metadata as it is
 
     Returns:
         Report: validation report

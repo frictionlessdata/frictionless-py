@@ -9,6 +9,7 @@ from ..resource import Resource
 from ..report import Report
 from ..schema import Schema
 from ..detector import Detector
+from ..system import system
 from . import common
 
 
@@ -22,8 +23,14 @@ def program_convert(
     yaml: bool = common.yaml,
     er_diagram: bool = common.er_diagram,
     markdown: bool = common.markdown,
+    debug: bool = common.debug,
+    standards: str = common.standards,
 ):
     """Convert metadata to various output"""
+
+    # Standards version
+    if standards:
+        system.standards_version = standards  # type: ignore
 
     # Validate input
     if not source:
@@ -54,8 +61,10 @@ def program_convert(
         elif metadata_type == "pipeline":
             metadata = Pipeline.from_descriptor(source)
     except Exception as exception:
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
 
     # Not found/supported
     if not metadata:

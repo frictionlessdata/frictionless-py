@@ -8,6 +8,7 @@ from ..actions import validate
 from ..detector import Detector
 from ..checklist import Checklist, Check
 from ..dialect import Dialect
+from ..system import system
 from .main import program
 from .. import formats
 from .. import helpers
@@ -64,10 +65,10 @@ def program_validate(
     limit_errors: int = common.limit_errors,
     limit_rows: int = common.limit_rows,
     parallel: bool = common.parallel,
-    strict: bool = common.strict,
     yaml: bool = common.yaml,
     json: bool = common.json,
     debug: bool = common.debug,
+    standards: str = common.standards,
 ):
     """
     Validate a data source.
@@ -75,6 +76,10 @@ def program_validate(
     Based on the inferred data source type it will validate resource or package.
     Default output format is YAML with a front matter.
     """
+
+    # Standards version
+    if standards:
+        system.standards_version = standards  # type: ignore
 
     # Support stdin
     is_stdin = False
@@ -173,7 +178,6 @@ def program_validate(
             limit_errors=limit_errors,
             limit_rows=limit_rows,
             parallel=parallel,
-            strict=strict,
         )
 
     # Validate source

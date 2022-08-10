@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 # General
 
 
-IStandardsVersion = Literal["v1", "v2"]
+IStandardsVersion = Literal["v1", "v2", "v2-strict"]
 IDescriptor = Dict[str, Any]
 IProfile = Dict[str, Any]
 IByteStream = BinaryIO

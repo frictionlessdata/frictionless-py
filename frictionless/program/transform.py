@@ -4,6 +4,7 @@ import typer
 from typing import List
 from ..pipeline import Pipeline, Step
 from ..actions import transform
+from ..system import system
 from .main import program
 from .. import helpers
 from . import common
@@ -18,12 +19,17 @@ def program_transform(
     steps: str = common.steps,
     # Command
     debug: bool = common.debug,
+    standards: str = common.standards,
 ):
     """Transform data using a provided pipeline.
 
     Please read more about Transform pipelines to write a pipeline
     that can be accepted by this function.
     """
+
+    # Standards version
+    if standards:
+        system.standards_version = standards  # type: ignore
 
     # Support stdin
     is_stdin = False

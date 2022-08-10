@@ -1214,7 +1214,7 @@ class Resource(Metadata):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor, *, strict=False):
+    def metadata_validate(cls, descriptor: IDescriptor):
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -1227,15 +1227,15 @@ class Resource(Metadata):
             note = 'one of the properties "path" or "data" is required'
             yield errors.ResourceError(note=note)
 
-        # Required (strict)
-        type = descriptor.get("type")
-        if strict:
+        # Required (standards/v2-strict)
+        if system.standards_version == "v2-strict":
+            type = descriptor.get("type")
             names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
             if type == "table":
                 names.append("schema")
             for name in names:
                 if name not in descriptor:
-                    note = f'property "{name}" is required in a strict mode'
+                    note = f'property "{name}" is required by standards "v2-strict"'
                     yield errors.ResourceError(note=note)
 
         # Path/Data

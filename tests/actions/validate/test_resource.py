@@ -1,7 +1,7 @@
 import pytest
 import pathlib
 from frictionless import Schema, Detector, Dialect, Check, Stats
-from frictionless import validate, formats, errors, platform
+from frictionless import validate, formats, errors, platform, system
 
 
 # General
@@ -44,16 +44,16 @@ def test_validate_forbidden_value_task_error():
     ]
 
 
-@pytest.mark.xfail(reason="strict")
-def test_validate_invalid_resource_strict():
-    report = validate({"path": "data/table.csv"}, strict=True)
+def test_validate_invalid_resource_standards_v2_strict():
+    with system.use_standards_version("v2-strict"):
+        report = validate({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 

@@ -2,13 +2,16 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checklist import Checklist
+from ..report import Report
 from ..dialect import Dialect
 from ..schema import Schema
 from ..resource import Resource
 from ..package import Package
 from .. import settings
+from .. import helpers
 from .. import errors
 
 
@@ -63,40 +66,50 @@ class InquiryTask(Metadata):
     package: Optional[str] = None
     """NOTE: add docs"""
 
-    strict: bool = False
-    """NOTE: add docs"""
-
     # Validate
 
     def validate(self):
+        timer = helpers.Timer()
 
         # Validate package
         if self.package:
-            package = Package.from_descriptor(self.package)
-            report = package.validate(strict=self.strict)
+            try:
+                package = Package.from_descriptor(self.package)
+            except FrictionlessException as exception:
+                errors = exception.to_errors()
+                return Report.from_validation(time=timer.time, errors=errors)
+            report = package.validate()
             return report
 
         # Validate resource
         if self.resource:
-            resource = Resource.from_descriptor(self.resource)
-            report = resource.validate(strict=self.strict)
+            try:
+                resource = Resource.from_descriptor(self.resource)
+            except FrictionlessException as exception:
+                errors = exception.to_errors()
+                return Report.from_validation(time=timer.time, errors=errors)
+            report = resource.validate()
             return report
 
         # Validate default
-        resource = Resource.from_options(
-            type=self.type,
-            path=self.path,
-            scheme=self.scheme,
-            format=self.format,
-            encoding=self.encoding,
-            compression=self.compression,
-            extrapaths=self.extrapaths,
-            innerpath=self.innerpath,
-            dialect=self.dialect,
-            schema=self.schema,
-            checklist=self.checklist,
-        )
-        report = resource.validate(strict=self.strict)
+        try:
+            resource = Resource.from_options(
+                type=self.type,
+                path=self.path,
+                scheme=self.scheme,
+                format=self.format,
+                encoding=self.encoding,
+                compression=self.compression,
+                extrapaths=self.extrapaths,
+                innerpath=self.innerpath,
+                dialect=self.dialect,
+                schema=self.schema,
+                checklist=self.checklist,
+            )
+        except FrictionlessException as exception:
+            errors = exception.to_errors()
+            return Report.from_validation(time=timer.time, errors=errors)
+        report = resource.validate()
         return report
 
     # Metadata
@@ -121,7 +134,6 @@ class InquiryTask(Metadata):
             "checklist": {"type": ["object", "string"]},
             "resource": {"type": ["object", "string"]},
             "package": {"type": ["object", "string"]},
-            "strict": {"type": "boolean"},
         },
     }
 

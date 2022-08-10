@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Check, Checklist, errors
+from frictionless import Resource, Detector, Check, Checklist, errors, system
 from frictionless import FrictionlessException
 
 
@@ -13,17 +13,17 @@ def test_resource_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="strict")
-def test_resource_validate_invalid_resource_strict():
+def test_resource_validate_invalid_resource_standards_v2_strict():
     resource = Resource({"path": "data/table.csv"})
-    report = resource.validate(strict=True)
+    with system.use_standards_version("v2-strict"):
+        report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 

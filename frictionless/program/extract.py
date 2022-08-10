@@ -7,6 +7,7 @@ from ..platform import platform
 from ..detector import Detector
 from ..dialect import Dialect
 from ..actions import extract
+from ..system import system
 from .main import program
 from .. import formats
 from .. import helpers
@@ -57,6 +58,7 @@ def program_extract(
     json: bool = common.json,
     csv: bool = common.csv,
     debug: bool = common.debug,
+    standards: str = common.standards,
 ):
     """
     Extract a data source.
@@ -64,6 +66,10 @@ def program_extract(
     Based on the inferred data source type it will return resource or package data.
     Default output format is tabulated with a front matter.
     """
+
+    # Standards version
+    if standards:
+        system.standards_version = standards  # type: ignore
 
     # Support stdin
     is_stdin = False

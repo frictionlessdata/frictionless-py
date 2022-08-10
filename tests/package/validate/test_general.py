@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Checklist, FrictionlessException
+from frictionless import Package, Checklist, FrictionlessException, system
 
 
 # General
@@ -76,17 +76,17 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="strict")
-def test_validate_package_invalid_package_strict():
+def test_validate_package_invalid_package_standards_v2_strict():
     package = Package({"resources": [{"path": "data/table.csv"}]})
-    report = package.validate(strict=True)
+    with system.use_standards_version("v2-strict"):
+        report = package.validate()
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 

@@ -2,7 +2,8 @@ import json
 import pytest
 import pathlib
 from copy import deepcopy
-from frictionless import Package, Resource, Schema, Detector, fields, validate, platform
+from frictionless import Package, Resource, Schema, Detector
+from frictionless import system, fields, validate, platform
 
 
 # General
@@ -86,16 +87,16 @@ def test_validate_package_invalid_package():
     assert error.note.count("[Errno 2]") and error.note.count("'bad'")
 
 
-@pytest.mark.xfail(reason="strict")
-def test_validate_package_invalid_package_strict():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, strict=True)
+def test_validate_package_invalid_package_standards_v2_strict():
+    with system.use_standards_version("v2-strict"):
+        report = validate({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 

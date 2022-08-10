@@ -277,11 +277,6 @@ parallel = Option(
     help="Enable multiprocessing",
 )
 
-strict = Option(
-    default=None,
-    help="Validate against strict version of the standards",
-)
-
 output_path = Option(
     default=None,
     help="Specify the output file path explicitly (e.g. package.yaml)",
@@ -324,5 +319,5 @@ debug = Option(
 
 standards = Option(
     default=None,
-    help='Set to "v1" to get Standards v1 stictly compatible metadata',
+    help="Possible options: v1, v2, v2-strict (default: v2)",
 )
