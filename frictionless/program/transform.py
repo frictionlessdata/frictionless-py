@@ -64,14 +64,19 @@ def program_transform(
     # Transform source
     try:
         resource = transform(prepare_source(), **prepare_options())
+    # TODO: we don't catch errors here because it's streaming
     except Exception as exception:
         if not debug:
             typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
             raise typer.Exit(1)
         raise
 
+    # TODO: support outputing packages
+
     # Return default
+    table = resource.to_petl()  # type: ignore
+    schema = resource.schema.to_summary()  # type: ignore
     typer.secho("\n## Schema\n")
-    typer.secho(resource.schema.to_summary())  # type: ignore
+    typer.secho(schema)
     typer.secho("\n## Table\n")
-    typer.secho(resource.to_petl())  # type: ignore
+    typer.secho(table)
