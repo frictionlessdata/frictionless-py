@@ -44,17 +44,6 @@ class Plugin:
         """
         pass
 
-    def create_error(self, descriptor: dict) -> Optional[Error]:
-        """Create error
-
-        Parameters:
-            descriptor (dict): error descriptor
-
-        Returns:
-            Error: error
-        """
-        pass
-
     def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
         """Create candidates
 

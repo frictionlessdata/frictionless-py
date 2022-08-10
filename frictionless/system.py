@@ -40,7 +40,6 @@ class System:
     supported_hooks = [
         "create_check",
         "create_control",
-        "create_error",
         "create_field_candidates",
         "create_loader",
         "create_manager",
@@ -156,26 +155,6 @@ class System:
             if control is not None:
                 return control
         return Control.from_descriptor(descriptor)
-
-    def create_error(self, descriptor: dict) -> Error:
-        """Create error
-
-        Parameters:
-            descriptor (dict): error descriptor
-
-        Returns:
-            Error: error
-        """
-        type = descriptor.get("type", "")
-        for func in self.methods["create_error"].values():
-            error = func(descriptor)
-            if error is not None:
-                return error
-        for Class in vars(import_module("frictionless.errors")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'error "{type}" is not supported'
-        raise FrictionlessException(note)
 
     def create_field_candidates(self) -> List[dict]:
         """Create candidates
