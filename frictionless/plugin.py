@@ -55,17 +55,6 @@ class Plugin:
         """
         pass
 
-    def create_field(self, descriptor: dict) -> Optional[Field]:
-        """Create field
-
-        Parameters:
-            descriptor (dict): field descriptor
-
-        Returns:
-            Field: field
-        """
-        pass
-
     def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
         """Create candidates
 

@@ -41,7 +41,6 @@ class System:
         "create_check",
         "create_control",
         "create_error",
-        "create_field",
         "create_field_candidates",
         "create_loader",
         "create_manager",
@@ -177,28 +176,6 @@ class System:
                 return Class.from_descriptor(descriptor)
         note = f'error "{type}" is not supported'
         raise FrictionlessException(note)
-
-    def create_field(self, descriptor: dict) -> Field:
-        """Create field
-
-        Parameters:
-            descriptor (dict): field descriptor
-
-        Returns:
-            Field: field
-        """
-        # TODO: move to a proper place
-        descriptor.setdefault("type", "any")
-        type = descriptor.get("type", "")
-        for func in self.methods["create_field"].values():
-            field = func(descriptor)
-            if field is not None:
-                return field
-        for Class in vars(import_module("frictionless.fields")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'field "{type}" is not supported'
-        raise FrictionlessException(errors.FieldError(note=note))
 
     def create_field_candidates(self) -> List[dict]:
         """Create candidates
