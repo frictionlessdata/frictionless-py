@@ -503,15 +503,12 @@ class Package(Metadata):
             compression = compression or platform.zipfile.ZIP_DEFLATED
             with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_descriptor()
+                print(package_descriptor)
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
-                    # Remote data
-                    if resource.remote:
-                        pass
-
                     # Memory data
-                    elif resource.memory:
+                    if resource.memory:
                         if not isinstance(resource.data, list):
                             path = f"{resource.name}.csv"
                             descriptor.pop("data", None)
@@ -535,7 +532,7 @@ class Package(Metadata):
                                 archive.write(normpath, path)
 
                     # Local Data
-                    else:
+                    elif resource.scheme == "file":
                         path = resource.path
                         normpath = resource.normpath
                         if os.path.isfile(normpath):

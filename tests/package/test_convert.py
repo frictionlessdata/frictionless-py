@@ -185,7 +185,6 @@ def test_package_to_zip_resource_multipart(tmpdir):
     ]
 
 
-@pytest.mark.xfail(reason="zip")
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     control = formats.SqlControl(table="table")

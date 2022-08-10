@@ -135,6 +135,10 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
+        # TODO: review
+        if control:
+            self.add_defined("dialect")
+
         # Handled by the create hook
         assert source is None
 
