@@ -736,7 +736,7 @@ class Resource(Metadata):
             self.fragment,
             labels=self.labels,
             schema=self.schema if self.has_schema else None,
-            field_candidates=system.create_field_candidates(),
+            field_candidates=system.detect_field_candidates(),
         )
         self.stats.fields = len(self.schema.fields)
 

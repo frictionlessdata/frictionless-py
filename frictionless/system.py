@@ -38,19 +38,18 @@ class System:
 
     standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
     supported_hooks = [
-        # TODO: rename?
-        "create_field_candidates",
         "create_loader",
         "create_manager",
         "create_parser",
-        # TODO: remove after rebase on Manager API
-        "create_storage",
+        "detect_field_candidates",
         "detect_resource",
         "select_Check",
         "select_Control",
         "select_Error",
         "select_Field",
         "select_Step",
+        # TODO: remove after rebase on Manager API
+        "create_storage",
     ]
 
     def __init__(self):
@@ -119,17 +118,6 @@ class System:
 
     # Hooks
 
-    def create_field_candidates(self) -> List[dict]:
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        candidates = settings.DEFAULT_FIELD_CANDIDATES.copy()
-        for func in self.methods["create_field_candidates"].values():
-            func(candidates)
-        return candidates
-
     def create_loader(self, resource: Resource) -> Loader:
         """Create loader
 
@@ -186,22 +174,16 @@ class System:
         note = f'format "{name}" is not supported'
         raise FrictionlessException(errors.FormatError(note=note))
 
-    def create_storage(self, name: str, source: Any, **options) -> Storage:
-        """Create storage
-
-        Parameters:
-            name (str): storage name
-            options (str): storage options
+    def detect_field_candidates(self) -> List[dict]:
+        """Create candidates
 
         Returns:
-            Storage: storage
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
-        for func in self.methods["create_storage"].values():
-            storage = func(name, source, **options)
-            if storage is not None:
-                return storage
-        note = f'storage "{name}" is not supported'
-        raise FrictionlessException(note)
+        candidates = settings.DEFAULT_FIELD_CANDIDATES.copy()
+        for func in self.methods["detect_field_candidates"].values():
+            func(candidates)
+        return candidates
 
     def detect_resource(self, resource: Resource) -> None:
         """Hook into resource detection
@@ -264,6 +246,23 @@ class System:
                 return Class
         note = f'step type "{type}" is not supported'
         raise FrictionlessException(errors.StepError(note=note))
+
+    def create_storage(self, name: str, source: Any, **options) -> Storage:
+        """Create storage
+
+        Parameters:
+            name (str): storage name
+            options (str): storage options
+
+        Returns:
+            Storage: storage
+        """
+        for func in self.methods["create_storage"].values():
+            storage = func(name, source, **options)
+            if storage is not None:
+                return storage
+        note = f'storage "{name}" is not supported'
+        raise FrictionlessException(note)
 
     # Context
 

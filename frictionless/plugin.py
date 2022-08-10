@@ -21,14 +21,6 @@ class Plugin:
 
     # Hooks
 
-    def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
-
     def create_loader(self, resource: Resource) -> Optional[Loader]:
         """Create loader
 
@@ -66,15 +58,11 @@ class Plugin:
         """
         pass
 
-    def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
-        """Create storage
-
-        Parameters:
-            name (str): storage name
-            options (str): storage options
+    def detect_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
+        """Detect field candidates
 
         Returns:
-            Storage: storage
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
         pass
 
@@ -100,4 +88,16 @@ class Plugin:
         pass
 
     def select_Step(self, type: str) -> Optional[Type[Step]]:
+        pass
+
+    def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
+        """Create storage
+
+        Parameters:
+            name (str): storage name
+            options (str): storage options
+
+        Returns:
+            Storage: storage
+        """
         pass
