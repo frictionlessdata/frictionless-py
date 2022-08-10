@@ -56,12 +56,17 @@ class Error(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        if cls is Error:
+    def metadata_specify(cls, *, type=None, property=None):
+        if type:
             system = import_module("frictionless").system
-            return system.create_error(descriptor)
+            return system.select_Error(type)
+
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
+
+        # Class props
         descriptor.pop("title", None)
         descriptor.pop("description", None)
         descriptor.pop("tags", None)
         descriptor.pop("message", None)
-        return super().metadata_import(descriptor)
