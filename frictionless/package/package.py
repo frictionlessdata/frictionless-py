@@ -506,9 +506,8 @@ class Package(Metadata):
                             descriptor["format"] = "csv"
                             descriptor["mediatype"] = "text/csv"
                             with tempfile.NamedTemporaryFile() as file:
-                                with system.use_trusted(True):
-                                    target = Resource(path=file.name, format="csv")
-                                    resource.write(target)
+                                target = Resource(path=file.name, format="csv")
+                                resource.write(target)
                                 archive.write(file.name, path)
 
                     # Multipart data
