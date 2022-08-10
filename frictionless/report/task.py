@@ -32,9 +32,6 @@ class ReportTask(Metadata):
     stats: Stats
     """NOTE: add docs"""
 
-    scope: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
-
     warnings: List[str] = attrs.field(factory=list)
     """NOTE: add docs"""
 
@@ -117,7 +114,6 @@ class ReportTask(Metadata):
             "type",
             "place",
             "stats",
-            "scope",
             "warnings",
             "errors",
         ],
@@ -127,7 +123,6 @@ class ReportTask(Metadata):
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "place": {"type": "string"},
             "stats": {"type": "object"},
-            "scope": {"type": "array"},
             "warnings": {"type": "array"},
             "errors": {"type": "array"},
         },

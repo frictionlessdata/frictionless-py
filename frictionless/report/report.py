@@ -105,12 +105,10 @@ class Report(Metadata):
         resource: Resource,
         *,
         time: float,
-        scope: List[str] = [],
         errors: List[Error] = [],
         warnings: List[str] = [],
     ):
         """Create a report from a validation task"""
-        scope = scope.copy()
         errors = errors.copy()
         warnings = warnings.copy()
         task_stats = resource.stats.to_copy() if resource.has_stats else Stats()
@@ -129,7 +127,6 @@ class Report(Metadata):
                     type=resource.type,  # type: ignore
                     place=resource.place,  # type: ignore
                     stats=task_stats,
-                    scope=scope,
                     errors=errors,
                     warnings=warnings,
                 )

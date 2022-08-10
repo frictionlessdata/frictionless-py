@@ -682,7 +682,6 @@ def test_validate_detector_infer_names():
 
 def test_validate_pick_errors():
     report = validate("data/invalid.csv", pick_errors=["blank-label", "blank-row"])
-    assert report.task.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
@@ -691,14 +690,6 @@ def test_validate_pick_errors():
 
 def test_validate_pick_errors_tags():
     report = validate("data/invalid.csv", pick_errors=["#header"])
-    assert report.task.scope == [
-        "blank-header",
-        "extra-label",
-        "missing-label",
-        "blank-label",
-        "duplicate-label",
-        "incorrect-label",
-    ]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],

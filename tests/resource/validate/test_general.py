@@ -177,7 +177,6 @@ def test_resource_validate_pick_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["blank-label", "blank-row"])
     report = resource.validate(checklist)
-    assert report.task.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
@@ -188,14 +187,6 @@ def test_resource_validate_pick_errors_tags():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["#header"])
     report = resource.validate(checklist)
-    assert report.task.scope == [
-        "blank-header",
-        "extra-label",
-        "missing-label",
-        "blank-label",
-        "duplicate-label",
-        "incorrect-label",
-    ]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],

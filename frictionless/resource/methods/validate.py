@@ -121,9 +121,5 @@ def validate(
 
     # Return report
     return Report.from_validation_task(
-        self,
-        time=timer.time,
-        scope=checklist.scope,
-        errors=errors,
-        warnings=warnings,
+        self, time=timer.time, errors=errors, warnings=warnings
     )

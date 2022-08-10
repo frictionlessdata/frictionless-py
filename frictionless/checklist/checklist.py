@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-# TODO: raise an exception if we try export a checklist with function based checks
+# TODO: raise an exception if we try export a checklist with function based checks?
 @attrs.define(kw_only=True)
 class Checklist(Metadata):
     """Checklist representation"""
