@@ -79,7 +79,7 @@ def validate(
                     **options,
                 )
         except FrictionlessException as exception:
-            return Report.from_validation(time=timer.time, errors=exception.errors)
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
         return resource.validate(
             checklist,
             limit_errors=limit_errors,
@@ -92,7 +92,7 @@ def validate(
         try:
             package = Package.from_options(source, **options)
         except FrictionlessException as exception:
-            return Report.from_validation(time=timer.time, errors=exception.errors)
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
         return package.validate(
             checklist,
             limit_errors=limit_errors,
@@ -123,7 +123,7 @@ def validate(
         try:
             inquiry = Inquiry.from_descriptor(source)
         except FrictionlessException as exception:
-            return Report.from_validation(time=timer.time, errors=exception.errors)
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
         return inquiry.validate()
 
     # Validate pipeline
@@ -131,7 +131,7 @@ def validate(
         try:
             pipeline = Pipeline.from_descriptor(source)
         except FrictionlessException as exception:
-            return Report.from_validation(time=timer.time, errors=exception.errors)
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
         return pipeline.validate()
 
     # Validate report

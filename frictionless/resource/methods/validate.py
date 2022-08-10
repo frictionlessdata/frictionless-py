@@ -44,7 +44,9 @@ def validate(
     try:
         self.to_descriptor()
     except FrictionlessException as exception:
-        return Report.from_validation_task(self, time=timer.time, errors=exception.errors)
+        return Report.from_validation_task(
+            self, time=timer.time, errors=exception.to_errors()
+        )
 
     # Ignore not-supported hashings
     if self.custom.get("hash"):
@@ -56,8 +58,9 @@ def validate(
         self.open()
     except FrictionlessException as exception:
         self.close()
-        errors = [exception.error]
-        return Report.from_validation_task(self, time=timer.time, errors=errors)
+        return Report.from_validation_task(
+            self, time=timer.time, errors=exception.to_errors()
+        )
 
     # Validate data
     with self:
