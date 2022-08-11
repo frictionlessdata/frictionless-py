@@ -1,10 +1,11 @@
 import pytest
-from frictionless import Package, Resource, FrictionlessException, system
+from frictionless import Package, Resource, FrictionlessException, system, platform
 
 
 # General
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_resource_unsafe_schema():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
@@ -26,6 +27,7 @@ def test_package_resource_unsafe_schema_trusted():
         Package({"resources": [{"path": path, "schema": schema}]})
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_resource_from_path_error_unsafe():
     resource = "data/../resource.json"
     with pytest.raises(FrictionlessException) as excinfo:
@@ -39,6 +41,7 @@ def test_package_resource_from_path_error_unsafe():
     assert reasons[0].note.count('resource.json" is not safe')
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

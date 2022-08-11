@@ -5,7 +5,7 @@ from frictionless import Package, Pipeline, steps
 # General
 
 
-@pytest.mark.xfail(reason="issue-1221")
+@pytest.mark.skip(reason="issue-1221")
 def test_transform_package():
     source = Package("data/tables/chunk*.csv")
     pipeline = Pipeline(

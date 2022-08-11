@@ -60,15 +60,16 @@ class Error(Metadata):
 
     @classmethod
     def metadata_specify(cls, *, type=None, property=None):
-        if type:
+        if type is not None:
             return platform.frictionless.system.select_Error(type)
 
     @classmethod
-    def metadata_transform(cls, descriptor):
-        super().metadata_transform(descriptor)
+    def metadata_import(cls, descriptor, **options):
 
         # Class props
         descriptor.pop("title", None)
         descriptor.pop("description", None)
         descriptor.pop("tags", None)
         descriptor.pop("message", None)
+
+        return super().metadata_import(descriptor, **options)

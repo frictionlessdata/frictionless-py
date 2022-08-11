@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource
+from frictionless import Resource, platform
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -8,6 +8,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_dereference():
     resource = Resource(path="data/table.csv", schema="data/schema.json")
     resource.infer(stats=True)
@@ -50,6 +51,7 @@ def test_resource_dialect_schema_from_path():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_dialect_schema_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource.to_descriptor() == {

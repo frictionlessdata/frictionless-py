@@ -101,6 +101,7 @@ def test_resource_extrapaths_error_bad_path_not_safe_absolute():
     assert reasons[0].note.count('chunk2.csv" is not safe')
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_extrapaths_error_bad_path_not_safe_traversing():
     extrapath = "data/../chunk2.csv"
     with pytest.raises(FrictionlessException) as excinfo:
@@ -127,6 +128,7 @@ def test_resource_profiles_error_bad_path_not_safe_absolute():
     assert reasons[0].note.count('camtrap.json" is not safe')
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_profiles_error_bad_path_not_safe_traversing():
     profile = "data/profiles/../profiles/camtrap.json"
     with pytest.raises(FrictionlessException) as excinfo:
