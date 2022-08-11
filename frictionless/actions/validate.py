@@ -22,7 +22,7 @@ def validate(
     schema: Optional[Union[Schema, str]] = None,
     stats: Optional[Stats] = None,
     # Checklist
-    checklist: Optional[Checklist] = None,
+    checklist: Optional[Union[Checklist, str]] = None,
     checks: List[Check] = [],
     pick_errors: List[str] = [],
     skip_errors: List[str] = [],
@@ -56,7 +56,9 @@ def validate(
                 type = "package"
 
     # Create checklist
-    if not checklist:
+    if isinstance(checklist, str):
+        checklist = Checklist.from_descriptor(checklist)
+    elif not checklist:
         checklist = Checklist(
             checks=checks,
             pick_errors=pick_errors,

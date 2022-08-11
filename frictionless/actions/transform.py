@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Union
 from ..exception import FrictionlessException
 from ..pipeline import Pipeline, Step
 from ..resource import Resource
@@ -15,7 +15,7 @@ def transform(
     *,
     type: Optional[str] = None,
     # Pipeline
-    pipeline: Optional[Pipeline] = None,
+    pipeline: Optional[Union[Pipeline, str]] = None,
     steps: Optional[List[Step]] = None,
     **options,
 ):
@@ -40,7 +40,9 @@ def transform(
                 type = "package"
 
     # Create pipeline
-    if not pipeline:
+    if isinstance(pipeline, str):
+        pipeline = Pipeline.from_descriptor(pipeline)
+    elif not pipeline:
         pipeline = Pipeline(steps=steps or [])
 
     # Transform resource
