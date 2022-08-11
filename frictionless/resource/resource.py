@@ -110,12 +110,12 @@ class Resource(Metadata):
         self.package = package
 
         # Store dereference state
-        self.detector = detector or Detector()
         self.dialect = dialect or Dialect()
         self.schema = schema
         self.checklist = checklist
         self.pipeline = pipeline
         self.stats = stats or Stats()
+        self.detector = detector or Detector()
 
         # Store internal state
         self.__loader: Optional[Loader] = None
@@ -128,7 +128,7 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
-        # Define defaults
+        # Define default state
         self.add_defined("dialect")
         self.add_defined("stats")
 

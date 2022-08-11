@@ -28,7 +28,6 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
-@pytest.mark.xfail(reason="why two identical errors?")
 def test_validate_forbidden_value_task_error():
     descriptor = {
         "path": "data/table.csv",

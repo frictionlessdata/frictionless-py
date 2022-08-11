@@ -46,11 +46,19 @@ class Report(Metadata):
     # Props
 
     @property
+    def error(self):
+        """Validation error (if there is only one)"""
+        if self.stats.errors != 1:
+            note = 'The "report.error" is available for single error reports'
+            raise FrictionlessException(note)
+        return self.tasks[0].error if self.tasks else self.errors[0]
+
+    @property
     def task(self):
         """Validation task (if there is only one)"""
-        if len(self.tasks) != 1:
-            error = Error(note='The "report.task" is available for single task reports')
-            raise FrictionlessException(error)
+        if self.stats.tasks != 1:
+            note = 'The "report.task" is available for single task reports'
+            raise FrictionlessException(note)
         return self.tasks[0]
 
     # Flatten
@@ -237,6 +245,8 @@ class Report(Metadata):
     def metadata_specify(cls, *, type=None, property=None):
         if property == "stats":
             return Stats
+        elif property == "errors":
+            return Error
         elif property == "tasks":
             return ReportTask
 

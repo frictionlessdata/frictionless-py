@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 
 class Metaclass(type):
+    # TODO: why it's called twice for every class?
     def __init__(cls, *args, **kwarts):
         if cls.metadata_profile_patch:  # type: ignore
             cls.metadata_profile = helpers.merge_jsonschema(

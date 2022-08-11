@@ -23,13 +23,16 @@ class Error(Metadata):
     tags: ClassVar[List[str]] = []
 
     def __attrs_post_init__(self):
+
+        # Define static state
+        self.add_defined("title")
+        self.add_defined("description")
+        self.add_defined("message")
+        self.add_defined("tags")
+
+        # Render message
         descriptor = self.metadata_export(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
-        # TODO: review this situation -- why we set it by hands??
-        self.metadata_assigned.add("title")
-        self.metadata_assigned.add("description")
-        self.metadata_assigned.add("message")
-        self.metadata_assigned.add("tags")
 
     # State
 

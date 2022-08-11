@@ -161,7 +161,7 @@ def merge_jsonschema(base, head):
     base_required = base.get("required", [])
     head_required = head.get("required", [])
     if base_required or head_required:
-        result["required"] = base_required + head_required
+        result["required"] = list(set(base_required + head_required))
     result["properties"] = copy_merge(
         base.get("properties", {}),
         head.get("properties", {}),
