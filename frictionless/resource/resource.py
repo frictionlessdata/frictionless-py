@@ -374,6 +374,10 @@ class Resource(Metadata):
         self.__dialect = value
 
     @property
+    def has_schema(self) -> bool:
+        return self.__schema is not None
+
+    @property
     def schema(self) -> Schema:
         """
         Table Schema object.
@@ -388,10 +392,6 @@ class Resource(Metadata):
         if isinstance(value, str):
             value = Schema.from_descriptor(value, basepath=self.basepath)
         self.__schema = value
-
-    @property
-    def has_schema(self) -> bool:
-        return self.__schema is not None
 
     @property
     def checklist(self) -> Optional[Checklist]:
@@ -929,19 +929,26 @@ class Resource(Metadata):
 
     # Write
 
-    def write(self, target: Any = None, **options) -> Resource:
+    def write(
+        self,
+        target: Optional[Union[Resource, Any]] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
+    ) -> Resource:
         """Write this resource to the target resource
 
         Parameters:
-            target (any|Resource): target or target resource instance
+            target (Resource|Any): target or target resource instance
             **options (dict): Resource constructor options
         """
-        native = isinstance(target, Resource)
-        target = target if native else Resource(target, **options)
-        target.infer(sample=False)
-        parser = system.create_parser(target)
+        resource = target
+        if not isinstance(resource, Resource):
+            resource = Resource(target, control=control, **options)
+        resource.infer(sample=False)
+        parser = system.create_parser(resource)
         parser.write_row_stream(self)
-        return target
+        return resource
 
     # Convert
 
