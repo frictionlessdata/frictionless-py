@@ -45,7 +45,7 @@ class baseline(Check):
 
     def connect(self, resource):
         super().connect(resource)
-        self.__stats = resource.stats.to_descriptor() if resource.has_stats else {}
+        self.__stats = resource.stats.to_descriptor()
 
     # Validate
 

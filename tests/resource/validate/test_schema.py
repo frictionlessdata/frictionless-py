@@ -6,8 +6,8 @@ from frictionless import Resource, Schema, Checklist, Detector, FrictionlessExce
 
 
 def test_resource_validate_schema_invalid_json():
-    resource = Resource("data/table.csv", schema="data/invalid.json")
-    report = resource.validate()
+    descriptor = dict(path="data/table.csv", schema="data/invalid.json")
+    report = Resource.validate_descriptor(descriptor)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "schema-error"],
     ]

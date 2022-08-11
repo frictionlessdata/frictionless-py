@@ -102,7 +102,7 @@ def test_resource_source_non_tabular():
         assert resource.path == path
         assert resource.data is None
         assert resource.type == "file"
-        assert resource.basepath == ""
+        assert resource.basepath is None
         assert resource.memory is False
         assert resource.multipart is False
         assert resource.normpath == path
@@ -124,7 +124,7 @@ def test_resource_source_non_tabular_remote():
         assert resource.type == "file"
         assert resource.memory is False
         assert resource.multipart is False
-        assert resource.basepath == ""
+        assert resource.basepath is None
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
@@ -154,7 +154,7 @@ def test_resource_source_path():
     assert resource.type == "table"
     assert resource.memory is False
     assert resource.multipart is False
-    assert resource.basepath == ""
+    assert resource.basepath is None
     assert resource.normpath == path
     if not platform.type == "windows":
         assert (
@@ -231,7 +231,7 @@ def test_resource_source_data():
         assert resource.memory is True
         assert resource.tabular is True
         assert resource.multipart is False
-        assert resource.basepath == ""
+        assert resource.basepath is None
         assert resource.read_bytes() == b""
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

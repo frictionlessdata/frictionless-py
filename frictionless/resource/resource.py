@@ -57,6 +57,7 @@ class Resource(Metadata):
     def __init__(
         self,
         source: Optional[Any] = None,
+        control: Optional[Control] = None,
         *,
         # Standard
         name: Optional[str] = None,
@@ -85,7 +86,6 @@ class Resource(Metadata):
         basepath: Optional[str] = None,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
-        control: Optional[Control] = None,
     ):
 
         # Store state
@@ -106,19 +106,16 @@ class Resource(Metadata):
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
-        self.detector = detector or Detector()
+        self.basepath = basepath
         self.package = package
 
-        # Store dereferenced state
-        self.__dialect = dialect
-        self.__control = control
-        self.__schema = schema
-        self.__checklist = checklist
-        self.__pipeline = pipeline
-        self.__stats = stats
-
-        # Store inherited state
-        self.__basepath = basepath
+        # Store dereference state
+        self.detector = detector or Detector()
+        self.dialect = dialect or Dialect()
+        self.schema = schema
+        self.checklist = checklist
+        self.pipeline = pipeline
+        self.stats = stats or Stats()
 
         # Store internal state
         self.__loader: Optional[Loader] = None
@@ -131,15 +128,25 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
-        # TODO: review
-        if control:
-            self.add_defined("dialect")
+        # Define defaults
+        self.add_defined("dialect")
+        self.add_defined("stats")
 
         # Handled by the create hook
         assert source is None
+        assert control is None
 
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, **options):
+    def __create__(
+        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
+    ):
+        if control is not None:
+
+            # Control
+            options.setdefault("dialect", control.to_dialect())
+            if source is None:
+                return Resource(**options)
+
         if source is not None:
 
             # Path
@@ -290,7 +297,7 @@ class Resource(Metadata):
         """Normalized path of the resource or raise if not set"""
         if self.path is None:
             raise FrictionlessException("path is not set")
-        return helpers.normalize_path(self.basepath, self.path)
+        return helpers.normalize_path(self.path, basepath=self.basepath)
 
     @property
     def normdata(self) -> Any:
@@ -313,7 +320,7 @@ class Resource(Metadata):
         """Normalized paths of the resource"""
         normpaths = []
         for path in self.paths:
-            normpaths.append(helpers.normalize_path(self.basepath, path))
+            normpaths.append(helpers.normalize_path(path, basepath=self.basepath))
         return normpaths
 
     # TODO: add asteriks for user/pass in url
@@ -356,20 +363,14 @@ class Resource(Metadata):
         File Dialect object.
         For more information, please check the Dialect documentation.
         """
-        if self.__dialect is None:
-            self.metadata_assigned.add("dialect")
-            if self.__dialect is None:
-                self.__dialect = Dialect()
-                if self.__control:
-                    self.__dialect.set_control(self.__control)
-        if isinstance(self.__dialect, str):
-            self.__dialect = Dialect.from_descriptor(
-                self.__dialect, basepath=self.basepath
-            )
         return self.__dialect
 
     @dialect.setter
     def dialect(self, value: Optional[Union[Dialect, str]]):
+        if value is None:
+            value = Dialect()
+        elif isinstance(value, str):
+            value = Dialect.from_descriptor(value, basepath=self.basepath)
         self.__dialect = value
 
     @property
@@ -380,12 +381,12 @@ class Resource(Metadata):
         """
         if self.__schema is None:
             raise FrictionlessException("schema is not set or inferred")
-        if isinstance(self.__schema, str):
-            self.__schema = Schema.from_descriptor(self.__schema, basepath=self.basepath)
         return self.__schema
 
     @schema.setter
     def schema(self, value: Optional[Union[Schema, str]]):
+        if isinstance(value, str):
+            value = Schema.from_descriptor(value, basepath=self.basepath)
         self.__schema = value
 
     @property
@@ -398,14 +399,12 @@ class Resource(Metadata):
         Checklist object.
         For more information, please check the Checklist documentation.
         """
-        if isinstance(self.__checklist, str):
-            self.__checklist = Checklist.from_descriptor(
-                self.__checklist, basepath=self.basepath
-            )
         return self.__checklist
 
     @checklist.setter
     def checklist(self, value: Optional[Union[Checklist, str]]):
+        if isinstance(value, str):
+            value = Checklist.from_descriptor(value, basepath=self.basepath)
         self.__checklist = value
 
     @property
@@ -414,49 +413,43 @@ class Resource(Metadata):
         Pipeline object.
         For more information, please check the Pipeline documentation.
         """
-        if isinstance(self.__pipeline, str):
-            self.__pipeline = Pipeline.from_descriptor(
-                self.__pipeline, basepath=self.basepath
-            )
         return self.__pipeline
 
     @pipeline.setter
     def pipeline(self, value: Optional[Union[Pipeline, str]]):
+        if isinstance(value, str):
+            value = Pipeline.from_descriptor(value, basepath=self.basepath)
         self.__pipeline = value
 
     @property
     def stats(self) -> Stats:
         """
         Stats object.
-        An object with the following possible properties: hash, bytes, fields, rows.
+        An object with the following possible properties: md5, sha256, bytes, fields, rows.
         """
-        if self.__stats is None:
-            self.metadata_assigned.add("stats")
-            self.__stats = Stats()
         return self.__stats
 
     @stats.setter
-    def stats(self, value: Optional[Stats]):
+    def stats(self, value: Optional[Union[Stats, str]]):
+        if value is None:
+            value = Stats()
+        elif isinstance(value, str):
+            value = Stats.from_descriptor(value, basepath=self.basepath)
         self.__stats = value
 
     @property
-    def has_stats(self) -> bool:
-        return self.__stats is not None
-
-    @property
-    def basepath(self) -> str:
+    def basepath(self) -> Optional[str]:
         """
         A basepath of the resource
-        The fullpath of the resource is joined `basepath` and /path`
+        The normpath of the resource is joined `basepath` and `/path`
         """
-        if self.__basepath is not None:
+        if self.__basepath:
             return self.__basepath
-        elif self.package:
+        if self.package:
             return self.package.basepath
-        return settings.DEFAULT_BASEPATH
 
     @basepath.setter
-    def basepath(self, value: str):
+    def basepath(self, value: Optional[str]):
         self.__basepath = value
 
     @property
@@ -959,7 +952,6 @@ class Resource(Metadata):
             basepath=self.basepath,
             detector=self.detector,
             package=self.package,
-            control=self.__control,
             **options,
         )
 

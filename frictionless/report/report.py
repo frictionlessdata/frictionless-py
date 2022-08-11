@@ -116,7 +116,7 @@ class Report(Metadata):
         """Create a report from a validation task"""
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = resource.stats.to_copy() if resource.has_stats else Stats()
+        task_stats = resource.stats.to_copy()
         task_stats.errors = len(errors)
         task_stats.warnings = len(warnings)
         task_stats.seconds = time

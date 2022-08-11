@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import List, ClassVar
-from importlib import import_module
 from .metadata import Metadata
+from .platform import platform
 from . import helpers
 
 
@@ -58,8 +58,7 @@ class Error(Metadata):
     @classmethod
     def metadata_specify(cls, *, type=None, property=None):
         if type:
-            system = import_module("frictionless").system
-            return system.select_Error(type)
+            return platform.frictionless.system.select_Error(type)
 
     @classmethod
     def metadata_transform(cls, descriptor):

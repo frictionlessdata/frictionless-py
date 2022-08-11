@@ -14,10 +14,10 @@ import textwrap
 import stringcase
 from copy import deepcopy
 from collections.abc import Mapping
-from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 from typing import List, Union, Any, Optional
+from .platform import platform
 
 
 # General
@@ -214,7 +214,7 @@ def is_remote_path(path):
     return True
 
 
-def normalize_path(basepath, path):
+def normalize_path(path: str, *, basepath: Optional[str] = None):
     if not is_remote_path(path) and not os.path.isabs(path):
         if basepath:
             separator = os.path.sep
@@ -262,15 +262,17 @@ def is_expandable_source(source: Any):
     return glob.has_magic(source) or os.path.isdir(source)
 
 
-def expand_source(source: Union[list, str], *, basepath: str):
+def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):
     if isinstance(source, list):
         return source
     paths = []
-    source = os.path.join(basepath, source)
+    if basepath:
+        source = os.path.join(basepath, source)
     pattern = f"{source}/*" if os.path.isdir(source) else source
     configs = {"recursive": True} if "**" in pattern else {}
     for path in sorted(glob.glob(pattern, **configs)):
-        path = os.path.relpath(path, basepath)
+        if basepath:
+            path = os.path.relpath(path, basepath)
         paths.append(path)
     return paths
 
@@ -395,28 +397,7 @@ def get_current_memory_usage():
         pass
 
 
-def extras(*, name: str):
-    """Decorator function to warp Frictionless extra dependency import
-    Provide name e.g. "sql" or "pandas"
-    """
-
-    def outer(func):
-        def inner(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except Exception:
-                module = import_module("frictionless.exception")
-                note = f'Please install "frictionless[{name}]"'
-                raise module.FrictionlessException(note)
-
-        return inner
-
-    return outer
-
-
 def create_yaml_dumper():
-    platform = import_module("frictionless").platform
-
     class IndentDumper(platform.yaml.SafeDumper):
         def increase_indent(self, flow=False, indentless=False):
             return super().increase_indent(flow, False)
@@ -426,7 +407,6 @@ def create_yaml_dumper():
 
 def render_markdown(path: str, data: dict) -> str:
     """Render any JSON-like object as Markdown, using jinja2 template"""
-    platform = import_module("frictionless").platform
 
     # Create environ
     template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
@@ -451,7 +431,6 @@ def dict_to_markdown(
     flatten_scalar_lists: bool = True,
 ) -> str:
     """Render any JSON-like object as Markdown, using nested bulleted lists"""
-    platform = import_module("frictionless").platform
 
     def _scalar_list(x) -> bool:
         return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
@@ -476,7 +455,7 @@ def dict_to_markdown(
                 else:
                     if isinstance(value, str):
                         # Indent to align following lines with '- '
-                        value = platform.jinja2.filters.do_indent(
+                        value = platform.jinja2_filters.do_indent(
                             value, width=2, first=False
                         )
                     lines.append(f"{label} {value}")
@@ -484,19 +463,18 @@ def dict_to_markdown(
         else:
             txt = str(x)
         if level > 0:
-            txt = platform.jinja2.filters.do_indent(
+            txt = platform.jinja2_filters.do_indent(
                 txt, width=tab, first=True, blank=False
             )
         return txt
 
-    return platform.jinja2.filters.do_indent(  # type: ignore
+    return platform.jinja2_filters.do_indent(
         _iter(x, level=0), width=tab * level, first=True, blank=False
     )
 
 
 def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
     """Tabulate dictionaries and render as a Markdown table"""
-    platform = import_module("frictionless").platform
     if kwargs:
         dicts = [filter_dict(x, **kwargs) for x in dicts]
     df = platform.pandas.DataFrame(dicts)

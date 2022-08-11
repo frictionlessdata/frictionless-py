@@ -264,7 +264,7 @@ class System:
             Class = func(type)
             if Class is not None:
                 return Class
-        for Class in vars(import_module("frictionless.checks")).values():
+        for Class in vars(platform.frictionless_checks).values():
             if getattr(Class, "type", None) == type:
                 return Class
         note = f'check type "{type}" is not supported'
@@ -283,7 +283,7 @@ class System:
             Class = func(type)
             if Class is not None:
                 return Class
-        for Class in vars(import_module("frictionless.errors")).values():
+        for Class in vars(platform.frictionless_errors).values():
             if getattr(Class, "type", None) == type:
                 return Class
         note = f'error type "{type}" is not supported'
@@ -294,7 +294,7 @@ class System:
             Class = func(type)
             if Class is not None:
                 return Class
-        for Class in vars(import_module("frictionless.fields")).values():
+        for Class in vars(platform.frictionless_fields).values():
             if getattr(Class, "type", None) == type:
                 return Class
         note = f'field type "{type}" is not supported'
@@ -305,7 +305,7 @@ class System:
             Class = func(type)
             if Class is not None:
                 return Class
-        for Class in vars(import_module("frictionless.steps")).values():
+        for Class in vars(platform.frictionless_steps).values():
             if getattr(Class, "type", None) == type:
                 return Class
         note = f'step type "{type}" is not supported'

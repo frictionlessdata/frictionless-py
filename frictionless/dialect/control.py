@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
-from importlib import import_module
 from typing import TYPE_CHECKING, ClassVar, Optional
+from ..platform import platform
 from ..metadata import Metadata
 from .. import settings
 from .. import errors
@@ -25,16 +25,18 @@ class Control(Metadata):
     description: Optional[str] = None
     """NOTE: add docs"""
 
+    # Convert
+
     @classmethod
     def from_dialect(cls, dialect: Dialect):
-
-        # Add control
         if not dialect.has_control(cls.type):
             dialect.add_control(cls())
-
         control = dialect.get_control(cls.type)
         assert isinstance(control, cls)
         return control
+
+    def to_dialect(self):
+        return platform.frictionless.Dialect(controls=[self])
 
     # Metadata
 
@@ -53,5 +55,4 @@ class Control(Metadata):
     @classmethod
     def metadata_specify(cls, *, type=None, property=None):
         if type is not None:
-            system = import_module("frictionless").system
-            return system.select_Control(type)
+            return platform.frictionless.system.select_Control(type)

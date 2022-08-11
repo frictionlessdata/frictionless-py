@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, Optional, List
-from importlib import import_module
 from multiprocessing import Pool
+from ..platform import platform
 from ..metadata import Metadata
 from ..errors import InquiryError
 from .task import InquiryTask
@@ -94,7 +94,6 @@ class Inquiry(Metadata):
 
 
 def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
-    InquiryTask = import_module("frictionless").InquiryTask
-    task = InquiryTask.from_descriptor(descriptor)
-    report = task.validate(metadata=False)
+    task = platform.frictionless.InquiryTask.from_descriptor(descriptor)
+    report = task.validate()
     return report.to_descriptor()

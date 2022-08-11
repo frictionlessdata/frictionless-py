@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor, IProfile
     from ..dialect import Dialect, Control
     from ..detector import Detector
+    from ..catalog import Catalog
     from .. import portals
 
 
@@ -49,6 +50,8 @@ class Package(Metadata):
     def __init__(
         self,
         source: Optional[Any] = None,
+        control: Optional[Control] = None,
+        innerpath: Optional[str] = None,
         *,
         # Standard
         name: Optional[str] = None,
@@ -63,13 +66,12 @@ class Package(Metadata):
         image: Optional[str] = None,
         version: Optional[str] = None,
         created: Optional[str] = None,
-        resources: List[Resource] = [],
+        resources: List[Union[Resource, str]] = [],
         # Software
-        basepath: str = settings.DEFAULT_BASEPATH,
-        innerpath: Optional[str] = None,
+        basepath: Optional[str] = None,
         detector: Optional[Detector] = None,
         dialect: Optional[Dialect] = None,
-        control: Optional[Control] = None,
+        catalog: Optional[Catalog] = None,
     ):
 
         # Store state
@@ -85,13 +87,13 @@ class Package(Metadata):
         self.image = image
         self.version = version
         self.created = created
-        self.resources = resources.copy()
         self.basepath = basepath
+        self.catalog = catalog
 
-        # TODO: the same for basepath?
-        # Connect resources
-        for resource in self.resources:
-            resource.package = self
+        # Add resources
+        self.resources = []
+        for resource in resources:
+            resource = self.add_resource(resource)
             if detector:
                 resource.detector = detector
             if dialect:
@@ -99,12 +101,19 @@ class Package(Metadata):
 
         # Handled by the create hook
         assert source is None
-        assert innerpath is None
         assert control is None
+        assert innerpath is None
 
     # TODO: support list of paths as resource paths?
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, **options):
+    def __create__(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        innerpath: Optional[str] = None,
+        **options,
+    ):
         if source is not None:
 
             # Path
@@ -117,7 +126,6 @@ class Package(Metadata):
 
             # Compressed
             elif helpers.is_zip_descriptor(source):
-                innerpath = options.pop("innerpath", None)
                 source = unzip_package(source, innerpath=innerpath)
 
             # Directory
@@ -130,13 +138,12 @@ class Package(Metadata):
             # Expandable
             elif helpers.is_expandable_source(source):
                 options["resources"] = []
-                basepath = options.get("basepath", settings.DEFAULT_BASEPATH)
+                basepath = options.get("basepath")
                 for path in helpers.expand_source(source, basepath=basepath):
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
 
             # Manager
-            control = options.pop("control", None)
             manager = system.create_manager(source, control=control)
             if manager:
                 package = manager.read_package()
@@ -235,10 +242,8 @@ class Package(Metadata):
     It can be dicts or Resource instances
     """
 
-    basepath: str
-    """
-    A basepath of the package
-    The fullpath of the resource is joined `basepath` and `/path`
+    catalog: Optional[Catalog]
+    """NOTE: add docs
     """
 
     # Props
@@ -253,15 +258,33 @@ class Package(Metadata):
         """Return names of resources"""
         return [resource.path for resource in self.resources if resource.path is not None]
 
+    @property
+    def basepath(self) -> Optional[str]:
+        """
+        A basepath of the package
+        The normpath of the resource is joined `basepath` and `/path`
+        """
+        if self.__basepath:
+            return self.__basepath
+        if self.catalog:
+            return self.catalog.basepath
+
+    @basepath.setter
+    def basepath(self, value: Optional[str]):
+        self.__basepath = value
+
     # Resources
 
-    def add_resource(self, resource: Resource) -> None:
+    def add_resource(self, resource: Union[Resource, str]) -> Resource:
         """Add new resource to the package"""
+        if isinstance(resource, str):
+            resource = Resource.from_descriptor(resource, basepath=self.basepath)
         if resource.name and self.has_resource(resource.name):
             error = errors.PackageError(note=f'resource "{resource.name}" already exists')
             raise FrictionlessException(error)
         self.resources.append(resource)
         resource.package = self
+        return resource
 
     def has_resource(self, name: str) -> bool:
         """Check if a resource is present"""
@@ -356,8 +379,7 @@ class Package(Metadata):
     def to_copy(self):
         """Create a copy of the package"""
         return super().to_copy(
-            resources=[resource.to_copy() for resource in self.resources],
-            basepath=self.basepath,
+            resources=[resource.to_copy() for resource in self.resources]
         )
 
     @staticmethod

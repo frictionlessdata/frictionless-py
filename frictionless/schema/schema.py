@@ -2,7 +2,6 @@ from __future__ import annotations
 import attrs
 from tabulate import tabulate
 from typing import TYPE_CHECKING, Optional, List, Any
-from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -76,8 +75,7 @@ class Schema(Metadata):
         Returns:
             Schema: table schema
         """
-        Resource = import_module("frictionless").Resource
-        resource = Resource.describe(source, **options)
+        resource = platform.frictionless.Resource.describe(source, **options)
         schema = resource.schema
         return schema
 

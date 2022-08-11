@@ -258,17 +258,13 @@ def test_package_validation_does_not_catch_errors_issue_869():
 
 
 def test_package_validation_duplicate_resource_names_issue_942():
-    package = Package(
-        resources=[
-            Resource(name="name", path="data/table.csv"),
-            Resource(name="name", path="data/table.csv"),
-        ]
-    )
     with pytest.raises(FrictionlessException) as excinfo:
-        package.to_descriptor()
+        Package(
+            resources=[
+                Resource(name="name", path="data/table.csv"),
+                Resource(name="name", path="data/table.csv"),
+            ]
+        )
     error = excinfo.value.error
-    reasons = excinfo.value.reasons
-    assert len(reasons) == 1
     assert error.type == "package-error"
-    assert error.note == "descriptor is not valid"
-    assert reasons[0].note == "names of the resources are not unique"
+    assert error.note == 'resource "name" already exists'

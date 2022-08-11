@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import Optional, List, Any
-from importlib import import_module
 from ..exception import FrictionlessException
+from ..platform import platform
 from ..metadata import Metadata
 from .control import Control
 from ..system import system
@@ -60,8 +60,7 @@ class Dialect(Metadata):
         Returns:
             Dialect: file dialect
         """
-        Resource = import_module("frictionless").Resource
-        resource = Resource.describe(source, **options)
+        resource = platform.frictionless.Resource.describe(source, **options)
         dialect = resource.dialect
         return dialect
 

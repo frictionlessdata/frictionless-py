@@ -8,9 +8,9 @@ import stringcase
 from pathlib import Path
 from copy import deepcopy
 from collections.abc import Mapping
-from importlib import import_module
 from typing import TYPE_CHECKING
-from typing import ClassVar, Optional, Union, List, Dict, Any, Set, Type
+from typing import Generator, ClassVar, Optional, Union, List, Dict, Any, Set, Type
+from typing_extensions import Self
 from .exception import FrictionlessException
 from .platform import platform
 from . import helpers
@@ -143,18 +143,18 @@ class Metadata(metaclass=Metaclass):
             cls.from_descriptor(descriptor)
         except FrictionlessException as exception:
             errors = exception.reasons if exception.reasons else [exception.error]
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
+        return platform.frictionless.Report.from_validation(
+            time=timer.time, errors=errors
+        )
 
     # Convert
 
     @classmethod
-    def from_options(cls, *args, **options):
+    def from_options(cls, *args, **options) -> Self:
         return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod
-    def from_descriptor(cls, descriptor, **options):
-        frictionless = import_module("frictionless")
+    def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options) -> Self:
         descriptor_path = None
         if isinstance(descriptor, str):
             descriptor_path = descriptor
@@ -164,7 +164,7 @@ class Metadata(metaclass=Metaclass):
                 options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
         Class = cls.metadata_specify(type=descriptor.get("type")) or cls
-        Error = Class.metadata_Error or frictionless.errors.MetadataError
+        Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
         Class.metadata_transform(descriptor)
         errors = list(Class.metadata_validate(descriptor))
         if errors:
@@ -176,10 +176,9 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self):
+    def to_descriptor(self) -> IDescriptor:
         descriptor = self.metadata_export()
-        frictionless = import_module("frictionless")
-        Error = self.metadata_Error or frictionless.errors.MetadataError
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
         errors = list(self.metadata_validate(descriptor))
         if errors:
             error = Error(note="descriptor is not valid")
@@ -194,18 +193,19 @@ class Metadata(metaclass=Metaclass):
                 return self.metadata_descriptor_path
         return descriptor
 
-    def to_copy(self, **options):
+    def to_copy(self, **options) -> Self:
         """Create a copy of the metadata"""
         return type(self).from_descriptor(self.to_descriptor(), **options)
 
-    def to_json(self, path=None, encoder_class=None):
+    def to_json(
+        self, path: Optional[str] = None, encoder_class: Optional[Any] = None
+    ) -> str:
         """Save metadata as a json
 
         Parameters:
             path (str): target path
         """
-        frictionless = import_module("frictionless")
-        Error = self.metadata_Error or frictionless.errors.MetadataError
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
         text = json.dumps(
             self.to_descriptor(),
             indent=2,
@@ -219,14 +219,13 @@ class Metadata(metaclass=Metaclass):
                 raise FrictionlessException(Error(note=str(exc))) from exc
         return text
 
-    def to_yaml(self, path=None):
+    def to_yaml(self, path: Optional[str] = None) -> str:
         """Save metadata as a yaml
 
         Parameters:
             path (str): target path
         """
-        frictionless = import_module("frictionless")
-        Error = self.metadata_Error or frictionless.errors.MetadataError
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
         text = platform.yaml.dump(
             self.to_descriptor(),
             sort_keys=False,
@@ -250,8 +249,7 @@ class Metadata(metaclass=Metaclass):
             path (str): target path
             table (bool): if true converts markdown to tabular format
         """
-        frictionless = import_module("frictionless")
-        Error = self.metadata_Error or frictionless.errors.MetadataError
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
         filename = self.__class__.__name__.lower()
         template = f"{filename}-table.md" if table is True else f"{filename}.md"
         descriptor = self.to_descriptor()
@@ -278,7 +276,7 @@ class Metadata(metaclass=Metaclass):
     metadata_descriptor_initial: Optional[IDescriptor] = None
 
     @classmethod
-    def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]):
+    def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
         try:
             if isinstance(descriptor, Mapping):
                 return deepcopy(descriptor)
@@ -286,8 +284,7 @@ class Metadata(metaclass=Metaclass):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
-                    system = import_module("frictionless.system").system
-                    response = system.http_session.get(descriptor)
+                    response = platform.frictionless.system.http_session.get(descriptor)
                     response.raise_for_status()
                     content = response.text
                 else:
@@ -301,13 +298,14 @@ class Metadata(metaclass=Metaclass):
                 return metadata
             raise TypeError("descriptor type is not supported")
         except Exception as exception:
-            frictionless = import_module("frictionless")
-            Error = cls.metadata_Error or frictionless.errors.MetadataError
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
             note = f'cannot retrieve metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None) -> Optional[Type[Metadata]]:
+    def metadata_specify(
+        cls, *, type: Optional[str] = None, property: Optional[str] = None
+    ) -> Optional[Type[Metadata]]:
         pass
 
     @classmethod
@@ -332,11 +330,10 @@ class Metadata(metaclass=Metaclass):
         *,
         profile: Optional[Union[IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
-    ):
+    ) -> Generator[Error, None, None]:
         Error = error_class
         if not Error:
-            frictionless = import_module("frictionless")
-            Error = cls.metadata_Error or frictionless.errors.MetadataError
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
         profile = profile or cls.metadata_profile
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
@@ -364,12 +361,8 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_import(
-        cls,
-        descriptor: IDescriptor,
-        *,
-        with_basepath: bool = False,
-        **options,
-    ):
+        cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options
+    ) -> Self:
         merged_options = {}
         basepath = options.pop("basepath", None)
         is_typed_class = isinstance(getattr(cls, "type", None), str)

@@ -86,6 +86,7 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
+    "typeing-extensions>=4.3",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")

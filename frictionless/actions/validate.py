@@ -125,11 +125,7 @@ def validate(
 
     # Validate pipeline
     if type == "pipeline":
-        try:
-            pipeline = Pipeline.from_descriptor(source)
-        except FrictionlessException as exception:
-            return Report.from_validation(time=timer.time, errors=exception.to_errors())
-        return pipeline.validate()
+        return Pipeline.validate_descriptor(source)
 
     # Validate report
     if type == "report":
