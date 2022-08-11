@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Optional, Type, Any
 
 if TYPE_CHECKING:
     from ..package import Package
-    from ...dialect import Dialect
 
 # Describe
 
@@ -13,7 +12,6 @@ def describe(
     cls: Type[Package],
     source: Optional[Any] = None,
     *,
-    dialect: Optional[Dialect] = None,
     stats: bool = False,
     **options,
 ):
@@ -31,9 +29,6 @@ def describe(
 
     # Create package
     package = cls.from_options(source, **options)
-    if dialect:
-        for resource in package.resources:
-            resource.dialect = dialect
 
     # Infer package
     package.infer(stats=stats)

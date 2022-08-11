@@ -106,6 +106,7 @@ class Resource(Metadata):
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
+        self.detector = detector or Detector()
         self.package = package
 
         # Store dereferenced state
@@ -118,7 +119,6 @@ class Resource(Metadata):
 
         # Store inherited state
         self.__basepath = basepath
-        self.__detector = detector
 
         # Store internal state
         self.__loader: Optional[Loader] = None
@@ -269,6 +269,12 @@ class Resource(Metadata):
     """
     Path within the compressed file.
     It defaults to the first file in the archive (if the source is an archive).
+    """
+
+    detector: Detector
+    """
+    File/table detector.
+    For more information, please check the Detector documentation.
     """
 
     package: Optional[Package]
@@ -452,23 +458,6 @@ class Resource(Metadata):
     @basepath.setter
     def basepath(self, value: str):
         self.__basepath = value
-
-    @property
-    def detector(self) -> Detector:
-        """
-        Resource detector.
-        For more information, please check the Detector documentation.
-        """
-        if self.__detector is not None:
-            return self.__detector
-        elif self.package:
-            return self.package.detector
-        self.__detector = Detector()
-        return self.__detector
-
-    @detector.setter
-    def detector(self, value: Detector):
-        self.__detector = value
 
     @property
     def buffer(self) -> IBuffer:

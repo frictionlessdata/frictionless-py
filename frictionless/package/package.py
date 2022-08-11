@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
-from ..detector import Detector
 from ..resource import Resource
 from ..system import system
 from .. import settings
@@ -21,7 +20,8 @@ from . import methods
 
 if TYPE_CHECKING:
     from ..interfaces import IDescriptor, IProfile
-    from ..dialect import Control
+    from ..dialect import Dialect, Control
+    from ..detector import Detector
     from .. import portals
 
 
@@ -66,8 +66,9 @@ class Package(Metadata):
         resources: List[Resource] = [],
         # Software
         basepath: str = settings.DEFAULT_BASEPATH,
-        detector: Optional[Detector] = None,
         innerpath: Optional[str] = None,
+        detector: Optional[Detector] = None,
+        dialect: Optional[Dialect] = None,
         control: Optional[Control] = None,
     ):
 
@@ -86,11 +87,15 @@ class Package(Metadata):
         self.created = created
         self.resources = resources.copy()
         self.basepath = basepath
-        self.detector = detector or Detector()
 
+        # TODO: the same for basepath?
         # Connect resources
         for resource in self.resources:
             resource.package = self
+            if detector:
+                resource.detector = detector
+            if dialect:
+                resource.dialect = dialect
 
         # Handled by the create hook
         assert source is None
@@ -236,12 +241,6 @@ class Package(Metadata):
     The fullpath of the resource is joined `basepath` and `/path`
     """
 
-    detector: Detector
-    """
-    File/table detector.
-    For more information, please check the Detector documentation.
-    """
-
     # Props
 
     @property
@@ -359,7 +358,6 @@ class Package(Metadata):
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],
             basepath=self.basepath,
-            detector=self.detector,
         )
 
     @staticmethod
