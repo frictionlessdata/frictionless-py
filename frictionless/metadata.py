@@ -387,6 +387,8 @@ class Metadata(metaclass=Metaclass):
                             type = item.get("type")
                             ItemClass = Class.metadata_specify(type=type) or Class
                             value[ix] = ItemClass.metadata_import(item, basepath=basepath)
+                        elif isinstance(item, str):
+                            value[ix] = Class.from_descriptor(item, basepath=basepath)
                 elif isinstance(value, dict):
                     value = Class.metadata_import(value, basepath=basepath)
                 elif isinstance(value, str):

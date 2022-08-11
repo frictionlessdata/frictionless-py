@@ -5,10 +5,14 @@ from ..metadata import Metadata
 from ..package import Package
 from ..system import system
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
     from ..dialect import Control
+    from ..interfaces import IDescriptor
+
+# TODO: we need to support opening dir as a catalog using datacatalog.yaml
 
 
 class Catalog(Metadata):
@@ -24,6 +28,7 @@ class Catalog(Metadata):
         description: Optional[str] = None,
         packages: List[Package] = [],
         # Software
+        basepath: str = settings.DEFAULT_BASEPATH,
         control: Optional[Control] = None,
     ):
 
@@ -32,6 +37,9 @@ class Catalog(Metadata):
         self.title = title
         self.description = description
         self.packages = packages.copy()
+        self.basepath = basepath
+
+        # TODO: connect packages?
 
         # Handled by the create hook
         assert source is None
@@ -47,6 +55,10 @@ class Catalog(Metadata):
             if manager:
                 catalog = manager.read_catalog()
                 return catalog
+
+            # Descriptor
+            if helpers.is_descriptor_source(source):
+                return Catalog.from_descriptor(source, **options)
 
     # State
 
@@ -84,7 +96,7 @@ class Catalog(Metadata):
             error = errors.PackageError(note=f'package "{package.name}" already exists')
             raise FrictionlessException(error)
         self.packages.append(package)
-        package.package = self
+        package.catalog = self
 
     def has_package(self, name: str) -> bool:
         """Check if a package is present"""
@@ -168,3 +180,11 @@ class Catalog(Metadata):
     def metadata_specify(cls, *, type=None, property=None):
         if property == "packages":
             return Package
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )

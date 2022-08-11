@@ -67,7 +67,6 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
-@pytest.mark.xfail(reason="copy")
 def test_package_to_copy():
     source = Package.describe("data/chunk*.csv")
     target = source.to_copy()

@@ -1,4 +1,4 @@
 name: catalog
-resources:
+packages:
   - package1.yaml
   - package2.yaml
