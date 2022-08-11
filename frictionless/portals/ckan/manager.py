@@ -67,8 +67,7 @@ def make_ckan_request(endpoint, *, method="GET", headers=None, apikey=None, **op
         headers.update({"Authorization": apikey})
 
     # Make request
-    http_session = system.get_http_session()
-    response = http_session.request(
+    response = system.http_session.request(
         method=method, url=endpoint, headers=headers, allow_redirects=True, **options
     ).json()
 

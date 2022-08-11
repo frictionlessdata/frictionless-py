@@ -45,7 +45,7 @@ def test_validate_forbidden_value_task_error():
 
 
 def test_validate_invalid_resource_standards_v2_strict():
-    with system.use_standards("v2-strict"):
+    with system.use_context(standards="v2-strict"):
         report = validate({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],

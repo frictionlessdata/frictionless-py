@@ -5,8 +5,9 @@ from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional, List, Any, Dict, Type
+from typing import TYPE_CHECKING, Optional, List, Any, Dict, Type, ClassVar
 from .exception import FrictionlessException
+from .platform import platform
 from .dialect import Control
 from . import settings
 from . import errors
@@ -35,9 +36,7 @@ class System:
 
     """
 
-    trusted: bool = settings.DEFAULT_TRUSTED
-    standards: IStandards = settings.DEFAULT_STANDARDS
-    supported_hooks = [
+    supported_hooks: ClassVar[List[str]] = [
         "create_loader",
         "create_manager",
         "create_parser",
@@ -56,7 +55,28 @@ class System:
         self.__dynamic_plugins = OrderedDict()
         self.__http_session = None
 
+    # State
+
+    trusted: bool = settings.DEFAULT_TRUSTED
+    standards: IStandards = settings.DEFAULT_STANDARDS
+
     # Props
+
+    @property
+    def http_session(self):
+        """Return a HTTP session
+
+        This method will return a new session or the session
+        from `system.use_http_session` context manager
+
+        Returns:
+            requests.Session: a HTTP session
+        """
+        if not self.__http_session:
+            http_session = platform.requests.Session()
+            http_session.headers.update(settings.DEFAULT_HTTP_HEADERS)
+            self.__http_session = http_session
+        return self.__http_session
 
     @cached_property
     def methods(self) -> Dict[str, Any]:
@@ -115,6 +135,36 @@ class System:
         if "methods" in self.__dict__:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
+
+    # Context
+
+    @contextmanager
+    def use_context(
+        self,
+        *,
+        trusted: Optional[bool] = None,
+        standards: Optional[IStandards] = None,
+        http_session: Optional[Any] = None,
+    ):
+
+        # Current
+        current_trusted = self.trusted
+        current_standards = self.standards
+        current_http_session = self.__http_session
+
+        # Update
+        if trusted is not None:
+            self.trusted = trusted
+        if standards is not None:
+            self.standards = standards
+        if http_session is not None:
+            self.__http_session = http_session
+        yield self
+
+        # Recover
+        self.trusted = current_trusted
+        self.standards = current_standards
+        self.__http_session = current_http_session
 
     # Hooks
 
@@ -263,56 +313,6 @@ class System:
                 return storage
         note = f'storage "{name}" is not supported'
         raise FrictionlessException(note)
-
-    # Context
-
-    def get_http_session(self):
-        """Return a HTTP session
-
-        This method will return a new session or the session
-        from `system.use_http_session` context manager
-
-        Returns:
-            requests.Session: a HTTP session
-        """
-        if self.__http_session:
-            return self.__http_session
-        return self.plugins["remote"].create_http_session()  # type: ignore
-
-    @contextmanager
-    def use_http_session(self, http_session=None):
-        """HTTP session context manager
-
-        ```
-        session = requests.Session(...)
-        with system.use_http_session(session):
-            # work with frictionless using a user defined HTTP session
-            report = validate(...)
-        ```
-
-        Parameters:
-            http_session? (requests.Session): a session; will create a new if omitted
-        """
-        if self.__http_session:
-            note = f"There is already HTTP session in use: {self.__http_session}"
-            raise FrictionlessException(note)
-        self.__http_session = http_session or self.get_http_session()
-        yield self.__http_session
-        self.__http_session = None
-
-    @contextmanager
-    def use_standards(self, version: IStandards):
-        current = self.standards
-        self.standards = version
-        yield version
-        self.standards = current
-
-    @contextmanager
-    def use_trusted(self, trusted: bool):
-        current = self.trusted
-        self.trusted = trusted
-        yield trusted
-        self.trusted = current
 
 
 system = System()

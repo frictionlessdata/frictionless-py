@@ -287,8 +287,7 @@ class Metadata(metaclass=Metaclass):
                     descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
                     system = import_module("frictionless.system").system
-                    http_session = system.get_http_session()
-                    response = http_session.get(descriptor)
+                    response = system.http_session.get(descriptor)
                     response.raise_for_status()
                     content = response.text
                 else:

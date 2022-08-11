@@ -162,7 +162,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     assert reasons[0].note.count('table.csv" is not safe')
 
     # trusted=true
-    with system.use_trusted(True):
+    with system.use_context(trusted=True):
         resource = Resource({"path": path})
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

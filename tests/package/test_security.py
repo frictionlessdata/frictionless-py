@@ -22,7 +22,7 @@ def test_package_resource_unsafe_schema():
 def test_package_resource_unsafe_schema_trusted():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
-    with system.use_trusted(True):
+    with system.use_context(trusted=True):
         Package({"resources": [{"path": path, "schema": schema}]})
 
 
@@ -56,7 +56,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
-    with system.use_trusted(True):
+    with system.use_context(trusted=True):
         package = Package(resources=[resource], profiles=[profile])
         report = package.validate()
         assert report.stats.errors == 5

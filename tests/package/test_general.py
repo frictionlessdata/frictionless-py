@@ -31,7 +31,7 @@ def test_package():
 def test_package_from_dict_to_standards_v1():
     package = Package({"name": "name", "profile": "data-package", "resources": []})
     assert package.to_descriptor() == {"name": "name", "resources": []}
-    with system.use_standards("v1"):
+    with system.use_context(standards="v1"):
         assert package.to_descriptor() == {
             "name": "name",
             "profile": "data-package",

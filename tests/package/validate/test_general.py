@@ -78,7 +78,7 @@ def test_validate_package_with_non_tabular():
 
 def test_validate_package_invalid_package_standards_v2_strict():
     package = Package({"resources": [{"path": "data/table.csv"}]})
-    with system.use_standards("v2-strict"):
+    with system.use_context(standards="v2-strict"):
         report = package.validate()
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],

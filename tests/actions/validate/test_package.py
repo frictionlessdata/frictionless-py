@@ -88,7 +88,7 @@ def test_validate_package_invalid_package():
 
 
 def test_validate_package_invalid_package_standards_v2_strict():
-    with system.use_standards("v2-strict"):
+    with system.use_context(standards="v2-strict"):
         report = validate({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],
