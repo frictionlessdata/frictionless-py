@@ -14,8 +14,7 @@ def test_resource_validate_schema_invalid_json():
 
 
 def test_resource_validate_invalid_resource():
-    resource = Resource({"path": "data/table.csv", "schema": "bad"})
-    report = resource.validate()
+    report = Resource.validate_descriptor({"path": "data/table.csv", "schema": "bad"})
     assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"

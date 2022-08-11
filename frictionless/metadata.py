@@ -363,8 +363,15 @@ class Metadata(metaclass=Metaclass):
                     yield from Class.metadata_validate(value)
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
+    def metadata_import(
+        cls,
+        descriptor: IDescriptor,
+        *,
+        with_basepath: bool = False,
+        **options,
+    ):
         merged_options = {}
+        basepath = options.pop("basepath", None)
         is_typed_class = isinstance(getattr(cls, "type", None), str)
         for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.pop(name, None)
@@ -375,15 +382,19 @@ class Metadata(metaclass=Metaclass):
             Class = cls.metadata_specify(property=name)
             if Class:
                 if isinstance(value, list):
-                    for index, item in enumerate(value):
+                    for ix, item in enumerate(value):
                         if isinstance(item, dict):
                             type = item.get("type")
                             ItemClass = Class.metadata_specify(type=type) or Class
-                            value[index] = ItemClass.metadata_import(item, **options)
+                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)
                 elif isinstance(value, dict):
-                    value = Class.metadata_import(value)
+                    value = Class.metadata_import(value, basepath=basepath)
+                elif isinstance(value, str):
+                    value = Class.from_descriptor(value, basepath=basepath)
             merged_options.setdefault(stringcase.snakecase(name), value)
         merged_options.update(options)
+        if with_basepath:
+            merged_options["basepath"] = basepath
         metadata = cls(**merged_options)
         metadata.custom = descriptor
         return metadata

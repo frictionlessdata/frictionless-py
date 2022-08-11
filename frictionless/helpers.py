@@ -7,6 +7,7 @@ import ast
 import json
 import glob
 import shutil
+import inspect
 import tempfile
 import datetime
 import textwrap
@@ -82,6 +83,11 @@ def rows_to_data(rows):
     for row in rows:
         data.append([cell if cell is not None else "" for cell in row.to_list()])
     return data
+
+
+def is_class_accept_option(cls, name):
+    sig = inspect.signature(cls.__init__)
+    return name in sig.parameters
 
 
 @contextmanager

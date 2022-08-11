@@ -737,6 +737,14 @@ class Package(Metadata):
                 note = f'"{name}" should be set as "resource.schema.{name}"'
                 yield errors.PackageError(note=note)
 
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )
+
     def metadata_export(self):
         descriptor = super().metadata_export()
 

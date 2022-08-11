@@ -215,8 +215,8 @@ class Dialect(Metadata):
                 descriptor["csv"][name] = value
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        dialect = super().metadata_import(descriptor)
+    def metadata_import(cls, descriptor, **options):
+        dialect = super().metadata_import(descriptor, **options)
 
         # Controls
         for type, item in dialect.custom.items():

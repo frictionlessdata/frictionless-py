@@ -1232,6 +1232,14 @@ class Resource(Metadata):
                 note = f'"{name}" should be set as "schema.{name}"'
                 yield errors.ResourceError(note=note)
 
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )
+
     def metadata_export(self):
         descriptor = super().metadata_export()
 
