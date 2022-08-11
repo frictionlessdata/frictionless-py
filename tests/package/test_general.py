@@ -224,13 +224,6 @@ def test_package_set_base_path():
     assert package.basepath == "/data/csv"
 
 
-def test_package_set_onerror():
-    package = Package(onerror="raise")
-    assert package.onerror == "raise"
-    package.onerror = "ignore"
-    assert package.onerror == "ignore"
-
-
 def test_package_pprint():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})

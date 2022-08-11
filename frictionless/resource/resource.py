@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from .loader import Loader
     from .parser import Parser
     from ..package import Package
-    from ..interfaces import IDescriptor, IOnerror, IBuffer, ISample, IFragment, IProfile
+    from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 
 
@@ -83,7 +83,6 @@ class Resource(Metadata):
         stats: Optional[Stats] = None,
         # Software
         basepath: Optional[str] = None,
-        onerror: Optional[IOnerror] = None,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
         control: Optional[Control] = None,
@@ -119,7 +118,6 @@ class Resource(Metadata):
 
         # Store inherited state
         self.__basepath = basepath
-        self.__onerror = onerror
         self.__detector = detector
 
         # Store internal state
@@ -456,24 +454,6 @@ class Resource(Metadata):
         self.__basepath = value
 
     @property
-    def onerror(self) -> IOnerror:
-        """
-        Behaviour if there is an error.
-        It defaults to 'ignore'. The default mode will ignore all errors
-        on resource level and they should be handled by the user
-        being available in Header and Row objects.
-        """
-        if self.__onerror is not None:
-            return self.__onerror  # type: ignore
-        elif self.package:
-            return self.package.onerror
-        return settings.DEFAULT_ONERROR
-
-    @onerror.setter
-    def onerror(self, value: IOnerror):
-        self.__onerror = value
-
-    @property
     def detector(self) -> Detector:
         """
         Resource detector.
@@ -737,9 +717,9 @@ class Resource(Metadata):
         # Handle errors
         if not self.header.valid:
             error = self.header.errors[0]
-            if self.onerror == "warn":
+            if system.onerror == "warn":
                 warnings.warn(error.message, UserWarning)
-            elif self.onerror == "raise":
+            elif system.onerror == "raise":
                 raise FrictionlessException(error)
 
     def __prepare_lookup(self):
@@ -887,10 +867,10 @@ class Resource(Metadata):
                                 row.errors.append(error)
 
                 # Handle errors
-                if self.onerror != "ignore":
+                if system.onerror != "ignore":
                     if not row.valid:
                         error = row.errors[0]
-                        if self.onerror == "raise":
+                        if system.onerror == "raise":
                             raise FrictionlessException(error)
                         warnings.warn(error.message, UserWarning)
 
@@ -988,7 +968,6 @@ class Resource(Metadata):
         return super().to_copy(
             data=self.data,
             basepath=self.basepath,
-            onerror=self.onerror,
             detector=self.detector,
             package=self.package,
             control=self.__control,

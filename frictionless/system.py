@@ -13,7 +13,7 @@ from . import settings
 from . import errors
 
 if TYPE_CHECKING:
-    from .interfaces import IStandards
+    from .interfaces import IStandards, IOnerror
     from .resource import Resource, Loader, Parser
     from .package import Manager, Storage
     from .plugin import Plugin
@@ -58,7 +58,16 @@ class System:
     # State
 
     trusted: bool = settings.DEFAULT_TRUSTED
+    """NOTE: add docs
+    """
+
+    onerror: IOnerror = settings.DEFAULT_ONERROR
+    """NOTE: add docs
+    """
+
     standards: IStandards = settings.DEFAULT_STANDARDS
+    """NOTE: add docs
+    """
 
     # Props
 
@@ -143,18 +152,22 @@ class System:
         self,
         *,
         trusted: Optional[bool] = None,
+        onerror: Optional[IOnerror] = None,
         standards: Optional[IStandards] = None,
         http_session: Optional[Any] = None,
     ):
 
         # Current
         current_trusted = self.trusted
+        current_onerror = self.onerror
         current_standards = self.standards
         current_http_session = self.__http_session
 
         # Update
         if trusted is not None:
             self.trusted = trusted
+        if onerror is not None:
+            self.onerror = onerror
         if standards is not None:
             self.standards = standards
         if http_session is not None:
@@ -163,6 +176,7 @@ class System:
 
         # Recover
         self.trusted = current_trusted
+        self.onerror = current_onerror
         self.standards = current_standards
         self.__http_session = current_http_session
 

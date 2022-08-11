@@ -364,13 +364,6 @@ def test_resource_set_detector():
     assert resource.detector == detector_set
 
 
-def test_resource_set_onerror():
-    resource = Resource(onerror="raise")
-    assert resource.onerror == "raise"
-    resource.onerror = "ignore"
-    assert resource.onerror == "ignore"
-
-
 def test_resource_set_package():
     test_package_1 = Package()
     resource = Resource(package=test_package_1)

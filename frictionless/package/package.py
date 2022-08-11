@@ -20,7 +20,7 @@ from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IProfile, IOnerror
+    from ..interfaces import IDescriptor, IProfile
     from ..dialect import Control
     from .. import portals
 
@@ -66,7 +66,6 @@ class Package(Metadata):
         resources: List[Resource] = [],
         # Software
         basepath: str = settings.DEFAULT_BASEPATH,
-        onerror: IOnerror = settings.DEFAULT_ONERROR,
         detector: Optional[Detector] = None,
         innerpath: Optional[str] = None,
         control: Optional[Control] = None,
@@ -87,7 +86,6 @@ class Package(Metadata):
         self.created = created
         self.resources = resources.copy()
         self.basepath = basepath
-        self.onerror = onerror
         self.detector = detector or Detector()
 
         # Connect resources
@@ -238,14 +236,6 @@ class Package(Metadata):
     The fullpath of the resource is joined `basepath` and `/path`
     """
 
-    onerror: IOnerror
-    """
-    Behaviour if there is an error.
-    It defaults to 'ignore'. The default mode will ignore all errors
-    on resource level and they should be handled by the user
-    being available in Header and Row objects.
-    """
-
     detector: Detector
     """
     File/table detector.
@@ -369,7 +359,6 @@ class Package(Metadata):
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],
             basepath=self.basepath,
-            onerror=self.onerror,
             detector=self.detector,
         )
 
