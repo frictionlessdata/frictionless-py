@@ -35,7 +35,7 @@ def analyze(resource: "Resource", *, detailed=False) -> dict:
 
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
-    for row in resource:
+    for row in resource.iterrows():
         null_columns = 0
         for field_name in row:
             field = resource.schema.get_field(field_name)

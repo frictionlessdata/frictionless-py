@@ -302,9 +302,10 @@ class Resource(Metadata):
     def __exit__(self, type, value, traceback):
         self.close()
 
-    def __iter__(self):
+    def iterrows(self):
         with helpers.ensure_open(self):
             yield from self.__row_stream
+
 
     @Metadata.property
     def name(self):

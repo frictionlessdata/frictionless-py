@@ -167,7 +167,7 @@ def test_resource_schema_unique():
         schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
     )
     with Resource(source, detector=detector) as resource:
-        for row in resource:
+        for row in resource.iterrows():
             assert row.valid
 
 
@@ -177,7 +177,7 @@ def test_resource_schema_unique_error():
         schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
     )
     with Resource(source, detector=detector) as resource:
-        for row in resource:
+        for row in resource.iterrows():
             if row.row_number == 3:
                 assert row.valid is False
                 assert row.errors[0].code == "unique-error"
@@ -189,7 +189,7 @@ def test_resource_schema_primary_key():
     source = [["name"], [1], [2], [3]]
     detector = Detector(schema_patch={"primaryKey": ["name"]})
     with Resource(source, detector=detector) as resource:
-        for row in resource:
+        for row in resource.iterrows():
             assert row.valid
 
 
@@ -197,7 +197,7 @@ def test_resource_schema_primary_key_error():
     source = [["name"], [1], [2], [2]]
     detector = Detector(schema_patch={"primaryKey": ["name"]})
     with Resource(source, detector=detector) as resource:
-        for row in resource:
+        for row in resource.iterrows():
             if row.row_number == 3:
                 assert row.valid is False
                 assert row.errors[0].code == "primary-key-error"
