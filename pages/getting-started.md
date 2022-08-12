@@ -7,7 +7,7 @@ cleanup:
     - rm invalid.csv
 ---
 
-# Quick Start
+# Getting Started
 
 Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
 

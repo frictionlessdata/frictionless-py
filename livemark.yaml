@@ -27,4 +27,5 @@ pages:
   items:
     - name: Introduction
       path: index
-    - path: pages/quick-start
+    - path: pages/getting-started
+    - path: pages/basic-examples
