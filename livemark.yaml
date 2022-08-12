@@ -35,6 +35,17 @@ pages:
         - path: pages/guides/extracting-data
         - path: pages/guides/validating-data
         - path: pages/guides/transforming-data
+    - name: Framework Details
+      items:
+        - path: pages/framework/program
+        - path: pages/framework/server
+        - path: pages/framework/actions
+        - path: pages/framework/package
+        - path: pages/framework/resource
+        - path: pages/framework/schema
+        - path: pages/framework/classes
+        - path: pages/framework/system
+        - path: pages/framework/extending
     - name: Validation Checks
       items:
         - path: pages/checks/cell
@@ -47,7 +58,22 @@ pages:
           name: Baseline
     - name: Validation Errors
       items:
+        - path: pages/errors/cell
+          name: Cell
         - path: pages/errors/data
+          name: Data
+        - path: pages/errors/file
+          name: File
+        - path: pages/errors/header
+          name: Header
+        - path: pages/errors/label
+          name: Label
+        - path: pages/errors/metadata
+          name: Metadata
+        - path: pages/errors/row
+          name: Row
+        - path: pages/errors/table
+          name: Table
     - name: Transform Steps
       items:
         - path: pages/steps/cell
