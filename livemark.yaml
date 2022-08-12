@@ -171,3 +171,5 @@ pages:
     - name: Development
       items:
         - path: pages/development/contributing
+    - path: pages/universe
+    - path: blog/index
