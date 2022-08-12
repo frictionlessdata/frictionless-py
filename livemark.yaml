@@ -29,3 +29,54 @@ pages:
       path: index
     - path: pages/getting-started
     - path: pages/basic-examples
+    - name: Data Management
+      items:
+        - path: pages/guides/describing-data
+        - path: pages/guides/extracting-data
+        - path: pages/guides/validating-data
+        - path: pages/guides/transforming-data
+    - name: Supported Checks
+      items:
+        - path: pages/checks/cell
+    - name: Supported Errors
+      items:
+        - path: pages/errors/data
+    - name: Supported Fields
+      items:
+        - path: pages/fields/general
+        - path: pages/fields/spatial
+        - path: pages/fields/temporal
+        - path: pages/fields/any
+    - name: Supported Formats
+      items:
+        - path: pages/formats/bigquery
+        - path: pages/formats/csv
+        - path: pages/formats/excel
+        - path: pages/formats/gsheets
+        - path: pages/formats/html
+        - path: pages/formats/inline
+        - path: pages/formats/json
+        - path: pages/formats/ods
+        - path: pages/formats/pandas
+        - path: pages/formats/parquet
+        - path: pages/formats/spss
+        - path: pages/formats/sql
+    - name: Supported Portals
+      items:
+        - path: pages/portals/ckan
+        - path: pages/portals/github
+        - path: pages/portals/zenodo
+    - name: Supported Schemes
+      items:
+        - path: pages/schemes/aws
+        - path: pages/schemes/buffer
+        - path: pages/schemes/local
+        - path: pages/schemes/multipart
+        - path: pages/schemes/remote
+        - path: pages/schemes/stream
+    - name: Supported Steps
+      items:
+        - path: pages/steps/cell
+    - name: Development
+      items:
+        - path: pages/development/contributing
