@@ -168,8 +168,9 @@ pages:
           name: Github
         - path: pages/portals/zenodo
           name: Zenodo
-    - name: Development
+    - name: Codebase
       items:
-        - path: pages/development/contributing
+        - path: pages/codebase/contributing
+        - path: pages/codebase/migration
     - path: pages/universe
     - path: blog/index
