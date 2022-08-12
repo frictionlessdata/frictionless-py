@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import List
-from ...schema import Field
-from ... import settings
+from ..schema import Field
+from .. import settings
 
 
 @attrs.define(kw_only=True)

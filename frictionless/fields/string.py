@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 import base64
-from ...schema import Field
-from ...platform import platform
+from ..schema import Field
+from ..platform import platform
 
 
 @attrs.define(kw_only=True)

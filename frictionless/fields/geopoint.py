@@ -3,7 +3,7 @@ import json
 import attrs
 from collections import namedtuple
 from decimal import Decimal
-from ...schema import Field
+from ..schema import Field
 
 
 @attrs.define(kw_only=True)

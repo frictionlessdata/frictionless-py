@@ -1,16 +1,16 @@
 from __future__ import annotations
 import attrs
-from ...schema import Field
+import datetime
+from ..schema import Field
+from ..platform import platform
 
 
 @attrs.define(kw_only=True)
-class YearField(Field):
-    type = "year"
+class DurationField(Field):
+    type = "duration"
     builtin = True
     supported_constraints = [
         "required",
-        "minimum",
-        "maximum",
         "enum",
     ]
 
@@ -20,17 +20,13 @@ class YearField(Field):
 
         # Create reader
         def value_reader(cell):
-            if not isinstance(cell, int):
+            if not isinstance(cell, (platform.isodate.Duration, datetime.timedelta)):
                 if not isinstance(cell, str):
                     return None
-                if len(cell) != 4:
-                    return None
                 try:
-                    cell = int(cell)
+                    cell = platform.isodate.parse_duration(cell)
                 except Exception:
                     return None
-            if cell < 0 or cell > 9999:
-                return None
             return cell
 
         return value_reader
@@ -41,6 +37,6 @@ class YearField(Field):
 
         # Create writer
         def value_writer(cell):
-            return str(cell)
+            return platform.isodate.duration_isoformat(cell)
 
         return value_writer

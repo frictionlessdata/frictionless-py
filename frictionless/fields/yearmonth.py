@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from collections import namedtuple
-from ...schema import Field
+from ..schema import Field
 
 
 @attrs.define(kw_only=True)

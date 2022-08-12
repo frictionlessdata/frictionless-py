@@ -1,17 +1,16 @@
 from __future__ import annotations
-import json
 import attrs
-from ...schema import Field
+from ..schema import Field
 
 
 @attrs.define(kw_only=True)
-class ObjectField(Field):
-    type = "object"
+class YearField(Field):
+    type = "year"
     builtin = True
     supported_constraints = [
         "required",
-        "minLength",
-        "maxLength",
+        "minimum",
+        "maximum",
         "enum",
     ]
 
@@ -21,15 +20,17 @@ class ObjectField(Field):
 
         # Create reader
         def value_reader(cell):
-            if not isinstance(cell, dict):
+            if not isinstance(cell, int):
                 if not isinstance(cell, str):
                     return None
+                if len(cell) != 4:
+                    return None
                 try:
-                    cell = json.loads(cell)
+                    cell = int(cell)
                 except Exception:
                     return None
-                if not isinstance(cell, dict):
-                    return None
+            if cell < 0 or cell > 9999:
+                return None
             return cell
 
         return value_reader
@@ -40,6 +41,6 @@ class ObjectField(Field):
 
         # Create writer
         def value_writer(cell):
-            return json.dumps(cell)
+            return str(cell)
 
         return value_writer

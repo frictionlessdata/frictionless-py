@@ -90,14 +90,36 @@ pages:
           name: Table
     - name: Tabular Fields
       items:
-        - path: pages/fields/general
-          name: General
-        - path: pages/fields/spatial
-          name: Spatial
-        - path: pages/fields/temporal
-          name: Temporal
         - path: pages/fields/any
           name: Any
+        - path: pages/fields/array
+          name: Array
+        - path: pages/fields/boolean
+          name: Boolean
+        - path: pages/fields/date
+          name: Date
+        - path: pages/fields/datetime
+          name: Datetime
+        - path: pages/fields/duration
+          name: Duration
+        - path: pages/fields/geojson
+          name: Geojson
+        - path: pages/fields/geopoint
+          name: Geopoint
+        - path: pages/fields/integer
+          name: Integer
+        - path: pages/fields/number
+          name: Number
+        - path: pages/fields/object
+          name: Object
+        - path: pages/fields/string
+          name: String
+        - path: pages/fields/time
+          name: Time
+        - path: pages/fields/year
+          name: Year
+        - path: pages/fields/yearmonth
+          name: Yearmonth
     - name: File Schemes
       items:
         - path: pages/schemes/aws

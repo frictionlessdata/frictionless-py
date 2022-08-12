@@ -2,7 +2,7 @@ from __future__ import annotations
 import json
 import attrs
 from typing import Optional
-from ...schema import Field
+from ..schema import Field
 
 
 @attrs.define(kw_only=True)

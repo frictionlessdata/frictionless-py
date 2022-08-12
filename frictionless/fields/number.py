@@ -2,8 +2,8 @@ from __future__ import annotations
 import re
 import attrs
 from decimal import Decimal
-from ...schema import Field
-from ... import settings
+from ..schema import Field
+from .. import settings
 
 
 @attrs.define(kw_only=True)
