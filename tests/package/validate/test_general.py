@@ -344,6 +344,7 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = package.validate()
     assert report.flatten() == [
         [None, None, None, "package-error"],
+        [None, None, None, "package-error"]
     ]
 
 
@@ -379,7 +380,7 @@ def test_validate_package_errors_with_missing_values_993():
 def test_validate_package_errors_with_fields_993():
     package = Package(descriptor="data/package-with-fields-993.json")
     report = package.validate()
-    assert report.flatten(["code", "message"]) == [
+    assert report.flatten(["code", "message"])[:-1] == [
         [
             "package-error",
             'The data package has an error: "fields" should be set as "resource.schema.fields" (not "package.fields").',

@@ -53,8 +53,8 @@ def validate(
     for error in package.metadata_errors:
         if error.code == "package-error":
             metadata_errors.append(error)
-        if metadata_errors:
-            return Report(time=timer.time, errors=metadata_errors, tasks=[])
+    if metadata_errors:
+        return Report(time=timer.time, errors=metadata_errors, tasks=[])
 
     # Validate sequentially
     if not parallel:
