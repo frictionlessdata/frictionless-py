@@ -80,6 +80,10 @@ target/
 # Spyder project settings
 .spyderproject
 
+# Livemark
+index.html
+pages/**/*.html
+
 # Extras
 .projectile
 tabulator

@@ -1,0 +1,30 @@
+brand:
+  text: Frictionless Framework
+about:
+  text: Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data
+site:
+  favicon: assets/logo.png
+  styles:
+    - style.css
+github:
+  user: frictionlessdata
+  repo: frictionless-py
+counter:
+  type: plausible
+  code: framework.frictionlessdata.io
+topics:
+  selector: h2
+search: false
+links:
+  items:
+    - name: Open Knowledge
+      path: https://okfn.org
+    - name: Frictionless
+      path: https://frictionlessdata.io
+    - name: Support
+      path: https://discord.com/channels/695635777199145130/695635777199145133
+pages:
+  items:
+    - name: Introduction
+      path: index
+    - path: pages/quick-start
