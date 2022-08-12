@@ -35,7 +35,7 @@ pages:
         - path: pages/guides/extracting-data
         - path: pages/guides/validating-data
         - path: pages/guides/transforming-data
-    - name: Supported Checks
+    - name: Validation Checks
       items:
         - path: pages/checks/cell
           name: Cell
@@ -45,10 +45,22 @@ pages:
           name: Table
         - path: pages/checks/baseline
           name: Baseline
-    - name: Supported Errors
+    - name: Validation Errors
       items:
         - path: pages/errors/data
-    - name: Supported Fields
+    - name: Transform Steps
+      items:
+        - path: pages/steps/cell
+          name: Cell
+        - path: pages/steps/field
+          name: Field
+        - path: pages/steps/resource
+          name: Resource
+        - path: pages/steps/row
+          name: Row
+        - path: pages/steps/table
+          name: Table
+    - name: Tabular Fields
       items:
         - path: pages/fields/general
           name: General
@@ -58,7 +70,21 @@ pages:
           name: Temporal
         - path: pages/fields/any
           name: Any
-    - name: Supported Formats
+    - name: File Schemes
+      items:
+        - path: pages/schemes/aws
+          name: Aws
+        - path: pages/schemes/buffer
+          name: Buffer
+        - path: pages/schemes/local
+          name: Local
+        - path: pages/schemes/multipart
+          name: Multipart
+        - path: pages/schemes/remote
+          name: Remote
+        - path: pages/schemes/stream
+          name: Stream
+    - name: File Formats
       items:
         - path: pages/formats/bigquery
           name: Bigquery
@@ -84,7 +110,7 @@ pages:
           name: Spss
         - path: pages/formats/sql
           name: Sql
-    - name: Supported Portals
+    - name: Data Portals
       items:
         - path: pages/portals/ckan
           name: Ckan
@@ -92,32 +118,6 @@ pages:
           name: Github
         - path: pages/portals/zenodo
           name: Zenodo
-    - name: Supported Schemes
-      items:
-        - path: pages/schemes/aws
-          name: Aws
-        - path: pages/schemes/buffer
-          name: Buffer
-        - path: pages/schemes/local
-          name: Local
-        - path: pages/schemes/multipart
-          name: Multipart
-        - path: pages/schemes/remote
-          name: Remote
-        - path: pages/schemes/stream
-          name: Stream
-    - name: Supported Steps
-      items:
-        - path: pages/steps/cell
-          name: Cell
-        - path: pages/steps/field
-          name: Field
-        - path: pages/steps/resource
-          name: Resource
-        - path: pages/steps/row
-          name: Row
-        - path: pages/steps/table
-          name: Table
     - name: Development
       items:
         - path: pages/development/contributing
