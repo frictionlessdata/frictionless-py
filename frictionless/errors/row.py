@@ -1,18 +1,18 @@
 from __future__ import annotations
 import attrs
 from typing import List
-from .content import ContentError
+from .table import TableError
 
 
 @attrs.define(kw_only=True)
-class RowError(ContentError):
+class RowError(TableError):
     """Row error representation"""
 
     type = "row-error"
     title = "Row Error"
     description = "Row Error"
     template = "Row Error"
-    tags = ["#table", "#content", "#row"]
+    tags = ["#table", "#row"]
 
     # State
 

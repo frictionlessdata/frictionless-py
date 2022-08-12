@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from ...exception import FrictionlessException
+from ..exception import FrictionlessException
 from .row import RowError
 
 
@@ -12,7 +12,7 @@ class CellError(RowError):
     title = "Cell Error"
     description = "Cell Error"
     template = "Cell Error"
-    tags = ["#table", "#content", "#row", "#cell"]
+    tags = ["#table", "#row", "#cell"]
 
     # State
 

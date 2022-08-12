@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ...error import Error
+from ..error import Error
 
 
 class DataError(Error):

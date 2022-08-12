@@ -72,6 +72,8 @@ pages:
           name: Metadata
         - path: pages/errors/row
           name: Row
+        - path: pages/errors/resource
+          name: Resource
         - path: pages/errors/table
           name: Table
     - name: Transform Steps
