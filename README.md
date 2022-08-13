@@ -1,4 +1,4 @@
-# Frictionless Framework
+# Frictionless Framework (v5)
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/main)](https://github.com/frictionlessdata/frictionless-py/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)

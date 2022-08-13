@@ -17,6 +17,8 @@ topics:
 search: false
 links:
   items:
+    - name: Framework@4 (docs)
+      path: https://v4.framework.frictionlessdata.io
     - name: Open Knowledge
       path: https://okfn.org
     - name: Frictionless
