@@ -82,6 +82,7 @@ target/
 
 # Livemark
 index.html
+blog/**/*.html
 pages/**/*.html
 
 # Extras
