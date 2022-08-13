@@ -1,3 +1,8 @@
+---
+script:
+  basepath: data
+---
+
 # Describing Data
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start). Also, this guide is meant to be read in order from top to bottom, and reuses examples throughout the text. You can use the menu to skip sections, but please note that you might need to run code from earlier sections to make all the examples work.
@@ -50,53 +55,15 @@ For example, if we want a Data Package descriptor for a single file:
 
 > Download [`table.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash
+```bash script output=yaml
 frictionless describe table.csv --type package
 ```
-```yaml title="Package Metadata: table.csv"
-# --------
-# metadata: table.csv
-# --------
 
-profile: data-package
-resources:
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: table
-    path: table.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-    scheme: file
-```
-
-```python
+```python script output=yaml
 from frictionless import describe
 
 package = describe("table.csv", type="package")
 print(package.to_yaml())
-```
-```yaml title="Package Metadata: table.csv"
-resources:
-  - path: table.csv
-    name: table
-    profile: tabular-data-resource
-    scheme: file
-    format: csv
-    hashing: md5
-    encoding: utf-8
-    schema:
-      fields:
-        - type: integer
-          name: id
-        - type: string
-          name: name
-profile: data-package
 ```
 
 ## Describing a Schema
