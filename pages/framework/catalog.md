@@ -1,4 +1,4 @@
-# Resource Errors
+# Catalog Class
 
 ```yaml remark
 text: Under development

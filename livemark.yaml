@@ -17,7 +17,7 @@ topics:
 search: false
 links:
   items:
-    - name: Framework@4 (docs)
+    - name: Framework (v4) (docs)
       path: https://v4.framework.frictionlessdata.io
     - name: Open Knowledge
       path: https://okfn.org
@@ -42,9 +42,16 @@ pages:
         - path: pages/framework/program
         - path: pages/framework/server
         - path: pages/framework/actions
+        - path: pages/framework/catalog
         - path: pages/framework/package
         - path: pages/framework/resource
+        - path: pages/framework/dialect
         - path: pages/framework/schema
+        - path: pages/framework/checklist
+        - path: pages/framework/pipeline
+        - path: pages/framework/detector
+        - path: pages/framework/inquiry
+        - path: pages/framework/report
         - path: pages/framework/classes
         - path: pages/framework/system
         - path: pages/framework/extending
