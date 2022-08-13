@@ -48,14 +48,14 @@ pages:
         - path: pages/framework/extending
     - name: Validation Checks
       items:
+        - path: pages/checks/baseline
+          name: Baseline
         - path: pages/checks/cell
           name: Cell
         - path: pages/checks/row
           name: Row
         - path: pages/checks/table
           name: Table
-        - path: pages/checks/baseline
-          name: Baseline
     - name: Validation Errors
       items:
         - path: pages/errors/cell
