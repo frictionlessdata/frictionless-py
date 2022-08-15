@@ -28,6 +28,9 @@ class Stats(Metadata):
     tasks: Optional[int] = None
     """NOTE: add docs"""
 
+    warnings: Optional[int] = None
+    """NOTE: add docs"""
+
     errors: Optional[int] = None
     """NOTE: add docs"""
 
@@ -46,7 +49,9 @@ class Stats(Metadata):
             "bytes": {"type": "integer"},
             "fields": {"type": "integer"},
             "rows": {"type": "integer"},
+            "tasks": {"type": "integer"},
+            "warnings": {"type": "integer"},
             "errors": {"type": "integer"},
-            "seconds": {"type": "float"},
+            "seconds": {"type": "number"},
         },
     }

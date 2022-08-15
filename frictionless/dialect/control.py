@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, ClassVar, Optional
-from importlib import import_module
+from ..platform import platform
 from ..metadata import Metadata
 from .. import settings
 from .. import errors
@@ -35,6 +35,9 @@ class Control(Metadata):
         assert isinstance(control, cls)
         return control
 
+    def to_dialect(self):
+        return platform.frictionless.Dialect(controls=[self])
+
     # Metadata
 
     metadata_type = "control"
@@ -50,9 +53,6 @@ class Control(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        if cls is Control:
-            descriptor = cls.metadata_normalize(descriptor)
-            system = import_module("frictionless").system
-            return system.create_control(descriptor)  # type: ignore
-        return super().metadata_import(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return platform.frictionless.system.select_Control(type)

@@ -1,8 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import Any
 from ...dialect import Control
-from ...system import system
 from . import settings
 
 
@@ -13,9 +11,6 @@ class RemoteControl(Control):
     type = "remote"
 
     # State
-
-    http_session: Any = attrs.field(factory=system.get_http_session)
-    """NOTE: add docs"""
 
     http_timeout: int = settings.DEFAULT_HTTP_TIMEOUT
     """NOTE: add docs"""

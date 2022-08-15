@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Optional, List, Any, Union, NamedTuple
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
-from ..detector import Detector
 from ..resource import Resource
 from ..system import system
 from .. import settings
@@ -20,8 +19,10 @@ from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IProfile, IOnerror
-    from ..dialect import Control
+    from ..interfaces import IDescriptor, IProfile
+    from ..dialect import Dialect, Control
+    from ..detector import Detector
+    from ..catalog import Catalog
     from .. import portals
 
 
@@ -49,6 +50,8 @@ class Package(Metadata):
     def __init__(
         self,
         source: Optional[Any] = None,
+        control: Optional[Control] = None,
+        innerpath: Optional[str] = None,
         *,
         # Standard
         name: Optional[str] = None,
@@ -63,14 +66,12 @@ class Package(Metadata):
         image: Optional[str] = None,
         version: Optional[str] = None,
         created: Optional[str] = None,
-        resources: List[Resource] = [],
+        resources: List[Union[Resource, str]] = [],
         # Software
-        basepath: str = settings.DEFAULT_BASEPATH,
-        onerror: IOnerror = settings.DEFAULT_ONERROR,
-        trusted: bool = settings.DEFAULT_TRUSTED,
+        basepath: Optional[str] = None,
         detector: Optional[Detector] = None,
-        innerpath: Optional[str] = None,
-        control: Optional[Control] = None,
+        dialect: Optional[Dialect] = None,
+        catalog: Optional[Catalog] = None,
     ):
 
         # Store state
@@ -86,25 +87,33 @@ class Package(Metadata):
         self.image = image
         self.version = version
         self.created = created
-        self.resources = resources.copy()
         self.basepath = basepath
-        self.onerror = onerror
-        self.trusted = trusted
-        self.detector = detector or Detector()
+        self.catalog = catalog
 
-        # Connect resources
-        for resource in self.resources:
-            resource.package = self
+        # Add resources
+        self.resources = []
+        for resource in resources:
+            resource = self.add_resource(resource)
+            if detector:
+                resource.detector = detector
+            if dialect:
+                resource.dialect = dialect
 
         # Handled by the create hook
         assert source is None
-        assert innerpath is None
         assert control is None
+        assert innerpath is None
 
     # TODO: support list of paths as resource paths?
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, **options):
-        control = options.pop("control", None)
+    def __create__(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        innerpath: Optional[str] = None,
+        **options,
+    ):
         if source is not None or control is not None:
 
             # Path
@@ -117,7 +126,6 @@ class Package(Metadata):
 
             # Compressed
             elif helpers.is_zip_descriptor(source):
-                innerpath = options.pop("innerpath", None)
                 source = unzip_package(source, innerpath=innerpath)
 
             # Directory
@@ -130,7 +138,7 @@ class Package(Metadata):
             # Expandable
             elif helpers.is_expandable_source(source):
                 options["resources"] = []
-                basepath = options.get("basepath", settings.DEFAULT_BASEPATH)
+                basepath = options.get("basepath")
                 for path in helpers.expand_source(source, basepath=basepath):
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
@@ -234,32 +242,8 @@ class Package(Metadata):
     It can be dicts or Resource instances
     """
 
-    basepath: str
-    """
-    A basepath of the package
-    The fullpath of the resource is joined `basepath` and `/path`
-    """
-
-    onerror: IOnerror
-    """
-    Behaviour if there is an error.
-    It defaults to 'ignore'. The default mode will ignore all errors
-    on resource level and they should be handled by the user
-    being available in Header and Row objects.
-    """
-
-    trusted: bool
-    """
-    Don't raise an exception on unsafe paths.
-    A path provided as a part of the descriptor considered unsafe
-    if there are path traversing or the path is absolute.
-    A path provided as `source` or `path` is alway trusted.
-    """
-
-    detector: Detector
-    """
-    File/table detector.
-    For more information, please check the Detector documentation.
+    catalog: Optional[Catalog]
+    """NOTE: add docs
     """
 
     # Props
@@ -274,15 +258,33 @@ class Package(Metadata):
         """Return names of resources"""
         return [resource.path for resource in self.resources if resource.path is not None]
 
+    @property
+    def basepath(self) -> Optional[str]:
+        """
+        A basepath of the package
+        The normpath of the resource is joined `basepath` and `/path`
+        """
+        if self.__basepath:
+            return self.__basepath
+        if self.catalog:
+            return self.catalog.basepath
+
+    @basepath.setter
+    def basepath(self, value: Optional[str]):
+        self.__basepath = value
+
     # Resources
 
-    def add_resource(self, resource: Resource) -> None:
+    def add_resource(self, resource: Union[Resource, str]) -> Resource:
         """Add new resource to the package"""
+        if isinstance(resource, str):
+            resource = Resource.from_descriptor(resource, basepath=self.basepath)
         if resource.name and self.has_resource(resource.name):
             error = errors.PackageError(note=f'resource "{resource.name}" already exists')
             raise FrictionlessException(error)
         self.resources.append(resource)
         resource.package = self
+        return resource
 
     def has_resource(self, name: str) -> bool:
         """Check if a resource is present"""
@@ -377,11 +379,7 @@ class Package(Metadata):
     def to_copy(self):
         """Create a copy of the package"""
         return super().to_copy(
-            resources=[resource.to_copy() for resource in self.resources],
-            basepath=self.basepath,
-            onerror=self.onerror,
-            trusted=self.trusted,
-            detector=self.detector,
+            resources=[resource.to_copy() for resource in self.resources]
         )
 
     @staticmethod
@@ -409,7 +407,7 @@ class Package(Metadata):
             BigqueryStorage: storage
         """
         storage = system.create_storage("bigquery", target, control=control)
-        storage.write_package(self.to_copy(), force=True)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
@@ -440,7 +438,7 @@ class Package(Metadata):
             CkanStorage: storage
         """
         storage = system.create_storage("ckan", target, control=control)
-        storage.write_package(self.to_copy(), force=True)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
@@ -524,7 +522,7 @@ class Package(Metadata):
             SqlStorage: storage
         """
         storage = system.create_storage("sql", target, control=control)
-        storage.write_package(self.to_copy(), force=True)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
@@ -558,16 +556,13 @@ class Package(Metadata):
         try:
             compression = compression or platform.zipfile.ZIP_DEFLATED
             with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
-                package_descriptor = self.to_dict()
+                package_descriptor = self.to_descriptor()
+                print(package_descriptor)
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
-                    # Remote data
-                    if resource.remote:
-                        pass
-
                     # Memory data
-                    elif resource.memory:
+                    if resource.memory:
                         if not isinstance(resource.data, list):
                             path = f"{resource.name}.csv"
                             descriptor.pop("data", None)
@@ -576,8 +571,8 @@ class Package(Metadata):
                             descriptor["format"] = "csv"
                             descriptor["mediatype"] = "text/csv"
                             with tempfile.NamedTemporaryFile() as file:
-                                tgt = Resource(path=file.name, format="csv", trusted=True)
-                                resource.write(tgt)
+                                target = Resource(path=file.name, format="csv")
+                                resource.write(target)
                                 archive.write(file.name, path)
 
                     # Multipart data
@@ -591,7 +586,7 @@ class Package(Metadata):
                                 archive.write(normpath, path)
 
                     # Local Data
-                    else:
+                    elif resource.scheme == "file":
                         path = resource.path
                         normpath = resource.normpath
                         if os.path.isfile(normpath):
@@ -685,7 +680,6 @@ class Package(Metadata):
 
     metadata_type = "package"
     metadata_Error = errors.PackageError
-    metadata_Types = dict(resources=Resource)
     metadata_profile = {
         "type": "object",
         "required": ["resources"],
@@ -745,67 +739,60 @@ class Package(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
-        if isinstance(descriptor, str):
-            options.setdefault("basepath", helpers.parse_basepath(descriptor))
-        descriptor = super().metadata_normalize(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "resources":
+            return Resource
 
-        # Profile (standards_v1)
+    @classmethod
+    def metadata_transform(cls, descriptor: IDescriptor):
+        super().metadata_transform(descriptor)
+
+        # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
         if profile:
             if profile not in ["data-package", "tabular-data-package"]:
                 descriptor.setdefault("profiles", [])
                 descriptor["profiles"].append(profile)
 
+    @classmethod
+    def metadata_validate(cls, descriptor: IDescriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
+
         # Security
-        trusted = options.setdefault("trusted", False)
-        if not trusted:
+        if not system.trusted:
             keys = ["resources", "profiles"]
             for key in keys:
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]
                 for item in items:
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
-                        error = errors.PackageError(note=f'path "{item}" is not safe')
-                        raise FrictionlessException(error)
-
-        return super().metadata_import(descriptor, **options)
-
-    def metadata_export(self):
-        descriptor = super().metadata_export()
-
-        # Profile (standards_v1)
-        if system.standards_version == "v1":
-            profiles = descriptor.pop("profiles", None)
-            descriptor["profile"] = "data-package"
-            if profiles:
-                descriptor["profile"] = profiles[0]
-
-        return descriptor
-
-    def metadata_validate(self):
-
-        # Resources
-        for resource in self.resources:
-            yield from resource.metadata_validate()
+                        yield errors.PackageError(note=f'path "{item}" is not safe')
+                        return
 
         # Resoruce Names
-        resource_names = list(filter(lambda name: name, self.resource_names))
+        resource_names = []
+        for resource in descriptor["resources"]:
+            if isinstance(resource, dict) and "name" in resource:
+                resource_names.append(resource["name"])
         if len(resource_names) != len(set(resource_names)):
             note = "names of the resources are not unique"
             yield errors.PackageError(note=note)
 
         # Created
-        if self.created:
-            field = fields.DatetimeField()
-            _, note = field.read_cell(self.created)
+        created = descriptor.get("created")
+        if created:
+            field = fields.DatetimeField(name="created")
+            _, note = field.read_cell(created)
             if note:
                 note = 'property "created" is not valid "datetime"'
                 yield errors.PackageError(note=note)
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:
-            for item in getattr(self, name, []):
+            for item in descriptor.get(name, []):
                 if item.get("email"):
                     field = fields.StringField(format="email")
                     _, note = field.read_cell(item.get("email"))
@@ -813,19 +800,40 @@ class Package(Metadata):
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
 
-        # Custom
+        # Profiles
+        profiles = descriptor.get("profiles", [])
+        for profile in profiles:
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=errors.PackageError,
+            )
+
+        # Misleading
         for name in ["missingValues", "fields"]:
-            if name in self.custom:
+            if name in descriptor:
                 note = f'"{name}" should be set as "resource.schema.{name}"'
                 yield errors.PackageError(note=note)
 
-        # Profiles
-        if self.profiles:
-            descriptor = self.to_descriptor()
-            for profile in self.profiles:
-                notes = helpers.validate_descriptor(descriptor, profile=profile)
-                for note in notes:
-                    yield errors.PackageError(note=note)
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Profile (standards/v1)
+        if system.standards == "v1":
+            profiles = descriptor.pop("profiles", None)
+            descriptor["profile"] = "data-package"
+            if profiles:
+                descriptor["profile"] = profiles[0]
+
+        return descriptor
 
 
 # Internal

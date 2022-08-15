@@ -1,8 +1,25 @@
 import sys
 from typing import ClassVar
 from functools import cached_property
+from importlib import import_module
 import platform as python_platform
-from .helpers import extras
+
+
+def extras(*, name: str):
+    """Extra dependency decorator"""
+
+    def outer(func):
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception:
+                module = import_module("frictionless.exception")
+                note = f'Please install "frictionless[{name}]"'
+                raise module.FrictionlessException(note)
+
+        return inner
+
+    return outer
 
 
 class Platform:
@@ -29,6 +46,54 @@ class Platform:
         return dateutil.parser
 
     @cached_property
+    def frictionless(self):
+        import frictionless
+
+        return frictionless
+
+    @cached_property
+    def frictionless_checks(self):
+        import frictionless.checks
+
+        return frictionless.checks
+
+    @cached_property
+    def frictionless_errors(self):
+        import frictionless.errors
+
+        return frictionless.errors
+
+    @cached_property
+    def frictionless_fields(self):
+        import frictionless.fields
+
+        return frictionless.fields
+
+    @cached_property
+    def frictionless_formats(self):
+        import frictionless.formats
+
+        return frictionless.formats
+
+    @cached_property
+    def frictionless_portals(self):
+        import frictionless.portals
+
+        return frictionless.portals
+
+    @cached_property
+    def frictionless_schemes(self):
+        import frictionless.schemes
+
+        return frictionless.schemes
+
+    @cached_property
+    def frictionless_steps(self):
+        import frictionless.steps
+
+        return frictionless.steps
+
+    @cached_property
     def gzip(self):
         import gzip
 
@@ -51,6 +116,12 @@ class Platform:
         import jinja2
 
         return jinja2
+
+    @cached_property
+    def jinja2_filters(self):
+        import jinja2.filters
+
+        return jinja2.filters
 
     @cached_property
     def jsonschema(self):

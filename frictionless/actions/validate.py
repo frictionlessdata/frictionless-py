@@ -1,4 +1,5 @@
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Union
+from ..stats import Stats
 from ..schema import Schema
 from ..report import Report
 from ..dialect import Dialect
@@ -13,13 +14,15 @@ from .. import settings
 from .. import helpers
 
 
-# TODO: shall we accept dialect/schema/checklist in a form of descriptors?
 def validate(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
+    dialect: Optional[Union[Dialect, str]] = None,
+    schema: Optional[Union[Schema, str]] = None,
+    stats: Optional[Stats] = None,
     # Checklist
-    checklist: Optional[Checklist] = None,
+    checklist: Optional[Union[Checklist, str]] = None,
     checks: List[Check] = [],
     pick_errors: List[str] = [],
     skip_errors: List[str] = [],
@@ -28,7 +31,6 @@ def validate(
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
     parallel: bool = False,
-    strict: bool = False,
     **options,
 ):
     """Validate resource
@@ -41,8 +43,11 @@ def validate(
     Returns:
         Report: validation report
     """
+    timer = helpers.Timer()
 
     # Detect type
+    if resource_name:
+        type = "resource"
     if not type:
         type = Detector.detect_descriptor(source)
         if not type:
@@ -51,7 +56,9 @@ def validate(
                 type = "package"
 
     # Create checklist
-    if not checklist:
+    if isinstance(checklist, str):
+        checklist = Checklist.from_descriptor(checklist)
+    elif not checklist:
         checklist = Checklist(
             checks=checks,
             pick_errors=pick_errors,
@@ -60,47 +67,38 @@ def validate(
 
     # Validate resource
     if type == "resource":
-        resource = source
-        if not isinstance(resource, Resource):
-            resource = Resource.from_options(resource, **options)
+        try:
+            if resource_name:
+                package = Package.from_options(source, **options)
+                resource = package.get_resource(resource_name)
+            else:
+                resource = Resource.from_options(
+                    source,
+                    dialect=dialect,
+                    schema=schema,
+                    stats=stats,
+                    **options,
+                )
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
         return resource.validate(
             checklist,
             limit_errors=limit_errors,
             limit_rows=limit_rows,
-            strict=strict,
         )
 
     # Validate package
     if type == "package":
-        package = source
-        if not isinstance(package, Package):
-            # TODO: remove when we add these to names kwargs
-            options.pop("schema", None)
-            options.pop("dialect", None)
-            options.pop("checklist", None)
-            options.pop("pipeline", None)
-            options.pop("stats", None)
-            package = Package.from_options(package, **options)
-
-        # Resource
-        if resource_name:
-            resource = package.get_resource(resource_name)
-            return resource.validate(
-                checklist,
-                limit_errors=limit_errors,
-                limit_rows=limit_rows,
-                strict=strict,
-            )
-
-        # Package
-        else:
-            return package.validate(
-                checklist,
-                limit_errors=limit_errors,
-                limit_rows=limit_rows,
-                strict=strict,
-                parallel=parallel,
-            )
+        try:
+            package = Package.from_options(source, **options)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
+        return package.validate(
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            parallel=parallel,
+        )
 
     # Ensure source
     if source is None:
@@ -109,52 +107,35 @@ def validate(
 
     # Validate checklist
     if type == "checklist":
-        checklist = source
-        if not isinstance(checklist, Checklist):
-            checklist = Checklist.from_descriptor(checklist)  # type: ignore
-        return checklist.validate()
+        return Checklist.validate_descriptor(source)
 
     # Validate detector
     if type == "detector":
-        detector = source
-        if not isinstance(detector, Detector):
-            detector = Detector.from_descriptor(detector)
-        return detector.validate()
+        return Detector.validate_descriptor(source)
 
     # Validate dialect
     if type == "dialect":
-        dialect = source
-        if not isinstance(dialect, Dialect):
-            dialect = Dialect.from_descriptor(dialect)
-        return dialect.validate()
+        return Dialect.validate_descriptor(source)
 
     # Validate inquiry
     if type == "inquiry":
-        inquiry = source
-        if not isinstance(inquiry, Inquiry):
-            inquiry = Inquiry.from_descriptor(inquiry)
+        try:
+            inquiry = Inquiry.from_descriptor(source)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
         return inquiry.validate()
 
     # Validate pipeline
     if type == "pipeline":
-        pipeline = source
-        if not isinstance(pipeline, Pipeline):
-            pipeline = Pipeline.from_descriptor(pipeline)
-        return pipeline.validate()
+        return Pipeline.validate_descriptor(source)
 
     # Validate report
     if type == "report":
-        report = source
-        if not isinstance(report, Report):
-            report = Report.from_descriptor(report)
-        return report.validate()
+        return Report.validate_descriptor(source)
 
     # Validate schema
     if type == "schema":
-        schema = source
-        if not isinstance(schema, Schema):
-            schema = Schema.from_descriptor(schema)
-        return schema.validate()
+        return Schema.validate_descriptor(source)
 
     # Not supported
     raise FrictionlessException(f"Not supported validate type: {type}")

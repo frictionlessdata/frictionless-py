@@ -1,4 +1,4 @@
-from frictionless import InquiryTask
+from frictionless import InquiryTask, system
 
 
 # General
@@ -10,7 +10,8 @@ def test_inquiry_task_validate():
     assert report.valid
 
 
-def test_inquiry_task_validate_strict():
-    inquiry = InquiryTask(resource="data/resource.json", strict=True)
-    report = inquiry.validate()
+def test_inquiry_task_validate_standards_v2_strict():
+    inquiry = InquiryTask(resource="data/resource.json")
+    with system.use_context(standards="v2-strict"):
+        report = inquiry.validate()
     assert not report.valid

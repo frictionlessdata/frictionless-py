@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, Optional, List
-from importlib import import_module
 from multiprocessing import Pool
+from ..platform import platform
 from ..metadata import Metadata
 from ..errors import InquiryError
 from .task import InquiryTask
@@ -48,16 +48,10 @@ class Inquiry(Metadata):
         timer = helpers.Timer()
         reports: List[Report] = []
 
-        # Validate inquiry
-        metadata_errors = self.list_metadata_errors()
-        if metadata_errors:
-            report = Report.from_validation(time=timer.time, errors=metadata_errors)
-            reports.append(report)
-
         # Validate sequential
-        elif not parallel:
+        if not parallel:
             for task in self.tasks:
-                report = task.validate(metadata=False)
+                report = task.validate()
                 reports.append(report)
 
         # Validate parallel
@@ -66,6 +60,8 @@ class Inquiry(Metadata):
                 task_descriptors = [task.to_descriptor() for task in self.tasks]
                 report_descriptors = pool.map(validate_parallel, task_descriptors)
                 for report_descriptor in report_descriptors:
+                    print(report_descriptor)
+                    print("---")
                     reports.append(Report.from_descriptor(report_descriptor))
 
         # Return report
@@ -79,7 +75,6 @@ class Inquiry(Metadata):
 
     metadata_type = "inquiry"
     metadata_Error = InquiryError
-    metadata_Types = dict(tasks=InquiryTask)
     metadata_profile = {
         "type": "object",
         "required": ["tasks"],
@@ -91,17 +86,16 @@ class Inquiry(Metadata):
         },
     }
 
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-        for task in self.tasks:
-            yield from task.metadata_validate()
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "tasks":
+            return InquiryTask
 
 
 # Internal
 
 
 def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
-    InquiryTask = import_module("frictionless").InquiryTask
-    task = InquiryTask.from_descriptor(descriptor)
-    report = task.validate(metadata=False)
+    task = platform.frictionless.InquiryTask.from_descriptor(descriptor)
+    report = task.validate()
     return report.to_descriptor()

@@ -1,7 +1,7 @@
 import pytest
 import pathlib
-from frictionless import Resource, Schema, Detector, Dialect, Checklist, Check, Stats
-from frictionless import validate, formats, errors, platform
+from frictionless import Schema, Detector, Dialect, Check, Stats
+from frictionless import validate, formats, errors, platform, system
 
 
 # General
@@ -12,7 +12,6 @@ def test_validate():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
     assert report.stats.errors == 1
@@ -21,7 +20,6 @@ def test_validate_invalid_source():
     assert note.count("[Errno 2]") and note.count("bad.json")
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
     assert report.stats.errors == 1
@@ -30,30 +28,31 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_forbidden_value_task_error():
-    checklist = Checklist.from_descriptor(
-        {
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
             "checks": [
                 {"type": "forbidden-value", "fieldName": "bad", "forbidden": [2]},
             ]
-        }
-    )
-    report = validate("data/table.csv", checklist=checklist)
-    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
-        [None, None, "task-error"],
+        },
+    }
+    report = validate(descriptor)
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", "'values' is a required property"],
     ]
 
 
-def test_validate_invalid_resource_strict():
-    report = validate({"path": "data/table.csv"}, strict=True)
+def test_validate_invalid_resource_standards_v2_strict():
+    with system.use_context(standards="v2-strict"):
+        report = validate({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 
@@ -251,23 +250,15 @@ def test_validate_compression_invalid():
 
 def test_validate_layout_none():
     dialect = Dialect(header=False)
-    resource = Resource("data/without-headers.csv", dialect=dialect)
-    report = validate(resource)
+    report = validate("data/without-headers.csv", dialect=dialect)
     assert report.valid
     assert report.task.stats.rows == 3
-    assert resource.dialect.header is False
-    assert resource.labels == []
-    assert resource.header == ["field1", "field2"]
 
 
 def test_validate_layout_none_extra_cell():
     dialect = Dialect(header=False)
-    resource = Resource("data/without-headers-extra.csv", dialect=dialect)
-    report = validate(resource)
+    report = validate("data/without-headers-extra.csv", dialect=dialect)
     assert report.task.stats.rows == 3
-    assert resource.dialect.header is False
-    assert resource.labels == []
-    assert resource.header == ["field1", "field2"]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [3, 3, "extra-cell"],
     ]
@@ -275,33 +266,28 @@ def test_validate_layout_none_extra_cell():
 
 def test_validate_layout_number():
     dialect = Dialect(header_rows=[2])
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["11", "12", "13", "14"]
+    report = validate("data/matrix.csv", dialect=dialect)
+    assert report.task.stats.rows == 3
     assert report.valid
 
 
 def test_validate_layout_list_of_numbers():
     dialect = Dialect(header_rows=[2, 3, 4])
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["11 21 31", "12 22 32", "13 23 33", "14 24 34"]
+    report = validate("data/matrix.csv", dialect=dialect)
+    assert report.task.stats.rows == 1
     assert report.valid
 
 
 def test_validate_layout_list_of_numbers_and_headers_join():
     dialect = Dialect(header_rows=[2, 3, 4], header_join=".")
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["11.21.31", "12.22.32", "13.23.33", "14.24.34"]
+    report = validate("data/matrix.csv", dialect=dialect)
+    assert report.task.stats.rows == 1
     assert report.valid
 
 
 def test_validate_layout_skip_rows():
     dialect = Dialect(comment_char="41", comment_rows=[2])
-    resource = Resource("data/matrix.csv", dialect=dialect)
-    report = validate(resource)
-    assert resource.header == ["f1", "f2", "f3", "f4"]
+    report = validate("data/matrix.csv", dialect=dialect)
     assert report.task.stats.rows == 2
     assert report.task.valid
 
@@ -316,27 +302,6 @@ def test_validate_dialect_delimiter():
 # Schema
 
 
-@pytest.mark.xfail(reason="error-catching")
-def test_validate_schema_invalid():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {
-            "fields": [
-                {"name": "name"},
-                {"name": "age", "type": "bad"},
-            ]
-        }
-    )
-    report = validate(source, schema=schema)
-    assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
-    ]
-
-
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_schema_invalid_json():
     report = validate("data/table.csv", schema="data/invalid.json")
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
@@ -493,7 +458,10 @@ def test_validate_schema_unique_error_and_type_error():
     schema = Schema.from_descriptor(
         {
             "fields": [
-                {"name": "id"},
+                {
+                    "name": "id",
+                    "type": "string",
+                },
                 {
                     "name": "unique_number",
                     "type": "number",
@@ -625,21 +593,21 @@ def test_validate_detector_sync_schema():
         }
     )
     detector = Detector(schema_sync=True)
-    resource = Resource("data/sync-schema.csv", schema=schema, detector=detector)
-    report = validate(resource)
+    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ],
-    }
 
 
 def test_validate_detector_sync_schema_invalid():
     source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
     schema = Schema.from_descriptor(
-        {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "FirstName", "type": "string"},
+                {"name": "LastName", "type": "string"},
+            ]
+        }
     )
     detector = Detector(schema_sync=True)
     report = validate(source, schema=schema, detector=detector)
@@ -657,8 +625,8 @@ def test_validate_detector_headers_errors():
         {
             "fields": [
                 {"name": "id", "type": "number"},
-                {"name": "language", "constraints": {"required": True}},
-                {"name": "country"},
+                {"name": "language", "type": "string", "constraints": {"required": True}},
+                {"name": "country", "type": "string"},
             ]
         }
     )
@@ -671,61 +639,40 @@ def test_validate_detector_headers_errors():
 
 def test_validate_detector_patch_schema():
     detector = Detector(schema_patch={"missingValues": ["-"]})
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "missingValues": ["-"],
-    }
 
 
 def test_validate_detector_patch_schema_fields():
     detector = Detector(
         schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
     )
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-        "missingValues": ["-"],
-    }
 
 
 def test_validate_detector_infer_type_string():
     detector = Detector(field_type="string")
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-    }
 
 
 def test_validate_detector_infer_type_any():
     detector = Detector(field_type="any")
-    resource = Resource("data/table.csv", detector=detector)
-    report = validate(resource)
+    report = validate("data/table.csv", detector=detector)
+    assert report.task.stats.fields == 2
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
-    }
 
 
 def test_validate_detector_infer_names():
     dialect = Dialect(header=False)
     detector = Detector(field_names=["id", "name"])
-    resource = Resource("data/without-headers.csv", dialect=dialect, detector=detector)
-    report = validate(resource)
-    assert resource.schema.fields[0].name == "id"
-    assert resource.schema.fields[1].name == "name"
+    report = validate("data/without-headers.csv", dialect=dialect, detector=detector)
+    assert report.task.stats.fields == 2
     assert report.task.stats.rows == 3
-    assert resource.labels == []
-    assert resource.header == ["id", "name"]
     assert report.valid
 
 
@@ -734,7 +681,6 @@ def test_validate_detector_infer_names():
 
 def test_validate_pick_errors():
     report = validate("data/invalid.csv", pick_errors=["blank-label", "blank-row"])
-    assert report.task.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
@@ -743,14 +689,6 @@ def test_validate_pick_errors():
 
 def test_validate_pick_errors_tags():
     report = validate("data/invalid.csv", pick_errors=["#header"])
-    assert report.task.scope == [
-        "blank-header",
-        "extra-label",
-        "missing-label",
-        "blank-label",
-        "duplicate-label",
-        "incorrect-label",
-    ]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -842,11 +780,16 @@ def test_validate_custom_check_with_arguments():
     ]
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_custom_check_bad_name():
-    report = validate("data/table.csv", checks=[{"type": "bad"}])  # type: ignore
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
+            "checks": [{"type": "bad"}],
+        },
+    }
+    report = validate(descriptor)
     assert report.flatten(["type", "note"]) == [
-        ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
+        ["check-error", 'check type "bad" is not supported'],
     ]
 
 
@@ -887,18 +830,19 @@ def test_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_invalid_table_schema_issue_304():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
-    )
-    report = validate(source, schema=schema)
+    descriptor = {
+        "data": [["name", "age"], ["Alex", "33"]],
+        "schema": {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "age", "type": "bad"},
+            ]
+        },
+    }
+    report = validate(descriptor)
     assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
+        ["field-error", 'field type "bad" is not supported'],
     ]
 
 

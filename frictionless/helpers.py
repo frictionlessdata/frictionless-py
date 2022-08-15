@@ -7,21 +7,17 @@ import ast
 import json
 import glob
 import shutil
+import inspect
 import tempfile
 import datetime
 import textwrap
 import stringcase
 from copy import deepcopy
-from typing import Union, Any, Optional
 from collections.abc import Mapping
-from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
-from typing import TYPE_CHECKING, List
-from . import settings
-
-if TYPE_CHECKING:
-    from .interfaces import IDescriptor, IProfile
+from typing import List, Union, Any, Optional
+from .platform import platform
 
 
 # General
@@ -89,6 +85,11 @@ def rows_to_data(rows):
     return data
 
 
+def is_class_accept_option(cls, name):
+    sig = inspect.signature(cls.__init__)
+    return name in sig.parameters
+
+
 @contextmanager
 def ensure_open(thing):
     if not thing.closed:
@@ -144,7 +145,7 @@ def parse_scheme_and_format(path: str):
         parsed = urlparse(f"//{path}", scheme=scheme)
     scheme = parsed.scheme.lower()
     if len(scheme) < 2:
-        scheme = settings.DEFAULT_SCHEME
+        scheme = "file"
     format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower()
     if not format:
         # Test if query string contains a "format=" parameter.
@@ -160,33 +161,12 @@ def merge_jsonschema(base, head):
     base_required = base.get("required", [])
     head_required = head.get("required", [])
     if base_required or head_required:
-        result["required"] = base_required + head_required
+        result["required"] = list(set(base_required + head_required))
     result["properties"] = copy_merge(
         base.get("properties", {}),
         head.get("properties", {}),
     )
     return result
-
-
-def validate_descriptor(
-    descriptor: IDescriptor,
-    *,
-    profile: Union[IProfile, str],
-) -> List[str]:
-    notes = []
-    frictionless = import_module("frictionless")
-    if isinstance(profile, str):
-        profile = frictionless.Metadata.metadata_normalize(profile)
-    validator_class = frictionless.platform.jsonschema.validators.validator_for(profile)  # type: ignore
-    validator = validator_class(profile)
-    for error in validator.iter_errors(descriptor):
-        metadata_path = "/".join(map(str, error.path))
-        message = re.sub(r"\s+", " ", error.message)
-        note = message
-        if metadata_path:
-            note = f"{note} of {metadata_path}"
-        notes.append(note)
-    return notes
 
 
 def ensure_dir(path):
@@ -195,12 +175,12 @@ def ensure_dir(path):
         os.makedirs(dirpath)
 
 
-def move_file(source, target):
+def move_file(source: str, target: str):
     ensure_dir(target)
     shutil.move(source, target)
 
 
-def copy_file(source, target):
+def copy_file(source: str, target: str):
     if isinstance(source, (tuple, list)):
         source = os.path.join(*source)
     if isinstance(target, (tuple, list)):
@@ -209,7 +189,7 @@ def copy_file(source, target):
     shutil.copy(source, target)
 
 
-def write_file(path, text):
+def write_file(path: str, text: str):
     with tempfile.NamedTemporaryFile("wt", delete=False, encoding="utf-8") as file:
         file.write(text)
         file.flush()
@@ -234,7 +214,7 @@ def is_remote_path(path):
     return True
 
 
-def normalize_path(basepath, path):
+def normalize_path(path: str, *, basepath: Optional[str] = None):
     if not is_remote_path(path) and not os.path.isabs(path):
         if basepath:
             separator = os.path.sep
@@ -282,15 +262,17 @@ def is_expandable_source(source: Any):
     return glob.has_magic(source) or os.path.isdir(source)
 
 
-def expand_source(source: Union[list, str], *, basepath: str):
+def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):
     if isinstance(source, list):
         return source
     paths = []
-    source = os.path.join(basepath, source)
+    if basepath:
+        source = os.path.join(basepath, source)
     pattern = f"{source}/*" if os.path.isdir(source) else source
     configs = {"recursive": True} if "**" in pattern else {}
     for path in sorted(glob.glob(pattern, **configs)):
-        path = os.path.relpath(path, basepath)
+        if basepath:
+            path = os.path.relpath(path, basepath)
         paths.append(path)
     return paths
 
@@ -415,20 +397,107 @@ def get_current_memory_usage():
         pass
 
 
-def extras(*, name: str):
-    """Decorator function to warp Frictionless extra dependency import
-    Provide name e.g. "sql" or "pandas"
-    """
+def create_yaml_dumper():
+    class IndentDumper(platform.yaml.SafeDumper):
+        def increase_indent(self, flow=False, indentless=False):
+            return super().increase_indent(flow, False)
 
-    def outer(func):
-        def inner(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except Exception:
-                module = import_module("frictionless.exception")
-                note = f'Please install "frictionless[{name}]"'
-                raise module.FrictionlessException(note)
+    return IndentDumper
 
-        return inner
 
-    return outer
+def render_markdown(path: str, data: dict) -> str:
+    """Render any JSON-like object as Markdown, using jinja2 template"""
+
+    # Create environ
+    template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
+    environ = platform.jinja2.Environment(
+        loader=platform.jinja2.FileSystemLoader(template_dir),
+        lstrip_blocks=True,
+        trim_blocks=True,
+    )
+
+    # Render data
+    environ.filters["filter_dict"] = filter_dict
+    environ.filters["dict_to_markdown"] = dict_to_markdown
+    environ.filters["tabulate"] = dicts_to_markdown_table
+    template = environ.get_template(path)
+    return template.render(**data)
+
+
+def dict_to_markdown(
+    x: Union[dict, list, int, float, str, bool],
+    level: int = 0,
+    tab: int = 2,
+    flatten_scalar_lists: bool = True,
+) -> str:
+    """Render any JSON-like object as Markdown, using nested bulleted lists"""
+
+    def _scalar_list(x) -> bool:
+        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
+
+    def _iter(x: Union[dict, list, int, float, str, bool], level: int = 0) -> str:
+        if isinstance(x, (dict, list)):
+            if isinstance(x, dict):
+                labels = [f"- `{key}`" for key in x]
+            elif isinstance(x, list):
+                labels = [f"- [{i + 1}]" for i in range(len(x))]
+            values = x if isinstance(x, list) else list(x.values())
+            if isinstance(x, list) and flatten_scalar_lists:
+                scalar = [not isinstance(value, (dict, list)) for value in values]
+                if all(scalar):
+                    values = [f"{values}"]
+            lines = []
+            for label, value in zip(labels, values):
+                if isinstance(value, (dict, list)) and (
+                    not flatten_scalar_lists or not _scalar_list(value)
+                ):
+                    lines.append(f"{label}\n{_iter(value, level=level + 1)}")
+                else:
+                    if isinstance(value, str):
+                        # Indent to align following lines with '- '
+                        value = platform.jinja2_filters.do_indent(
+                            value, width=2, first=False
+                        )
+                    lines.append(f"{label} {value}")
+            txt = "\n".join(lines)
+        else:
+            txt = str(x)
+        if level > 0:
+            txt = platform.jinja2_filters.do_indent(
+                txt, width=tab, first=True, blank=False
+            )
+        return txt
+
+    return platform.jinja2_filters.do_indent(
+        _iter(x, level=0), width=tab * level, first=True, blank=False
+    )
+
+
+def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
+    """Tabulate dictionaries and render as a Markdown table"""
+    if kwargs:
+        dicts = [filter_dict(x, **kwargs) for x in dicts]
+    df = platform.pandas.DataFrame(dicts)
+    return df.where(df.notnull(), None).to_markdown(index=False)  # type: ignore
+
+
+def filter_dict(
+    x: dict,
+    include: Optional[list] = None,
+    exclude: Optional[list] = None,
+    order: Optional[list] = None,
+) -> dict:
+    """Filter and order dictionary by key names"""
+
+    if include:
+        x = {key: x[key] for key in x if key in include}
+    if exclude:
+        x = {key: x[key] for key in x if key not in exclude}
+    if order:
+        index = [
+            (order.index(key) if key in order else len(order), i)
+            for i, key in enumerate(x)
+        ]
+        sorted_keys = [key for _, key in sorted(zip(index, x.keys()))]
+        x = {key: x[key] for key in sorted_keys}
+    return x

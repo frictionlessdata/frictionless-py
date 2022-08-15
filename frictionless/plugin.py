@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
     from .resource import Resource, Loader, Parser
@@ -20,59 +20,6 @@ class Plugin:
     """
 
     # Hooks
-
-    def create_check(self, descriptor: dict) -> Optional[Check]:
-        """Create check
-
-        Parameters:
-            name (str): check name
-            descriptor (dict): check descriptor
-
-        Returns:
-            Check: check
-        """
-        pass
-
-    def create_control(self, descriptor: dict) -> Optional[Control]:
-        """Create control
-
-        Parameters:
-            descriptor (dict): control descriptor
-
-        Returns:
-            Control: control
-        """
-        pass
-
-    def create_error(self, descriptor: dict) -> Optional[Error]:
-        """Create error
-
-        Parameters:
-            descriptor (dict): error descriptor
-
-        Returns:
-            Error: error
-        """
-        pass
-
-    def create_field(self, descriptor: dict) -> Optional[Field]:
-        """Create field
-
-        Parameters:
-            descriptor (dict): field descriptor
-
-        Returns:
-            Field: field
-        """
-        pass
-
-    def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
 
     def create_loader(self, resource: Resource) -> Optional[Loader]:
         """Create loader
@@ -111,15 +58,36 @@ class Plugin:
         """
         pass
 
-    def create_step(self, descriptor: dict) -> Optional[Step]:
-        """Create step
-
-        Parameters:
-            descriptor (dict): step descriptor
+    def detect_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
+        """Detect field candidates
 
         Returns:
-            Step: step
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
+        pass
+
+    def detect_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        pass
+
+    def select_Check(self, type: str) -> Optional[Type[Check]]:
+        pass
+
+    def select_Control(self, type: str) -> Optional[Type[Control]]:
+        pass
+
+    def select_Error(self, type: str) -> Optional[Type[Error]]:
+        pass
+
+    def select_Field(self, type: str) -> Optional[Type[Field]]:
+        pass
+
+    def select_Step(self, type: str) -> Optional[Type[Step]]:
         pass
 
     def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
@@ -131,14 +99,5 @@ class Plugin:
 
         Returns:
             Storage: storage
-        """
-        pass
-
-    def detect_resource(self, resource: Resource) -> None:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
         """
         pass

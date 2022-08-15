@@ -8,7 +8,6 @@ from frictionless import Resource, Detector, Dialect, describe, platform
 def test_describe_resource():
     resource = describe("data/table.csv")
     assert isinstance(resource, Resource)
-    assert resource.check_metadata_valid()
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
@@ -30,7 +29,6 @@ def test_describe_resource():
 def test_describe_resource_with_stats():
     resource = describe("data/table.csv", stats=True)
     assert isinstance(resource, Resource)
-    assert resource.check_metadata_valid()
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",

@@ -9,10 +9,6 @@ class MultipartPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "multipart":
-            return MultipartControl.from_descriptor(descriptor)
-
     def create_loader(self, resource):
         if resource.scheme == "multipart":
             return MultipartLoader(resource)
@@ -20,3 +16,7 @@ class MultipartPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.multipart:
             resource.scheme = "multipart"
+
+    def select_Control(self, type):
+        if type == "multipart":
+            return MultipartControl

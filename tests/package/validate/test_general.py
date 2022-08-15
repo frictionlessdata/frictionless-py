@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Checklist
+from frictionless import Package, Checklist, FrictionlessException, system
 
 
 # General
@@ -76,16 +76,17 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-def test_validate_package_invalid_package_strict():
+def test_validate_package_invalid_package_standards_v2_strict():
     package = Package({"resources": [{"path": "data/table.csv"}]})
-    report = package.validate(strict=True)
+    with system.use_context(standards="v2-strict"):
+        report = package.validate()
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 
@@ -124,7 +125,10 @@ def test_validate_package_dialect_header_false():
                 "data": [["John", "22"], ["Alex", "33"], ["Paul", "44"]],
                 "dialect": {"header": False},
                 "schema": {
-                    "fields": [{"name": "name"}, {"name": "age", "type": "integer"}]
+                    "fields": [
+                        {"name": "name", "type": "string"},
+                        {"name": "age", "type": "integer"},
+                    ]
                 },
             }
         ]
@@ -174,7 +178,10 @@ def test_validate_package_composite_primary_key_unique_issue_215():
                 "name": "name",
                 "data": [["id1", "id2"], ["a", "1"], ["a", "2"]],
                 "schema": {
-                    "fields": [{"name": "id1"}, {"name": "id2"}],
+                    "fields": [
+                        {"name": "id1", "type": "string"},
+                        {"name": "id2", "type": "string"},
+                    ],
                     "primaryKey": ["id1", "id2"],
                 },
             }
@@ -192,7 +199,10 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
                 "name": "name",
                 "data": [["id1", "id2"], ["a", "1"], ["a", "1"]],
                 "schema": {
-                    "fields": [{"name": "id1"}, {"name": "id2"}],
+                    "fields": [
+                        {"name": "id1", "type": "string"},
+                        {"name": "id2", "type": "string"},
+                    ],
                     "primaryKey": ["id1", "id2"],
                 },
             }
@@ -266,46 +276,39 @@ def test_validate_package_with_diacritic_symbol_issue_905():
 
 
 def test_validate_package_with_resource_data_is_a_string_issue_977():
-    package = Package("data/issue-977.json")
-    report = package.validate()
-    assert report.flatten() == [
-        [1, None, None, "resource-error"],
-    ]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Package("data/issue-977.json")
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert error.type == "package-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert (
+        reasons[0].note
+        == "'MY_INLINE_DATA' is not of type 'object', 'array' at property 'data'"
+    )
 
 
 def test_validate_package_metadata_errors_with_missing_values_993():
-    package = Package("data/package-with-missingvalues-993.json")
-    error = package.list_metadata_errors()[0]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Package("data/package-with-missingvalues-993.json")
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "package-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "package-error"
     assert (
-        error.note == '"missingValues" should be set as "resource.schema.missingValues"'
+        reasons[0].note
+        == '"missingValues" should be set as "resource.schema.missingValues"'
     )
 
 
 def test_validate_package_metadata_errors_with_fields_993():
-    package = Package("data/package-with-fields-993.json")
-    error = package.list_metadata_errors()[0]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Package("data/package-with-fields-993.json")
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "package-error"
-    assert error.note == '"fields" should be set as "resource.schema.fields"'
-
-
-def test_validate_package_errors_with_missing_values_993():
-    package = Package("data/package-with-missingvalues-993.json")
-    report = package.validate()
-    assert report.flatten(["type", "message"]) == [
-        [
-            "package-error",
-            'The data package has an error: "missingValues" should be set as "resource.schema.missingValues"',
-        ]
-    ]
-
-
-def test_validate_package_errors_with_fields_993():
-    package = Package("data/package-with-fields-993.json")
-    report = package.validate()
-    assert report.flatten(["type", "message"]) == [
-        [
-            "package-error",
-            'The data package has an error: "fields" should be set as "resource.schema.fields"',
-        ]
-    ]
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "package-error"
+    assert reasons[0].note == '"fields" should be set as "resource.schema.fields"'

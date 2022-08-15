@@ -2,7 +2,7 @@ import sys
 import pytest
 import textwrap
 from importlib import import_module
-from frictionless import Package, Resource, Control, Schema, Field, Detector, platform
+from frictionless import Package, Resource, Control, Detector, platform
 from frictionless import Dialect, FrictionlessException
 
 
@@ -102,7 +102,7 @@ def test_resource_source_non_tabular():
         assert resource.path == path
         assert resource.data is None
         assert resource.type == "file"
-        assert resource.basepath == ""
+        assert resource.basepath is None
         assert resource.memory is False
         assert resource.multipart is False
         assert resource.normpath == path
@@ -124,7 +124,7 @@ def test_resource_source_non_tabular_remote():
         assert resource.type == "file"
         assert resource.memory is False
         assert resource.multipart is False
-        assert resource.basepath == ""
+        assert resource.basepath is None
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
@@ -154,7 +154,7 @@ def test_resource_source_path():
     assert resource.type == "table"
     assert resource.memory is False
     assert resource.multipart is False
-    assert resource.basepath == ""
+    assert resource.basepath is None
     assert resource.normpath == path
     if not platform.type == "windows":
         assert (
@@ -231,7 +231,7 @@ def test_resource_source_data():
         assert resource.memory is True
         assert resource.tabular is True
         assert resource.multipart is False
-        assert resource.basepath == ""
+        assert resource.basepath is None
         assert resource.read_bytes() == b""
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -248,24 +248,26 @@ def test_resource_source_data():
 
 
 def test_resource_source_no_path_and_no_data():
-    resource = Resource.from_descriptor({})
-    assert resource.path is None
-    assert resource.data is None
     with pytest.raises(FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource.from_descriptor({})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == 'one of the properties "path" or "data" is required'
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == 'one of the properties "path" or "data" is required'
 
 
 def test_resource_source_both_path_and_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    resource = Resource({"data": data, "path": "path"})
     with pytest.raises(FrictionlessException) as excinfo:
-        assert resource.read_rows()
+        Resource({"data": data, "path": "path"})
     error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == 'properties "path" and "data" is mutually exclusive'
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == 'properties "path" and "data" is mutually exclusive'
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
@@ -276,7 +278,7 @@ def test_resource_standard_specs_properties(create_descriptor):
         name="name",
         title="title",
         description="description",
-        profiles=["profile"],
+        profiles=[],
         licenses=[],
         sources=[],
     )
@@ -289,7 +291,7 @@ def test_resource_standard_specs_properties(create_descriptor):
     assert resource.name == "name"
     assert resource.title == "title"
     assert resource.description == "description"
-    assert resource.profiles == ["profile"]
+    assert resource.profiles == []
     assert resource.licenses == []
     assert resource.sources == []
 
@@ -346,23 +348,6 @@ def test_resource_description_text_plain():
     assert resource.description_text == "It's just a plain text. Another sentence"
 
 
-def test_resource_metadata_bad_schema_format():
-    schema = Schema(
-        fields=[
-            Field.from_descriptor(
-                dict(
-                    name="name",
-                    type="boolean",
-                    format={"trueValues": "Yes", "falseValues": "No"},
-                )
-            )
-        ]
-    )
-    resource = Resource(name="name", path="data/table.csv", schema=schema)
-    assert resource.check_metadata_valid() is False
-    assert resource.list_metadata_errors()[0].type == "field-error"
-
-
 def test_resource_set_base_path():
     resource = Resource(basepath="/data")
     assert resource.basepath == "/data"
@@ -377,20 +362,6 @@ def test_resource_set_detector():
     detector_set = Detector(sample_size=3)
     resource.detector = detector_set
     assert resource.detector == detector_set
-
-
-def test_resource_set_onerror():
-    resource = Resource(onerror="raise")
-    assert resource.onerror == "raise"
-    resource.onerror = "ignore"
-    assert resource.onerror == "ignore"
-
-
-def test_resource_set_trusted():
-    resource = Resource(trusted=True)
-    assert resource.trusted is True
-    resource.trusted = False
-    assert resource.trusted is False
 
 
 def test_resource_set_package():
@@ -534,3 +505,11 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
             "rows": 3,
         },
     }
+
+
+def test_resource_path_with_brackets_issue_1206():
+    resource = Resource.from_descriptor({"path": "data/[table].csv"})
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]

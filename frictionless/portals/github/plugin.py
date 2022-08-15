@@ -18,10 +18,6 @@ class GithubPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "github":
-            return GithubControl.from_descriptor(descriptor)
-
     # TODO: improve
     def create_manager(
         self, source: str, *, control: Optional[portals.GithubControl] = None
@@ -40,3 +36,7 @@ class GithubPlugin(Plugin):
                     return GithubManager(control)
         if not source and isinstance(control, GithubControl):
             return GithubManager(control=control)
+
+    def select_Control(self, type):
+        if type == "github":
+            return GithubControl

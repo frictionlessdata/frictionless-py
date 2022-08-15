@@ -84,9 +84,14 @@ def test_resource_schema_source_remote():
 
 
 def test_resource_schema_from_path_error_bad_path():
-    resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource(
+            {
+                "name": "name",
+                "path": "data/table.csv",
+                "schema": "data/bad.json",
+            }
+        )
     error = excinfo.value.error
     assert error.type == "schema-error"
     assert error.note.count("bad.json")

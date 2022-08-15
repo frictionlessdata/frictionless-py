@@ -242,11 +242,6 @@ basepath = Option(
     help="Basepath of the resource/package",
 )
 
-trusted = Option(
-    default=None,
-    help="Follow unsafe paths",
-)
-
 resource_name = Option(
     default=None,
     help="Name of resource to validate",
@@ -275,11 +270,6 @@ limit_rows = Option(
 parallel = Option(
     default=None,
     help="Enable multiprocessing",
-)
-
-strict = Option(
-    default=None,
-    help="Validate against strict version of the standards",
 )
 
 output_path = Option(
@@ -322,7 +312,12 @@ debug = Option(
     help="Enable debug mode",
 )
 
+trusted = Option(
+    default=False,
+    help="Follow unsafe paths",
+)
+
 standards = Option(
     default=None,
-    help='Set to "v1" to get Standards v1 stictly compatible metadata',
+    help="Possible options: v1, v2, v2-strict (default: v2)",
 )

@@ -1,4 +1,4 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -40,8 +40,9 @@ def test_step_table_intersect_from_dict():
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_intersect.from_descriptor(
+            Step.from_descriptor(
                 {
+                    "type": "table-intersect",
                     "resource": dict(
                         data=[
                             ["id", "name", "population"],
@@ -49,7 +50,7 @@ def test_step_table_intersect_from_dict():
                             [2, "france", 50],
                             [3, "spain", 47],
                         ]
-                    )
+                    ),
                 }
             ),
         ],

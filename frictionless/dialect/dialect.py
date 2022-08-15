@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import Optional, List, Any
-from importlib import import_module
 from ..exception import FrictionlessException
+from ..platform import platform
 from ..metadata import Metadata
 from .control import Control
 from ..system import system
@@ -60,18 +60,9 @@ class Dialect(Metadata):
         Returns:
             Dialect: file dialect
         """
-        Resource = import_module("frictionless").Resource
-        resource = Resource.describe(source, **options)
+        resource = platform.frictionless.Resource.describe(source, **options)
         dialect = resource.dialect
         return dialect
-
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
 
     # Controls
 
@@ -191,7 +182,6 @@ class Dialect(Metadata):
 
     metadata_type = "dialect"
     metadata_Error = errors.DialectError
-    metadata_Types = dict(controls=Control)
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -208,8 +198,13 @@ class Dialect(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = super().metadata_normalize(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "controls":
+            return Control
+
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
 
         # Csv (standards@1)
         for name in CSV_PROPS_V1:
@@ -218,12 +213,15 @@ class Dialect(Metadata):
                 descriptor.setdefault("csv", {})
                 descriptor["csv"][name] = value
 
+    @classmethod
+    def metadata_import(cls, descriptor, **options):
+        dialect = super().metadata_import(descriptor, **options)
+
         # Controls
-        dialect = super().metadata_import(descriptor)
-        for type, descriptor in dialect.custom.items():
-            if isinstance(descriptor, dict):
-                descriptor["type"] = type
-                control = Control.from_descriptor(descriptor)
+        for type, item in dialect.custom.items():
+            if isinstance(item, dict):
+                item["type"] = type
+                control = Control.from_descriptor(item)
                 dialect.add_control(control)
 
         return dialect
@@ -238,8 +236,8 @@ class Dialect(Metadata):
             if control_descriptor:
                 descriptor[type] = control_descriptor
 
-        # Csv (standards_v1)
-        if system.standards_version == "v1":
+        # Csv (standards/v1)
+        if system.standards == "v1":
             for name, value in descriptor.pop("csv", {}).items():
                 descriptor[name] = value
 

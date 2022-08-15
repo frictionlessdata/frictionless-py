@@ -1,20 +1,18 @@
 from __future__ import annotations
 import attrs
-from importlib import import_module
 from typing import TYPE_CHECKING, List, Optional
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checks import baseline
 from .check import Check
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
     from ..resource import Resource
 
 
-# TODO: raise an exception if we try export a checklist with function based checks
+# TODO: raise an exception if we try export a checklist with function based checks?
 @attrs.define(kw_only=True)
 class Checklist(Metadata):
     """Checklist representation"""
@@ -64,14 +62,6 @@ class Checklist(Metadata):
                 scope.append(Error.type)
         return scope
 
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
-
     # Checks
 
     def add_check(self, check: Check) -> None:
@@ -118,11 +108,8 @@ class Checklist(Metadata):
         checks = []
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
-            if check.check_metadata_valid():
-                # TODO: review
-                #  check = check.to_copy()
-                check.connect(resource)
-                checks.append(check)
+            check.connect(resource)
+            checks.append(check)
         return checks
 
     # Match
@@ -137,7 +124,6 @@ class Checklist(Metadata):
 
     metadata_type = "checklist"
     metadata_Error = errors.ChecklistError
-    metadata_Types = dict(checks=Check)
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -150,9 +136,7 @@ class Checklist(Metadata):
         },
     }
 
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Checks
-        for check in self.checks:
-            yield from check.metadata_validate()
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "checks":
+            return Check

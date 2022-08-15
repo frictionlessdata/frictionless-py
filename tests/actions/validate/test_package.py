@@ -2,8 +2,8 @@ import json
 import pytest
 import pathlib
 from copy import deepcopy
-from frictionless import Package, Resource, Schema, Detector, fields, validate, platform
-from frictionless import FrictionlessException
+from frictionless import Package, Resource, Schema, Detector
+from frictionless import system, fields, validate, platform
 
 
 # General
@@ -71,32 +71,32 @@ def test_validate_package_with_non_tabular():
 
 
 def test_validate_package_invalid_descriptor_path():
-    with pytest.raises(FrictionlessException) as excinfo:
-        validate("bad/datapackage.json")
-    error = excinfo.value.error
+    report = validate("bad/datapackage.json")
+    error = report.errors[0]
     assert error.type == "package-error"
     assert error.note.count("[Errno 2]")
     assert error.note.count("bad/datapackage.json")
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
     assert report.stats.errors == 1
     error = report.errors[0]
     assert error.type == "schema-error"
-    assert error.note.count("[Errno 2]") and error.note.count("'bad'")
+    assert error.note.count("[Errno 2]")
+    assert error.note.count("'bad'")
 
 
-def test_validate_package_invalid_package_strict():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, strict=True)
+def test_validate_package_invalid_package_standards_v2_strict():
+    with system.use_context(standards="v2-strict"):
+        report = validate({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 
@@ -131,7 +131,10 @@ def test_validate_package_dialect_header_false():
                 "name": "name",
                 "data": [["John", "22"], ["Alex", "33"], ["Paul", "44"]],
                 "schema": {
-                    "fields": [{"name": "name"}, {"name": "age", "type": "integer"}]
+                    "fields": [
+                        {"name": "name", "type": "string"},
+                        {"name": "age", "type": "integer"},
+                    ]
                 },
                 "dialect": {"header": False},
             }
@@ -393,13 +396,12 @@ def test_validate_package_mixed_issue_170():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_invalid_json_issue_192():
     report = validate("data/invalid.json", type="package")
     assert report.flatten(["type", "note"]) == [
         [
             "package-error",
-            'cannot extract metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
+            'cannot retrieve metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
         ]
     ]
 
@@ -411,7 +413,10 @@ def test_validate_package_composite_primary_key_unique_issue_215():
                 "name": "name",
                 "data": [["id1", "id2"], ["a", "1"], ["a", "2"]],
                 "schema": {
-                    "fields": [{"name": "id1"}, {"name": "id2"}],
+                    "fields": [
+                        {"name": "id1", "type": "string"},
+                        {"name": "id2", "type": "integer"},
+                    ],
                     "primaryKey": ["id1", "id2"],
                 },
             }
@@ -428,7 +433,10 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
                 "name": "name",
                 "data": [["id1", "id2"], ["a", "1"], ["a", "1"]],
                 "schema": {
-                    "fields": [{"name": "id1"}, {"name": "id2"}],
+                    "fields": [
+                        {"name": "id1", "type": "string"},
+                        {"name": "id2", "type": "integer"},
+                    ],
                     "primaryKey": ["id1", "id2"],
                 },
             }
@@ -511,11 +519,13 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats.tasks == 3
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = validate("data/issue-977.json", type="package")
-    assert report.flatten() == [
-        [None, None, None, "package-error"],
+    assert report.flatten(["type", "note"]) == [
+        [
+            "resource-error",
+            "'MY_INLINE_DATA' is not of type 'object', 'array' at property 'data'",
+        ],
     ]
 
 
@@ -524,7 +534,6 @@ def test_validate_package_single_resource_221():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_validate_package_single_resource_wrong_resource_name_221():
     report = validate("data/datapackage.json", resource_name="number-twoo")
     assert report.flatten(["type", "message"]) == [

@@ -106,7 +106,7 @@ def test_analyze_package_detailed():
 
 def test_analyze_package_invalid_data():
     descriptor = {
-        "name": "capitals and schools",
+        "name": "capitals-and-schools",
         "resources": [
             {"name": "capital-invalid", "path": "data/invalid.csv"},
         ],
@@ -224,7 +224,7 @@ def test_analyze_package_detailed_non_numeric_summary():
 
 def test_analyze_package_detailed_invalid_data():
     descriptor = {
-        "name": "capitals and schools",
+        "name": "capitals-and-schools",
         "resources": [
             {"name": "capital-invalid", "path": "data/invalid.csv"},
         ],

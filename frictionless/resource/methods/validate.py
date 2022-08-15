@@ -17,13 +17,11 @@ def validate(
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
-    strict: bool = False,
 ):
     """Validate resource
 
     Parameters:
         checklist? (checklist): a Checklist object
-        strict? (bool): validate metadata as it is
 
     Returns:
         Report: validation report
@@ -39,15 +37,16 @@ def validate(
     # Prepare checklist
     checklist = checklist or self.checklist or Checklist()
     checks = checklist.connect(self)
-    checklist_errors = checklist.list_metadata_errors()
-    if checklist_errors:
-        return Report.from_validation(time=timer.time, errors=checklist_errors)
 
     # Validate metadata
-    metadata_errors = list(self.metadata_validate(strict=strict))
-    if metadata_errors:
-        errors = metadata_errors
-        return Report.from_validation_task(self, time=timer.time, errors=errors)
+    try:
+        self.to_descriptor()
+    except FrictionlessException as exception:
+        return Report.from_validation_task(
+            self, time=timer.time, errors=exception.to_errors()
+        )
+
+    # Ignore not-supported hashings
     if self.custom.get("hash"):
         warning = "hash is ignored; supported algorithms: md5/sha256"
         warnings.append(warning)
@@ -57,8 +56,9 @@ def validate(
         self.open()
     except FrictionlessException as exception:
         self.close()
-        errors = [exception.error]
-        return Report.from_validation_task(self, time=timer.time, errors=errors)
+        return Report.from_validation_task(
+            self, time=timer.time, errors=exception.to_errors()
+        )
 
     # Validate data
     with self:
@@ -122,9 +122,5 @@ def validate(
 
     # Return report
     return Report.from_validation_task(
-        self,
-        time=timer.time,
-        scope=checklist.scope,
-        errors=errors,
-        warnings=warnings,
+        self, time=timer.time, errors=errors, warnings=warnings
     )

@@ -4,7 +4,6 @@ import attrs
 import codecs
 from pathlib import Path
 from copy import copy, deepcopy
-from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
@@ -130,14 +129,6 @@ class Detector(Metadata):
     key named after a field name and the values being a field patch.
     For more information, please check "Extracting Data" guide.
     """
-
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
 
     # Detect
 
@@ -353,7 +344,9 @@ class Detector(Metadata):
             runners = []
             runner_fields = []  # we use shared fields
             for candidate in field_candidates:
-                field = Field.from_descriptor(candidate)
+                descriptor = candidate.copy()
+                descriptor["name"] = "shared"
+                field = Field.from_descriptor(descriptor)
                 if field.type == "number" and self.field_float_numbers:
                     field.float_number = True  # type: ignore
                 elif field.type == "boolean":
@@ -427,7 +420,7 @@ class Detector(Metadata):
                 field_descriptor.update(field_patch)
             schema = Schema.from_descriptor(descriptor)
 
-        return schema
+        return schema  # type: ignore
 
     # Metadata
 

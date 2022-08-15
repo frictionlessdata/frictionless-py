@@ -8,7 +8,6 @@ from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .task import ReportTask
 from .. import settings
-from .. import helpers
 
 if TYPE_CHECKING:
     from ..resource import Resource
@@ -47,19 +46,20 @@ class Report(Metadata):
     # Props
 
     @property
+    def error(self):
+        """Validation error (if there is only one)"""
+        if self.stats.errors != 1:
+            note = 'The "report.error" is available for single error reports'
+            raise FrictionlessException(note)
+        return self.tasks[0].error if self.tasks else self.errors[0]
+
+    @property
     def task(self):
         """Validation task (if there is only one)"""
-        if len(self.tasks) != 1:
-            error = Error(note='The "report.task" is available for single task reports')
-            raise FrictionlessException(error)
+        if self.stats.tasks != 1:
+            note = 'The "report.task" is available for single task reports'
+            raise FrictionlessException(note)
         return self.tasks[0]
-
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        return Report.from_validation(time=timer.time, errors=errors)
 
     # Flatten
 
@@ -99,7 +99,12 @@ class Report(Metadata):
         errors = errors.copy()
         warnings = warnings.copy()
         error_count = len(errors) + sum(task.stats.errors or 0 for task in tasks)
-        stats = Stats(tasks=len(tasks), errors=error_count, seconds=time)
+        stats = Stats(
+            tasks=len(tasks),
+            errors=error_count,
+            warnings=len(warnings),
+            seconds=time,
+        )
         return Report(
             valid=not error_count,
             stats=stats,
@@ -113,18 +118,22 @@ class Report(Metadata):
         resource: Resource,
         *,
         time: float,
-        scope: List[str] = [],
         errors: List[Error] = [],
         warnings: List[str] = [],
     ):
         """Create a report from a validation task"""
-        scope = scope.copy()
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = resource.stats.to_copy() if resource.has_stats else Stats()
+        task_stats = resource.stats.to_copy()
         task_stats.errors = len(errors)
+        task_stats.warnings = len(warnings)
         task_stats.seconds = time
-        report_stats = Stats(tasks=1, errors=len(errors), seconds=time)
+        report_stats = Stats(
+            tasks=1,
+            errors=len(errors),
+            warnings=len(warnings),
+            seconds=time,
+        )
         return Report(
             valid=not errors,
             stats=report_stats,
@@ -137,7 +146,6 @@ class Report(Metadata):
                     type=resource.type,  # type: ignore
                     place=resource.place,  # type: ignore
                     stats=task_stats,
-                    scope=scope,
                     errors=errors,
                     warnings=warnings,
                 )
@@ -218,7 +226,6 @@ class Report(Metadata):
 
     metadata_type = "report"
     metadata_Error = ReportError
-    metadata_Types = dict(stats=Stats, tasks=ReportTask)
     metadata_profile = {
         "type": "object",
         "required": ["valid", "stats", "warnings", "errors", "tasks"],
@@ -234,12 +241,13 @@ class Report(Metadata):
         },
     }
 
-    # TODO: validate valid/errors count
-    # TODO: validate stats when the class is added
-    # TODO: validate errors when metadata is reworked
-    def metadata_validate(self):
-        yield from super().metadata_validate()
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "stats":
+            return Stats
+        elif property == "errors":
+            return Error
+        elif property == "tasks":
+            return ReportTask
 
-        # Tasks
-        for task in self.tasks:
-            yield from task.metadata_validate()
+    # TODO: validate valid/errors count

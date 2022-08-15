@@ -46,12 +46,12 @@ def enable_custom_plugin():
 
     # Plugin
     class CustomPlugin(Plugin):
-        def create_field(self, descriptor):
-            if descriptor.get("type") == "custom":
-                return CustomField.from_descriptor(descriptor)
-
-        def create_field_candidates(self, candidates):
+        def detect_field_candidates(self, candidates):
             candidates.insert(0, {"type": "custom"})
+
+        def select_Field(self, type):
+            if type == "custom":
+                return CustomField
 
     # System
     plugin = CustomPlugin()

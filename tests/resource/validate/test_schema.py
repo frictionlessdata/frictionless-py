@@ -1,23 +1,20 @@
 import pytest
-from frictionless import Resource, Schema, Checklist, Detector
+from frictionless import Resource, Schema, Checklist, Detector, FrictionlessException
 
 
 # General
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_resource_validate_schema_invalid_json():
-    resource = Resource("data/table.csv", schema="data/invalid.json")
-    report = resource.validate()
+    descriptor = dict(path="data/table.csv", schema="data/invalid.json")
+    report = Resource.validate_descriptor(descriptor)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "schema-error"],
     ]
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_resource_validate_invalid_resource():
-    resource = Resource({"path": "data/table.csv", "schema": "bad"})
-    report = resource.validate()
+    report = Resource.validate_descriptor({"path": "data/table.csv", "schema": "bad"})
     assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
@@ -184,7 +181,7 @@ def test_resource_validate_schema_unique_error_and_type_error():
     schema = Schema.from_descriptor(
         {
             "fields": [
-                {"name": "id"},
+                {"name": "id", "type": "string"},
                 {
                     "name": "unique_number",
                     "type": "number",
@@ -253,28 +250,24 @@ def test_resource_validate_schema_primary_key_error_composite():
 # Bugs
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_resource_validate_invalid_table_schema_issue_304():
-    source = [["name", "age"], ["Alex", "33"]]
-    schema = Schema.from_descriptor(
-        {
+    descriptor = {
+        "data": [["name", "age"], ["Alex", "33"]],
+        "schema": {
             "fields": [
-                {"name": "name"},
+                {"name": "name", "type": "string"},
                 {"name": "age", "type": "bad"},
             ]
-        }
-    )
-    resource = Resource(source, schema=schema)
-    report = resource.validate()
-    assert report.flatten(["type", "note"]) == [
-        [
-            "field-error",
-            "\"{'name': 'age', 'type': 'bad'} is not valid under any of the given schemas\" at \"\" in metadata and at \"anyOf\" in profile",
-        ],
-    ]
+        },
+    }
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource(descriptor)
+    error = excinfo.value.error
+    # TODO: why it's not a descriptor error with exception.reasons?
+    assert error.type == "field-error"
+    assert error.note == 'field type "bad" is not supported'
 
 
-@pytest.mark.xfail(reason="error-catching")
 def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     resource = Resource(
@@ -284,8 +277,5 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     )
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        [
-            "schema-error",
-            'Duplicate labels in header is not supported with "schema_sync"',
-        ],
+        ["error", '"schema_sync" requires unique labels in the header'],
     ]

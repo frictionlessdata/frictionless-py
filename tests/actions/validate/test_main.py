@@ -1,4 +1,4 @@
-from frictionless import Resource, Schema, validate, fields
+from frictionless import Schema, validate, fields
 
 
 # Table
@@ -21,12 +21,6 @@ def test_validate_invalid():
         [4, None, "blank-row"],
         [5, 5, "extra-cell"],
     ]
-
-
-def test_validate_from_resource_instance():
-    resource = Resource("data/table.csv")
-    report = validate(resource)
-    assert report.valid
 
 
 # Bugs

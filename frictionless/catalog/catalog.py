@@ -1,14 +1,18 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..package import Package
 from ..system import system
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
     from ..dialect import Control
+    from ..interfaces import IDescriptor
+
+# TODO: we need to support opening dir as a catalog using datacatalog.yaml
 
 
 class Catalog(Metadata):
@@ -18,28 +22,35 @@ class Catalog(Metadata):
         self,
         source: Optional[Any] = None,
         *,
+        control: Optional[Control] = None,
         # Standard
         name: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
-        packages: List[Package] = [],
+        packages: List[Union[Package, str]] = [],
         # Software
-        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
     ):
 
         # Store state
         self.name = name
         self.title = title
         self.description = description
-        self.packages = packages.copy()
+        self.basepath = basepath
+
+        # Add packages
+        self.packages = []
+        for package in packages:
+            package = self.add_package(package)
 
         # Handled by the create hook
         assert source is None
         assert control is None
 
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, **options):
-        control = options.pop("control", None)
+    def __create__(
+        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
+    ):
         if source is not None or control is not None:
 
             # Manager
@@ -47,6 +58,10 @@ class Catalog(Metadata):
             if manager:
                 catalog = manager.read_catalog()
                 return catalog
+
+            # Descriptor
+            if helpers.is_descriptor_source(source):
+                return Catalog.from_descriptor(source, **options)
 
     # State
 
@@ -69,6 +84,16 @@ class Catalog(Metadata):
     It should a human-oriented description of the resource.
     """
 
+    packages: List[Package]
+    """NOTE: add docs
+    """
+
+    basepath: Optional[str]
+    """
+    A basepath of the catalog
+    The normpath of the resource is joined `basepath` and `/path`
+    """
+
     # Props
 
     @property
@@ -78,13 +103,16 @@ class Catalog(Metadata):
 
     # Packages
 
-    def add_package(self, package: Package) -> None:
+    def add_package(self, package: Union[Package, str]) -> Package:
         """Add new package to the package"""
+        if isinstance(package, str):
+            package = Package.from_descriptor(package, basepath=self.basepath)
         if package.name and self.has_package(package.name):
             error = errors.PackageError(note=f'package "{package.name}" already exists')
             raise FrictionlessException(error)
         self.packages.append(package)
-        package.package = self
+        package.catalog = self
+        return package
 
     def has_package(self, name: str) -> bool:
         """Check if a package is present"""
@@ -150,7 +178,6 @@ class Catalog(Metadata):
 
     metadata_type = "catalog"
     metadata_Error = errors.CatalogError
-    metadata_Types = dict(packages=Package)
     metadata_profile = {
         "type": "object",
         "required": ["packages"],
@@ -164,3 +191,16 @@ class Catalog(Metadata):
             },
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "packages":
+            return Package
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )

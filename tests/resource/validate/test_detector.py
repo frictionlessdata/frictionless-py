@@ -28,7 +28,13 @@ def test_resource_validate_detector_sync_schema():
 def test_resource_validate_detector_sync_schema_invalid():
     source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
     schema = Schema.from_descriptor(
-        {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
+        {
+            "fields": [
+                {"name": "id", "type": "string"},
+                {"name": "FirstName", "type": "string"},
+                {"name": "LastName", "type": "string"},
+            ]
+        }
     )
     detector = Detector(schema_sync=True)
     resource = Resource(source, schema=schema, detector=detector)
@@ -47,8 +53,8 @@ def test_resource_validate_detector_headers_errors():
         {
             "fields": [
                 {"name": "id", "type": "number"},
-                {"name": "language", "constraints": {"required": True}},
-                {"name": "country"},
+                {"name": "language", "type": "string", "constraints": {"required": True}},
+                {"name": "country", "type": "string"},
             ]
         }
     )

@@ -1,4 +1,4 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -177,7 +177,9 @@ def test_step_row_subset_conflicts_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.row_subset.from_descriptor({"subset": "conflicts", "fieldName": "id"}),
+            Step.from_descriptor(
+                {"type": "row-subset", "subset": "conflicts", "fieldName": "id"}
+            ),
         ],
     )
     target = source.transform(pipeline)

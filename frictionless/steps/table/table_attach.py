@@ -35,10 +35,14 @@ class table_attach(Step):
 
     # Metadata
 
-    metadata_Types = dict(resource=Resource)
     metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
             "resource": {"type": ["object", "string"]},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "resource":
+            return Resource

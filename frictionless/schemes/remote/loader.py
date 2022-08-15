@@ -3,6 +3,7 @@ import io
 from .control import RemoteControl
 from ...platform import platform
 from ...resource import Loader
+from ...system import system
 
 
 class RemoteLoader(Loader):
@@ -15,7 +16,7 @@ class RemoteLoader(Loader):
     def read_byte_stream_create(self):
         path = platform.requests_utils.requote_uri(self.resource.normpath)
         control = RemoteControl.from_dialect(self.resource.dialect)
-        session = control.http_session
+        session = system.http_session
         timeout = control.http_timeout
         byte_stream = RemoteByteStream(path, session=session, timeout=timeout).open()
         if control.http_preload:
@@ -30,8 +31,7 @@ class RemoteLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.normpath.replace(file, "")
-        control = RemoteControl.from_dialect(self.resource.dialect)
-        response = control.http_session.post(url, files={file: byte_stream})
+        response = system.http_session.post(url, files={file: byte_stream})
         response.raise_for_status()
         return response
 

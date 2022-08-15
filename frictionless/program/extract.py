@@ -7,6 +7,7 @@ from ..platform import platform
 from ..detector import Detector
 from ..dialect import Dialect
 from ..actions import extract
+from ..system import system
 from .main import program
 from .. import formats
 from .. import helpers
@@ -52,11 +53,12 @@ def program_extract(
     valid: bool = common.valid_rows,
     invalid: bool = common.invalid_rows,
     limit_rows: int = common.limit_rows,
-    trusted: bool = common.trusted,
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
+    standards: str = common.standards,
 ):
     """
     Extract a data source.
@@ -64,6 +66,12 @@ def program_extract(
     Based on the inferred data source type it will return resource or package data.
     Default output format is tabulated with a front matter.
     """
+
+    # Setup system
+    if trusted:
+        system.trusted = trusted
+    if standards:
+        system.standards = standards  # type: ignore
 
     # Support stdin
     is_stdin = False
@@ -153,7 +161,6 @@ def program_extract(
             limit_rows=limit_rows,
             process=prepare_process(),
             filter=prepare_filter(),
-            trusted=trusted,
         )
 
     # Extract data

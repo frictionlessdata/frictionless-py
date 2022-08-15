@@ -20,7 +20,7 @@ def test_program_summary_invalid():
     result = runner.invoke(program, "summary data/countries-invalid.yaml")
     assert result.exit_code == 1
     assert result.stdout.count(
-        '[field-error] Field is not valid: "required" should be set as "constraints.required"'
+        'Field is not valid: "required" should be set as "constraints.required"'
     )
 
 

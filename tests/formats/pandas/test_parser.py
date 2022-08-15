@@ -255,9 +255,9 @@ def test_pandas_parser_nan_without_field_type_information_1143():
         "path": "data/issue-1109.csv",
         "schema": {
             "fields": [
-                {"name": "int"},
-                {"name": "number"},
-                {"name": "string"},
+                {"name": "int", "type": "any"},
+                {"name": "number", "type": "any"},
+                {"name": "string", "type": "any"},
             ]
         },
     }

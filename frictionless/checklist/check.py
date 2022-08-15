@@ -20,10 +20,9 @@ if TYPE_CHECKING:
 class Check(Metadata):
     """Check representation."""
 
-    type: ClassVar[str] = "check"
+    type: ClassVar[str]
     """NOTE: add docs"""
 
-    # TODO: can it be just types not objects?
     Errors: ClassVar[List[Type[Error]]] = []
     """NOTE: add docs"""
 
@@ -85,6 +84,21 @@ class Check(Metadata):
         """
         yield from []
 
+    # Convert
+
+    @classmethod
+    def from_descriptor(cls, descriptor):
+
+        # Type (framework/v4)
+        code = descriptor.pop("code", None)
+        if code:
+            descriptor.setdefault("type", code)
+            note = 'Check "code" is deprecated in favor of "type"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
+
+        return super().from_descriptor(descriptor)
+
     # Metadata
 
     metadata_type = "check"
@@ -100,17 +114,6 @@ class Check(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
-
-        # Type (framework_v4)
-        code = descriptor.pop("code", None)
-        if code:
-            descriptor.setdefault("type", code)
-            note = 'Check "code" is deprecated in favor of "type"'
-            note += "(it will be removed in the next major version)"
-            warnings.warn(note, UserWarning)
-
-        if cls is Check:
-            return system.create_check(descriptor)
-        return super().metadata_import(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Check(type)

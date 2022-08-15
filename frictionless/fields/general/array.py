@@ -31,6 +31,7 @@ class ArrayField(Field):
         if self.array_item:
             descriptor = self.array_item.copy()
             descriptor.pop("arrayItem", None)
+            descriptor.setdefault("name", self.name)
             descriptor.setdefault("type", "any")
             field = Field.from_descriptor(descriptor)
             field_reader = field.create_cell_reader()

@@ -12,7 +12,7 @@ class RowError(ContentError):
     title = "Row Error"
     description = "Row Error"
     template = "Row Error"
-    tags = ["#table", "content", "#row"]
+    tags = ["#table", "#content", "#row"]
 
     # State
 

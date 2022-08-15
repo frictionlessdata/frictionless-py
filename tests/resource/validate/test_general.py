@@ -1,6 +1,7 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Check, Checklist, errors
+from frictionless import Resource, Detector, Check, Checklist, errors, system
+from frictionless import FrictionlessException
 
 
 # General
@@ -12,16 +13,17 @@ def test_resource_validate():
     assert report.valid
 
 
-def test_resource_validate_invalid_resource_strict():
+def test_resource_validate_invalid_resource_standards_v2_strict():
     resource = Resource({"path": "data/table.csv"})
-    report = resource.validate(strict=True)
+    with system.use_context(standards="v2-strict"):
+        report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required in a strict mode'],
-        ["resource-error", 'property "type" is required in a strict mode'],
-        ["resource-error", 'property "scheme" is required in a strict mode'],
-        ["resource-error", 'property "format" is required in a strict mode'],
-        ["resource-error", 'property "encoding" is required in a strict mode'],
-        ["resource-error", 'property "mediatype" is required in a strict mode'],
+        ["resource-error", 'property "name" is required by standards "v2-strict"'],
+        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
+        ["resource-error", 'property "format" is required by standards "v2-strict"'],
+        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
+        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 
@@ -175,7 +177,6 @@ def test_resource_validate_pick_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["blank-label", "blank-row"])
     report = resource.validate(checklist)
-    assert report.task.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
@@ -186,14 +187,6 @@ def test_resource_validate_pick_errors_tags():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["#header"])
     report = resource.validate(checklist)
-    assert report.task.scope == [
-        "blank-header",
-        "extra-label",
-        "missing-label",
-        "blank-label",
-        "duplicate-label",
-        "incorrect-label",
-    ]
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -397,36 +390,22 @@ def test_resource_validate_resource_array_path_issue_991():
 
 
 def test_resource_validate_resource_metadata_errors_with_missing_values_993():
-    resource = Resource("data/resource-with-missingvalues-993.json")
-    error = resource.list_metadata_errors()[0]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource("data/resource-with-missingvalues-993.json")
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == '"missingValues" should be set as "schema.missingValues"'
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == '"missingValues" should be set as "schema.missingValues"'
 
 
 def test_resource_validate_resource_metadata_errors_with_fields_993():
-    resource = Resource("data/resource-with-fields-993.json")
-    error = resource.list_metadata_errors()[0]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource("data/resource-with-fields-993.json")
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == '"fields" should be set as "schema.fields"'
-
-
-def test_resource_validate_resource_errors_with_missing_values_993():
-    resource = Resource("data/resource-with-missingvalues-993.json")
-    report = resource.validate()
-    assert report.flatten(["type", "message"]) == [
-        [
-            "resource-error",
-            'The data resource has an error: "missingValues" should be set as "schema.missingValues"',
-        ]
-    ]
-
-
-def test_resource_validate_resource_errors_with_fields_993():
-    resource = Resource("data/resource-with-fields-993.json")
-    report = resource.validate()
-    assert report.flatten(["type", "message"]) == [
-        [
-            "resource-error",
-            'The data resource has an error: "fields" should be set as "schema.fields"',
-        ]
-    ]
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == '"fields" should be set as "schema.fields"'

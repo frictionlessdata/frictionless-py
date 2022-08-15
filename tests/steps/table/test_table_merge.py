@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -37,8 +37,13 @@ def test_step_table_merge_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.table_merge.from_descriptor(
-                {"resource": dict(data=[["id", "name", "note"], [4, "malta", "island"]])}
+            Step.from_descriptor(
+                {
+                    "type": "table-merge",
+                    "resource": dict(
+                        data=[["id", "name", "note"], [4, "malta", "island"]]
+                    ),
+                }
             ),
         ],
     )

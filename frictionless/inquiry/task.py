@@ -2,13 +2,15 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checklist import Checklist
+from ..report import Report
 from ..dialect import Dialect
 from ..schema import Schema
 from ..resource import Resource
 from ..package import Package
-from ..report import Report
+from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -65,54 +67,56 @@ class InquiryTask(Metadata):
     package: Optional[str] = None
     """NOTE: add docs"""
 
-    strict: bool = False
-    """NOTE: add docs"""
-
     # Validate
 
-    def validate(self, *, metadata=True):
+    def validate(self):
         timer = helpers.Timer()
-
-        # Validate metadata
-        if metadata:
-            metadata_errors = self.list_metadata_errors()
-            if metadata_errors:
-                return Report.from_validation(time=timer.time, errors=metadata_errors)
 
         # Validate package
         if self.package:
-            package = Package.from_descriptor(self.package)
-            report = package.validate(strict=self.strict)
+            try:
+                package = Package.from_descriptor(self.package)
+            except FrictionlessException as exception:
+                errors = exception.to_errors()
+                return Report.from_validation(time=timer.time, errors=errors)
+            report = package.validate()
             return report
 
         # Validate resource
         if self.resource:
-            resource = Resource.from_descriptor(self.resource)
-            report = resource.validate(strict=self.strict)
+            try:
+                resource = Resource.from_descriptor(self.resource)
+            except FrictionlessException as exception:
+                errors = exception.to_errors()
+                return Report.from_validation(time=timer.time, errors=errors)
+            report = resource.validate()
             return report
 
         # Validate default
-        resource = Resource.from_options(
-            type=self.type,
-            path=self.path,
-            scheme=self.scheme,
-            format=self.format,
-            encoding=self.encoding,
-            compression=self.compression,
-            extrapaths=self.extrapaths,
-            innerpath=self.innerpath,
-            dialect=self.dialect,
-            schema=self.schema,
-            checklist=self.checklist,
-        )
-        report = resource.validate(strict=self.strict)
+        try:
+            resource = Resource.from_options(
+                type=self.type,
+                path=self.path,
+                scheme=self.scheme,
+                format=self.format,
+                encoding=self.encoding,
+                compression=self.compression,
+                extrapaths=self.extrapaths,
+                innerpath=self.innerpath,
+                dialect=self.dialect,
+                schema=self.schema,
+                checklist=self.checklist,
+            )
+        except FrictionlessException as exception:
+            errors = exception.to_errors()
+            return Report.from_validation(time=timer.time, errors=errors)
+        report = resource.validate()
         return report
 
     # Metadata
 
     metadata_type = "inquiry-task"
     metadata_Error = errors.InquiryTaskError
-    metadata_Types = dict(dialect=Dialect, schema=Schema, checklist=Checklist)
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -131,15 +135,22 @@ class InquiryTask(Metadata):
             "checklist": {"type": ["object", "string"]},
             "resource": {"type": ["object", "string"]},
             "package": {"type": ["object", "string"]},
-            "strict": {"type": "boolean"},
         },
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "dialect":
+            return Dialect
+        elif property == "schema":
+            return Schema
+        elif property == "checklist":
+            return Checklist
 
-        # Source (framework_v4)
+    @classmethod
+    def metadata_transform(cls, descriptor):
+
+        # Source (framework/v4)
         source = descriptor.pop("source", None)
         if source:
             type = descriptor.pop("type", "resource")
@@ -149,12 +160,28 @@ class InquiryTask(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        return super().metadata_import(descriptor)
+    @classmethod
+    def metadata_validate(cls, descriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
 
-    def metadata_validate(self):
-        yield from super().metadata_validate()
+        # Security
+        if not system.trusted:
+            keys = ["path", "resource", "package"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        yield errors.InquiryTaskError(note=f'path "{item}" is not safe')
+                        return
 
-        # Required (normal)
-        if self.path is None and self.resource is None and self.package is None:
+        # Required
+        path = descriptor.get("path")
+        resource = descriptor.get("resource")
+        package = descriptor.get("package")
+        if path is None and resource is None and package is None:
             note = 'one of the properties "path", "resource", or "package" is required'
             yield errors.InquiryTaskError(note=note)

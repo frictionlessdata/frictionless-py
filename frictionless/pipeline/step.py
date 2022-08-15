@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class Step(Metadata):
     """Step representation"""
 
-    type: ClassVar[str] = "step"
+    type: ClassVar[str]
     """NOTE: add docs"""
 
     # State
@@ -61,6 +61,21 @@ class Step(Metadata):
         """
         pass
 
+    # Convert
+
+    @classmethod
+    def from_descriptor(cls, descriptor):
+
+        # Type (framework/v4)
+        code = descriptor.pop("code", None)
+        if code:
+            descriptor.setdefault("type", code)
+            note = 'Step "code" is deprecated in favor of "type"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
+
+        return super().from_descriptor(descriptor)
+
     # Metadata
 
     metadata_type = "step"
@@ -76,17 +91,6 @@ class Step(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
-
-        # Type (framework_v4)
-        code = descriptor.pop("code", None)
-        if code:
-            descriptor.setdefault("type", code)
-            note = 'Step "code" is deprecated in favor of "type"'
-            note += "(it will be removed in the next major version)"
-            warnings.warn(note, UserWarning)
-
-        if cls is Step:
-            return system.create_step(descriptor)  # type: ignore
-        return super().metadata_import(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Step(type)

@@ -197,30 +197,46 @@ class Field(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
-        if cls is Field:
-            return system.create_field(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Field(type)
 
-        # Format (standards_v1)
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
+
+        # Format (standards/v1)
         format = descriptor.get("format")
         if format and isinstance(format, str) and format.startswith("fmt:"):
             descriptor["format"] = format.replace("fmt:", "")
 
-        return super().metadata_import(descriptor)
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
+    @classmethod
+    def metadata_validate(cls, descriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
 
         # Constraints
-        for name in self.constraints.keys():
-            if name not in self.supported_constraints + ["unique"]:
-                note = f'constraint "{name}" is not supported by type "{self.type}"'
+        for name in descriptor.get("constraints", {}):
+            if name not in cls.supported_constraints + ["unique"]:
+                note = f'constraint "{name}" is not supported by type "{cls.type}"'
                 yield errors.FieldError(note=note)
 
-        # Custom
+        # Examples
+        example = descriptor.get("example")
+        if example:
+            type = descriptor.get("type")
+            Class = system.select_Field(type)
+            field = Class(name=descriptor["name"])
+            _, notes = field.read_cell(example)
+            if notes is not None:
+                note = f'example value "{example}" for field "{field.name}" is not valid'
+                yield errors.FieldError(note=note)
+
+        # Misleading
         for name in ["required"]:
-            if name in self.custom:
+            if name in descriptor:
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
 

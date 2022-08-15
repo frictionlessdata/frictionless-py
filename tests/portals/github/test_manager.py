@@ -245,7 +245,9 @@ def test_github_manager_catalog_from_repo_with_multiple_packages(
 @pytest.mark.vcr
 def test_github_manager_catalog_with_search_param_only_containing_userqualifier():
     catalog = Catalog(
-        control=portals.GithubControl(search="test-repo-write user:fdtester"),
+        control=portals.GithubControl(
+            search="test-repo-write user:fdtester", per_page=1, page=1
+        ),
     )
 
     # Read
@@ -257,7 +259,9 @@ def test_github_manager_catalog_with_search_param_only_containing_userqualifier(
 @pytest.mark.vcr
 def test_github_manager_catalog_with_search_having_userqualifier_and_user_param():
     catalog = Catalog(
-        control=portals.GithubControl(search="test-repo-write", user="fdtester"),
+        control=portals.GithubControl(
+            search="test-repo-write", user="fdtester", per_page=1, page=1
+        ),
     )
 
     # Read
@@ -278,14 +282,14 @@ def test_github_manager_catalog_with_search_text_and_without_user_or_userqualifi
 @pytest.mark.vcr
 def test_github_manager_catalog_with_user_param_only():
     catalog = Catalog(
-        control=portals.GithubControl(user="fdtester"),
+        control=portals.GithubControl(user="fdtester", per_page=2, page=1),
     )
-    assert len(catalog.packages) == 7
+    assert len(catalog.packages) == 1
 
     # Read
     expected_file_path = "data/datapackage.json"
     with open(expected_file_path) as file:
-        assert json.loads(catalog.packages[3].to_json()) == json.loads(file.read())
+        assert json.loads(catalog.packages[0].to_json()) == json.loads(file.read())
 
 
 @pytest.mark.vcr
@@ -357,20 +361,30 @@ def test_github_manager_catalog_qualifiers(options_without_dp):
 
 @pytest.mark.vcr
 def test_github_manager_catalog_qualifiers_sort_qualifier(options_without_dp):
-    output = options_without_dp.pop("output")
     catalog = Catalog(
-        control=portals.GithubControl(search="sort:updated", user="fdtester"),
+        control=portals.GithubControl(
+            search="sort:updated", user="fdtester", per_page=2, page=1
+        ),
     )
-    assert json.loads(catalog.packages[3].to_json()) == output
+
+    # Read
+    expected_file_path = "data/datapackage.json"
+    with open(expected_file_path) as file:
+        assert json.loads(catalog.packages[0].to_json()) == json.loads(file.read())
 
 
 @pytest.mark.vcr
 def test_github_manager_catalog_qualifiers_sort_param(options_without_dp):
-    output = options_without_dp.pop("output")
     catalog = Catalog(
-        control=portals.GithubControl(sort="updated", user="fdtester"),
+        control=portals.GithubControl(
+            sort="updated", user="fdtester", per_page=2, page=1
+        ),
     )
-    assert json.loads(catalog.packages[0].to_json()) == output
+
+    # Read
+    expected_file_path = "data/datapackage.json"
+    with open(expected_file_path) as file:
+        assert json.loads(catalog.packages[0].to_json()) == json.loads(file.read())
 
 
 @pytest.mark.vcr
@@ -380,7 +394,11 @@ def test_github_manager_catalog_qualifiers_sort_by_updated_in_desc_order(
     output = options_without_dp.pop("output")
     catalog = Catalog(
         control=portals.GithubControl(
-            search="sort:updated", user="fdtester", order="desc"
+            search="sort:updated", user="fdtester", order="desc", per_page=2, page=1
         ),
     )
-    assert json.loads(catalog.packages[3].to_json()) == output
+
+    # Read
+    expected_file_path = "data/datapackage.json"
+    with open(expected_file_path) as file:
+        assert json.loads(catalog.packages[0].to_json()) == json.loads(file.read())

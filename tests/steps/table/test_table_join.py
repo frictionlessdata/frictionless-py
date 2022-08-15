@@ -1,4 +1,4 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -35,8 +35,9 @@ def test_step_table_join_from_dict():
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_join.from_descriptor(
+            Step.from_descriptor(
                 {
+                    "type": "table-join",
                     "resource": dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                     "fieldName": "id",
                 }
@@ -258,8 +259,9 @@ def test_step_table_join_mode_left_from_descriptor_issue_996():
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_join.from_descriptor(
+            Step.from_descriptor(
                 {
+                    "type": "table-join",
                     "fieldName": "id",
                     "mode": "left",
                     "resource": dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),

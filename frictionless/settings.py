@@ -27,16 +27,14 @@ TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
 # Defaults
 
 
-DEFAULT_STANDARDS_VERSION = "v2"
+DEFAULT_STANDARDS = "v2"
 DEFAULT_TYPE = "file"
-DEFAULT_SCHEME = "file"
-DEFAULT_FORMAT = "csv"
 DEFAULT_ENCODING = "utf-8"
 DEFAULT_INNERPATH = ""
 DEFAULT_PACKAGE_INNERPATH = "datapackage.json"
 DEFAULT_COMPRESSION = ""
 DEFAULT_BASEPATH = ""
-DEFAULT_TRUSTED = True
+DEFAULT_TRUSTED = False
 DEFAULT_ONERROR = "ignore"
 DEFAULT_HEADER = True
 DEFAULT_HEADER_ROWS = [1]
@@ -65,6 +63,13 @@ DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
 DEFAULT_SERVER_PORT = 8000
+DEFAULT_HTTP_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/54.0.2840.87 Safari/537.36"
+    )
+}
 DEFAULT_FIELD_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},

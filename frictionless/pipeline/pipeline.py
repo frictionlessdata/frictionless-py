@@ -2,12 +2,10 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List
-from importlib import import_module
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
 from .. import settings
-from .. import helpers
 from .. import errors
 
 
@@ -35,14 +33,6 @@ class Pipeline(Metadata):
     @property
     def step_types(self) -> List[str]:
         return [step.type for step in self.steps]
-
-    # Validate
-
-    def validate(self):
-        timer = helpers.Timer()
-        errors = self.list_metadata_errors()
-        Report = import_module("frictionless").Report
-        return Report.from_validation(time=timer.time, errors=errors)
 
     # Steps
 
@@ -88,7 +78,6 @@ class Pipeline(Metadata):
 
     metadata_type = "pipeline"
     metadata_Error = errors.PipelineError
-    metadata_Types = dict(steps=Step)
     metadata_profile = {
         "type": "object",
         "required": ["steps"],
@@ -101,22 +90,18 @@ class Pipeline(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor):
-        descriptor = cls.metadata_normalize(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "steps":
+            return Step
 
-        # Tasks (framework_v4)
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
+
+        # Tasks (framework/v4)
         tasks = descriptor.pop("tasks", [])
         if tasks and isinstance(tasks[0], dict):
             descriptor.setdefault("steps", tasks[0].get("steps"))
             note = 'Pipeline "tasks[].steps" is deprecated in favor of "steps"'
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
-
-        return super().metadata_import(descriptor)
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Steps
-        for step in self.steps:
-            yield from step.metadata_validate()

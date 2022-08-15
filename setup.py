@@ -23,6 +23,9 @@ TESTS_REQUIRE = [
     "moto",
     "black",
     "yattag",
+    # TODO: remove after the fix
+    # https://github.com/klen/pylama/issues/224
+    "pyflakes==2.4.0",
     "pylama",
     "pytest",
     "pyright",
@@ -83,6 +86,7 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
+    "typing-extensions>=4.3",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")

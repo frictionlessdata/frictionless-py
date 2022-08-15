@@ -9,10 +9,6 @@ class GsheetsPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "gsheets":
-            return GsheetsControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "gsheets":
             return GsheetsParser(resource)
@@ -27,3 +23,7 @@ class GsheetsPlugin(Plugin):
                 elif "csv" in resource.path:
                     resource.scheme = "https"
                     resource.format = "csv"
+
+    def select_Control(self, type):
+        if type == "gsheets":
+            return GsheetsControl

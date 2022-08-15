@@ -13,10 +13,6 @@ class CkanPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "ckan":
-            return CkanControl.from_descriptor(descriptor)
-
     # TODO: improve
     def create_manager(self, source, *, control=None):
         if isinstance(source, str):
@@ -29,3 +25,7 @@ class CkanPlugin(Plugin):
                     if dataset:
                         control.dataset = dataset
                     return CkanManager(control)
+
+    def select_Control(self, type):
+        if type == "ckan":
+            return CkanControl

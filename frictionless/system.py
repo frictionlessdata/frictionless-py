@@ -5,14 +5,15 @@ from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional, List, Any, Dict
+from typing import TYPE_CHECKING, Optional, List, Any, Dict, Type, ClassVar
 from .exception import FrictionlessException
+from .platform import platform
 from .dialect import Control
 from . import settings
 from . import errors
 
 if TYPE_CHECKING:
-    from .interfaces import IStandardsVersion
+    from .interfaces import IStandards, IOnerror
     from .resource import Resource, Loader, Parser
     from .package import Manager, Storage
     from .plugin import Plugin
@@ -23,8 +24,7 @@ if TYPE_CHECKING:
 
 
 # NOTE:
-# On the next iteration we can improve the plugin system to provide prioritization
-# Also, we might cosider having plugin.name although module based naming might be enough
+# Shall we add plugin.identity/priority/etc as we do in Livemark?
 
 
 # TODO: finish typing
@@ -36,26 +36,56 @@ class System:
 
     """
 
-    standards_version: IStandardsVersion = settings.DEFAULT_STANDARDS_VERSION
-    supported_hooks = [
-        "create_check",
-        "create_control",
-        "create_error",
-        "create_field",
-        "create_field_candidates",
+    supported_hooks: ClassVar[List[str]] = [
         "create_loader",
         "create_manager",
         "create_parser",
-        "create_step",
-        "create_storage",
+        "detect_field_candidates",
         "detect_resource",
+        "select_Check",
+        "select_Control",
+        "select_Error",
+        "select_Field",
+        "select_Step",
+        # TODO: remove after rebase on Manager API
+        "create_storage",
     ]
 
     def __init__(self):
         self.__dynamic_plugins = OrderedDict()
         self.__http_session = None
 
+    # State
+
+    trusted: bool = settings.DEFAULT_TRUSTED
+    """NOTE: add docs
+    """
+
+    onerror: IOnerror = settings.DEFAULT_ONERROR
+    """NOTE: add docs
+    """
+
+    standards: IStandards = settings.DEFAULT_STANDARDS
+    """NOTE: add docs
+    """
+
     # Props
+
+    @property
+    def http_session(self):
+        """Return a HTTP session
+
+        This method will return a new session or the session
+        from `system.use_http_session` context manager
+
+        Returns:
+            requests.Session: a HTTP session
+        """
+        if not self.__http_session:
+            http_session = platform.requests.Session()
+            http_session.headers.update(settings.DEFAULT_HTTP_HEADERS)
+            self.__http_session = http_session
+        return self.__http_session
 
     @cached_property
     def methods(self) -> Dict[str, Any]:
@@ -115,96 +145,42 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
+    # Context
+
+    @contextmanager
+    def use_context(
+        self,
+        *,
+        trusted: Optional[bool] = None,
+        onerror: Optional[IOnerror] = None,
+        standards: Optional[IStandards] = None,
+        http_session: Optional[Any] = None,
+    ):
+
+        # Current
+        current_trusted = self.trusted
+        current_onerror = self.onerror
+        current_standards = self.standards
+        current_http_session = self.__http_session
+
+        # Update
+        if trusted is not None:
+            self.trusted = trusted
+        if onerror is not None:
+            self.onerror = onerror
+        if standards is not None:
+            self.standards = standards
+        if http_session is not None:
+            self.__http_session = http_session
+        yield self
+
+        # Recover
+        self.trusted = current_trusted
+        self.onerror = current_onerror
+        self.standards = current_standards
+        self.__http_session = current_http_session
+
     # Hooks
-
-    def create_check(self, descriptor: dict) -> Check:
-        """Create check
-
-        Parameters:
-            descriptor (dict): check descriptor
-
-        Returns:
-            Check: check
-        """
-        type = descriptor.get("type", "")
-        for func in self.methods["create_check"].values():
-            check = func(descriptor)
-            if check is not None:
-                return check
-        for Class in vars(import_module("frictionless.checks")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'check "{type}" is not supported'
-        raise FrictionlessException(errors.CheckError(note=note))
-
-    def create_control(self, descriptor: dict) -> Control:
-        """Create control
-
-        Parameters:
-            descriptor (dict): control descriptor
-
-        Returns:
-            Control: control
-        """
-        control = None
-        for func in self.methods["create_control"].values():
-            control = func(descriptor)
-            if control is not None:
-                return control
-        return Control.from_descriptor(descriptor)
-
-    def create_error(self, descriptor: dict) -> Error:
-        """Create error
-
-        Parameters:
-            descriptor (dict): error descriptor
-
-        Returns:
-            Error: error
-        """
-        type = descriptor.get("type", "")
-        for func in self.methods["create_error"].values():
-            error = func(descriptor)
-            if error is not None:
-                return error
-        for Class in vars(import_module("frictionless.errors")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'error "{type}" is not supported'
-        raise FrictionlessException(note)
-
-    def create_field(self, descriptor: dict) -> Field:
-        """Create field
-
-        Parameters:
-            descriptor (dict): field descriptor
-
-        Returns:
-            Field: field
-        """
-        # TODO: move to a proper place
-        descriptor.setdefault("type", "any")
-        type = descriptor.get("type", "")
-        for func in self.methods["create_field"].values():
-            field = func(descriptor)
-            if field is not None:
-                return field
-        for Class in vars(import_module("frictionless.fields")).values():
-            if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'field "{type}" is not supported'
-        raise FrictionlessException(errors.FieldError(note=note))
-
-    def create_field_candidates(self) -> List[dict]:
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        candidates = settings.DEFAULT_FIELD_CANDIDATES.copy()
-        for func in self.methods["create_field_candidates"].values():
-            func(candidates)
-        return candidates
 
     def create_loader(self, resource: Resource) -> Loader:
         """Create loader
@@ -262,24 +238,77 @@ class System:
         note = f'format "{name}" is not supported'
         raise FrictionlessException(errors.FormatError(note=note))
 
-    def create_step(self, descriptor: dict) -> Step:
-        """Create step
-
-        Parameters:
-            descriptor (dict): step descriptor
+    def detect_field_candidates(self) -> List[dict]:
+        """Create candidates
 
         Returns:
-            Step: step
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
-        type = descriptor.get("type", "")
-        for func in self.methods["create_step"].values():
-            step = func(descriptor)
-            if step is not None:
-                return step
-        for Class in vars(import_module("frictionless.steps")).values():
+        candidates = settings.DEFAULT_FIELD_CANDIDATES.copy()
+        for func in self.methods["detect_field_candidates"].values():
+            func(candidates)
+        return candidates
+
+    def detect_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        for func in self.methods["detect_resource"].values():
+            func(resource)
+
+    def select_Check(self, type: str) -> Type[Check]:
+        for func in self.methods["select_Check"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(platform.frictionless_checks).values():
             if getattr(Class, "type", None) == type:
-                return Class.from_descriptor(descriptor)
-        note = f'step "{type}" is not supported'
+                return Class
+        note = f'check type "{type}" is not supported'
+        raise FrictionlessException(errors.CheckError(note=note))
+
+    def select_Control(self, type: str) -> Type[Control]:
+        for func in self.methods["select_Control"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        note = f'control type "{type}" is not supported'
+        raise FrictionlessException(errors.ControlError(note=note))
+
+    def select_Error(self, type: str) -> Type[Error]:
+        for func in self.methods["select_Error"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(platform.frictionless_errors).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'error type "{type}" is not supported'
+        raise FrictionlessException(errors.Error(note=note))
+
+    def select_Field(self, type: str) -> Type[Field]:
+        for func in self.methods["select_Field"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(platform.frictionless_fields).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'field type "{type}" is not supported'
+        raise FrictionlessException(errors.FieldError(note=note))
+
+    def select_Step(self, type: str) -> Type[Step]:
+        for func in self.methods["select_Step"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(platform.frictionless_steps).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'step type "{type}" is not supported'
         raise FrictionlessException(errors.StepError(note=note))
 
     def create_storage(self, name: str, source: Any, **options) -> Storage:
@@ -298,59 +327,6 @@ class System:
                 return storage
         note = f'storage "{name}" is not supported'
         raise FrictionlessException(note)
-
-    def detect_resource(self, resource: Resource) -> None:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
-        """
-        for func in self.methods["detect_resource"].values():
-            func(resource)
-
-    # Context
-
-    def get_http_session(self):
-        """Return a HTTP session
-
-        This method will return a new session or the session
-        from `system.use_http_session` context manager
-
-        Returns:
-            requests.Session: a HTTP session
-        """
-        if self.__http_session:
-            return self.__http_session
-        return self.plugins["remote"].create_http_session()  # type: ignore
-
-    @contextmanager
-    def use_http_session(self, http_session=None):
-        """HTTP session context manager
-
-        ```
-        session = requests.Session(...)
-        with system.use_http_session(session):
-            # work with frictionless using a user defined HTTP session
-            report = validate(...)
-        ```
-
-        Parameters:
-            http_session? (requests.Session): a session; will create a new if omitted
-        """
-        if self.__http_session:
-            note = f"There is already HTTP session in use: {self.__http_session}"
-            raise FrictionlessException(note)
-        self.__http_session = http_session or self.get_http_session()
-        yield self.__http_session
-        self.__http_session = None
-
-    @contextmanager
-    def use_standards_version(self, version: IStandardsVersion):
-        current = self.standards_version
-        self.standards_version = version
-        yield version
-        self.standards_version = current
 
 
 system = System()

@@ -42,7 +42,6 @@ class table_intersect(Step):
 
     # Metadata
 
-    metadata_Types = dict(resource=Resource)
     metadata_profile_patch = {
         "required": ["resource"],
         "properties": {
@@ -50,3 +49,8 @@ class table_intersect(Step):
             "useHash": {"type": "boolean"},
         },
     }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "resource":
+            return Resource

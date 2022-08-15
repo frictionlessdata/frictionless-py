@@ -32,9 +32,6 @@ class ReportTask(Metadata):
     stats: Stats
     """NOTE: add docs"""
 
-    scope: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
-
     warnings: List[str] = attrs.field(factory=list)
     """NOTE: add docs"""
 
@@ -109,7 +106,6 @@ class ReportTask(Metadata):
 
     metadata_type = "report-task"
     metadata_Error = ReportTaskError
-    metadata_Types = dict(stats=Stats, errors=Error)
     metadata_profile = {
         "type": "object",
         "required": [
@@ -118,7 +114,6 @@ class ReportTask(Metadata):
             "type",
             "place",
             "stats",
-            "scope",
             "warnings",
             "errors",
         ],
@@ -128,14 +123,16 @@ class ReportTask(Metadata):
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "place": {"type": "string"},
             "stats": {"type": "object"},
-            "scope": {"type": "array"},
             "warnings": {"type": "array"},
             "errors": {"type": "array"},
         },
     }
 
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "stats":
+            return Stats
+        elif property == "errors":
+            return Error
+
     # TODO: validate valid/errors count
-    # TODO: validate stats when the class is added
-    # TODO: validate errors when metadata is reworked
-    def metadata_validate(self):
-        yield from super().metadata_validate()

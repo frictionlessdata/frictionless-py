@@ -7,7 +7,6 @@ from frictionless import describe, Resource, Package, formats, platform
 
 def test_describe():
     resource = describe("data/table.csv")
-    assert resource.check_metadata_valid()
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
@@ -28,7 +27,6 @@ def test_describe():
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_with_stats():
     resource = describe("data/table.csv", stats=True)
-    assert resource.check_metadata_valid()
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",

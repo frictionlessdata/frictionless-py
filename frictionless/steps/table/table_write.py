@@ -12,6 +12,7 @@ class table_write(Step):
 
     # State
 
+    # TODO: rebase on resource?
     path: str
     """NOTE: add docs
     """

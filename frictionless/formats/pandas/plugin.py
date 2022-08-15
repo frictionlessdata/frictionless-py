@@ -16,10 +16,6 @@ class PandasPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "pandas":
-            return PandasControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "pandas":
             return PandasParser(resource)
@@ -33,3 +29,7 @@ class PandasPlugin(Plugin):
                 resource.mediatype = "application/pandas"
         elif resource.format == "pandas":
             resource.data = platform.pandas.DataFrame()
+
+    def select_Control(self, type):
+        if type == "pandas":
+            return PandasControl

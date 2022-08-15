@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from .loader import Loader
     from .parser import Parser
     from ..package import Package
-    from ..interfaces import IDescriptor, IOnerror, IBuffer, ISample, IFragment, IProfile
+    from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 
 
@@ -57,6 +57,7 @@ class Resource(Metadata):
     def __init__(
         self,
         source: Optional[Any] = None,
+        control: Optional[Control] = None,
         *,
         # Standard
         name: Optional[str] = None,
@@ -83,11 +84,8 @@ class Resource(Metadata):
         stats: Optional[Stats] = None,
         # Software
         basepath: Optional[str] = None,
-        onerror: Optional[IOnerror] = None,
-        trusted: Optional[bool] = None,
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
-        control: Optional[Control] = None,
     ):
 
         # Store state
@@ -108,21 +106,16 @@ class Resource(Metadata):
         self.compression = compression
         self.extrapaths = extrapaths.copy()
         self.innerpath = innerpath
+        self.basepath = basepath
         self.package = package
 
-        # Store dereferenced state
-        self.__dialect = dialect
-        self.__control = control
-        self.__schema = schema
-        self.__checklist = checklist
-        self.__pipeline = pipeline
-        self.__stats = stats
-
-        # Store inherited state
-        self.__basepath = basepath
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__detector = detector
+        # Store dereference state
+        self.dialect = dialect or Dialect()
+        self.schema = schema
+        self.checklist = checklist
+        self.pipeline = pipeline
+        self.stats = stats or Stats()
+        self.detector = detector or Detector()
 
         # Store internal state
         self.__loader: Optional[Loader] = None
@@ -135,11 +128,25 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
+        # Define default state
+        self.add_defined("dialect")
+        self.add_defined("stats")
+
         # Handled by the create hook
         assert source is None
+        assert control is None
 
     @classmethod
-    def __create__(cls, source: Optional[Any] = None, **options):
+    def __create__(
+        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
+    ):
+        if control is not None:
+
+            # Control
+            options.setdefault("dialect", control.to_dialect())
+            if source is None:
+                return Resource(**options)
+
         if source is not None:
 
             # Path
@@ -271,6 +278,12 @@ class Resource(Metadata):
     It defaults to the first file in the archive (if the source is an archive).
     """
 
+    detector: Detector
+    """
+    File/table detector.
+    For more information, please check the Detector documentation.
+    """
+
     package: Optional[Package]
     """
     Parental to this resource package.
@@ -284,7 +297,7 @@ class Resource(Metadata):
         """Normalized path of the resource or raise if not set"""
         if self.path is None:
             raise FrictionlessException("path is not set")
-        return helpers.normalize_path(self.basepath, self.path)
+        return helpers.normalize_path(self.path, basepath=self.basepath)
 
     @property
     def normdata(self) -> Any:
@@ -307,7 +320,7 @@ class Resource(Metadata):
         """Normalized paths of the resource"""
         normpaths = []
         for path in self.paths:
-            normpaths.append(helpers.normalize_path(self.basepath, path))
+            normpaths.append(helpers.normalize_path(path, basepath=self.basepath))
         return normpaths
 
     # TODO: add asteriks for user/pass in url
@@ -350,21 +363,19 @@ class Resource(Metadata):
         File Dialect object.
         For more information, please check the Dialect documentation.
         """
-        if self.__dialect is None:
-            self.metadata_assigned.add("dialect")
-            if self.__dialect is None:
-                self.__dialect = Dialect()
-                if self.__control:
-                    self.__dialect.set_control(self.__control)
-        if isinstance(self.__dialect, str):
-            self.__dialect = Dialect.from_descriptor(
-                self.__dialect, basepath=self.basepath
-            )
         return self.__dialect
 
     @dialect.setter
     def dialect(self, value: Optional[Union[Dialect, str]]):
+        if value is None:
+            value = Dialect()
+        elif isinstance(value, str):
+            value = Dialect.from_descriptor(value, basepath=self.basepath)
         self.__dialect = value
+
+    @property
+    def has_schema(self) -> bool:
+        return self.__schema is not None
 
     @property
     def schema(self) -> Schema:
@@ -374,17 +385,13 @@ class Resource(Metadata):
         """
         if self.__schema is None:
             raise FrictionlessException("schema is not set or inferred")
-        if isinstance(self.__schema, str):
-            self.__schema = Schema.from_descriptor(self.__schema, basepath=self.basepath)
         return self.__schema
 
     @schema.setter
     def schema(self, value: Optional[Union[Schema, str]]):
+        if isinstance(value, str):
+            value = Schema.from_descriptor(value, basepath=self.basepath)
         self.__schema = value
-
-    @property
-    def has_schema(self) -> bool:
-        return self.__schema is not None
 
     @property
     def checklist(self) -> Optional[Checklist]:
@@ -392,14 +399,12 @@ class Resource(Metadata):
         Checklist object.
         For more information, please check the Checklist documentation.
         """
-        if isinstance(self.__checklist, str):
-            self.__checklist = Checklist.from_descriptor(
-                self.__checklist, basepath=self.basepath
-            )
         return self.__checklist
 
     @checklist.setter
     def checklist(self, value: Optional[Union[Checklist, str]]):
+        if isinstance(value, str):
+            value = Checklist.from_descriptor(value, basepath=self.basepath)
         self.__checklist = value
 
     @property
@@ -408,103 +413,44 @@ class Resource(Metadata):
         Pipeline object.
         For more information, please check the Pipeline documentation.
         """
-        if isinstance(self.__pipeline, str):
-            self.__pipeline = Pipeline.from_descriptor(
-                self.__pipeline, basepath=self.basepath
-            )
         return self.__pipeline
 
     @pipeline.setter
     def pipeline(self, value: Optional[Union[Pipeline, str]]):
+        if isinstance(value, str):
+            value = Pipeline.from_descriptor(value, basepath=self.basepath)
         self.__pipeline = value
 
     @property
     def stats(self) -> Stats:
         """
         Stats object.
-        An object with the following possible properties: hash, bytes, fields, rows.
+        An object with the following possible properties: md5, sha256, bytes, fields, rows.
         """
-        if self.__stats is None:
-            self.metadata_assigned.add("stats")
-            self.__stats = Stats()
         return self.__stats
 
     @stats.setter
-    def stats(self, value: Optional[Stats]):
+    def stats(self, value: Optional[Union[Stats, str]]):
+        if value is None:
+            value = Stats()
+        elif isinstance(value, str):
+            value = Stats.from_descriptor(value, basepath=self.basepath)
         self.__stats = value
 
     @property
-    def has_stats(self) -> bool:
-        return self.__stats is not None
-
-    @property
-    def basepath(self) -> str:
+    def basepath(self) -> Optional[str]:
         """
         A basepath of the resource
-        The fullpath of the resource is joined `basepath` and /path`
+        The normpath of the resource is joined `basepath` and `/path`
         """
-        if self.__basepath is not None:
+        if self.__basepath:
             return self.__basepath
-        elif self.package:
+        if self.package:
             return self.package.basepath
-        return settings.DEFAULT_BASEPATH
 
     @basepath.setter
-    def basepath(self, value: str):
+    def basepath(self, value: Optional[str]):
         self.__basepath = value
-
-    @property
-    def onerror(self) -> IOnerror:
-        """
-        Behaviour if there is an error.
-        It defaults to 'ignore'. The default mode will ignore all errors
-        on resource level and they should be handled by the user
-        being available in Header and Row objects.
-        """
-        if self.__onerror is not None:
-            return self.__onerror  # type: ignore
-        elif self.package:
-            return self.package.onerror
-        return settings.DEFAULT_ONERROR
-
-    @onerror.setter
-    def onerror(self, value: IOnerror):
-        self.__onerror = value
-
-    @property
-    def trusted(self) -> bool:
-        """
-        Don't raise an exception on unsafe paths.
-        A path provided as a part of the descriptor considered unsafe
-        if there are path traversing or the path is absolute.
-        A path provided as `source` or `path` is alway trusted.
-        """
-        if self.__trusted is not None:
-            return self.__trusted
-        elif self.package:
-            return self.package.trusted
-        return settings.DEFAULT_TRUSTED
-
-    @trusted.setter
-    def trusted(self, value: bool):
-        self.__trusted = value
-
-    @property
-    def detector(self) -> Detector:
-        """
-        Resource detector.
-        For more information, please check the Detector documentation.
-        """
-        if self.__detector is not None:
-            return self.__detector
-        elif self.package:
-            return self.package.detector
-        self.__detector = Detector()
-        return self.__detector
-
-    @detector.setter
-    def detector(self, value: Detector):
-        self.__detector = value
 
     @property
     def buffer(self) -> IBuffer:
@@ -701,7 +647,6 @@ class Resource(Metadata):
     def __prepare_file(self):
         self.detector.detect_resource(self)
         system.detect_resource(self)
-        self.assert_metadata_valid()
 
     def __prepare_loader(self):
         self.__loader = system.create_loader(self)
@@ -724,7 +669,6 @@ class Resource(Metadata):
     def __prepare_dialect(self):
         self.metadata_assigned.add("dialect")
         self.__dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
-        self.__dialect.assert_metadata_valid()
 
     def __prepare_labels(self):
         self.__labels = self.dialect.read_labels(self.sample)
@@ -738,9 +682,8 @@ class Resource(Metadata):
             self.fragment,
             labels=self.labels,
             schema=self.schema if self.has_schema else None,
-            field_candidates=system.create_field_candidates(),
+            field_candidates=system.detect_field_candidates(),
         )
-        self.__schema.assert_metadata_valid()
         self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
@@ -756,9 +699,9 @@ class Resource(Metadata):
         # Handle errors
         if not self.header.valid:
             error = self.header.errors[0]
-            if self.onerror == "warn":
+            if system.onerror == "warn":
                 warnings.warn(error.message, UserWarning)
-            elif self.onerror == "raise":
+            elif system.onerror == "raise":
                 raise FrictionlessException(error)
 
     def __prepare_lookup(self):
@@ -903,10 +846,10 @@ class Resource(Metadata):
                                 row.errors.append(error)
 
                 # Handle errors
-                if self.onerror != "ignore":
+                if system.onerror != "ignore":
                     if not row.valid:
                         error = row.errors[0]
-                        if self.onerror == "raise":
+                        if system.onerror == "raise":
                             raise FrictionlessException(error)
                         warnings.warn(error.message, UserWarning)
 
@@ -983,19 +926,26 @@ class Resource(Metadata):
 
     # Write
 
-    def write(self, target: Any = None, **options) -> Resource:
+    def write(
+        self,
+        target: Optional[Union[Resource, Any]] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
+    ) -> Resource:
         """Write this resource to the target resource
 
         Parameters:
-            target (any|Resource): target or target resource instance
+            target (Resource|Any): target or target resource instance
             **options (dict): Resource constructor options
         """
-        native = isinstance(target, Resource)
-        target = target if native else Resource(target, **options)
-        target.infer(sample=False)
-        parser = system.create_parser(target)
+        resource = target
+        if not isinstance(resource, Resource):
+            resource = Resource(target, control=control, **options)
+        resource.infer(sample=False)
+        parser = system.create_parser(resource)
         parser.write_row_stream(self)
-        return target
+        return resource
 
     # Convert
 
@@ -1004,11 +954,8 @@ class Resource(Metadata):
         return super().to_copy(
             data=self.data,
             basepath=self.basepath,
-            onerror=self.onerror,
-            trusted=self.trusted,
             detector=self.detector,
             package=self.package,
-            control=self.__control,
             **options,
         )
 
@@ -1082,13 +1029,6 @@ class Resource(Metadata):
 
     metadata_type = "resource"
     metadata_Error = errors.ResourceError
-    metadata_Types = dict(
-        dialect=Dialect,
-        schema=Schema,
-        checklist=Checklist,
-        pipeline=Pipeline,
-        stats=Stats,
-    )
     metadata_profile = {
         "type": "object",
         "properties": {
@@ -1138,25 +1078,36 @@ class Resource(Metadata):
     }
 
     @classmethod
-    def metadata_import(cls, descriptor: Union[IDescriptor, str], **options):
-        if isinstance(descriptor, str):
-            options.setdefault("basepath", helpers.parse_basepath(descriptor))
-        descriptor = super().metadata_normalize(descriptor)
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "dialect":
+            return Dialect
+        elif property == "schema":
+            return Schema
+        elif property == "checklist":
+            return Checklist
+        elif property == "pipeline":
+            return Pipeline
+        elif property == "stats":
+            return Stats
 
-        # Url (standards_v0)
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
+
+        # Url (standards/v0)
         url = descriptor.pop("url", None)
         path = descriptor.get("path")
         data = descriptor.get("data")
         if not path and not data and url:
             descriptor.setdefault("path", url)
 
-        # Path (standards_v1)
+        # Path (standards/v1)
         path = descriptor.get("path")
         if path and isinstance(path, list):
             descriptor["path"] = path[0]
             descriptor["extrapaths"] = path[1:]
 
-        # Profile (standards_v1)
+        # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
         if profile == "data-resource":
             descriptor["type"] = "file"
@@ -1166,13 +1117,13 @@ class Resource(Metadata):
             descriptor.setdefault("profiles", [])
             descriptor["profiles"].append(profile)
 
-        # Bytes (standards_v1)
+        # Bytes (standards/v1)
         bytes = descriptor.pop("bytes", None)
         if bytes:
             descriptor.setdefault("stats", {})
             descriptor["stats"]["bytes"] = bytes
 
-        # Hash (framework_v4)
+        # Hash (framework/v4)
         hashing = descriptor.get("hashing", None)
         stats = descriptor.get("stats", None)
         if hashing and stats:
@@ -1183,7 +1134,7 @@ class Resource(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        # Hash (standards_v1)
+        # Hash (standards/v1)
         hash = descriptor.get("hash", None)
         if hash:
             algo, hash = helpers.parse_resource_hash_v1(hash)
@@ -1192,7 +1143,7 @@ class Resource(Metadata):
                 descriptor.setdefault("stats", {})
                 descriptor["stats"][algo] = hash
 
-        # Compression (framework_v4)
+        # Compression (framework/v4)
         compression = descriptor.get("compression")
         if compression == "no":
             descriptor.pop("compression")
@@ -1200,7 +1151,7 @@ class Resource(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        # Layout (framework_v4)
+        # Layout (framework/v4)
         layout = descriptor.pop("layout", None)
         if layout:
             descriptor.setdefault("dialect", {})
@@ -1209,9 +1160,15 @@ class Resource(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
+    @classmethod
+    def metadata_validate(cls, descriptor: IDescriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
+
         # Security
-        trusted = options.setdefault("trusted", False)
-        if not trusted:
+        if not system.trusted:
             keys = ["path"]
             keys += ["extrapaths", "profiles"]
             keys += ["dialect", "schema", "checklist", "pipeline"]
@@ -1220,21 +1177,75 @@ class Resource(Metadata):
                 items = value if isinstance(value, list) else [value]
                 for item in items:
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
-                        error = errors.ResourceError(note=f'path "{item}" is not safe')
-                        raise FrictionlessException(error)
+                        yield errors.ResourceError(note=f'path "{item}" is not safe')
+                        return
 
-        return super().metadata_import(descriptor, **options)
+        # Required
+        path = descriptor.get("path")
+        data = descriptor.get("data")
+        if path is None and data is None:
+            note = 'one of the properties "path" or "data" is required'
+            yield errors.ResourceError(note=note)
+
+        # Required (standards/v2-strict)
+        if system.standards == "v2-strict":
+            type = descriptor.get("type")
+            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
+            if type == "table":
+                names.append("schema")
+            for name in names:
+                if name not in descriptor:
+                    note = f'property "{name}" is required by standards "v2-strict"'
+                    yield errors.ResourceError(note=note)
+
+        # Path/Data
+        if path is not None and data is not None:
+            note = 'properties "path" and "data" is mutually exclusive'
+            yield errors.ResourceError(note=note)
+
+        # Contributors/Sources
+        for name in ["contributors", "sources"]:
+            for item in descriptor.get(name, []):
+                if item.get("email"):
+                    field = fields.StringField(format="email")
+                    _, note = field.read_cell(item.get("email"))
+                    if note:
+                        note = f'property "{name}[].email" is not valid "email"'
+                        yield errors.ResourceError(note=note)
+
+        # Profiles
+        profiles = descriptor.get("profiles", [])
+        for profile in profiles:
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=cls.metadata_Error,
+            )
+
+        # Misleading
+        for name in ["missingValues", "fields"]:
+            if name in descriptor:
+                note = f'"{name}" should be set as "schema.{name}"'
+                yield errors.ResourceError(note=note)
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )
 
     def metadata_export(self):
         descriptor = super().metadata_export()
 
         # Data
         data = descriptor.get("data")
-        if data is not None and not isinstance(data, (str, bool, int, float, list, dict)):
-            descriptor.pop("data")
+        if data and not isinstance(data, (str, bool, int, float, list, dict)):
+            descriptor["data"] = []
 
-        # Path (standards_v1)
-        if system.standards_version == "v1":
+        # Path (standards/v1)
+        if system.standards == "v1":
             path = descriptor.get("path")
             extrapaths = descriptor.pop("extrapaths", None)
             if extrapaths:
@@ -1243,8 +1254,8 @@ class Resource(Metadata):
                     descriptor["path"].append(path)
                 descriptor["path"].extend(extrapaths)
 
-        # Profile (standards_v1)
-        if system.standards_version == "v1":
+        # Profile (standards/v1)
+        if system.standards == "v1":
             type = descriptor.pop("type", None)
             profiles = descriptor.pop("profiles", None)
             descriptor["profile"] = "data-resource"
@@ -1253,8 +1264,8 @@ class Resource(Metadata):
             elif profiles:
                 descriptor["profile"] = profiles[0]
 
-        # Stats (standards_v1)
-        if system.standards_version == "v1":
+        # Stats (standards/v1)
+        if system.standards == "v1":
             stats = descriptor.pop("stats", None)
             if stats:
                 sha256 = stats.get("sha256")
@@ -1268,68 +1279,3 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
-
-    def metadata_validate(self, *, strict=False):
-        yield from super().metadata_validate()
-
-        # Required
-        if self.path is None and self.data is None:
-            note = 'one of the properties "path" or "data" is required'
-            yield errors.ResourceError(note=note)
-        if strict:
-            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
-            if self.tabular:
-                names.append("schema")
-            for name in names:
-                if getattr(self, name, None) is None:
-                    note = f'property "{name}" is required in a strict mode'
-                    yield errors.ResourceError(note=note)
-
-        # Path/Data
-        if self.path is not None and self.data is not None:
-            note = 'properties "path" and "data" is mutually exclusive'
-            yield errors.ResourceError(note=note)
-
-        # Dialect
-        if self.dialect:
-            yield from self.dialect.metadata_validate()
-
-        # Schema
-        if self.has_schema:
-            yield from self.schema.metadata_validate()
-
-        # Checklist
-        if self.checklist:
-            yield from self.checklist.metadata_validate()
-
-        # Pipeline
-        if self.pipeline:
-            yield from self.pipeline.metadata_validate()
-
-        # Stats
-        if self.has_stats:
-            yield from self.stats.metadata_validate()
-
-        # Contributors/Sources
-        for name in ["contributors", "sources"]:
-            for item in getattr(self, name, []):
-                if item.get("email"):
-                    field = fields.StringField(format="email")
-                    _, note = field.read_cell(item.get("email"))
-                    if note:
-                        note = f'property "{name}[].email" is not valid "email"'
-                        yield errors.ResourceError(note=note)
-
-        # Custom
-        for name in ["missingValues", "fields"]:
-            if name in self.custom:
-                note = f'"{name}" should be set as "schema.{name}"'
-                yield errors.ResourceError(note=note)
-
-        # Profiles
-        if self.profiles:
-            descriptor = self.to_descriptor()
-            for profile in self.profiles:
-                notes = helpers.validate_descriptor(descriptor, profile=profile)
-                for note in notes:
-                    yield errors.ResourceError(note=note)

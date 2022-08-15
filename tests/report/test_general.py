@@ -31,33 +31,6 @@ def test_report():
             report.task.stats.sha256
             == "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
         )
-    assert report.task.scope == [
-        # File
-        "md5-count",
-        "sha256-count",
-        "byte-count",
-        # Table
-        "field-count",
-        "row-count",
-        # Header
-        "blank-header",
-        # Label
-        "extra-label",
-        "missing-label",
-        "blank-label",
-        "duplicate-label",
-        "incorrect-label",
-        # Row
-        "blank-row",
-        "primary-key",
-        "foreign-key",
-        # Cell
-        "extra-cell",
-        "missing-cell",
-        "type-error",
-        "constraint-error",
-        "unique-error",
-    ]
     assert report.warnings == []
     assert report.errors == []
 

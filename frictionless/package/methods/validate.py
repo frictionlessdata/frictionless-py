@@ -1,6 +1,7 @@
 from __future__ import annotations
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Optional, List
+from ...exception import FrictionlessException
 from ...checklist import Checklist
 from ...resource import Resource
 from ...report import Report
@@ -19,7 +20,6 @@ def validate(
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
     parallel: bool = False,
-    strict: bool = False,
 ):
     """Validate package
 
@@ -42,17 +42,12 @@ def validate(
 
     # Prepare checklist
     checklist = checklist or Checklist()
-    checklist_errors = checklist.list_metadata_errors()
-    if checklist_errors:
-        return Report.from_validation(time=timer.time, errors=checklist_errors)
 
     # Validate metadata
-    metadata_errors = []
-    for error in self.list_metadata_errors():
-        if error.type == "package-error":
-            metadata_errors.append(error)
-    if metadata_errors:
-        return Report.from_validation(time=timer.time, errors=metadata_errors)
+    try:
+        self.to_descriptor()
+    except FrictionlessException as exception:
+        return Report.from_validation(time=timer.time, errors=exception.to_errors())
 
     # Validate sequential
     if not parallel or with_fks:
@@ -60,7 +55,6 @@ def validate(
             report = resource.validate(
                 limit_errors=limit_errors,
                 limit_rows=limit_rows,
-                strict=strict,
             )
             reports.append(report)
 
@@ -73,11 +67,9 @@ def validate(
                 options["resource"] = {}
                 options["resource"]["descriptor"] = resource.to_descriptor()
                 options["resource"]["basepath"] = resource.basepath
-                options["resource"]["trusted"] = resource.trusted
                 options["validate"] = {}
                 options["validate"]["limit_rows"] = limit_rows
                 options["validate"]["limit_errors"] = limit_errors
-                options["validate"]["strict"] = strict
                 options_pool.append(options)
             report_descriptors = pool.map(validate_parallel, options_pool)
             for report_descriptor in report_descriptors:

@@ -1,26 +1,30 @@
-from frictionless import Resource
+import pytest
+from frictionless import Resource, FrictionlessException
 
 
 # General
 
 
-def test_resource_profiles():
+def test_resource_profiles_to_descriptor():
     profile = "data/resource.profile.json"
     resource = Resource(path="data/table.csv", profiles=[profile])
-    error = resource.list_metadata_errors()[0]
-    assert resource.profiles == [profile]
+    with pytest.raises(FrictionlessException) as excinfo:
+        resource.to_descriptor()
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == "'requiredProperty' is a required property"
-    resource.profiles = []
-    assert resource.check_metadata_valid()
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == "'requiredProperty' is a required property"
 
 
-def test_resource_profiles_from_dict():
+def test_resource_profiles_from_descriptor():
     profile = {"type": "object", "required": ["requiredProperty"]}
-    resource = Resource(path="data/table.csv", profiles=[profile])
-    error = resource.list_metadata_errors()[0]
-    assert resource.profiles == [profile]
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource.from_descriptor({"path": "data/table.csv", "profiles": [profile]})
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
     assert error.type == "resource-error"
-    assert error.note == "'requiredProperty' is a required property"
-    resource.profiles = []
-    assert resource.check_metadata_valid()
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note == "'requiredProperty' is a required property"

@@ -9,10 +9,6 @@ class HtmlPlugin(Plugin):
 
     # Hooks
 
-    def create_control(self, descriptor):
-        if descriptor.get("type") == "html":
-            return HtmlControl.from_descriptor(descriptor)
-
     def create_parser(self, resource):
         if resource.format == "html":
             return HtmlParser(resource)
@@ -20,3 +16,7 @@ class HtmlPlugin(Plugin):
     def detect_resource(self, resource):
         if resource.format == "html":
             resource.mediatype = "text/html"
+
+    def select_Control(self, type):
+        if type == "html":
+            return HtmlControl
