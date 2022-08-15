@@ -1,0 +1,2655 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/search/repositories?q=user%3Africtionlessdata&per_page=2&page=2
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - no-cache
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:25 GMT
+      Link:
+      - <https://api.github.com/search/repositories?q=user%3Africtionlessdata&per_page=2&page=1>;
+        rel="prev", <https://api.github.com/search/repositories?q=user%3Africtionlessdata&per_page=2&page=3>;
+        rel="next", <https://api.github.com/search/repositories?q=user%3Africtionlessdata&per_page=2&page=58>;
+        rel="last", <https://api.github.com/search/repositories?q=user%3Africtionlessdata&per_page=2&page=1>;
+        rel="first"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8E80:1CAE8C:62F8ECC0
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '30'
+      X-RateLimit-Remaining:
+      - '29'
+      X-RateLimit-Reset:
+      - '1660480765'
+      X-RateLimit-Resource:
+      - search
+      X-RateLimit-Used:
+      - '1'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:25 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8EB3:1CAEC5:62F8ECC1
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4797'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '203'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/.github
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72W647aMBCF38W/KY7tXJGqPkhVIV/GTbTOpbEjRFe8e52CsmGXsA1N+IdkZ86c
+        M/6wv7+iipeAdqiwtoO9g7Ix3MG2VGiDGu5yv7T9Wbi8E/jWFptzvyOTURSGRNEwiRWJVKjTLFGR
+        IsAIi1ksGQ1EmPY1bfHby1GSbFDXGv9t7lxjdxjzprgIbWVd4haa2mLdFtIVdWXAWsUdx44L/1vm
+        UPIvzRHLunJQOYsne/zWgv5a8qLy2rkrzf5a9Wztr+JnWsLUAveVpsW8hi/4TuIhY74M7gUtnpGt
+        qg+Vqbl610DLD5d4OgvtJbJ/svypW3ds+sOjCwPe+94U1YtFu1dkwejnztYH9r+CD2Xen6mR8MLn
+        6XTaDIQ2nTH7Fn51YN19UO/sPPNKNVBCiGaEiIQwIJGgMtUqDSIIBCNSZ1zGKnvjNYjW4XWq1TWx
+        ndJcg94ZSa9L7x3TT4V4qo/xwBdlecYElmR5yicaI20dN7A9+n+QD5fteOkMrZQJTdIgY1JCmmoS
+        SMbClGcyjJQnWXlsiQASDtAmAV0H2qG3NSkdB7D4pTojy3WxHLt8Koc3Z7goeDMyXhK8t0THpB3q
+        9kWb+mA/kjZeOpMmVBZRElPVX4VJzBPFuAROJWUklqmQgdI6UWQgLViHs6Gz5ThzLcD1I3Zsf0HO
+        eiGLZyR5zVnlHzsbdCFCFa2PeuXX5c2wFwJidhiPA3FvwKfTjz/oVzY48Q0AAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:25 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8EE0:1CAEF4:62F8ECC1
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4796'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '204'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/data
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:26 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8F12:1CAF24:62F8ECC2
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4795'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '205'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/examples
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8XXW46bMBQG4L3wnAbbgLEjVV1IVSFfi1VuxU6n6Sh7rzOJKAyZTJgCeYtix8fn
+        tz8Rvj4HFStVsAuyzFTGZdm2OQSboGEu91+q36xsCmXD4ajN2WkQU6kQ5RxJKHEcxZxwRJlK04RJ
+        IpCKiUgiCv1y1vzxNcAm2LeF/2XuXGN3Ycgas/1uXL7nW1GXYaua2oa6NcKZuvJlrWSOhY5x/1nk
+        qmSfmkMo6sqpytnw2ua+tEp/LpmpfNHclUU2LNgr9l4ZXtQ8PK10tY5f3q/1avUPteOXCU+1fD/3
+        5ynrp6qomXy1gZY9XfLcW9VegnqJ9r1ubzXqDs3pgmhTKN92Vpjqhw12z4FVhV7tMH1M/1vrQ0mf
+        LlGv8HwX6HjcdPZebrj3p1V7nd9owlmgFqkgQFGBhEqowBpDmWIgUyB44h1ihLGIEO8EUrKUweEO
+        F2U4CmN2iRNyXVjiqNd1Mb59qrN6nJD3rB5fpTsm2bBKMnvLZH/GGWWkNIqJAohzQTlkOhWplJHi
+        EiQQJwRDmkSS4g4ljpKFHozn/rotrqCyH8fsLCckuwrLfrOPcHn1YGeFOSHxBWD+y3cs0/4sbrHs
+        hi8mE4ViyWOJFYgxRiSGSCv/sCQaoIjFkIFIY806kxBAtCjK8wZXENklMT/H+0NdhWPX6SMsjs9z
+        Xoj3Z70AxEuyY4W/WGH8O5q6RXE45+wx5qlkmAIJqBYihRwTQrTAmELB/d9WgSMapYh2HpNkWY69
+        Ta5gchjJ7DAnpLsKzGG7j9D5xvHOSnRC6gsQ7Wd8PH77C2bn7J7YEQAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:26 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8F37:1CAF4D:62F8ECC2
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4794'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '206'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tableschema
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA82bS2/jNhDHv4vP6ZrvxwJFTz300gIt0EtRBHwmQhXbsJRut8V+945XtkRlpcRy
+        SXUvQRAq4sx/+NNwRtRv/2x25ils3m9+/f7nX3746cfN3eZg2kf4Q2tsHRr3GJ7MdhhsHg2MSaED
+        lQFz7RlRitJgg9I6GoqlUixS5Zy2isPdmupvuL282zwfa/jPx7Y9NO+3W3Oo3j1U7eOzfef2T9tj
+        OOybbTxWrq32O5i38aY128SGbw4ft26/a8OubdK/X2z77hjit0+m2sGcj+1TfT+eL5nrrVlsvbfb
+        052mpoG7w61e3PwmZ+A229NUzXaBmn7/YVfvjX9hwNF8OKv53ITjWabPwr7l7Ct+th8Pp4URqzqA
+        1/d1tfuj2bz/Z9OEOq4VSRDpv051k86nFZRMnG31fPp01xN3f1/tYCndvzt8nKZufEFHnhBMUGeZ
+        EERHp5H2wcoYMVNUOIyCU94YwwfylBLl2EssLM3fWIzsDC7QtTyDY19X53AmqllZXKB3bhZTdcc8
+        nh6Gr/KYXtDxiAMOCOsgrTdWB8dw0BZLxK2SSDvBvDDY+jhkQlYSx97A8jimWmTHcYGsa+CY+vo/
+        4DgZ1aw4LtA7P46DuimOrq5mM2M/1kGIEGxFWWBAokJOUqwR4tHDD++CsRKSJObBoB5Cwigth2Fn
+        XWkCew2yw7dAzvLw9W6uzt2XYcyK3AKVcyN31nRE234Xq4d54JLhjjltJY9REclYMMFp4yPGAnsV
+        uYxCYketMVSJnjkmSUHkLvYVpy4RIjt4CzRdAbzE0/XZm4pnVvwWaJ0dv17ZFwQ27RF2oG0zXQ5C
+        WZ9c0FHIPYdOjIqCeIGRCoy6SFGMAivJNNSCXJvInOspREUZvNiXj8L2GMKXzZixFBk5PE3XbBeo
+        OuZw91zXd5szLb46rtM3SdRIhc+Ey2JJbsfl7WCnwIS/XDic2oXNbNp6ecm5e8mQjI4HjgKlFlEX
+        PJcByjUo27zXRlppiPfJdpFQXo6bkZH5yJluY75UJCM752bm9eKWz2EvvV09j83GNhOcizW/Hc5r
+        1lOKZ6xC7WfJTEY7KGGvGDhnzjqhlQ3EMe8EYo4hFOE34Yy1SCo6NFJQSSgv9pXmMdEhO4oLJC2P
+        YuLo6hROBTMrgAuUzg1gr2vK3mOoD+E4nxdH4x1/ASmsSMTRCxo984wSKQgmFPKi8swYhoU0dNhJ
+        UmiylEuKg4WlCRxpkZ3BBbKWZ3Dk6uoUToc0K4cL1M7NYaJtSmK1i+E4mwWT0Y5CypgMUQVqqICG
+        Jg5eMEOoCPBWQcfgEI5QuNKhq3J6316Owot9pRlMdMhO4AJJyxOYOLo6f1PBzErfAqVz09frmrJ3
+        qJ8fqt1MN2UYPPczBSEOEy5MYAJDcoNXB4Rwoq01mngLyVBo7IYX6wWT39m2fNRNF9aDBBmh69oF
+        +no1v4YOyoTgmchYLMftZLwe5BEYx/3pVM9sWjqk4x0eljOOlMdeSiWjpF4Lj4nRzBrMgvIcOo0C
+        tolDeSZZwYMng4X5IJkucEdaZOSkq9wXyFo+OY1cXT09TYc0E4aL1b4dwzeX0QSJczmq4/A0ennp
+        Rrz0CjqWlivqjVIOmvsoCDiEKaBH4rUXyli8Rrv/HK8mH4AzD7BBhIz4nZ/L9mo9v4o0dZaiWJdf
+        X6/H7YC8EeYUj+748WyeSofPgGABBz6ikUQgHSPnGAMvcBI5EE2cjohRZQwhPSBYE4bLFVC9hfko
+        mX6+pFJkxKR7burrVS2fpVJPV09Sk/HMmqMWaH07gm+toRGD7f5oHuY3i0063lHoSSBw3spb+AYg
+        cGMRsVR7KKy4FFRaOKeFPKA59PI5xQWPRQ4WFqcw1SI7hgtkXQHD1NX1OexnL5ALu4feArWzgzho
+        m5L4+WuY2WSYjJ4pNIFbA51DHTwyRODApfOcIALnQ2IMxCvERXI0mVAkSLlceDGwNISJEPkRvF7T
+        8ggmjq4O4FQws+ZBSBfXrt7c+PW6juCDr6FmyrST+EONhhTylCIt4BM4zYwlJkaPhYlGQw70wcHh
+        LCaIXKNG+2xZPt6md+4X9zPC1lVnC5T8GqqzL8TOxMNiMW7n4bUApzD8aeoKPtCcT0bjCy4ddnh1
+        5b0h+vSBGuISa4c1fDcToaGBXDx9whYFGmozJgq+2koszAfI9L56LEZGTM7Vmbha1/I5aezr6mlp
+        JqqZSFys9+0kvr2SPn36/V9xBcZtvj0AAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:27 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8F63:1CAF76:62F8ECC2
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4793'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '207'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tests
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:27 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8F85:1CAF9B:62F8ECC3
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4792'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '208'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/.github/workflows
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72SzW7CMBCE38VnmgUakhCp6oNUFVo7G2LhP9mOohTx7nXaHAoHSqnam2Wt59sZ
+        z8uRGdTEarYnQx5VNmrFFsxh7NJltpex6zkM1h9aZYcA52OhwzSVcyFwlT9uloLzphSb5bbKy3VB
+        uOYVr6gsqpwjFkk3yLcEW+XVdsF6r9LjLkYXagB0cqZlwmrw5GyA1ksRpTWKQmgwIkTk6Sw60vjg
+        RhDWRDIxwNVFnz21TxqlSQt0UavdOfnT4wf1Ox5XlsOkdB2YOEn0AnOXwSQDEzTAD0Ju7GCUxeZi
+        AY/DHFMfyM/R3WT7JsdxdFOPWqko+d8paQ6B1UcWSLX//88puN9C78p+6tcX8B9063R6fQdVQkEH
+        tgMAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:27 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8FB3:1CAFCE:62F8ECC3
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4791'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '209'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tableschema/constraints
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA82Z726bMBTF3yWfu+K/2K407QX2BtMUXZvrBi0hKRB1XZV3n7OkAaJUgw7MvlWV
+        63vvOfx0bPfb66KADS4eFstlXuT1cnm/e1ncLXZQr8Iva7BrrNwKN5C4bVHVJeRFXSXdxdUKwlqp
+        pcjSlFtGU8Go44RpYTkBLQgxymrvKJHWhd2r/FcoKRS9W+zLdfjbVV3vqockgV1+/5jXq729d9tN
+        UuJuWyW+zF2db4vQSZVBDUmrq0+7l2NjNR676tHtlxL9500YInSxqjfrZbd+q/bfqtr11ibHnfqU
+        DdXC1lfFPjRs2CY5lq6SAXpn2+divYXsqoESns9q7ysszzL+Ef5vww+Yu37ZHT8vn68xqLBc58WP
+        avHwuqhw7edyPoj4r6U/5MPxi2sVnuxrOxzuLlxjsd/0YrpZeOIZUya5VU5kTIAk4L3PVKDZOqKd
+        JQYzhiql+sIz55F4Pncak+VGnNE5HqBzXI6bmWdl+Ibbo/I7QP8p+X1Tu83uBn5+xeKxXvUC+Gr1
+        OZUVFZpL5A4cVRQN14Yfc9oTBEo1ocowkE0qcxGJ4na7MVG+kml0nmV/xePyfDX4rFC/Z/6oZA9w
+        YkqyO7pf4Z1veqZz2KRZe0KbOM9AaM9QKxA2wxQ05UyKVDEuMCWSaeMwuwS0ZDLOgbtpNjLYjUSj
+        Yz1A7ehYN2PPDfW5k7btoyI9wIWJkX7TvAN0XgzJ6+7qE9TMSGsUMADFDJJUsuMPzmZAHQrFQQFm
+        3pnm1B0tr1vtRsW6K9PoYA9QPDLY3cHnRfsd80eFe4ATk8Ld1v0K7/55HV7TLtl+QttlllgOKbXh
+        wK2YZ1ppQpwDiswYS71S3jBOZsjrS7ORwZ4wrweoHR3r/yWvb9o+KtIDXJgY6Vt5HV65ayyLXrfr
+        ztrzC5kD4UImpxwFKK+BOMJduGpzolMZgNZOU8ubu7XkKs4BvGk2JtAdiUbPaeyvdlygO2PPmtK3
+        bR8V6AEuTAl0S/N2Qpf4tM9LzHoR3V18zujwvyuudZbpVAgupcaUCs8pUG6ICI/h3iDFVDXHb6Lj
+        IN3qNibTXZFGh9r11zsu1N25Z6X6HedHxXqAD1Ni3Va9zfW+yJ/22Ivq9tIT09wLw5QwAsNzWbhH
+        W4/GCaNUuFobpongXBnO2YVpJngcpi+9xiS6LdDoPA/QOi7P7alnpfmm56OyPMCDKVluFD8cvv8G
+        Fz9T3GgiAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:28 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B8FE2:1CAFFA:62F8ECC4
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4790'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '210'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tableschema/plugins
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WS0WrDMAxF/8XPXdwm2ZoGyj5kDCPHcmPm2CZ2KFnpv08ZfUjLIFvH2Kss3XN1
+        rZcTc9Ahq5kQxpkkRBZGtmIBUkvFBNJibFrsgAc7HIyL/LoxtkB9efOoNnKjyxwRngrI1bbcolZy
+        3ZRVtS7pQe4KrEg5mnfCFbvNig29pdk2pRBrziGY7GBSO8is8R3vMfjIdW+aZLwjF1FBAj5z9BBG
+        3niX0KU4r3/l9LlHve/AOHLQps6Ka/aMu0SU1ks+KS0hiUSyN6C7liQZPmEj/0HOyh+d9aBuDPRw
+        vKQ8ROwv8X0GvrT4N3dOY5jOSRuLlICwxr1FVp9YRKv/47cpvN9i78p/urIZ+E8u7Hx+/QBraEhT
+        wQMAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:28 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B900B:1CB030:62F8ECC4
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4789'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '211'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tableschema/profiles
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WT227CMAyG3yXXQFjSA6007UGmCTknmq1tqiYIMdR3XwIIdRSJwwbcVKrl+Ld/
+        +3vfoBoqiXK0kObTmnoSPmiEGnCFjzpgpbS8kBXgpjVK+z98lGoL8JlJRhiP6QuhKYkiGacqoyJK
+        mZr5wCxjIpsyQSHyta3+9oozkkxHaNmW/nHhXGNzjKHRk4V2xZJNuKlwKxtjsWo1d9rUXtoKcIB7
+        TY2bNeamdrJ2th8/3exbK9VrBToMWLiqnP9W7ymf02SlYThUOi/qtXzhI6mbBvVlcBC2+AqzhVnV
+        pQFx1EALq73TSyvbvYVb08+NfvHUbt2Ewwo34z2Yl7r+sijfICtL9ZydewP/KnzTDsKt9YTvdGdd
+        NzrQvEVkvAP3EqRP5e+4ZlIoAAqgqGLKIxzzjCSMsSROSZaIjCU0nvL4wHVCCYkfAPag5YfRPVC+
+        B+JX+P5AxE+N/jzOB930T+BfYb9iG3eDfTAt6rqPH+YxKMPBBwAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:29 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B9042:1CB06C:62F8ECC4
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4788'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '212'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tableschema/types
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:29 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B9076:1CB099:62F8ECC5
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4787'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '213'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tests/constraints
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA82Z3ZLaOBCF34Xr2bH1L03VVl4gb5DaolpSK7gChrFNzc6m5t1XDizYDGTsrC1y
+        54JG3X2OP1qWv3xflLDBxdNiuSzKolkuH3evi4fFDppV/LDBuqkzty3rpoKijNf9sHoFMQql8UiN
+        tdQTLznjVltqAJUS4LWjyLUTzJC4bl38E5PlD4t9tY6/XDXNrn7KMtgVj1+LZrW3j267ySrcbess
+        VIVrim25xrr20EDWgI3XboUb+GP32pbVYFvTT6v8VGH4cxOLj9lXzWa97GfuZP0on11vbdau9POE
+        MU9c9CLNLzUYl8napHU2QmG/fSnXW/AXBVTwclR4X2N1lO6H2B+1Pajj5nXX3kShWGPsf7kuym/1
+        4un7osZ1SO9zFO7/Jv0l7dv7q5N4hnvr7e3hRGx72y+x3G8+QPYi7shsAGZccBqEogwcpYSDjPQS
+        Rq1hllCORAo4McsVnZvabqFpsL2QZnpuh6ucituLlu8E7i2rpyV3uPrzkNvT+h26G/j7M5Zfm9UQ
+        fi+CDxBHeq0IQgodrA0YpKSUB8mDN3kgCuNXzqugOxDLJBB3q01I8oVIk+M8Qu+kOF/0fU+mbzk/
+        KdgjfJgR7J7q1+guNsNmc1zoHHogWwWlmdC5YDoQ9DJw4JyBYLkGZZ1CkM4oe95Sc5mM7GOtabk+
+        CzQ51SO0Tk31ues7M33F80mJHuHBvET/p/h7notyxLTuBx+Y1oIqLRWTTAmDBiAoIzhXQSIQqyLs
+        VDFtRPpp3ak2JdV9kSbneoTeabnu931Xsm84PynbI3yYk+2u6tfoHjyt4znZabAfyTZxo60tamO8
+        yMFqpoF4AixoycA7axWhjvMz2amm9anWtFzPOK3jH+RQrVNT/ZtM66ueT0v0cA/mJfrmtI7n1w1W
+        5ZAn617ogWcOQeZAuDXx+TkH4MJR77imEFDGKe3j9OaSnnkWiXg+15qQ555Ak0/pEVon5bnX9T1n
+        9HXPJ+V5hAcz8txR/N18rvB5X1TohwDdjz0QTZgMxGMENx5uO05pAMmcsobncTILTh04R3xn761J
+        kpOyTrEJke5LNDnTI9ROynS/7XtCfcP2Sake4cKMVHc1f4f1viye9zgE6m7kAWlAw70P3jHdnnLr
+        HPL20RoZSK4szzmq+BIa8s6me/b3zj8O/E+lJgS6K8/kOI9QOinO3abvCfNVwydFeYQDM6J81vvt
+        7a9/AewTrb46IgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:30 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B90C2:1CB0F4:62F8ECC5
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4786'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '214'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tableschema-py/contents/tests/types
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8Wb227jNhBA/8XP2zXvlwWKfkhRGLwME7e+wVKwSBf5947XjiXFShxtSeotiBlx
+        5oxOhhLpP38sdm4Li2+L1Wq9W7er1dfD8+LL4uDaR/xlC03bLNvnAzTL4YDm0eHnoGwEZr1nkUYl
+        uPDGM+tAa+miCQyECZJbilds1v/iNOTL4um4wb98bNtD8225dIf114d1+/jkv4b9dnmEw75ZpuM6
+        tOv9bgNNE13rlq3z+HN4hK377fC8DPtdC7tTZOPx/XGE9PvWrXc472O73ayGc/bmuzeT3+z98nSl
+        96bCGfBybyb4paTwMsvTdM1yAtW4/77b7F18E8DRfb9QfWrgeMH1E/C9hO/keroVsHppvQHMfLVZ
+        7/5pFt9+LBrYpJpVRVj/d7pf4n26m3oTZ72TXl6+XG083dgrt3t+18bhgLONwoCiVBOmjCeSRSKT
+        NTy6JAwRgikeIljHT5U72yglLedjL8LSPg5hZPdxAtfyPg5zre7jO1XN6uME3rl97NO99fF4dPeM
+        7IacnfQkABVOaueodTqEZBilXguiidPGOUOZoCxdnTSKl3byEmMdKzsg2b2cwLaWl122M5k5Utus
+        bk5gXsbNV8I3dvr9fgNu93HHHAw6G0q4ojwQJlQCFyyzwXJCwSSqnTRWqAhRCxmvhlJhCy5jf/4H
+        6sKsIumASnZNJwCupOkg33lEHa9wVlUncC+iao/yjaz4VAcfm9qNOGvquE+UJAYAmggSDCVREWOZ
+        SExoI7xNyQbSNVKqlSzcSS8xVnG045Fd0AloKwnaJTuPnSOFzarmBOJF1HzlO+plu95+ws1u1NlP
+        qQlVynKNzVMlgstck6I2iUvJtA0gnTXAROjaqDY1/LzEWc3Rjkt2Tycgruhpl/B8ro4UOauvE8gX
+        8/WV862zT0d3elt6p58ORp2d1dIDvr8VXJlkkhbYXymHwFwUp26rOVjpGO05S6Up3VO7OOs4O+CS
+        3dkJiGs5O0h4JmfHi5zV2Qnkyzjb43zj7APs/27uKTsYdFkFCx+ipEYYI1UMHoQkhOgAIGWQ+Oyq
+        abSE6q7LWiMKG9uFWUXYAZXsvrrPA67k6yDfeXQdr3BWWydwL2Jrj/KYrIf9etd+3GDxCr1Rl0Ux
+        boU6rWwy3ChPkxfWCRfwfVJMijrwznNtuO10VYyV1/U1zlq+9rhkF1Z+HnE9YXsJz2bsWJGzKjuB
+        fCllr5xvnEVd4QGOHys7GHQ2NkD0XAnCYlCCRScVjRGEjbhEFp4nTjwuiYFcjbWq9MvgLsoqvg6g
+        ZNd1At9Kug7yncfW8QpnlXUC9yKy9ijfuLp72vp7qvbHnE2lEZ9PJbGOEpacwgdZPPBgcQUMHs81
+        MM8pbrfio+3VVGaJLtxbr1FWMbXPJLuoE/BWErWf7jyejpY3q6YTqBfRtGN8Y+ne/w3hzhq4P+by
+        wGqwYSqhKedOUSaDAA8aHEg8qaQJdykloWTXT3GrtbCk1yCrSNpHkl1S93m6lSTtpzuPpKPlzSrp
+        BOpFJO0Y30jatMf17uHjVW9/zOU9sBd4OBBPIyXJhcCe6fGIEpPG+8ASRO4YizIo1i16Temn1GuQ
+        VSTtI8kuqf483UqS9tOdR9LR8maVdAL1IpJ2jG8kvb/B+nZz1VkfKO6tUpqkBgEycGPwvBKue1Pw
+        mhHqg2Oxd/hBUVu4jY7suZ1A5j5r//M8VMFN1QloK9k594bqSGGzmjmBeBEz391IfQZ354VRN+Lc
+        OD3B4w4BD9d7PNtLSAjaoYjKaApoJBCrQIvA5LVxSlt6//QSYpW22eHI3jQnkK2kZZfsPC1zpLBZ
+        tZxAvIiWr3xv2uXpgy1+4+vx42Xtm2GXDZio8Xw9Hmgw2DJ94sxSzbjSYGOQlHt8wcvxuzLdfqkR
+        pVe2/TirWdrjl11V+XnGFVXtZTyfr69B9OucVdoJ7ItJeyX98vLXf12EPkpQOgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:30 GMT
+      ETag:
+      - W/"1e0a9b992ff7073ea688f248716663bfd3467921"
+      Last-Modified:
+      - Thu, 11 Aug 2022 14:21:09 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B90F7:1CB11D:62F8ECC6
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4785'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '215'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:30 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B9121:1CB14C:62F8ECC6
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4784'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '216'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/.github
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72W3Y7bIBCF38XXaQBjbBOp6oNUVYRhaKzFPwWsKF3l3YubKOvsxmmdtXMNnjPn
+        DJ/h+2tUiwqiTVQ618HWQ9Ua4WFdqWgVtcLvwtL6Z+l3XYFubXE7EXZwyViSEBUnWaoIU4nOeaaY
+        IkAJTWkqaYyLJO9ruvJ3kItJtoo6a8K3O+9bt0FItOVZaC2bClloG4e0LaUvm9qAc0p4gbwoutBg
+        Y7+0BySb2kPtHRrt8JsF/bUSZR2Ud74y22vNk7G/eveVCtMUqK8zLhUUQrl3Ag+YCkVQL+fQhFRV
+        s69NI9Q7eSv252g6B/Yc13/Y/adTf2j7Q6NLA8H31pT1i4s2r5EDo5850xDW5+QeSrs/SQPZWU/R
+        8bi6MNl2xmwt/OrA+fto3tl5IjTWEBNCNCWkyAgFwopY5lrlmAEuKJGaC5kq/kYoZksQOtbocqCO
+        Kc7P64SMl+T1juEnYjvWxXDQM9I7Ifv56B3zGA0hdl4YWB/CH+PDhTpcOmEqZRZnOeZUSshzTbCk
+        NMkFlwlTgV0VQCUFkOSCaYbjJTC9dLYcl0PzM1+cE1JcEsShwyeSd3N2M6I2Id35UHvLcsjWvrEv
+        2jR795Gt4dKJLcI4SEpwuPRSoJxroYUEFedcyhgzjmUmlGL6whZegqxLX3OR5S3A9dN0aH02snoZ
+        hyZkeE1WHZ4yq+hMgSrt0q/GmzHPAsHkIB6F4N5gj8cffwDsywPBuw0AAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:31 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B914B:1CB179:62F8ECC7
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4783'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '217'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/data
+  response:
+    body:
+      string: !!binary |
+        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
+        uCCqGb6XRHVOITRG/v4XgIFHbTlDAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:31 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B917A:1CB1A6:62F8ECC7
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4782'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '218'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/examples
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72TUW+DIBSF/4vPXamIVpss+yHLYi4KkwyBAKbrGv/7cGs625hm3WwffPGGcziH
+        +z3vIwUtizZRWQolfFkuzS5aRAZ8E36yd2iNZA6dTl0DwzAraoYLSnEd1xlJCM0pLoCt1ynUeYUZ
+        yas0KeIg58RH8Fgtos7KcLLx3rgNQmDE8lX4pqPLSrfIMqMd4lZUXmgVbF0NHpAH2knw2j6YHaq0
+        8kx5h6au9mQZf2xBqGDZ+FaWp3Yjq8smVGqKBp1JlyAelM60/xAliKDBKWT5fZO13iqpoT6zt7A9
+        NNk5Zg8lfZV6OemlkH5nhsXgQrIQuZRCvblos48ck/xOjxgq+p/TnzoeVmdkO9fa9P3iSJvzlkE7
+        zdp49k0ajvGq4ClNkzxbkYSznBJKCYc8fDjlHOOCkGJ9JC1J4uwmsB3vdkPUxvlnBu2KIm8K2jji
+        PTGbfL4ZIbui3xkh+2mz718+AYSTnU/SBgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:32 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B91A8:1CB1D1:62F8ECC7
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4781'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '219'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tabulator
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8Way27jNhRA/8XrNOb7EWDQVRfdtEALdFMUAZ9joYptSErTdJB/L115JCqWjNAl
+        NVvTEu891NHlQ79/2ezVk9s8bH774Zdff/z5p83d5qi6XfihU/q5Vt2h2Y5N7U6FFiSEwQYQZKAz
+        mABslMYcAKIMMtQQLxmB2tJwr7b6J9yc322emzpcueu6Y/uw3apjdf+56nbP+t4cnraNOx7arW8q
+        01WHfe3a1qpObYcIvju+bs1h37l9146/fo3r+8b5T0+q2of+dt1T/TjtK+rneg+6Pujt6T6XXYQ7
+        h9u8u/ENSYSbbE/dtNsEhvbwsq8Pyr7rvlEvZ4bPrWvOeP7DeT3NxQy71+PpQfBV7UK+j3W1/7Pd
+        PHzZtK72a4xdgPP/urmJ7umJibrN8rS8vd0NXj0+Vvvw6DzeH1/n3Jo2935p7DSESEKuDNCSUg48
+        ocB7pRylUlGFkIBKj35xVMawKLqSlk0hZDYtgWZZ06ZZrmrbwjhmNC6Bck7jYqZT606vuSvWxc29
+        ddBBB6B0XFulpTMEOqkhB1QLDqRhxDIVqpofrSOlpBuCKytdzCCzdAkwS0sXZ7mydLPjmFG6BMp5
+        pRuZxtKZulqockNLr5qFHBFMjLeUIieAN5BBR40RjnhDjMTcSCX5oBoigpaRrY+spGdD7pkVS4BY
+        VrEhwVXtuhy4jGIlsM0p1pnkxKnD3lefl7SKGs9FDHKGNNLMhRWZ80qGCaPhmhBOBKEiTCO54MKP
+        RQxhIAuZ9TW4onJFBDL7BT+OsrBfUY7rKjY3ghktSyCc1bKBZyya+9u442n7oV2Q7f0feuHCtNAq
+        oy0LKzXEDJZI8rA6UyjMHj0FWiiFNMFgKGUQiELCTQIsKd17EpnFS0BaVrz3ea4q3+JoZhQwgXRO
+        AadcYwl3rj66ZsnASWuvH5BcUSikxNBIaIBFQmINpIJCEI45McJSy8atSIZJob2SMbqS7k0YZBYv
+        AWZZ8SZJrmrd/CBmVC6BcU7lIqKxb6dtZdcsFLy4sbeNW4GA9MIpbojU2gHjtFOSOXJyDnuJvCMG
+        jsUOgUK2DcGVlC0mkNm1BJRlXYtzXFW12RHMaFoC4ZymjTwvRWuDGBena/0Fp6bz7j+x3lPiASHM
+        e8g0w8JqrDVQyBqIAHVWhoI3SAbKrN/OceXyq2uce3+6Nqaeza5TN+1Wf5zh1K79c13fbc4e2KoJ
+        kAsfhM1gziJBMohbJbg2sLECR9WEc8qFWhM3nvcIDfBcEOS4YT7sx2PHBHdhYwYzRCTlSobFlpTj
+        TgYGQJQxYQgulwtzJ80xgWw29GfN9uMoy9aaOMdVa83sCGbRLJnwrZpdf2YuRZutNT2HsdYQ6B0O
+        R1s+1BREteMUAmoJ0EQhiY3Bglsi3bh7UajWnOPK5dfcK2lMPZtd/Ss2geG3rjUzmLNIkAziVgmu
+        DWysQBv+qJ4Wak3c2NeasEngoYBWWip5OPT1Njz4QlriBBOAA8y48haOGmDOJS5TbIbocskw9+KI
+        EWTToX8VJrAsW2ziHFctNrMjmMWzZMK3enb9mYlN+0vVVfhYzy24Nm3ubROhyiCnFAnHVP4kEqOI
+        QeUxFkpzrznFYcYXnVFBDGEZ2aLwSuo2pZBZuAScZYWbZrmqcgvjmFG6BMo5pYuZxtq9NFW3uJiK
+        G88bd2HX22DqKHYwfLsrPBYY4PAtIVHUeq4pklQRNu4phGlgoY92h+BKChcTyKwb/zjKsrrFOa4q
+        2+wIZlQtgXBO1Uael6LNLqb6C8bFFJLh+yXMQy3zmBnFwqfwYf7IeJg8cq+sCFPK8PEuYqU37s5x
+        5fJrbs49pp7Nrn4NkcDwWy+mZjBnkSAZxK0SXBvYt7c//gVB5l0SGzIAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:32 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B91CF:1CB1F8:62F8ECC8
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4780'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '220'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tests
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WY3Y6bMBCF34XrdGFsA/ZKVR+kqiL/jBtUAgiTrrarvHtNkyaQhNWSmvQWK56Z
+        M+eLx/76FlVyi9FztF4XVdGt10/Na7SKGtlt/McOXefi8ZLbSL+CmTBIhFLEgMkYZYorIiTmeSoN
+        1wQZ1ykV4PdyxS8fIFlFu7b0v9x0XeOe41g2xdP3otvs1JOut3GLTe1i2xa6K+qqROeM7GTcSbUr
+        ZVe3n5rXWNdVh5XP6CqvLy3az1tZVD7eptuW63GsQZz3I6iyVnG/z3UIv7Pf5mLjO4rwm8R9GBfP
+        0NDUL1VZS3MRvpUvRw13DtujPH/kfL/MyQq716Y3gy1K9PWuy6L64aLnt8hhaR/ROy/Ov4W5S93e
+        MYOwQdyy369ObPnG2N6yN9gaLx3YIsIwaXPNrVFcAuWoZMLRQE4gyzRiZqhhqu/Qga00peHpGmS2
+        FF3j4gPTNUPF5egaV/gwuiZ6F5CuGeqGomuo5ZAuW7db2bnLU+v8+UCVEgjUZCYHnmpCjVQEUiYV
+        B6sJJCAtA22IWPLEOuYUiqeuRRyeVueSg7HUh3DxDO3GLFW7slxFR9+bol32ULkhbxDLzxbhXstP
+        NXRod6c3uMUru58/H+wOyAC5yEEraZhIDU854aiV4DzNc8tsmqQJ2CXtfsxpKbufSw5s9xna/U+7
+        35A3oN1niBDK7n8bOrR7PzetdVncmJ3GSwfbC8Iy6ocnpjOlRIIULJDc+LHJ/+n76wlNSZKlmJxs
+        nwEPPzsNMgtl/subybj4YAAcbiYzVFxudhpX+LDZaaJ3Qciare69ZL3nliu6Nlg22LopwkbLB8ok
+        GIt+aMowyzMkDKRJRUKYyGVGUikNCKDCnm8oLMlhIczO6S2K2kiFwLjNkHNh3EZVPha5230MiN0M
+        lYNiN9D0Cj3nJz65nSJvuPoXPCuM5iRF4IZqnivmXweEp4/ZnFCrcp7RBNjpeGMAQixE3im9RcEb
+        ihCcuw+ruTB3wyIfi93NJgal7sMaB6XurOgVdD9lWfjHZZzCbrx+fJNLeAIGuNVWZtoKRvyAyTSl
+        /gGcWmk1GGQa9Ak8yClbiLtBfouSN9YhMHvk44IuzN64zMfSN9HKgPzN0Dkof0NV9/tvvwET3/o0
+        aRoAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:32 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B91F5:1CB228:62F8ECC8
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4779'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '221'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/.github/workflows
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA73S0U6DMBQG4Hfp9aQF5lAS44MYsxzgVJodWtJTQnDZu1uUC7cLMqfxlpTz9f97
+        Xo7CQoeiFB4JgTGZOhIb0UNo48fkzYR2qOTo/EGTG1meH+MW4inM1VbluxRRK51lWGBR60IVdZ7i
+        fVpl20btHpTK41w27xHLHouNGDzFf9sQei6lhN4sWFK7LjK9Y6m9qYNxlpC5gQAyQDUQBOfv+knW
+        zga0geXqLZ896qcOjI16Gzran7tfAT/Nda0iV8l5zjoXlTjyArkhXBwiZ5LlD9pt3GjJQXPBexiX
+        igZGv9R2ReSr0oapn9dHG8KYfU/GHliUR8FI+r/fN5b2O/Km1uet+sb++UadTq8frfbu+KcDAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:33 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B921C:1CB24B:62F8ECC9
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4778'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '222'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/data/special
+  response:
+    body:
+      string: !!binary |
+        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
+        9HjPdwAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:33 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B9240:1CB272:62F8ECC9
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4777'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '223'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tabulator/loaders
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WX226bQBCG34XrNOyBPRCp6oNUlbWH2RoVA2LXStPI79517cCmteKQApZ8hcb7
+        z3zDp7W/PmeN2kH2kG02VVOFzea+e8rusk6FbXwYlN7XKrR9XrfKQu/z12V+q2IV8NICKbUmFlte
+        0EJLTUoFQjBlpSFQSMNoieO5vvoVw9Bdtu/r+M1tCJ1/yHPVVfffq7Dd63vT7vIeutbnrq9MqNqm
+        Bu+tCiofuvnUPeWmbQI0wY9PL/X4pQf3eaeqJmZvw67evM5NMt9O03Wr8+M5b8fFlHjkXyEfGC4e
+        kh8jfT6BrW0fm+Oa/orv1eOZ7d5Df8b2B/PbI79r2vDUHV8eV9UQZ9/UVfPDZw/PmYfarb3fCO3/
+        Ij9E/fhWJbGzv1GHw93gqHr0V/QcKk5mcoQ1s2VppKUlAoy05KLERlDuMGIKK8lKk5hJkFhYzlOH
+        a3g5sJhZyQlQ11FyGPQmNv670BlFnMB6CRHPZFMH69ao+oqFSc3ZQ6uAK0Wcc1wwSizXyDhBrC2I
+        plwBQRiYlcMNiQtZLntJvvS4hokJj7ldfD/YdVxMRr2JjZfWOqeP7+e9hI8D3dTIHnZtgCtKpkUn
+        J6llhghEKHCLHZZIW1dKhVz8AasQlvHHqyCm5IOTlPGF78ahyTWkTInMbOUEtOtYmc56Ey0vbnZG
+        LycQX8LLkW8qpg89qN0VMdOik5iFM7ykNn4EKRAY4qxgMv5/ZEJrw4wsmAHDUXJZIrzsZTk0uYaY
+        KZGZxZyAdh0x01lvIubFzc4o5gTiS4g58k3FDPAzXNFyLDlJiQgjUhJHJEGgRIGxMw6kAKsZNRZT
+        V1JJqB2lJEQsK+W5xTWUHGnMLOQErOsIOU56Ex0v7HRGGSfQXkLGF7aHw7ffC03q0XgVAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:34 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B926C:1CB2A1:62F8ECCA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4776'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '224'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tabulator/parsers
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8Wa2XLbNhRA/0XProl98UynH5LpaLBaamRJEekmbsb/XihkQNhSTTEFQD9qrnhx
+        z9UxiOXT99VePbnVw2q93u633Xp9f3xZ3a2OqtuEDzuln3eqO5yaozq17tQ2b8PajQpRjknrkNQa
+        WWgZwUQLjaRynFNlhUGOCEOxhOG57fafkAzcrZ5Pu/DNTdcd24emUcft/eO22zzre3N4ak7ueGgb
+        f9qabnvY71zbWtWpJo7mt+NLYw77zu27dvz02hj/ODn/+5Pa7kPuTfe0W7/Nm+T8OJveHXRzfs7H
+        6UKW8Mh3SX6huPCQ5pyybWawtYev+91B2XfpT+rrwPY5dHDA9gPzxyXfVG33cjz/ePx250Lt6912
+        /7ldPXxftW7na/c3QPt/KX+J+vlXlaTN/ot6fb2Ljpr27wk9Y0RvJiJGW0q4MVQDIKxHRAKhcPhE
+        UOAU9tAYp0g0k2DGysrZj7CGl5FFZiVnQK2jZCx0ERsvG5pRxBmsS4g4kE0dPM9ER2U+q0c34eJF
+        ZO+ktloJAxAkmgkNnbRhtuRUY6alVYoQJiwx0EQnQyQp6+TbkdZw84JNZkdnQK7j6EXBi7j6343O
+        6OwM9iWcfUc6dfex3TjXTWibBvXGEkGJR9RjY4SFAmnAHSUKa8QIIghQxbhkBkRjIWOwrLFxkDVk
+        TYlk9nQG2jqeprUuoujVzma0cwbxEnaOfFMxz5kmtBxDeilhENF4YTl2zlKnlOLSQ2qwEkxqKp2X
+        lmElx2kUS1RWymGINZQcaWQWcgbWOkKOlS6i45WeZpRxBu0SMv5km6q43YdF/NSrbRo07AEpBRGH
+        RDIirBVhYYkJhVopoSl1QGFqobFMjTqG6LI6xkHWEDIlklnJ8L/tVrR1lExrXUTKq53NqOUM4iW0
+        HPmmYv7VHvYTc+QY0kuJjVSeawXCyhJYiShiwUoFqQUShr0gyjgG1iRzJBKF58hhiDWUHGlkFnIG
+        1jpCjpUuouOVnmaUcQbtEjL+ZJuquLc3yJgGDetIzJkhYT/WG+kplV44iSwTXlApgEDhT3jK2ThH
+        AlB4joyDrCFkSiSzkuR2tHWUTGtdRMqrnc2o5QziJbQc+aZiHmw7MUXGiF5JS7lEEobDSmYVk8xx
+        TZwmHAqvDNOQAqI8IePRJRKs8AzZj7CGj5FFZhlnQK0jYyx0ERMvG5pRwxmsS2g4kE0dbL9MbeXE
+        iN5BZsNBZLggwIWkTjpjqacQWQuDicJg6cNOKwdiPKSEkhc+pOxHWMPByCKzgzOg1nEwFrqIg5cN
+        zejgDNYlHBzIpg52kxcFYsTwauoVd8BhiCEKhxzhcgDAzggJAQWchA0dhazGcjyUhJQXvsXTj7CG
+        g5FFZgfJ7VDrOBgLXcTBy4ZmdHAG6xIODmRTB7/tpt5FY8RwoiGlQGEShF4aRajFUhDAMKTQirAB
+        iDFhkDJ8vmjVX6PDkhe+GNCPsIaDkUVmB+HtUOs4GAtdxMHLhmZ0cAbrEg4OZN85+G1iQRi+NYQM
+        e6ZQYkeRIM4owQUwxIT7OVBr7sPaz5zP+bE1brQwrBFB4dfRYYyVPBxwZBYR3861mohDpUuZeE6f
+        9jSjijNoF1LxB9vX1z//BVkIl5RiLgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:34 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B9291:1CB2CF:62F8ECCA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4775'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '225'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tabulator/writers
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WW246bMBRF/4XnNICNbRyp6odUFfLluKFDgGKnmXSUf69TGMhclJQpEEXiARzv
+        c5a9ZH99Ckqxg2ATZFle5i7L1vUxWAW1cFv/0gm5L4SrmvDQ5A4aG74cZrfCjwLKNSAuJdKxpglO
+        ZCoRF8AYETpVCJJUEcxjP6/Nf/uwaBXsm8L/c+tcbTdhKOp8/T13271cq2oXNlBXNjRNrlxelQVY
+        q4UTYV/Np/oYqqp0UDo7vH2vxi8NmM87kZc+e+t2RfYy9yLzeposKhme57ke51P8lK9CPtCcnyQ8
+        R9pwBFtdHcqiEvpVfCMOHdu9habD9hfz9Zb/qVt3rM+bx+QF+N6zIi8fbLB5CiwUZun19dD+L/JD
+        1M+76iJ28h11Oq16R5X9dUPPfkRrpuQYiECAMPM/CihWLNIyQTiSMcOGM6qSlPHezDji6bxythUu
+        4WXPYmIlR0BdRsm+0bvY+HZBJxRxBOs5ROzIXjr4w1blDQmHIa2FmBAdaRMbLWLCRRIRrFEC/tAk
+        0kiKFFDKVWp6C9MUzSthV+ESFg4wJtZwBNVlNBw6vYuH76zphCKOoD2HiM9sL020P4sbIvYjWg/9
+        GSgU0yzFzFBIkABBkxjzhCuAFMH5C4ljNpyGmJF5RWwrXMLDnsXEGo6AuoyGfaN3sfDtgk4o4QjW
+        c0jYkb108LGwjzckHIa0FiIgSMbS3zRjSpHBQhpOIsYjqpB/UM61/4LxxZ0Uz3wn7UpcQsOBxsQe
+        jsC6jIdDp3cR8Z01ndDEEbTnMPGZ7en07Q90YxtGwhEAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:35 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B92C5:1CB307:62F8ECCA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4774'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '226'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tests/formats
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8Xa2W7jNhQG4HfxdRpzXwIUfZCiMA4Xxeo4tmspnUkHeffSkUaSIyeyZkjqKoBD
+        izw/9YE0pT+/r/bw5FcPq82m3Jf1ZnN/fFndrY5Qb8OHta/qal0cTk8Q/l42qbYQWnihnSfaGOKw
+        E4wyowzR4KXk4JQlninLqcbhmlX5X+gI3a2eT7vwzW1dH6uH9RqO5f1jWW+fzb09PK1P/ngIXZ5K
+        W5eH/c5XlYMa1jWY5x3Uh9Nvx5e1Pexrvw8j+nB8f5x88fsTlPvQ77Z+2m0u+xz093lPZncw6/N1
+        Pu4q9BAu966DnygqXGR97q5az8jUHb7udwdw77o/wdc20+fKn9q43uL9vNzJSuuX4/lmKcqdD3Vv
+        duX+S7V6+L6q/K7IOachrF/r7qfSPt9Jg26j3kWvr3edxfNtvbHVv59YvGzSWJSWc4OskJYYXHBN
+        sdOSOqBYKVUUHFMClhe8syi4luk4DoaYmuNlGpE5zog1PcfLSrNz/GBOI3KckXZsjsNsRxzPq9AR
+        7Bd49FMsR00bnsoI5SgmSgnDfOGURN5jLAXWHCnLnNJeCC47noShhKvlW7WXQ83CdJROZK4zYs7E
+        dVTxMmw/nuuIfGekn4Tvu6xHjB+rrff1lOBhqwYvaIQps5KA0FZYXEjHMcaEIhY0swL7QNsT0+HF
+        iKTG240yi9thJpHJzgg3E9lhsctovTq5EaHOyDwJ1D7hkdFzf1NC+zbt3regwgMhknhukRMaKY+R
+        lY4pDACUau+wBtL7xIQk3vu2Y8yis88jsk15e7CZbPalLiPzyrRGdDkj7yQuf6Q7Ulnuw6/9yb3v
+        sFUjkyILoAsnLBFCUayVsAppbj1m0hnpueYSPOu3vVKnltmNMovNYSaRdc4IN5POYbHL+Lw6uRGF
+        zsg8idA+4ZHRv6vDfmrl7Ns0PpmiAksllBSeagdYgAGNOeOsAI6wMkZSw3Xnk3LOEq+c7Riz6Ozz
+        iGxzRrCZbPalLiPzyrRGdDkj7yQuf6Q7Url3t7gctmp/c3IinXcOFYWSTjqqMJXWcYWYIoCAhz28
+        AKb6Pa1iKrHMbpRZbA4ziawTbg83k85hscv4vDq5EYXOyDyJ0D7hkdGDq6YWzq5Ju25i4sLWllGj
+        jQNvBKYWMeyx41wW4ahXBqhY037dRCr1vrYZYhaaXRqRXbLbY83ksqt0GZTjOY0ockbaSUS22Y44
+        Vv9MngB1TRqOmjoDhhYeW0e8V+Gw1oAkFEuvvNNaADGOWdQvluFZS+LFshliFo5dGpE5zog1E8eu
+        0mU4juc0IscZaSfh2GY74lhPv4vQNWk4FuG1IGUlDvgQYOsZDac+4UWh8BkVkmlmwTHNi54jZqmf
+        lzRDzMKxSyMyxxmxZuLYVboMx/GcRuQ4I+0kHNtsRxy/7SY3q12ThiPy0hunjLXYaO0MI4BZ0Ei4
+        pZgqqZnhTgvRcQz/FIlXx2aIWTh2aUTmOCPWTBy7SpfhOJ7TiBxnpJ2EY5vtNY7fpn48hu+2bdqz
+        nfAunifh4aSURREegTjmJLwdviLhBDHh1dlwvDM42wnv1qberrZjzCWyzSMySbg92Hwk21IXM3nu
+        fzitEVHOyDsVyrd0X1//+h/L4T/wzS4AAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:35 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B92FE:1CB33B:62F8ECCB
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4773'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '227'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/frictionlessdata/tabulator-py/contents/tests/schemes
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WX7W6bMBSG74XfXcDGYLvStAuZJnRsHxY0voQddV2Ve5+zpIQ0SVM6IH+Tg99z
+        HvuR4ftLUEOFwWOQZUVduCxbtc/BQ9CCW/sfHVpnQ6vXWKENT0vsGnwFptIglUpRQ0zKYqaEohKQ
+        8wSM0BSZ0EksiV/TFn98UPQQbLrSP7l2rrWPYQhtsfpZuPVGrXRThR22jQ3zrtCuaOoSrTXgIHSg
+        NiW4pvvSPoe6qR3WvrOr/X3rMP9aQVH73LWryuw0c5D3fpIqGxXu1rke5RP8cm8CPjGUXyTcxdlw
+        BFPTPNVlA+ZNfAdPB6Ybi90B1z+87497c1L33O4OS16U6OfOyqL+ZYPHl8BimS+5px7W/8V9ivbu
+        JA1iJz1F2+1D7+LuWGfwZN9x8bRk76JgmqVxGgkiBEeMNLAkJkZGioL/ixKRR0wlSe8iJSmdT8dB
+        i3PreEpjYh1HYJ1fx9NJF9fxyp5OqOMI2lPrOGR7pmPZaChvCTko2isZa50LAgRSA2AQjUg101ox
+        TgVCrJEaBUigV5IQyWdW8rXJRaQcEJlYyxFoF9JyMOt9xLy0sxOqOYL4LGr2fM/k7LBqHN6yc1h1
+        uDEVMYqmkeHUmEQkjHgxOYu5JgRBRVKqXDBgRz0Fn/vG7LtcxM8hk4kFFR+Hu5Cgw2HvY+jFzZ1Q
+        0RHMZ1H0SPjMUes6hOqWo8OqwxUK/m1WcWFSk5Lcf2AqquLEcI5JLpUhCmWUQMx7R1mczHyD9k0u
+        ougQycSKxh9nu5Ciw2Hvo+jFzZ1Q0RHMZ1H0SPhMUYe/3S1BjzV7PQ1BBZJDHhNiIu6/MVXiX20l
+        ZRrSiKLkRqEgea+njOKZ9Ty0uIicRxwTqzmC60JqHke9j5gXtnVCLUfwnkXLV7rb7Y+/57ETeZUV
+        AAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 14 Aug 2022 12:38:35 GMT
+      ETag:
+      - W/"4f7f7489a5166b66c2524ec8531dc2cd90e086bd"
+      Last-Modified:
+      - Sat, 23 Jul 2022 22:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A391:17F0:1B9335:1CB370:62F8ECCB
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4772'
+      X-RateLimit-Reset:
+      - '1660482160'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '228'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+version: 1

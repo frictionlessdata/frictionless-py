@@ -1,6 +1,7 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+import os
+from typing import Optional, List
 from ...dialect import Control
 
 
@@ -12,41 +13,57 @@ class GithubControl(Control):
 
     # State
 
-    user: Optional[str] = None
+    apikey: Optional[str] = os.environ.get("GITHUB_ACCESS_TOKEN", None)
     """NOTE: add docs"""
 
-    email: Optional[str] = None
+    email: Optional[str] = os.environ.get("GITHUB_EMAIL", None)
     """NOTE: add docs"""
 
-    repo: Optional[str] = None
+    formats: Optional[List[str]] = ["csv"]
     """NOTE: add docs"""
 
-    formats: Optional[list] = [".csv"]
+    name: Optional[str] = os.environ.get("GITHUB_NAME", None)
     """NOTE: add docs"""
 
-    search: Optional[str] = None
-    """NOTE: add docs"""
-
-    per_page: Optional[int] = 30
+    order: Optional[str] = None
     """NOTE: add docs"""
 
     page: Optional[int] = None
     """NOTE: add docs"""
 
-    apikey: Optional[str] = None
+    per_page: Optional[int] = 30
+    """NOTE: add docs"""
+
+    repo: Optional[str] = None
+    """NOTE: add docs"""
+
+    search: Optional[str] = None
+    """NOTE: add docs"""
+
+    sort: Optional[str] = None
+    """NOTE: add docs"""
+
+    user: Optional[str] = None
+    """NOTE: add docs"""
+
+    filename: Optional[str] = None
     """NOTE: add docs"""
 
     # Metadata
 
     metadata_profile_patch = {
         "properties": {
-            "user": {"type": "string"},
+            "apikey": {"type": "string"},
             "email": {"type": "string"},
-            "repo": {"type": "string"},
             "formats": {"type": "array"},
-            "search": {"type": "str"},
+            "name": {"type": "string"},
+            "order": {"type": "string"},
             "per_page": {"type": "int"},
             "page": {"type": "int"},
-            "apikey": {"type": "string"},
+            "repo": {"type": "string"},
+            "search": {"type": "str"},
+            "sort": {"type": "string"},
+            "user": {"type": "string"},
+            "filename": {"type": "string"},
         },
     }

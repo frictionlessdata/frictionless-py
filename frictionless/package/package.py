@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any, Union, NamedTuple
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -104,7 +104,8 @@ class Package(Metadata):
     # TODO: support list of paths as resource paths?
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
-        if source is not None:
+        control = options.pop("control", None)
+        if source is not None or control is not None:
 
             # Path
             if isinstance(source, Path):
@@ -135,7 +136,6 @@ class Package(Metadata):
                 return Package.from_options(**options)
 
             # Manager
-            control = options.pop("control", None)
             manager = system.create_manager(source, control=control)
             if manager:
                 package = manager.read_package()
@@ -442,6 +442,62 @@ class Package(Metadata):
         storage = system.create_storage("ckan", target, control=control)
         storage.write_package(self.to_copy(), force=True)
         return storage
+
+    @staticmethod
+    def from_github(
+        source: Any = None, *, control: Optional[portals.GithubControl] = None
+    ):
+        """Import package from Github
+
+        Parameters:
+            source (string): Github repo url e.g. "https://github.com/frictionlessdata/repository-demo"
+            control (portals.GithubControl): Github control
+
+        Returns:
+            Package: package
+        """
+        manager = system.create_manager(source, control=control)
+        if not manager:
+            raise FrictionlessException(f"Not supported Github source: {source}")
+        package = manager.read_package()
+        return package
+
+    def to_github(
+        self, target: Any = None, *, control: Optional[portals.GithubControl] = None
+    ) -> NamedTuple:
+        """Export package to Github
+
+        Parameters:
+            target (string): Github instance url e.g. "https://github.com/frictionlessdata/repository-demo"
+            control (portals.GithubControl): Github control
+
+        Returns:
+            NamedTuple: Reference to new repository and file created
+        """
+
+        manager = system.create_manager(target, control=control)
+        if not manager:
+            raise FrictionlessException(f"Not supported target: {target}")
+        response = manager.write_package(self.to_copy())
+        return response
+
+    def publish(
+        self, target: Any = None, *, control: Optional[portals.GithubControl] = None
+    ) -> Any:
+        """Publish package to any supported data portal
+
+        Parameters:
+            target (string): url e.g. "https://github.com/frictionlessdata/repository-demo" of target[CKAN/Github...]
+            control (dict): Github control
+
+        Returns:
+            Any: Response from the target
+        """
+        manager = system.create_manager(target, control=control)
+        if not manager:
+            raise FrictionlessException(f"Not supported target: {target}")
+        response = manager.write_package(self.to_copy())
+        return response
 
     @staticmethod
     def from_sql(source, *, control=None):

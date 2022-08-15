@@ -39,10 +39,10 @@ class Catalog(Metadata):
 
     @classmethod
     def __create__(cls, source: Optional[Any] = None, **options):
-        if source is not None:
+        control = options.pop("control", None)
+        if source is not None or control is not None:
 
             # Manager
-            control = options.pop("control", None)
             manager = system.create_manager(source, control=control)
             if manager:
                 catalog = manager.read_catalog()
