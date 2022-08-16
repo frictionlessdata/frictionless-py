@@ -14,7 +14,6 @@ counter:
   code: framework.frictionlessdata.io
 topics:
   selector: h2,h3
-search: false
 links:
   items:
     - name: Framework (v4) (docs)
