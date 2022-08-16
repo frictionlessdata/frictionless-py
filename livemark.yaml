@@ -29,6 +29,7 @@ pages:
   items:
     - path: index
       name: Introduction
+      from: README.md
     - path: pages/getting-started
     - path: pages/basic-examples
     - name: Data Management
@@ -179,7 +180,13 @@ pages:
           name: Zenodo
     - name: Codebase
       items:
-        - path: pages/codebase/contributing
+        - path: pages/codebase/changelog
+          from: CHANGELOG.md
         - path: pages/codebase/migration
+          from: MIGRATION.md
+        - path: pages/codebase/authors
+          from: AUTHORS.md
+        - path: pages/codebase/contributing
+          from: CONTRIBUTING.md
     - path: pages/universe
     - path: blog/index
