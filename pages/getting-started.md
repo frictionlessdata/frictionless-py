@@ -41,17 +41,17 @@ The framework can be used:
 
 For instance, all the examples below do the same thing:
 
-```bash
+```bash tabs=CLI
 frictionless extract data/table.csv
 ```
 
-```python
+```python tabs=Python
 from frictionless import extract
 
 rows = extract('data/table.csv')
 ```
 
-```plaintext
+```plaintext tabs=API
 [POST] /extract {"path': 'data/table.csv"}
 ```
 
@@ -78,25 +78,24 @@ frictionless transform --help
 
 We will take a very messy data file:
 
-```bash script
+```bash script tabs=CLI
 cat invalid.csv
 ```
 
-```python script
+```python script tabs=Python
 with open('invalid.csv') as file:
     print(file.read())
 ```
 
 First of all, let's use `describe` to infer the metadata directly from the tabular data. We can then edit and save it to provide others with useful information about the data:
 
-```bash script
+> The CLI output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
+
+```bash script tabs=CLI output=yaml
 frictionless describe invalid.csv
 ```
 
-> This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
-
-
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import describe
 
@@ -106,11 +105,11 @@ pprint(resource)
 
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
-```bash script
+```bash script tabs=CLI
 frictionless extract invalid.csv
 ```
 
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import extract
 
@@ -120,11 +119,11 @@ pprint(rows)
 
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
 
-```bash script title="CLI"
+```bash script tabs=CLI
 frictionless validate invalid.csv
 ```
 
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import validate
 
