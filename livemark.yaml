@@ -180,12 +180,15 @@ pages:
           name: Zenodo
     - name: Codebase
       items:
-        - path: pages/codebase/changelog
-          from: CHANGELOG.md
-        - path: pages/codebase/migration
-          from: MIGRATION.md
         - path: pages/codebase/authors
           from: AUTHORS.md
+        - path: pages/codebase/license
+          name: License
+          from: LICENSE.md
+        - path: pages/codebase/migration
+          from: MIGRATION.md
+        - path: pages/codebase/changelog
+          from: CHANGELOG.md
         - path: pages/codebase/contributing
           from: CONTRIBUTING.md
     - path: pages/universe
