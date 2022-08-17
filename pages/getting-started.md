@@ -1,10 +1,6 @@
 ---
-prepare:
-  commands:
-    - cp data/invalid.csv invalid.csv
-cleanup:
-  commands:
-    - rm invalid.csv
+script:
+  basepath: data
 ---
 
 # Getting Started
@@ -15,7 +11,7 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 > The framework requires Python3.8+. Versioning follows the [SemVer Standard](https://semver.org/).
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless
 pip install frictionless[sql] # to install a core plugin (optional)
 pip install 'frictionless[sql]' # for zsh shell
@@ -51,7 +47,7 @@ from frictionless import extract
 rows = extract('data/table.csv')
 ```
 
-```plaintext tabs=API
+```json tabs=API
 [POST] /extract {"path': 'data/table.csv"}
 ```
 
@@ -64,7 +60,7 @@ Arguments conform to the following naming convention:
 
 To get the documentation for a command-line interface just use the `--help` flag:
 
-```bash title="CLI"
+```bash tabs=CLI
 frictionless --help
 frictionless describe --help
 frictionless extract --help

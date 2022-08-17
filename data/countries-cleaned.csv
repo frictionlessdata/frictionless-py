@@ -1,0 +1,5 @@
+id,neighbor_id,name,population
+1,,Britain,67
+2,3,France,67
+3,2,Germany,83
+4,,Italy,60

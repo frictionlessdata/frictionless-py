@@ -1,11 +1,6 @@
 ---
-prepare:
-  commands:
-    - cp data/countries.csv countries.csv
-cleanup:
-  commands:
-      - rm countries.csv
-      - rm countries.resource.yaml
+script:
+  basepath: data
 ---
 
 # Basic Examples
@@ -16,11 +11,11 @@ Let's start with an example dataset. We will look at a few raw data files that h
 
 > Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash script
+```bash script tabs=CLI
 cat countries.csv
 ```
 
-```python script
+```python script tabs=Python
 with open('countries.csv') as file:
     print(file.read())
 ```
@@ -37,11 +32,11 @@ First of all, we're going to describe our dataset. Frictionless uses the powerfu
 
 Let's describe the `countries` table:
 
-```bash script
+```bash script tabs=CLI output=yaml
 frictionless describe countries.csv # optionally add --stats to get statistics
 ```
 
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import describe
 
@@ -57,16 +52,14 @@ As we can see, Frictionless was smart enough to understand that the first row co
 
 Let's update our metadata and save it to the disc:
 
+> Open this file in your favorite editor and update as it's shown below
 
-```bash
+```bash tabs=CLI
 frictionless describe countries.csv --yaml > countries.resource.yaml
 editor countries.resource.yaml
 ```
 
-> Open this file in your favorite editor and update as it's shown below
-
-
-```python script
+```python script tabs=Python
 from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "n/a"])
@@ -80,11 +73,11 @@ resource.to_yaml("countries.resource.yaml")
 
 Let's see what we have created:
 
-```bash script
+```bash script tabs=CLI output=yaml
 cat countries.resource.yaml
 ```
 
-```python script
+```python script tabs=Python output=yaml
 with open('countries.resource.yaml') as file:
     print(file.read())
 ```
@@ -95,11 +88,11 @@ It has the same metadata as we saw above but also includes our editing related t
 
 It's time to try extracting our data as a table. As a first naive attempt, we will ignore the metadata we saved on the previous step:
 
-```bash script
+```bash script tabs=CLI
 frictionless extract countries.csv
 ```
 
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import extract
 
@@ -114,11 +107,11 @@ Actually, it doesn't look terrible, but in reality, data like this is not quite 
 
 Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
 
-```bash script
+```bash script tabs=CLI
 frictionless extract countries.resource.yaml
 ```
 
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import extract
 
@@ -132,31 +125,30 @@ It's now much better! Numerical fields are numerical fields, and there are no mo
 
 Data validation with Frictionless is as easy as describing or extracting data:
 
-```bash script
+```bash script tabs=CLI
 frictionless validate countries.csv
 ```
 
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import validate
 
 report = validate('countries.csv')
-pprint(report.flatten(["rowPosition", "fieldPosition", "code"]))
+pprint(report.flatten(["rowNumber", "fieldNumber", "type"]))
 ```
 
 Ahh, we had seen that coming. The data is not valid; there are some missing and extra cells. But wait a minute, in the first step, we created the metadata file with more information about our table. We have to use it.
 
-```bash script title="CLI"
+```bash script tabs=CLI
 frictionless validate countries.resource.yaml
 ```
 
-
-```python script
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import validate
 
 report = validate('countries.resource.yaml')
-pprint(report.flatten(["rowPosition", "fieldPosition", "code"]))
+pprint(report.flatten(["rowNumber", "fieldNumber", "type"]))
 ```
 
 Now it's even worse, but regarding data validation errors, the more, the better, actually. Thanks to the metadata, we were able to reveal some critical errors:
@@ -171,8 +163,8 @@ We will use metadata to fix all the data type problems automatically. The only t
 - France's population
 - Germany's neighborhood
 
-```
-$ cat > countries.pipeline.yaml <<EOF
+```bash script tabs=CLI
+cat > countries.pipeline.yaml <<EOF
 steps:
   - type: cell-replace
     fieldName: neighbor_id
@@ -186,68 +178,59 @@ steps:
     formula: population
   - type: field-update
     name: neighbor_id
-    type: integer
+    descriptor:
+      type: integer
+  - type: field-update
+    name: population
+    descriptor:
+      type: integer
   - type: table-normalize
   - type: table-write
-    path: countries.csv
+    path: countries-cleaned.csv
 EOF
-$ frictionless transform countries.csv --pipeline countries.pipeline.yaml
+frictionless transform countries.csv --pipeline countries.pipeline.yaml
 ```
 
-```python
-from frictionless import Resource, describe, transform, steps
+```python script tabs=Python output=Python
+from pprint import pprint
+from frictionless import Resource, Pipeline, describe, transform, steps
 
-def clean(resource):
-    current = resource.to_copy()
+pipeline = Pipeline(steps=[
+    steps.cell_replace(field_name='neighbor_id', pattern='22', replace='2'),
+    steps.cell_replace(field_name='population', pattern='n/a', replace='67'),
+    steps.row_filter(formula='population'),
+    steps.field_update(name='neighbor_id', descriptor={"type": "integer"}),
+    steps.table_normalize(),
+    steps.table_write(path="countries-cleaned.csv"),
+])
 
-    # Data
-    def data():
-        with current:
-            for row in current.row_stream:
-                if row["name"] == "France":
-                    row["population"] = 67
-                if row["name"] == "Germany":
-                    row["neighbor_id"] = 2
-                if row["name"]:
-                    yield row
-
-    # Meta
-    resource.schema = Resource("countries.resource.yaml").schema
-    resource.data = data
-
-source = describe("countries.csv")
-target = transform(
-    source,
-    steps=[
-        clean,
-        steps.table_write(path="countries.csv"),
-    ],
-)
+source = Resource('data/countries.csv')
+target = resource.transform(pipeline)
+pprint(target.read_rows())
 ```
 
 Finally, we've got the cleaned version of our data, which can be exported to a database or published. We have used a CSV as an output format but could have used Excel, JSON, SQL, and others.
 
 
-```bash
-cat countries.csv
+```bash script tabs=CLI
+cat countries-cleaned.csv
 ```
 
-
-```python
-with open('countries.csv') as file:
+```python script tabs=Python
+with open('countries-cleaned.csv') as file:
     print(file.read())
 ```
 
 Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making research data not reproducible.
 
-```bash
-ls countries.*
+```bash script tabs=CLI
+ls countries-cleaned.*
 ```
 
-```python
+```python script tabs=Python
 import os
 
-files = [f for f in os.listdir('.') if os.path.isfile(f) and f.startswith('countries.')]
+files = [f for f in os.listdir('.') if os.path.isfile(f) and f.startswith('countries-cleaned.')]
 print(files)
 ```
 
