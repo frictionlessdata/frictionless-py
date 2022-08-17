@@ -316,144 +316,54 @@ This documentation contains a great deal of information on how to use metadata a
 
 Let's get back to this complex data table:
 
-```bash
+```bash script tabs=CLI
 cat country-2.csv
 ```
-```csv title="Data: country-2.csv"
-# Author: the scientist
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-```
 
-```python
+```python script tabs=Python
 with open('country-2.csv') as file:
     print(file.read())
-```
-```csv title="Data: country-2.csv"
-# Author: the scientist
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
 ```
 
 As we tried before, by default Frictionless can't properly describe this file so we got something like:
 
-```bash
+```bash script tabs=CLI output=yaml
 frictionless describe country-2.csv
 ```
-```yaml title="Resource Metadata: country-2.csv"
-encoding: utf-8
-format: csv
-hashing: md5
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: '# Author: the scientist'
-      type: string
-scheme: file
-```
 
-```python
+```python script tabs=Python output=yaml
 from frictionless import describe
 
 resource = describe("country-2.csv")
 print(resource.to_yaml())
 ```
-```yaml title="Resource Metadata: country-2.csv"
-encoding: utf-8
-format: csv
-hashing: md5
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: '# Author: the scientist'
-      type: string
-scheme: file
-```
 
 Trying to extract the data will fail this way:
 
-```bash
+```bash script tabs=CLI
 frictionless extract country-2.csv
 ```
-```csv title="Data: country-2.csv"
-==============================
-# Author: the scientist
-==============================
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-==============================
-```
 
-```python
+```python script tabs=Python output=python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
-resource = extract("country-2.csv")
-print(tabulate(resource, headers="keys", tablefmt="rst"))
-```
-```csv title="Data: country-2.csv"
-==============================
-# Author: the scientist
-==============================
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-==============================
+rows = extract("country-2.csv")
+pprint(rows)
 ```
 
-This example highlights a really important idea - without metadata many software will not be able to even read this data file. Furthermore, without metadata people cannot understand the purpose of this data. To see how we can use metadata to fix our data, let's now use the `country.resource.yaml` file we created in the "Data Resource" section with Frictionless `extract`:
+This example highlights a really important idea - without metadata many software will not be able to even read this data file. Furthermore, without metadata people cannot understand the purpose of this data. To see how we can use metadata to fix our data, let's now use the `country.resource-full.yaml` file we created in the "Data Resource" section with Frictionless `extract`:
 
-```bash
-frictionless extract country.resource.yaml
-```
-```csv title="Data: country.resource.yaml"
-==  ===========  =======  ==========
-id  neighbor_id  name     population
-==  ===========  =======  ==========
- 1               Britain          67
- 2            3  France           67
- 3            2  Germany          83
- 4            5  Italy            60
- 5            4  Spain            47
-==  ===========  =======  ==========
+```bash script tabs=CLI
+frictionless extract country.resource-cleaned.yaml
 ```
 
-```bash
+```python script tabs=Python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
-data = extract("country.resource.yaml")
-print(tabulate(data, headers="keys", tablefmt="rst"))
-```
-```csv title="Data: country.resource.yaml"
-====  =============  =======  ============
-  id    neighbor_id  name       population
-====  =============  =======  ============
-   1                 Britain            67
-   2              3  France             67
-   3              2  Germany            83
-   4              5  Italy              60
-   5              4  Spain              47
-====  =============  =======  ============
+rows = extract("country.resource-cleaned.yaml")
+pprint(rows)
 ```
 
 As we can see, the data is now fixed. The metadata we had saved the day! If we explore this data in Python we can discover that it also corrected data types - e.g. `id` is Python's integer not string. We can now export and share this data without any worries.
@@ -464,12 +374,11 @@ As we can see, the data is now fixed. The metadata we had saved the day! If we e
 
 Many Frictionless functions infer metadata under the hood such as `describe`, `extract`, and many more. On a lower-level, it's possible to control this process. To see this, let's create a `Resource`.
 
-```python title="Python"
-from pprint import pprint
+```python script tabsl=Python output=python
 from frictionless import Resource
 
 resource = Resource("country-1.csv")
-pprint(resource)
+print(resource)
 ```
 ```
 {'path': 'country-1.csv'}
@@ -479,28 +388,11 @@ Frictionless always tries to be as explicit as possible. We didn't provide any m
 
 > We can ask for stats using CLI with `frictionless describe data/table.csv --stats`. Note that we use the `stats` argument for the `resource.infer` function.
 
-```bash
+```bash script tabs=CLI output=json
 frictionless describe country-1.csv --stats --json
 ```
-```json title="Resource Metadata: country-1.csv"
-{'encoding': 'utf-8',
- 'scheme': 'file',
- 'format': 'csv',
- 'hashing': 'md5',
- 'name': 'country-1',
- 'path': 'data/country-1.csv',
- 'profile': 'tabular-data-resource',
- 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
-                       {'name': 'neighbor_id', 'type': 'integer'},
-                       {'name': 'name', 'type': 'string'},
-                       {'name': 'population', 'type': 'integer'}]},
- 'stats': {'bytes': 100,
-           'fields': 4,
-           'hash': '4204f087f328b70c854c03403ab448c4',
-           'rows': 5}}
-```
 
-```python
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import Resource
 
@@ -508,237 +400,74 @@ resource = Resource("country-1.csv")
 resource.infer(stats=True)
 pprint(resource)
 ```
-```json title="Resource Metadata: country-1.csv"
-{'encoding': 'utf-8',
- 'scheme': 'file',
- 'format': 'csv',
- 'hashing': 'md5',
- 'name': 'country-1',
- 'path': 'data/country-1.csv',
- 'profile': 'tabular-data-resource',
- 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
-                       {'name': 'neighbor_id', 'type': 'integer'},
-                       {'name': 'name', 'type': 'string'},
-                       {'name': 'population', 'type': 'integer'}]},
- 'stats': {'bytes': 100,
-           'fields': 4,
-           'hash': '4204f087f328b70c854c03403ab448c4',
-           'rows': 5}}
-```
 
 The result is really familiar to us already. We have seen it a lot as an output of the `describe` function or command. Basically, that's what this high-level function does under the hood: create a resource and then infer additional metadata.
 
 All the main `Metadata` classes have this method with different available options but with the same conceptual purpose:
 - `package.infer`
 - `resource.infer`
-- `schema.infer`
 
 For more advanced detection options, please read the [Detector Guide](framework/detector-guide.md)
-
-## Expanding Metadata
-
-By default, Frictionless never adds default values to metadata, for example:
-
-```bash
-frictionless describe data/country-1.csv --type schema --json
-```
-```json title="Schema Metadata: country-1.csv"
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'neighbor_id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-```
-
-```python
-from pprint import pprint
-from frictionless import describe
-
-resource = describe("data/country-1.csv")
-pprint(resource.schema)
-```
-```json title="Schema Metadata: country-1.csv"
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'neighbor_id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-```
-
-Under the hood it, for example, still treats empty strings as missing values because it's the specs' default. We can reveal implicit metadata by expanding it:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import describe
-
-resource = describe("data/country-1.csv")
-resource.schema.expand()
-pprint(resource.schema)
-```
-```
-{'fields': [{'bareNumber': True,
-             'format': 'default',
-             'name': 'id',
-             'type': 'integer'},
-            {'bareNumber': True,
-             'format': 'default',
-             'name': 'neighbor_id',
-             'type': 'integer'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-            {'bareNumber': True,
-             'format': 'default',
-             'name': 'population',
-             'type': 'integer'}],
- 'missingValues': ['']}
-```
-
-## Transforming Metadata
-
-We have seen this before but let's re-iterate; it's possible to transform core metadata properties using Python's interface:
-
-```python title="Python"
-from frictionless import Resource
-
-resource = Resource("country.resource.yaml")
-resource.title = "Countries"
-resource.description = "It's a research project"
-resource.dialect.delimiter = ";"
-resource.layout.header_rows = [2]
-resource.to_yaml("country.resource.yaml")
-```
-
-But the Python interface is not our only option. Thanks to the flexibility of the Frictionless Specs, we can add arbitrary metadata to our descriptor. We use dictionary operations to do this:
-
-```python title="Python"
-from frictionless import Resource
-
-resource = Resource("country.resource.yaml")
-resource["customKey1"] = "Value1"
-resource["customKey2"] = "Value2"
-resource.to_yaml("country.resource.yaml")
-```
-
-Let's check it out:
-
-```bash title="CLI"
-cat country.resource.yaml
-```
-```yaml title="Resource Metadata: country.resource.yaml"
-customKey1: Value1
-customKey2: Value2
-description: It's a research project
-dialect:
-  delimiter: ;
-encoding: utf-8
-format: csv
-hashing: md5
-layout:
-  headerRows:
-    - 2
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      title: Identifier
-      type: integer
-    - name: neighbor_id
-      title: Identifier of the neighbor
-      type: integer
-    - name: name
-      title: Name of the country
-      type: string
-    - constraints:
-        minimum: 0
-      description: According to the year 2020's data
-      name: population
-      title: Population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-scheme: file
-title: Countries
-```
-
-```python
-with open('country.resource.yaml') as file:
-    print(file.read())
-```
-```yaml title="Resource Metadata: country.resource.yaml"
-customKey1: Value1
-customKey2: Value2
-description: It's a research project
-dialect:
-  delimiter: ;
-encoding: utf-8
-format: csv
-hashing: md5
-layout:
-  headerRows:
-    - 2
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      title: Identifier
-      type: integer
-    - name: neighbor_id
-      title: Identifier of the neighbor
-      type: integer
-    - name: name
-      title: Name of the country
-      type: string
-    - constraints:
-        minimum: 0
-      description: According to the year 2020's data
-      name: population
-      title: Population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-scheme: file
-title: Countries
-```
 
 ## Validating Metadata
 
 Metadata validity is an important topic, and we recommend validating your metadata before publishing. For example, let's first make it invalid:
 
-```python title="Python"
+```python script tabs=Python
+import yaml
 from frictionless import Resource
 
-resource = Resource("country.resource.yaml")
-resource["title"] = 1
-print(resource.metadata_valid)
-print(resource.metadata_errors)
+descriptor = {}
+descriptor['path'] = 'country-1.csv'
+descriptor['title'] = 1
+try:
+    Resource(descriptor)
+except Exception as exception:
+    print(exception.error)
+    print(exception.reasons)
 ```
 ```
 False
 [{'code': 'resource-error', 'name': 'Resource Error', 'tags': [], 'note': '"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'description': 'A validation cannot be processed.'}]
 ```
 
-We see this error: `'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile'` Now, let's fix our resource metadata:
+We see this error`'"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile'` as we set `title` to be an integer.
 
-```python title="Python"
+Frictionless' high-level functions like `validate` runs all metadata checks by default.
+
+## Transforming Metadata
+
+We have seen this before but let's re-iterate; it's possible to transform core metadata properties using Python's interface:
+
+```python script tabs=Python
 from frictionless import Resource
 
-resource = Resource("country.resource.yaml")
-resource["title"] = 'Countries'
-print(resource.metadata_valid)
-```
-```
-True
+resource = Resource("country.resource-cleaned.yaml")
+resource.title = "Countries"
+resource.description = "It's a research project"
+resource.dialect.header_rows = [2]
+resource.dialect.get_control('csv').delimiter = ";"
+resource.to_yaml("country.resource-updated.yaml")
 ```
 
-You need to check `metadata.metadata_valid` only if you change it manually; Frictionless' high-level functions like `validate` do that on their own.
+We can add custom options using the `custom` property:
+
+```python script tabs=Python
+from frictionless import Resource
+
+resource = Resource("country.resource-updated.yaml")
+resource.custom["customKey1"] = "Value1"
+resource.custom["customKey2"] = "Value2"
+resource.to_yaml("country.resource-updated2.yaml")
+```
+
+Let's check it out:
+
+```bash script tabs=CLI output=yaml
+cat country.resource-updated2.yaml
+```
+
+```python script tabs=Python output=yaml
+with open('country.resource-updated2.yaml') as file:
+    print(file.read())
+```
