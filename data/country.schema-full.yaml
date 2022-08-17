@@ -1,0 +1,23 @@
+fields:
+  - name: id
+    type: integer
+    title: Identifier
+  - name: neighbor_id
+    type: integer
+    title: Identifier of the neighbor
+  - name: name
+    type: string
+    title: Name of the country
+  - name: population
+    type: integer
+    title: Population
+    description: According to the year 2020's data
+    constraints:
+      minimum: 0
+foreignKeys:
+  - fields:
+      - neighbor_id
+    reference:
+      resource: ''
+      fields:
+        - id

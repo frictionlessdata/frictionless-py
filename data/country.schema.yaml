@@ -1,0 +1,9 @@
+fields:
+  - name: id
+    type: integer
+  - name: neighbor_id
+    type: integer
+  - name: name
+    type: string
+  - name: population
+    type: integer
