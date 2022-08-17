@@ -13,3 +13,6 @@ schema:
       type: string
     - name: name2
       type: string
+stats:
+  md5: ae23c74693ca2d3f0e38b9ba3570775b
+  bytes: 100
