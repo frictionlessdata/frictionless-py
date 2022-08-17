@@ -1,3 +1,8 @@
+---
+script:
+  basepath: data
+---
+
 # Transforming Data
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -40,24 +45,16 @@ Frictionless supports a few different kinds of data and metadata transformations
 
 The main difference between these is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file. We'll talk more about pipelines in the [Transforming Pipeline](#transforming-pipeline) section below. First, we will introduce the transform functions, then go into detail about how to transform a resource and a package. As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction).
 
-> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as". You might need to change the file extension from .txt to .csv).
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/transform.csv) to reproduce the examples (right-click and "Save link as". You might need to change the file extension from .txt to .csv).
 
-```bash
+```bash script tabs=CLI
 cat transform.csv
 ```
-```csv title="Data: transform.csv"
-id,name,population
-1,germany,83
-2,france,66
-3,spain,47
-```
-
 
 The high-level interface to transform data is a set of `transform` functions:
 - `transform`: detects the source type and transforms data accordingly
-- `transform_resource`: transforms a resource
-- `transform_package`: transforms a package
-- `transform_pipeline`: transforms a resource or package based on a declarative pipeline definition
+- `reosurce.transform`: transforms a resource
+- `package.transform`: transforms a package
 
 We'll see examples of these functions in the next few sections.
 
@@ -65,39 +62,24 @@ We'll see examples of these functions in the next few sections.
 
 Let's write our first transformation. Here, we will transform a data file (a resource) by defining a source resource, applying transform steps and getting back a resulting target resource:
 
-```python title="Python"
-from frictionless import Resource, transform, steps
+```python script tabs=Python
+from frictionless import Resource, Pipeline, steps
 
 # Define source resource
 source = Resource(path="transform.csv")
 
-# Apply transform steps
-target = transform(
-    source,
-    steps=[
-        steps.table_normalize(),
-        steps.field_add(name="cars", type="integer", formula='population*2'),
-    ],
-)
+# Create a pipeline
+pipeline = Pipeline(steps=[
+    steps.table_normalize(),
+    steps.field_add(name="cars", formula='population*2', descriptor={'type': 'integer'}),
+])
+
+# Apply transform pipeline
+target = source.transform(pipeline)
 
 # Print resulting schema and data
 print(target.schema)
 print(target.to_view())
-```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'},
-            {'name': 'cars', 'type': 'integer'}]}
-+----+-----------+------------+------+
-| id | name      | population | cars |
-+====+===========+============+======+
-|  1 | 'germany' |         83 |  166 |
-+----+-----------+------------+------+
-|  2 | 'france'  |         66 |  132 |
-+----+-----------+------------+------+
-|  3 | 'spain'   |         47 |   94 |
-+----+-----------+------------+------+
 ```
 
 Let's break down the transforming steps we applied:
@@ -110,48 +92,32 @@ There are many more available steps that we will cover below.
 
 A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves. This example shows how transforming a package is similar to transforming a single resource:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Package, Resource, transform, steps
 
 # Define source package
 source = Package(resources=[Resource(name='main', path="transform.csv")])
 
+# Create a pipeline
+pipeline = Pipeline(steps=[
+    steps.resource_add(name="extra", descriptor={"data": [['id', 'cars'], [1, 166], [2, 132], [3, 94]]}),
+    steps.resource_transform(
+        name="main",
+        steps=[
+            steps.table_normalize(),
+            steps.table_join(resource="extra", field_name="id"),
+        ],
+    ),
+    steps.resource_remove(name="extra"),
+])
+
 # Apply transform steps
-target = transform(
-    source,
-    steps=[
-        steps.resource_add(name="extra", data=[['id', 'cars'], [1, 166], [2, 132], [3, 94]]),
-        steps.resource_transform(
-            name="main",
-            steps=[
-                steps.table_normalize(),
-                steps.table_join(resource="extra", field_name="id"),
-            ],
-        ),
-        steps.resource_remove(name="extra"),
-    ],
-)
+target = source.transform(pipeline)
 
 # Print resulting resources, schema and data
 print(target.resource_names)
 print(target.get_resource("main").schema)
 print(target.get_resource("main").to_view())
-```
-```
-['main']
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'},
-            {'name': 'cars', 'type': 'integer'}]}
-+----+-----------+------------+------+
-| id | name      | population | cars |
-+====+===========+============+======+
-|  1 | 'germany' |         83 |  166 |
-+----+-----------+------------+------+
-|  2 | 'france'  |         66 |  132 |
-+----+-----------+------------+------+
-|  3 | 'spain'   |         47 |   94 |
-+----+-----------+------------+------+
 ```
 
 We have basically done the same as in [Transforming a Resource](#transforming-a-resource) section. This example is quite artificial and created only to show how to join two resources, but hopefully it provides a basic understanding of how flexible package transformations can be.
@@ -162,49 +128,24 @@ A pipeline is a declarative way to write out metadata transform steps. With a pi
 
 For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the [Transforming a Resource](#transforming-a-resource) section:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Pipeline, transform
 
-pipeline = Pipeline(
-    {
-        "tasks": [
-            {
-                "type": "resource",
-                "source": {"path": "data/transform.csv"},
-                "steps": [
-                    {"code": "table-normalize"},
-                    {
-                        "code": "field-add",
-                        "name": "cars",
-                        "type": "integer",
-                        "formula": "population*2",
-                    },
-                ],
-            }
-        ]
-    }
-)
-status = transform(pipeline)
-print(status.task.target.schema)
-print(status.task.target.to_view())
-```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'},
-            {'name': 'cars'}]}
-+----+-----------+------------+------+
-| id | name      | population | cars |
-+====+===========+============+======+
-|  1 | 'germany' |         83 |  166 |
-+----+-----------+------------+------+
-|  2 | 'france'  |         66 |  132 |
-+----+-----------+------------+------+
-|  3 | 'spain'   |         47 |   94 |
-+----+-----------+------------+------+
+pipeline = Pipeline.from_descriptor({
+    "steps": [
+        {"type": "table-normalize"},
+        {
+            "type": "field-add",
+            "name": "cars",
+            "formula": "population*2",
+            "descriptor": {"type": "integer"}
+        },
+    ],
+})
+print(pipeline)
 ```
 
-This returns the same result as in the [Transforming a Resource](#transforming-a-resource). So what's the reason to use declarative pipelines if it works the same as the Python code? The main difference is that pipelines can be saved as JSON files which can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. This is the same for CLI - if your colleague has  given you a `pipeline.json` file, you can run `frictionless transform pipeline.json` in the CLI to get the same results as they got.
+So what's the reason to use declarative pipelines if it works the same as the Python code? The main difference is that pipelines can be saved as JSON files which can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. This is the same for CLI - if your colleague has  given you a `pipeline.json` file, you can run `frictionless transform pipeline.json` in the CLI to get the same results as they got.
 
 ## Available Steps
 
@@ -216,46 +157,34 @@ Frictionless includes more than 40+ built-in transform steps. They are grouped b
 - row
 - cell
 
-See [Transform Steps](transform-steps.md) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
+See [Transform Steps](../steps/cell.md) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
 
 ## Custom Steps
 
 Here is an example of a custom step written as a Python function. This example step removes a field from a data table (note: Frictionless already has a built-in function that does this same thing: `steps.field_remove`).
 
-```python title="Python"
-from frictionless import Package, Resource, transform, steps
+```python script tabs=Python
+from frictionless import Package, Resource, Step, transform, steps
 
-def step(resource):
-    current = resource.to_copy()
+class custom_step(Step):
+    def transform_resource(self, resource):
+        current = resource.to_copy()
 
-    # Data
-    def data():
-        with current:
-            for list in current.list_stream:
-                yield list[1:]
+        # Data
+        def data():
+            with current:
+                for list in current.cell_stream:
+                    yield list[1:]
 
-    # Meta
-    resource.data = data
-    resource.schema.remove_field("id")
-
+        # Meta
+        resource.data = data
+        resource.schema.remove_field("id")
 
 source = Resource("transform.csv")
-target = transform(source, steps=[step])
+pipeline = Pipeline(steps=[custom_step()])
+target = source.transform(pipeline)
 print(target.schema)
 print(target.to_view())
-```
-```
-{'fields': [{'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-+-----------+------------+
-| name      | population |
-+===========+============+
-| 'germany' |         83 |
-+-----------+------------+
-| 'france'  |         66 |
-+-----------+------------+
-| 'spain'   |         47 |
-+-----------+------------+
 ```
 
 As you can see you can implement any custom steps within a Python script. To make it work within a declarative pipeline you need to implement a plugin. Learn more about [Custom Steps](extension/step-guide.md) and [Plugins](extension/plugin-guide.md).
@@ -268,22 +197,11 @@ As you can see you can implement any custom steps within a Python script. To mak
 
 In some cases, it's better to use a lower-level API to achieve your goal. A resource can be exported as a PETL table. For more information please visit PETL's [documentation portal](https://petl.readthedocs.io/en/stable/).
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Resource
 
 resource = Resource(path='transform.csv')
 petl_table = resource.to_petl()
 # Use it with PETL framework
 print(petl_table)
-```
-```
-+----+---------+------------+
-| id | name    | population |
-+====+=========+============+
-| 1  | germany | 83         |
-+----+---------+------------+
-| 2  | france  | 66         |
-+----+---------+------------+
-| 3  | spain   | 47         |
-+----+---------+------------+
 ```

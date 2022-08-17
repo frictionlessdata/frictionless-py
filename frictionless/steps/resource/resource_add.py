@@ -1,23 +1,14 @@
 from __future__ import annotations
+import attrs
 from ...pipeline import Step
 from ...resource import Resource
-from ... import helpers
 
 
-# TODO: migrate to dataclass
+@attrs.define(kw_only=True)
 class resource_add(Step):
     """Add resource"""
 
     type = "resource-add"
-
-    def __init__(
-        self,
-        *,
-        name: str,
-        **options,
-    ):
-        self.name = name
-        self.descriptor = helpers.create_descriptor(**options)
 
     # State
 
@@ -31,7 +22,11 @@ class resource_add(Step):
 
     def transform_package(self, package):
         descriptor = self.descriptor.copy()
-        resource = Resource(descriptor, basepath=package.basepath)
+        resource = Resource.from_descriptor(
+            descriptor,
+            name=self.name,
+            basepath=package.basepath,
+        )
         resource.infer()
         package.add_resource(resource)
 
@@ -41,5 +36,6 @@ class resource_add(Step):
         "required": ["name"],
         "properties": {
             "name": {"type": "string"},
+            "descriptor": {"type": "object"},
         },
     }
