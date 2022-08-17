@@ -13,58 +13,58 @@ Let's see this with some real files:
 
 > Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash script
+```bash script tabs=CLI
 cat country-3.csv
 ```
 
-```python script
+```python script tabs=Python
 with open('country-3.csv') as file:
     print(file.read())
 ```
 
 > Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash script
+```bash script tabs=CLI
 cat capital-3.csv
 ```
 
-```python script
+```python script tabs=Python
 with open('capital-3.csv') as file:
     print(file.read())
 ```
 
 To start, we will extract data from a resource:
 
-```bash script
+```bash script tabs=CLI
 frictionless extract country-3.csv
 ```
 
-```python script
+```python script tabs=Python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
 rows = extract('country-3.csv')
-print(tabulate(rows, headers="keys", tablefmt="rst"))
+pprint(rows)
 ```
 
 ## Extract Functions
 
 The high-level interface for extracting data provided by Frictionless is a set of `extract` functions:
 - `extract`: detects the source file type and extracts data accordingly
-- `extract_resource`: accepts a resource descriptor and returns a data table
-- `extract_package`: accepts a package descriptor and returns a map of the package's tables
+- `resource.extract`: returns a data table
+- `package.extract`: returns a map of the package's tables
 
 As described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema.
 
 The command/function would be used as follows:
 
-```bash
+```bash tabs=CLI
 frictionless extract your-table.csv
 frictionless extract your-resource.json --type resource
 frictionless extract your-package.json --type package
 ```
 
-```python
+```python tabs=Python
 from frictionless import extract
 
 rows = extract('capital-3.csv')
@@ -78,45 +78,45 @@ The `extract` functions always reads data in the form of rows, into memory. The 
 
 A resource contains only one file. To extract a resource, we have three options. First, we can use the same approach as above, extracting from the data file itself:
 
-```bash script
+```bash script tabs=CLI
 frictionless extract capital-3.csv
 ```
 
-```python script
+```python script tabs=Python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
 rows = extract('capital-3.csv')
-print(tabulate(rows, headers="keys", tablefmt="rst"))
+pprint(rows)
 ```
 
 Our second option is to extract the resource from a descriptor file by using the `extract_resource` function. A descriptor file is useful because it can contain different metadata and be stored on the disc.
 
 As an example of how to use `extract_resource`, let's first create a descriptor file (note: this example uses YAML for the descriptor, but Frictionless also supports JSON):
 
-```python script
+```python script tabs=Python
 from frictionless import Resource
 
 resource = Resource('capital-3.csv')
 resource.infer()
 # as an example, in the next line we will append the schema
 resource.schema.missing_values.append('3') # will interpret 3 as a missing value
-resource.to_yaml('capital.resource.yaml') # use resource.to_json for JSON format
+resource.to_yaml('capital.resource-test.yaml') # use resource.to_json for JSON format
 ```
 You can also use a pre-made descriptor file.
 
 Now, this descriptor file can be used to extract the resource:
 
-```bash script
-frictionless extract capital.resource.yaml
+```bash script tabs=CLI
+frictionless extract capital.resource-test.yaml
 ```
 
-```python script
+```python script tabs=Python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
 rows = extract('capital.resource.yaml')
-print(tabulate(rows, headers="keys", tablefmt="rst"))
+pprint(rows)
 ```
 
 So what has happened in this example? We set the textual representation of the number "3" to be a missing value. In the output we can see how the `id` number 3 now appears as `None` representing a missing value. This toy example demonstrates how the metadata in a descriptor can be used; other values like "NA" are more common for missing values.
@@ -130,30 +130,29 @@ The third way we can extract information is from a package, which is a set of tw
 As a primary example, we provide two data files to the `extract` command which will be enough to detect that it's a dataset. Let's start by using the command-line interface:
 
 
-```bash script
+```bash script tabs=CLI
 frictionless extract *-3.csv
 ```
 
-```python script
+```python script tabs=Python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
 data = extract('*-3.csv')
-for path, rows in data.items():
-    print("#----")
-    print("# data:", path)
-    print("#----")
-    print(tabulate(rows, headers="keys", tablefmt="rst"))
-    print("\n")
+pprint(data)
 ```
 
-We can also extract the package from a descriptor file using the `extract_package` function (Note: see the [Package Class section](#package-class) for the creation of the `country.package.yaml` file):
+We can also extract the package from a descriptor file using the `package.extract` function (Note: see the [Package Class section](#package-class) for the creation of the `country.package.yaml` file):
 
-```python
+```bash script tabs=CLI
+frictionless extract country.package.yaml
+```
+
+```python script tabs=Python
 from frictionless import Package
 
 package = Package('country.package.yaml')
-pprint(package)
+pprint(package.extract())
 ```
 
 You can read more advanced details about the [Package Class below](#package-class).
@@ -168,7 +167,7 @@ The Resource class provides metadata about a resource with read and stream funct
 
 It's a byte representation of the contents:
 
-```python script
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
@@ -180,7 +179,7 @@ pprint(resource.read_bytes())
 
 It's a textual representation of the contents:
 
-```python script
+```python script tabs=Python
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -191,7 +190,7 @@ pprint(resource.read_text())
 
 For a tabular data there are raw representaion of the tabular contents:
 
-```python script
+```python script tabs=Python
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -202,7 +201,7 @@ pprint(resource.read_cells())
 
 For a tabular data there are row available which is are normalized lists presented as dictionaries:
 
-```python script
+```python script tabs=Python
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -213,7 +212,7 @@ pprint(resource.read_rows())
 
 For a tabular data there is the Header object available:
 
-```python script"
+```python script tabs=Python
 from frictionless import Resource
 
 with Resource('country-3.csv') as resource:
@@ -224,7 +223,7 @@ with Resource('country-3.csv') as resource:
 
 It's really handy to read all your data into memory but it's not always possible if a file is very big. For such cases, Frictionless provides streaming functions:
 
-```python
+```python tabs=Python
 from frictionless import Resource
 
 with Resource('country-3.csv') as resource:
@@ -238,11 +237,11 @@ with Resource('country-3.csv') as resource:
 
 The Package class provides functions to read the contents of a package. First of all, let's create a package descriptor:
 
-```bash script
+```bash script tabs=CLI
 frictionless describe *-3.csv --json > country.package.json
 ```
 
-```python script
+```python script tabs=Python
 from frictionless import describe
 
 package = describe('*-3.csv')
@@ -253,7 +252,7 @@ Note that --json is used here to output the descriptor in JSON format. Without t
 
 We can create a package from data files (using their paths) and then read the package's resources:
 
-```python script
+```python script tabs=Python
 from frictionless import Package
 
 package = Package('*-3.csv')
@@ -268,7 +267,7 @@ The package by itself doesn't provide any read functions directly because it's j
 
 After opening a resource you get access to a `resource.header` object which describes the resource in more detail. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
 
-```python script
+```python script tabs=Python
 from frictionless import Resource
 
 with Resource('capital-3.csv') as resource:
@@ -284,7 +283,7 @@ with Resource('capital-3.csv') as resource:
 
 The example above shows a case when a header is valid. For a header that contains errors in its tabular structure, this information can be very useful, revealing discrepancies, duplicates or missing cell information:
 
-```python script
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
@@ -296,7 +295,7 @@ with Resource([['name', 'name'], ['value', 'value']]) as resource:
 
 The `extract`, `resource.read_rows()` and other functions return or yield row objects. In Python, this returns a dictionary with the following information. Note: this example uses the [Detector object](/docs/guides/framework/detector-guide), which tweaks how different aspects of metadata are detected.
 
-```python script
+```python script tabs=Python
 from frictionless import Resource, Detector
 
 detector = Detector(schema_patch={'missingValues': ['1']})
@@ -319,7 +318,7 @@ with Resource('capital-3.csv', detector=detector) as resource:
 
 As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors:
 
-```python script
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
