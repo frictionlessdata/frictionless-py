@@ -15,7 +15,7 @@ from frictionless import validate, checks
 
 source=[["s.no","code"],[1,"ssµ"]]
 report = validate(source, checks=[checks.ascii_value()])
-print(report.flatten(["type", "message"]))
+pprint(report.flatten(["type", "message"]))
 ```
 
 ## Deviated Cell
