@@ -1,6 +1,6 @@
 # Other Classes
 
-## Error Class
+## Error
 
 The Error class is a metadata with no behavior. It's used to describe an error that happened during Framework work or during the validation.
 
@@ -15,4 +15,11 @@ class DuplicateRowError(errors.RowError):
     tags = ["#table", "#row", "#duplicate"]
     template = "Row at position {rowPosition} is duplicated: {note}"
     description = "The row is duplicated."
+```
+
+## Stats
+
+```yaml remark
+text: Under Construction
+type: warning
 ```
