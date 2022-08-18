@@ -1,6 +1,9 @@
 # Running API
 
-> This functionality requires an experimental `server` plugin. [Read More](../references/plugins-reference.md)
+```yaml remark
+text: This functionality is currently disabled as being in active development
+type: danger
+```
 
 It's possible to start Frictionless API as a standalone server. This capability is highly experimental at the moment and **it's not tested to be secure**. Please don't use the server in production environment.
 
@@ -8,16 +11,16 @@ It's possible to start Frictionless API as a standalone server. This capability 
 
 The API server are shipped as plugin so you need to install it with the core framework:
 
-```bash title="CLI"
-pip install frictionless[server]
-pip install 'frictionless[server]' # for zsh shell
+```bash tabs=CLI
+pip install frictionless[api]
+pip install 'frictionless[api]' # for zsh shell
 ```
 
 ## Server
 
 It's simple to start the API server:
 
-```bash title="CLI"
+```bash tabs=CLI
 frictionless api
 ```
 
@@ -29,23 +32,18 @@ http://localhost:8000
 
 The API is the same as Python and Command-Line interfaces use.
 
-## Inputs
+## Commands
 
 All input data is expected to be in JSON format, for exmaple:
 
 > [POST] http://localhost:8000/extract
 
-```json title="API"
+```json tabs=API
 {
-	"source": "data/table.csv"
+	"path": "data/table.csv"
 }
 ```
-
-## Ouputs
-
-All output data will be in JSON format, for example:
-
-```json title="API"
+```json
 [
     {
         "id": 1,
