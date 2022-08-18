@@ -42,63 +42,73 @@ pages:
         - path: pages/framework/program
         - path: pages/framework/server
         - path: pages/framework/actions
+          name: Actions
         - path: pages/framework/catalog
+          name: Catalog
         - path: pages/framework/package
+          name: Package
         - path: pages/framework/resource
+          name: Resource
         - path: pages/framework/dialect
+          name: Dialect
         - path: pages/framework/schema
+          name: Schema
         - path: pages/framework/checklist
+          name: Checklist
         - path: pages/framework/pipeline
+          name: Pipeline
         - path: pages/framework/detector
+          name: Detector
         - path: pages/framework/inquiry
+          name: Inquiry
         - path: pages/framework/report
+          name: Report
         - path: pages/framework/table
+          name: Table
         - path: pages/framework/classes
-        - path: pages/framework/architecture
-        - path: pages/framework/system
-        - path: pages/framework/extending
+          name: Other
     - name: Validation Checks
       items:
         - path: pages/checks/baseline
           name: Baseline
-        - path: pages/checks/cell
-          name: Cell
-        - path: pages/checks/row
-          name: Row
         - path: pages/checks/table
           name: Table
+        - path: pages/checks/row
+          name: Row
+        - path: pages/checks/cell
+          name: Cell
     - name: Validation Errors
       items:
-        - path: pages/errors/cell
-          name: Cell
+        - path: pages/errors/metadata
+          name: Metadata
+        - path: pages/errors/resource
+          name: Resource
         - path: pages/errors/data
           name: Data
         - path: pages/errors/file
           name: File
+        - path: pages/errors/table
+          name: Table
         - path: pages/errors/header
           name: Header
         - path: pages/errors/label
           name: Label
-        - path: pages/errors/metadata
-          name: Metadata
         - path: pages/errors/row
           name: Row
-        - path: pages/errors/resource
-          name: Resource
-        - path: pages/errors/table
-          name: Table
+        - path: pages/errors/cell
+          name: Cell
     - name: Transform Steps
       items:
-        - path: pages/steps/cell
-          name: Cell
-        - path: pages/steps/field
-          name: Field
         - path: pages/steps/resource
           name: Resource
-        - path: pages/steps/row
-          name: Row
         - path: pages/steps/table
           name: Table
+        - path: pages/steps/field
+          name: Field
+        - path: pages/steps/row
+          name: Row
+        - path: pages/steps/cell
+          name: Cell
     - name: Tabular Fields
       items:
         - path: pages/fields/any
@@ -179,6 +189,11 @@ pages:
           name: Github
         - path: pages/portals/zenodo
           name: Zenodo
+    - name: Architecture
+      items:
+        - path: pages/architecture/design
+        - path: pages/architecture/system
+        - path: pages/architecture/extending
     - name: Codebase
       items:
         - path: pages/codebase/authors

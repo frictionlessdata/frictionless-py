@@ -1,4 +1,4 @@
-# Architecture
+# Design
 
 This guides provides a high-level overview of the Frictionless Framework architecture. It will be useful for plugin authors and advanced users.
 
