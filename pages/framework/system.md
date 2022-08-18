@@ -1,17 +1,5 @@
 # System/Plugin
 
-This guides provides a high-level overview of the Frictionless Framework architecture. It will be useful for plugin authors and advanced users.
-
-## Reading Flow
-
-Frictionless uses modular approach for its architecture. During reading a data source goes through various subsystems which are selected depending on the data characteristics:
-
-![Reading](../../assets/reading.png)
-
-For example for a local CSV file it will use:
-- `LocalLoader`
-- `CsvParser`
-
 ## System Object
 
 The most important undelaying object in the Frictionless Framework is `system`. It's an singletone object avaialble as `frictionless.system`. This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Type`. Here is a quick example of using the `system` object:

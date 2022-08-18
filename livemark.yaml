@@ -52,7 +52,9 @@ pages:
         - path: pages/framework/detector
         - path: pages/framework/inquiry
         - path: pages/framework/report
-        - path: pages/framework/classes
+        - path: pages/framework/table
+        - path: pages/framework/other
+        - path: pages/framework/architecture
         - path: pages/framework/system
         - path: pages/framework/extending
     - name: Validation Checks
