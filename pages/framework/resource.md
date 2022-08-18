@@ -136,11 +136,7 @@ with Resource('country-3.csv') as resource:
       print(row)
 ```
 
-## File Details
-
-Let's overview the details we can specify for a file. Usually you don't need to provide those details as Frictionless is capable to infer it on its own. Although, there are situation when you need to specify it manually. The following example will use the `Resource` class but the same options can be used for the `extract` and `extract_table` functions.
-
-### Scheme
+## Scheme
 
 The scheme also know as protocol indicates which loader Frictionless should use to read or write data. It can be `file` (default), `text`, `http`, `https`, `s3`, and others.
 
@@ -152,7 +148,7 @@ with Resource(b'header1,header2\nvalue1,value2', format='csv') as resource:
   print(resource.to_view())
 ```
 
-### Format
+## Format
 
 The format or as it's also called extension helps Frictionless to choose a proper parser to handle the file. Popular formats are `csv`, `xlsx`, `json` and others
 
@@ -164,7 +160,7 @@ with Resource(b'header1,header2\nvalue1,value2.csv', format='csv') as resource:
   print(resource.to_view())
 ```
 
-### Encoding
+## Encoding
 
 Frictionless automatically detects encoding of files but sometimes it can be inaccurate. It's possible to provide an encoding manually:
 
@@ -180,7 +176,7 @@ utf-8
 data/country-3.csv
 ```
 
-### Innerpath
+## Innerpath
 
 By default, Frictionless uses the first file found in a zip archive. It's possible to adjust this behaviour:
 
@@ -193,7 +189,7 @@ with Resource('table-multiple-files.zip', innerpath='table-reverse.csv') as reso
   print(resource.to_view())
 ```
 
-### Compression
+## Compression
 
 It's possible to adjust compression detection by providing the algorithm explicitly. For the example below it's not required as it would be detected anyway:
 
@@ -205,34 +201,7 @@ with Resource('table.csv.zip', compression='zip') as resource:
   print(resource.to_view())
 ```
 
-### Control
-
-The Control object allows you to manage the loader used by the Resource class. In most cases, you don't need to provide any Control settings but sometimes it can be useful:
-
-```python title="Python"
-from frictionless import Resource
-from frictionless.plugins.remote import RemoteControl
-
-source = 'https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv'
-control = RemoteControl(http_timeout=10)
-with Resource(source, control=control) as resource:
-  print(resource.control)
-  print(resource.to_view())
-```
-```
-{'httpTimeout': 10}
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | '中国人'     |
-+----+-----------+
-```
-
-Exact parameters depend on schemes and can be found in the "Schemes Reference". For example, the Remote Control provides `http_timeout`, `http_session`, and others but there is only one option available for all controls:
-
-### Dialect
+## Dialect
 
 The Dialect adjusts the way the parsers work. The concept is similar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
 
@@ -257,29 +226,18 @@ with Resource(source, format='csv', dialect=dialect) as resource:
 
 There are a great deal of options available for different dialects that can be found in "Formats Reference". We will list the properties that can be used with every dialect:
 
-## Table Details
+## Schema
 
-The core concepts for tabular resource are Layout and Schema.
+Please read [Schema Guide](schema.html) for more information.
 
-### Layout
-
-Please read [Layout Guide](layout-guide.md) for more information.
-
-### Schema
-
-Please read [Schema Guide](schema-guide.md) for more information.
-
-### Stats
+## Stats
 
 Resource's stats can be accessed with `resource.stats`:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Resource
 
-resource = Resource('data/table.csv')
+resource = Resource('table.csv')
 resource.infer(stats=True)
 print(resource.stats)
-```
-```
-{'hash': '6c2c61dd9b0e9c6876139a449ed87933', 'bytes': 30, 'fields': 2, 'rows': 2}
 ```
