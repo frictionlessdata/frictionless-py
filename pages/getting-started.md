@@ -70,7 +70,7 @@ frictionless transform --help
 
 ## Example
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) to reproduce the examples (right-click and "Save link as"). For more examples, please take a look at the [Basic Examples](basic-examples.md) article.
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/invalid.csv) to reproduce the examples (right-click and "Save link as"). For more examples, please take a look at the [Basic Examples](basic-examples.md) article.
 
 We will take a very messy data file:
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import List, ClassVar
+from typing import List, ClassVar, Optional, Type
 from .metadata import Metadata
 from .platform import platform
 from . import helpers
@@ -41,6 +41,22 @@ class Error(Metadata):
 
     note: str
     """NOTE: add docs"""
+
+    # List
+
+    @classmethod
+    def list_children(
+        cls, *, root: bool = False, exclude: Optional[List[Type[Error]]] = None
+    ) -> List[Type[Error]]:
+        children = []
+        for item in vars(platform.frictionless_errors).values():
+            if isinstance(item, type) and issubclass(item, cls):
+                if not root and item is cls:
+                    continue
+                if exclude and issubclass(item, tuple(exclude)):
+                    continue
+                children.append(item)
+        return children
 
     # Metadata
 

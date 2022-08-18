@@ -39,14 +39,14 @@ class DetectorError(MetadataError):
 
 class DialectError(MetadataError):
     type = "dialect-error"
-    titlte = "Dialect Error"
+    title = "Dialect Error"
     description = "Provided dialect is not valid."
     template = "Dialect is not valid: {note}"
 
 
 class ControlError(DialectError):
     type = "control-error"
-    titlte = "Control Error"
+    title = "Control Error"
     description = "Provided control is not valid."
     template = "Control is not valid: {note}"
 
