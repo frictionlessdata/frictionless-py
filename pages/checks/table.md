@@ -50,9 +50,8 @@ source = [
     [5, 5000, 1000],
 ]
 
-report = validate(source, checks=[
-  Check.from_descriptor({"code": "table-dimensions", "minFields": 4, "maxRows": 3}),
-])
+check = Check.from_descriptor({"type": "table-dimensions", "minFields": 4, "maxRows": 3})
+report = validate(source, checks=[check])
 pprint(report.flatten(["type", "message"]))
 ```
 

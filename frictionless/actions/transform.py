@@ -33,11 +33,13 @@ def transform(
 
     # Detect type
     if not type:
+        type = getattr(source, "metadata_type", None)
+    if not type:
         type = Detector.detect_descriptor(source)
-        if not type:
-            type = "resource"
-            if helpers.is_expandable_source(source):
-                type = "package"
+    if not type:
+        type = "resource"
+        if helpers.is_expandable_source(source):
+            type = "package"
 
     # Create pipeline
     if isinstance(pipeline, str):
@@ -47,7 +49,9 @@ def transform(
 
     # Transform resource
     if type == "resource":
-        resource = Resource.from_options(source, **options)
+        resource = source
+        if not isinstance(resource, Resource):
+            resource = Resource.from_options(source, **options)
         return resource.transform(pipeline)
 
     # Transform package
@@ -58,7 +62,9 @@ def transform(
         options.pop("checklist", None)
         options.pop("pipeline", None)
         options.pop("stats", None)
-        package = Package.from_options(source, **options)
+        package = source
+        if not isinstance(package, Package):
+            package = Package.from_options(source, **options)
         return package.transform(pipeline)
 
     # Not supported
