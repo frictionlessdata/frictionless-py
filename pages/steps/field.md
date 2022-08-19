@@ -41,6 +41,25 @@ print(target.schema)
 print(target.to_view())
 ```
 
+## Merge Fields
+
+```python script tabs=Python
+from pprint import pprint
+from frictionless import Package, Resource, transform, steps
+
+source = Resource(path="transform.csv")
+target = transform(
+     source,
+     steps=[
+     	 # seperator argument can be used to set delimeter. Default value is '-'
+    	 # preserve argument keeps the original fields
+         steps.field_merge(name="details", from_names=["name", "population"], preserve=True)
+     ],
+)
+print(target.schema)
+print(target.to_view())
+```
+
 ## Move Field
 
 ```python script tabs=Python
@@ -52,6 +71,25 @@ target = transform(
     source,
     steps=[
         steps.field_move(name="id", position=3),
+    ]
+)
+print(target.schema)
+print(target.to_view())
+```
+
+## Pack Fields
+
+```python script tabs=Python
+from pprint import pprint
+from frictionless import Package, Resource, transform, steps
+
+source = Resource(path="transform.csv")
+target = transform(
+    source,
+    steps=[
+    	# field_type returns packed fields as JSON Object. Default value for field_type is 'array'
+    	# preserve argument keeps the original fields
+        steps.field_pack(name="details", from_names=["name", "population"], as_object=True, preserve=True)
     ]
 )
 print(target.schema)
