@@ -1,3 +1,8 @@
+---
+script:
+  basepath: data
+---
+
 # Table Steps
 
 These steps are meant to be used on a table level of a resource. This includes various different operations from simple validation or writing to the disc to complex re-shaping like pivoting or melting.
@@ -6,7 +11,7 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 Group rows under the given group_name then apply aggregation functions provided as aggregation dictionary (see example)
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -23,22 +28,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'name', 'type': 'string'}, {'name': 'sum'}]}
-+-----------+-----+
-| name      | sum |
-+===========+=====+
-| 'france'  | 120 |
-+-----------+-----+
-| 'germany' | 160 |
-+-----------+-----+
-| 'spain'   |  80 |
-+-----------+-----+
-```
 
-## Attach Tables
+## Attach Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -52,26 +45,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'},
-            {'name': 'note', 'type': 'string'}]}
-+----+-----------+------------+---------+
-| id | name      | population | note    |
-+====+===========+============+=========+
-|  1 | 'germany' |         83 | 'large' |
-+----+-----------+------------+---------+
-|  2 | 'france'  |         66 | 'mid'   |
-+----+-----------+------------+---------+
-|  3 | 'spain'   |         47 | None    |
-+----+-----------+------------+---------+
-
-```
 
 ## Debug Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -84,24 +61,10 @@ target = transform(
 )
 print(target.to_view())
 ```
-```
-{'id': 1, 'name': 'germany', 'population': 83}
-{'id': 2, 'name': 'france', 'population': 66}
-{'id': 3, 'name': 'spain', 'population': 47}
-+----+-----------+------------+
-| id | name      | population |
-+====+===========+============+
-|  1 | 'germany' |         83 |
-+----+-----------+------------+
-|  2 | 'france'  |         66 |
-+----+-----------+------------+
-|  3 | 'spain'   |         47 |
-+----+-----------+------------+
-```
 
-## Diff Tables
+## Diff Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -125,20 +88,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-+----+----------+------------+
-| id | name     | population |
-+====+==========+============+
-|  2 | 'france' |         66 |
-+----+----------+------------+
-```
 
-## Intersect Tables
+## Intersect Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -162,22 +115,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-+----+-----------+------------+
-| id | name      | population |
-+====+===========+============+
-|  1 | 'germany' |         83 |
-+----+-----------+------------+
-|  3 | 'spain'   |         47 |
-+----+-----------+------------+
-```
 
 ## Join Tables
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -195,23 +136,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'},
-            {'name': 'note', 'type': 'string'}]}
-+----+-----------+------------+--------+
-| id | name      | population | note   |
-+====+===========+============+========+
-|  1 | 'germany' |         83 | 'beer' |
-+----+-----------+------------+--------+
-|  2 | 'france'  |         66 | 'vine' |
-+----+-----------+------------+--------+
-```
 
 ## Melt Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -226,28 +154,14 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'name', 'type': 'string'},
-            {'name': 'variable'},
-            {'name': 'value'}]}
-+-----------+--------------+-------+
-| name      | variable     | value |
-+===========+==============+=======+
-| 'germany' | 'id'         |     1 |
-+-----------+--------------+-------+
-| 'germany' | 'population' |    83 |
-+-----------+--------------+-------+
-| 'france'  | 'id'         |     2 |
-+-----------+--------------+-------+
-| 'france'  | 'population' |    66 |
-+-----------+--------------+-------+
-| 'spain'   | 'id'         |     3 |
-+-----------+--------------+-------+
-```
 
 ## Merge Tables
 
-```python title="Python"
+```markdown remark type=danger
+This functionality is currently disabled as being fixed in [#1221](https://github.com/frictionlessdata/frictionless-py/issues/1221)
+```
+
+```python tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -263,63 +177,33 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'},
-            {'name': 'note', 'type': 'string'}]}
-+----+-----------+------------+----------+
-| id | name      | population | note     |
-+====+===========+============+==========+
-|  1 | 'germany' |         83 | None     |
-+----+-----------+------------+----------+
-|  2 | 'france'  |         66 | None     |
-+----+-----------+------------+----------+
-|  3 | 'spain'   |         47 | None     |
-+----+-----------+------------+----------+
-|  4 | 'malta'   | None       | 'island' |
-+----+-----------+------------+----------+
-```
 
 ## Normalize Table
 
 The `table_normalize` step normalizes an underlaying tabular stream (cast types and fix dimensions) according to a provided or inferred schema. If your data is not really big it's recommended to normalize a table before any others steps.
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource("data/table.csv")
+source = Resource("table.csv")
+print(source.read_cells())
 target = transform(
     source,
     steps=[
         steps.table_normalize(),
     ]
 )
-print(source.to_view())
-print(target.to_view())
-```
-```
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | '中国人'     |
-+----+-----------+
-
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | '中国人'     |
-+----+-----------+
+print(target.read_cells())
 ```
 
 ## Pivot Table
 
-```python title="Python"
+```markdown remark type=danger
+This functionality is currently disabled as being fixed in [#1220](https://github.com/frictionlessdata/frictionless-py/issues/1220)
+```
+
+```python tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -334,22 +218,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'region', 'type': 'string'},
-            {'name': 'boy', 'type': 'integer'},
-            {'name': 'girl', 'type': 'integer'}]}
-+--------+-----+------+
-| region | boy | girl |
-+========+=====+======+
-| 'east' |  33 |   29 |
-+--------+-----+------+
-| 'west' |  35 |   23 |
-+--------+-----+------+
-```
 
 ## Print Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -362,19 +234,10 @@ target = transform(
     ]
 )
 ```
-```
-==  =======  ==========
-id  name     population
-==  =======  ==========
- 1  germany          83
- 2  france           66
- 3  spain            47
-==  =======  ==========
-```
 
 ## Recast Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -390,24 +253,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-+----+-----------+------------+
-| id | name      | population |
-+====+===========+============+
-|  1 | 'germany' |         83 |
-+----+-----------+------------+
-|  2 | 'france'  |         66 |
-+----+-----------+------------+
-|  3 | 'spain'   |         47 |
-+----+-----------+------------+
-```
 
 ## Transpose Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -422,23 +271,10 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
-```
-{'fields': [{'name': 'name', 'type': 'string'},
-            {'name': 'germany', 'type': 'integer'},
-            {'name': 'france', 'type': 'integer'},
-            {'name': 'spain', 'type': 'integer'}]}
-+--------------+-----------+----------+---------+
-| id           | 1         | 2        | 3       |
-+==============+===========+==========+=========+
-| 'name'       | 'germany' | 'france' | 'spain' |
-+--------------+-----------+----------+---------+
-| 'population' |        83 |       66 |      47 |
-+--------------+-----------+----------+---------+
-```
 
 ## Validate Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -456,16 +292,10 @@ try:
 except Exception as exception:
   pprint(exception)
 ```
-```
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-FrictionlessException('[step-error] Step is not valid: "table_validate" raises "[type-error] Type error in the cell "bad" in row "2" and field "population" at position "3": type is "integer/default""')
-```
 
 ## Write Table
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -473,65 +303,18 @@ source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
-        steps.table_write(path='tmp/transform.json'),
+        steps.table_write(path='transform.json'),
     ]
 )
 ```
 
+Let's read the output:
 
-```bash
-cat tmp/transform.json
-```
-```json title="Data: tmp/transform.json"
-[
-  [
-    "id",
-    "name",
-    "population"
-  ],
-  [
-    1,
-    "germany",
-    83
-  ],
-  [
-    2,
-    "france",
-    66
-  ],
-  [
-    3,
-    "spain",
-    47
-  ]
-]
+```bash script tabs=CLI
+cat transform.json
 ```
 
-```python
-with open('tmp/transform.json') as file:
+```python script tabs=Python
+with open('transform.json') as file:
     print(file.read())
-```
-```json title="Data: tmp/transform.json"
-[
-  [
-    "id",
-    "name",
-    "population"
-  ],
-  [
-    1,
-    "germany",
-    83
-  ],
-  [
-    2,
-    "france",
-    66
-  ],
-  [
-    3,
-    "spain",
-    47
-  ]
-]
 ```
