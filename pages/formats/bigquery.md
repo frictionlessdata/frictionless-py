@@ -1,10 +1,12 @@
 # Bigquery Format
 
-> This functionality requires an experimental `bigquery` plugin. [Read More](../../references/plugins-reference.md)
+```markdown remark type=danger
+This functionality is currently disabled as being fixed in [#1217](https://github.com/frictionlessdata/frictionless-py/issues/1217)
+```
 
 Frictionless supports both reading tables from BigQuery source and treating a BigQuery dataset as a tabular data storage.
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[bigquery]
 pip install 'frictionless[bigquery]' # for zsh shell
 ```
@@ -13,7 +15,7 @@ pip install 'frictionless[bigquery]' # for zsh shell
 
 You can read from this source using `Package/Resource`, for example:
 
-```python title="Python"
+```python tabs=Python
 import os
 import json
 from pprint import pprint
@@ -37,7 +39,7 @@ pprint(resource.read_rows())
 
 If you'd like to treat BigQuery dataset as a tabular storage:
 
-```python title="Python"
+```python tabs=Python
 from pprint import pprint
 from frictionless import Package
 
@@ -63,11 +65,11 @@ package.to_bigquery(service, project=project, dataset='<dataset>')
 
 Also, it's possible to save a resource as a Bigquery table using `resource.write()`.
 
-## Configuring Data
+## Configuration
 
 There is the `BigqueryDialect` to configure how Frictionles works with BigQuery:
 
-```python
+```python tabs=Python
 from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.bigquery import BigqueryDialect
@@ -76,6 +78,3 @@ dialect = BigqueryDialect(project=project, dataset='<dataset>', table='<table>'
 resource = Resource(service, dialect=dialect)
 pprint(resource.read_rows())
 ```
-
-References:
-- [BigQuery Dialect](../../references/formats-reference.md#bigquery)

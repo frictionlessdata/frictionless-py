@@ -1,10 +1,13 @@
-# Pandas Format
+---
+script:
+  basepath: data
+---
 
-> This functionality requires an experimental `pandas` plugin. [Read More](../../references/plugins-reference.md)
+# Pandas Format
 
 Frictionless supports reading and writing Pandas dataframes.
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[pandas]
 pip install 'frictionless[pandas]' # for zsh shell
 ```
@@ -13,7 +16,7 @@ pip install 'frictionless[pandas]' # for zsh shell
 
 You can read a Pandas dataframe:
 
-```python title="Python"
+```python tabs=Python
 from frictionless import Resource
 
 resource = Resource(df)
@@ -22,20 +25,11 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
-
 You can write a dataset to Pandas:
 
-```python
+```python tabs=Python
 from frictionless import Resource
 
-resource = Resource('data/table.csv')
+resource = Resource('table.csv')
 df = resource.to_pandas()
 ```
-
-## Configuring Data
-
-There are no options available in `PandasDialect`.
-
-References:
-- [Pandas Dialect](../../references/formats-reference.md#pandas)

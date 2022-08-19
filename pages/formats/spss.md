@@ -1,10 +1,17 @@
+---
+script:
+  basepath: data
+---
+
 # Spss Format
 
-> This functionality requires an experimental `spss` plugin. [Read More](../../references/plugins-reference.md)
+```markdown remark
+Timezone support for this format is currently being development in [#1212](https://github.com/frictionlessdata/frictionless-py/issues/1212)
+```
 
 Frictionless supports reading and writing SPSS files.
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[spss]
 pip install 'frictionless[spss]' # for zsh shell
 ```
@@ -13,32 +20,23 @@ pip install 'frictionless[spss]' # for zsh shell
 
 You can read SPSS files:
 
-```python title="Python"
+```python tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource('data/table.sav')
+resource = Resource('table.sav')
 pprint(resource.read_rows())
 ```
 
 ## Writing Data
 
-> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
-
 You can write SPSS files:
 
-```python title="Python"
+```python tabs=Python
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-target = source.write('table.sav')
+target = source.write('table-output.sav')
 pprint(target)
 pprint(target.read_rows())
 ```
-
-## Configuring Data
-
-There are no options available in `SpssDialect`.
-
-References:
-- [SPSS Dialect](../../references/formats-reference.md#spss)

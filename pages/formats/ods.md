@@ -1,8 +1,13 @@
+---
+script:
+  basepath: data
+---
+
 # Ods Format
 
 Frictionless supports ODS parsing.
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[ods]
 pip install 'frictionless[ods]' # for zsh shell
 ```
@@ -11,44 +16,34 @@ pip install 'frictionless[ods]' # for zsh shell
 
 You can read this format using `Package/Resource`, for example:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='data/table.ods')
+resource = Resource(path='table.ods')
 pprint(resource.read_rows())
-```
-```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data
 
 The same is actual for writing:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-target = source.write('table.ods')
+target = source.write('table-output.ods')
 pprint(target)
 ```
-```
-{'path': 'table.ods'}
-```
 
-## Configuring ODS
+## Configuration
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 
-```python title="Python"
-from frictionless import Resource
-from frictionless.plugins.ods import OdsDialect
+```python tabs=Python
+from frictionless import Resource, formats
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('tmp/table.ods', dialect=OdsDialect(sheet='My Table'))
+resource.write('table.ods', control=formats.OdsControl(sheet='My Table'))
 ```
-
-References:
-- [ODS Dialect](../../references/formats-reference.md#ods)

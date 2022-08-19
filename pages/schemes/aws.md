@@ -4,6 +4,7 @@ Frictionless supports reading data from a AWS cloud source. You can read files i
 
 ```bash tabs=CLI
 pip install frictionless[aws]
+pip install 'frictionless[aws]' # for zsh shell
 ```
 
 ## Reading Data

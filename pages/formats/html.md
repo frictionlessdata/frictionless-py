@@ -1,10 +1,13 @@
-# Html Format
+---
+script:
+  basepath: data
+---
 
-> This functionality requires an experimental `html` plugin. [Read More](../../references/plugins-reference.md)
+# Html Format
 
 Frictionless supports parsing HTML format:
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[html]
 pip install 'frictionless[html]' # for zsh shell
 ```
@@ -13,51 +16,35 @@ pip install 'frictionless[html]' # for zsh shell
 
 You can this file format using `Package/Resource`, for example:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='data/table1.html')
+resource = Resource(path='table1.html', type='table')
 pprint(resource.read_rows())
-```
-```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data
 
 The same is actual for writing:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-target = source.write('table.html')
+target = source.write('table-output.html', type='table')
 print(target)
 print(target.to_view())
 ```
-```
-{'path': 'table.html'}
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | 'german'  |
-+----+-----------+
-```
 
-## Configuring Data
+## Configuration
 
 There is a dialect to configure HTML, for example:
 
-```python title="Python"
-from frictionless import Resource
-from frictionless.plugins.html import HtmlDialect
+```python script tabs=Python
+from frictionless import Resource, formats
 
-resource = Resource(path='data/table1.html', dialect=HtmlDialect(selector='#id'))
+control=formats.HtmlControl(selector='#id')
+resource = Resource(path='table1.html', type='table', control=control)
 print(resource.read_rows())
 ```
-
-References:
-- [Html Dialect](../../references/formats-reference.md#html)

@@ -1,10 +1,8 @@
 # Gsheets Format
 
-> This functionality requires an experimental `gsheets` plugin. [Read More](../../references/plugins-reference.md)
-
 Frictionless supports parsing Google Sheets data as a file format.
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[gsheets]
 pip install 'frictionless[gsheets]' # for zsh shell
 ```
@@ -13,11 +11,12 @@ pip install 'frictionless[gsheets]' # for zsh shell
 
 You can read from Google Sheets using `Package/Resource`, for example:
 
-```python title="python"
+```python tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing')
+path='https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing'
+resource = Resource(path=path)
 pprint(resource.read_rows())
 ```
 ```
@@ -28,23 +27,22 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python title="Python"
-from frictionless import Resource
+```python tabs=Python
+from frictionless import Resource, formats
 
+control = formats.GsheetsControl(credentials=".google.json")
 resource = Resource(path='data/table.csv')
-resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", dialect={"credentials": ".google.json"})
+resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", control=control})
 ```
 
-## Configuring Data
+## Configuration
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 
-```python title="Python"
-from frictionless import Resource
+```python tabs=Python
+from frictionless import Resource, formats
 
+control = formats.GsheetsControl(credentials=".google.json")
 resource = Resource(path='data/table.csv')
-resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", dialect={"credentials": ".google.json"})
+resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", control=control)
 ```
-
-References:
-- [Gseets Dialect](../../references/formats-reference.md#gsheets)

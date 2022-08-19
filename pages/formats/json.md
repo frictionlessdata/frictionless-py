@@ -1,64 +1,53 @@
+---
+script:
+  basepath: data
+---
+
 # Json Format
 
 Frictionless supports parsing JSON tables (JSON and JSONL/NDJSON).
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless[json]
 pip install 'frictionless[json]' # for zsh shell
 ```
 
 ## Reading Data
 
+> We use the `path` argument to ensure that it will not be guessed to be a metadata file
+
 You can read this format using `Package/Resource`, for example:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='data/table.json')
+resource = Resource(path='table.json', type='table')
 pprint(resource.read_rows())
-```
-```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data
 
-> We use the `path` argument for `resource.write` to ensure that it will not be guessed to be a metadata file
-
 The same is actual for writing:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-target = source.write(path='table.json')
+target = source.write(path='table-output.json', type='table')
 print(target)
 print(target.to_view())
 ```
-```
-{'path': 'table.json'}
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | 'german'  |
-+----+-----------+
-```
 
-## Configuring Data
+## Configuration
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
-from frictionless import Resource
-from frictionless.plugins.json import JsonDialect
+from frictionless import Resource, formats
 
-resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('tmp/table.json', dialect=JsonDialect(keyed=True))
+control=formats.JsonControl(keyed=True)
+resource = Resource(path='table.keyed.json', type='table', control=control)
+pprint(resource.read_rows())
 ```
-
-References:
-- [JSON Dialect](../../references/formats-reference.md#json)
