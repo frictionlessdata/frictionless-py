@@ -1,6 +1,9 @@
-# Multipart Scheme
+---
+script:
+  basepath: data
+---
 
-> This functionality requires an experimental `multipart` plugin. [Read More](../../references/plugins-reference.md)
+# Multipart Scheme
 
 You can read and write files split into chunks with Frictionless.
 
@@ -8,40 +11,35 @@ You can read and write files split into chunks with Frictionless.
 
 You can read using `Package/Resource`, for example:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path=['data/chunk1.csv', 'data/chunk2.csv'])
+resource = Resource(path='chunk1.csv', extrapaths=['chunk2.csv'])
 pprint(resource.read_rows())
-```
-```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data
 
 A similiar approach can be used for writing:
 
-```python title="Python"
+```python tabs=Python
 from frictionless import Resource
 
-resource = Resource(path='data/table.json')
-resource.write('tmp/table{number}.json', scheme="multipart", control={"chunkSize": 1000000})
+resource = Resource(path='table.json')
+resource.write('table{number}.json', scheme="multipart", control={"chunkSize": 1000000})
 ```
 
-## Configuring Data
+## Configuration
 
 There is a `Control` to configure how Frictionless reads files using this scheme. For example:
 
-```python title="Python"
+```python tabs=Python
 from frictionless import Resource
 from frictionless.plugins.multipart import MultipartControl
 
 control = MultipartControl(chunk_size=1000000)
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('tmp/table{number}.json', scheme="multipart", control=control)
+resource.write('table{number}.json', scheme="multipart", control=control)
 ```
 
-References:
-- [Multipart Control](../../references/schemes-reference.md#multipart)

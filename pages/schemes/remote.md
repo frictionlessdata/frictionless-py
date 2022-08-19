@@ -6,11 +6,12 @@ You can read files remotely with Frictionless. This is a basic functionality of 
 
 You can read using `Package/Resource`, for example:
 
-```python title="Python"
+```python tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv')
+path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv'
+resource = Resource(path=path)
 pprint(resource.read_rows())
 ```
 ```
@@ -21,23 +22,24 @@ pprint(resource.read_rows())
 
 A similar approach can be used for writing:
 
-```python title="Python"
+```python tabs=Python
 from frictionless import Resource
 
 resource = Resource(path='data/table.csv')
 resource.write('https://example.com/data/table.csv') # will POST the file to the server
 ```
 
-## Configuring Data
+## Configuration
 
 There is a `Control` to configure remote data, for example:
 
-```python title="Python"
+```python tabs=Python
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl
 
 control = RemoteControl(http_timeout=10)
-resource = Resource(path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv', control=control)
+path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv'
+resource = Resource(path=path, control=control)
 print(resource.to_view())
 ```
 ```
@@ -49,6 +51,3 @@ print(resource.to_view())
 |  2 | '中国人'     |
 +----+-----------+
 ```
-
-References:
-- [Remote Control](../../references/schemes-reference.md#remote)

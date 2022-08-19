@@ -1,3 +1,8 @@
+---
+script:
+  basepath: data
+---
+
 # Stream Scheme
 
 Frictionless supports using data stored as File-Like objects in Python.
@@ -8,23 +13,20 @@ Frictionless supports using data stored as File-Like objects in Python.
 
 You can read Stream using `Package/Resource`, for example:
 
-```python title="Python"
+```python script tabs=Python
 from pprint import pprint
 from frictionless import Resource
 
-with open('data/table.csv', 'rb') as file:
+with open('table.csv', 'rb') as file:
   resource = Resource(file, format='csv')
   pprint(resource.read_rows())
-```
-```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data
 
 A similiar approach can be used for writing:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
@@ -32,22 +34,3 @@ target = source.write(scheme='stream', format='csv')
 print(target)
 print(target.to_view())
 ```
-```
-{'data': <_io.BufferedReader name='/tmp/tmpaxbiv_8_'>,
- 'format': 'csv',
- 'scheme': 'stream'}
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | 'german'  |
-+----+-----------+
-```
-
-## Configuring Data
-
-There are no options available for `StreamControl`.
-
-References:
-- [Stream Control](../../references/schemes-reference.md#stream)
