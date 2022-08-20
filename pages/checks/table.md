@@ -56,3 +56,13 @@ pprint(report.flatten(["type", "message"]))
 ```
 
 But the table dimensions check arguments `num_rows`, `min_rows`, `max_rows`, `num_fields`, `min_fields`, `max_fields` must be passed in camelCase format as the example above i.e. `numRows`, `minRows`, `maxRows`, `numFields`, `minFields` and `maxFields`.
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_dimensions
+name: frictionless.checks.table_dimensions
+```

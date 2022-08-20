@@ -43,3 +43,12 @@ resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('table{number}.json', scheme="multipart", control=control)
 ```
 
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=MultipartControl
+name: frictionless.schemes.MultipartControl
+```

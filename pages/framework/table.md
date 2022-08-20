@@ -5,7 +5,7 @@ script:
 
 # Table Classes
 
-## Header
+## Table Header
 
 After opening a resource you get access to a `resource.header` object which describes the resource in more detail. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
 
@@ -33,7 +33,7 @@ with Resource([['name', 'name'], ['value', 'value']]) as resource:
     pprint(resource.header.errors)
 ```
 
-## Row
+## Table Row
 
 The `extract`, `resource.read_rows()` and other functions return or yield row objects. In Python, this returns a dictionary with the following information. Note: this example uses the [Detector object](/docs/guides/framework/detector-guide), which tweaks how different aspects of metadata are detected.
 
@@ -67,4 +67,18 @@ from frictionless import Resource
 with Resource([['name'], ['value', 'value']]) as resource:
     for row in resource.row_stream:
         pprint(row.errors)
+```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Header
+name: frictionless.Header
+```
+
+```yaml reference tabs=Row
+name: frictionless.Row
 ```

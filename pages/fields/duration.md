@@ -1,6 +1,11 @@
 # Duration Field
 
-```yaml remark
-text: Under development
-type: warning
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=DurationField
+name: frictionless.fields.DurationField
 ```

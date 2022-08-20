@@ -1,3 +1,8 @@
+---
+script:
+  basepath: data
+---
+
 # Other Classes
 
 ## Error
@@ -19,7 +24,25 @@ class DuplicateRowError(errors.RowError):
 
 ## Stats
 
-```yaml remark
-text: Under Construction
-type: warning
+The Stats represent various describe/validate stats:
+
+```python script title="Python"
+from frictionless import describe
+
+resource = describe('table.csv', stats=True)
+print(resource.stats)
+```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Error
+name: frictionless.Error
+```
+
+```yaml reference tabs=Stats
+name: frictionless.Stats
 ```

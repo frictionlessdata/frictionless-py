@@ -1,6 +1,8 @@
 ---
 script:
   basepath: data
+topics:
+  selector: h2
 ---
 
 # Cell Checks
@@ -83,4 +85,34 @@ from frictionless import validate, checks
 source = [["int", "str"], ["a" * 255, 32767], ["good", 2147483647]]
 report = validate(source, checks=[checks.truncated_value()])
 pprint(report.flatten(["type", "message"]))
+```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=ascii_value
+name: frictionless.checks.ascii_value
+```
+
+```yaml reference tabs=deviated_cell
+name: frictionless.checks.deviated_cell
+```
+
+```yaml reference tabs=deviated_value
+name: frictionless.checks.deviated_value
+```
+
+```yaml reference tabs=forbidden_value
+name: frictionless.checks.forbidden_value
+```
+
+```yaml reference tabs=sequential_value
+name: frictionless.checks.sequential_value
+```
+
+```yaml reference tabs=truncated_value
+name: frictionless.checks.truncated_value
 ```

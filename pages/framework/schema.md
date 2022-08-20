@@ -7,9 +7,7 @@ script:
 
 The Table Schema is a core Frictionless Data concept meaning a metadata information regarding tabular data source. You can read [Table Schema Standard](https://specs.frictionlessdata.io/table-schema/) for more information.
 
-## Schema
-
-### Creating Schema
+## Creating Schema
 
 Let's create a table schema:
 
@@ -30,7 +28,7 @@ schema = Schema(fields=[fields.StringField(name='id')]) # from fields
 schema = Schema.from_descriptor('schema.json') # from a descriptor
 ```
 
-### Describing Schema
+## Describing Schema
 
 The standard support some additional schema's metadata:
 
@@ -67,7 +65,7 @@ schema.missing_values.append('-')
 print(schema)
 ```
 
-### Field Management
+## Field Management
 
 The Schema class provides useful methods to manage fields:
 
@@ -83,7 +81,7 @@ print(schema.has_field('new-name'))
 schema.remove_field('new-name')
 ```
 
-### Saving Descriptor
+## Saving Descriptor
 
 As any of the Metadata classes the Schema class can be saved as JSON or YAML:
 
@@ -94,7 +92,7 @@ schema.to_json('schema.json') # Save as JSON
 schema.to_yaml('schema.yaml') # Save as YAML
 ```
 
-### Reading Cells
+## Reading Cells
 
 During the process of data reading a resource uses a schema to convert data:
 
@@ -106,7 +104,7 @@ cells, notes = schema.read_cells(['3', 'value'])
 print(cells)
 ```
 
-### Writing Cells
+## Writing Cells
 
 During the process of data writing a resource uses a schema to convert data:
 
@@ -118,9 +116,7 @@ cells, notes = schema.write_cells([3, 'value'])
 print(cells)
 ```
 
-## Field
-
-### Creating Field
+## Creating Field
 
 Let's create a field:
 
@@ -141,7 +137,7 @@ field = resource.schema.get_field('id')
 print(field)
 ```
 
-### Field Types
+## Field Types
 
 Frictionless Framework supports all the [Table Schema Standard](https://specs.frictionlessdata.io/table-schema/#types-and-formats) field types along with an ability to create custom types.
 
@@ -157,7 +153,7 @@ print(field.bare_number)
 
 See the complete reference at [Tabular Fields](../fields/any.html).
 
-### Reading Cell
+## Reading Cell
 
 During the process of data reading a schema uses a field internally. If needed a user can convert their data using this interface:
 
@@ -169,7 +165,7 @@ cell, note = field.read_cell('3')
 print(cell)
 ```
 
-### Writing Cell
+## Writing Cell
 
 During the process of data writing a schema uses a field internally. The same as with reasing a user can convert their data using this interface:
 
@@ -179,4 +175,18 @@ from frictionless import fields
 field = fields.IntegerField(name='name')
 cell, note = field.write_cell(3)
 print(cell)
+```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Schema
+name: frictionless.Schema
+```
+
+```yaml reference tabs=Field
+name: frictionless.Field
 ```

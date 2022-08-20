@@ -48,3 +48,13 @@ control=formats.HtmlControl(selector='#id')
 resource = Resource(path='table1.html', type='table', control=control)
 print(resource.read_rows())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=HtmlControl
+name: frictionless.formats.HtmlControl
+```

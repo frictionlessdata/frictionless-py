@@ -1,13 +1,6 @@
 # Checklist Class
 
-## Checklist
-
-```yaml remark
-text: Under development
-type: warning
-```
-
-## Check
+## Checks
 
 The Check concept is a part of the Validation API. You can create a custom Check to be used as part of resource or package validation.
 
@@ -40,3 +33,17 @@ class duplicate_row(Check):
 ```
 
 It's usuall to create a custom [Error](error-guide.md) along side with a Custom Check.
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Checklist
+name: frictionless.Checklist
+```
+
+```yaml reference tabs=Check
+name: frictionless.Check
+```

@@ -109,3 +109,33 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=cell_convert
+name: frictionless.steps.cell_convert
+```
+
+```yaml reference tabs=cell_fill
+name: frictionless.steps.cell_fill
+```
+
+```yaml reference tabs=cell_format
+name: frictionless.steps.cell_format
+```
+
+```yaml reference tabs=cell_interpolate
+name: frictionless.steps.cell_interpolate
+```
+
+```yaml reference tabs=cell_replace
+name: frictionless.steps.cell_replace
+```
+
+```yaml reference tabs=cell_set
+name: frictionless.steps.cell_set
+```

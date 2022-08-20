@@ -31,3 +31,17 @@ source = [
 report = validate(source, checks=[checks.row_constraint(formula="salary == bonus * 5")])
 pprint(report.flatten(["type", "message"]))
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=duplicate_row
+name: frictionless.checks.duplicate_row
+```
+
+```yaml reference tabs=row_constraint
+name: frictionless.checks.row_constraint
+```

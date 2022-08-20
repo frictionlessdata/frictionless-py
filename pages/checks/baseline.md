@@ -5,6 +5,7 @@ script:
 
 # Baseline Check
 
+## Overview
 
 The Baseline Check is always enabled. It makes various small checks that reveal a great deal of tabular errors. You can create an empty `Checklist` to see the baseline check scope:
 
@@ -21,3 +22,13 @@ pprint(report.flatten(['type', 'message']))
 ```
 
 The Baseline Check is incorporated into base Frictionless classes as though Resource, Header, and Row. There is no exact order in which those errors are revealed as it's highly optimized. One should consider the Baseline Check as one unit of validation.
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=baseline
+name: frictionless.checks.baseline
+```

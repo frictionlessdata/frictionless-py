@@ -127,3 +127,37 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_filter
+name: frictionless.steps.row_filter
+```
+
+```yaml reference tabs=row_search
+name: frictionless.steps.row_search
+```
+
+```yaml reference tabs=row_slice
+name: frictionless.steps.row_slice
+```
+
+```yaml reference tabs=row_sort
+name: frictionless.steps.row_sort
+```
+
+```yaml reference tabs=row_split
+name: frictionless.steps.row_split
+```
+
+```yaml reference tabs=row_subset
+name: frictionless.steps.row_subset
+```
+
+```yaml reference tabs=row_ungroup
+name: frictionless.steps.row_ungroup
+```

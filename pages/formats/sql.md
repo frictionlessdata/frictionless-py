@@ -54,3 +54,13 @@ from frictionless import Resource, formats
 control = SqlControl(table='table', order_by='field', where='field > 20')
 resource = Resource('postgresql://database', control=control)
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=SqlControl
+name: frictionless.formats.SqlControl
+```

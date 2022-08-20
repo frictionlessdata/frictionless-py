@@ -164,3 +164,13 @@ with Resource('table.csv', detector=detector) as resource:
     print(resource.schema)
     print(resource.read_rows())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Detector
+name: frictionless.Detector
+```

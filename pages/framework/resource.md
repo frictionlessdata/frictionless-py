@@ -1,6 +1,8 @@
 ---
 script:
   basepath: data
+topics:
+  selector: h2
 ---
 
 # Resource Class
@@ -240,4 +242,22 @@ from frictionless import Resource
 resource = Resource('table.csv')
 resource.infer(stats=True)
 print(resource.stats)
+```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Resource
+name: frictionless.Resource
+```
+
+```yaml reference tabs=Loader
+name: frictionless.Loader
+```
+
+```yaml reference tabs=Parser
+name: frictionless.Parser
 ```

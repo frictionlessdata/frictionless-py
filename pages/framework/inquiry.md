@@ -43,3 +43,17 @@ row  field  code             message
 ```
 
 At first sight, it's no clear why such a construct exists but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there are more than 1 task provided.
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Inquiry
+name: frictionless.Inquiry
+```
+
+```yaml reference tabs=InquiryTask
+name: frictionless.InquiryTask
+```

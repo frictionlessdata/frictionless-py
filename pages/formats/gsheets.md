@@ -46,3 +46,13 @@ control = formats.GsheetsControl(credentials=".google.json")
 resource = Resource(path='data/table.csv')
 resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", control=control)
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=GsheetsControl
+name: frictionless.formats.GsheetsControl
+```

@@ -318,3 +318,69 @@ cat transform.json
 with open('transform.json') as file:
     print(file.read())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_aggregate
+name: frictionless.steps.table_aggregate
+```
+
+```yaml reference tabs=table_attach
+name: frictionless.steps.table_attach
+```
+
+```yaml reference tabs=table_debug
+name: frictionless.steps.table_debug
+```
+
+```yaml reference tabs=table_diff
+name: frictionless.steps.table_diff
+```
+
+```yaml reference tabs=table_intersect
+name: frictionless.steps.table_intersect
+```
+
+```yaml reference tabs=table_join
+name: frictionless.steps.table_join
+```
+
+```yaml reference tabs=table_melt
+name: frictionless.steps.table_melt
+```
+
+```yaml reference tabs=table_merge
+name: frictionless.steps.table_merge
+```
+
+```yaml reference tabs=table_normalize
+name: frictionless.steps.table_normalize
+```
+
+```yaml reference tabs=table_pivot
+name: frictionless.steps.table_pivot
+```
+
+```yaml reference tabs=table_print
+name: frictionless.steps.table_print
+```
+
+```yaml reference tabs=table_recast
+name: frictionless.steps.table_recast
+```
+
+```yaml reference tabs=table_transpose
+name: frictionless.steps.table_transpose
+```
+
+```yaml reference tabs=table_validate
+name: frictionless.steps.table_validate
+```
+
+```yaml reference tabs=table_write
+name: frictionless.steps.table_write
+```

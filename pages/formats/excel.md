@@ -47,3 +47,13 @@ from frictionless import Resource, formats
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('table-output.xls', control=formats.ExcelControl(sheet='My Table'))
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=ExcelControl
+name: frictionless.formats.ExcelControl
+```

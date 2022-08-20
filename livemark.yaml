@@ -13,7 +13,7 @@ counter:
   type: plausible
   code: framework.frictionlessdata.io
 topics:
-  selector: h2,h3
+  selector: h2
 links:
   items:
     - name: Framework (v4) (docs)

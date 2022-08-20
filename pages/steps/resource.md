@@ -79,3 +79,25 @@ target = transform(
 )
 print(target.get_resource('main'))
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=resource_add
+name: frictionless.steps.resource_add
+```
+
+```yaml reference tabs=resource_remove
+name: frictionless.steps.resource_remove
+```
+
+```yaml reference tabs=resource_transform
+name: frictionless.steps.resource_transform
+```
+
+```yaml reference tabs=resource_update
+name: frictionless.steps.resource_update
+```

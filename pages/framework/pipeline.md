@@ -50,7 +50,7 @@ print(status.task.target.to_view())
 +----+-----------+------------+------+
 ```
 
-## Step
+## Transform Steps
 
 The Step concept is a part of the Transform API. You can create a custom Step to be used as part of resource or package transformation.
 
@@ -71,4 +71,18 @@ class cell_set(Step):
         value = self.get("value")
         field_name = self.get("fieldName")
         yield from resource.to_petl().update(field_name, value)
+```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=Pipeline
+name: frictionless.Pipeline
+```
+
+```yaml reference tabs=Step
+name: frictionless.Step
 ```

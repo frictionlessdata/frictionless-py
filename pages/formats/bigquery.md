@@ -78,3 +78,13 @@ dialect = BigqueryDialect(project=project, dataset='<dataset>', table='<table>'
 resource = Resource(service, dialect=dialect)
 pprint(resource.read_rows())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=BigqueryControl
+name: frictionless.formats.BigqueryControl
+```

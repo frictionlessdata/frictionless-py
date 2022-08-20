@@ -51,3 +51,13 @@ control=formats.JsonControl(keyed=True)
 resource = Resource(path='table.keyed.json', type='table', control=control)
 pprint(resource.read_rows())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=JsonControl
+name: frictionless.formats.JsonControl
+```

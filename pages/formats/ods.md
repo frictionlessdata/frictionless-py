@@ -47,3 +47,13 @@ from frictionless import Resource, formats
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('table.ods', control=formats.OdsControl(sheet='My Table'))
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=OdsControl
+name: frictionless.formats.OdsControl
+```

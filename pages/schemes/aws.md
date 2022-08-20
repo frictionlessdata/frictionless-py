@@ -44,5 +44,12 @@ resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('table.new.csv', control=controls.S3Control(endpoint_url='<url>'))
 ```
 
-References:
-- [S3 Control](../../references/schemes-reference.md#s3)
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=AwsControl
+name: frictionless.schemes.AwsControl
+```

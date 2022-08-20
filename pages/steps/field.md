@@ -164,3 +164,45 @@ target = transform(
 print(target.schema)
 print(target.to_view())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_add
+name: frictionless.steps.field_add
+```
+
+```yaml reference tabs=field_filter
+name: frictionless.steps.field_filter
+```
+
+```yaml reference tabs=field_merge
+name: frictionless.steps.field_merge
+```
+
+```yaml reference tabs=field_move
+name: frictionless.steps.field_move
+```
+
+```yaml reference tabs=field_pack
+name: frictionless.steps.field_pack
+```
+
+```yaml reference tabs=field_remove
+name: frictionless.steps.field_remove
+```
+
+```yaml reference tabs=field_split
+name: frictionless.steps.field_split
+```
+
+```yaml reference tabs=field_unpack
+name: frictionless.steps.field_unpack
+```
+
+```yaml reference tabs=field_update
+name: frictionless.steps.field_update
+```

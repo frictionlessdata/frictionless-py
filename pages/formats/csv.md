@@ -42,3 +42,13 @@ from frictionless import Resource, formats
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('tmp/table.csv', control=formats.CsvControl(delimiter=';'))
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=CsvControl
+name: frictionless.formats.CsvControl
+```

@@ -12,3 +12,13 @@
 | Template    | {{ Error.template }}       |
 | Tags        | {{ Error.tags|join(' ') }} |
 {% endfor %}
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=CellError
+name: frictionless.errors.CellError
+```

@@ -43,3 +43,13 @@ control = formats.InlineControl(keyed=True, keys=['name', 'id'])
 resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}], control=control)
 print(resource.to_view())
 ```
+
+## Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=InlineControl
+name: frictionless.formats.InlineControl
+```
