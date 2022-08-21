@@ -2,7 +2,9 @@
 
 ## Duplicate Row
 
-This checks for duplicate rows. You need to take into account that checking for duplicate rows can lead to high memory consumption on big files. Here is an example:
+This checks for duplicate rows. You need to take into account that checking for duplicate rows can lead to high memory consumption on big files. Here is an example.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -13,9 +15,22 @@ report = validate(source, format="csv", checks=[checks.duplicate_row()])
 pprint(report.flatten(["type", "message"]))
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=duplicate_row
+name: frictionless.checks.duplicate_row
+level: 4
+```
+
 ## Row Constraint
 
-This check is the most powerful one as it uses the external `simpleeval` package allowing you to evaluate arbitrary Python expressions on data rows. Let's show on an example:
+This check is the most powerful one as it uses the external `simpleeval` package allowing you to evaluate arbitrary Python expressions on data rows. Let's show on an example.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -32,16 +47,13 @@ report = validate(source, checks=[checks.row_constraint(formula="salary == bonus
 pprint(report.flatten(["type", "message"]))
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=duplicate_row
-name: frictionless.checks.duplicate_row
-```
-
 ```yaml reference tabs=row_constraint
 name: frictionless.checks.row_constraint
+level: 4
 ```

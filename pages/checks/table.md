@@ -2,7 +2,9 @@
 
 ## Table Dimensions
 
-This check is used to validate if your data has expected dimensions as: exact number of rows (`num_rows`), minimum (`min_rows`) and maximum (`max_rows`) number of rows, exact number of fields (`num_fields`), minimum (`min_fields`) and maximum (`max_fields`) number of fields.
+This check is used to validate if your data has expected dimensions as: exact number of rows , minimum and maximum number of rows, exact number of fields , minimum and maximum  number of fields.
+
+### Basic Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -18,6 +20,8 @@ source = [
 report = validate(source, checks=[checks.table_dimensions(num_rows=5)])
 pprint(report.flatten(["type", "message"]))
 ```
+
+### Multiple Limits
 
 You can also give multiples limits at the same time:
 
@@ -35,6 +39,8 @@ source = [
 report = validate(source, checks=[checks.table_dimensions(num_rows=5, num_fields=4)])
 pprint(report.flatten(["type", "message"]))
 ```
+
+### Using Declaratively
 
 It is possible to use de check declaratively as:
 
@@ -57,7 +63,7 @@ pprint(report.flatten(["type", "message"]))
 
 But the table dimensions check arguments `num_rows`, `min_rows`, `max_rows`, `num_fields`, `min_fields`, `max_fields` must be passed in camelCase format as the example above i.e. `numRows`, `minRows`, `maxRows`, `numFields`, `minFields` and `maxFields`.
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
@@ -65,4 +71,5 @@ Select reference to show
 
 ```yaml reference tabs=table_dimensions
 name: frictionless.checks.table_dimensions
+level: 4
 ```

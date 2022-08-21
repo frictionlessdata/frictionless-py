@@ -9,7 +9,9 @@ topics:
 
 ## ASCII Value
 
-If you want to skip non-ascii characters, this check helps to notify if there are any in data during validation. Here is how we can use this check:
+If you want to skip non-ascii characters, this check helps to notify if there are any in data during validation. Here is how we can use this check.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -20,9 +22,22 @@ report = validate(source, checks=[checks.ascii_value()])
 pprint(report.flatten(["type", "message"]))
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=ascii_value
+name: frictionless.checks.ascii_value
+level: 4
+```
+
 ## Deviated Cell
 
 This check identifies deviated cells from the normal ones. To flag the deviated cell, the check compares the length of the characters in each cell with a threshold value. The threshold value is either 5000 or value calculated using Python's built-in `statistics` module which is average plus(+) three standard deviation. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/main/frictionless/checks/cell/deviated_value.py). For example:
+
+### Example
 
 > Download [`issue-1066.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/issue-1066.csv) to reproduce the examples (right-click and "Save link as")..
 
@@ -34,9 +49,22 @@ report = validate("issue-1066.csv", checks=[checks.deviated_cell()])
 pprint(report.flatten(["type", "message"]))
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=deviated_cell
+name: frictionless.checks.deviated_cell
+level: 4
+```
+
 ## Deviated Value
 
 This check uses Python's built-in `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -47,9 +75,22 @@ report = validate(source, checks=[checks.deviated_value(field_name="temperature"
 pprint(report.flatten(["type", "message"]))
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=deviated_value
+name: frictionless.checks.deviated_value
+level: 4
+```
+
 ## Forbidden Value
 
-This check ensures that some field doesn't have any forbidden or denylist values. For example:
+This check ensures that some field doesn't have any forbidden or denylist values.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -61,9 +102,22 @@ report = validate(source, format='csv', checks=checks)
 pprint(report.flatten(['type', 'message']))
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=forbidden_value
+name: frictionless.checks.forbidden_value
+level: 4
+```
+
 ## Sequential Value
 
-This check gives us an opportunity to validate sequential fields like primary keys or other similar data. It doesn't need to start from 0 or 1. We're providing a field name:
+This check gives us an opportunity to validate sequential fields like primary keys or other similar data. It doesn't need to start from 0 or 1. We're providing a field name.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -74,9 +128,22 @@ report = validate(source, format='csv', checks=[checks.sequential_value(field_na
 pprint(report.flatten(['type', 'message']))
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=sequential_value
+name: frictionless.checks.sequential_value
+level: 4
+```
+
 ## Truncated Value
 
-Sometime during data export from a database or other storage, data values can be truncated. This check tries to detect such truncation. Let's explore some truncation indicators:
+Sometime during data export from a database or other storage, data values can be truncated. This check tries to detect such truncation. Let's explore some truncation indicators.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -87,32 +154,13 @@ report = validate(source, checks=[checks.truncated_value()])
 pprint(report.flatten(["type", "message"]))
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=ascii_value
-name: frictionless.checks.ascii_value
-```
-
-```yaml reference tabs=deviated_cell
-name: frictionless.checks.deviated_cell
-```
-
-```yaml reference tabs=deviated_value
-name: frictionless.checks.deviated_value
-```
-
-```yaml reference tabs=forbidden_value
-name: frictionless.checks.forbidden_value
-```
-
-```yaml reference tabs=sequential_value
-name: frictionless.checks.sequential_value
-```
-
 ```yaml reference tabs=truncated_value
 name: frictionless.checks.truncated_value
+level: 4
 ```
