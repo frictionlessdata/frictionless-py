@@ -9,6 +9,10 @@ The Resource steps are only available for a package transformation. This include
 
 ## Add Resource
 
+This step add a new resource to a data package.
+
+### Example
+
 ```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -25,7 +29,22 @@ print(target.get_resource('extra').schema)
 print(target.get_resource('extra').to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=resource_add
+name: frictionless.steps.resource_add
+level: 4
+```
+
 ## Remove Resource
+
+This step remove an existent resource from a data package.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -41,7 +60,22 @@ target = transform(
 print(target)
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=resource_remove
+name: frictionless.steps.resource_remove
+level: 4
+```
+
 ## Transform Resource
+
+It's a hierarchical step allowing to transform a data package's resource. It's possible to use any resource steps as a part of this package step.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -61,7 +95,22 @@ print(target.get_resource('main').schema)
 print(target.get_resource('main').to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=resource_transform
+name: frictionless.steps.resource_transform
+level: 4
+```
+
 ## Update Resource
+
+This step update a resource's metadata.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -80,24 +129,13 @@ target = transform(
 print(target.get_resource('main'))
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=resource_add
-name: frictionless.steps.resource_add
-```
-
-```yaml reference tabs=resource_remove
-name: frictionless.steps.resource_remove
-```
-
-```yaml reference tabs=resource_transform
-name: frictionless.steps.resource_transform
-```
-
 ```yaml reference tabs=resource_update
 name: frictionless.steps.resource_update
+level: 4
 ```

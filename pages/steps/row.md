@@ -9,6 +9,10 @@ These steps are row-based including row filtering, slicing, and many more.
 
 ## Filter Rows
 
+This step filters rows based on a provided formula or function.
+
+### Example
+
 ```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -25,7 +29,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_filter
+name: frictionless.steps.row_filter
+level: 4
+```
+
 ## Search Rows
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -42,7 +59,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_search
+name: frictionless.steps.row_search
+level: 4
+```
+
 ## Slice Rows
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -59,7 +89,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_slice
+name: frictionless.steps.row_slice
+level: 4
+```
+
 ## Sort Rows
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -76,7 +119,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_sort
+name: frictionless.steps.row_sort
+level: 4
+```
+
 ## Split Rows
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -93,7 +149,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_split
+name: frictionless.steps.row_split
+level: 4
+```
+
 ## Subset Rows
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -111,7 +180,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=row_subset
+name: frictionless.steps.row_subset
+level: 4
+```
+
 ## Ungroup Rows
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -128,36 +210,13 @@ print(target.schema)
 print(target.to_view())
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=row_filter
-name: frictionless.steps.row_filter
-```
-
-```yaml reference tabs=row_search
-name: frictionless.steps.row_search
-```
-
-```yaml reference tabs=row_slice
-name: frictionless.steps.row_slice
-```
-
-```yaml reference tabs=row_sort
-name: frictionless.steps.row_sort
-```
-
-```yaml reference tabs=row_split
-name: frictionless.steps.row_split
-```
-
-```yaml reference tabs=row_subset
-name: frictionless.steps.row_subset
-```
-
 ```yaml reference tabs=row_ungroup
 name: frictionless.steps.row_ungroup
+level: 4
 ```

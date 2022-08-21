@@ -9,22 +9,79 @@ The Cell steps are responsible for cell operations like converting, replacing, o
 
 ## Convert Cells
 
+Converts cell values of one or more fields using arbitrary functions, method
+invocations or dictionary translations.
+
+### Using Value
+
+We can provide a value to be set as a value of all cells of this field. Take into account that the value type needs to conform to the field type otherwise it will lead to a validation error:
+
 ```python script tabs=Python
-from pprint import pprint
-from frictionless import Package, Resource, transform, steps
+from frictionless import Resource, transform, steps
 
 source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
-        steps.cell_convert(value="n/a", field_name="name"),
-    ]
+        steps.cell_convert(field_name='population', value="100"),
+    ],
 )
-print(target.schema)
 print(target.to_view())
 ```
 
+### Using Mapping
+
+Another option to modify the field's cell is to provide a mapping. It's a translation table that uses literal matching to replace values. It's usually used for string fields:
+
+```python script tabs=Python
+from frictionless import Resource, transform, steps
+
+source = Resource(path="transform.csv")
+target = transform(
+    source,
+    steps=[
+        steps.cell_convert(field_name='name', mapping = {'germany': 'GERMANY'}),
+    ],
+)
+print(target.to_view())
+```
+
+### Using Function
+
+```markdown remark type=info
+Functions are not supported in declarative pipelines
+```
+
+We can provide an arbitrary function to update the field cells. If you want to modify a non-string field it's really important to normalize the table first otherwise the function will be applied to a non-parsed value:
+
+```python script tabs=Python
+from frictionless import Resource, transform, steps
+
+source = Resource(path="transform.csv")
+target = transform(
+    source,
+    steps=[
+        steps.table_normalize(),
+        steps.cell_convert(field_name='population', function=lambda v: v*2),
+    ],
+)
+print(target.to_view())
+```
+
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=cell_convert
+name: frictionless.steps.cell_convert
+level: 4
+```
+
 ## Fill Cells
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -42,7 +99,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=cell_fill
+name: frictionless.steps.cell_fill
+level: 4
+```
+
 ## Format Cells
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -59,7 +129,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=cell_format
+name: frictionless.steps.cell_format
+level: 4
+```
+
 ## Interpolate Cells
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -76,7 +159,20 @@ pprint(target.schema)
 pprint(target.read_rows())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=cell_interpolate
+name: frictionless.steps.cell_interpolate
+level: 4
+```
+
 ## Replace Cells
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -93,7 +189,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=cell_replace
+name: frictionless.steps.cell_replace
+level: 4
+```
+
 ## Set Cells
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -110,32 +219,13 @@ print(target.schema)
 print(target.to_view())
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=cell_convert
-name: frictionless.steps.cell_convert
-```
-
-```yaml reference tabs=cell_fill
-name: frictionless.steps.cell_fill
-```
-
-```yaml reference tabs=cell_format
-name: frictionless.steps.cell_format
-```
-
-```yaml reference tabs=cell_interpolate
-name: frictionless.steps.cell_interpolate
-```
-
-```yaml reference tabs=cell_replace
-name: frictionless.steps.cell_replace
-```
-
 ```yaml reference tabs=cell_set
 name: frictionless.steps.cell_set
+level: 4
 ```

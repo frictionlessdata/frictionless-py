@@ -9,6 +9,8 @@ The Field steps are responsible for managing a Table Schema's fields. You can ad
 
 ## Add Field
 
+### Example
+
 ```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -24,7 +26,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_add
+name: frictionless.steps.field_add
+level: 4
+```
+
 ## Filter Fields
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -41,7 +56,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_filter
+name: frictionless.steps.field_filter
+level: 4
+```
+
 ## Merge Fields
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -60,7 +88,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_merge
+name: frictionless.steps.field_merge
+level: 4
+```
+
 ## Move Field
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -77,7 +118,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_move
+name: frictionless.steps.field_move
+level: 4
+```
+
 ## Pack Fields
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -96,7 +150,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_pack
+name: frictionless.steps.field_pack
+level: 4
+```
+
 ## Remove Field
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -113,7 +180,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_remove
+name: frictionless.steps.field_remove
+level: 4
+```
+
 ## Split Field
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -130,7 +210,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_split
+name: frictionless.steps.field_split
+level: 4
+```
+
 ## Unpack Field
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -148,7 +241,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=field_unpack
+name: frictionless.steps.field_unpack
+level: 4
+```
+
 ## Update Field
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -165,44 +271,13 @@ print(target.schema)
 print(target.to_view())
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=field_add
-name: frictionless.steps.field_add
-```
-
-```yaml reference tabs=field_filter
-name: frictionless.steps.field_filter
-```
-
-```yaml reference tabs=field_merge
-name: frictionless.steps.field_merge
-```
-
-```yaml reference tabs=field_move
-name: frictionless.steps.field_move
-```
-
-```yaml reference tabs=field_pack
-name: frictionless.steps.field_pack
-```
-
-```yaml reference tabs=field_remove
-name: frictionless.steps.field_remove
-```
-
-```yaml reference tabs=field_split
-name: frictionless.steps.field_split
-```
-
-```yaml reference tabs=field_unpack
-name: frictionless.steps.field_unpack
-```
-
 ```yaml reference tabs=field_update
 name: frictionless.steps.field_update
+level: 4
 ```

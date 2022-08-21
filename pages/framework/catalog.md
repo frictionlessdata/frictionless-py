@@ -2,7 +2,7 @@
 
 ## Reference
 
-```markdown tabs=Select
+```markdown tabs=Reference
 Select reference to show
 ```
 

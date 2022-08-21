@@ -11,6 +11,8 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 Group rows under the given group_name then apply aggregation functions provided as aggregation dictionary (see example)
 
+### Example
+
 ```python script tabs=Python
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -29,7 +31,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_aggregate
+name: frictionless.steps.table_aggregate
+level: 4
+```
+
 ## Attach Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -46,7 +61,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_attach
+name: frictionless.steps.table_attach
+level: 4
+```
+
 ## Debug Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -62,7 +90,20 @@ target = transform(
 print(target.to_view())
 ```
 
-## Diff Table
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_debug
+name: frictionless.steps.table_debug
+level: 4
+```
+
+## Diff Tables
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -89,7 +130,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
-## Intersect Table
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_diff
+name: frictionless.steps.table_diff
+level: 4
+```
+
+## Intersect Tables
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -116,7 +170,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_intersect
+name: frictionless.steps.table_intersect
+level: 4
+```
+
 ## Join Tables
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -137,7 +204,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_join
+name: frictionless.steps.table_join
+level: 4
+```
+
 ## Melt Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -155,7 +235,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_melt
+name: frictionless.steps.table_melt
+level: 4
+```
+
 ## Merge Tables
+
+### Example
 
 ```markdown remark type=danger
 This functionality is currently disabled as being fixed in [#1221](https://github.com/frictionlessdata/frictionless-py/issues/1221)
@@ -178,9 +271,22 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_merge
+name: frictionless.steps.table_merge
+level: 4
+```
+
 ## Normalize Table
 
 The `table_normalize` step normalizes an underlaying tabular stream (cast types and fix dimensions) according to a provided or inferred schema. If your data is not really big it's recommended to normalize a table before any others steps.
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -197,7 +303,20 @@ target = transform(
 print(target.read_cells())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_normalize
+name: frictionless.steps.table_normalize
+level: 4
+```
+
 ## Pivot Table
+
+### Example
 
 ```markdown remark type=danger
 This functionality is currently disabled as being fixed in [#1220](https://github.com/frictionlessdata/frictionless-py/issues/1220)
@@ -219,7 +338,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_pivot
+name: frictionless.steps.table_pivot
+level: 4
+```
+
 ## Print Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -235,7 +367,20 @@ target = transform(
 )
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_print
+name: frictionless.steps.table_print
+level: 4
+```
+
 ## Recast Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -254,7 +399,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_recast
+name: frictionless.steps.table_recast
+level: 4
+```
+
 ## Transpose Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -272,7 +430,20 @@ print(target.schema)
 print(target.to_view())
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_transpose
+name: frictionless.steps.table_transpose
+level: 4
+```
+
 ## Validate Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -293,7 +464,20 @@ except Exception as exception:
   pprint(exception)
 ```
 
+### Reference
+
+```markdown tabs=Select
+Select reference to show
+```
+
+```yaml reference tabs=table_validate
+name: frictionless.steps.table_validate
+level: 4
+```
+
 ## Write Table
+
+### Example
 
 ```python script tabs=Python
 from pprint import pprint
@@ -319,68 +503,13 @@ with open('transform.json') as file:
     print(file.read())
 ```
 
-## Reference
+### Reference
 
 ```markdown tabs=Select
 Select reference to show
 ```
 
-```yaml reference tabs=table_aggregate
-name: frictionless.steps.table_aggregate
-```
-
-```yaml reference tabs=table_attach
-name: frictionless.steps.table_attach
-```
-
-```yaml reference tabs=table_debug
-name: frictionless.steps.table_debug
-```
-
-```yaml reference tabs=table_diff
-name: frictionless.steps.table_diff
-```
-
-```yaml reference tabs=table_intersect
-name: frictionless.steps.table_intersect
-```
-
-```yaml reference tabs=table_join
-name: frictionless.steps.table_join
-```
-
-```yaml reference tabs=table_melt
-name: frictionless.steps.table_melt
-```
-
-```yaml reference tabs=table_merge
-name: frictionless.steps.table_merge
-```
-
-```yaml reference tabs=table_normalize
-name: frictionless.steps.table_normalize
-```
-
-```yaml reference tabs=table_pivot
-name: frictionless.steps.table_pivot
-```
-
-```yaml reference tabs=table_print
-name: frictionless.steps.table_print
-```
-
-```yaml reference tabs=table_recast
-name: frictionless.steps.table_recast
-```
-
-```yaml reference tabs=table_transpose
-name: frictionless.steps.table_transpose
-```
-
-```yaml reference tabs=table_validate
-name: frictionless.steps.table_validate
-```
-
 ```yaml reference tabs=table_write
 name: frictionless.steps.table_write
+level: 4
 ```
