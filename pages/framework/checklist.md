@@ -1,6 +1,17 @@
 # Checklist Class
 
-## Checks
+## Creating Checklist
+
+Checklist is a set of validation checks and a few addition settings. Let's create a checklist:
+
+```python script tabs=Python
+from frictionless import Checklist, checks
+
+checklist = Checklist(checks=[checks.row_constraint(formula='id > 1')])
+print(checklist)
+```
+
+## Validatation Checks
 
 The Check concept is a part of the Validation API. You can create a custom Check to be used as part of resource or package validation.
 

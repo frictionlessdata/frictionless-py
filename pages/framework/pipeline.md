@@ -1,53 +1,34 @@
+---
+script:
+  basepath: data
+---
+
 # Pipeline Class
 
-A pipeline is a metadata object having one of these types:
-- resource
-- package
-- others (depending on custom plugins you use)
+Pipeline is a object containg a list of transformation steps.
 
 ## Creating Pipeline
 
-For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's just run the same resource transformation as we did in the `Tranforming Resource` section:
+Let's create a pipeline using Python interface:
 
-```python title="Python"
+```python script tabs=Python
 from frictionless import Pipeline, transform, steps
 
-pipeline = Pipeline({
-    'tasks': [
-        {
-            'type': 'resource',
-            'source': {'path': 'data/transform.csv'},
-            'steps': [
-                {'code': 'table-normalize'},
-                {'code': 'table-melt', 'fieldName': 'name'}
-            ]
-        }
-    ]
-})
+pipeline = Pipeline(steps=[steps.table_normalize(), steps.table_melt(field_name='name')])
+print(pipeline)
 ```
 
 ## Running Pipeline
 
-Let's run this pipeline:
+To run a pipeline you need to use a transform function or method:
 
-```python title="Python"
-status = transform(pipeline)
-print(status.task.target.schema)
-print(status.task.target.to_view())
-```
-```
-{'fields': [{'name': 'name', 'type': 'string'},
-            {'name': 'variable'},
-            {'name': 'value'}]}
-+----+-----------+------------+------+
-| id | name      | population | cars |
-+====+===========+============+======+
-|  1 | 'germany' |         83 |  166 |
-+----+-----------+------------+------+
-|  2 | 'france'  |         66 |  132 |
-+----+-----------+------------+------+
-|  3 | 'spain'   |         47 |   94 |
-+----+-----------+------------+------+
+```python script tabs=Python
+from frictionless import Pipeline, transform, steps
+
+pipeline = Pipeline(steps=[steps.table_normalize(), steps.table_melt(field_name='name')])
+resource = transform('table.csv', pipeline=pipeline)
+print(resource.schema)
+print(resource.read_rows())
 ```
 
 ## Transform Steps
