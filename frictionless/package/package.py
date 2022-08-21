@@ -501,7 +501,6 @@ class Package(Metadata):
             compression = compression or platform.zipfile.ZIP_DEFLATED
             with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_descriptor()
-                print(package_descriptor)
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
