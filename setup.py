@@ -82,7 +82,7 @@ INSTALL_REQUIRES = [
     "jsonschema>=2.5",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
-    "typer[all]==0.5.0",
+    "typer[all]>=0.5",
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
