@@ -16,21 +16,6 @@ It's possible to run this documentation portal locally:
 livemark start
 ```
 
-Alternatively, you can run the documentation portal with Docker. With
-both Docker and Docker Compose installed on the system, first build the docker container with:
-
-```base tabs=CLI
-docker build --rm -t frictionless-docs .
-```
-
-then, every time you want to run the documentation portal locally, run:
-
-```base tabs=CLI
-docker-compose up
-```
-
-then open http://localhost:3000 on a web browser to see the portal.
-
 ## Code Contribution
 
 Frictionless is a Python3.8+ framework, and it uses some common Python tools for the development process:
