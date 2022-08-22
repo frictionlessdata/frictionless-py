@@ -5,6 +5,10 @@ script:
 
 # Getting Started
 
+```markdown remark type=info
+This documentation covers Frictionless Framework v5 which currently in a pre-release and can be installed using the `pip --pre` modifier. If you're interested in Frictionless Framework v4 docs please follow [this link](https://v4.framework.frictionlessdata.io).
+```
+
 Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
 
 ## Installation
@@ -12,9 +16,9 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 > The framework requires Python3.8+. Versioning follows the [SemVer Standard](https://semver.org/).
 
 ```bash tabs=CLI
-pip install frictionless
-pip install frictionless[sql] # to install a core plugin (optional)
-pip install 'frictionless[sql]' # for zsh shell
+pip install frictionless --pre
+pip install frictionless[sql] --pre # to install a core plugin (optional)
+pip install 'frictionless[sql]' --pre # for zsh shell
 ```
 
 The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. There are plugins for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
