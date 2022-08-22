@@ -81,8 +81,8 @@ target/
 .spyderproject
 
 # Livemark
-pages/**/*.html
 blog/**/*.html
+docs/**/*.html
 index.html
 404.html
 
@@ -94,6 +94,6 @@ datapackage
 .mypy_cache
 !docs/build
 .google.json
-tmp
 .vscode/
 coverage/
+tmp

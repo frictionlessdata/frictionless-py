@@ -29,183 +29,183 @@ pages:
     - path: index
       name: Introduction
       from: README.md
-    - path: pages/getting-started
-    - path: pages/basic-examples
+    - path: docs/getting-started
+    - path: docs/basic-examples
     - name: Data Management
       items:
-        - path: pages/guides/describing-data
-        - path: pages/guides/extracting-data
-        - path: pages/guides/validating-data
-        - path: pages/guides/transforming-data
+        - path: docs/guides/describing-data
+        - path: docs/guides/extracting-data
+        - path: docs/guides/validating-data
+        - path: docs/guides/transforming-data
     - name: Framework Details
       items:
-        - path: pages/framework/program
-        - path: pages/framework/server
-        - path: pages/framework/actions
+        - path: docs/framework/program
+        - path: docs/framework/server
+        - path: docs/framework/actions
           name: Actions
-        - path: pages/framework/catalog
+        - path: docs/framework/catalog
           name: Catalog
-        - path: pages/framework/package
+        - path: docs/framework/package
           name: Package
-        - path: pages/framework/resource
+        - path: docs/framework/resource
           name: Resource
-        - path: pages/framework/dialect
+        - path: docs/framework/dialect
           name: Dialect
-        - path: pages/framework/schema
+        - path: docs/framework/schema
           name: Schema
-        - path: pages/framework/checklist
+        - path: docs/framework/checklist
           name: Checklist
-        - path: pages/framework/pipeline
+        - path: docs/framework/pipeline
           name: Pipeline
-        - path: pages/framework/detector
+        - path: docs/framework/detector
           name: Detector
-        - path: pages/framework/inquiry
+        - path: docs/framework/inquiry
           name: Inquiry
-        - path: pages/framework/report
+        - path: docs/framework/report
           name: Report
-        - path: pages/framework/table
+        - path: docs/framework/table
           name: Table
-        - path: pages/framework/classes
+        - path: docs/framework/classes
           name: Other
     - name: Validation Checks
       items:
-        - path: pages/checks/baseline
+        - path: docs/checks/baseline
           name: Baseline
-        - path: pages/checks/table
+        - path: docs/checks/table
           name: Table
-        - path: pages/checks/row
+        - path: docs/checks/row
           name: Row
-        - path: pages/checks/cell
+        - path: docs/checks/cell
           name: Cell
     - name: Validation Errors
       items:
-        - path: pages/errors/metadata
+        - path: docs/errors/metadata
           name: Metadata
-        - path: pages/errors/resource
+        - path: docs/errors/resource
           name: Resource
-        - path: pages/errors/data
+        - path: docs/errors/data
           name: Data
-        - path: pages/errors/file
+        - path: docs/errors/file
           name: File
-        - path: pages/errors/table
+        - path: docs/errors/table
           name: Table
-        - path: pages/errors/header
+        - path: docs/errors/header
           name: Header
-        - path: pages/errors/label
+        - path: docs/errors/label
           name: Label
-        - path: pages/errors/row
+        - path: docs/errors/row
           name: Row
-        - path: pages/errors/cell
+        - path: docs/errors/cell
           name: Cell
     - name: Transform Steps
       items:
-        - path: pages/steps/resource
+        - path: docs/steps/resource
           name: Resource
-        - path: pages/steps/table
+        - path: docs/steps/table
           name: Table
-        - path: pages/steps/field
+        - path: docs/steps/field
           name: Field
-        - path: pages/steps/row
+        - path: docs/steps/row
           name: Row
-        - path: pages/steps/cell
+        - path: docs/steps/cell
           name: Cell
     - name: Tabular Fields
       items:
-        - path: pages/fields/any
+        - path: docs/fields/any
           name: Any
-        - path: pages/fields/array
+        - path: docs/fields/array
           name: Array
-        - path: pages/fields/boolean
+        - path: docs/fields/boolean
           name: Boolean
-        - path: pages/fields/date
+        - path: docs/fields/date
           name: Date
-        - path: pages/fields/datetime
+        - path: docs/fields/datetime
           name: Datetime
-        - path: pages/fields/duration
+        - path: docs/fields/duration
           name: Duration
-        - path: pages/fields/geojson
+        - path: docs/fields/geojson
           name: Geojson
-        - path: pages/fields/geopoint
+        - path: docs/fields/geopoint
           name: Geopoint
-        - path: pages/fields/integer
+        - path: docs/fields/integer
           name: Integer
-        - path: pages/fields/number
+        - path: docs/fields/number
           name: Number
-        - path: pages/fields/object
+        - path: docs/fields/object
           name: Object
-        - path: pages/fields/string
+        - path: docs/fields/string
           name: String
-        - path: pages/fields/time
+        - path: docs/fields/time
           name: Time
-        - path: pages/fields/year
+        - path: docs/fields/year
           name: Year
-        - path: pages/fields/yearmonth
+        - path: docs/fields/yearmonth
           name: Yearmonth
     - name: File Schemes
       items:
-        - path: pages/schemes/aws
+        - path: docs/schemes/aws
           name: Aws
-        - path: pages/schemes/buffer
+        - path: docs/schemes/buffer
           name: Buffer
-        - path: pages/schemes/local
+        - path: docs/schemes/local
           name: Local
-        - path: pages/schemes/multipart
+        - path: docs/schemes/multipart
           name: Multipart
-        - path: pages/schemes/remote
+        - path: docs/schemes/remote
           name: Remote
-        - path: pages/schemes/stream
+        - path: docs/schemes/stream
           name: Stream
     - name: File Formats
       items:
-        - path: pages/formats/bigquery
+        - path: docs/formats/bigquery
           name: Bigquery
-        - path: pages/formats/csv
+        - path: docs/formats/csv
           name: Csv
-        - path: pages/formats/excel
+        - path: docs/formats/excel
           name: Excel
-        - path: pages/formats/gsheets
+        - path: docs/formats/gsheets
           name: Gsheets
-        - path: pages/formats/html
+        - path: docs/formats/html
           name: Html
-        - path: pages/formats/inline
+        - path: docs/formats/inline
           name: Inline
-        - path: pages/formats/json
+        - path: docs/formats/json
           name: Json
-        - path: pages/formats/ods
+        - path: docs/formats/ods
           name: Ods
-        - path: pages/formats/pandas
+        - path: docs/formats/pandas
           name: Pandas
-        - path: pages/formats/parquet
+        - path: docs/formats/parquet
           name: Parquet
-        - path: pages/formats/spss
+        - path: docs/formats/spss
           name: Spss
-        - path: pages/formats/sql
+        - path: docs/formats/sql
           name: Sql
     - name: Data Portals
       items:
-        - path: pages/portals/ckan
+        - path: docs/portals/ckan
           name: Ckan
-        - path: pages/portals/github
+        - path: docs/portals/github
           name: Github
-        - path: pages/portals/zenodo
+        - path: docs/portals/zenodo
           name: Zenodo
     - name: Architecture
       items:
-        - path: pages/architecture/design
-        - path: pages/architecture/system
-        - path: pages/architecture/extending
+        - path: docs/architecture/design
+        - path: docs/architecture/system
+        - path: docs/architecture/extending
     - name: Codebase
       items:
-        - path: pages/codebase/authors
+        - path: docs/codebase/authors
           from: AUTHORS.md
-        - path: pages/codebase/license
+        - path: docs/codebase/license
           name: License
           from: LICENSE.md
-        - path: pages/codebase/migration
+        - path: docs/codebase/migration
           from: MIGRATION.md
-        - path: pages/codebase/changelog
+        - path: docs/codebase/changelog
           from: CHANGELOG.md
-        - path: pages/codebase/contributing
+        - path: docs/codebase/contributing
           from: CONTRIBUTING.md
-    - path: pages/universe
+    - path: docs/universe
     - path: blog/index
