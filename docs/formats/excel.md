@@ -28,7 +28,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
@@ -45,7 +45,7 @@ There is a dialect to configure how Frictionless read and write files in this fo
 from frictionless import Resource, formats
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('table-output.xls', control=formats.ExcelControl(sheet='My Table'))
+resource.write('table-output-sheet.xls', control=formats.ExcelControl(sheet='My Table'))
 ```
 
 ## Reference
