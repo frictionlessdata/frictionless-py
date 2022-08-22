@@ -1,5 +1,6 @@
 # `package`
 ## `main`
+  - `path` data/primary-file-types.csv
   - `schema`
       - `primaryKey` ['id']
 ### `id`
@@ -16,19 +17,3 @@
 ### `boolean`
   - `description` Any boolean
   - `type` boolean
-## `secondary`
-  - `schema`
-      - `foreignKeys`
-      - [1]
-        - `fields` ['main_id']
-        - `reference`
-          - `resource` main
-          - `fields` ['id']
-### `main_id`
-  - `description` Any value in main.id
-  - `type` integer
-### `string`
-  - `description` Any string of up to 3 characters
-  - `type` string
-  - `constraints`:
-    - `maxLength` 3

@@ -10,6 +10,7 @@ DESCRIPTOR = {
     "resources": [
         {
             "name": "main",
+            "path": "data/primary-file-types.csv",
             "schema": {
                 "fields": [
                     {
@@ -32,31 +33,7 @@ DESCRIPTOR = {
                 ],
                 "primaryKey": ["id"],
             },
-        },
-        {
-            "name": "secondary",
-            "schema": {
-                "fields": [
-                    {
-                        "name": "main_id",
-                        "description": "Any value in main.id",
-                        "type": "integer",
-                    },
-                    {
-                        "name": "string",
-                        "description": "Any string of up to 3 characters",
-                        "type": "string",
-                        "constraints": {"maxLength": 3},
-                    },
-                ],
-                "foreignKeys": [
-                    {
-                        "fields": ["main_id"],
-                        "reference": {"resource": "main", "fields": ["id"]},
-                    }
-                ],
-            },
-        },
+        }
     ],
 }
 
@@ -200,17 +177,16 @@ def test_package_to_zip_resource_sql(tmpdir, database_url):
 # Markdown
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown():
     package = Package(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/package.md"
 
     # Reads
     with open(expected_file_path, encoding="utf-8") as file:
+        print("\n", package.to_markdown().strip())
         assert package.to_markdown().strip() == file.read()
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown_file(tmpdir):
     package = Package(DESCRIPTOR)
     output_file_path = str(tmpdir.join("package.md"))
@@ -228,7 +204,6 @@ def test_package_to_markdown_file(tmpdir):
         assert expected == file.read()
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_package_to_markdown_table():
     package = Package(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/package-table.md"

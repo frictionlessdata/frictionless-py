@@ -7,6 +7,7 @@ from frictionless import Resource
 
 DESCRIPTOR = {
     "name": "main",
+    "path": "data/primary-file-types.csv",
     "schema": {
         "fields": [
             {
@@ -20,6 +21,11 @@ DESCRIPTOR = {
                 "description": "An integer between 1 and 10",
                 "type": "integer",
                 "constraints": {"minimum": 1, "maximum": 10},
+            },
+            {
+                "name": "boolean",
+                "description": "Any boolean",
+                "type": "boolean",
             },
         ],
         "primaryKey": ["id"],
@@ -83,7 +89,6 @@ def test_resource_to_yaml(tmpdir):
 # Markdown
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_path_schema():
     resource = Resource(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/resource.md"
@@ -93,17 +98,17 @@ def test_resource_to_markdown_path_schema():
         assert resource.to_markdown().strip() == file.read()
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_path_schema_table():
     resource = Resource(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/resource-table.md"
 
     # Read
     with open(expected_file_path, encoding="utf-8") as file:
+        print("")
+        print(resource.to_markdown(table=True).strip())
         assert resource.to_markdown(table=True).strip() == file.read().strip()
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_resource_to_markdown_file(tmpdir):
     resource = Resource(DESCRIPTOR)
     expected_file_path = "data/fixtures/output-markdown/resource.md"
