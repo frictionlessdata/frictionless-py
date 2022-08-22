@@ -28,11 +28,50 @@ def options_with_dp():
 
 
 @pytest.fixture
-def options_with_multiple_packages():
+def options_with_duplicate_files():
     return {
-        "url": "https://github.com/fdtester/test-repo-with-multiple-packages",
+        "url": "https://github.com/fdtester/test-repo-files-in-multiple-folders-duplicate-files",
         "user": "fdtester",
-        "repo": "test-repo-with-multiple-packages",
+        "repo": "test-repo-files-in-multiple-folders-duplicate_files",
+    }
+
+
+@pytest.fixture
+def options_with_multiple_folders():
+    return {
+        "url": "https://github.com/fdtester/test-repo-files-in-multiple-folders",
+        "user": "fdtester",
+        "repo": "test-repo-files-in-multiple-folders",
+    }
+
+
+@pytest.fixture
+def options_with_dp_yaml():
+    return {
+        "url": "https://github.com/fdtester/test-repo-with-datapackage-yaml",
+        "user": "fdtester",
+        "repo": "test-repo-with-datapackage-yaml",
+        "output": {
+            "resources": [
+                {
+                    "name": "capitals",
+                    "type": "table",
+                    "path": "data/capitals.csv",
+                    "scheme": "file",
+                    "format": "csv",
+                    "encoding": "utf-8",
+                    "mediatype": "text/csv",
+                    "dialect": {"csv": {"skipInitialSpace": True}},
+                    "schema": {
+                        "fields": [
+                            {"name": "id", "type": "integer"},
+                            {"name": "cid", "type": "integer"},
+                            {"name": "name", "type": "string"},
+                        ]
+                    },
+                }
+            ]
+        },
     }
 
 
@@ -42,52 +81,57 @@ def options_without_dp():
         "url": "https://github.com/fdtester/test-repo-without-datapackage",
         "user": "fdtester",
         "repo": "test-repo-without-datapackage",
+        "output_csv_only": {
+            "name": "test-repo-without-datapackage",
+            "resources": [
+                {
+                    "name": "capitals",
+                    "type": "table",
+                    "path": "data/capitals.csv",
+                    "scheme": "file",
+                    "format": "csv",
+                    "encoding": "base64",
+                    "mediatype": "text/csv",
+                },
+                {
+                    "name": "countries",
+                    "type": "table",
+                    "path": "data/countries.csv",
+                    "scheme": "file",
+                    "format": "csv",
+                    "encoding": "base64",
+                    "mediatype": "text/csv",
+                },
+            ],
+        },
         "output": {
             "name": "test-repo-without-datapackage",
             "resources": [
                 {
                     "name": "capitals",
                     "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
-                    "scheme": "https",
+                    "path": "data/capitals.csv",
+                    "scheme": "file",
                     "format": "csv",
+                    "encoding": "base64",
                     "mediatype": "text/csv",
                 },
                 {
                     "name": "countries",
                     "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
-                    "scheme": "https",
+                    "path": "data/countries.csv",
+                    "scheme": "file",
                     "format": "csv",
-                    "mediatype": "text/csv",
-                },
-            ],
-        },
-        "output_with_xls": {
-            "name": "test-repo-without-datapackage",
-            "resources": [
-                {
-                    "name": "capitals",
-                    "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
-                    "scheme": "https",
-                    "format": "csv",
-                    "mediatype": "text/csv",
-                },
-                {
-                    "name": "countries",
-                    "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
-                    "scheme": "https",
-                    "format": "csv",
+                    "encoding": "base64",
                     "mediatype": "text/csv",
                 },
                 {
                     "name": "student",
                     "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
-                    "scheme": "https",
+                    "path": "data/student.xlsx",
+                    "scheme": "file",
                     "format": "xlsx",
+                    "encoding": "base64",
                     "mediatype": "application/vnd.ms-excel",
                 },
             ],
@@ -95,28 +139,39 @@ def options_without_dp():
     }
 
 
+# Write/Publish
+
+
 @pytest.fixture
 def options_write():
     return {
-        "url": "https://github.com/fdtester/test-repo-write",
+        "url": "https://github.com/fdtester/test-write",
         "user": "fdtester",
-        "repo": "test-repo-write",
+        "repo": "test-write",
     }
 
 
 @pytest.fixture
 def options_write_test_params():
     return {
-        "url": "https://github.com/fdtester/test-repo-write-with-params",
+        "url": "https://github.com/fdtester/test-write-with-params",
         "user": "fdtester",
-        "repo": "test-repo-write-with-params",
+        "repo": "test-write-with-params",
     }
 
 
 @pytest.fixture
 def options_publish_test_params():
     return {
-        "url": "https://github.com/fdtester/test-repo-publish",
+        "url": "https://github.com/fdtester/test-publish",
         "user": "fdtester",
-        "repo": "test-repo-publish",
+        "repo": "test-publish",
     }
+
+
+# Catalog
+
+
+@pytest.fixture
+def options_user():
+    return {"url": "https://github.com/fdtester/", "user": "fdtester"}

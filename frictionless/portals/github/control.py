@@ -5,6 +5,10 @@ from typing import Optional, List
 from ...dialect import Control
 
 
+DEFAULT_FORMATS = ["csv", "xlsx", "xls"]
+DEFAULT_PER_PAGE = 30
+
+
 @attrs.define(kw_only=True)
 class GithubControl(Control):
     """Github control representation"""
@@ -16,10 +20,13 @@ class GithubControl(Control):
     apikey: Optional[str] = os.environ.get("GITHUB_ACCESS_TOKEN", None)
     """NOTE: add docs"""
 
+    basepath: Optional[str] = None
+    """NOTE: add docs"""
+
     email: Optional[str] = os.environ.get("GITHUB_EMAIL", None)
     """NOTE: add docs"""
 
-    formats: Optional[List[str]] = ["csv"]
+    formats: Optional[List[str]] = DEFAULT_FORMATS
     """NOTE: add docs"""
 
     name: Optional[str] = os.environ.get("GITHUB_NAME", None)
@@ -31,7 +38,7 @@ class GithubControl(Control):
     page: Optional[int] = None
     """NOTE: add docs"""
 
-    per_page: Optional[int] = 30
+    per_page: Optional[int] = DEFAULT_PER_PAGE
     """NOTE: add docs"""
 
     repo: Optional[str] = None

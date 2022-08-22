@@ -456,9 +456,10 @@ class Package(Metadata):
         """
         manager = system.create_manager(source, control=control)
         if not manager:
-            raise FrictionlessException(f"Not supported Github source: {source}")
-        package = manager.read_package()
-        return package
+            raise FrictionlessException(
+                f"Not supported Github source '{source}' or control"
+            )
+        return Package(source, control=control)
 
     def to_github(
         self, target: Any = None, *, control: Optional[portals.GithubControl] = None
@@ -472,12 +473,7 @@ class Package(Metadata):
         Returns:
             NamedTuple: Reference to new repository and file created
         """
-
-        manager = system.create_manager(target, control=control)
-        if not manager:
-            raise FrictionlessException(f"Not supported target: {target}")
-        response = manager.write_package(self.to_copy())
-        return response
+        return self.publish(target, control=control)
 
     def publish(
         self, target: Any = None, *, control: Optional[portals.GithubControl] = None
@@ -493,7 +489,7 @@ class Package(Metadata):
         """
         manager = system.create_manager(target, control=control)
         if not manager:
-            raise FrictionlessException(f"Not supported target: {target}")
+            raise FrictionlessException(f"Not supported target: {target} or control")
         response = manager.write_package(self.to_copy())
         return response
 
