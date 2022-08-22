@@ -1,0 +1,3 @@
+id,integer_minmax,boolean
+1,21,true
+2,31,false

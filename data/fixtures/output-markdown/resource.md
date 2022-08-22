@@ -1,4 +1,5 @@
 ## `main`
+  - `path` data/primary-file-types.csv
   - `schema`
       - `primaryKey` ['id']
 ### `id`
@@ -12,3 +13,6 @@
   - `constraints`:
     - `minimum` 1
     - `maximum` 10
+### `boolean`
+  - `description` Any boolean
+  - `type` boolean

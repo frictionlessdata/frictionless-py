@@ -5,7 +5,7 @@ import pytest
 import yattag
 from pathlib import Path
 from zipfile import ZipFile
-from frictionless import Schema
+from frictionless import Schema, FrictionlessException
 
 
 UNZIPPED_DIR = "data/fixtures/output-unzipped"
@@ -107,8 +107,7 @@ def test_schema_to_summary_without_required():
     )
 
 
-@pytest.mark.xfail(reason="issue-1205")
-def test_schema_to_summary_without_type_missing_for_some_fields():
+def test_schema_to_summary_with_type_missing_for_some_fields():
     descriptor = {
         "fields": [
             {"name": "id", "format": "default"},
@@ -116,17 +115,13 @@ def test_schema_to_summary_without_type_missing_for_some_fields():
             {"name": "age", "format": "default"},
         ]
     }
-    schema = Schema.from_descriptor(descriptor)
-    output = schema.to_summary()
-    assert (
-        output.count("| name   | type   | required   |")
-        and output.count("| id     | any    |            |")
-        and output.count("| name   | string |            |")
-        and output.count("| age    | any    |            |")
-    )
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor(descriptor)
+    error = excinfo.value.error
+    assert error.type == "schema-error"
+    assert error.description == "Provided schema is not valid."
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_schema_to_summary_with_name_missing_for_some_fields():
     descriptor = {
         "fields": [
@@ -135,14 +130,11 @@ def test_schema_to_summary_with_name_missing_for_some_fields():
             {"name": "name", "type": "string", "format": "default"},
         ]
     }
-    schema = Schema.from_descriptor(descriptor)
-    output = schema.to_summary()
-    assert (
-        output.count("| name   | type    | required   |")
-        and output.count("|        | integer |            |")
-        and output.count("|        | integer |            |")
-        and output.count("| name   | string  |            |")
-    )
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema.from_descriptor(descriptor)
+    error = excinfo.value.error
+    assert error.type == "schema-error"
+    assert error.description == "Provided schema is not valid."
 
 
 # Markdown
@@ -261,7 +253,6 @@ def test_schema_from_jsonschema():
 # Excel template
 
 
-@pytest.mark.xfail(reason="issue-1205")
 @pytest.mark.parametrize(
     "zip_path",
     [

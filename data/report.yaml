@@ -1,8 +1,8 @@
 valid: true
 stats:
+  tasks: 1
   errors: 0
   time: 0.025
-  tasks: 1
 warnings: []
 errors: []
 tasks:
@@ -18,7 +18,7 @@ tasks:
       rows: 6
       errors: 0
       time: 0.025
-    scope:
-      - duplicate-label
     warnings: []
     errors: []
+    scope:
+      - duplicate-label

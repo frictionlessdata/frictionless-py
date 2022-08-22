@@ -185,7 +185,6 @@ def test_program_validate_zipped_resources_979():
     assert actual.stdout.count("invalid: ogd10_catalogs.zip -> capital-invalid.csv")
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_long_error_messages_976():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     assert actual.exit_code == 1

@@ -1,5 +1,4 @@
 import json
-import pytest
 from frictionless import Resource, Report
 
 
@@ -71,7 +70,6 @@ def test_report_to_yaml_with_bytes_serialization_issue_836():
 # Yaml
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_report_to_yaml():
     report = Report.from_descriptor("data/report.json")
     output_file_path = "data/report.yaml"
@@ -94,7 +92,6 @@ def test_report_to_json():
 # Markdown
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_report_to_markdown():
     report = Report.from_descriptor("data/report.json")
     output_file_path = "data/fixtures/convert/report.md"

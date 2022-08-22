@@ -137,7 +137,6 @@ def test_program_convert_dialect_yaml():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_report_yaml():
     result = runner.invoke(program, "convert data/report.json --yaml")
     assert result.exit_code == 0
@@ -307,7 +306,6 @@ def test_program_convert_dialect_markdown():
         assert result.stdout.count(file.read().strip())
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_convert_report_markdown():
     result = runner.invoke(program, "convert data/report.json --markdown")
     assert result.exit_code == 0
