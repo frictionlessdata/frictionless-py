@@ -69,14 +69,8 @@ class CsvPlugin(Plugin):
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=System
-name: frictionless.System
-```
-
-```yaml reference tabs=Plugin
-name: frictionless.Plugin
+```yaml reference
+references:
+  - frictionless.System
+  - frictionless.Plugin
 ```

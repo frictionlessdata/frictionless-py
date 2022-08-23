@@ -18,10 +18,7 @@ print(rows)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=BooleanField
-name: frictionless.fields.BooleanField
+```yaml reference
+references:
+  - frictionless.fields.BooleanField
 ```

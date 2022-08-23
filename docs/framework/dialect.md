@@ -80,14 +80,8 @@ with Resource('capital-3.csv', dialect=dialect, schema=schema) as resource:
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Dialect
-name: frictionless.Dialect
-```
-
-```yaml reference tabs=Control
-name: frictionless.Control
+```yaml reference
+references:
+  - frictionless.Dialect
+  - frictionless.Control
 ```

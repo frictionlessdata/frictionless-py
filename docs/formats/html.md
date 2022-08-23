@@ -51,10 +51,7 @@ print(resource.read_rows())
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=HtmlControl
-name: frictionless.formats.HtmlControl
+```yaml reference
+references:
+  - frictionless.formats.HtmlControl
 ```

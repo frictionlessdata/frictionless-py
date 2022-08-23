@@ -38,10 +38,7 @@ print(target.read_rows())
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=ParquetControl
-name: frictionless.formats.ParquetControl
+```yaml reference
+references:
+  - frictionless.formats.ParquetControl
 ```

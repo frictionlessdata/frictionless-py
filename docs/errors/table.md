@@ -16,10 +16,7 @@
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=TableError
-name: frictionless.errors.TableError
+```yaml reference
+references:
+  - frictionless.errors.TableError
 ```

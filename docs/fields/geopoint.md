@@ -14,10 +14,7 @@ print(rows)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=GeopointField
-name: frictionless.fields.GeopointField
+```yaml reference
+references:
+  - frictionless.fields.GeopointField
 ```

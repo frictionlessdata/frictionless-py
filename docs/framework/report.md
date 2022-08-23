@@ -66,14 +66,8 @@ Please explore "Errors Reference" to learn about all the available errors and th
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Report
-name: frictionless.Report
-```
-
-```yaml reference tabs=ReportTask
-name: frictionless.ReportTask
+```yaml reference
+references:
+  - frictionless.Report
+  - frictionless.ReportTask
 ```

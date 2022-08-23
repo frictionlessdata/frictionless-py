@@ -100,14 +100,8 @@ package.to_yaml('datapackage.yaml') # Save as YAML
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Package
-name: frictionless.Package
-```
-
-```yaml reference tabs=Manager
-name: frictionless.Manager
+```yaml reference
+references:
+  - frictionless.Package
+  - frictionless.Manager
 ```

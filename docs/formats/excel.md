@@ -50,10 +50,7 @@ resource.write('table-output-sheet.xls', control=formats.ExcelControl(sheet='My 
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=ExcelControl
-name: frictionless.formats.ExcelControl
+```yaml reference
+references:
+  - frictionless.formats.ExcelControl
 ```

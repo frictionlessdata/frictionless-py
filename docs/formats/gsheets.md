@@ -49,10 +49,7 @@ resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", control=contr
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=GsheetsControl
-name: frictionless.formats.GsheetsControl
+```yaml reference
+references:
+  - frictionless.formats.GsheetsControl
 ```

@@ -34,14 +34,8 @@ At first sight, it's no clear why such a construct exists but when your validati
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Inquiry
-name: frictionless.Inquiry
-```
-
-```yaml reference tabs=InquiryTask
-name: frictionless.InquiryTask
+```yaml reference
+references:
+  - frictionless.Inquiry
+  - frictionless.InquiryTask
 ```

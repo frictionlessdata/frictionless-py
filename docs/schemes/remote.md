@@ -54,10 +54,7 @@ print(resource.to_view())
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=RemoteControl
-name: frictionless.schemes.RemoteControl
+```yaml reference
+references:
+  - frictionless.schemes.RemoteControl
 ```

@@ -20,13 +20,10 @@ print(resource)
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=describe
-name: frictionless.describe
+```yaml reference
 level: 4
+references:
+  - frictionless.describe
 ```
 
 ## Extract
@@ -45,13 +42,10 @@ pprint(rows)
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=extract
-name: frictionless.extract
+```yaml reference
 level: 4
+references:
+  - frictionless.extract
 ```
 
 ## Validate
@@ -69,13 +63,10 @@ print(report.valid)
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=validate
-name: frictionless.validate
+```yaml reference
 level: 4
+references:
+  - frictionless.validate
 ```
 
 ## Transform
@@ -93,11 +84,8 @@ print(resource.read_rows())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=transform
-name: frictionless.transform
+```yaml reference
 level: 4
+references:
+  - frictionless.transform
 ```

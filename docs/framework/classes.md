@@ -35,14 +35,8 @@ print(resource.stats)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Error
-name: frictionless.Error
-```
-
-```yaml reference tabs=Stats
-name: frictionless.Stats
+```yaml reference
+references:
+  - frictionless.Error
+  - frictionless.Stats
 ```

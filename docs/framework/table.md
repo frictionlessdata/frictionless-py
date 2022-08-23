@@ -71,14 +71,8 @@ with Resource([['name'], ['value', 'value']]) as resource:
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Header
-name: frictionless.Header
-```
-
-```yaml reference tabs=Row
-name: frictionless.Row
+```yaml reference
+references:
+  - frictionless.Header
+  - frictionless.Row
 ```

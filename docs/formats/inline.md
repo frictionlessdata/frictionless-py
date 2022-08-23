@@ -46,10 +46,7 @@ print(resource.to_view())
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=InlineControl
-name: frictionless.formats.InlineControl
+```yaml reference
+references:
+  - frictionless.formats.InlineControl
 ```

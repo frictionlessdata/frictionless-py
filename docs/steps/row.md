@@ -31,13 +31,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_filter
-name: frictionless.steps.row_filter
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_filter
 ```
 
 ## Search Rows
@@ -61,13 +58,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_search
-name: frictionless.steps.row_search
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_search
 ```
 
 ## Slice Rows
@@ -91,13 +85,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_slice
-name: frictionless.steps.row_slice
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_slice
 ```
 
 ## Sort Rows
@@ -121,13 +112,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_sort
-name: frictionless.steps.row_sort
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_sort
 ```
 
 ## Split Rows
@@ -151,13 +139,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_split
-name: frictionless.steps.row_split
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_split
 ```
 
 ## Subset Rows
@@ -182,13 +167,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_subset
-name: frictionless.steps.row_subset
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_subset
 ```
 
 ## Ungroup Rows
@@ -212,11 +194,8 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_ungroup
-name: frictionless.steps.row_ungroup
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.row_ungroup
 ```

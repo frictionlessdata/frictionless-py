@@ -17,13 +17,10 @@ pprint(report.flatten(["type", "message"]))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=duplicate_row
-name: frictionless.checks.duplicate_row
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.duplicate_row
 ```
 
 ## Row Constraint
@@ -49,11 +46,8 @@ pprint(report.flatten(["type", "message"]))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=row_constraint
-name: frictionless.checks.row_constraint
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.row_constraint
 ```

@@ -179,14 +179,8 @@ print(cell)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Schema
-name: frictionless.Schema
-```
-
-```yaml reference tabs=Field
-name: frictionless.Field
+```yaml reference
+references:
+  - frictionless.Schema
+  - frictionless.Field
 ```

@@ -46,10 +46,7 @@ This example is over-simplified to show the high-level mechanics but writing Fri
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Plugin
-name: frictionless.Plugin
+```yaml reference
+references:
+  - frictionless.Plugin
 ```

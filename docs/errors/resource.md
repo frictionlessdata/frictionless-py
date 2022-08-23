@@ -14,10 +14,7 @@
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=ResourceError
-name: frictionless.errors.ResourceError
+```yaml reference
+references:
+  - frictionless.errors.ResourceError
 ```

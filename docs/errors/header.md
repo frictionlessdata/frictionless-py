@@ -16,10 +16,7 @@
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=HeaderError
-name: frictionless.errors.HeaderError
+```yaml reference
+references:
+  - frictionless.errors.HeaderError
 ```

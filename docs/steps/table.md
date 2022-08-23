@@ -33,13 +33,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_aggregate
-name: frictionless.steps.table_aggregate
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_aggregate
 ```
 
 ## Attach Table
@@ -63,13 +60,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_attach
-name: frictionless.steps.table_attach
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_attach
 ```
 
 ## Debug Table
@@ -92,13 +86,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_debug
-name: frictionless.steps.table_debug
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_debug
 ```
 
 ## Diff Tables
@@ -132,13 +123,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_diff
-name: frictionless.steps.table_diff
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_diff
 ```
 
 ## Intersect Tables
@@ -172,13 +160,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_intersect
-name: frictionless.steps.table_intersect
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_intersect
 ```
 
 ## Join Tables
@@ -206,13 +191,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_join
-name: frictionless.steps.table_join
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_join
 ```
 
 ## Melt Table
@@ -237,13 +219,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_melt
-name: frictionless.steps.table_melt
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_melt
 ```
 
 ## Merge Tables
@@ -273,13 +252,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_merge
-name: frictionless.steps.table_merge
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_merge
 ```
 
 ## Normalize Table
@@ -305,13 +281,10 @@ print(target.read_cells())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_normalize
-name: frictionless.steps.table_normalize
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_normalize
 ```
 
 ## Pivot Table
@@ -340,13 +313,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_pivot
-name: frictionless.steps.table_pivot
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_pivot
 ```
 
 ## Print Table
@@ -369,13 +339,10 @@ target = transform(
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_print
-name: frictionless.steps.table_print
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_print
 ```
 
 ## Recast Table
@@ -401,13 +368,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_recast
-name: frictionless.steps.table_recast
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_recast
 ```
 
 ## Transpose Table
@@ -432,13 +396,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_transpose
-name: frictionless.steps.table_transpose
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_transpose
 ```
 
 ## Validate Table
@@ -466,13 +427,10 @@ except Exception as exception:
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_validate
-name: frictionless.steps.table_validate
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_validate
 ```
 
 ## Write Table
@@ -505,11 +463,8 @@ with open('transform.json') as file:
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_write
-name: frictionless.steps.table_write
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.table_write
 ```

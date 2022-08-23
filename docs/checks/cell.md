@@ -24,13 +24,10 @@ pprint(report.flatten(["type", "message"]))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=ascii_value
-name: frictionless.checks.ascii_value
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.ascii_value
 ```
 
 ## Deviated Cell
@@ -51,13 +48,10 @@ pprint(report.flatten(["type", "message"]))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=deviated_cell
-name: frictionless.checks.deviated_cell
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.deviated_cell
 ```
 
 ## Deviated Value
@@ -77,13 +71,10 @@ pprint(report.flatten(["type", "message"]))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=deviated_value
-name: frictionless.checks.deviated_value
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.deviated_value
 ```
 
 ## Forbidden Value
@@ -104,13 +95,10 @@ pprint(report.flatten(['type', 'message']))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=forbidden_value
-name: frictionless.checks.forbidden_value
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.forbidden_value
 ```
 
 ## Sequential Value
@@ -130,13 +118,10 @@ pprint(report.flatten(['type', 'message']))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=sequential_value
-name: frictionless.checks.sequential_value
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.sequential_value
 ```
 
 ## Truncated Value
@@ -156,11 +141,8 @@ pprint(report.flatten(["type", "message"]))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=truncated_value
-name: frictionless.checks.truncated_value
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.truncated_value
 ```

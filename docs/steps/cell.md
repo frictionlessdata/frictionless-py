@@ -70,13 +70,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=cell_convert
-name: frictionless.steps.cell_convert
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.cell_convert
 ```
 
 ## Fill Cells
@@ -101,13 +98,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=cell_fill
-name: frictionless.steps.cell_fill
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.cell_fill
 ```
 
 ## Format Cells
@@ -131,13 +125,10 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=cell_format
-name: frictionless.steps.cell_format
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.cell_format
 ```
 
 ## Interpolate Cells
@@ -161,13 +152,10 @@ pprint(target.read_rows())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=cell_interpolate
-name: frictionless.steps.cell_interpolate
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.cell_interpolate
 ```
 
 ## Replace Cells
@@ -189,15 +177,10 @@ print(target.schema)
 print(target.to_view())
 ```
 
-### Reference
-
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=cell_replace
-name: frictionless.steps.cell_replace
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.cell_replace
 ```
 
 ## Set Cells
@@ -221,11 +204,8 @@ print(target.to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=cell_set
-name: frictionless.steps.cell_set
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.cell_set
 ```

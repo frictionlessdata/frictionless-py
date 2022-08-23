@@ -65,11 +65,8 @@ But the table dimensions check arguments `num_rows`, `min_rows`, `max_rows`, `nu
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=table_dimensions
-name: frictionless.checks.table_dimensions
+```yaml reference
 level: 4
+references:
+  - frictionless.checks.table_dimensions
 ```

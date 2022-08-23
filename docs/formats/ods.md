@@ -50,10 +50,7 @@ resource.write('table-output-sheet.ods', control=formats.OdsControl(sheet='My Ta
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=OdsControl
-name: frictionless.formats.OdsControl
+```yaml reference
+references:
+  - frictionless.formats.OdsControl
 ```

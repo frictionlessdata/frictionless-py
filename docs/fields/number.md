@@ -16,10 +16,7 @@ print(rows)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=NumberField
-name: frictionless.fields.NumberField
+```yaml reference
+references:
+  - frictionless.fields.NumberField
 ```

@@ -17,10 +17,7 @@ print(rows)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=DurationField
-name: frictionless.fields.DurationField
+```yaml reference
+references:
+  - frictionless.fields.DurationField
 ```

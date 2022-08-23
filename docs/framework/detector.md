@@ -167,10 +167,7 @@ with Resource('table.csv', detector=detector) as resource:
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Detector
-name: frictionless.Detector
+```yaml reference
+references:
+  - frictionless.Detector
 ```

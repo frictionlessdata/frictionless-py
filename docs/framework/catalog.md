@@ -57,10 +57,7 @@ catalog.to_yaml('datacatalog.yaml') # Save as YAML
 
 ## Reference
 
-```markdown tabs=Reference
-Select reference to show
-```
-
-```yaml reference tabs=Catalog
-name: frictionless.Catalog
+```yaml reference
+references:
+  - frictionless.Catalog
 ```

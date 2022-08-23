@@ -47,14 +47,8 @@ It's usuall to create a custom [Error](error-guide.md) along side with a Custom 
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Checklist
-name: frictionless.Checklist
-```
-
-```yaml reference tabs=Check
-name: frictionless.Check
+```yaml reference
+references:
+  - frictionless.Checklist
+  - frictionless.Check
 ```

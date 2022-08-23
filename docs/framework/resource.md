@@ -246,18 +246,9 @@ print(resource.stats)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Resource
-name: frictionless.Resource
-```
-
-```yaml reference tabs=Loader
-name: frictionless.Loader
-```
-
-```yaml reference tabs=Parser
-name: frictionless.Parser
+```yaml reference
+references:
+  - frictionless.Resource
+  - frictionless.Loader
+  - frictionless.Parser
 ```

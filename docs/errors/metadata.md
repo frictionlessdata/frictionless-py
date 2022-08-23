@@ -15,10 +15,7 @@
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=MetadataError
-name: frictionless.errors.MetadataError
+```yaml reference
+references:
+  - frictionless.errors.MetadataError
 ```

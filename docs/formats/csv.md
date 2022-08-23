@@ -45,10 +45,7 @@ resource.write('tmp/table.csv', control=formats.CsvControl(delimiter=';'))
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=CsvControl
-name: frictionless.formats.CsvControl
+```yaml reference
+references:
+  - frictionless.formats.CsvControl
 ```

@@ -57,10 +57,7 @@ resource = Resource('postgresql://database', control=control)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=SqlControl
-name: frictionless.formats.SqlControl
+```yaml reference
+references:
+  - frictionless.formats.SqlControl
 ```

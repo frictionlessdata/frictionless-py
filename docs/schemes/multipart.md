@@ -45,10 +45,7 @@ resource.write('table{number}.json', scheme="multipart", control=control)
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=MultipartControl
-name: frictionless.schemes.MultipartControl
+```yaml reference
+references:
+  - frictionless.schemes.MultipartControl
 ```

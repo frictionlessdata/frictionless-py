@@ -56,14 +56,8 @@ class cell_set(Step):
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=Pipeline
-name: frictionless.Pipeline
-```
-
-```yaml reference tabs=Step
-name: frictionless.Step
+```yaml reference
+references:
+  - frictionless.Pipeline
+  - frictionless.Step
 ```

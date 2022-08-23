@@ -46,10 +46,7 @@ resource.write('table.new.csv', control=controls.S3Control(endpoint_url='<url>')
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=AwsControl
-name: frictionless.schemes.AwsControl
+```yaml reference
+references:
+  - frictionless.schemes.AwsControl
 ```

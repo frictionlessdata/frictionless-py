@@ -31,13 +31,10 @@ print(target.get_resource('extra').to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=resource_add
-name: frictionless.steps.resource_add
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.resource_add
 ```
 
 ## Remove Resource
@@ -62,13 +59,10 @@ print(target)
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=resource_remove
-name: frictionless.steps.resource_remove
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.resource_remove
 ```
 
 ## Transform Resource
@@ -97,13 +91,10 @@ print(target.get_resource('main').to_view())
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=resource_transform
-name: frictionless.steps.resource_transform
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.resource_transform
 ```
 
 ## Update Resource
@@ -131,11 +122,8 @@ print(target.get_resource('main'))
 
 ### Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=resource_update
-name: frictionless.steps.resource_update
+```yaml reference
 level: 4
+references:
+  - frictionless.steps.resource_update
 ```

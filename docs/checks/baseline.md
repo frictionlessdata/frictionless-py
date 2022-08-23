@@ -25,10 +25,7 @@ The Baseline Check is incorporated into base Frictionless classes as though Reso
 
 ## Reference
 
-```markdown tabs=Select
-Select reference to show
-```
-
-```yaml reference tabs=baseline
-name: frictionless.checks.baseline
+```yaml reference
+references:
+  - frictionless.checks.baseline
 ```
