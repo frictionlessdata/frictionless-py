@@ -1,6 +1,4 @@
 from typing import Optional, List, Any, Union
-
-from frictionless.checklist import check
 from ..stats import Stats
 from ..schema import Schema
 from ..report import Report

@@ -10,7 +10,7 @@ def test_step_resource_transform():
         steps=[
             steps.resource_update(name="data", descriptor={"title": "It's our data"}),
             steps.resource_remove(name="data2"),
-            steps.resource_add(name="data2", path="data2.csv"),
+            steps.resource_add(name="data2", descriptor={"path": "data2.csv"}),
             steps.resource_transform(
                 name="data",
                 steps=[

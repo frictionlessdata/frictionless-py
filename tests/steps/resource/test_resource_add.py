@@ -9,7 +9,7 @@ def test_step_resource_add():
     pipeline = Pipeline(
         steps=[
             steps.resource_remove(name="data2"),
-            steps.resource_add(name="data2", path="data2.csv"),
+            steps.resource_add(name="data2", descriptor={"path": "data2.csv"}),
         ],
     )
     target = source.transform(pipeline)
