@@ -171,25 +171,15 @@ def test_program_validate_summary():
 # Bugs
 
 
-@pytest.mark.xfail(reason="issue-1205")
 def test_program_validate_zipped_resources_979():
     actual = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
     assert actual.exit_code == 1
-
-    # Read
-    expected_file_path = "data/fixtures/cli/zipped-resources-979.txt"
-    with open(expected_file_path, encoding="utf-8") as file:
-        assert actual.stdout.count(file.read().strip())
-    assert actual.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
-    assert actual.stdout.count("valid: ogd10_catalogs.zip -> finanzquellen.csv")
-    assert actual.stdout.count("invalid: ogd10_catalogs.zip -> capital-invalid.csv")
+    assert actual.stdout.count("Schema is not valid: names of the fields are not unique")
 
 
 def test_program_validate_long_error_messages_976():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     assert actual.exit_code == 1
-
-    # Read
     expected_file_path = "data/fixtures/cli/long-error-messages-976.txt"
     with open(expected_file_path, encoding="utf-8") as file:
         assert actual.stdout.count(file.read().strip())
