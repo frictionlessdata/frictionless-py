@@ -43,7 +43,7 @@ class PandasParser(Parser):
                     value = pk[schema.primary_key.index(field.name)]
                 else:
                     value = item[field.name]
-                if field.type == "number" and np.isnan(value):
+                if field.type == "number" and np.isnan(value):  # type: ignore
                     value = None
                 cells.append(value)
             yield cells
