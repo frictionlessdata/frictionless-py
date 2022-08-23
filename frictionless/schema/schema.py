@@ -233,8 +233,7 @@ class Schema(Metadata):
             # Field
             assert isinstance(name, str)
             assert isinstance(prop, dict)
-            field = Field.from_descriptor({"type": type})
-            field.name = name
+            field = Field.from_descriptor({"type": type, "name": name})
             schema.add_field(field)
 
             # Description
