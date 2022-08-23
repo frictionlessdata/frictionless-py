@@ -12,7 +12,7 @@
           on {{ item.document.get_plugin('blog').date }}
         </strong>
       </p>
-      {{ item.document.description }}
+      {{ item.document.get_plugin('blog').description }}
       <a href="{{ item.relpath }}.html">Read more &raquo;</a>
     </div>
     <div class="col-4">
