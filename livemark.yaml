@@ -1,0 +1,211 @@
+brand:
+  text: Frictionless Framework
+about:
+  text: Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data
+site:
+  favicon: assets/logo.png
+  styles:
+    - style.css
+github:
+  user: frictionlessdata
+  repo: frictionless-py
+counter:
+  type: plausible
+  code: framework.frictionlessdata.io
+topics:
+  selector: h2
+links:
+  items:
+    - name: Framework (v4) (docs)
+      path: https://v4.framework.frictionlessdata.io
+    - name: Open Knowledge
+      path: https://okfn.org
+    - name: Frictionless
+      path: https://frictionlessdata.io
+    - name: Support
+      path: https://discord.com/channels/695635777199145130/695635777199145133
+pages:
+  items:
+    - path: index
+      name: Introduction
+      from: README.md
+    - path: docs/getting-started
+    - path: docs/basic-examples
+    - name: Data Management
+      items:
+        - path: docs/guides/describing-data
+        - path: docs/guides/extracting-data
+        - path: docs/guides/validating-data
+        - path: docs/guides/transforming-data
+    - name: Framework Details
+      items:
+        - path: docs/framework/program
+        - path: docs/framework/server
+        - path: docs/framework/actions
+          name: Actions
+        - path: docs/framework/catalog
+          name: Catalog
+        - path: docs/framework/package
+          name: Package
+        - path: docs/framework/resource
+          name: Resource
+        - path: docs/framework/dialect
+          name: Dialect
+        - path: docs/framework/schema
+          name: Schema
+        - path: docs/framework/checklist
+          name: Checklist
+        - path: docs/framework/pipeline
+          name: Pipeline
+        - path: docs/framework/detector
+          name: Detector
+        - path: docs/framework/inquiry
+          name: Inquiry
+        - path: docs/framework/report
+          name: Report
+        - path: docs/framework/table
+          name: Table
+        - path: docs/framework/classes
+          name: Other
+    - name: Validation Checks
+      items:
+        - path: docs/checks/baseline
+          name: Baseline
+        - path: docs/checks/table
+          name: Table
+        - path: docs/checks/row
+          name: Row
+        - path: docs/checks/cell
+          name: Cell
+    - name: Validation Errors
+      items:
+        - path: docs/errors/metadata
+          name: Metadata
+        - path: docs/errors/resource
+          name: Resource
+        - path: docs/errors/data
+          name: Data
+        - path: docs/errors/file
+          name: File
+        - path: docs/errors/table
+          name: Table
+        - path: docs/errors/header
+          name: Header
+        - path: docs/errors/label
+          name: Label
+        - path: docs/errors/row
+          name: Row
+        - path: docs/errors/cell
+          name: Cell
+    - name: Transform Steps
+      items:
+        - path: docs/steps/resource
+          name: Resource
+        - path: docs/steps/table
+          name: Table
+        - path: docs/steps/field
+          name: Field
+        - path: docs/steps/row
+          name: Row
+        - path: docs/steps/cell
+          name: Cell
+    - name: Tabular Fields
+      items:
+        - path: docs/fields/any
+          name: Any
+        - path: docs/fields/array
+          name: Array
+        - path: docs/fields/boolean
+          name: Boolean
+        - path: docs/fields/date
+          name: Date
+        - path: docs/fields/datetime
+          name: Datetime
+        - path: docs/fields/duration
+          name: Duration
+        - path: docs/fields/geojson
+          name: Geojson
+        - path: docs/fields/geopoint
+          name: Geopoint
+        - path: docs/fields/integer
+          name: Integer
+        - path: docs/fields/number
+          name: Number
+        - path: docs/fields/object
+          name: Object
+        - path: docs/fields/string
+          name: String
+        - path: docs/fields/time
+          name: Time
+        - path: docs/fields/year
+          name: Year
+        - path: docs/fields/yearmonth
+          name: Yearmonth
+    - name: File Schemes
+      items:
+        - path: docs/schemes/aws
+          name: Aws
+        - path: docs/schemes/buffer
+          name: Buffer
+        - path: docs/schemes/local
+          name: Local
+        - path: docs/schemes/multipart
+          name: Multipart
+        - path: docs/schemes/remote
+          name: Remote
+        - path: docs/schemes/stream
+          name: Stream
+    - name: File Formats
+      items:
+        - path: docs/formats/bigquery
+          name: Bigquery
+        - path: docs/formats/csv
+          name: Csv
+        - path: docs/formats/excel
+          name: Excel
+        - path: docs/formats/gsheets
+          name: Gsheets
+        - path: docs/formats/html
+          name: Html
+        - path: docs/formats/inline
+          name: Inline
+        - path: docs/formats/json
+          name: Json
+        - path: docs/formats/ods
+          name: Ods
+        - path: docs/formats/pandas
+          name: Pandas
+        - path: docs/formats/parquet
+          name: Parquet
+        - path: docs/formats/spss
+          name: Spss
+        - path: docs/formats/sql
+          name: Sql
+    - name: Data Portals
+      items:
+        - path: docs/portals/ckan
+          name: Ckan
+        - path: docs/portals/github
+          name: Github
+        - path: docs/portals/zenodo
+          name: Zenodo
+    - name: Architecture
+      items:
+        - path: docs/architecture/design
+        - path: docs/architecture/system
+        - path: docs/architecture/extending
+    - name: Codebase
+      items:
+        - path: docs/codebase/authors
+          from: AUTHORS.md
+        - path: docs/codebase/license
+          name: License
+          from: LICENSE.md
+        - path: docs/codebase/migration
+          from: MIGRATION.md
+        - path: docs/codebase/changelog
+          from: CHANGELOG.md
+        - path: docs/codebase/contributing
+          from: CONTRIBUTING.md
+    - path: docs/universe
+    - path: blog/index

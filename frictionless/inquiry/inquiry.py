@@ -60,8 +60,6 @@ class Inquiry(Metadata):
                 task_descriptors = [task.to_descriptor() for task in self.tasks]
                 report_descriptors = pool.map(validate_parallel, task_descriptors)
                 for report_descriptor in report_descriptors:
-                    print(report_descriptor)
-                    print("---")
                     reports.append(Report.from_descriptor(report_descriptor))
 
         # Return report

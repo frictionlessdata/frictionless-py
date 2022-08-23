@@ -1,0 +1,40 @@
+title: Countries and their capitals
+description: The data was collected as a research project
+resources:
+  - name: capital
+    type: table
+    path: capital-3.csv
+    scheme: file
+    format: csv
+    encoding: utf-8
+    mediatype: text/csv
+    schema:
+      fields:
+        - name: id
+          type: integer
+        - name: name
+          type: string
+  - name: country
+    type: table
+    path: country-3.csv
+    scheme: file
+    format: csv
+    encoding: utf-8
+    mediatype: text/csv
+    schema:
+      fields:
+        - name: id
+          type: integer
+        - name: capital_id
+          type: integer
+        - name: name
+          type: string
+        - name: population
+          type: integer
+      foreignKeys:
+        - fields:
+            - capital_id
+          reference:
+            resource: capital
+            fields:
+              - id

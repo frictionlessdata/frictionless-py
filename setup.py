@@ -40,9 +40,6 @@ TESTS_REQUIRE = [
     "requests-mock",
     "python-dotenv",
     "pytest-timeout",
-    # TODO: review
-    #  "pydoc-markdown",
-    "docstring-parser",
 ]
 EXTRAS_REQUIRE = {
     "api": ["fastapi>=0.78", "uvicorn>=0.17"],
@@ -50,12 +47,7 @@ EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
     "dev": TESTS_REQUIRE,
-    "excel": [
-        "xlrd>=1.2",
-        "xlwt>=1.2",
-        "openpyxl>=3.0",
-        "tableschema-to-template>=0.0.12",
-    ],
+    "excel": ["xlrd>=1.2", "xlwt>=1.2", "openpyxl>=3.0", "tableschema-to-template>=0.0"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
@@ -82,7 +74,7 @@ INSTALL_REQUIRES = [
     "jsonschema>=2.5",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
-    "typer[all]>=0.4.1",
+    "typer[all]>=0.5",
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",

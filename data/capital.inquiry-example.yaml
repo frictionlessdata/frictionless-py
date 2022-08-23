@@ -1,0 +1,3 @@
+tasks:
+  - path: capital-valid.csv
+  - path: capital-invalid.csv

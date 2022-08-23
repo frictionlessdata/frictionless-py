@@ -32,6 +32,7 @@ class Pipeline(Metadata):
 
     @property
     def step_types(self) -> List[str]:
+        """Return type list of the steps"""
         return [step.type for step in self.steps]
 
     # Steps

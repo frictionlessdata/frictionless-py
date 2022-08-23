@@ -43,25 +43,31 @@ def extract(
     if resource_name:
         type = "resource"
     if not type:
+        type = getattr(source, "metadata_type", None)
+    if not type:
         type = Detector.detect_descriptor(source)
-        if not type:
-            type = "resource"
-            if helpers.is_expandable_source(source):
-                type = "package"
+    if not type:
+        type = "resource"
+        if helpers.is_expandable_source(source):
+            type = "package"
 
     # Extract resource
     if type == "resource":
         if resource_name:
-            package = Package.from_options(source, **options)
+            package = source
+            if not isinstance(package, Package):
+                package = Package.from_options(source, **options)
             resource = package.get_resource(resource_name)
         else:
-            resource = Resource.from_options(
-                source,
-                type="table",
-                dialect=dialect,
-                schema=schema,
-                **options,
-            )
+            resource = source
+            if not isinstance(resource, Resource):
+                resource = Resource.from_options(
+                    source,
+                    type="table",
+                    dialect=dialect,
+                    schema=schema,
+                    **options,
+                )
         return resource.extract(
             limit_rows=limit_rows,
             process=process,
@@ -71,7 +77,9 @@ def extract(
 
     # Extract package
     if type == "package":
-        package = Package.from_options(source, **options)
+        package = source
+        if not isinstance(package, Package):
+            package = Package.from_options(source, **options)
         return package.extract(
             limit_rows=limit_rows,
             process=process,

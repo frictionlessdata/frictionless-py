@@ -1,0 +1,22 @@
+steps:
+  - type: cell-replace
+    fieldName: neighbor_id
+    pattern: '22'
+    replace: '2'
+  - type: cell-replace
+    fieldName: population
+    pattern: 'n/a'
+    replace: '67'
+  - type: row-filter
+    formula: population
+  - type: field-update
+    name: neighbor_id
+    descriptor:
+      type: integer
+  - type: field-update
+    name: population
+    descriptor:
+      type: integer
+  - type: table-normalize
+  - type: table-write
+    path: countries-cleaned.csv

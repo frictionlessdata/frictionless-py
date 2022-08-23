@@ -198,6 +198,10 @@ class Metadata(metaclass=Metaclass):
         """Create a copy of the metadata"""
         return type(self).from_descriptor(self.to_descriptor(), **options)
 
+    def to_dict(self) -> IDescriptor:
+        """Export metadata as dictionary (alias for "to_descriptor")"""
+        return self.to_descriptor()
+
     def to_json(
         self, path: Optional[str] = None, encoder_class: Optional[Any] = None
     ) -> str:
