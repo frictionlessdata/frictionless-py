@@ -54,3 +54,4 @@ build
 .docusaurus
 .cache-loader
 types
+.vercel
