@@ -118,7 +118,7 @@ jobs:
       - name: Install and build site
         run: |
           echo '!**/*.html' >> .gitignore
-          pip install -e .
+          make install
           livemark build
       - name: Publush to Github Pages
         uses: stefanzweifel/git-auto-commit-action@v4
