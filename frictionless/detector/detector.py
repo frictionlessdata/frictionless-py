@@ -432,7 +432,7 @@ class Detector(Metadata):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "bufferSize": {"type": "integer"},
-            "samleSize": {"type": "integer"},
+            "sampleSize": {"type": "integer"},
             "encodingConfidence": {"type": "number"},
             "fieldType": {"type": "string"},
             "fieldNames": {"type": "array"},
