@@ -49,6 +49,14 @@ module.exports = {
     ],
   ],
   themeConfig: {
+    announcementBar: {
+      id: "support_us",
+      content:
+        'You are reading Frictionless Framework (v4) documentation. Swith to <a href="https://framework.frictionlessdata.io/">Frictionless Framework (v5)</a> documentation if you are looking for the latest version',
+      backgroundColor: "#fafbfc",
+      textColor: "#091E42",
+      isCloseable: false,
+    },
     sidebarCollapsible: true,
     image: "img/logo-bright2.png",
     prism: {
