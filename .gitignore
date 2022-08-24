@@ -96,4 +96,5 @@ datapackage
 .google.json
 .vscode/
 coverage/
-tmp
+site/
+tmp/
