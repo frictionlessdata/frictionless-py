@@ -1,32 +1,34 @@
+from __future__ import annotations
 import os
 import json
-import jinja2
-import zipfile
+import atexit
+import shutil
 import tempfile
 from pathlib import Path
-from copy import deepcopy
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
+from ..platform import platform
 from ..metadata import Metadata
-from ..detector import Detector
 from ..resource import Resource
-from ..field import Field
 from ..system import system
-from .analyze import analyze
-from .describe import describe
-from .extract import extract
-from .transform import transform
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
+from .. import fields
+from . import methods
+
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor, IProfile
+    from ..dialect import Dialect, Control
+    from ..detector import Detector
+    from ..catalog import Catalog
+    from .. import portals
 
 
+# TODO: think about package/resource/schema/etc extension mechanism (e.g. FiscalPackage)
 class Package(Metadata):
     """Package representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Package`
 
     This class is one of the cornerstones of of Frictionless framework.
     It manages underlaying resource and provides an ability to describe a package.
@@ -36,457 +38,314 @@ class Package(Metadata):
     package.get_resoure('table').read_rows() == [
         {'id': 1, 'name': 'english'},
         {'id': 2, 'name': '中国人'},
-    ]
-    ```
 
-    Parameters:
-
-        source (any): Source of the package; can be in various forms.
-            Usually, it's a package descriptor in a form of dict or path
-            Also, it can be a glob pattern or a resource path
-
-        descriptor (dict|str): A resource descriptor provided explicitly.
-            Keyword arguments will patch this descriptor if provided.
-
-        resources? (dict|Resource[]): A list of resource descriptors.
-            It can be dicts or Resource instances.
-
-        id? (str): A property reserved for globally unique identifiers.
-            Examples of identifiers that are unique include UUIDs and DOIs.
-
-        name? (str): A short url-usable (and preferably human-readable) name.
-            This MUST be lower-case and contain only alphanumeric characters
-            along with “.”, “_” or “-” characters.
-
-        title? (str): A Package title according to the specs
-           It should a human-oriented title of the resource.
-
-        description? (str): A Package description according to the specs
-           It should a human-oriented description of the resource.
-
-        licenses? (dict[]): The license(s) under which the package is provided.
-            If omitted it's considered the same as the package's licenses.
-
-        sources? (dict[]): The raw sources for this data package.
-            It MUST be an array of Source objects.
-            Each Source object MUST have a title and
-            MAY have path and/or email properties.
-
-        profile? (str): A string identifying the profile of this descriptor.
-            For example, `fiscal-data-package`.
-
-        homepage? (str): A URL for the home on the web that is related to this package.
-            For example, github repository or ckan dataset address.
-
-        version? (str): A version string identifying the version of the package.
-            It should conform to the Semantic Versioning requirements and
-            should follow the Data Package Version pattern.
-
-        contributors? (dict[]): The people or organizations who contributed to this package.
-            It MUST be an array. Each entry is a Contributor and MUST be an object.
-            A Contributor MUST have a title property and MAY contain
-            path, email, role and organization properties.
-
-        keywords? (str[]): An Array of string keywords to assist users searching.
-            For example, ['data', 'fiscal']
-
-        image? (str): An image to use for this data package.
-            For example, when showing the package in a listing.
-
-        created? (str): The datetime on which this was created.
-            The datetime must conform to the string formats for RFC3339 datetime,
-
-        innerpath? (str): A ZIP datapackage descriptor inner path.
-            Path to the package descriptor inside the ZIP datapackage.
-            Example: some/folder/datapackage.yaml
-            Default: datapackage.json, datapackage.yaml or datapackage.yml
-
-        basepath? (str): A basepath of the resource
-            The fullpath of the resource is joined `basepath` and /path`
-
-        detector? (Detector): File/table detector.
-            For more information, please check the Detector documentation.
-
-        onerror? (ignore|warn|raise): Behaviour if there is an error.
-            It defaults to 'ignore'. The default mode will ignore all errors
-            on resource level and they should be handled by the user
-            being available in Header and Row objects.
-
-        trusted? (bool): Don't raise an exception on unsafe paths.
-            A path provided as a part of the descriptor considered unsafe
-            if there are path traversing or the path is absolute.
-            A path provided as `source` or `path` is alway trusted.
-
-        hashing? (str): a hashing algorithm for resources
-            It defaults to 'md5'.
-
-        dialect? (dict|Dialect): Table dialect.
-            For more information, please check the Dialect documentation.
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
     """
 
-    describe = staticmethod(describe)
-    extract = extract
-    transform = transform
-    validate = validate
-    analyze = analyze
+    analyze = methods.analyze
+    describe = methods.describe
+    extract = methods.extract
+    transform = methods.transform
+    validate = methods.validate
 
     def __init__(
         self,
-        source=None,
+        source: Optional[Any] = None,
+        control: Optional[Control] = None,
+        innerpath: Optional[str] = None,
         *,
-        descriptor=None,
-        # Spec
-        resources=None,
-        id=None,
-        name=None,
-        title=None,
-        description=None,
-        licenses=None,
-        sources=None,
-        profile=None,
-        homepage=None,
-        version=None,
-        contributors=None,
-        keywords=None,
-        image=None,
-        created=None,
-        # Extra
-        innerpath="",
-        basepath="",
-        detector=None,
-        onerror="ignore",
-        trusted=False,
-        hashing=None,
-        dialect=None,
+        # Standard
+        name: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        homepage: Optional[str] = None,
+        profiles: List[Union[IProfile, str]] = [],
+        licenses: List[dict] = [],
+        sources: List[dict] = [],
+        contributors: List[dict] = [],
+        keywords: List[str] = [],
+        image: Optional[str] = None,
+        version: Optional[str] = None,
+        created: Optional[str] = None,
+        resources: List[Union[Resource, str]] = [],
+        # Software
+        basepath: Optional[str] = None,
+        detector: Optional[Detector] = None,
+        dialect: Optional[Dialect] = None,
+        catalog: Optional[Catalog] = None,
     ):
 
-        # Handle source
+        # Store state
+        self.name = name
+        self.title = title
+        self.description = description
+        self.profiles = profiles.copy()
+        self.licenses = licenses.copy()
+        self.sources = sources.copy()
+        self.homepage = homepage
+        self.contributors = contributors.copy()
+        self.keywords = keywords.copy()
+        self.image = image
+        self.version = version
+        self.created = created
+        self.basepath = basepath
+        self.catalog = catalog
+
+        # Add resources
+        self.resources = []
+        for resource in resources:
+            resource = self.add_resource(resource)
+            if detector:
+                resource.detector = detector
+            if dialect:
+                resource.dialect = dialect
+
+        # Handled by the create hook
+        assert source is None
+        assert control is None
+        assert innerpath is None
+
+    # TODO: support list of paths as resource paths?
+    @classmethod
+    def __create__(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        innerpath: Optional[str] = None,
+        **options,
+    ):
         if source is not None:
-            if descriptor is None:
-                descriptor = source
-                file = system.create_file(source, basepath=basepath)
-                if file.multipart:
-                    descriptor = {"resources": []}
-                    for part in file.normpath:
-                        descriptor["resources"].append({"path": part})
-                elif file.type == "table" and not file.compression:
-                    descriptor = {"resources": [{"path": file.normpath}]}
 
-        # Handle pathlib
-        if isinstance(descriptor, Path):
-            descriptor = str(descriptor)
+            # Path
+            if isinstance(source, Path):
+                source = str(source)
 
-        # Handle trusted
-        if descriptor is None:
-            trusted = True
+            # Mapping
+            elif isinstance(source, Mapping):
+                source = {key: value for key, value in source.items()}
 
-        # Handle zip
-        if helpers.is_zip_descriptor(descriptor):
-            descriptor = helpers.unzip_descriptor(descriptor, innerpath)
+            # Compressed
+            elif helpers.is_zip_descriptor(source):
+                source = unzip_package(source, innerpath=innerpath)
 
-        # Set attributes
-        self.setinitial("resources", resources)
-        self.setinitial("name", name)
-        self.setinitial("id", id)
-        self.setinitial("licenses", licenses)
-        self.setinitial("profile", profile)
-        self.setinitial("title", title)
-        self.setinitial("description", description)
-        self.setinitial("homepage", homepage)
-        self.setinitial("version", version)
-        self.setinitial("sources", sources)
-        self.setinitial("contributors", contributors)
-        self.setinitial("keywords", keywords)
-        self.setinitial("image", image)
-        self.setinitial("created", created)
-        self.__basepath = basepath or helpers.parse_basepath(descriptor)
-        self.__detector = detector or Detector()
-        self.__dialect = dialect
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__hashing = hashing
-        super().__init__(descriptor)
+            # Directory
+            elif helpers.is_directory_source(source):
+                for name in ["datapackage.json", "datapackage.yaml"]:
+                    path = os.path.join(source, name)
+                    if os.path.isfile(path):
+                        return Package.from_descriptor(path)
 
-    def __setattr__(self, name, value):
-        if name == "hashing":
-            self.__hashing = value
-        elif name == "basepath":
-            self.__basepath = value
-        elif name == "onerror":
-            self.__onerror = value
-        elif name == "trusted":
-            self.__trusted = value
-        else:
-            return super().__setattr__(name, value)
-        self.metadata_process()
+            # Expandable
+            elif helpers.is_expandable_source(source):
+                options["resources"] = []
+                basepath = options.get("basepath")
+                for path in helpers.expand_source(source, basepath=basepath):
+                    options["resources"].append(Resource(path=path))
+                return Package.from_options(**options)
 
-    @Metadata.property
-    def name(self):
-        """
-        Returns:
-            str: package name
-        """
-        return self.get("name", "")
+            # Manager
+            manager = system.create_manager(source, control=control)
+            if manager:
+                package = manager.read_package()
+                return package
 
-    @Metadata.property
-    def id(self):
-        """
-        Returns:
-            str: package id
-        """
-        return self.get("id", "")
+            # Descriptor
+            if helpers.is_descriptor_source(source):
+                return Package.from_descriptor(source, **options)
 
-    @Metadata.property
-    def licenses(self):
-        """
-        Returns:
-            dict[]: package licenses
-        """
-        licenses = self.get("licenses", [])
-        return self.metadata_attach("licenses", licenses)
+            # Path/data
+            options["resources"] = [Resource(source)]
+            return Package(**options)
 
-    @Metadata.property
-    def profile(self):
-        """
-        Returns:
-            str: package profile
-        """
-        return self.get("profile", settings.DEFAULT_PACKAGE_PROFILE)
+    # State
 
-    @Metadata.property
-    def title(self):
-        """
-        Returns:
-            str: package title
-        """
-        return self.get("title", "")
+    name: Optional[str]
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
 
-    @Metadata.property
-    def description(self):
-        """
-        Returns:
-            str: package description
-        """
-        return self.get("description", "")
+    title: Optional[str]
+    """
+    A Package title according to the specs
+    It should a human-oriented title of the resource.
+    """
 
-    @Metadata.property(cache=False, write=False)
-    def description_html(self):
-        """
-        Returns:
-            str: package description
-        """
-        return helpers.md_to_html(self.description)
+    description: Optional[str]
+    """
+    A Package description according to the specs
+    It should a human-oriented description of the resource.
+    """
 
-    @Metadata.property
-    def description_text(self):
-        """
-        Returns:
-            str: package description
-        """
-        return helpers.html_to_text(self.description_html)
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
 
-    @Metadata.property
-    def homepage(self):
-        """
-        Returns:
-            str: package homepage
-        """
-        return self.get("homepage", "")
+    profiles: List[Union[IProfile, str]]
+    """
+    A strings identifying the profiles of this descriptor.
+    For example, `fiscal-data-package`.
+    """
 
-    @Metadata.property
-    def version(self):
-        """
-        Returns:
-            str: package version
-        """
-        return self.get("version", "")
+    licenses: List[dict]
+    """
+    The license(s) under which the package is provided.
+    """
 
-    @Metadata.property
-    def sources(self):
-        """
-        Returns:
-            dict[]: package sources
-        """
-        sources = self.get("sources", [])
-        return self.metadata_attach("sources", sources)
+    sources: List[dict]
+    """
+    The raw sources for this data package.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
 
-    @Metadata.property
-    def contributors(self):
-        """
-        Returns:
-            dict[]: package contributors
-        """
-        contributors = self.get("contributors", [])
-        return self.metadata_attach("contributors", contributors)
+    contributors: List[dict]
+    """
+    The people or organizations who contributed to this package.
+    It MUST be an array. Each entry is a Contributor and MUST be an object.
+    A Contributor MUST have a title property and MAY contain
+    path, email, role and organization properties.
+    """
 
-    @Metadata.property
-    def keywords(self):
-        """
-        Returns:
-            str[]: package keywords
-        """
-        keywords = self.get("keywords", [])
-        return self.metadata_attach("keywords", keywords)
+    keywords: List[str]
+    """
+    An Array of string keywords to assist users searching.
+    For example, ['data', 'fiscal']
+    """
 
-    @Metadata.property
-    def image(self):
-        """
-        Returns:
-            str: package image
-        """
-        return self.get("image", "")
+    image: Optional[str]
+    """
+    An image to use for this data package.
+    For example, when showing the package in a listing.
+    """
 
-    @Metadata.property
-    def created(self):
-        """
-        Returns:
-            str: package created
-        """
-        return self.get("created", "")
+    version: Optional[str]
+    """
+    A version string identifying the version of the package.
+    It should conform to the Semantic Versioning requirements and
+    should follow the Data Package Version pattern.
+    """
 
-    @Metadata.property(cache=False, write=False)
-    def hashing(self):
-        """
-        Returns:
-            str: package hashing
-        """
-        return self.__hashing or settings.DEFAULT_HASHING
+    created: Optional[str]
+    """
+    The datetime on which this was created.
+    The datetime must conform to the string formats for RFC3339 datetime,
+    """
 
-    @Metadata.property(cache=False, write=False)
-    def basepath(self):
-        """
-        Returns:
-            str: package basepath
-        """
-        return self.__basepath
+    resources: List[Resource]
+    """
+    A list of resource descriptors.
+    It can be dicts or Resource instances
+    """
 
-    @Metadata.property(cache=False, write=False)
-    def onerror(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        return self.__onerror
+    catalog: Optional[Catalog]
+    """NOTE: add docs
+    """
 
-    @Metadata.property(cache=False, write=False)
-    def trusted(self):
+    # Props
+
+    @property
+    def resource_names(self) -> List[str]:
+        """Return names of resources"""
+        return [resource.name for resource in self.resources if resource.name is not None]
+
+    @property
+    def resource_paths(self) -> List[str]:
+        """Return names of resources"""
+        return [resource.path for resource in self.resources if resource.path is not None]
+
+    @property
+    def basepath(self) -> Optional[str]:
         """
-        Returns:
-            str: package trusted
+        A basepath of the package
+        The normpath of the resource is joined `basepath` and `/path`
         """
-        return self.__trusted
+        if self.__basepath:
+            return self.__basepath
+        if self.catalog:
+            return self.catalog.basepath
+
+    @basepath.setter
+    def basepath(self, value: Optional[str]):
+        self.__basepath = value
 
     # Resources
 
-    @Metadata.property
-    def resources(self):
-        """
-        Returns:
-            Resources[]: package resource
-        """
-        resources = self.get("resources", [])
-        return self.metadata_attach("resources", resources)
+    def add_resource(self, resource: Union[Resource, str]) -> Resource:
+        """Add new resource to the package"""
+        if isinstance(resource, str):
+            resource = Resource.from_descriptor(resource, basepath=self.basepath)
+        if resource.name and self.has_resource(resource.name):
+            error = errors.PackageError(note=f'resource "{resource.name}" already exists')
+            raise FrictionlessException(error)
+        self.resources.append(resource)
+        resource.package = self
+        return resource
 
-    @Metadata.property(cache=False, write=False)
-    def resource_names(self):
-        """
-        Returns:
-            str[]: package resource names
-        """
-        return [resource.name for resource in self.resources]
+    def has_resource(self, name: str) -> bool:
+        """Check if a resource is present"""
+        for resource in self.resources:
+            if resource.name == name:
+                return True
+        return False
 
-    def add_resource(self, source=None, **options):
-        """Add new resource to the package.
-
-        Parameters:
-            source (dict|str): a data source
-            **options (dict): options of the Resource class
-
-        Returns:
-            Resource/None: added `Resource` instance or `None` if not added
-        """
-        native = isinstance(source, Resource)
-        resource = source if native else Resource(source, **options)
-        self.setdefault("resources", [])
-        self["resources"].append(resource)
-        return self.resources[-1]
-
-    def get_resource(self, name):
-        """Get resource by name.
-
-        Parameters:
-            name (str): resource name
-
-        Raises:
-            FrictionlessException: if resource is not found
-
-        Returns:
-           Resource/None: `Resource` instance or `None` if not found
-        """
+    def get_resource(self, name: str) -> Resource:
+        """Get resource by name"""
         for resource in self.resources:
             if resource.name == name:
                 return resource
         error = errors.PackageError(note=f'resource "{name}" does not exist')
         raise FrictionlessException(error)
 
-    def has_resource(self, name):
-        """Check if a resource is present
+    def set_resource(self, resource: Resource) -> Optional[Resource]:
+        """Set resource by name"""
+        assert resource.name
+        if self.has_resource(resource.name):
+            prev_resource = self.get_resource(resource.name)
+            index = self.resources.index(prev_resource)
+            self.resources[index] = resource
+            resource.package = self
+            return prev_resource
+        self.add_resource(resource)
 
-        Parameters:
-            name (str): schema resource name
+    def update_resource(self, name: str, descriptor: IDescriptor) -> Resource:
+        """Update resource"""
+        prev_resource = self.get_resource(name)
+        resource_index = self.resources.index(prev_resource)
+        resource_descriptor = prev_resource.to_descriptor()
+        resource_descriptor.update(descriptor)
+        new_resource = Resource.from_descriptor(resource_descriptor)
+        new_resource.package = self
+        self.resources[resource_index] = new_resource
+        return prev_resource
 
-        Returns:
-           bool: whether there is the resource
-        """
-        for resource in self.resources:
-            if resource.name == name:
-                return True
-        return False
-
-    def remove_resource(self, name):
-        """Remove resource by name.
-
-        Parameters:
-            name (str): resource name
-
-        Raises:
-            FrictionlessException: if resource is not found
-
-        Returns:
-            Resource/None: removed `Resource` instances or `None` if not found
-        """
+    def remove_resource(self, name: str) -> Resource:
+        """Remove resource by name"""
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
 
-    # Expand
-
-    def expand(self):
-        """Expand metadata
-
-        It will add default values to the package.
-        """
-        self.setdefault("resources", self.resources)
-        self.setdefault("profile", self.profile)
-        for resource in self.resources:
-            resource.expand()
+    def clear_resources(self):
+        """Remove all the resources"""
+        self.resources = []
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, sample=True, stats=False):
         """Infer package's attributes
 
         Parameters:
+            sample? (bool): open files and infer from a sample (default: True)
             stats? (bool): stream files completely and infer stats
         """
 
         # General
-        self.setdefault("profile", settings.DEFAULT_PACKAGE_PROFILE)
         for resource in self.resources:
-            resource.infer(stats=stats)
+            resource.infer(sample=sample, stats=stats)
 
         # Deduplicate names
         if len(self.resource_names) != len(set(self.resource_names)):
@@ -497,129 +356,117 @@ class Package(Metadata):
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
 
-    # Export/Import
+    # Flatten
+
+    def flatten(self, spec=["name", "path"]):
+        """Flatten the package
+
+        Parameters
+            spec (str[]): flatten specification
+
+        Returns:
+            any[]: flatten package
+        """
+        result = []
+        for resource in self.resources:
+            context = {}
+            context.update(resource.to_descriptor())
+            result.append([context.get(prop) for prop in spec])
+        return result
+
+    # Convert
 
     def to_copy(self):
         """Create a copy of the package"""
-        descriptor = self.to_dict()
-        # Resource's data can be not serializable (generators/functions)
-        descriptor.pop("resources", None)
-        resources = []
-        for resource in self.resources:
-            resources.append(resource.to_copy())
-        return Package(
-            descriptor,
-            resources=resources,
-            basepath=self.__basepath,
-            detector=self.__detector,
-            onerror=self.__onerror,
-            trusted=self.__trusted,
+        return super().to_copy(
+            resources=[resource.to_copy() for resource in self.resources]
         )
 
-    def to_er_diagram(self, path=None) -> str:
-        """Generate ERD(Entity Relationship Diagram) from package resources
-        and exports it as .dot file
-
-        Parameters:
-            path (str): target path
-
-        Returns:
-            path(str): location of the .dot file
-
-        Raises:
-            FrictionlessException: on any error
-        """
-        text = to_dot(self)
-        path = path if path else "package.dot"
-        try:
-            helpers.write_file(path, text)
-        except Exception as exc:
-            raise FrictionlessException(self.__Error(note=str(exc))) from exc
-
-        return path
-
     @staticmethod
-    def from_bigquery(source, *, dialect=None):
+    def from_bigquery(source, *, control=None):
         """Import package from Bigquery
 
         Parameters:
             source (string): BigQuery `Service` object
-            dialect (dict): BigQuery dialect
+            control (dict): BigQuery control
 
         Returns:
             Package: package
         """
-        storage = system.create_storage("bigquery", source, dialect=dialect)
+        storage = system.create_storage("bigquery", source, control=control)
         return storage.read_package()
 
-    def to_bigquery(self, target, *, dialect=None):
+    def to_bigquery(self, target, *, control=None):
         """Export package to Bigquery
 
         Parameters:
             target (string): BigQuery `Service` object
-            dialect (dict): BigQuery dialect
+            control (dict): BigQuery control
 
         Returns:
             BigqueryStorage: storage
         """
-        storage = system.create_storage("bigquery", target, dialect=dialect)
-        storage.write_package(self.to_copy(), force=True)
+        storage = system.create_storage("bigquery", target, control=control)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
-    def from_ckan(source, *, dialect=None):
+    def from_ckan(source: Any, *, control: Optional[portals.CkanControl] = None):
         """Import package from CKAN
 
         Parameters:
             source (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dialect (dict): CKAN dialect
+            control (dict): CKAN control
 
         Returns:
             Package: package
         """
-        storage = system.create_storage("ckan", source, dialect=dialect)
-        return storage.read_package()
+        manager = system.create_manager(source, control=control)
+        if not manager:
+            raise FrictionlessException(f"not supported CKAN source: {source}")
+        package = manager.read_package()
+        return package
 
-    def to_ckan(self, target, *, dialect=None):
+    def to_ckan(self, target, *, control=None):
         """Export package to CKAN
 
         Parameters:
             target (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dialect (dict): CKAN dialect
+            control (dict): CKAN control
 
         Returns:
             CkanStorage: storage
         """
-        storage = system.create_storage("ckan", target, dialect=dialect)
-        storage.write_package(self.to_copy(), force=True)
+        storage = system.create_storage("ckan", target, control=control)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
-    def from_sql(source, *, dialect=None):
+    def from_sql(source, *, control=None):
         """Import package from SQL
 
         Parameters:
             source (any): SQL connection string of engine
-            dialect (dict): SQL dialect
+            control (dict): SQL control
 
         Returns:
             Package: package
         """
-        storage = system.create_storage("sql", source, dialect=dialect)
+        storage = system.create_storage("sql", source, control=control)
         return storage.read_package()
 
-    def to_sql(self, target, *, dialect=None):
+    def to_sql(self, target, *, control=None):
         """Export package to SQL
 
         Parameters:
             target (any): SQL connection string of engine
-            dialect (dict): SQL dialect
+            control (dict): SQL control
 
         Returns:
             SqlStorage: storage
         """
-        storage = system.create_storage("sql", target, dialect=dialect)
-        storage.write_package(self.to_copy(), force=True)
+        storage = system.create_storage("sql", target, control=control)
+        storage.write_package(self, force=True)
         return storage
 
     @staticmethod
@@ -630,9 +477,9 @@ class Package(Metadata):
             path(str): file path
             **options(dict): resouce options
         """
-        return Package(descriptor=path, **options)
+        return Package(path, **options)
 
-    def to_zip(self, path, *, encoder_class=None, compression=zipfile.ZIP_DEFLATED):
+    def to_zip(self, path, *, encoder_class=None, compression=None):
         """Save package to a zip
 
         Parameters:
@@ -640,52 +487,57 @@ class Package(Metadata):
             encoder_class (object): json encoder class
             compression (int): the ZIP compression method to use when
                 writing the archive. Possible values are the ones supported
-                by Python's `zipfile` module.
+                by Python's `zipfile` module. Defaults: zipfile.ZIP_DEFLATED
 
         Raises:
             FrictionlessException: on any error
         """
+
+        # Infer
+        self.infer(sample=False)
+
+        # Save
         try:
-            with zipfile.ZipFile(path, "w", compression=compression) as archive:
-                package_descriptor = self.to_dict()
+            compression = compression or platform.zipfile.ZIP_DEFLATED
+            with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
+                package_descriptor = self.to_descriptor()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
-                    # Remote data
-                    if resource.remote:
-                        pass
-
                     # Memory data
-                    elif resource.memory:
+                    if resource.memory:
                         if not isinstance(resource.data, list):
                             path = f"{resource.name}.csv"
-                            descriptor["path"] = path
                             descriptor.pop("data", None)
+                            descriptor["path"] = path
+                            descriptor["scheme"] = "file"
+                            descriptor["format"] = "csv"
+                            descriptor["mediatype"] = "text/csv"
                             with tempfile.NamedTemporaryFile() as file:
-                                tgt = Resource(path=file.name, format="csv", trusted=True)
-                                resource.write(tgt)
+                                target = Resource(path=file.name, format="csv")
+                                resource.write(target)
                                 archive.write(file.name, path)
 
                     # Multipart data
                     elif resource.multipart:
-                        for path, fullpath in zip(resource.path, resource.fullpath):
-                            if os.path.isfile(fullpath):
-                                if not helpers.is_safe_path(fullpath):
-                                    note = f'Zipping usafe "{fullpath}" is not supported'
+                        for path, normpath in zip(resource.paths, resource.normpaths):
+                            if os.path.isfile(normpath):
+                                if not helpers.is_safe_path(normpath):
+                                    note = f'Zipping usafe "{normpath}" is not supported'
                                     error = errors.PackageError(note=note)
                                     raise FrictionlessException(error)
-                                archive.write(fullpath, path)
+                                archive.write(normpath, path)
 
                     # Local Data
-                    else:
+                    elif resource.scheme == "file":
                         path = resource.path
-                        fullpath = resource.fullpath
-                        if os.path.isfile(fullpath):
-                            if not helpers.is_safe_path(fullpath):
-                                note = f'Zipping usafe "{fullpath}" is not supported'
+                        normpath = resource.normpath
+                        if os.path.isfile(normpath):
+                            if not helpers.is_safe_path(normpath):
+                                note = f'Zipping usafe "{normpath}" is not supported'
                                 error = errors.PackageError(note=note)
                                 raise FrictionlessException(error)
-                            archive.write(fullpath, path)
+                            archive.write(normpath, path)
 
                 # Metadata
                 archive.writestr(
@@ -698,132 +550,257 @@ class Package(Metadata):
                     ),
                 )
 
+        # Error
         except Exception as exception:
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception
 
+    # TODO: if path is not provided return as a string
+    def to_er_diagram(self, path=None) -> str:
+        """Generate ERD(Entity Relationship Diagram) from package resources
+        and exports it as .dot file
+
+        Based on:
+        - https://github.com/frictionlessdata/frictionless-py/issues/1118
+
+        Parameters:
+            path (str): target path
+
+        Returns:
+            path(str): location of the .dot file
+
+        """
+
+        # Infer
+        self.infer()
+
+        # Render
+        template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
+        environ = platform.jinja2.Environment(
+            loader=platform.jinja2.FileSystemLoader(template_dir),
+            lstrip_blocks=True,
+            trim_blocks=True,
+        )
+        table_template = environ.get_template("table.html")
+        field_template = environ.get_template("field.html")
+        primary_key_template = environ.get_template("primary_key_field.html")
+        graph = environ.get_template("graph.html")
+        edges = []
+        nodes = []
+        for t_name in self.resource_names:
+            resource = self.get_resource(t_name)  # type: ignore
+            templates = {k: primary_key_template for k in resource.schema.primary_key}
+            t_fields = [
+                templates.get(f.name, field_template).render(name=f.name, type=f.type)  # type: ignore
+                for f in resource.schema.fields
+            ]
+            nodes.append(table_template.render(name=t_name, rows="".join(t_fields)))
+            child_table = t_name
+            for fk in resource.schema.foreign_keys:
+                for foreign_key in fk["fields"]:
+                    if fk["reference"]["resource"] == "":
+                        continue
+                    parent_table = fk["reference"]["resource"]
+                    for parent_primary_key in fk["reference"]["fields"]:
+                        edges.append(
+                            f'"{parent_table}":{parent_primary_key}n -> "{child_table}":{foreign_key}n;'
+                        )
+        text = graph.render(
+            name=self.name,
+            tables="\n\t".join(nodes),
+            edges="\n\t".join(edges),
+        )
+
+        # Output
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(errors.PackageError(note=str(exc))) from exc
+        return text
+
     # Metadata
 
-    metadata_duplicate = True
-    metadata_Error = errors.PackageError  # type: ignore
-    metadata_profile = deepcopy(settings.PACKAGE_PROFILE)
-    metadata_profile["properties"]["resources"] = {"type": "array"}
+    metadata_type = "package"
+    metadata_Error = errors.PackageError
+    metadata_profile = {
+        "type": "object",
+        "required": ["resources"],
+        "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "homepage": {"type": "string"},
+            "profiles": {"type": "array"},
+            "licenses": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "path": {"type": "string"},
+                        "title": {"type": "string"},
+                    },
+                },
+            },
+            "sources": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "path": {"type": "string"},
+                        "email": {"type": "string"},
+                    },
+                },
+            },
+            "contributors": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "path": {"type": "string"},
+                        "email": {"type": "string"},
+                        "organisation": {"type": "string"},
+                        "role": {"type": "string"},
+                    },
+                },
+            },
+            "keywords": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "image": {"type": "string"},
+            "version": {"type": "string"},
+            "created": {"type": "string"},
+            "resources": {
+                "type": "array",
+                "items": {"type": ["object", "string"]},
+            },
+        },
+    }
 
-    def metadata_process(self):
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "resources":
+            return Resource
 
-        # Resources
-        resources = self.get("resources")
-        if isinstance(resources, list):
-            for index, resource in enumerate(resources):
-                if not isinstance(resource, Resource):
-                    if not isinstance(resource, dict):
-                        resource = {"name": f"resource{index+1}"}
-                    resource = Resource(
-                        resource,
-                        dialect=self.__dialect,
-                        basepath=self.__basepath,
-                        detector=self.__detector,
-                        hashing=self.__hashing,
-                    )
-                    list.__setitem__(resources, index, resource)
-                resource.onerror = self.__onerror
-                resource.trusted = self.__trusted
-                resource.package = self
-            if not isinstance(resources, helpers.ControlledList):
-                resources = helpers.ControlledList(resources)
-                resources.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "resources", resources)
+    @classmethod
+    def metadata_transform(cls, descriptor: IDescriptor):
+        super().metadata_transform(descriptor)
 
-    def metadata_validate(self):
-        # Check invalid properties
-        invalid_fields = {
-            "missingValues": "resource.schema.missingValues",
-            "fields": "resource.schema.fields",
-        }
-        for invalid_field, object in invalid_fields.items():
-            if invalid_field in self:
-                note = f'"{invalid_field}" should be set as "{object}" (not "package.{invalid_field}").'
-                yield errors.PackageError(note=note)
+        # Profile (standards/v1)
+        profile = descriptor.pop("profile", None)
+        if profile:
+            if profile not in ["data-package", "tabular-data-package"]:
+                descriptor.setdefault("profiles", [])
+                descriptor["profiles"].append(profile)
 
-        # Package
-        if self.profile == "data-package":
-            yield from super().metadata_validate()
-        elif self.profile == "fiscal-data-package":
-            yield from super().metadata_validate(settings.FISCAL_PACKAGE_PROFILE)
-        elif self.profile == "tabular-data-package":
-            yield from super().metadata_validate(settings.TABULAR_PACKAGE_PROFILE)
-        else:
-            if not self.trusted:
-                if not helpers.is_safe_path(self.profile):
-                    note = f'path "{self.profile}" is not safe'
-                    error = errors.PackageError(note=note)
-                    raise FrictionlessException(error)
-            profile = Metadata(self.profile).to_dict()
-            yield from super().metadata_validate(profile)
+    @classmethod
+    def metadata_validate(cls, descriptor: IDescriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
 
-        # Resources
-        for resource in self.resources:
-            yield from resource.metadata_errors
-        if len(self.resource_names) != len(set(self.resource_names)):
+        # Security
+        if not system.trusted:
+            keys = ["resources", "profiles"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        yield errors.PackageError(note=f'path "{item}" is not safe')
+                        return
+
+        # Resoruce Names
+        resource_names = []
+        for resource in descriptor["resources"]:
+            if isinstance(resource, dict) and "name" in resource:
+                resource_names.append(resource["name"])
+        if len(resource_names) != len(set(resource_names)):
             note = "names of the resources are not unique"
             yield errors.PackageError(note=note)
 
         # Created
-        if self.get("created"):
-            field = Field(type="datetime")
-            cell = field.read_cell(self.get("created"))[0]
-            if not cell:
+        created = descriptor.get("created")
+        if created:
+            field = fields.DatetimeField(name="created")
+            _, note = field.read_cell(created)
+            if note:
                 note = 'property "created" is not valid "datetime"'
                 yield errors.PackageError(note=note)
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:
-            for item in self.get(name, []):
+            for item in descriptor.get(name, []):
                 if item.get("email"):
-                    field = Field(type="string", format="email")
-                    cell = field.read_cell(item.get("email"))[0]
-                    if not cell:
+                    field = fields.StringField(format="email")
+                    _, note = field.read_cell(item.get("email"))
+                    if note:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
 
+        # Profiles
+        profiles = descriptor.get("profiles", [])
+        for profile in profiles:
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=errors.PackageError,
+            )
 
-# https://github.com/frictionlessdata/frictionless-py/issues/1118
-def to_dot(package: dict) -> str:
-    """Generate graphviz from package, using jinja2 template"""
+        # Misleading
+        for name in ["missingValues", "fields"]:
+            if name in descriptor:
+                note = f'"{name}" should be set as "resource.schema.{name}"'
+                yield errors.PackageError(note=note)
 
-    template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
-    environ = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(template_dir),
-        lstrip_blocks=True,
-        trim_blocks=True,
-    )
-    table_template = environ.get_template("table.html")
-    field_template = environ.get_template("field.html")
-    primary_key_template = environ.get_template("primary_key_field.html")
-    graph = environ.get_template("graph.html")
-    edges = []
-    nodes = []
-    for t_name in package.resource_names:
-        resource = package.get_resource(t_name)
-        templates = {k: primary_key_template for k in resource.schema.primary_key}
-        t_fields = [
-            templates.get(f.name, field_template).render(name=f.name, type=f.type)
-            for f in resource.schema.fields
-        ]
-        nodes.append(table_template.render(name=t_name, rows="".join(t_fields)))
-        child_table = t_name
-        for fk in resource.schema.foreign_keys:
-            for foreign_key in fk["fields"]:
-                if fk["reference"]["resource"] == "":
-                    continue
-                parent_table = fk["reference"]["resource"]
-                for parent_primary_key in fk["reference"]["fields"]:
-                    edges.append(
-                        f'"{parent_table}":{parent_primary_key}n -> "{child_table}":{foreign_key}n;'
-                    )
-    output_text = graph.render(
-        name=package.name,
-        tables="\n\t".join(nodes),
-        edges="\n\t".join(edges),
-    )
-    return output_text
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Profile (standards/v1)
+        if system.standards == "v1":
+            profiles = descriptor.pop("profiles", None)
+            descriptor["profile"] = "data-package"
+            if profiles:
+                descriptor["profile"] = profiles[0]
+
+        return descriptor
+
+
+# Internal
+
+
+# NOTE: review if we can improve this code / move to a better place
+def unzip_package(path: str, *, innerpath: Optional[str] = None) -> str:
+    with Resource(path=path, compression=None) as resource:
+        byte_stream = resource.byte_stream
+        if resource.remote:
+            byte_stream = tempfile.TemporaryFile()
+            shutil.copyfileobj(resource.byte_stream, byte_stream)
+            byte_stream.seek(0)
+        with platform.zipfile.ZipFile(byte_stream, "r") as zip:
+            tempdir = tempfile.mkdtemp()
+            zip.extractall(tempdir)
+            atexit.register(shutil.rmtree, tempdir)
+            if innerpath is None:
+                innerpath = "datapackage.json"
+                extensions = ("json", "yaml")
+                default_names = (f"datapackage.{ext}" for ext in extensions)
+                for name in default_names:
+                    if os.path.isfile(os.path.join(tempdir, name)):
+                        innerpath = name
+                        break
+            descriptor = os.path.join(tempdir, innerpath)
+    return descriptor

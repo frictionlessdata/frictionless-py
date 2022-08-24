@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -9,16 +9,16 @@ def test_step_table_write(tmpdir):
 
     # Write
     source = Resource("data/transform.csv")
-    transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value=100),
             steps.table_write(path=path),
         ],
     )
+    source.transform(pipeline)
 
     # Read
-    resource = Resource(path=path)
+    resource = Resource(path=path, type="table")
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

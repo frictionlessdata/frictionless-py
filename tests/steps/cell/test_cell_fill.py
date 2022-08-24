@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,14 +6,14 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_fill():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.cell_replace(pattern="france", replace=None),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(field_name="name", value="FRANCE"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -29,14 +29,14 @@ def test_step_cell_fill():
 
 def test_step_cell_fill_direction_down():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.cell_replace(pattern="france", replace=None),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="down"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -52,17 +52,16 @@ def test_step_cell_fill_direction_down():
 
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string"),
-            steps.field_update(name="population", type="string"),
-            steps.cell_replace(pattern="france", replace=None),
+            steps.field_update(name="id", descriptor={"type": "string"}),
+            steps.field_update(name="population", descriptor={"type": "string"}),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="right"),
         ],
     )
-    print(target.read_rows())
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "string"},
             {"name": "name", "type": "string"},
@@ -78,16 +77,16 @@ def test_step_cell_fill_direction_right():
 
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string"),
-            steps.field_update(name="population", type="string"),
-            steps.cell_replace(pattern="france", replace=None),
+            steps.field_update(name="id", descriptor={"type": "string"}),
+            steps.field_update(name="population", descriptor={"type": "string"}),
+            steps.cell_replace(pattern="france", replace=None),  # type: ignore
             steps.cell_fill(direction="left"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "string"},
             {"name": "name", "type": "string"},

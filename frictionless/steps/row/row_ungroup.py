@@ -1,45 +1,38 @@
-import petl
-from ...step import Step
+from __future__ import annotations
+import attrs
+from typing import Optional
+from ...platform import platform
+from ...pipeline import Step
 
 
-# NOTE:
-# We need to review simpleeval perfomance for using it with row_filter
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
+@attrs.define(kw_only=True)
 class row_ungroup(Step):
     """Ungroup rows"""
 
-    code = "row-ungroup"
+    type = "row-ungroup"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        selection=None,
-        group_name=None,
-        value_name=None,
-    ):
-        self.setinitial("selection", selection)
-        self.setinitial("groupName", group_name)
-        self.setinitial("valueName", value_name)
-        super().__init__(descriptor)
+    # State
+
+    selection: str
+    """NOTE: add docs"""
+
+    group_name: str
+    """NOTE: add docs"""
+
+    value_name: Optional[str] = None
+    """NOTE: add docs"""
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        selection = self.get("selection")
-        group_name = self.get("groupName")
-        value_name = self.get("valueName")
-        function = getattr(petl, f"groupselect{selection}")
-        if selection in ["first", "last"]:
-            resource.data = function(table, group_name)
+        function = getattr(platform.petl, f"groupselect{self.selection}")
+        if self.selection in ["first", "last"]:
+            resource.data = function(table, self.group_name)
         else:
-            resource.data = function(table, group_name, value_name)
+            resource.data = function(table, self.group_name, self.value_name)
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["groupName", "selection"],
         "properties": {
             "selection": {

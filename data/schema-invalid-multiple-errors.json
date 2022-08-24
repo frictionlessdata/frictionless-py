@@ -17,7 +17,7 @@
             "fields": ["id", "notafield"],
             "reference": {
                 "datapackage": "http://data.okfn.org/data/mydatapackage/",
-                "fields": "no" 
+                "fields": "no"
             }
         }
     ]

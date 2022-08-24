@@ -1,0 +1,10 @@
+{
+  "name": "table",
+  "type": "table",
+  "path": "table.csv",
+  "scheme": "file",
+  "format": "csv",
+  "hashing": "sha256",
+  "encoding": "utf-8",
+  "mediatype": "text/csv"
+}

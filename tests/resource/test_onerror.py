@@ -1,51 +1,46 @@
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, Schema, FrictionlessException, system
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Onerror
+# General
 
 
 def test_resource_onerror():
     resource = Resource(path="data/invalid.csv")
-    assert resource.onerror == "ignore"
     assert resource.read_rows()
 
 
 def test_resource_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    resource = Resource(data=data, schema=schema, onerror="warn")
-    assert resource.onerror == "warn"
-    with pytest.warns(UserWarning):
-        resource.read_rows()
+    schema = Schema.from_descriptor({"fields": [{"name": "bad", "type": "integer"}]})
+    with system.use_context(onerror="warn"):
+        resource = Resource(data=data, schema=schema)
+        with pytest.warns(UserWarning):
+            resource.read_rows()
 
 
 def test_resource_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    resource = Resource(data=data, schema=schema, onerror="raise")
-    assert resource.onerror == "raise"
-    with pytest.raises(FrictionlessException):
-        resource.read_rows()
+    schema = Schema.from_descriptor({"fields": [{"name": "bad", "type": "integer"}]})
+    with system.use_context(onerror="raise"):
+        resource = Resource(data=data, schema=schema)
+        with pytest.raises(FrictionlessException):
+            resource.read_rows()
 
 
 def test_resource_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "name", "type": "string"}]}
-    resource = Resource(data=data, schema=schema, onerror="warn")
-    assert resource.onerror == "warn"
-    with pytest.warns(UserWarning):
-        resource.read_rows()
+    schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})
+    with system.use_context(onerror="warn"):
+        resource = Resource(data=data, schema=schema)
+        with pytest.warns(UserWarning):
+            resource.read_rows()
 
 
 def test_resource_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "name", "type": "string"}]}
-    resource = Resource(data=data, schema=schema, onerror="raise")
-    assert resource.onerror == "raise"
-    with pytest.raises(FrictionlessException):
-        resource.read_rows()
+    schema = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})
+    with system.use_context(onerror="raise"):
+        resource = Resource(data=data, schema=schema)
+        with pytest.raises(FrictionlessException):
+            resource.read_rows()

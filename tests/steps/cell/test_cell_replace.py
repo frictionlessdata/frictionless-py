@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_replace():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace="FRANCE"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -28,13 +28,13 @@ def test_step_cell_replace():
 
 def test_step_cell_replace_with_field_name():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace="FRANCE", field_name="id"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -50,15 +50,15 @@ def test_step_cell_replace_with_field_name():
 
 def test_step_cell_replace_using_regex():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.cell_replace(
                 pattern="<regex>.*r.*", replace="center", field_name="name"
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

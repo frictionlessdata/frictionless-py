@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_sort():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_sort(field_names=["name"]),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -28,13 +28,13 @@ def test_step_row_sort():
 
 def test_step_row_sort_with_reverse():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_sort(field_names=["id"], reverse=True),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -48,15 +48,20 @@ def test_step_row_sort_with_reverse():
     ]
 
 
+# Bugs
+
+
 def test_step_row_sort_with_reverse_in_desriptor_issue_996():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.row_sort({"fieldNames": ["id"], "reverse": True}),
+            Step.from_descriptor(
+                {"type": "row-sort", "fieldNames": ["id"], "reverse": True}
+            ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

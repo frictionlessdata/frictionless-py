@@ -1,20 +1,22 @@
-from frictionless import Resource, transform, steps
+import pytest
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
 
 
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]])
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -30,17 +32,23 @@ def test_step_table_merge():
     ]
 
 
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.table_merge(
-                resource=dict(data=[["id", "name", "note"], [4, "malta", "island"]])
+            Step.from_descriptor(
+                {
+                    "type": "table-merge",
+                    "resource": dict(
+                        data=[["id", "name", "note"], [4, "malta", "island"]]
+                    ),
+                }
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -56,10 +64,10 @@ def test_step_table_merge_from_dict():
     ]
 
 
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_field_names():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]]),
@@ -67,7 +75,8 @@ def test_step_table_merge_with_field_names():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -81,10 +90,10 @@ def test_step_table_merge_with_field_names():
     ]
 
 
+@pytest.mark.skip(reason="issue-1221")
 def test_step_merge_ignore_fields():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id2", "name2"], [4, "malta"]]),
@@ -92,7 +101,8 @@ def test_step_merge_ignore_fields():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -107,18 +117,19 @@ def test_step_merge_ignore_fields():
     ]
 
 
+@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_sort():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),
-                sort_by_field=["population"],
+                sort_by_field=["population"],  # type: ignore
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

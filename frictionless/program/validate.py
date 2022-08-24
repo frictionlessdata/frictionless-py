@@ -1,12 +1,16 @@
+from __future__ import annotations
 import sys
 import typer
 from typing import List
 from tabulate import tabulate
+from ..stats import Stats
 from ..actions import validate
 from ..detector import Detector
+from ..checklist import Checklist, Check
 from ..dialect import Dialect
-from ..layout import Layout
+from ..system import system
 from .main import program
+from .. import formats
 from .. import helpers
 from . import common
 
@@ -20,33 +24,29 @@ def program_validate(
     path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
-    hashing: str = common.hashing,
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
-    # Control
-    control: str = common.control,
     # Dialect
     dialect: str = common.dialect,
+    header_rows: str = common.header_rows,
+    header_join: str = common.header_join,
+    comment_char: str = common.comment_char,
+    comment_rows: str = common.comment_rows,
     sheet: str = common.sheet,
     table: str = common.table,
     keys: str = common.keys,
     keyed: bool = common.keyed,
-    # Layout
-    header_rows: str = common.header_rows,
-    header_join: str = common.header_join,
-    pick_fields: str = common.pick_fields,
-    skip_fields: str = common.skip_fields,
-    limit_fields: int = common.limit_fields,
-    offset_fields: int = common.offset_fields,
-    pick_rows: str = common.pick_rows,
-    skip_rows: str = common.skip_rows,
-    limit_rows: int = common.limit_rows,
-    offset_rows: int = common.offset_rows,
     # Schema
     schema: str = common.schema,
+    # Checklist
+    checklist: str = common.checklist,
+    checks: str = common.checks,
+    pick_errors: str = common.pick_errors,
+    skip_errors: str = common.skip_errors,
     # Stats
-    stats_hash: str = common.stats_hash,
+    stats_md5: str = common.stats_md5,
+    stats_sha256: str = common.stats_sha256,
     stats_bytes: int = common.stats_bytes,
     stats_fields: int = common.stats_fields,
     stats_rows: int = common.stats_rows,
@@ -59,18 +59,17 @@ def program_validate(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
-    # Command
+    # Software
     basepath: str = common.basepath,
-    pick_errors: str = common.pick_errors,
-    skip_errors: str = common.skip_errors,
+    resource_name: str = common.resource_name,
     limit_errors: int = common.limit_errors,
-    limit_memory: int = common.limit_memory,
-    original: bool = common.original,
+    limit_rows: int = common.limit_rows,
     parallel: bool = common.parallel,
     yaml: bool = common.yaml,
     json: bool = common.json,
-    # Resource
-    resource_name: str = common.resource_name,
+    debug: bool = common.debug,
+    trusted: bool = common.trusted,
+    standards: str = common.standards,
 ):
     """
     Validate a data source.
@@ -79,12 +78,18 @@ def program_validate(
     Default output format is YAML with a front matter.
     """
 
+    # Setup system
+    if trusted:
+        system.trusted = trusted
+    if standards:
+        system.standards = standards  # type: ignore
+
     # Support stdin
     is_stdin = False
     if not source and not path:
         if not sys.stdin.isatty():
             is_stdin = True
-            source = [sys.stdin.buffer.read()]
+            source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
     if not source and not path:
@@ -92,116 +97,100 @@ def program_validate(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
-    # Normalize parameters
-    source = list(source) if len(source) > 1 else (source[0] if source else None)
-    control = helpers.parse_json_string(control)
-    dialect = helpers.parse_json_string(dialect)
-    header_rows = helpers.parse_csv_string(header_rows, convert=int)
-    pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
-    skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
-    pick_rows = helpers.parse_csv_string(pick_rows, convert=int, fallback=True)
-    skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
-    field_names = helpers.parse_csv_string(field_names)
-    field_missing_values = helpers.parse_csv_string(field_missing_values)
-    pick_errors = helpers.parse_csv_string(pick_errors)
-    skip_errors = helpers.parse_csv_string(skip_errors)
+    # Prepare source
+    def prepare_source():
+        return list(source) if len(source) > 1 else (source[0] if source else None)
 
-    # TODO: rework after Dialect class is reworked
     # Prepare dialect
-    dialect = Dialect(dialect)
-    if sheet:
-        dialect["sheet"] = sheet
-    if table:
-        dialect["table"] = table
-    if keys:
-        dialect["keys"] = helpers.parse_csv_string(keys)
-    if keyed:
-        dialect["keyed"] = keyed
-    if len(dialect.to_dict()) < 1:
-        dialect = None
-
-    # Prepare layout
-    layout = (
-        Layout(
-            header_rows=header_rows,
+    def prepare_dialect():
+        descriptor = helpers.parse_json_string(dialect)
+        if descriptor:
+            return Dialect.from_descriptor(descriptor)
+        controls = []
+        if sheet:
+            controls.append(formats.ExcelControl(sheet=sheet))
+        elif table:
+            controls.append(formats.SqlControl(table=table))
+        elif keys or keyed:
+            controls.append(formats.JsonControl.from_options(keys=keys, keyed=keyed))
+        return Dialect.from_options(
+            header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
-            pick_fields=pick_fields,
-            skip_fields=skip_fields,
-            limit_fields=limit_fields,
-            offset_fields=offset_fields,
-            pick_rows=pick_rows,
-            skip_rows=skip_rows,
-            limit_rows=limit_rows,
-            offset_rows=offset_rows,
+            comment_char=comment_char,
+            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
+            controls=controls,
         )
-        or None
-    )
 
-    # Prepare stats
-    stats = (
-        helpers.remove_non_values(
-            dict(
-                hash=stats_hash,
-                bytes=stats_bytes,
-                fields=stats_fields,
-                rows=stats_rows,
-            )
+    # Prepare checklist
+    def prepare_checklist():
+        descriptor = helpers.parse_json_string(checklist)
+        if descriptor:
+            return Checklist.from_descriptor(descriptor)
+        check_objects = []
+        for check_descriptor in helpers.parse_descriptors_string(checks) or []:
+            check_objects.append(Check.from_descriptor(check_descriptor))
+        return Checklist.from_options(
+            checks=check_objects,
+            pick_errors=helpers.parse_csv_string(pick_errors),
+            skip_errors=helpers.parse_csv_string(skip_errors),
         )
-        or None
-    )
 
     # Prepare detector
-    detector = Detector(
-        **helpers.remove_non_values(
-            dict(
-                buffer_size=buffer_size,
-                sample_size=sample_size,
-                field_type=field_type,
-                field_names=field_names,
-                field_confidence=field_confidence,
-                field_float_numbers=field_float_numbers,
-                field_missing_values=field_missing_values,
-                schema_sync=schema_sync,
-            )
+    def prepare_detector():
+        return Detector.from_options(
+            buffer_size=buffer_size,
+            sample_size=sample_size,
+            field_type=field_type,
+            field_names=helpers.parse_csv_string(field_names),
+            field_confidence=field_confidence,
+            field_float_numbers=field_float_numbers,
+            field_missing_values=helpers.parse_csv_string(field_missing_values),
+            schema_sync=schema_sync,
         )
-    )
+
+    # Prepare stats
+    def prepare_stats():
+        return Stats.from_options(
+            md5=stats_md5,
+            sha256=stats_sha256,
+            bytes=stats_bytes,
+            fields=stats_fields,
+            rows=stats_rows,
+        )
 
     # Prepare options
-    options = helpers.remove_non_values(
-        dict(
+    def prepare_options():
+        return dict(
             type=type,
-            # Spec
+            # Standard
             path=path,
             scheme=scheme,
             format=format,
-            hashing=hashing,
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            control=control,
-            dialect=dialect,
-            layout=layout,
+            dialect=prepare_dialect(),
             schema=schema,
-            stats=stats,
-            # Extra
+            checklist=prepare_checklist(),
+            stats=prepare_stats(),
+            # Software
             basepath=basepath,
-            detector=detector,
-            pick_errors=pick_errors,
-            skip_errors=skip_errors,
-            limit_errors=limit_errors,
-            limit_memory=limit_memory,
-            original=original,
-            parallel=parallel,
+            detector=prepare_detector(),
+            # Action
             resource_name=resource_name,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            parallel=parallel,
         )
-    )
 
     # Validate source
     try:
-        report = validate(source, **options)
+        report = validate(prepare_source(), **prepare_options())
     except Exception as exception:
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
 
     # Return JSON
     if json:
@@ -218,16 +207,15 @@ def program_validate(
     # Return validation report errors
     if report.errors:
         content = []
-        if is_stdin:
-            source = "stdin"
         prefix = "invalid"
+        name = "stdin" if is_stdin else source
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {prefix}: {name}", bold=True)
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
         for error in report.errors:
-            content.append([error.code, error.message])
+            content.append([error.type, error.message])
         typer.secho(
-            str(tabulate(content, headers=["code", "message"], tablefmt="simple"))
+            str(tabulate(content, headers=["type", "message"], tablefmt="simple"))
         )
 
     # Return validation report summary and tables

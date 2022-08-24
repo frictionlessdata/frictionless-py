@@ -1,33 +1,32 @@
-from ...step import Step
+# type: ignore
+from __future__ import annotations
+import attrs
+from typing import List
+from ...pipeline import Step
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
+@attrs.define(kw_only=True)
 class field_remove(Step):
     """Remove field"""
 
-    code = "field-remove"
+    type = "field-remove"
 
-    def __init__(self, descriptor=None, *, names=None):
-        self.setinitial("names", names)
-        super().__init__(descriptor)
+    # State
+
+    names: List[str]
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names")
-        for name in names:
+        for name in self.names:  # type: ignore
             resource.schema.remove_field(name)
-        resource.data = table.cutout(*names)
+        resource.data = table.cutout(*self.names)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["names"],
         "properties": {
             "names": {"type": "array"},

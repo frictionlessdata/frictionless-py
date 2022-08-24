@@ -1,32 +1,32 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from typing import Any
+from ...pipeline import Step
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
+@attrs.define(kw_only=True)
 class cell_set(Step):
     """Set cell"""
 
-    code = "cell-set"
+    type = "cell-set"
 
-    def __init__(self, descriptor=None, *, value=None, field_name=None):
-        self.setinitial("value", value)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # State
+
+    value: Any
+    """NOTE: add docs"""
+
+    field_name: str
+    """NOTE: add docs"""
+
+    # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        value = self.get("value")
-        field_name = self.get("fieldName")
-        resource.data = table.update(field_name, value)
+        resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
             "fieldName": {"type": "string"},
             "value": {},

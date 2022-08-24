@@ -1,16 +1,17 @@
+from __future__ import annotations
 import sys
-import petl
 import typer
 import json as pyjson
-import yaml as pyyaml
 from typing import List
+from ..platform import platform
 from ..detector import Detector
+from ..dialect import Dialect
 from ..actions import extract
-from ..layout import Layout
+from ..system import system
 from .main import program
+from .. import formats
 from .. import helpers
 from . import common
-from frictionless import Dialect
 
 
 @program.command(name="extract")
@@ -22,29 +23,19 @@ def program_extract(
     path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
-    hashing: str = common.hashing,
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
-    # Control
-    control: str = common.control,
     # Dialect
     dialect: str = common.dialect,
+    header_rows: str = common.header_rows,
+    header_join: str = common.header_join,
+    comment_char: str = common.comment_char,
+    comment_rows: str = common.skip_rows,
     sheet: str = common.sheet,
     table: str = common.table,
     keys: str = common.keys,
     keyed: bool = common.keyed,
-    # Layout
-    header_rows: str = common.header_rows,
-    header_join: str = common.header_join,
-    pick_fields: str = common.pick_fields,
-    skip_fields: str = common.skip_fields,
-    limit_fields: int = common.limit_fields,
-    offset_fields: int = common.offset_fields,
-    pick_rows: str = common.pick_rows,
-    skip_rows: str = common.skip_rows,
-    limit_rows: int = common.limit_rows,
-    offset_rows: int = common.offset_rows,
     # Schema
     schema: str = common.schema,
     # Detector
@@ -56,15 +47,18 @@ def program_extract(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
-    # Command
+    # Software
     basepath: str = common.basepath,
-    trusted: bool = common.trusted,
+    resource_name: str = common.resource_name,
+    valid: bool = common.valid_rows,
+    invalid: bool = common.invalid_rows,
+    limit_rows: int = common.limit_rows,
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
-    # Row
-    valid: bool = common.valid_rows,
-    invalid: bool = common.invalid_rows,
+    debug: bool = common.debug,
+    trusted: bool = common.trusted,
+    standards: str = common.standards,
 ):
     """
     Extract a data source.
@@ -73,12 +67,18 @@ def program_extract(
     Default output format is tabulated with a front matter.
     """
 
+    # Setup system
+    if trusted:
+        system.trusted = trusted
+    if standards:
+        system.standards = standards  # type: ignore
+
     # Support stdin
     is_stdin = False
     if not source and not path:
         if not sys.stdin.isatty():
             is_stdin = True
-            source = [sys.stdin.buffer.read()]
+            source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
     if not source and not path:
@@ -86,106 +86,96 @@ def program_extract(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
-    # Normalize parameters
-    source = list(source) if len(source) > 1 else (source[0] if source else None)
-    control = helpers.parse_json_string(control)
-    dialect = helpers.parse_json_string(dialect)
+    # Prepare source
+    def prepare_source():
+        return list(source) if len(source) > 1 else (source[0] if source else None)
 
-    header_rows = helpers.parse_csv_string(header_rows, convert=int)
-    pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
-    skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
-    pick_rows = helpers.parse_csv_string(pick_rows, convert=int, fallback=True)
-    skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
-    field_names = helpers.parse_csv_string(field_names)
-    field_missing_values = helpers.parse_csv_string(field_missing_values)
-
-    # TODO: rework after Dialect class is reworked
     # Prepare dialect
-    dialect = Dialect(dialect)
-    if sheet:
-        dialect["sheet"] = sheet
-    if table:
-        dialect["table"] = table
-    if keys:
-        dialect["keys"] = helpers.parse_csv_string(keys)
-    if keyed:
-        dialect["keyed"] = keyed
-    if len(dialect.to_dict()) < 1:
-        dialect = None
-
-    # Prepare layout
-    layout = (
-        Layout(
-            header_rows=header_rows,
+    def prepare_dialect():
+        descriptor = helpers.parse_json_string(dialect)
+        if descriptor:
+            return Dialect.from_descriptor(descriptor)
+        controls = []
+        if sheet:
+            controls.append(formats.ExcelControl(sheet=sheet))
+        elif table:
+            controls.append(formats.SqlControl(table=table))
+        elif keys or keyed:
+            controls.append(
+                formats.JsonControl.from_options(
+                    keys=helpers.parse_csv_string(keys),
+                    keyed=keyed,
+                )
+            )
+        return Dialect.from_options(
+            header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
-            pick_fields=pick_fields,
-            skip_fields=skip_fields,
-            limit_fields=limit_fields,
-            offset_fields=offset_fields,
-            pick_rows=pick_rows,
-            skip_rows=skip_rows,
-            limit_rows=limit_rows,
-            offset_rows=offset_rows,
+            comment_char=comment_char,
+            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
+            controls=controls,
         )
-        or None
-    )
 
     # Prepare detector
-    detector = Detector(
-        **helpers.remove_non_values(
-            dict(
-                buffer_size=buffer_size,
-                sample_size=sample_size,
-                field_type=field_type,
-                field_names=field_names,
-                field_confidence=field_confidence,
-                field_float_numbers=field_float_numbers,
-                field_missing_values=field_missing_values,
-                schema_sync=schema_sync,
-            )
+    def prepare_detector():
+        return Detector.from_options(
+            buffer_size=buffer_size,
+            sample_size=sample_size,
+            field_type=field_type,
+            field_names=helpers.parse_csv_string(field_names),
+            field_confidence=field_confidence,
+            field_float_numbers=field_float_numbers,
+            field_missing_values=helpers.parse_csv_string(field_missing_values),
+            schema_sync=schema_sync,
         )
-    )
+
+    # Prepare process
+    def prepare_process():
+        if json or yaml:
+            return lambda row: row.to_dict(json=True)
+
+    # Prepare filter
+    def prepare_filter():
+        if valid:
+            return lambda row: row.valid
+        if invalid:
+            return lambda row: not row.valid
 
     # Prepare options
-    options = helpers.remove_non_values(
-        dict(
+    def prepare_options():
+        return dict(
             type=type,
-            # Spec
+            # Standard
             path=path,
             scheme=scheme,
             format=format,
-            hashing=hashing,
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            control=control,
-            dialect=dialect,
-            layout=layout,
+            dialect=prepare_dialect(),
             schema=schema,
-            # Extra
+            # Software
             basepath=basepath,
-            detector=detector,
-            trusted=trusted,
+            detector=prepare_detector(),
+            # Action
+            resource_name=resource_name,
+            limit_rows=limit_rows,
+            process=prepare_process(),
+            filter=prepare_filter(),
         )
-    )
 
     # Extract data
     try:
-        process = (lambda row: row.to_dict(json=True)) if json or yaml else None
-        filter = None
-        if valid:
-            filter = lambda row: row.valid
-        if invalid:
-            filter = lambda row: not row.valid
-        data = extract(source, process=process, filter=filter, **options)
+        data = extract(prepare_source(), **prepare_options())
     except Exception as exception:
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
 
     # Normalize data
     normdata = data
     if isinstance(data, list):
-        normdata = {source: data}
+        normdata = {prepare_source(): data}
 
     # Return JSON
     if json:
@@ -195,23 +185,24 @@ def program_extract(
 
     # Return YAML
     if yaml:
-        content = pyyaml.safe_dump(data, allow_unicode=True).strip()
+        content = platform.yaml.safe_dump(data, allow_unicode=True).strip()
         typer.secho(content)
         raise typer.Exit()
 
     # Return CSV
+    # TODO: rework
     if csv:
-        for number, rows in enumerate(normdata.values(), start=1):
-            for row in rows:
-                if row.row_number == 1:
-                    typer.secho(helpers.stringify_csv_string(row.field_names))
-                typer.secho(row.to_str())
-            if number < len(normdata):
+        for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
+            for index, row in enumerate(rows):
+                if index == 0:
+                    typer.secho(helpers.stringify_csv_string(row.field_names))  # type: ignore
+                typer.secho(row.to_str())  # type: ignore
+            if number < len(normdata):  # type: ignore
                 typer.secho("")
         raise typer.Exit()
 
     # Return default
-    for number, (name, rows) in enumerate(normdata.items(), start=1):
+    for number, (name, rows) in enumerate(normdata.items(), start=1):  # type: ignore
         if is_stdin:
             name = "stdin"
         prefix = "data"
@@ -224,6 +215,6 @@ def program_extract(
             valid_text = "valid" if valid else "invalid"
             typer.secho(str(f"No {valid_text} rows"))
             continue
-        typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))
-        if number < len(normdata):
+        typer.secho(str(platform.petl.util.vis.lookall(subdata, vrepr=str, style="simple")))  # type: ignore
+        if number < len(normdata):  # type: ignore
             typer.secho("")

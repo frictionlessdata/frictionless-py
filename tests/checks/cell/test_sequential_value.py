@@ -1,4 +1,4 @@
-from frictionless import validate, checks
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -13,14 +13,15 @@ def test_validate_sequential_value():
         [5, 5, 6],
         [6],
     ]
-    report = validate(
-        source,
+    resource = Resource(source)
+    checklist = Checklist(
         checks=[
             checks.sequential_value(field_name="index2"),
             checks.sequential_value(field_name="index3"),
         ],
     )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [3, 3, "sequential-value"],
         [5, 2, "sequential-value"],
         [6, 2, "missing-cell"],
@@ -34,13 +35,16 @@ def test_validate_sequential_value_non_existent_field():
         [2, "Alex"],
         [3, "Brad"],
     ]
-    report = validate(
-        source,
-        checks=[
-            {"code": "sequential-value", "fieldName": "row"},
-            {"code": "sequential-value", "fieldName": "bad"},
-        ],
+    resource = Resource(source)
+    checklist = Checklist.from_descriptor(
+        {
+            "checks": [
+                {"type": "sequential-value", "fieldName": "row"},
+                {"type": "sequential-value", "fieldName": "bad"},
+            ]
+        }
     )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "check-error"],
     ]

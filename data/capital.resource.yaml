@@ -1,0 +1,15 @@
+name: capital-invalid
+type: table
+path: capital-invalid.csv
+scheme: file
+format: csv
+encoding: utf-8
+mediatype: text/csv
+schema:
+  fields:
+    - name: id
+      type: integer
+    - name: name
+      type: string
+    - name: name2
+      type: string

@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,18 +6,18 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_melt():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="name"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -32,18 +32,18 @@ def test_step_table_melt():
 
 def test_step_table_melt_with_variables():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_melt(field_name="name", variables=["population"]),
+            steps.table_melt(field_name="name", variables=["population"]),  # type: ignore
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -55,20 +55,20 @@ def test_step_table_melt_with_variables():
 
 def test_step_table_melt_with_to_field_names():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(
-                field_name="name", variables=["population"], to_field_names=["key", "val"]
+                field_name="name", variables=["population"], to_field_names=["key", "val"]  # type: ignore
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "key"},
-            {"name": "val"},
+            {"name": "key", "type": "string"},
+            {"name": "val", "type": "any"},
         ]
     }
     assert target.read_rows() == [

@@ -1,54 +1,46 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from typing import Optional
+from ...pipeline import Step
 
 
-# NOTE:
-# We need to review simpleeval perfomance for using it with row_filter
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
+@attrs.define(kw_only=True)
 class row_slice(Step):
     """Slice rows"""
 
-    code = "row-slice"
+    type = "row-slice"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        start=None,
-        stop=None,
-        step=None,
-        head=None,
-        tail=None,
-    ):
-        self.setinitial("start", start)
-        self.setinitial("stop", stop)
-        self.setinitial("step", step)
-        self.setinitial("head", head)
-        self.setinitial("tail", tail)
-        super().__init__(descriptor)
+    # State
+
+    start: Optional[int] = None
+    """NOTE: add docs"""
+
+    stop: Optional[int] = None
+    """NOTE: add docs"""
+
+    step: Optional[int] = None
+    """NOTE: add docs"""
+
+    head: Optional[int] = None
+    """NOTE: add docs"""
+
+    tail: Optional[int] = None
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        start = self.get("start")
-        stop = self.get("stop")
-        step = self.get("step")
-        head = self.get("head")
-        tail = self.get("tail")
-        if head:
-            resource.data = table.head(head)
-        elif tail:
-            resource.data = table.tail(tail)
+        if self.head:
+            resource.data = table.head(self.head)  # type: ignore
+        elif self.tail:
+            resource.data = table.tail(self.tail)  # type: ignore
         else:
-            resource.data = table.rowslice(start, stop, step)
+            resource.data = table.rowslice(self.start, self.stop, self.step)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
             "start": {},
             "stop": {},

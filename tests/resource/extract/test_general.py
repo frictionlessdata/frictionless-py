@@ -1,7 +1,7 @@
 import os
 import types
 from pathlib import Path
-from frictionless import Resource
+from frictionless import Resource, system
 
 
 # General
@@ -37,9 +37,9 @@ def test_extract_resource_stream():
 def test_extract_resource_process_and_stream():
     resource = Resource("data/resource.json")
     process = lambda row: row.to_list()
-    list_stream = resource.extract(process=process, stream=True)
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_stream = resource.extract(process=process, stream=True)
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]
@@ -83,16 +83,19 @@ def test_extract_resource_from_file_pathlib():
 def test_extract_resource_from_file_process_and_stream():
     resource = Resource("data/table.csv")
     process = lambda row: row.to_list()
-    list_stream = resource.extract(process=process, stream=True)
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_stream = resource.extract(process=process, stream=True)
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]
 
 
+# Bugs
+
+
 def test_extract_resource_from_json_format_issue_827():
-    resource = Resource(path="data/table.json")
+    resource = Resource(path="data/table.json", type="table")
     rows = resource.extract()
     assert rows == [
         {"id": 1, "name": "english"},
@@ -102,9 +105,9 @@ def test_extract_resource_from_json_format_issue_827():
 
 def test_extract_resource_basepath_and_abspath_issue_856():
     descriptor = {"path": os.path.abspath("data/table.csv")}
-    resource = Resource(descriptor, basepath="data", trusted=True)
-    rows = resource.extract()
-    assert rows == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    with system.use_context(trusted=True):
+        resource = Resource(descriptor, basepath="data")
+        assert resource.extract() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

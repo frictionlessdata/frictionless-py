@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_split():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_split(field_name="name", pattern="a"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

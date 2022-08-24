@@ -1,13 +1,18 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
-def test_step_field_merge_907():
+# General
+
+
+def test_step_field_merge():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
-        steps=[steps.field_merge(name="details", from_names=["name", "population"])],
+    pipeline = Pipeline(
+        steps=[
+            steps.field_merge(name="details", from_names=["name", "population"]),
+        ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "details", "type": "string"},
@@ -19,17 +24,17 @@ def test_step_field_merge_907():
     }
 
 
-def test_step_field_merge_preserve_907():
+def test_step_field_merge_preserve():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_merge(
                 name="details", from_names=["name", "population"], preserve=True
             )
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

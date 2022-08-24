@@ -1,133 +1,96 @@
-# NOTE: implement create_resource so plugins can validate it (see #991)?
+from __future__ import annotations
+from typing import TYPE_CHECKING, Optional, List, Any, Type
+
+if TYPE_CHECKING:
+    from .resource import Resource, Loader, Parser
+    from .package import Manager, Storage
+    from .checklist import Check
+    from .dialect import Control
+    from .error import Error
+    from .schema import Field
+    from .pipeline import Step
 
 
 class Plugin:
     """Plugin representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Plugin`
 
     It's an interface for writing Frictionless plugins.
     You can implement one or more methods to hook into Frictionless system.
 
     """
 
-    code = "plugin"
-    status = "stable"
+    # Hooks
 
-    def create_candidates(self, candidates):
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
-
-    def create_check(self, name, *, descriptor=None):
-        """Create check
-
-        Parameters:
-            name (str): check name
-            descriptor (dict): check descriptor
-
-        Returns:
-            Check: check
-        """
-        pass
-
-    def create_control(self, file, *, descriptor):
-        """Create control
-
-        Parameters:
-            file (File): control file
-            descriptor (dict): control descriptor
-
-        Returns:
-            Control: control
-        """
-        pass
-
-    def create_dialect(self, file, *, descriptor):
-        """Create dialect
-
-        Parameters:
-            file (File): dialect file
-            descriptor (dict): dialect descriptor
-
-        Returns:
-            Dialect: dialect
-        """
-        pass
-
-    def create_error(self, descriptor):
-        """Create error
-
-        Parameters:
-            descriptor (dict): error descriptor
-
-        Returns:
-            Error: error
-        """
-        pass
-
-    def create_file(self, source, **options):
-        """Create file
-
-        Parameters:
-            source (any): file source
-            options (dict): file options
-
-        Returns:
-            File: file
-        """
-        pass
-
-    def create_loader(self, file):
+    def create_loader(self, resource: Resource) -> Optional[Loader]:
         """Create loader
 
         Parameters:
-            file (File): loader file
+            resource (Resource): loader resource
 
         Returns:
             Loader: loader
         """
         pass
 
-    def create_parser(self, file):
+    def create_manager(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+    ) -> Optional[Manager]:
+        """Create manager
+
+        Parameters:
+            source: source
+            control: control
+
+        """
+        pass
+
+    def create_parser(self, resource: Resource) -> Optional[Parser]:
         """Create parser
 
         Parameters:
-            file (File): parser file
+            resource (Resource): parser resource
 
         Returns:
             Parser: parser
         """
         pass
 
-    def create_server(self, name):
-        """Create server
-
-        Parameters:
-            name (str): server name
+    def detect_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
+        """Detect field candidates
 
         Returns:
-            Server: server
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
         pass
 
-    def create_step(self, descriptor):
-        """Create step
+    def detect_resource(self, resource: Resource) -> None:
+        """Hook into resource detection
 
         Parameters:
-            descriptor (dict): step descriptor
+            resource (Resource): resource
 
-        Returns:
-            Step: step
         """
         pass
 
-    def create_storage(self, name, source, **options):
+    def select_Check(self, type: str) -> Optional[Type[Check]]:
+        pass
+
+    def select_Control(self, type: str) -> Optional[Type[Control]]:
+        pass
+
+    def select_Error(self, type: str) -> Optional[Type[Error]]:
+        pass
+
+    def select_Field(self, type: str) -> Optional[Type[Field]]:
+        pass
+
+    def select_Step(self, type: str) -> Optional[Type[Step]]:
+        pass
+
+    def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
         """Create storage
 
         Parameters:
@@ -136,16 +99,5 @@ class Plugin:
 
         Returns:
             Storage: storage
-        """
-        pass
-
-    def create_type(self, field):
-        """Create type
-
-        Parameters:
-            field (Field): corresponding field
-
-        Returns:
-            Type: type
         """
         pass

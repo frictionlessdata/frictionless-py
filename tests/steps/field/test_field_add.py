@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_add():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_add(name="note", type="string", value="eu"),
+            steps.field_add(name="note", value="eu", descriptor={"type": "string"}),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -29,15 +29,15 @@ def test_step_field_add():
 
 def test_step_field_add_with_position():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_add(name="note", position=1, value="eu"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
-            {"name": "note"},
+            {"name": "note", "type": "any"},
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
@@ -52,19 +52,19 @@ def test_step_field_add_with_position():
 
 def test_step_field_add_with_formula():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.field_add(name="calc", formula="id * 100 + population"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "calc"},
+            {"name": "calc", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -76,8 +76,7 @@ def test_step_field_add_with_formula():
 
 def test_step_field_add_with_function():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.field_add(
@@ -85,12 +84,13 @@ def test_step_field_add_with_function():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "calc"},
+            {"name": "calc", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -102,15 +102,15 @@ def test_step_field_add_with_function():
 
 def test_step_field_add_with_incremental():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_add(name="number", incremental=True),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
-            {"name": "number"},
+            {"name": "number", "type": "integer"},
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},

@@ -1,66 +1,60 @@
-import petl
-from ...step import Step
-from ...field import Field
+from __future__ import annotations
+import attrs
+from typing import List
+from ...platform import platform
+from ...pipeline import Step
+from ... import fields
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
+@attrs.define(kw_only=True)
 class field_split(Step):
     """Split field"""
 
-    code = "field-split"
+    type = "field-split"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        name=None,
-        to_names=None,
-        pattern=None,
-        preserve=False,
-    ):
-        self.setinitial("name", name)
-        self.setinitial("toNames", to_names)
-        self.setinitial("pattern", pattern)
-        self.setinitial("preserve", preserve)
-        super().__init__(descriptor)
+    # State
+
+    name: str
+    """NOTE: add docs"""
+
+    to_names: List[str]
+    """NOTE: add docs"""
+
+    pattern: str
+    """NOTE: add docs"""
+
+    preserve: bool = False
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        to_names = self.get("toNames")
-        pattern = self.get("pattern")
-        preserve = self.get("preserve")
-        for to_name in to_names:
-            resource.schema.add_field(Field(name=to_name, type="string"))
-        if not preserve:
-            resource.schema.remove_field(name)
-        processor = petl.split
+        for to_name in self.to_names:
+            field = fields.StringField(name=to_name)
+            resource.schema.add_field(field)
+        if not self.preserve:
+            resource.schema.remove_field(self.name)
+        processor = platform.petl.split
         # NOTE: this condition needs to be improved
-        if "(" in pattern:
-            processor = petl.capture
+        if "(" in self.pattern:
+            processor = platform.petl.capture
         resource.data = processor(
             table,
-            name,
-            pattern,
-            to_names,
-            include_original=preserve,
+            self.name,
+            self.pattern,
+            self.to_names,
+            include_original=self.preserve,  # type: ignore
         )
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name", "toNames", "pattern"],
         "properties": {
             "name": {"type": "string"},
-            "toNames": {},
-            "pattern": {},
-            "preserve": {},
+            "toNames": {"type": "array"},
+            "pattern": {"type": "string"},
+            "preserve": {"type": "boolean"},
         },
     }

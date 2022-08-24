@@ -1,39 +1,37 @@
-import os
+from __future__ import annotations
 import json
-import petl
 import warnings
 from pathlib import Path
-from copy import deepcopy
-from itertools import zip_longest, chain
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
+from ..table import Header, Lookup, Row
+from ..dialect import Dialect, Control
+from ..checklist import Checklist
+from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
-from ..layout import Layout
+from ..pipeline import Pipeline
 from ..schema import Schema
-from ..header import Header
 from ..system import system
-from ..field import Field
-from ..row import Row
-from .analyze import analyze
-from .describe import describe
-from .extract import extract
-from .transform import transform
-from .validate import validate
+from ..stats import Stats
 from .. import settings
 from .. import helpers
 from .. import errors
+from .. import fields
+from . import methods
 
 
-# NOTE:
-# Review the situation with describe function removing stats (move to infer?)
+if TYPE_CHECKING:
+    from .loader import Loader
+    from .parser import Parser
+    from ..package import Package
+    from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
+    from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 
 
 class Resource(Metadata):
     """Resource representation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Resource`
 
     This class is one of the cornerstones of of Frictionless framework.
     It loads a data source, and allows you to stream its parsed contents.
@@ -48,252 +46,126 @@ class Resource(Metadata):
         ]
     ```
 
-    Parameters:
-
-        source (any): Source of the resource; can be in various forms.
-            Usually, it's a string as `<scheme>://path/to/file.<format>`.
-            It also can be, for example, an array of data arrays/dictionaries.
-            Or it can be a resource descriptor dict or path.
-
-        descriptor (dict|str): A resource descriptor provided explicitly.
-            Keyword arguments will patch this descriptor if provided.
-
-        name? (str): A Resource name according to the specs.
-            It should be a slugified name of the resource.
-
-        title? (str): A Resource title according to the specs
-           It should a human-oriented title of the resource.
-
-        description? (str): A Resource description according to the specs
-           It should a human-oriented description of the resource.
-
-        mediatype? (str): A mediatype/mimetype of the resource e.g. “text/csv”,
-            or “application/vnd.ms-excel”.  Mediatypes are maintained by the
-            Internet Assigned Numbers Authority (IANA) in a media type registry.
-
-        licenses? (dict[]): The license(s) under which the resource is provided.
-            If omitted it's considered the same as the package's licenses.
-
-        sources? (dict[]): The raw sources for this data resource.
-            It MUST be an array of Source objects.
-            Each Source object MUST have a title and
-            MAY have path and/or email properties.
-
-        profile? (str): A string identifying the profile of this descriptor.
-            For example, `tabular-data-resource`.
-
-        scheme? (str): Scheme for loading the file (file, http, ...).
-            If not set, it'll be inferred from `source`.
-
-        format? (str): File source's format (csv, xls, ...).
-            If not set, it'll be inferred from `source`.
-
-        hashing? (str): An algorithm to hash data.
-            It defaults to 'md5'.
-
-        encoding? (str): Source encoding.
-            If not set, it'll be inferred from `source`.
-
-        innerpath? (str): A path within the compressed file.
-            It defaults to the first file in the archive.
-
-        compression? (str): Source file compression (zip, ...).
-            If not set, it'll be inferred from `source`.
-
-        control? (dict|Control): File control.
-            For more information, please check the Control documentation.
-
-        dialect? (dict|Dialect): Table dialect.
-            For more information, please check the Dialect documentation.
-
-        layout? (dict|Layout): Table layout.
-            For more information, please check the Layout documentation.
-
-        schema? (dict|Schema): Table schema.
-            For more information, please check the Schema documentation.
-
-        stats? (dict): File/table stats.
-            A dict with the following possible properties: hash, bytes, fields, rows.
-
-        basepath? (str): A basepath of the resource
-            The fullpath of the resource is joined `basepath` and /path`
-
-        detector? (Detector): File/table detector.
-            For more information, please check the Detector documentation.
-
-        onerror? (ignore|warn|raise): Behaviour if there is an error.
-            It defaults to 'ignore'. The default mode will ignore all errors
-            on resource level and they should be handled by the user
-            being available in Header and Row objects.
-
-        trusted? (bool): Don't raise an exception on unsafe paths.
-            A path provided as a part of the descriptor considered unsafe
-            if there are path traversing or the path is absolute.
-            A path provided as `source` or `path` is alway trusted.
-
-        package? (Package): A owning this resource package.
-            It's actual if the resource is part of some data package.
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
     """
 
-    describe = staticmethod(describe)
-    extract = extract
-    transform = transform
-    validate = validate
-    analyze = analyze
+    analyze = methods.analyze
+    describe = methods.describe
+    extract = methods.extract
+    validate = methods.validate
+    transform = methods.transform
 
     def __init__(
         self,
-        source=None,
+        source: Optional[Any] = None,
+        control: Optional[Control] = None,
         *,
-        descriptor=None,
-        # Spec
-        name=None,
-        title=None,
-        description=None,
-        mediatype=None,
-        licenses=None,
-        sources=None,
-        profile=None,
-        path=None,
-        data=None,
-        scheme=None,
-        format=None,
-        hashing=None,
-        encoding=None,
-        innerpath=None,
-        compression=None,
-        control=None,
-        dialect=None,
-        layout=None,
-        schema=None,
-        stats=None,
-        # Extra
-        basepath="",
-        detector=None,
-        onerror="ignore",
-        trusted=False,
-        package=None,
+        # Standard
+        name: Optional[str] = None,
+        type: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        homepage: Optional[str] = None,
+        profiles: List[Union[IProfile, str]] = [],
+        licenses: List[dict] = [],
+        sources: List[dict] = [],
+        path: Optional[str] = None,
+        data: Optional[Any] = None,
+        scheme: Optional[str] = None,
+        format: Optional[str] = None,
+        encoding: Optional[str] = None,
+        mediatype: Optional[str] = None,
+        compression: Optional[str] = None,
+        extrapaths: List[str] = [],
+        innerpath: Optional[str] = None,
+        dialect: Optional[Union[Dialect, str]] = None,
+        schema: Optional[Union[Schema, str]] = None,
+        checklist: Optional[Union[Checklist, str]] = None,
+        pipeline: Optional[Union[Pipeline, str]] = None,
+        stats: Optional[Stats] = None,
+        # Software
+        basepath: Optional[str] = None,
+        detector: Optional[Detector] = None,
+        package: Optional[Package] = None,
     ):
 
-        # Handle source
-        if source is not None:
-            file = system.create_file(source, basepath=basepath)
-            if file.type == "table":
-                if path is None:
-                    path = file.path
-                if data is None:
-                    data = file.data
-            elif descriptor is None:
-                descriptor = source
-
-        # Handle pathlib
-        if isinstance(descriptor, Path):
-            descriptor = str(descriptor)
-
-        # Handle trusted
-        if descriptor is None:
-            trusted = True
-
         # Store state
-        self.__loader = None
-        self.__parser = None
-        self.__sample = None
-        self.__labels = None
-        self.__fragment = None
-        self.__header = None
-        self.__lookup = None
-        self.__byte_stream = None
-        self.__text_stream = None
-        self.__list_stream = None
-        self.__row_stream = None
-        self.__row_number = None
-        self.__row_position = None
-        self.__field_positions = None
-        self.__fragment_positions = None
+        self.name = name
+        self.type = type
+        self.title = title
+        self.description = description
+        self.homepage = homepage
+        self.profiles = profiles.copy()
+        self.licenses = licenses.copy()
+        self.sources = sources.copy()
+        self.path = path
+        self.data = data
+        self.scheme = scheme
+        self.format = format
+        self.encoding = encoding
+        self.mediatype = mediatype
+        self.compression = compression
+        self.extrapaths = extrapaths.copy()
+        self.innerpath = innerpath
+        self.basepath = basepath
+        self.package = package
 
-        # Store extra
-        self.__basepath = basepath or helpers.parse_basepath(descriptor)
-        self.__detector = detector or Detector()
-        self.__onerror = onerror
-        self.__trusted = trusted
-        self.__package = package
+        # Store dereference state
+        self.dialect = dialect or Dialect()
+        self.schema = schema
+        self.checklist = checklist
+        self.pipeline = pipeline
+        self.stats = stats or Stats()
+        self.detector = detector or Detector()
 
-        # Store specs
-        self.setinitial("name", name)
-        self.setinitial("title", title)
-        self.setinitial("description", description)
-        self.setinitial("mediatype", mediatype)
-        self.setinitial("licenses", licenses)
-        self.setinitial("sources", sources)
-        self.setinitial("profile", profile)
-        self.setinitial("path", path)
-        self.setinitial("data", data)
-        self.setinitial("scheme", scheme)
-        self.setinitial("format", format)
-        self.setinitial("hashing", hashing)
-        self.setinitial("encoding", encoding)
-        self.setinitial("compression", compression)
-        self.setinitial("innerpath", innerpath)
-        self.setinitial("control", control)
-        self.setinitial("dialect", dialect)
-        self.setinitial("layout", layout)
-        self.setinitial("schema", schema)
-        self.setinitial("stats", stats)
-        super().__init__(descriptor)
+        # Store internal state
+        self.__loader: Optional[Loader] = None
+        self.__parser: Optional[Parser] = None
+        self.__buffer: Optional[IBuffer] = None
+        self.__sample: Optional[ISample] = None
+        self.__labels: Optional[ILabels] = None
+        self.__fragment: Optional[IFragment] = None
+        self.__header: Optional[Header] = None
+        self.__lookup: Optional[Lookup] = None
+        self.__row_stream: Optional[IRowStream] = None
 
-        # NOTE: it will not work if dialect is a path
-        # Handle official dialect.header
-        dialect = self.get("dialect")
-        if isinstance(dialect, dict):
-            header = dialect.pop("header", None)
-            if header is False:
-                self.setdefault("layout", {})
-                self["layout"]["header"] = False
+        # Define default state
+        self.add_defined("dialect")
+        self.add_defined("stats")
 
-        # Handle official hash/bytes/rows
-        for name in ["hash", "bytes", "rows"]:
-            value = self.pop(name, None)
-            if value:
-                if name == "hash":
-                    hashing, value = helpers.parse_resource_hash(value)
-                    if hashing != settings.DEFAULT_HASHING:
-                        self["hashing"] = hashing
-                self.setdefault("stats", {})
-                self["stats"][name] = value
+        # Handled by the create hook
+        assert source is None
+        assert control is None
 
-        # Handle deprecated url
-        url = self.get("url")
-        path = self.get("path")
-        if url and not path:
-            message = 'Property "url" is deprecated. Please use "path" instead.'
-            warnings.warn(message, UserWarning)
-            self["path"] = self.pop("url")
+    @classmethod
+    def __create__(
+        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
+    ):
+        if control is not None:
 
-        # Handle deprecated compression
-        compression = self.get("compression")
-        if compression == "no":
-            message = 'Compression "no" is deprecated. Please use "" compression.'
-            warnings.warn(message, UserWarning)
-            self["compression"] = ""
+            # Control
+            options.setdefault("dialect", control.to_dialect())
+            if source is None:
+                return Resource(**options)
 
-    def __setattr__(self, name, value):
-        if name == "basepath":
-            self.__basepath = value
-        elif name == "detector":
-            self.__detector = value
-        elif name == "onerror":
-            self.__onerror = value
-        elif name == "trusted":
-            self.__trusted = value
-        elif name == "package":
-            self.__package = value
-        else:
-            return super().__setattr__(name, value)
-        self.metadata_process()
+        if source is not None:
 
+            # Path
+            if isinstance(source, Path):
+                source = str(source)
+
+            # Mapping
+            elif isinstance(source, Mapping):
+                source = {key: value for key, value in source.items()}
+
+            # Descriptor
+            if helpers.is_descriptor_source(source):
+                return Resource.from_descriptor(source, **options)
+
+            # Path/data
+            options["path" if isinstance(source, str) else "data"] = source
+            return Resource(**options)
+
+    # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
         if self.closed:
             self.open()
@@ -302,253 +174,297 @@ class Resource(Metadata):
     def __exit__(self, type, value, traceback):
         self.close()
 
-    def __iter__(self):
-        with helpers.ensure_open(self):
-            yield from self.__row_stream
+    # State
 
-    @Metadata.property
-    def name(self):
-        """
-        Returns
-            str: resource name
-        """
-        return self.get("name", self.__file.name)
+    name: Optional[str]
+    """
+    Resource name according to the specs.
+    It should be a slugified name of the resource.
+    """
 
-    @Metadata.property
-    def title(self):
-        """
-        Returns
-            str: resource title
-        """
-        return self.get("title", "")
+    type: Optional[str]
+    """
+    Type of the data e.g. "table"
+    """
 
-    @Metadata.property
-    def description(self):
-        """
-        Returns
-            str: resource description
-        """
-        return self.get("description", "")
+    title: Optional[str]
+    """
+    Resource title according to the specs
+    It should a human-oriented title of the resource.
+    """
 
-    @Metadata.property(cache=False, write=False)
-    def description_html(self):
-        """
-        Returns:
-            str?: resource description
-        """
-        return helpers.md_to_html(self.description)
+    description: Optional[str]
+    """
+    Resource description according to the specs
+    It should a human-oriented description of the resource.
+    """
 
-    @Metadata.property
-    def description_text(self):
-        """
-        Returns:
-            str: resource description
-        """
-        return helpers.html_to_text(self.description_html)
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
 
-    @Metadata.property
-    def mediatype(self):
-        """
-        Returns
-            str: resource mediatype
-        """
-        return self.get("mediatype", "")
+    profiles: List[Union[IProfile, str]]
+    """
+    Strings identifying the profile of this descriptor.
+    For example, `tabular-data-resource`.
+    """
 
-    @Metadata.property
-    def licenses(self):
-        """
-        Returns
-            dict[]: resource licenses
-        """
-        licenses = self.get("licenses", [])
-        return self.metadata_attach("licenses", licenses)
+    licenses: List[dict]
+    """
+    The license(s) under which the resource is provided.
+    If omitted it's considered the same as the package's licenses.
+    """
 
-    @Metadata.property
-    def sources(self):
-        """
-        Returns
-            dict[]: resource sources
-        """
-        sources = self.get("sources", [])
-        return self.metadata_attach("sources", sources)
+    sources: List[dict]
+    """
+    The raw sources for this data resource.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
 
-    @Metadata.property
-    def profile(self):
-        """
-        Returns
-            str: resource profile
-        """
-        default = settings.DEFAULT_RESOURCE_PROFILE
-        if self.tabular:
-            default = settings.DEFAULT_TABULAR_RESOURCE_PROFILE
-        return self.get("profile", default)
+    path: Optional[str]
+    """
+    Path to data source
+    """
 
-    @Metadata.property
-    def path(self):
-        """
-        Returns
-            str: resource path
-        """
-        return self.get("path", self.__file.path)
+    data: Optional[Any]
+    """
+    Inline data source
+    """
 
-    @Metadata.property
-    def data(self):
-        """
-        Returns
-            any[][]?: resource data
-        """
-        return self.get("data", self.__file.data)
+    scheme: Optional[str]
+    """
+    Scheme for loading the file (file, http, ...).
+    If not set, it'll be inferred from `source`.
+    """
 
-    @Metadata.property
-    def scheme(self):
-        """
-        Returns
-            str: resource scheme
-        """
-        scheme = self.get("scheme", self.__file.scheme).lower()
-        # NOTE: review this approach (see #991)
-        # NOTE: move to plugins.multipart when plugin.priority/create_resource is implemented
-        if self.multipart and scheme != "multipart":
-            note = f'Multipart resource requires "multipart" scheme but "{scheme}" is set'
-            raise FrictionlessException(errors.SchemeError(note=note))
-        return scheme
+    format: Optional[str]
+    """
+    File source's format (csv, xls, ...).
+    If not set, it'll be inferred from `source`.
+    """
 
-    @Metadata.property
-    def format(self):
-        """
-        Returns
-            str: resource format
-        """
-        return self.get("format", self.__file.format).lower()
+    encoding: Optional[str]
+    """
+    Source encoding.
+    If not set, it'll be inferred from `source`.
+    """
 
-    @Metadata.property
-    def hashing(self):
-        """
-        Returns
-            str: resource hashing
-        """
-        return self.get("hashing", settings.DEFAULT_HASHING).lower()
+    mediatype: Optional[str]
+    """
+    Mediatype/mimetype of the resource e.g. “text/csv”,
+    or “application/vnd.ms-excel”.  Mediatypes are maintained by the
+    Internet Assigned Numbers Authority (IANA) in a media type registry.
+    """
 
-    @Metadata.property
-    def encoding(self):
-        """
-        Returns
-            str: resource encoding
-        """
-        return self.get("encoding", settings.DEFAULT_ENCODING).lower()
+    compression: Optional[str]
+    """
+    Source file compression (zip, ...).
+    If not set, it'll be inferred from `source`.
+    """
 
-    @Metadata.property
-    def innerpath(self):
-        """
-        Returns
-            str: resource compression path
-        """
-        return self.get("innerpath", self.__file.innerpath)
+    extrapaths: List[str]
+    """
+    List of paths to concatenate to the main path.
+    It's used for multipart resources.
+    """
 
-    @Metadata.property
-    def compression(self):
-        """
-        Returns
-            str: resource compression
-        """
-        return self.get("compression", self.__file.compression).lower()
+    innerpath: Optional[str]
+    """
+    Path within the compressed file.
+    It defaults to the first file in the archive (if the source is an archive).
+    """
 
-    @Metadata.property
-    def control(self):
-        """
-        Returns
-            Control: resource control
-        """
-        control = self.get("control")
-        if control is None:
-            control = system.create_control(self, descriptor=control)
-            control = self.metadata_attach("control", control)
-        elif isinstance(control, str):
-            control = os.path.join(self.basepath, control)
-            control = system.create_control(self, descriptor=control)
-            control = self.metadata_attach("control", control)
-        return control
+    detector: Detector
+    """
+    File/table detector.
+    For more information, please check the Detector documentation.
+    """
 
-    @Metadata.property
-    def dialect(self):
-        """
-        Returns
-            Dialect: resource dialect
-        """
-        dialect = self.get("dialect")
-        if dialect is None:
-            dialect = system.create_dialect(self, descriptor=dialect)
-            dialect = self.metadata_attach("dialect", dialect)
-        elif isinstance(dialect, str):
-            dialect = helpers.join_path(self.basepath, dialect)
-            dialect = system.create_dialect(self, descriptor=dialect)
-            dialect = self.metadata_attach("dialect", dialect)
-        return dialect
+    package: Optional[Package]
+    """
+    Parental to this resource package.
+    For more information, please check the Package documentation.
+    """
 
-    @Metadata.property
-    def layout(self):
-        """
-        Returns:
-            Layout: table layout
-        """
-        layout = self.get("layout")
-        if layout is None:
-            layout = Layout()
-            layout = self.metadata_attach("layout", layout)
-        elif isinstance(layout, str):
-            layout = Layout(os.path.join(self.basepath, layout))
-            layout = self.metadata_attach("layout", layout)
-        return layout
-
-    @Metadata.property
-    def schema(self):
-        """
-        Returns
-            Schema: resource schema
-        """
-        schema = self.get("schema")
-        if schema is None:
-            schema = Schema()
-            schema = self.metadata_attach("schema", schema)
-        elif isinstance(schema, str):
-            schema = Schema(helpers.join_path(self.basepath, schema))
-            schema = self.metadata_attach("schema", schema)
-        return schema
-
-    # NOTE: updating this Metadata.propertyc reates a huge overheader
-    # Once it's fixed we might return to stats updating during reading
-    # See: https://github.com/frictionlessdata/frictionless-py/issues/879
-    @Metadata.property
-    def stats(self):
-        """
-        Returns
-            dict: resource stats
-        """
-        stats = self.get("stats")
-        if stats is None:
-            stats = {"hash": "", "bytes": 0}
-            if self.tabular:
-                stats.update({"fields": 0, "rows": 0})
-            stats = self.metadata_attach("stats", stats)
-        return stats
+    # Props
 
     @property
-    def buffer(self):
+    def normpath(self) -> str:
+        """Normalized path of the resource or raise if not set"""
+        if self.path is None:
+            raise FrictionlessException("path is not set")
+        return helpers.normalize_path(self.path, basepath=self.basepath)
+
+    @property
+    def normdata(self) -> Any:
+        """Normalized data or raise if not set"""
+        if self.data is None:
+            raise FrictionlessException("data is not set")
+        return self.data
+
+    @property
+    def paths(self) -> List[str]:
+        """All paths of the resource"""
+        paths = []
+        if self.path is not None:
+            paths.append(self.path)
+        paths.extend(self.extrapaths)
+        return paths
+
+    @property
+    def normpaths(self) -> List[str]:
+        """Normalized paths of the resource"""
+        normpaths = []
+        for path in self.paths:
+            normpaths.append(helpers.normalize_path(path, basepath=self.basepath))
+        return normpaths
+
+    # TODO: add asteriks for user/pass in url
+    @property
+    def place(self) -> str:
+        """Stringified resource location"""
+        if self.data:
+            return "<memory>"
+        elif self.extrapaths:
+            return f"{self.path} (multipart)"
+        elif self.innerpath:
+            return f"{self.path} -> {self.innerpath}"
+        elif self.path:
+            return self.path
+        return ""
+
+    @property
+    def memory(self) -> bool:
+        """Whether resource is not path based"""
+        return self.data is not None
+
+    @property
+    def remote(self) -> bool:
+        """Whether resource is remote"""
+        return helpers.is_remote_path(self.basepath or self.path)
+
+    @property
+    def multipart(self) -> bool:
+        """Whether resource is multipart"""
+        return not self.memory and bool(self.extrapaths)
+
+    @property
+    def tabular(self) -> bool:
+        """Whether resource is tabular"""
+        return self.type == "table"
+
+    @property
+    def dialect(self) -> Dialect:
+        """
+        File Dialect object.
+        For more information, please check the Dialect documentation.
+        """
+        return self.__dialect
+
+    @dialect.setter
+    def dialect(self, value: Optional[Union[Dialect, str]]):
+        if value is None:
+            value = Dialect()
+        elif isinstance(value, str):
+            value = Dialect.from_descriptor(value, basepath=self.basepath)
+        self.__dialect = value
+
+    @property
+    def has_schema(self) -> bool:
+        return self.__schema is not None
+
+    @property
+    def schema(self) -> Schema:
+        """
+        Table Schema object.
+        For more information, please check the Schema documentation.
+        """
+        if self.__schema is None:
+            raise FrictionlessException("schema is not set or inferred")
+        return self.__schema
+
+    @schema.setter
+    def schema(self, value: Optional[Union[Schema, str]]):
+        if isinstance(value, str):
+            value = Schema.from_descriptor(value, basepath=self.basepath)
+        self.__schema = value
+
+    @property
+    def checklist(self) -> Optional[Checklist]:
+        """
+        Checklist object.
+        For more information, please check the Checklist documentation.
+        """
+        return self.__checklist
+
+    @checklist.setter
+    def checklist(self, value: Optional[Union[Checklist, str]]):
+        if isinstance(value, str):
+            value = Checklist.from_descriptor(value, basepath=self.basepath)
+        self.__checklist = value
+
+    @property
+    def pipeline(self) -> Optional[Pipeline]:
+        """
+        Pipeline object.
+        For more information, please check the Pipeline documentation.
+        """
+        return self.__pipeline
+
+    @pipeline.setter
+    def pipeline(self, value: Optional[Union[Pipeline, str]]):
+        if isinstance(value, str):
+            value = Pipeline.from_descriptor(value, basepath=self.basepath)
+        self.__pipeline = value
+
+    @property
+    def stats(self) -> Stats:
+        """
+        Stats object.
+        An object with the following possible properties: md5, sha256, bytes, fields, rows.
+        """
+        return self.__stats
+
+    @stats.setter
+    def stats(self, value: Optional[Union[Stats, str]]):
+        if value is None:
+            value = Stats()
+        elif isinstance(value, str):
+            value = Stats.from_descriptor(value, basepath=self.basepath)
+        self.__stats = value
+
+    @property
+    def basepath(self) -> Optional[str]:
+        """
+        A basepath of the resource
+        The normpath of the resource is joined `basepath` and `/path`
+        """
+        if self.__basepath:
+            return self.__basepath
+        if self.package:
+            return self.package.basepath
+
+    @basepath.setter
+    def basepath(self, value: Optional[str]):
+        self.__basepath = value
+
+    @property
+    def buffer(self) -> IBuffer:
         """File's bytes used as a sample
 
         These buffer bytes are used to infer characteristics of the
         source file (e.g. encoding, ...).
-
-        Returns:
-            bytes?: file buffer
         """
-        if self.__parser and self.__parser.loader:
-            return self.__parser.loader.buffer
-        if self.__loader:
-            return self.__loader.buffer
+        if self.__buffer is None:
+            raise FrictionlessException("resource is not open or non binary")
+        return self.__buffer
 
     @property
-    def sample(self):
+    def sample(self) -> ISample:
         """Table's lists used as sample.
 
         These sample rows are used to infer characteristics of the
@@ -557,18 +473,22 @@ class Resource(Metadata):
         Returns:
             list[]?: table sample
         """
+        if self.__sample is None:
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__sample
 
     @property
-    def labels(self):
+    def labels(self) -> ILabels:
         """
         Returns:
             str[]?: table labels
         """
+        if self.__labels is None:
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__labels
 
     @property
-    def fragment(self):
+    def fragment(self) -> IFragment:
         """Table's lists used as fragment.
 
         These fragment rows are used internally to infer characteristics of the
@@ -577,233 +497,137 @@ class Resource(Metadata):
         Returns:
             list[]?: table fragment
         """
+        if self.__fragment is None:
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__fragment
 
     @property
-    def header(self):
+    def header(self) -> Header:
         """
         Returns:
             str[]?: table header
         """
+        if self.__header is None:
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__header
 
-    @Metadata.property(cache=False, write=False)
-    def basepath(self):
-        """
-        Returns
-            str: resource basepath
-        """
-        return self.__file.basepath
-
-    @Metadata.property(cache=False, write=False)
-    def fullpath(self):
-        """
-        Returns
-            str: resource fullpath
-        """
-        return self.__file.fullpath
-
-    @Metadata.property(cache=False, write=False)
-    def detector(self):
-        """
-        Returns
-            str: resource detector
-        """
-        return self.__detector
-
-    @Metadata.property(cache=False, write=False)
-    def onerror(self):
+    @property
+    def lookup(self) -> Lookup:
         """
         Returns:
-            ignore|warn|raise: on error bahaviour
+            str[]?: table lookup
         """
-        return self.__onerror
-
-    @Metadata.property(cache=False, write=False)
-    def trusted(self):
-        """
-        Returns:
-            bool: don't raise an exception on unsafe paths
-        """
-        return self.__trusted
-
-    @Metadata.property(cache=False, write=False)
-    def package(self):
-        """
-        Returns:
-            Package?: parent package
-        """
-        return self.__package
-
-    @Metadata.property(write=False)
-    def memory(self):
-        return self.__file.memory
-
-    @Metadata.property(write=False)
-    def remote(self):
-        return self.__file.remote
-
-    @Metadata.property(write=False)
-    def multipart(self):
-        return self.__file.multipart
-
-    @Metadata.property(write=False)
-    def tabular(self):
-        """
-        Returns
-            bool: if resource is tabular
-        """
-        if not self.closed:
-            return bool(self.__parser)
-        try:
-            system.create_parser(self)
-            return True
-        except Exception:
-            return False
+        if self.__lookup is None:
+            raise FrictionlessException("resource is not open or non tabular")
+        return self.__lookup
 
     @property
-    def byte_stream(self):
+    def byte_stream(self) -> IByteStream:
         """Byte stream in form of a generator
 
         Yields:
             gen<bytes>?: byte stream
         """
-        if not self.closed:
-            if not self.__loader:
-                self.__loader = system.create_loader(self)
-                self.__loader.open()
-            return self.__loader.byte_stream
+        if self.closed:
+            raise FrictionlessException("resource is not open or non binary")
+        if not self.__loader:
+            self.__loader = system.create_loader(self)
+            self.__loader.open()
+        return self.__loader.byte_stream
 
     @property
-    def text_stream(self):
+    def text_stream(self) -> ITextStream:
         """Text stream in form of a generator
 
         Yields:
             gen<str[]>?: text stream
         """
-        if not self.closed:
-            if not self.__loader:
-                self.__loader = system.create_loader(self)
-                self.__loader.open()
-            return self.__loader.text_stream
+        if self.closed:
+            raise FrictionlessException("resource is not open or non textual")
+        if not self.__loader:
+            self.__loader = system.create_loader(self)
+            self.__loader.open()
+        return self.__loader.text_stream
 
     @property
-    def list_stream(self):
-        """List stream in form of a generator
+    def cell_stream(self) -> ICellStream:
+        """Cell stream in form of a generator
 
         Yields:
-            gen<any[][]>?: list stream
+            gen<any[][]>?: cell stream
         """
-        if self.__parser:
-            return self.__parser.list_stream
+        if self.__parser is None:
+            raise FrictionlessException("resource is not open or non tabular")
+        return self.__parser.cell_stream
 
     @property
-    def row_stream(self):
+    def row_stream(self) -> IRowStream:
         """Row stream in form of a generator of Row objects
 
         Yields:
             gen<Row[]>?: row stream
         """
+        if self.__row_stream is None:
+            raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("profile", self.profile)
-        self.setdefault("scheme", self.scheme)
-        self.setdefault("format", self.format)
-        self.setdefault("hashing", self.hashing)
-        self.setdefault("encoding", self.encoding)
-        self.setdefault("innerpath", self.innerpath)
-        self.setdefault("compression", self.compression)
-        self.setdefault("control", self.control)
-        self.setdefault("dialect", self.dialect)
-        self.control.expand()
-        self.dialect.expand()
-        if self.tabular:
-            self.setdefault("layout", self.layout)
-            self.setdefault("schema", self.schema)
-            self.layout.expand()
-            self.schema.expand()
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, sample: bool = True, stats: bool = False) -> None:
         """Infer metadata
 
         Parameters:
+            sample? (bool): open file and infer from a sample (default: True)
             stats? (bool): stream file completely and infer stats
         """
+        if sample is False:
+            self.__prepare_file()
+            return
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
-                self.pop("stats", None)
+                self.stats = None
                 return
-            stream = self.row_stream or self.byte_stream
+            stream = self.__row_stream or self.byte_stream
             helpers.pass_through(stream)
 
     # Open/Close
 
-    def open(self):
-        """Open the resource as "io.open" does
-
-        Raises:
-            FrictionlessException: any exception that occurs
-        """
+    def open(self, *, as_file: bool = False):
+        """Open the resource as "io.open" does"""
         self.close()
-
-        # Infer
-        self.pop("stats", None)
-        self["name"] = self.name
-        self["profile"] = self.profile
-        self["scheme"] = self.scheme
-        self["format"] = self.format
-        self["hashing"] = self.hashing
-        if self.innerpath:
-            self["innerpath"] = self.innerpath
-        if self.compression:
-            self["compression"] = self.compression
-        if self.control:
-            self["control"] = self.control
-        if self.dialect:
-            self["dialect"] = self.dialect
-        self["stats"] = self.stats
-
-        # Validate
-        if self.metadata_errors:
-            error = self.metadata_errors[0]
-            raise FrictionlessException(error)
-
-        # Open
         try:
 
+            # General
+            self.__prepare_file()
+
             # Table
-            if self.tabular:
-                self.__parser = system.create_parser(self)
-                self.__parser.open()
-                self.__read_detect_layout()
-                self.__read_detect_schema()
-                self.__read_detect_lookup()
-                self.__header = self.__read_header()
-                self.__row_stream = self.__read_row_stream()
-                return self
+            if self.type == "table" and not as_file:
+                self.__prepare_parser()
+                self.__prepare_buffer()
+                self.__prepare_sample()
+                self.__prepare_dialect()
+                self.__prepare_labels()
+                self.__prepare_fragment()
+                self.__prepare_schema()
+                self.__prepare_header()
+                self.__prepare_lookup()
+                self.__prepare_row_stream()
 
             # File
-            else:
-                self.__loader = system.create_loader(self)
-                self.__loader.open()
-                return self
+            elif self.scheme:
+                self.__prepare_loader()
+                self.__prepare_buffer()
 
-        # Error
         except Exception:
             self.close()
             raise
+        return self
 
-    def close(self):
-        """Close the table as "filelike.close" does"""
+    def close(self) -> None:
+        """Close the resource as "filelike.close" does"""
         if self.__parser:
             self.__parser.close()
             self.__parser = None
@@ -812,7 +636,7 @@ class Resource(Metadata):
             self.__loader = None
 
     @property
-    def closed(self):
+    def closed(self) -> bool:
         """Whether the table is closed
 
         Returns:
@@ -820,90 +644,122 @@ class Resource(Metadata):
         """
         return self.__parser is None and self.__loader is None
 
-    # Read
+    def __prepare_file(self):
+        self.detector.detect_resource(self)
+        system.detect_resource(self)
 
-    def read_bytes(self, *, size=None):
-        """Read bytes into memory
+    def __prepare_loader(self):
+        self.__loader = system.create_loader(self)
+        self.__loader.open()
 
-        Returns:
-            any[][]: resource bytes
-        """
-        if self.memory:
-            return b""
-        with helpers.ensure_open(self):
-            return self.byte_stream.read1(size)
+    def __prepare_buffer(self):
+        if self.__parser and self.__parser.requires_loader:
+            self.__buffer = self.__parser.loader.buffer
+        elif self.__loader:
+            self.__buffer = self.__loader.buffer
 
-    def read_text(self, *, size=None):
-        """Read text into memory
+    def __prepare_parser(self):
+        self.__parser = system.create_parser(self)
+        self.__parser.open()
 
-        Returns:
-            str: resource text
-        """
-        if self.memory:
-            return ""
-        with helpers.ensure_open(self):
-            return self.text_stream.read(size)
+    def __prepare_sample(self):
+        if self.__parser:
+            self.__sample = self.__parser.sample
 
-    def read_data(self, *, size=None):
-        """Read data into memory
+    def __prepare_dialect(self):
+        self.metadata_assigned.add("dialect")
+        self.__dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
 
-        Returns:
-            any: resource data
-        """
-        if self.data:
-            return self.data
-        with helpers.ensure_open(self):
-            text = self.read_text()
-            data = json.loads(text)
-            return data
+    def __prepare_labels(self):
+        self.__labels = self.dialect.read_labels(self.sample)
 
-    def read_lists(self, *, size=None):
-        """Read lists into memory
+    def __prepare_fragment(self):
+        self.__fragment = self.dialect.read_fragment(self.sample)
 
-        Returns:
-            any[][]: table lists
-        """
-        with helpers.ensure_open(self):
-            lists = []
-            for cells in self.list_stream:
-                lists.append(cells)
-                if size and len(lists) >= size:
-                    break
-            return lists
+    def __prepare_schema(self):
+        self.metadata_assigned.add("schema")
+        self.__schema = self.detector.detect_schema(
+            self.fragment,
+            labels=self.labels,
+            schema=self.schema if self.has_schema else None,
+            field_candidates=system.detect_field_candidates(),
+        )
+        self.stats.fields = len(self.schema.fields)
 
-    def read_rows(self, *, size=None):
-        """Read rows into memory
+    def __prepare_header(self):
 
-        Returns:
-            Row[]: table rows
-        """
-        with helpers.ensure_open(self):
-            rows = []
-            for row in self.row_stream:
-                rows.append(row)
-                if size and len(rows) >= size:
-                    break
-            return rows
+        # Create header
+        self.__header = Header(
+            self.__labels,
+            fields=self.schema.fields,
+            row_numbers=self.dialect.header_rows,
+            ignore_case=not self.dialect.header_case,
+        )
 
-    def __read_row_stream(self):
+        # Handle errors
+        if not self.header.valid:
+            error = self.header.errors[0]
+            if system.onerror == "warn":
+                warnings.warn(error.message, UserWarning)
+            elif system.onerror == "raise":
+                raise FrictionlessException(error)
 
-        # During row streaming we crate a field inf structure
+    def __prepare_lookup(self):
+        self.__lookup = Lookup()
+        for fk in self.schema.foreign_keys:
+
+            # Prepare source
+            source_name = fk["reference"]["resource"]
+            source_key = tuple(fk["reference"]["fields"])
+            if source_name != "" and not self.package:
+                continue
+            if source_name:
+                if not self.package:
+                    note = 'package is required for FK: "{fk}"'
+                    raise FrictionlessException(errors.ResourceError(note=note))
+                if not self.package.has_resource(source_name):
+                    note = f'failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
+                    raise FrictionlessException(errors.ResourceError(note=note))
+                source_res = self.package.get_resource(source_name)
+            else:
+                source_res = self.to_copy()
+            if source_res.has_schema:
+                source_res.schema.foreign_keys = []
+
+            # Prepare lookup
+            self.__lookup.setdefault(source_name, {})
+            if source_key in self.__lookup[source_name]:
+                continue
+            self.__lookup[source_name][source_key] = set()
+            if not source_res:
+                continue
+            with source_res:
+                for row in source_res.row_stream:  # type: ignore
+                    cells = tuple(row.get(field_name) for field_name in source_key)
+                    if set(cells) == {None}:
+                        continue
+                    self.__lookup[source_name][source_key].add(cells)
+
+    def __prepare_row_stream(self):
+
+        # TODO: we need to rework this field_info / row code
+        # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
 
         # Create field info
         field_number = 0
-        field_info = {"names": [], "objects": [], "positions": [], "mapping": {}}
-        iterator = zip_longest(self.schema.fields, self.__field_positions)
-        for field, field_position in iterator:
-            if field is None:
-                break
+        field_info = {"names": [], "objects": [], "mapping": {}}
+        for field in self.schema.fields:
             field_number += 1
             field_info["names"].append(field.name)
             field_info["objects"].append(field.to_copy())
-            field_info["mapping"][field.name] = (field, field_number, field_position)
-            if field_position is not None:
-                field_info["positions"].append(field_position)
+            field_info["mapping"][field.name] = (
+                field,
+                field_number,
+                field.create_cell_reader(),
+                field.create_cell_writer(),
+            )
 
         # Create state
         memory_unique = {}
@@ -923,34 +779,22 @@ class Resource(Metadata):
                 foreign_groups.append(group)
                 is_integrity = True
 
-        # Create iterator
-        iterator = chain(
-            zip(self.__fragment_positions, self.__fragment),
-            self.__read_list_stream(),
+        # Create content stream
+        enumerated_content_stream = self.dialect.read_enumerated_content_stream(
+            self.cell_stream
         )
 
         # Create row stream
         def row_stream():
-            self.__row_number = 0
-            limit = self.layout.limit_rows
-            offset = self.layout.offset_rows or 0
-            for row_position, cells in iterator:
-                self.__row_position = row_position
-
-                # Offset/offset rows
-                if offset:
-                    offset -= 1
-                    continue
-                if limit and limit <= self.__row_number:
-                    break
+            self.stats.rows = 0
+            for row_number, cells in enumerated_content_stream:
+                self.stats.rows += 1
 
                 # Create row
-                self.__row_number += 1
                 row = Row(
                     cells,
                     field_info=field_info,
-                    row_position=self.__row_position,
-                    row_number=self.__row_number,
+                    row_number=row_number,
                 )
 
                 # Unique Error
@@ -959,7 +803,7 @@ class Resource(Metadata):
                         cell = row[field_name]
                         if cell is not None:
                             match = memory_unique[field_name].get(cell)
-                            memory_unique[field_name][cell] = row.row_position
+                            memory_unique[field_name][cell] = row.row_number
                             if match:
                                 func = errors.UniqueError.from_row
                                 note = "the same as in the row at position %s" % match
@@ -975,7 +819,7 @@ class Resource(Metadata):
                         row.errors.append(error)
                     else:
                         match = memory_primary.get(cells)
-                        memory_primary[cells] = row.row_position
+                        memory_primary[cells] = row.row_number
                         if match:
                             if match:
                                 note = "the same as in the row at position %s" % match
@@ -985,7 +829,7 @@ class Resource(Metadata):
                 # Foreign Key Error
                 if is_integrity and foreign_groups:
                     for group in foreign_groups:
-                        group_lookup = self.__lookup.get(group["sourceName"])
+                        group_lookup = self.lookup.get(group["sourceName"])
                         if group_lookup:
                             cells = tuple(row[name] for name in group["targetKey"])
                             if set(cells) == {None}:
@@ -1005,160 +849,116 @@ class Resource(Metadata):
                                 row.errors.append(error)
 
                 # Handle errors
-                if self.onerror != "ignore":
+                if system.onerror != "ignore":
                     if not row.valid:
                         error = row.errors[0]
-                        if self.onerror == "raise":
+                        if system.onerror == "raise":
                             raise FrictionlessException(error)
                         warnings.warn(error.message, UserWarning)
 
                 # Yield row
                 yield row
 
-            # Update stats
-            self.stats["rows"] = self.__row_number
+        # Crreate row stream
+        self.__row_stream = row_stream()
 
-        # Return row stream
-        return row_stream()
+    # Read
 
-    def __read_header(self):
+    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
+        """Read bytes into memory
 
-        # Create header
-        header = Header(
-            self.__labels,
-            fields=self.schema.fields,
-            field_positions=self.__field_positions,
-            row_positions=self.layout.header_rows,
-            ignore_case=not self.layout.header_case,
-        )
+        Returns:
+            any[][]: resource bytes
+        """
+        if self.memory:
+            return b""
+        with helpers.ensure_open(self):
+            return self.byte_stream.read1(size)  # type: ignore
 
-        # Handle errors
-        if not header.valid:
-            error = header.errors[0]
-            if self.onerror == "warn":
-                warnings.warn(error.message, UserWarning)
-            elif self.onerror == "raise":
-                raise FrictionlessException(error)
+    def read_text(self, *, size: Optional[int] = None) -> str:
+        """Read text into memory
 
-        return header
+        Returns:
+            str: resource text
+        """
+        if self.memory:
+            return ""
+        with helpers.ensure_open(self):
+            return self.text_stream.read(size)  # type: ignore
 
-    def __read_list_stream(self):
+    def read_data(self, *, size: Optional[int] = None) -> Any:
+        """Read data into memory
 
-        # Prepare iterator
-        iterator = (
-            (position, cells)
-            for position, cells in enumerate(self.__parser.list_stream, start=1)
-            if position > len(self.__parser.sample)
-        )
+        Returns:
+            any: resource data
+        """
+        if self.data:
+            return self.data
+        with helpers.ensure_open(self):
+            text = self.read_text(size=size)
+            data = json.loads(text)
+            return data
 
-        # Stream without filtering
-        if not self.layout:
-            yield from iterator
-            return
+    def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
+        """Read lists into memory
 
-        # Stream with filtering
-        for row_position, cells in iterator:
-            if self.layout.read_filter_rows(cells, row_position=row_position):
-                yield row_position, self.layout.read_filter_cells(
-                    cells, field_positions=self.__field_positions
-                )
+        Returns:
+            any[][]: table lists
+        """
+        with helpers.ensure_open(self):
+            result = []
+            for cells in self.cell_stream:
+                result.append(cells)
+                if size and len(result) >= size:
+                    break
+            return result
 
-    def __read_detect_layout(self):
-        sample = self.__parser.sample
-        layout = self.detector.detect_layout(sample, layout=self.layout)
-        if layout:
-            self.layout = layout
-        self.__sample = sample
+    def read_rows(self, *, size=None) -> List[Row]:
+        """Read rows into memory
 
-    def __read_detect_schema(self):
-        labels, field_positions = self.layout.read_labels(self.sample)
-        fragment, fragment_positions = self.layout.read_fragment(self.sample)
-        schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
-        if schema:
-            self.schema = schema
-        self.__labels = labels
-        self.__fragment = fragment
-        self.__field_positions = field_positions
-        self.__fragment_positions = fragment_positions
-        self.stats["fields"] = len(schema.fields)
-        # NOTE: review whether it's a proper place for this fallback to data resource
-        if not schema:
-            self.profile = "data-resource"
-
-    def __read_detect_lookup(self):
-        lookup = {}
-        for fk in self.schema.foreign_keys:
-            source_name = fk["reference"]["resource"]
-            source_key = tuple(fk["reference"]["fields"])
-            if source_name != "" and not self.__package:
-                continue
-            if source_name:
-                if not self.__package.has_resource(source_name):
-                    note = f'Failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
-                    raise FrictionlessException(errors.ResourceError(note=note))
-                source_res = self.__package.get_resource(source_name)
-            else:
-                source_res = self.to_copy()
-            source_res.schema.pop("foreignKeys", None)
-            lookup.setdefault(source_name, {})
-            if source_key in lookup[source_name]:
-                continue
-            lookup[source_name][source_key] = set()
-            if not source_res:
-                continue
-            with source_res:
-                for row in source_res.row_stream:
-                    cells = tuple(row.get(field_name) for field_name in source_key)
-                    if set(cells) == {None}:
-                        continue
-                    lookup[source_name][source_key].add(cells)
-        self.__lookup = lookup
+        Returns:
+            Row[]: table rows
+        """
+        with helpers.ensure_open(self):
+            rows = []
+            for row in self.row_stream:
+                rows.append(row)
+                if size and len(rows) >= size:
+                    break
+            return rows
 
     # Write
 
-    def write(self, target=None, **options):
+    def write(
+        self,
+        target: Optional[Union[Resource, Any]] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
+    ) -> Resource:
         """Write this resource to the target resource
 
         Parameters:
-            target (any|Resource): target or target resource instance
+            target (Resource|Any): target or target resource instance
             **options (dict): Resource constructor options
         """
-        native = isinstance(target, Resource)
-        target = target.to_copy() if native else Resource(target, **options)
-        parser = system.create_parser(target)
-        parser.write_row_stream(self.to_copy())
-        return target
+        resource = target
+        if not isinstance(resource, Resource):
+            resource = Resource(target, control=control, **options)
+        resource.infer(sample=False)
+        parser = system.create_parser(resource)
+        parser.write_row_stream(self)
+        return resource
 
-    # Export/Import
-
-    def to_dict(self):
-        """Create a dict from the resource
-
-        Returns
-            dict: dict representation
-        """
-        # Data can be not serializable (generators/functions)
-        descriptor = super().to_dict()
-        data = descriptor.pop("data", None)
-        if isinstance(data, list):
-            descriptor["data"] = data
-        return descriptor
+    # Convert
 
     def to_copy(self, **options):
-        """Create a copy from the resource
-
-        Returns
-            Resource: resource copy
-        """
-        descriptor = self.to_dict()
-        return Resource(
-            descriptor,
+        """Create a copy from the resource"""
+        return super().to_copy(
             data=self.data,
-            basepath=self.__basepath,
-            detector=self.__detector,
-            onerror=self.__onerror,
-            trusted=self.__trusted,
-            package=self.__package,
+            basepath=self.basepath,
+            detector=self.detector,
+            package=self.package,
             **options,
         )
 
@@ -1166,7 +966,7 @@ class Resource(Metadata):
         """Create a view from the resource
 
         See PETL's docs for more information:
-        https://petl.readthedocs.io/en/stable/util.html#visualising-tables
+        https://platform.petl.readthedocs.io/en/stable/util.html#visualising-tables
 
         Parameters:
             type (look|lookall|see|display|displayall): view's type
@@ -1215,7 +1015,7 @@ class Resource(Metadata):
         resource = self.to_copy()
 
         # Define view
-        class ResourceView(petl.Table):
+        class ResourceView(platform.petl.Table):
             def __iter__(self):
                 with resource:
                     if normalize:
@@ -1230,88 +1030,255 @@ class Resource(Metadata):
 
     # Metadata
 
-    metadata_duplicate = True
+    metadata_type = "resource"
     metadata_Error = errors.ResourceError
-    metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
-    metadata_profile["properties"]["control"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["layout"] = {"type": ["string", "object"]}
-    metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
+    metadata_profile = {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "homepage": {"type": "string"},
+            "profiles": {"type": "array"},
+            "licenses": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "path": {"type": "string"},
+                        "title": {"type": "string"},
+                    },
+                },
+            },
+            "sources": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "path": {"type": "string"},
+                        "email": {"type": "string"},
+                    },
+                },
+            },
+            "path": {"type": "string"},
+            "data": {"type": ["object", "array"]},
+            "scheme": {"type": "string"},
+            "format": {"type": "string"},
+            "encoding": {"type": "string"},
+            "mediatype": {"type": "string"},
+            "compression": {"type": "string"},
+            "extrapaths": {"type": "array"},
+            "innerpath": {"type": "string"},
+            "dialect": {"type": ["object", "string"]},
+            "schema": {"type": ["object", "string"]},
+            "checklist": {"type": ["object", "string"]},
+            "pipeline": {"type": ["object", "string"]},
+            "stats": {"type": "object"},
+        },
+    }
 
-    def metadata_process(self):
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "dialect":
+            return Dialect
+        elif property == "schema":
+            return Schema
+        elif property == "checklist":
+            return Checklist
+        elif property == "pipeline":
+            return Pipeline
+        elif property == "stats":
+            return Stats
 
-        # File
-        self.__file = system.create_file(
-            self.get("data", self.get("path", [])),
-            innerpath=self.get("innerpath"),
-            basepath=self.__basepath,
-        )
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
 
-        # Control
-        control = self.get("control")
-        if not isinstance(control, (str, type(None))):
-            control = system.create_control(self, descriptor=control)
-            dict.__setitem__(self, "control", control)
+        # Url (standards/v0)
+        url = descriptor.pop("url", None)
+        path = descriptor.get("path")
+        data = descriptor.get("data")
+        if not path and not data and url:
+            descriptor.setdefault("path", url)
 
-        # Dialect
-        dialect = self.get("dialect")
-        if not isinstance(dialect, (str, type(None))):
-            dialect = system.create_dialect(self, descriptor=dialect)
-            dict.__setitem__(self, "dialect", dialect)
+        # Path (standards/v1)
+        path = descriptor.get("path")
+        if path and isinstance(path, list):
+            descriptor["path"] = path[0]
+            descriptor["extrapaths"] = path[1:]
 
-        # Layout
-        layout = self.get("layout")
-        if not isinstance(layout, (str, type(None), Layout)):
-            layout = Layout(layout)
-            dict.__setitem__(self, "layout", layout)
+        # Profile (standards/v1)
+        profile = descriptor.pop("profile", None)
+        if profile == "data-resource":
+            descriptor["type"] = "file"
+        elif profile == "tabular-data-resource":
+            descriptor["type"] = "table"
+        elif profile:
+            descriptor.setdefault("profiles", [])
+            descriptor["profiles"].append(profile)
 
-        # Schema
-        schema = self.get("schema")
-        if not isinstance(schema, (str, type(None), Schema)):
-            schema = Schema(schema)
-            dict.__setitem__(self, "schema", schema)
+        # Bytes (standards/v1)
+        bytes = descriptor.pop("bytes", None)
+        if bytes:
+            descriptor.setdefault("stats", {})
+            descriptor["stats"]["bytes"] = bytes
+
+        # Hash (framework/v4)
+        hashing = descriptor.get("hashing", None)
+        stats = descriptor.get("stats", None)
+        if hashing and stats:
+            hash = stats.pop("hash", None)
+            if hash:
+                descriptor[hashing] = hash
+            note = 'Resource "stats.hash" is deprecated in favor of "stats.sha256/md5"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
+
+        # Hash (standards/v1)
+        hash = descriptor.get("hash", None)
+        if hash:
+            algo, hash = helpers.parse_resource_hash_v1(hash)
+            if algo in ["md5", "sha256"]:
+                descriptor.pop("hash")
+                descriptor.setdefault("stats", {})
+                descriptor["stats"][algo] = hash
+
+        # Compression (framework/v4)
+        compression = descriptor.get("compression")
+        if compression == "no":
+            descriptor.pop("compression")
+            note = 'Resource "compression=no" is deprecated in favor not set value'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
+
+        # Layout (framework/v4)
+        layout = descriptor.pop("layout", None)
+        if layout:
+            descriptor.setdefault("dialect", {})
+            descriptor["dialect"].update(layout)
+            note = 'Resource "layout" is deprecated in favor of "dialect"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)
+
+    @classmethod
+    def metadata_validate(cls, descriptor: IDescriptor):
+        metadata_errors = list(super().metadata_validate(descriptor))
+        if metadata_errors:
+            yield from metadata_errors
+            return
 
         # Security
-        if not self.trusted:
-            for name in ["path", "control", "dialect", "schema"]:
-                path = self.get(name)
-                if not isinstance(path, (str, list)):
-                    continue
-                path = path if isinstance(path, list) else [path]
-                if not all(helpers.is_safe_path(chunk) for chunk in path):
-                    note = f'path "{path}" is not safe'
-                    error = errors.ResourceError(note=note)
-                    raise FrictionlessException(error)
+        if not system.trusted:
+            keys = ["path"]
+            keys += ["extrapaths", "profiles"]
+            keys += ["dialect", "schema", "checklist", "pipeline"]
+            for key in keys:
+                value = descriptor.get(key)
+                items = value if isinstance(value, list) else [value]
+                for item in items:
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                        yield errors.ResourceError(note=f'path "{item}" is not safe')
+                        return
 
-    def metadata_validate(self):
-        # Check invalid properties
-        invalid_fields = {
-            "missingValues": "resource.schema.missingValues",
-            "fields": "resource.schema.fields",
-        }
-        for invalid_field, object in invalid_fields.items():
-            if invalid_field in self:
-                note = f'"{invalid_field}" should be set as "{object}" (not "resource.{invalid_field}").'
-                yield errors.ResourceError(note=note)
+        # Required
+        path = descriptor.get("path")
+        data = descriptor.get("data")
+        if path is None and data is None:
+            note = 'one of the properties "path" or "data" is required'
+            yield errors.ResourceError(note=note)
 
-        yield from super().metadata_validate()
+        # Required (standards/v2-strict)
+        if system.standards == "v2-strict":
+            type = descriptor.get("type")
+            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
+            if type == "table":
+                names.append("schema")
+            for name in names:
+                if name not in descriptor:
+                    note = f'property "{name}" is required by standards "v2-strict"'
+                    yield errors.ResourceError(note=note)
 
-        # Control/Dialect
-        yield from self.control.metadata_errors
-        yield from self.dialect.metadata_errors
-
-        # Layout/Schema
-        if self.layout:
-            yield from self.layout.metadata_errors
-        if self.schema:
-            yield from self.schema.metadata_errors
+        # Path/Data
+        if path is not None and data is not None:
+            note = 'properties "path" and "data" is mutually exclusive'
+            yield errors.ResourceError(note=note)
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:
-            for item in self.get(name, []):
+            for item in descriptor.get(name, []):
                 if item.get("email"):
-                    field = Field(type="string", format="email")
-                    cell = field.read_cell(item.get("email"))[0]
-                    if not cell:
+                    field = fields.StringField(format="email")
+                    _, note = field.read_cell(item.get("email"))
+                    if note:
                         note = f'property "{name}[].email" is not valid "email"'
-                        yield errors.PackageError(note=note)
+                        yield errors.ResourceError(note=note)
+
+        # Profiles
+        profiles = descriptor.get("profiles", [])
+        for profile in profiles:
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=cls.metadata_Error,
+            )
+
+        # Misleading
+        for name in ["missingValues", "fields"]:
+            if name in descriptor:
+                note = f'"{name}" should be set as "schema.{name}"'
+                yield errors.ResourceError(note=note)
+
+    @classmethod
+    def metadata_import(cls, descriptor: IDescriptor, **options):
+        return super().metadata_import(
+            descriptor=descriptor,
+            with_basepath=True,
+            **options,
+        )
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Data
+        data = descriptor.get("data")
+        if data and not isinstance(data, (str, bool, int, float, list, dict)):
+            descriptor["data"] = []
+
+        # Path (standards/v1)
+        if system.standards == "v1":
+            path = descriptor.get("path")
+            extrapaths = descriptor.pop("extrapaths", None)
+            if extrapaths:
+                descriptor["path"] = []
+                if path:
+                    descriptor["path"].append(path)
+                descriptor["path"].extend(extrapaths)
+
+        # Profile (standards/v1)
+        if system.standards == "v1":
+            type = descriptor.pop("type", None)
+            profiles = descriptor.pop("profiles", None)
+            descriptor["profile"] = "data-resource"
+            if type == "table":
+                descriptor["profile"] = "tabular-data-profile"
+            elif profiles:
+                descriptor["profile"] = profiles[0]
+
+        # Stats (standards/v1)
+        if system.standards == "v1":
+            stats = descriptor.pop("stats", None)
+            if stats:
+                sha256 = stats.get("sha256")
+                md5 = stats.get("md5")
+                bytes = stats.get("bytes")
+                if sha256 is not None:
+                    descriptor["hash"] = f"sha256:{sha256}"
+                if md5 is not None:
+                    descriptor["hash"] = md5
+                if bytes is not None:
+                    descriptor["bytes"] = bytes
+
+        return descriptor

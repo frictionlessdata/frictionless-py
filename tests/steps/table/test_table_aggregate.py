@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,19 +6,19 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_aggregate():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(
-                group_name="name", aggregation={"sum": ("population", sum)}
+                group_name="name", aggregation={"sum": ("population", sum)}  # type: ignore
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "sum"},
+            {"name": "sum", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -30,26 +30,26 @@ def test_step_table_aggregate():
 
 def test_step_table_aggregate_multiple():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(
                 group_name="name",
                 aggregation={
-                    "sum": ("population", sum),
-                    "min": ("population", min),
-                    "max": ("population", max),
+                    "sum": ("population", sum),  # type: ignore
+                    "min": ("population", min),  # type: ignore
+                    "max": ("population", max),  # type: ignore
                 },
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "sum"},
-            {"name": "min"},
-            {"name": "max"},
+            {"name": "sum", "type": "any"},
+            {"name": "min", "type": "any"},
+            {"name": "max", "type": "any"},
         ]
     }
     assert target.read_rows() == [

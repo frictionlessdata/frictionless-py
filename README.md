@@ -1,4 +1,4 @@
-# Frictionless Framework
+# Frictionless Framework (v5)
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/main)](https://github.com/frictionlessdata/frictionless-py/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)
@@ -7,7 +7,7 @@
 [![Codebase](https://img.shields.io/badge/codebase-github-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
 [![Support](https://img.shields.io/badge/support-discord-brightgreen)](https://discordapp.com/invite/Sewv6av)
 
-Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
+Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Standards](https://specs.frictionlessdata.io/).
 
 ## Purpose
 
@@ -51,4 +51,3 @@ $ frictionless validate data/invalid.csv
 
 Please visit our documentation portal:
 - https://framework.frictionlessdata.io
-

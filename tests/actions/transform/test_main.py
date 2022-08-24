@@ -1,24 +1,23 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Step, transform, steps
 
 
 # General
 
 
 def test_transform():
-    source = Resource(path="data/transform.csv")
-    source.infer()
     target = transform(
-        source,
+        "data/transform.csv",
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
         ],
     )
-    assert target.schema == {
+    assert isinstance(target, Resource)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
-            {"name": "variable"},
-            {"name": "value"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -31,27 +30,33 @@ def test_transform():
     ]
 
 
-def test_transform_custom_step_function_based():
+def test_transform_custom_step():
 
     # Create step
-    def custom(resource):
-        current = resource.to_copy()
+    class custom(Step):
+        def transform_resource(self, resource: Resource):
+            current = resource.to_copy()
 
-        # Data
-        def data():
-            with current:
-                for row in current.row_stream:
-                    row["id"] = row["id"] * row["id"]
-                    yield row
+            # Data
+            def data():
+                with current:
+                    for row in current.row_stream:  # type: ignore
+                        row["id"] = row["id"] * row["id"]
+                        yield row
 
-        # Meta
-        resource.data = data
+            # Meta
+            resource.data = data
 
     # Transform resource
-    source = Resource(path="data/transform.csv")
-    source.infer()
-    target = transform(source, steps=[custom])
-    assert target.schema == source.schema
+    target = transform("data/transform.csv", steps=[custom()])
+    assert isinstance(target, Resource)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 4, "name": "france", "population": 66},

@@ -1,28 +1,25 @@
 import pytest
-from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
+from frictionless import Resource, Dialect, Detector, FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Open/Close
+# General
 
 
 def test_resource_open():
     with Resource("data/table.csv") as resource:
+        assert resource.name == "table"
         assert resource.path == "data/table.csv"
+        assert resource.normpath == "data/table.csv"
         assert resource.scheme == "file"
         assert resource.format == "csv"
         assert resource.encoding == "utf-8"
-        assert resource.innerpath == ""
-        assert resource.compression == ""
-        assert resource.fullpath == "data/table.csv"
+        assert resource.innerpath == None
+        assert resource.compression == None
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
-        assert resource.header.row_positions == [1]
-        assert resource.schema == {
+        assert resource.header.row_numbers == [1]
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
@@ -39,19 +36,17 @@ def test_resource_open_read_rows():
         headers = resource.header
         row1, row2 = resource.read_rows()
         assert headers == ["id", "name"]
-        assert headers.field_positions == [1, 2]
+        assert headers.field_numbers == [1, 2]
         assert headers.errors == []
         assert headers.valid is True
         assert row1.to_dict() == {"id": 1, "name": "english"}
-        assert row1.field_positions == [1, 2]
-        assert row1.row_position == 2
-        assert row1.row_number == 1
+        assert row1.field_numbers == [1, 2]
+        assert row1.row_number == 2
         assert row1.errors == []
         assert row1.valid is True
         assert row2.to_dict() == {"id": 2, "name": "中国人"}
-        assert row2.field_positions == [1, 2]
-        assert row2.row_position == 3
-        assert row2.row_number == 2
+        assert row2.field_numbers == [1, 2]
+        assert row2.row_number == 3
         assert row2.errors == []
         assert row2.valid is True
 
@@ -71,10 +66,10 @@ def test_resource_open_row_stream_iterate():
         assert resource.header == ["id", "name"]
         for row in resource.row_stream:
             assert len(row) == 2
-            assert row.row_number in [1, 2]
-            if row.row_number == 1:
-                assert row.to_dict() == {"id": 1, "name": "english"}
+            assert row.row_number in [2, 3]
             if row.row_number == 2:
+                assert row.to_dict() == {"id": 1, "name": "english"}
+            if row.row_number == 3:
                 assert row.to_dict() == {"id": 2, "name": "中国人"}
 
 
@@ -83,11 +78,11 @@ def test_resource_open_row_stream_error_cells():
     with Resource("data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
         assert resource.header == ["id", "name"]
-        assert row1.errors[0].code == "type-error"
+        assert row1.errors[0].type == "type-error"
         assert row1.error_cells == {"name": "english"}
         assert row1.to_dict() == {"id": 1, "name": None}
         assert row1.valid is False
-        assert row2.errors[0].code == "type-error"
+        assert row2.errors[0].type == "type-error"
         assert row2.error_cells == {"name": "中国人"}
         assert row2.to_dict() == {"id": 2, "name": None}
         assert row2.valid is False
@@ -106,28 +101,28 @@ def test_resource_open_row_stream_blank_cells():
         assert row2.valid is True
 
 
-def test_resource_open_read_lists():
+def test_resource_open_read_cells():
     with Resource("data/table.csv") as resource:
-        assert resource.read_lists() == [
+        assert resource.read_cells() == [
             ["id", "name"],
             ["1", "english"],
             ["2", "中国人"],
         ]
 
 
-def test_resource_open_list_stream():
+def test_resource_open_cell_stream():
     with Resource("data/table.csv") as resource:
-        assert list(resource.list_stream) == [
+        assert list(resource.cell_stream) == [
             ["id", "name"],
             ["1", "english"],
             ["2", "中国人"],
         ]
-        assert list(resource.list_stream) == []
+        assert list(resource.cell_stream) == []
 
 
-def test_resource_open_list_stream_iterate():
+def test_resource_open_cell_stream_iterate():
     with Resource("data/table.csv") as resource:
-        for number, cells in enumerate(resource.list_stream):
+        for number, cells in enumerate(resource.cell_stream):
             assert len(cells) == 2
             if number == 0:
                 assert cells == ["id", "name"]
@@ -141,7 +136,7 @@ def test_resource_open_empty():
     with Resource("data/empty.csv") as resource:
         assert resource.header.missing
         assert resource.header == []
-        assert resource.schema == {}
+        assert resource.schema.to_descriptor() == {"fields": []}
         assert resource.read_rows() == []
 
 
@@ -149,7 +144,7 @@ def test_resource_open_without_rows():
     with Resource("data/without-rows.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == []
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "any"},
                 {"name": "name", "type": "any"},
@@ -158,12 +153,12 @@ def test_resource_open_without_rows():
 
 
 def test_resource_open_without_headers():
-    layout = Layout(header=False)
-    with Resource("data/without-headers.csv", layout=layout) as resource:
+    dialect = Dialect(header=False)
+    with Resource("data/without-headers.csv", dialect=dialect) as resource:
         assert resource.labels == []
         assert resource.header.missing
         assert resource.header == ["field1", "field2"]
-        assert resource.schema == {
+        assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "field1", "type": "integer"},
                 {"name": "field2", "type": "string"},
@@ -177,11 +172,11 @@ def test_resource_open_without_headers():
 
 
 def test_resource_open_source_error_data():
-    resource = Resource(b"[1,2]", format="json")
+    resource = Resource(b"[1,2]", type="table", format="json")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "source-error"
+    assert error.type == "source-error"
     assert error.note == "unsupported inline data"
 
 
@@ -238,8 +233,8 @@ def test_resource_reopen_generator():
         yield [1]
         yield [2]
 
-    layout = Layout(header=False)
-    with Resource(generator, layout=layout) as resource:
+    dialect = Dialect(header=False)
+    with Resource(generator, dialect=dialect) as resource:
         # Before reopen
         assert resource.read_rows() == [{"field1": 1}, {"field1": 2}]
         # Reset resource

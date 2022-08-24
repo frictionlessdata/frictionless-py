@@ -1,45 +1,56 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from typing import Optional, Any
+from ...pipeline import Step
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
+@attrs.define(kw_only=True)
 class cell_convert(Step):
-    """Convert cell"""
+    """Convert cell
 
-    code = "cell-convert"
+    Converts cell values of one or more fields using arbitrary functions, method
+    invocations or dictionary translations.
 
-    def __init__(self, descriptor=None, *, value=None, function=None, field_name=None):
-        self.setinitial("value", value)
-        self.setinitial("function", function)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    """
+
+    type = "cell-convert"
+
+    # State
+
+    value: Optional[Any] = None
+    """Value to set in the field's cells"""
+
+    mapping: Optional[dict] = None
+    """Mapping to apply to the column"""
+
+    function: Optional[Any] = None
+    """Function to apply to the column"""
+
+    field_name: Optional[str] = None
+    """Name of the field to apply the transform on"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_name = self.get("fieldName")
-        function = self.get("function")
-        value = self.get("value")
-        if not field_name:
+        function = self.function
+        if not self.field_name:
             if not function:
-                function = lambda input: value
-            resource.data = table.convertall(function)
-        elif function:
-            resource.data = table.convert(field_name, function)
+                function = lambda _: self.value
+            resource.data = table.convertall(function)  # type: ignore
+        elif self.function:
+            resource.data = table.convert(self.field_name, function)  # type: ignore
+        elif self.mapping:
+            resource.data = table.convert(self.field_name, self.mapping)  # type: ignore
         else:
-            resource.data = table.update(field_name, value)
+            resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
             "value": {},
+            "mapping": {"type": "object"},
             "fieldName": {"type": "string"},
         },
     }

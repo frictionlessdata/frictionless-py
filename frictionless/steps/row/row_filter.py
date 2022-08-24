@@ -1,41 +1,40 @@
+from __future__ import annotations
+import attrs
 import simpleeval
-from ...step import Step
+from typing import Optional, Any
+from ...pipeline import Step
 
 
-# NOTE:
-# We need to review simpleeval perfomance for using it with row_filter
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
+@attrs.define(kw_only=True)
 class row_filter(Step):
     """Filter rows"""
 
-    code = "row-filter"
+    type = "row-filter"
 
-    def __init__(self, descriptor=None, *, formula=None, function=None):
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        super().__init__(descriptor)
+    # State
+
+    formula: Optional[Any] = None
+    """NOTE: add docs"""
+
+    function: Optional[Any] = None
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        function = self.function
         table = resource.to_petl()
-        formula = self.get("formula")
-        function = self.get("function")
-        if formula:
+        if self.formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
-            function = lambda row: evalclass(names=row).eval(formula)
-        resource.data = table.select(function)
+            function = lambda row: evalclass(names=row).eval(self.formula)
+        resource.data = table.select(function)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
+    metadata_profile_patch = {
         "properties": {
-            "formula": {type: "string"},
+            "formula": {"type": "string"},
             "function": {},
         },
     }

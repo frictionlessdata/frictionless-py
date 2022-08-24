@@ -1,5 +1,2 @@
-tasks:
-  - type: resource
-    source: bad.csv
-    steps:
-      - code: table-print
+steps:
+  - type: table-print

@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_attach():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_attach(resource=Resource(data=[["note"], ["large"], ["mid"]]))
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -27,13 +27,20 @@ def test_step_table_attach():
     ]
 
 
-def test_step_table_attach_from_dict():
+def test_step_table_attach_from_descriptor():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
-        steps=[steps.table_attach(resource=dict(data=[["note"], ["large"], ["mid"]]))],
+    pipeline = Pipeline(
+        steps=[
+            Step.from_descriptor(
+                {
+                    "type": "table-attach",
+                    "resource": dict(data=[["note"], ["large"], ["mid"]]),
+                }
+            ),
+        ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

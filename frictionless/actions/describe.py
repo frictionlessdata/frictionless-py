@@ -1,131 +1,52 @@
-import warnings
+from typing import Any, Optional
+from ..dialect import Dialect
 from ..resource import Resource
 from ..package import Package
+from ..schema import Schema
 from ..exception import FrictionlessException
-from ..system import system
-from .. import errors
+from .. import helpers
 
 
-def describe(source=None, *, type=None, **options):
+def describe(
+    source: Optional[Any] = None,
+    *,
+    type: Optional[str] = None,
+    stats: bool = False,
+    **options,
+):
     """Describe the data source
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import describe`
 
     Parameters:
         source (any): data source
         type (str): source type - `schema`, `resource` or `package` (default: infer)
+        stats? (bool): if `True` infer resource's stats
         **options (dict): options for the underlaying describe function
 
     Returns:
-        Package|Resource|Schema: metadata
+        Metadata: described metadata e.g. a Table Schema
     """
+
+    # Detect type
     if not type:
-        file = system.create_file(source, basepath=options.get("basepath", ""))
-        type = "package" if file.multipart else "resource"
-    describe = globals().get("describe_%s" % type, None)
-    if describe is None:
-        note = f"Not supported describe type: {type}"
-        raise FrictionlessException(errors.GeneralError(note=note))
-    return describe(source, deprecate=False, **options)
+        type = "resource"
+        if helpers.is_expandable_source(source):
+            type = "package"
 
+    # Describe resource
+    if type == "resource":
+        return Resource.describe(source, stats=stats, **options)
 
-def describe_dialect(source=None, deprecate=True, **options):
-    """Describe the given source as a dialect
+    # Describe package
+    if type == "package":
+        return Package.describe(source, stats=stats, **options)
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import describe_dialect`
+    # Describe dialect
+    if type == "dialect":
+        return Dialect.describe(source, **options)
 
-    Parameters:
-        source (any): data source
-        **options (dict): describe resource options
+    # Describe schema
+    if type == "schema":
+        return Schema.describe(source, **options)
 
-    Returns:
-        Dialect: file dialect
-    """
-    if deprecate:
-        message = 'Function "describe_dialect" is deprecated.'
-        warnings.warn(message, UserWarning)
-    resource = describe_resource(source, **options)
-    return resource.dialect
-
-
-def describe_package(
-    source=None, *, expand=False, stats=False, deprecate=True, **options
-):
-    """Describe the given source as a package
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import describe_package`
-
-    Parameters:
-        source (any): data source
-        expand? (bool): if `True` it will expand the metadata
-        stats? (bool): if `True` infer resource's stats
-        **options (dict): Package constructor options
-
-    Returns:
-        Package: data package
-
-    """
-    if deprecate:
-        message = 'Function "describe_package" is deprecated (use "Package.describe").'
-        warnings.warn(message, UserWarning)
-    package = Package(source, **options)
-    package.infer(stats=stats)
-    if expand:
-        package.expand()
-    return package
-
-
-def describe_resource(
-    source=None, *, expand=False, stats=False, deprecate=True, **options
-):
-    """Describe the given source as a resource
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import describe_resource`
-
-    Parameters:
-        source (any): data source
-        expand? (bool): if `True` it will expand the metadata
-        stats? (bool): if `True` infer resource's stats
-        **options (dict): Resource constructor options
-
-    Returns:
-        Resource: data resource
-
-    """
-    if deprecate:
-        message = 'Function "describe_resource" is deprecated (use "Resource.describe").'
-        warnings.warn(message, UserWarning)
-    resource = Resource(source, **options)
-    resource.infer(stats=stats)
-    if expand:
-        resource.expand()
-    return resource
-
-
-def describe_schema(source=None, deprecate=True, **options):
-    """Describe the given source as a schema
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import describe_schema`
-
-    Parameters:
-        source (any): data source
-        **options (dict): describe resource options
-
-    Returns:
-        Schema: table schema
-    """
-    if deprecate:
-        message = 'Function "describe_schema" is deprecated (use "Schema.describe").'
-        warnings.warn(message, UserWarning)
-    resource = describe_resource(source, **options)
-    return resource.schema
+    # Not supported
+    raise FrictionlessException(f"Not supported describe type: {type}")

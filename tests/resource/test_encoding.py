@@ -1,12 +1,8 @@
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, Dialect, FrictionlessException, platform
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Encoding
+# General
 
 
 def test_resource_encoding():
@@ -42,7 +38,8 @@ def test_resource_encoding_explicit_latin1():
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     source = "en,English\nja,日本語".encode("utf-16")
-    with Resource(source, format="csv", layout={"header": False}) as resource:
+    dialect = Dialect(header=False)
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.encoding == "utf-16"
         assert resource.read_rows() == [
             {"field1": "en", "field2": "English"},
@@ -55,7 +52,7 @@ def test_resource_encoding_error_bad_encoding():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "encoding-error"
+    assert error.type == "encoding-error"
     assert error.note == "unknown encoding: bad"
 
 
@@ -64,6 +61,6 @@ def test_resource_encoding_error_non_matching_encoding():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "encoding-error"
-    if IS_UNIX:
+    assert error.type == "encoding-error"
+    if not platform.type == "windows":
         assert error.note[:51] == "'ascii' codec can't decode byte 0xe4 in position 20"

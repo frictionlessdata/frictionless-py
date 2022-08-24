@@ -1,38 +1,48 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from typing import Any
+from ...pipeline import Step
 
 
-# NOTE:
-# We might consider implementing table_preload/cache step
-# Some of the following step use **options - we need to review/fix it
-# Currently, metadata profiles are not fully finished; will require improvements
-# We need to review table_pivot step as it's not fully implemented/tested
-# We need to review table_validate step as it's not fully implemented/tested
-# We need to review table_write step as it's not fully implemented/tested
-# We need to review how we use "target.schema.fields.clear()"
-
-
+@attrs.define(kw_only=True)
 class table_pivot(Step):
     """Pivot table"""
 
-    code = "table-pivot"
+    type = "table-pivot"
 
-    def __init__(self, descriptor=None, **options):
-        self.setinitial("options", options)
-        super().__init__(descriptor)
+    # State
+
+    f1: str
+    """NOTE: add docs
+    """
+
+    f2: str
+    """NOTE: add docs
+    """
+
+    f3: str
+    """NOTE: add docs
+    """
+
+    aggfun: Any
+    """NOTE: add docs
+    """
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        options = self.get("options")
-        resource.pop("schema", None)
-        resource.data = table.pivot(**options)
+        resource.data = table.pivot(self.f1, self.f2, self.f3, self.aggfun)  # type: ignore
         resource.infer()
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": [],
-        "properties": {},
+    metadata_profile_patch = {
+        "required": ["f1", "f2", "f3", "aggfun"],
+        "properties": {
+            "f1": {"type": "string"},
+            "f2": {"type": "string"},
+            "f3": {"type": "string"},
+            "aggfun": {},
+        },
     }

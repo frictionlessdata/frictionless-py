@@ -2,6 +2,7 @@
 fields:
 -
   name: abc
+  type: string
   description: Start of the alphabet
   constraints:
     enum:
@@ -10,6 +11,7 @@ fields:
       - C
 -
   name: xyz
+  type: string
   description: End of the alphabet
   constraints:
     enum:
@@ -18,6 +20,7 @@ fields:
       - Z
 -
   name: string
+  type: string
   description: Any string
 -
   name: number

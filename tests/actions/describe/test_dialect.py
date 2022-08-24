@@ -1,9 +1,9 @@
-from frictionless import describe_dialect
+from frictionless import describe
 
 
 # General
 
 
 def test_describe_dialect():
-    dialect = describe_dialect("data/delimiter.csv")
-    assert dialect == {"delimiter": ";"}
+    dialect = describe("data/delimiter.csv", type="dialect")
+    assert dialect.to_descriptor() == {"csv": {"delimiter": ";"}}

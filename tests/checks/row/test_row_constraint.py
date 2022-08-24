@@ -1,4 +1,4 @@
-from frictionless import validate, checks
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -13,10 +13,10 @@ def test_validate_row_constraint():
         [5, 5000, 1000],
         [6],
     ]
-    report = validate(
-        source, checks=[checks.row_constraint(formula="salary == bonus * 5")]
-    )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    resource = Resource(source)
+    checklist = Checklist(checks=[checks.row_constraint(formula="salary == bonus * 5")])
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [4, None, "row-constraint"],
         [6, 2, "missing-cell"],
         [6, 3, "missing-cell"],
@@ -29,15 +29,18 @@ def test_validate_row_constraint_incorrect_constraint():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(
-        source,
-        checks=[
-            {"code": "row-constraint", "formula": "vars()"},
-            {"code": "row-constraint", "formula": "import(os)"},
-            {"code": "row-constraint", "formula": "non_existent > 0"},
-        ],
+    resource = Resource(source)
+    checklist = Checklist.from_descriptor(
+        {
+            "checks": [
+                {"type": "row-constraint", "formula": "vars()"},
+                {"type": "row-constraint", "formula": "import(os)"},
+                {"type": "row-constraint", "formula": "non_existent > 0"},
+            ]
+        }
     )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, None, "row-constraint"],
         [2, None, "row-constraint"],
         [2, None, "row-constraint"],
@@ -45,12 +48,13 @@ def test_validate_row_constraint_incorrect_constraint():
 
 
 def test_validate_row_constraint_list_in_formula_issue_817():
-    data = [["val"], ["one"], ["two"]]
-    report = validate(
-        data,
+    source = [["val"], ["one"], ["two"]]
+    resource = Resource(source)
+    checklist = Checklist(
         checks=[
             checks.duplicate_row(),
             checks.row_constraint(formula="val in ['one', 'two']"),
         ],
     )
+    report = resource.validate(checklist)
     assert report.valid

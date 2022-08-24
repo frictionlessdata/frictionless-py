@@ -1,20 +1,21 @@
-from frictionless import Resource, transform, steps
+import pytest
+from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip(reason="issue-1220")
 def test_step_table_pivot():
     source = Resource("data/transform-pivot.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_pivot(f1="region", f2="gender", f3="units", aggfun=sum),
         ],
     )
-    print(target.schema)
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "region", "type": "string"},
             {"name": "boy", "type": "integer"},

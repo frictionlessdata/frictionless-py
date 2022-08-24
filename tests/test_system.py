@@ -1,6 +1,6 @@
 import pytest
 import requests
-from frictionless import Resource, system
+from frictionless import Resource, system, schemes
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -10,11 +10,12 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 @pytest.mark.vcr
-def test_system_use_http_session():
+def test_system_use_context_http_session():
     session = requests.Session()
-    with system.use_http_session(session):
-        assert system.get_http_session() is session
+    with system.use_context(http_session=session):
+        assert system.http_session is session
         with Resource(BASEURL % "data/table.csv") as resource:
-            assert resource.control.http_session is session
+            control = resource.dialect.get_control("remote")
+            assert isinstance(control, schemes.RemoteControl)
             assert resource.header == ["id", "name"]
-    assert system.get_http_session() is not session
+    assert system.http_session is not session

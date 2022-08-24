@@ -1,33 +1,28 @@
+from __future__ import annotations
+import attrs
+from typing import List
 from .table import TableError
 
 
+@attrs.define(kw_only=True)
 class RowError(TableError):
-    """Row error representation
+    """Row error representation"""
 
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        row_number (int): row number
-        row_position (int): row position
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    code = "row-error"
-    name = "Row Error"
-    tags = ["#table", "#row"]
-    template = "Row Error"
+    type = "row-error"
+    title = "Row Error"
     description = "Row Error"
+    template = "Row Error"
+    tags = ["#table", "#row"]
 
-    def __init__(self, descriptor=None, *, note, cells, row_number, row_position):
-        self.setinitial("cells", cells)
-        self.setinitial("rowNumber", row_number)
-        self.setinitial("rowPosition", row_position)
-        super().__init__(descriptor, note=note)
+    # State
 
-    # Create
+    cells: List[str]
+    """NOTE: add docs"""
+
+    row_number: int
+    """NOTE: add docs"""
+
+    # Convert
 
     @classmethod
     def from_row(cls, row, *, note):
@@ -45,40 +40,48 @@ class RowError(TableError):
             note=note,
             cells=list(map(to_str, row.cells)),
             row_number=row.row_number,
-            row_position=row.row_position,
         )
+
+    # Metadata
+
+    metadata_profile_patch = {
+        "properties": {
+            "cells": {"type": "array", "items": {"type": "string"}},
+            "rowNumber": {"type": "integer"},
+        },
+    }
 
 
 class BlankRowError(RowError):
-    code = "blank-row"
-    name = "Blank Row"
-    template = 'Row at position "{rowPosition}" is completely blank'
+    type = "blank-row"
+    title = "Blank Row"
     description = "This row is empty. A row should contain at least one value."
+    template = 'Row at position "{rowNumber}" is completely blank'
 
 
 class PrimaryKeyError(RowError):
-    code = "primary-key-error"
-    name = "PrimaryKey Error"
-    template = 'Row at position "{rowPosition}" violates the primary key: {note}'
+    type = "primary-key"
+    title = "PrimaryKey Error"
     description = "Values in the primary key fields should be unique for every row"
+    template = 'Row at position "{rowNumber}" violates the primary key: {note}'
 
 
 class ForeignKeyError(RowError):
-    code = "foreign-key-error"
-    name = "ForeignKey Error"
-    template = 'Row at position "{rowPosition}" violates the foreign key: {note}'
+    type = "foreign-key"
+    title = "ForeignKey Error"
     description = "Values in the foreign key fields should exist in the reference table"
+    template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
 
 
 class DuplicateRowError(RowError):
-    code = "duplicate-row"
-    name = "Duplicate Row"
-    template = "Row at position {rowPosition} is duplicated: {note}"
+    type = "duplicate-row"
+    title = "Duplicate Row"
     description = "The row is duplicated."
+    template = "Row at position {rowNumber} is duplicated: {note}"
 
 
 class RowConstraintError(RowError):
-    code = "row-constraint"
-    name = "Row Constraint"
-    template = "The row at position {rowPosition} has an error: {note}"
+    type = "row-constraint"
+    title = "Row Constraint"
     description = "The value does not conform to the row constraint."
+    template = "The row at position {rowNumber} has an error: {note}"

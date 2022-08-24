@@ -1,33 +1,31 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from ...pipeline import Step
 
 
-# NOTE:
-# We need to review simpleeval perfomance for using it with row_filter
-# Currently, metadata profiles are not fully finished; will require improvements
-
-
+@attrs.define(kw_only=True)
 class row_split(Step):
     """Split rows"""
 
-    code = "row-add"
+    type = "row-add"
 
-    def __init__(self, descriptor=None, *, pattern=None, field_name=None):
-        self.setinitial("pattern", pattern)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    # State
+
+    pattern: str
+    """NOTE: add docs"""
+
+    field_name: str
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        pattern = self.get("pattern")
-        field_name = self.get("fieldName")
-        resource.data = table.splitdown(field_name, pattern)
+        resource.data = table.splitdown(self.field_name, self.pattern)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["fieldName", "pattern"],
         "properties": {
             "fieldName": {"type": "string"},

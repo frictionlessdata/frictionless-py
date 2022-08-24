@@ -1,11 +1,7 @@
-from frictionless import Package, helpers
+from frictionless import Package
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Schema
+# General
 
 
 DESCRIPTOR_FK = {
@@ -20,10 +16,10 @@ DESCRIPTOR_FK = {
             ],
             "schema": {
                 "fields": [
-                    {"name": "id"},
-                    {"name": "name"},
-                    {"name": "surname"},
-                    {"name": "parent_id"},
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                    {"name": "surname", "type": "string"},
+                    {"name": "parent_id", "type": "integer"},
                 ],
                 "foreignKeys": [
                     {
@@ -54,57 +50,57 @@ def test_package_schema_foreign_key():
     assert rows[1].valid
     assert rows[2].valid
     assert rows[0].to_dict() == {
-        "id": "1",
+        "id": 1,
         "name": "Alex",
         "surname": "Martin",
         "parent_id": None,
     }
     assert rows[1].to_dict() == {
-        "id": "2",
+        "id": 2,
         "name": "John",
         "surname": "Dockins",
-        "parent_id": "1",
+        "parent_id": 1,
     }
     assert rows[2].to_dict() == {
-        "id": "3",
+        "id": 3,
         "name": "Walter",
         "surname": "White",
-        "parent_id": "2",
+        "parent_id": 2,
     }
 
 
 def test_package_schema_foreign_key_invalid():
     package = Package(DESCRIPTOR_FK)
-    package.resources[1].data[3][0] = "bad"
+    package.resources[1].data[3][0] = "bad"  # type: ignore
     resource = package.get_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[2].errors[0].type == "foreign-key"
     assert rows[0].to_dict() == {
-        "id": "1",
+        "id": 1,
         "name": "Alex",
         "surname": "Martin",
         "parent_id": None,
     }
     assert rows[1].to_dict() == {
-        "id": "2",
+        "id": 2,
         "name": "John",
         "surname": "Dockins",
-        "parent_id": "1",
+        "parent_id": 1,
     }
     assert rows[2].to_dict() == {
-        "id": "3",
+        "id": 3,
         "name": "Walter",
         "surname": "White",
-        "parent_id": "2",
+        "parent_id": 2,
     }
 
 
 def test_package_schema_foreign_key_self_reference():
     package = Package(DESCRIPTOR_FK)
     package.resources[0].schema.foreign_keys = [
-        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
+        {"fields": ["parent_id"], "reference": {"resource": "", "fields": ["id"]}}
     ]
     resource = package.get_resource("main")
     rows = resource.read_rows()
@@ -115,15 +111,15 @@ def test_package_schema_foreign_key_self_reference():
 
 def test_package_schema_foreign_key_self_reference_invalid():
     package = Package(DESCRIPTOR_FK)
-    package.resources[0].data[2][0] = "0"
+    package.resources[0].data[2][0] = "0"  # type: ignore
     package.resources[0].schema.foreign_keys = [
-        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
+        {"fields": ["parent_id"], "reference": {"resource": "", "fields": ["id"]}}
     ]
     resource = package.get_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[2].errors[0].type == "foreign-key"
 
 
 def test_package_schema_foreign_key_multifield():
@@ -149,9 +145,9 @@ def test_package_schema_foreign_key_multifield_invalid():
             "reference": {"resource": "people", "fields": ["firstname", "surname"]},
         }
     ]
-    package.resources[1].data[3][0] = "bad"
+    package.resources[1].data[3][0] = "bad"  # type: ignore
     resource = package.get_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[2].errors[0].type == "foreign-key"

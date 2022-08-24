@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_ungroup_first():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(group_name="name", selection="first"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -29,13 +29,13 @@ def test_step_row_ungroup_first():
 
 def test_step_row_ungroup_last():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(group_name="name", selection="last"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -52,15 +52,15 @@ def test_step_row_ungroup_last():
 
 def test_step_row_ungroup_min():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(
                 group_name="name", selection="min", value_name="population"
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -77,15 +77,15 @@ def test_step_row_ungroup_min():
 
 def test_step_row_ungroup_max():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(
                 group_name="name", selection="max", value_name="population"
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

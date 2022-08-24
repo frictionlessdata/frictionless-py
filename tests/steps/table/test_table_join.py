@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_join():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -16,7 +15,8 @@ def test_step_table_join():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -32,17 +32,20 @@ def test_step_table_join():
 
 def test_step_table_join_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_join(
-                resource=dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
-                field_name="id",
+            Step.from_descriptor(
+                {
+                    "type": "table-join",
+                    "resource": dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+                    "fieldName": "id",
+                }
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -58,8 +61,7 @@ def test_step_table_join_from_dict():
 
 def test_step_table_join_with_name_is_not_first_field():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_join(
                 resource=Resource(
@@ -69,7 +71,8 @@ def test_step_table_join_with_name_is_not_first_field():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -85,8 +88,7 @@ def test_step_table_join_with_name_is_not_first_field():
 
 def test_step_table_join_mode_left():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -96,34 +98,8 @@ def test_step_table_join_mode_left():
             ),
         ],
     )
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-            {"name": "note", "type": "string"},
-        ]
-    }
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
-        {"id": 2, "name": "france", "population": 66, "note": "vine"},
-        {"id": 3, "name": "spain", "population": 47, "note": None},
-    ]
-
-
-def test_step_table_join_mode_left_from_descriptor_issue_996():
-    source = Resource("data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.table_normalize(),
-            steps.table_join(
-                {"fieldName": "id", "mode": "left"},
-                resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
-            ),
-        ],
-    )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -140,8 +116,7 @@ def test_step_table_join_mode_left_from_descriptor_issue_996():
 
 def test_step_table_join_mode_right():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -151,7 +126,8 @@ def test_step_table_join_mode_right():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -167,8 +143,7 @@ def test_step_table_join_mode_right():
 
 def test_step_table_join_mode_outer():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -178,7 +153,8 @@ def test_step_table_join_mode_outer():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -196,8 +172,7 @@ def test_step_table_join_mode_outer():
 
 def test_step_table_join_mode_cross():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_join(
                 resource=Resource(data=[["id2", "note"], [1, "beer"], [4, "rum"]]),
@@ -205,7 +180,8 @@ def test_step_table_join_mode_cross():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -226,8 +202,7 @@ def test_step_table_join_mode_cross():
 
 def test_step_table_join_mode_negate():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_join(
                 resource=Resource(data=[["id", "note"], ["1", "beer"], ["4", "rum"]]),
@@ -235,7 +210,8 @@ def test_step_table_join_mode_negate():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -250,8 +226,7 @@ def test_step_table_join_mode_negate():
 
 def test_step_table_join_hash_is_true():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -261,7 +236,8 @@ def test_step_table_join_hash_is_true():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -272,4 +248,38 @@ def test_step_table_join_hash_is_true():
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83, "note": "beer"},
         {"id": 2, "name": "france", "population": 66, "note": "vine"},
+    ]
+
+
+# Bugs
+
+
+def test_step_table_join_mode_left_from_descriptor_issue_996():
+    source = Resource("data/transform.csv")
+    pipeline = Pipeline(
+        steps=[
+            steps.table_normalize(),
+            Step.from_descriptor(
+                {
+                    "type": "table-join",
+                    "fieldName": "id",
+                    "mode": "left",
+                    "resource": dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+                }
+            ),
+        ],
+    )
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
+        {"id": 2, "name": "france", "population": 66, "note": "vine"},
+        {"id": 3, "name": "spain", "population": 47, "note": None},
     ]

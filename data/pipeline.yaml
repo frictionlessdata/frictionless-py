@@ -1,11 +1,5 @@
 name: pipeline
-tasks:
-  - name: task
-    type: resource
-    source:
-      # FD resource descriptor
-      path: data/transform.csv
-    steps:
-      - code: cell-set
-        fieldName: population
-        value: 100
+steps:
+  - type: cell-set
+    fieldName: population
+    value: 100

@@ -1,7 +1,7 @@
 import os
 import types
 from pathlib import Path
-from frictionless import extract
+from frictionless import extract, system
 
 
 # General
@@ -33,9 +33,9 @@ def test_extract_resource_stream():
 
 def test_extract_resource_process_and_stream():
     process = lambda row: row.to_list()
-    list_stream = extract("data/resource.json", process=process, stream=True)
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_stream = extract("data/resource.json", process=process, stream=True)
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]
@@ -74,9 +74,9 @@ def test_extract_resource_from_file_pathlib():
 
 def test_extract_resource_from_file_process_and_stream():
     process = lambda row: row.to_list()
-    list_stream = extract("data/table.csv", process=process, stream=True)
-    assert isinstance(list_stream, types.GeneratorType)
-    assert list(list_stream) == [
+    cell_stream = extract("data/table.csv", process=process, stream=True)
+    assert isinstance(cell_stream, types.GeneratorType)
+    assert list(cell_stream) == [
         [1, "english"],
         [2, "中国人"],
     ]
@@ -92,8 +92,9 @@ def test_extract_resource_from_json_format_issue_827():
 
 def test_extract_resource_basepath_and_abspath_issue_856():
     descriptor = {"path": os.path.abspath("data/table.csv")}
-    rows = extract(descriptor, basepath="data", trusted=True)
-    assert rows == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    with system.use_context(trusted=True):
+        rows = extract(descriptor, basepath="data")
+        assert rows == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

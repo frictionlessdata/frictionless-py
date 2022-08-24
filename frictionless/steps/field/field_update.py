@@ -1,69 +1,62 @@
+from __future__ import annotations
+import attrs
 import simpleeval
-from ...step import Step
-from ... import helpers
+from copy import deepcopy
+from typing import TYPE_CHECKING, Optional, Any
+from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...interfaces import IDescriptor
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
+@attrs.define(kw_only=True)
 class field_update(Step):
     """Update field"""
 
-    code = "field-update"
+    type = "field-update"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        name=None,
-        value=None,
-        formula=None,
-        function=None,
-        new_name=None,
-        **options,
-    ):
-        self.setinitial("name", name)
-        self.setinitial("value", value)
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        self.setinitial("newName", new_name)
-        for key, value in helpers.create_descriptor(**options).items():
-            self.setinitial(key, value)
-        super().__init__(descriptor)
+    # State
+
+    name: str
+    """NOTE: add docs"""
+
+    value: Optional[Any] = None
+    """NOTE: add docs"""
+
+    formula: Optional[Any] = None
+    """NOTE: add docs"""
+
+    function: Optional[Any] = None
+    """NOTE: add docs"""
+
+    descriptor: Optional[IDescriptor] = None
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        function = self.function
         table = resource.to_petl()
-        descriptor = self.to_dict()
-        descriptor.pop("code", None)
-        name = descriptor.pop("name", None)
-        value = descriptor.pop("value", None)
-        formula = descriptor.pop("formula", None)
-        function = descriptor.pop("function", None)
-        new_name = descriptor.pop("newName", None)
-        if new_name:
-            descriptor["name"] = new_name
-        field = resource.schema.get_field(name)
-        field.update(descriptor)
-        if formula:
-            function = lambda val, row: simpleeval.simple_eval(formula, names=row)
+        descriptor = deepcopy(self.descriptor) or {}
+        new_name = descriptor.get("name")
+        resource.schema.update_field(self.name, descriptor)
+        if self.formula:
+            function = lambda _, row: simpleeval.simple_eval(self.formula, names=row)
         if function:
-            resource.data = table.convert(name, function)
+            resource.data = table.convert(self.name, function)  # type: ignore
+        elif self.value:
+            resource.data = table.update(self.name, self.value)  # type: ignore
         elif new_name:
-            resource.data = table.rename({name: new_name})
-        elif "value" in self:
-            resource.data = table.update(name, value)
+            resource.data = table.rename({self.name: new_name})  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name"],
         "properties": {
             "name": {"type": "string"},
-            "newName": {"type": "string"},
+            "value": {},
+            "formula": {"type": "string"},
+            "descriptor": {"type": "object"},
         },
     }

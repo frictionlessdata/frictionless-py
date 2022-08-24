@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_split():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_split(name="name", to_names=["name1", "name2"], pattern="a"),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "population", "type": "integer"},
@@ -29,15 +29,15 @@ def test_step_field_split():
 
 def test_step_field_split_with_preserve():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern="a", preserve=True
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -55,15 +55,15 @@ def test_step_field_split_with_preserve():
 
 def test_step_field_split_with_capturing_groups():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern=r"(.{2})(.*)"
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "population", "type": "integer"},

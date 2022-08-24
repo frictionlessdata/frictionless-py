@@ -1,156 +1,99 @@
-import stringcase
-from copy import deepcopy
+from __future__ import annotations
+import attrs
+from typing import TYPE_CHECKING, Optional, List
 from multiprocessing import Pool
-from importlib import import_module
+from ..platform import platform
 from ..metadata import Metadata
 from ..errors import InquiryError
-from ..system import system
+from .task import InquiryTask
 from ..report import Report
-from .validate import validate
 from .. import settings
 from .. import helpers
 
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
+
+@attrs.define
 class Inquiry(Metadata):
-    """Inquiry representation.
+    """Inquiry representation."""
 
-    Parameters:
-        descriptor? (str|dict): descriptor
+    # State
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
+    name: Optional[str] = None
+    """NOTE: add docs"""
 
-    """
+    title: Optional[str] = None
+    """NOTE: add docs"""
 
-    validate = validate
+    description: Optional[str] = None
+    """NOTE: add docs"""
 
-    def __init__(self, descriptor=None, *, tasks=None):
-        self.setinitial("tasks", tasks)
-        super().__init__(descriptor)
+    tasks: List[InquiryTask] = attrs.field(factory=list)
+    """List of underlaying tasks"""
 
-    @property
-    def tasks(self):
-        """
+    # Validate
+
+    def validate(self, *, parallel=False):
+        """Validate inquiry
+
+        Parameters:
+            parallel? (bool): enable multiprocessing
+
         Returns:
-            dict[]: tasks
+            Report: validation report
         """
-        return self["tasks"]
-
-    # Run
-
-    def run(self, *, parallel=False):
 
         # Create state
-        reports = []
         timer = helpers.Timer()
+        reports: List[Report] = []
 
-        # Validate inquiry
-        if self.metadata_errors:
-            return Report(time=timer.time, errors=self.metadata_errors, tasks=[])
-
-        # Validate sequentially
+        # Validate sequential
         if not parallel:
             for task in self.tasks:
-                report = task.run()
+                report = task.validate()
                 reports.append(report)
 
-        # Validate in-parallel
+        # Validate parallel
         else:
             with Pool() as pool:
-                task_descriptors = [task.to_dict() for task in self.tasks]
-                report_descriptors = pool.map(run_task_in_parallel, task_descriptors)
+                task_descriptors = [task.to_descriptor() for task in self.tasks]
+                report_descriptors = pool.map(validate_parallel, task_descriptors)
                 for report_descriptor in report_descriptors:
-                    reports.append(Report(report_descriptor))
+                    reports.append(Report.from_descriptor(report_descriptor))
 
         # Return report
-        tasks = []
-        errors = []
-        for report in reports:
-            tasks.extend(report.tasks)
-            errors.extend(report.errors)
-        return Report(time=timer.time, errors=errors, tasks=tasks)
-
-    # Metadata
-
-    metadata_Error = InquiryError
-    metadata_profile = deepcopy(settings.INQUIRY_PROFILE)
-    metadata_profile["properties"]["tasks"] = {"type": "array"}
-
-    def metadata_process(self):
-
-        # Tasks
-        tasks = self.get("tasks")
-        if isinstance(tasks, list):
-            for index, task in enumerate(tasks):
-                if not isinstance(task, InquiryTask):
-                    task = InquiryTask(task)
-                    list.__setitem__(tasks, index, task)
-            if not isinstance(tasks, helpers.ControlledList):
-                tasks = helpers.ControlledList(tasks)
-                tasks.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "tasks", tasks)
-
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Tasks
-        for task in self.tasks:
-            yield from task.metadata_errors
-
-
-class InquiryTask(Metadata):
-    """Inquiry task representation.
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, source=None, type=None, **options):
-        self.setinitial("source", source)
-        self.setinitial("type", type)
-        for key, value in options.items():
-            self.setinitial(stringcase.camelcase(key), value)
-        super().__init__(descriptor)
-
-    @property
-    def source(self):
-        """
-        Returns:
-            any: source
-        """
-        return self["source"]
-
-    @property
-    def type(self):
-        """
-        Returns:
-            string?: type
-        """
-        return self.get("type") or system.create_file(self.source).type
-
-    # Run
-
-    def run(self):
-        validate = import_module("frictionless").validate
-        # NOTE: review usage of trusted
-        report = validate(trusted=True, **helpers.create_options(self))
+        report = Report.from_validation_reports(time=timer.time, reports=reports)
+        report.name = self.name
+        report.title = self.title
+        report.description = self.description
         return report
 
     # Metadata
 
+    metadata_type = "inquiry"
     metadata_Error = InquiryError
-    metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
+    metadata_profile = {
+        "type": "object",
+        "required": ["tasks"],
+        "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "tasks": {"type": "array", "items": {"type": "object"}},
+        },
+    }
+
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "tasks":
+            return InquiryTask
 
 
 # Internal
 
 
-def run_task_in_parallel(task_descriptor):
-    task = InquiryTask(task_descriptor)
-    report = task.run()
-    report_descriptor = report.to_dict()
-    return report_descriptor
+def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
+    task = platform.frictionless.InquiryTask.from_descriptor(descriptor)
+    report = task.validate()
+    return report.to_descriptor()

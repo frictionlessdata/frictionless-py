@@ -1,8 +1,5 @@
-from frictionless import describe, Resource, Package, helpers
-from frictionless.plugins.csv import CsvDialect
-
-
-IS_UNIX = not helpers.is_platform("windows")
+import pytest
+from frictionless import describe, Resource, Package, formats, platform
 
 
 # General
@@ -10,15 +7,14 @@ IS_UNIX = not helpers.is_platform("windows")
 
 def test_describe():
     resource = describe("data/table.csv")
-    assert resource.metadata_valid
-    assert resource == {
-        "profile": "tabular-data-resource",
+    assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
+        "type": "table",
         "scheme": "file",
         "format": "csv",
-        "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "text/csv",
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -28,31 +24,31 @@ def test_describe():
     }
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_with_stats():
     resource = describe("data/table.csv", stats=True)
-    assert resource.metadata_valid
-    if IS_UNIX:
-        assert resource == {
-            "profile": "tabular-data-resource",
-            "name": "table",
-            "path": "data/table.csv",
-            "scheme": "file",
-            "format": "csv",
-            "hashing": "md5",
-            "encoding": "utf-8",
-            "schema": {
-                "fields": [
-                    {"name": "id", "type": "integer"},
-                    {"name": "name", "type": "string"},
-                ]
-            },
-            "stats": {
-                "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-                "bytes": 30,
-                "fields": 2,
-                "rows": 2,
-            },
-        }
+    assert resource.to_descriptor() == {
+        "name": "table",
+        "path": "data/table.csv",
+        "type": "table",
+        "scheme": "file",
+        "format": "csv",
+        "encoding": "utf-8",
+        "mediatype": "text/csv",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        },
+        "stats": {
+            "md5": "6c2c61dd9b0e9c6876139a449ed87933",
+            "sha256": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
+    }
 
 
 def test_describe_resource():
@@ -75,13 +71,14 @@ def test_describe_package_type_package():
     assert isinstance(resource, Package)
 
 
-# Issues
+# Bugs
 
 
 def test_describe_blank_cells_issue_7():
     source = b"header1,header2\n1,\n2,\n3,\n"
     resource = describe(source, format="csv")
-    assert resource.schema == {
+    assert isinstance(resource, Resource)
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
             {"name": "header2", "type": "any"},
@@ -92,7 +89,8 @@ def test_describe_blank_cells_issue_7():
 def test_describe_whitespace_cells_issue_7():
     source = b"header1,header2\n1, \n2, \n3, \n"
     resource = describe(source, format="csv")
-    assert resource.schema == {
+    assert isinstance(resource, Resource)
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
             {"name": "header2", "type": "string"},
@@ -102,9 +100,10 @@ def test_describe_whitespace_cells_issue_7():
 
 def test_describe_whitespace_cells_with_skip_initial_space_issue_7():
     source = b"header1,header2\n1, \n2, \n3, \n"
-    dialect = CsvDialect(skip_initial_space=True)
-    resource = describe(source, format="csv", dialect=dialect)
-    assert resource.schema == {
+    control = formats.CsvControl(skip_initial_space=True)
+    resource = describe(source, format="csv", control=control)
+    assert isinstance(resource, Resource)
+    assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
             {"name": "header2", "type": "any"},
@@ -114,16 +113,17 @@ def test_describe_whitespace_cells_with_skip_initial_space_issue_7():
 
 def test_describe_non_tabular_resource_issue_641():
     resource = describe("data/document.pdf", stats=True)
-    assert resource == {
-        "path": "data/document.pdf",
+    assert resource.to_descriptor() == {
         "name": "document",
-        "profile": "data-resource",
+        "path": "data/document.pdf",
+        "type": "file",
         "scheme": "file",
         "format": "pdf",
-        "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "application/pdf",
         "stats": {
-            "hash": "3a503daaa773a3ea32b1fedd9fece844",
+            "md5": "3a503daaa773a3ea32b1fedd9fece844",
+            "sha256": "8acf6c76fa7ad2e13531e8e41c93e944597db489aee53c8f1748e3aafaf165ef",
             "bytes": 262443,
         },
     }
@@ -131,12 +131,12 @@ def test_describe_non_tabular_resource_issue_641():
 
 def test_describe_non_tabular_html_issue_715():
     resource = describe("data/text.html")
-    assert resource == {
-        "path": "data/text.html",
+    assert resource.to_descriptor() == {
+        "type": "file",
         "name": "text",
-        "profile": "data-resource",
+        "path": "data/text.html",
         "scheme": "file",
         "format": "html",
-        "hashing": "md5",
         "encoding": "utf-8",
+        "mediatype": "text/html",
     }

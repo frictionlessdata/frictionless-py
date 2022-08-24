@@ -1,13 +1,9 @@
 import sys
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Compression
+# General
 
 
 def test_resource_compression_local_csv_zip():
@@ -56,8 +52,8 @@ def test_resource_compression_local_csv_zip_multiple_open():
 
 def test_resource_compression_local_csv_gz():
     with Resource("data/table.csv.gz") as resource:
-        assert resource.innerpath == ""
         assert resource.compression == "gz"
+        assert resource.innerpath == None
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -112,7 +108,7 @@ def test_resource_compression_error_bad():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "compression-error"
+    assert error.type == "compression-error"
     assert error.note == 'compression "bad" is not supported'
 
 
@@ -122,7 +118,7 @@ def test_resource_compression_error_invalid_zip():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "compression-error"
+    assert error.type == "compression-error"
     assert error.note == "File is not a zip file"
 
 
@@ -133,15 +129,19 @@ def test_resource_compression_error_invalid_gz():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "compression-error"
+    assert error.type == "compression-error"
     assert error.note == "Not a gzipped file (b'id')"
 
 
-def test_resource_compression_legacy_no_value_issue_616():
+# Bugs
+
+
+def test_resource_compression_legacy_no_value_framework_v4_issue_616():
+    descriptor = {"path": "data/table.csv", "compression": "no"}
     with pytest.warns(UserWarning):
-        with Resource("data/table.csv", compression="no") as resource:
-            assert resource.innerpath == ""
-            assert resource.compression == ""
+        with Resource.from_descriptor(descriptor) as resource:
+            assert resource.innerpath is None
+            assert resource.compression is None
             assert resource.header == ["id", "name"]
             assert resource.read_rows() == [
                 {"id": 1, "name": "english"},

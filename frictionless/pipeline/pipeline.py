@@ -1,175 +1,108 @@
-from copy import deepcopy
-from multiprocessing import Pool
-from importlib import import_module
-from ..errors import PipelineError, TaskError
-from ..status import Status, StatusTask
+from __future__ import annotations
+import attrs
+import warnings
+from typing import Optional, List
+from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..resource import Resource
-from ..package import Package
-from .transform import transform
-from .validate import validate
+from .step import Step
 from .. import settings
-from .. import helpers
+from .. import errors
 
 
+# TODO: raise an exception if we try export a pipeline with function based steps
+@attrs.define(kw_only=True)
 class Pipeline(Metadata):
-    """Pipeline representation.
+    """Pipeline representation"""
 
-    Parameters:
-        descriptor? (str|dict): pipeline descriptor
+    # State
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
+    name: Optional[str] = None
+    """NOTE: add docs"""
 
-    """
+    title: Optional[str] = None
+    """NOTE: add docs"""
 
-    transform = transform
-    validate = validate
+    description: Optional[str] = None
+    """NOTE: add docs"""
 
-    def __init__(self, descriptor, tasks=None):
-        self.setinitial("tasks", tasks)
-        super().__init__(descriptor)
+    steps: List[Step] = attrs.field(factory=list)
+    """List of transform steps"""
+
+    # Props
 
     @property
-    def tasks(self):
-        """
-        Returns:
-            dict[]: tasks
-        """
-        tasks = self.get("tasks", [])
-        return self.metadata_attach("tasks", tasks)
+    def step_types(self) -> List[str]:
+        """Return type list of the steps"""
+        return [step.type for step in self.steps]
 
-    # Run
+    # Steps
 
-    def run(self, *, parallel=False):
-        """Run the pipeline"""
+    def add_step(self, step: Step) -> None:
+        """Add new step to the schema"""
+        self.steps.append(step)
 
-        # Create state
-        statuses = []
-        timer = helpers.Timer()
+    def has_step(self, type: str) -> bool:
+        """Check if a step is present"""
+        for step in self.steps:
+            if step.type == type:
+                return True
+        return False
 
-        # Validate pipeline
-        if self.metadata_errors:
-            return Status(time=timer.time, errors=self.metadata_errors, tasks=[])
+    def get_step(self, type: str) -> Step:
+        """Get step by type"""
+        for step in self.steps:
+            if step.type == type:
+                return step
+        error = errors.PipelineError(note=f'step "{type}" does not exist')
+        raise FrictionlessException(error)
 
-        # Transform sequentially
-        if not parallel:
-            for task in self.tasks:
-                status = task.run()
-                statuses.append(status)
+    def set_step(self, step: Step) -> Optional[Step]:
+        """Set step by type"""
+        if self.has_step(step.type):
+            prev_step = self.get_step(step.type)
+            index = self.steps.index(prev_step)
+            self.steps[index] = step
+            return prev_step
+        self.add_step(step)
 
-        # Transform in-parallel
-        else:
-            with Pool() as pool:
-                task_descriptors = [task.to_dict() for task in self.tasks]
-                status_descriptors = pool.map(run_task_in_parallel, task_descriptors)
-                for status_descriptor in status_descriptors:
-                    statuses.append(Status(status_descriptor))
+    def remove_step(self, type: str) -> Step:
+        """Remove step by type"""
+        step = self.get_step(type)
+        self.steps.remove(step)
+        return step
 
-        # Return status
-        tasks = []
-        errors = []
-        for status in statuses:
-            tasks.extend(status["tasks"])
-            errors.extend(status["errors"])
-        return Status(time=timer.time, errors=[], tasks=tasks)
+    def clear_steps(self) -> None:
+        """Remove all the steps"""
+        self.steps = []
 
     # Metadata
 
-    metadata_Error = PipelineError
-    metadata_profile = deepcopy(settings.PIPELINE_PROFILE)
-    metadata_profile["properties"]["tasks"] = {"type": "array"}
+    metadata_type = "pipeline"
+    metadata_Error = errors.PipelineError
+    metadata_profile = {
+        "type": "object",
+        "required": ["steps"],
+        "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "steps": {"type": "array"},
+        },
+    }
 
-    def metadata_process(self):
+    @classmethod
+    def metadata_specify(cls, *, type=None, property=None):
+        if property == "steps":
+            return Step
 
-        # Tasks
-        tasks = self.get("tasks")
-        if isinstance(tasks, list):
-            for index, task in enumerate(tasks):
-                if not isinstance(task, PipelineTask):
-                    task = PipelineTask(task)
-                    list.__setitem__(tasks, index, task)
-            if not isinstance(tasks, helpers.ControlledList):
-                tasks = helpers.ControlledList(tasks)
-                tasks.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "tasks", tasks)
+    @classmethod
+    def metadata_transform(cls, descriptor):
+        super().metadata_transform(descriptor)
 
-    def metadata_validate(self):
-        yield from super().metadata_validate()
-
-        # Tasks
-        for task in self.tasks:
-            yield from task.metadata_errors
-
-
-class PipelineTask(Metadata):
-    """Pipeline task representation.
-
-    Parameters:
-        descriptor? (str|dict): pipeline task descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, source=None, type=None, steps=None):
-        self.setinitial("source", source)
-        self.setinitial("type", type)
-        self.setinitial("steps", steps)
-        super().__init__(descriptor)
-
-    @property
-    def source(self):
-        return self["source"]
-
-    @property
-    def type(self):
-        return self["type"]
-
-    @property
-    def steps(self):
-        return self["steps"]
-
-    # Run
-
-    def run(self):
-        """Run the task"""
-        errors = []
-        target = None
-        timer = helpers.Timer()
-        try:
-            transform = import_module("frictionless").transform
-            target = transform(self.source, type=self.type, steps=self.steps)
-        except Exception as exception:
-            errors.append(TaskError(note=str(exception)))
-        task = StatusTask(time=timer.time, errors=errors, target=target, type=self.type)
-        return Status(tasks=[task], time=timer.time, errors=[])
-
-    # Metadata
-
-    metadata_Error = PipelineError
-    metadata_profile = settings.PIPELINE_PROFILE["properties"]["tasks"]["items"]
-
-    def metadata_process(self):
-
-        # Source
-        source = self.get("source")
-        if not isinstance(source, Metadata):
-            # NOTE: review usage of trusted
-            source = (
-                Resource(source, trusted=True)
-                if self.type == "resource"
-                else Package(source, trusted=True)
-            )
-            dict.__setitem__(self, "source", source)
-
-
-# Internal
-
-
-def run_task_in_parallel(task_descriptor):
-    task = PipelineTask(task_descriptor)
-    status = task.run()
-    status_descriptor = status.to_dict()
-    return status_descriptor
+        # Tasks (framework/v4)
+        tasks = descriptor.pop("tasks", [])
+        if tasks and isinstance(tasks[0], dict):
+            descriptor.setdefault("steps", tasks[0].get("steps"))
+            note = 'Pipeline "tasks[].steps" is deprecated in favor of "steps"'
+            note += "(it will be removed in the next major version)"
+            warnings.warn(note, UserWarning)

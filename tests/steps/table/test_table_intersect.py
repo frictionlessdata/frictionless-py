@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, Step, steps
 
 
 # General
@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_intersect():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -22,7 +21,8 @@ def test_step_table_intersect():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -37,23 +37,26 @@ def test_step_table_intersect():
 
 def test_step_table_intersect_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
-            steps.table_intersect(
-                resource=dict(
-                    data=[
-                        ["id", "name", "population"],
-                        [1, "germany", 83],
-                        [2, "france", 50],
-                        [3, "spain", 47],
-                    ]
-                )
+            Step.from_descriptor(
+                {
+                    "type": "table-intersect",
+                    "resource": dict(
+                        data=[
+                            ["id", "name", "population"],
+                            [1, "germany", 83],
+                            [2, "france", 50],
+                            [3, "spain", 47],
+                        ]
+                    ),
+                }
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -68,8 +71,7 @@ def test_step_table_intersect_from_dict():
 
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -85,7 +87,8 @@ def test_step_table_intersect_with_use_hash():
             ),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},

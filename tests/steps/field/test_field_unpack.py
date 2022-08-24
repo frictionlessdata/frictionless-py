@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,19 +6,19 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_unpack():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="array", value=[1, 1]),
+            steps.field_update(name="id", value=[1, 1], descriptor={"type": "array"}),
             steps.field_unpack(name="id", to_names=["id2", "id3"]),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "id2"},
-            {"name": "id3"},
+            {"name": "id2", "type": "any"},
+            {"name": "id3", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -30,20 +30,20 @@ def test_step_field_unpack():
 
 def test_step_field_unpack_with_preserve():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="array", value=[1, 1]),
+            steps.field_update(name="id", value=[1, 1], descriptor={"type": "array"}),
             steps.field_unpack(name="id", to_names=["id2", "id3"], preserve=True),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "array"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "id2"},
-            {"name": "id3"},
+            {"name": "id2", "type": "any"},
+            {"name": "id3", "type": "any"},
         ]
     }
     assert target.read_rows() == [
@@ -55,18 +55,22 @@ def test_step_field_unpack_with_preserve():
 
 def test_step_field_unpack_source_is_object():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="object", value={"note": "eu"}),
+            steps.field_update(
+                name="id",
+                value={"note": "eu"},
+                descriptor={"type": "object"},
+            ),
             steps.field_unpack(name="id", to_names=["note"]),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "note"},
+            {"name": "note", "type": "any"},
         ]
     }
     assert target.read_rows() == [

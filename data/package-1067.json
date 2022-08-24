@@ -1,5 +1,5 @@
 {
-  "name": "capitals and schools",
+  "name": "capitals-and-schools",
   "resources": [
     { "name": "capital-valid",
       "path": "capital-valid.csv",
@@ -16,7 +16,7 @@
         ]
       }
     },
-    {"name": "capital-invalid", 
+    {"name": "capital-invalid",
      "path": "capital-invalid.csv",
       "schema": {
         "fields": [

@@ -1,36 +1,33 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from ...pipeline import Step
 from ...exception import FrictionlessException
 from ... import errors
 
 
-# NOTE:
-# Some of the following step use **options - we need to review/fix it
-# The step updating resource might benefit from having schema_patch argument
-
-
+@attrs.define(kw_only=True)
 class resource_remove(Step):
     """Remove resource"""
 
-    code = "resource-remove"
+    type = "resource-remove"
 
-    def __init__(self, descriptor=None, *, name=None):
-        self.setinitial("name", name)
-        super().__init__(descriptor)
+    # State
+
+    name: str
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_package(self, package):
-        name = self.get("name")
-        resource = package.get_resource(name)
+        resource = package.get_resource(self.name)
         if not resource:
-            error = errors.ResourceError(note=f'No resource "{name}"')
+            error = errors.ResourceError(note=f'No resource "{self.name}"')
             raise FrictionlessException(error=error)
-        package.remove_resource(name)
+        package.remove_resource(self.name)
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name"],
         "properties": {
             "name": {"type": "string"},

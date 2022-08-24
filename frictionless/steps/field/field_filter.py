@@ -1,36 +1,32 @@
-from ...step import Step
+from __future__ import annotations
+import attrs
+from typing import List
+from ...pipeline import Step
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
+@attrs.define(kw_only=True)
 class field_filter(Step):
     """Filter fields"""
 
-    code = "field-filter"
+    type = "field-filter"
 
-    def __init__(self, descriptor=None, *, names=None):
-        self.setinitial("names", names)
-        super().__init__(descriptor)
+    # State
+
+    names: List[str]
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names", [])
-        schema_fields_dict = {dct["name"]: dct for dct in resource.schema.fields}
-        new_schema_fields = [
-            schema_fields_dict[name] for name in names if name in schema_fields_dict
-        ]
-        resource.schema.fields = new_schema_fields
-        new_names = [dct["name"] for dct in new_schema_fields]
-        resource.data = table.cut(*new_names)
+        for name in resource.schema.field_names:
+            if name not in self.names:
+                resource.schema.remove_field(name)
+        resource.data = table.cut(*resource.schema.field_names)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile_patch = {
         "type": "object",
         "required": ["names"],
         "properties": {

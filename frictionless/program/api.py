@@ -1,15 +1,16 @@
-from typer import Option as Opt
-from ..system import system
+from __future__ import annotations
+from ..platform import platform
 from .main import program
-from .. import settings
+from . import common
 
 
 @program.command(name="api")
 def program_api(
-    port: int = Opt(settings.DEFAULT_SERVER_PORT, help="Specify server port"),
+    port: int = common.port,
 ):
     """
     Start API server
     """
-    server = system.create_server("api")
-    server.start(port=port)
+    from ..server import server
+
+    platform.uvicorn.run(server, port=port)  # type: ignore

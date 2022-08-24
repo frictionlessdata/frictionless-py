@@ -1,28 +1,30 @@
+from __future__ import annotations
+import attrs
 from ... import errors
-from ...check import Check
-from typing import Iterator
+from ...checklist import Check
+from typing import TYPE_CHECKING, Iterable
+
+if TYPE_CHECKING:
+    from ...table import Row
+    from ...error import Error
 
 
+@attrs.define(kw_only=True)
 class ascii_value(Check):
     """Check whether all the string characters in the data are ASCII
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "ascii-value"}])`
 
     This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     """
 
-    code = "ascii-value"
+    type = "ascii-value"
     Errors = [errors.AsciiValueError]
 
     # Validate
 
-    def validate_row(self, row: any) -> Iterator[any]:
-        for field in row.fields:
+    def validate_row(self, row: Row) -> Iterable[Error]:
+        for field in row.fields:  # type: ignore
             if field.type == "string":
                 cell = row[field.name]
                 if cell and not cell.isascii():
@@ -30,10 +32,3 @@ class ascii_value(Check):
                     yield errors.AsciiValueError.from_row(
                         row, note=note, field_name=field.name
                     )
-
-    # Metadata
-
-    metadata_profile = {
-        "type": "object",
-        "properties": {},
-    }

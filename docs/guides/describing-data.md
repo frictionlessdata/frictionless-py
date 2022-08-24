@@ -1,24 +1,9 @@
 ---
-title: Describing Data
-prepare:
-  - cp data/table.csv table.csv
-  - cp data/country-1.csv country-1.csv
-  - cp data/country-2.csv country-2.csv
-  - cp data/country-3.csv country-3.csv
-  - cp data/capital-3.csv capital-3.csv
-cleanup:
-  - rm table.csv
-  - rm country-1.csv
-  - rm country-2.csv
-  - rm country-3.csv
-  - rm capital-3.csv
-  - rm country.schema.yaml
-  - rm country.resource.yaml
-  - rm country.package.yaml
+script:
+  basepath: data
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+# Describing Data
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start). Also, this guide is meant to be read in order from top to bottom, and reuses examples throughout the text. You can use the menu to skip sections, but please note that you might need to run code from earlier sections to make all the examples work.
 
@@ -39,7 +24,7 @@ These are not the only positives of having metadata, but they are two of the mos
 
 For the following examples, you will need to have Frictionless installed. See our [Quick Start Guide](https://framework.frictionlessdata.io/docs/guides/quick-start) if you need help.
 
-```bash title="CLI"
+```bash tabs=CLI
 pip install frictionless
 ```
 
@@ -57,7 +42,7 @@ As described in more detail in the [Introduction](https://framework.frictionless
 
 In the command-line, there is only 1 command (`describe`) but there is also a flag to adjust the behavior:
 
-```bash title="CLI"
+```bash tabs=CLI
 frictionless describe your-table.csv
 frictionless describe your-table.csv --type schema
 frictionless describe your-table.csv --type resource
@@ -68,67 +53,18 @@ Please take into account that file names might be used by Frictionless to detect
 
 For example, if we want a Data Package descriptor for a single file:
 
-> Download [`table.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv) to reproduce the examples (right-click and "Save link as").
+> Download [`table.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/table.csv) to reproduce the examples (right-click and "Save link as").
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=yaml
 frictionless describe table.csv --type package
 ```
-```yaml title="Package Metadata: table.csv"
-# --------
-# metadata: table.csv
-# --------
 
-profile: data-package
-resources:
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: table
-    path: table.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-    scheme: file
-```
-
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=yaml
 from frictionless import describe
 
 package = describe("table.csv", type="package")
 print(package.to_yaml())
 ```
-```yaml title="Package Metadata: table.csv"
-resources:
-  - path: table.csv
-    name: table
-    profile: tabular-data-resource
-    scheme: file
-    format: csv
-    hashing: md5
-    encoding: utf-8
-    schema:
-      fields:
-        - type: integer
-          name: id
-        - type: string
-          name: name
-profile: data-package
-```
-
-</TabItem>
-</Tabs>
 
 ## Describing a Schema
 
@@ -136,47 +72,20 @@ Table Schema is a specification for providing a "schema" (similar to a database 
 
 We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
-> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) to reproduce the examples (right-click and "Save link as").
+> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/country-1.csv) to reproduce the examples (right-click and "Save link as").
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI
 cat country-1.csv
 ```
-```csv title="Data: country-1.csv"
-id,neighbor_id,name,population
-1,,Britain,67
-2,3,France,67
-3,2,Germany,83
-4,5,Italy,60
-5,4,Spain,47
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python
 with open('country-1.csv') as file:
     print(file.read())
 ```
-```csv title="Data: country-1.csv"
-id,neighbor_id,name,population
-1,,Britain,67
-2,3,France,67
-3,2,Germany,83
-4,5,Italy,60
-5,4,Spain,47
-```
-
-</TabItem>
-</Tabs>
 
 Let's get a Table Schema using the Frictionless framework (note: this example uses YAML for the schema format, but Frictionless also supports JSON format):
 
-```python script title="Python"
+```python script tabs=Python
 from frictionless import Schema
 
 schema = Schema.describe("country-1.csv")
@@ -185,51 +94,20 @@ schema.to_yaml("country.schema.yaml") # use schema.to_json for JSON
 
 The high-level functions of Frictionless operate on the dataset and resource levels so we have to use a little bit of Python programming to get the schema information. Below we will show how to use a command-line interface for similar tasks.
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=yaml
 cat country.schema.yaml
 ```
-```yaml title="Schema Metadata: country.schema.yaml"
-fields:
-  - name: id
-    type: integer
-  - name: neighbor_id
-    type: integer
-  - name: name
-    type: string
-  - name: population
-    type: integer
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=yaml
 with open('country.schema.yaml') as file:
     print(file.read())
 ```
-```yaml title="Schema Metadata: country.schema.yaml"
-fields:
-  - name: id
-    type: integer
-  - name: neighbor_id
-    type: integer
-  - name: name
-    type: string
-  - name: population
-    type: integer
-```
-
-</TabItem>
-</Tabs>
 
 As we can see, we were able to infer basic metadata from our data file. But describing data doesn't end here - we can provide additional information that we discussed earlier:
 
-```python script title="Python"
+> You can edit "country.schema.yaml" manually instead of running Python
+
+```python script tabs=Python
 from frictionless import Schema
 
 schema = Schema.describe("country-1.csv")
@@ -242,7 +120,7 @@ schema.get_field("population").constraints["minimum"] = 0
 schema.foreign_keys.append(
     {"fields": ["neighbor_id"], "reference": {"resource": "", "fields": ["id"]}}
 )
-schema.to_yaml("country.schema.yaml")
+schema.to_yaml("country.schema-full.yaml")
 ```
 
 Let's break it down:
@@ -251,75 +129,14 @@ Let's break it down:
 - we set a constraint to the "Population" field because it can't be less than 0
 - we added a foreign key saying that "Identifier of the neighbor" should be present in the "Identifier" field
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
-cat country.schema.yaml
-```
-```yaml title="Schema Metadata: country.schema.yaml"
-fields:
-  - name: id
-    title: Identifier
-    type: integer
-  - name: neighbor_id
-    title: Identifier of the neighbor
-    type: integer
-  - name: name
-    title: Name of the country
-    type: string
-  - constraints:
-      minimum: 0
-    description: According to the year 2020's data
-    name: population
-    title: Population
-    type: integer
-foreignKeys:
-  - fields:
-      - neighbor_id
-    reference:
-      fields:
-        - id
-      resource: ''
+```bash script tabs=CLI output=yaml
+cat country.schema-full.yaml
 ```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
-with open('country.schema.yaml') as file:
+```python script tabs=Python output=yaml
+with open('country.schema-full.yaml') as file:
     print(file.read())
 ```
-```yaml title="Schema Metadata: country.schema.yaml"
-fields:
-  - name: id
-    title: Identifier
-    type: integer
-  - name: neighbor_id
-    title: Identifier of the neighbor
-    type: integer
-  - name: name
-    title: Name of the country
-    type: string
-  - constraints:
-      minimum: 0
-    description: According to the year 2020's data
-    name: population
-    title: Population
-    type: integer
-foreignKeys:
-  - fields:
-      - neighbor_id
-    reference:
-      fields:
-        - id
-      resource: ''
-```
-
-</TabItem>
-</Tabs>
 
 Later we're going to show how to use the schema we created to ensure the validity of your data; in the next few sections, we will focus on Data Resource and Data Package metadata.
 
@@ -335,109 +152,42 @@ A range of other properties can be declared to provide a richer set of metadata 
 
 For this section, we will use a file that is slightly more complex to handle. In this example, cells are separated by the ";" character and there is a comment on the top:
 
-> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) to reproduce the examples (right-click and "Save link as").
+> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/country-2.csv) to reproduce the examples (right-click and "Save link as").
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI
 cat country-2.csv
 ```
-```csv title="Data: country-2.csv"
-# Author: the scientist
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-```
-</TabItem>
-<TabItem value="python">
 
-```python script
+```python script tabs=Python
 with open('country-2.csv') as file:
     print(file.read())
 ```
-```csv title="Data: country-2.csv"
-# Author: the scientist
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-```
-
-</TabItem>
-</Tabs>
 
 Let's describe it:
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=yaml
 frictionless describe country-2.csv
 ```
-```yaml title="Resource Metadata: country-2.csv"
-# --------
-# metadata: country-2.csv
-# --------
 
-encoding: utf-8
-format: csv
-hashing: md5
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: '# Author: the scientist'
-      type: string
-scheme: file
-```
-
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=yaml
 from frictionless import describe
 
 resource = describe('country-2.csv')
 print(resource.to_yaml())
 ```
-```yaml title="Resource Metadata: country-2.csv"
-path: country-2.csv
-name: country-2
-profile: tabular-data-resource
-scheme: file
-format: csv
-hashing: md5
-encoding: utf-8
-schema:
-  fields:
-    - type: string
-      name: '# Author: the scientist'
-```
-
-</TabItem>
-</Tabs>
 
 OK, that looks wrong -- for example, the schema has only inferred one field, and that field does not seem correct either. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our data table is too complex for it to automatically infer. We need to manually program it:
 
-```python script title="Python"
+> You can edit "country.resource.yaml" manually instead of running Python
+
+```python script tabs=Python
 from frictionless import Schema, describe
 
 resource = describe("country-2.csv")
-resource.dialect.delimiter = ";"
-resource.layout.header_rows = [2]
-resource.schema = Schema("country.schema.yaml")
-resource.to_yaml("country.resource.yaml")
+resource.dialect.header_rows = [2]
+resource.dialect.get_control('csv').delimiter = ";"
+resource.schema = "country.schema.yaml"
+resource.to_yaml("country.resource-cleaned.yaml")
 ```
 
 So what we did here:
@@ -445,101 +195,14 @@ So what we did here:
 - we set the CSV Delimiter to be ";"
 - we reuse the schema we created [earlier](#describing-a-schema) as the data has the same structure and meaning
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
-cat country.resource.yaml
-```
-```yaml title="Resource Metadata: country.resource.yaml"
-dialect:
-  delimiter: ;
-encoding: utf-8
-format: csv
-hashing: md5
-layout:
-  headerRows:
-    - 2
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      title: Identifier
-      type: integer
-    - name: neighbor_id
-      title: Identifier of the neighbor
-      type: integer
-    - name: name
-      title: Name of the country
-      type: string
-    - constraints:
-        minimum: 0
-      description: According to the year 2020's data
-      name: population
-      title: Population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-scheme: file
+```bash script tabs=CLI output=yaml
+cat country.resource-cleaned.yaml
 ```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
-with open('country.resource.yaml') as file:
+```python script tabs=Python output=yaml
+with open('country.resource-cleaned.yaml') as file:
     print(file.read())
 ```
-```yaml title="Resource Metadata: country.resource.yaml"
-dialect:
-  delimiter: ;
-encoding: utf-8
-format: csv
-hashing: md5
-layout:
-  headerRows:
-    - 2
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      title: Identifier
-      type: integer
-    - name: neighbor_id
-      title: Identifier of the neighbor
-      type: integer
-    - name: name
-      title: Name of the country
-      type: string
-    - constraints:
-        minimum: 0
-      description: According to the year 2020's data
-      name: population
-      title: Population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-scheme: file
-```
-
-</TabItem>
-</Tabs>
 
 Our resource metadata includes the schema metadata we created earlier, but it also has:
 - general information about the file's schema, format, and compression
@@ -575,182 +238,48 @@ The data included in the package may be provided as:
 
 For this section, we will use the following files:
 
-> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) to reproduce the examples (right-click and "Save link as")
+> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/country-3.csv) to reproduce the examples (right-click and "Save link as")
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI
 cat country-3.csv
 ```
-```csv title="Data: country-3.csv"
-id,capital_id,name,population
-1,1,Britain,67
-2,3,France,67
-3,2,Germany,83
-4,5,Italy,60
-5,4,Spain,47
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python
 with open('country-3.csv') as file:
     print(file.read())
 ```
-```csv title="Data: country-3.csv"
-id,capital_id,name,population
-1,1,Britain,67
-2,3,France,67
-3,2,Germany,83
-4,5,Italy,60
-5,4,Spain,47
-```
 
-</TabItem>
-</Tabs>
+> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/main/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
 
-> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
-
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI
 cat capital-3.csv
 ```
-```csv title="Data: capital-3.csv"
-id,name
-1,London
-2,Berlin
-3,Paris
-4,Madrid
-5,Rome
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python
 with open('capital-3.csv') as file:
     print(file.read())
 ```
-```csv title="Data: capital-3.csv"
-id,name
-1,London
-2,Berlin
-3,Paris
-4,Madrid
-5,Rome
-```
-
-</TabItem>
-</Tabs>
 
 First of all, let's describe our package now. We did it before for a resource but now we're going to use a glob pattern to indicate that there are multiple files:
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=yaml
 frictionless describe *-3.csv
 ```
-```yaml title="Package Metadata: capital-3.csv country-3.csv"
-# --------
-# metadata: capital-3.csv country-3.csv
-# --------
 
-profile: data-package
-resources:
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: capital-3
-    path: capital-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-    scheme: file
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: country-3
-    path: country-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: capital_id
-          type: integer
-        - name: name
-          type: string
-        - name: population
-          type: integer
-    scheme: file
-```
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=yaml
 from frictionless import describe
 
 package = describe("*-3.csv")
 print(package.to_yaml())
 ```
-```yaml title="Package Metadata: capital-3.csv country-3.csv"
-profile: data-package
-resources:
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: capital-3
-    path: capital-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-    scheme: file
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: country-3
-    path: country-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: capital_id
-          type: integer
-        - name: name
-          type: string
-        - name: population
-          type: integer
-    scheme: file
-```
-
-</TabItem>
-</Tabs>
 
 We have already learned about many concepts that are reflected in this metadata. We can see resources, schemas, fields, and other familiar entities. The difference is that this descriptor has information about multiple files which is a popular way of sharing data - in datasets. Very often you have not only one data file but also additional data files, some textual documents e.g. PDF, and others. To package all of these files with the corresponding metadata we use data packages.
 
 Following the pattern that is already familiar to the guide reader, we add some additional metadata:
 
-```python script title="Python"
+> You can edit "country.package.yaml" manually instead of running Python
+
+```python script tabs=Python output=yaml
 from frictionless import describe
 
 package = describe("*-3.csv")
@@ -766,111 +295,14 @@ package.to_yaml("country.package.yaml")
 
 In this case, we add a relation between different files connecting `id` and `capital_id`. Also, we provide dataset-level metadata to explain the purpose of this dataset. We haven't added individual fields' titles and descriptions, but that can be done as it was shown in the "Table Schema" section.
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=yaml
 cat country.package.yaml
 ```
-```yaml title="Package Metadata: country.package.yaml"
-description: The data was collected as a research project
-profile: data-package
-resources:
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: capital
-    path: capital-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-    scheme: file
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: country
-    path: country-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: capital_id
-          type: integer
-        - name: name
-          type: string
-        - name: population
-          type: integer
-      foreignKeys:
-        - fields:
-            - capital_id
-          reference:
-            fields:
-              - id
-            resource: capital
-    scheme: file
-title: Countries and their capitals
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=yaml
 with open('country.package.yaml') as file:
     print(file.read())
 ```
-```yaml title="Package Metadata: country.package.yaml"
-description: The data was collected as a research project
-profile: data-package
-resources:
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: capital
-    path: capital-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-    scheme: file
-  - encoding: utf-8
-    format: csv
-    hashing: md5
-    name: country
-    path: country-3.csv
-    profile: tabular-data-resource
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: capital_id
-          type: integer
-        - name: name
-          type: string
-        - name: population
-          type: integer
-      foreignKeys:
-        - fields:
-            - capital_id
-          reference:
-            fields:
-              - id
-            resource: capital
-    scheme: file
-title:
-```
-
-</TabItem>
-</Tabs>
 
 The main role of the Data Package descriptor is describing a dataset; as we can see, it includes previously shown descriptors like `schema`, `dialect`, and `resource`. But it would be a mistake to think that Data Package is the least important specification; actually, it completes the Frictionless Data suite making it possible to share and validate not only individual files but also complete datasets.
 
@@ -884,189 +316,55 @@ This documentation contains a great deal of information on how to use metadata a
 
 Let's get back to this complex data table:
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI
 cat country-2.csv
 ```
-```csv title="Data: country-2.csv"
-# Author: the scientist
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python
 with open('country-2.csv') as file:
     print(file.read())
 ```
-```csv title="Data: country-2.csv"
-# Author: the scientist
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-```
-
-</TabItem>
-</Tabs>
 
 As we tried before, by default Frictionless can't properly describe this file so we got something like:
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=yaml
 frictionless describe country-2.csv
 ```
-```yaml title="Resource Metadata: country-2.csv"
-encoding: utf-8
-format: csv
-hashing: md5
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: '# Author: the scientist'
-      type: string
-scheme: file
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=yaml
 from frictionless import describe
 
 resource = describe("country-2.csv")
 print(resource.to_yaml())
 ```
-```yaml title="Resource Metadata: country-2.csv"
-encoding: utf-8
-format: csv
-hashing: md5
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: '# Author: the scientist'
-      type: string
-scheme: file
-```
-
-</TabItem>
-</Tabs>
 
 Trying to extract the data will fail this way:
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI
 frictionless extract country-2.csv
 ```
-```csv title="Data: country-2.csv"
-==============================
-# Author: the scientist
-==============================
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-==============================
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python script
+```python script tabs=Python output=python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
-resource = extract("country-2.csv")
-print(tabulate(resource, headers="keys", tablefmt="rst"))
-```
-```csv title="Data: country-2.csv"
-==============================
-# Author: the scientist
-==============================
-id;neighbor_id;name;population
-1;;Britain;67
-2;3;France;67
-3;2;Germany;83
-4;5;Italy;60
-5;4;Spain;47
-==============================
+rows = extract("country-2.csv")
+pprint(rows)
 ```
 
-</TabItem>
-</Tabs>
+This example highlights a really important idea - without metadata many software will not be able to even read this data file. Furthermore, without metadata people cannot understand the purpose of this data. To see how we can use metadata to fix our data, let's now use the `country.resource-full.yaml` file we created in the "Data Resource" section with Frictionless `extract`:
 
-This example highlights a really important idea - without metadata many software will not be able to even read this data file. Furthermore, without metadata people cannot understand the purpose of this data. To see how we can use metadata to fix our data, let's now use the `country.resource.yaml` file we created in the "Data Resource" section with Frictionless `extract`:
-
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
-frictionless extract country.resource.yaml
-```
-```csv title="Data: country.resource.yaml"
-==  ===========  =======  ==========
-id  neighbor_id  name     population
-==  ===========  =======  ==========
- 1               Britain          67
- 2            3  France           67
- 3            2  Germany          83
- 4            5  Italy            60
- 5            4  Spain            47
-==  ===========  =======  ==========
+```bash script tabs=CLI
+frictionless extract country.resource-cleaned.yaml
 ```
 
-</TabItem>
-<TabItem value="python">
-
-```bash script
+```python script tabs=Python
+from pprint import pprint
 from frictionless import extract
-from tabulate import tabulate
 
-data = extract("country.resource.yaml")
-print(tabulate(data, headers="keys", tablefmt="rst"))
+rows = extract("country.resource-cleaned.yaml")
+pprint(rows)
 ```
-```csv title="Data: country.resource.yaml"
-====  =============  =======  ============
-  id    neighbor_id  name       population
-====  =============  =======  ============
-   1                 Britain            67
-   2              3  France             67
-   3              2  Germany            83
-   4              5  Italy              60
-   5              4  Spain              47
-====  =============  =======  ============
-```
-
-</TabItem>
-</Tabs>
 
 As we can see, the data is now fixed. The metadata we had saved the day! If we explore this data in Python we can discover that it also corrected data types - e.g. `id` is Python's integer not string. We can now export and share this data without any worries.
 
@@ -1076,12 +374,11 @@ As we can see, the data is now fixed. The metadata we had saved the day! If we e
 
 Many Frictionless functions infer metadata under the hood such as `describe`, `extract`, and many more. On a lower-level, it's possible to control this process. To see this, let's create a `Resource`.
 
-```python script title="Python"
-from pprint import pprint
+```python script tabsl=Python output=python
 from frictionless import Resource
 
 resource = Resource("country-1.csv")
-pprint(resource)
+print(resource)
 ```
 ```
 {'path': 'country-1.csv'}
@@ -1091,36 +388,11 @@ Frictionless always tries to be as explicit as possible. We didn't provide any m
 
 > We can ask for stats using CLI with `frictionless describe data/table.csv --stats`. Note that we use the `stats` argument for the `resource.infer` function.
 
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script
+```bash script tabs=CLI output=json
 frictionless describe country-1.csv --stats --json
 ```
-```json title="Resource Metadata: country-1.csv"
-{'encoding': 'utf-8',
- 'scheme': 'file',
- 'format': 'csv',
- 'hashing': 'md5',
- 'name': 'country-1',
- 'path': 'data/country-1.csv',
- 'profile': 'tabular-data-resource',
- 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
-                       {'name': 'neighbor_id', 'type': 'integer'},
-                       {'name': 'name', 'type': 'string'},
-                       {'name': 'population', 'type': 'integer'}]},
- 'stats': {'bytes': 100,
-           'fields': 4,
-           'hash': '4204f087f328b70c854c03403ab448c4',
-           'rows': 5}}
-```
 
-</TabItem>
-<TabItem value="python">
-
-```python
+```python script tabs=Python output=python
 from pprint import pprint
 from frictionless import Resource
 
@@ -1128,261 +400,74 @@ resource = Resource("country-1.csv")
 resource.infer(stats=True)
 pprint(resource)
 ```
-```json title="Resource Metadata: country-1.csv"
-{'encoding': 'utf-8',
- 'scheme': 'file',
- 'format': 'csv',
- 'hashing': 'md5',
- 'name': 'country-1',
- 'path': 'data/country-1.csv',
- 'profile': 'tabular-data-resource',
- 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
-                       {'name': 'neighbor_id', 'type': 'integer'},
-                       {'name': 'name', 'type': 'string'},
-                       {'name': 'population', 'type': 'integer'}]},
- 'stats': {'bytes': 100,
-           'fields': 4,
-           'hash': '4204f087f328b70c854c03403ab448c4',
-           'rows': 5}}
-```
-</TabItem>
-</Tabs>
 
 The result is really familiar to us already. We have seen it a lot as an output of the `describe` function or command. Basically, that's what this high-level function does under the hood: create a resource and then infer additional metadata.
 
 All the main `Metadata` classes have this method with different available options but with the same conceptual purpose:
 - `package.infer`
 - `resource.infer`
-- `schema.infer`
 
 For more advanced detection options, please read the [Detector Guide](framework/detector-guide.md)
-
-## Expanding Metadata
-
-By default, Frictionless never adds default values to metadata, for example:
-
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script 
-frictionless describe data/country-1.csv --type schema --json
-```
-```json title="Schema Metadata: country-1.csv"
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'neighbor_id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-```
-
-</TabItem>
-<TabItem value="python">
-
-```python script
-from pprint import pprint
-from frictionless import describe
-
-resource = describe("data/country-1.csv")
-pprint(resource.schema)
-```
-```json title="Schema Metadata: country-1.csv"
-{'fields': [{'name': 'id', 'type': 'integer'},
-            {'name': 'neighbor_id', 'type': 'integer'},
-            {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-```
-
-</TabItem>
-</Tabs>
-
-Under the hood it, for example, still treats empty strings as missing values because it's the specs' default. We can reveal implicit metadata by expanding it:
-
-```python script title="Python"
-from pprint import pprint
-from frictionless import describe
-
-resource = describe("data/country-1.csv")
-resource.schema.expand()
-pprint(resource.schema)
-```
-```
-{'fields': [{'bareNumber': True,
-             'format': 'default',
-             'name': 'id',
-             'type': 'integer'},
-            {'bareNumber': True,
-             'format': 'default',
-             'name': 'neighbor_id',
-             'type': 'integer'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-            {'bareNumber': True,
-             'format': 'default',
-             'name': 'population',
-             'type': 'integer'}],
- 'missingValues': ['']}
-```
-
-## Transforming Metadata
-
-We have seen this before but let's re-iterate; it's possible to transform core metadata properties using Python's interface:
-
-```python script title="Python"
-from frictionless import Resource
-
-resource = Resource("country.resource.yaml")
-resource.title = "Countries"
-resource.description = "It's a research project"
-resource.dialect.delimiter = ";"
-resource.layout.header_rows = [2]
-resource.to_yaml("country.resource.yaml")
-```
-
-But the Python interface is not our only option. Thanks to the flexibility of the Frictionless Specs, we can add arbitrary metadata to our descriptor. We use dictionary operations to do this:
-
-```python script title="Python"
-from frictionless import Resource
-
-resource = Resource("country.resource.yaml")
-resource["customKey1"] = "Value1"
-resource["customKey2"] = "Value2"
-resource.to_yaml("country.resource.yaml")
-```
-
-Let's check it out:
-
-<Tabs
-defaultValue="cli"
-values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
-<TabItem value="cli">
-
-```bash script title="CLI"
-cat country.resource.yaml
-```
-```yaml title="Resource Metadata: country.resource.yaml"
-customKey1: Value1
-customKey2: Value2
-description: It's a research project
-dialect:
-  delimiter: ;
-encoding: utf-8
-format: csv
-hashing: md5
-layout:
-  headerRows:
-    - 2
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      title: Identifier
-      type: integer
-    - name: neighbor_id
-      title: Identifier of the neighbor
-      type: integer
-    - name: name
-      title: Name of the country
-      type: string
-    - constraints:
-        minimum: 0
-      description: According to the year 2020's data
-      name: population
-      title: Population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-scheme: file
-title: Countries
-```
-
-</TabItem>
-<TabItem value="python">
-
-```python script
-with open('country.resource.yaml') as file:
-    print(file.read())
-```
-```yaml title="Resource Metadata: country.resource.yaml"
-customKey1: Value1
-customKey2: Value2
-description: It's a research project
-dialect:
-  delimiter: ;
-encoding: utf-8
-format: csv
-hashing: md5
-layout:
-  headerRows:
-    - 2
-name: country-2
-path: country-2.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      title: Identifier
-      type: integer
-    - name: neighbor_id
-      title: Identifier of the neighbor
-      type: integer
-    - name: name
-      title: Name of the country
-      type: string
-    - constraints:
-        minimum: 0
-      description: According to the year 2020's data
-      name: population
-      title: Population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-scheme: file
-title: Countries
-```
-
-</TabItem>
-</Tabs>
 
 ## Validating Metadata
 
 Metadata validity is an important topic, and we recommend validating your metadata before publishing. For example, let's first make it invalid:
 
-```python script title="Python"
+```python script tabs=Python
+import yaml
 from frictionless import Resource
 
-resource = Resource("country.resource.yaml")
-resource["title"] = 1
-print(resource.metadata_valid)
-print(resource.metadata_errors)
+descriptor = {}
+descriptor['path'] = 'country-1.csv'
+descriptor['title'] = 1
+try:
+    Resource(descriptor)
+except Exception as exception:
+    print(exception.error)
+    print(exception.reasons)
 ```
 ```
 False
 [{'code': 'resource-error', 'name': 'Resource Error', 'tags': [], 'note': '"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'description': 'A validation cannot be processed.'}]
 ```
 
-We see this error: `'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile'` Now, let's fix our resource metadata:
+We see this error`'"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile'` as we set `title` to be an integer.
 
-```python script title="Python"
+Frictionless' high-level functions like `validate` runs all metadata checks by default.
+
+## Transforming Metadata
+
+We have seen this before but let's re-iterate; it's possible to transform core metadata properties using Python's interface:
+
+```python script tabs=Python
 from frictionless import Resource
 
-resource = Resource("country.resource.yaml")
-resource["title"] = 'Countries'
-print(resource.metadata_valid)
-```
-```
-True
+resource = Resource("country.resource-cleaned.yaml")
+resource.title = "Countries"
+resource.description = "It's a research project"
+resource.dialect.header_rows = [2]
+resource.dialect.get_control('csv').delimiter = ";"
+resource.to_yaml("country.resource-updated.yaml")
 ```
 
-You need to check `metadata.metadata_valid` only if you change it manually; Frictionless' high-level functions like `validate` do that on their own.
+We can add custom options using the `custom` property:
+
+```python script tabs=Python
+from frictionless import Resource
+
+resource = Resource("country.resource-updated.yaml")
+resource.custom["customKey1"] = "Value1"
+resource.custom["customKey2"] = "Value2"
+resource.to_yaml("country.resource-updated2.yaml")
+```
+
+Let's check it out:
+
+```bash script tabs=CLI output=yaml
+cat country.resource-updated2.yaml
+```
+
+```python script tabs=Python output=yaml
+with open('country.resource-updated2.yaml') as file:
+    print(file.read())
+```

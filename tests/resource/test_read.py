@@ -1,43 +1,38 @@
 import sys
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource, platform
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
+# General
 
 
-# Read
-
-
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
     bytes = resource.read_bytes()
-    if IS_UNIX:
-        assert bytes == b"text\n"
+    assert bytes == b"text\n"
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_read_text():
     resource = Resource(path="data/text.txt")
     text = resource.read_text()
-    if IS_UNIX:
-        assert text == "text\n"
+    assert text == "text\n"
 
 
 def test_resource_read_data():
-    resource = Resource(path="data/table.json")
-    assert resource.read_lists() == [
+    resource = Resource(path="data/table.json", type="table")
+    assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
         [2, "中国人"],
     ]
 
 
-def test_resource_read_lists():
-    resource = Resource(path="data/table.json")
-    lists = resource.read_lists()
-    assert lists == [
+def test_resource_read_cells():
+    resource = Resource(path="data/table.json", type="table")
+    assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
         [2, "中国人"],
@@ -45,7 +40,7 @@ def test_resource_read_lists():
 
 
 def test_resource_read_rows():
-    resource = Resource(path="data/table.json")
+    resource = Resource(path="data/table.json", type="table")
     rows = resource.read_rows()
     assert rows == [
         {"id": 1, "name": "english"},

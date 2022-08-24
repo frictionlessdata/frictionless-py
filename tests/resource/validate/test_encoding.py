@@ -1,23 +1,24 @@
-from frictionless import Resource, helpers
+import pytest
+from frictionless import Resource, platform
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
-def test_validate_encoding():
+def test_resource_validate_encoding():
     resource = Resource("data/table.csv", encoding="utf-8")
     report = resource.validate()
     assert report.valid
 
 
-def test_validate_encoding_invalid():
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_resource_validate_encoding_invalid():
     resource = Resource("data/latin1.csv", encoding="utf-8")
     report = resource.validate()
     assert not report.valid
-    if IS_UNIX:
-        assert report.flatten(["code", "note"]) == [
-            [
-                "encoding-error",
-                "'utf-8' codec can't decode byte 0xa9 in position 20: invalid start byte",
-            ],
-        ]
+    assert report.flatten(["type", "note"]) == [
+        [
+            "encoding-error",
+            "'utf-8' codec can't decode byte 0xa9 in position 20: invalid start byte",
+        ],
+    ]

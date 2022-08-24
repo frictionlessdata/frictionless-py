@@ -1,12 +1,8 @@
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Format
+# General
 
 
 def test_resource_format_csv():
@@ -39,5 +35,5 @@ def test_resource_format_error_non_matching_format():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "format-error"
+    assert error.type == "format-error"
     assert error.note == 'invalid excel file "data/table.csv"'

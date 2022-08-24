@@ -1,3 +1,5 @@
+# TODO: rename into program
+from __future__ import annotations
 import sys
 import typer
 from typing import Optional
@@ -33,7 +35,7 @@ def version(value: bool):
 
 @program.callback()
 def program_main(
-    version: Optional[bool] = typer.Option(None, "--version", callback=version)
+    version: Optional[bool] = typer.Option(None, "--version", callback=version),
 ):
     """Describe, extract, validate and transform tabular data."""
     pass

@@ -10,10 +10,7 @@ def test_validate():
 
 
 def test_validate_invalid():
-    report = validate({"fields": {}})
-    assert report.flatten(["code", "note"]) == [
-        [
-            "schema-error",
-            '"{} is not of type \'array\'" at "fields" in metadata and at "properties/fields/type" in profile',
-        ],
+    report = validate({"fields": "bad"})
+    assert report.flatten(["type", "note"]) == [
+        ["schema-error", "'bad' is not of type 'array' at property 'fields'"],
     ]

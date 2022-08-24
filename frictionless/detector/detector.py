@@ -1,354 +1,195 @@
+from __future__ import annotations
+import os
+import attrs
 import codecs
-import chardet
+from pathlib import Path
 from copy import copy, deepcopy
-from typing import List, Dict
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
-from ..system import system
-from ..layout import Layout
-from ..schema import Schema
-from ..field import Field
-from .validate import validate
+from ..schema import Schema, Field
+from ..platform import platform
+from ..metadata import Metadata
+from ..fields import AnyField
+from ..dialect import Dialect
 from .. import settings
+from .. import helpers
 from .. import errors
 
+if TYPE_CHECKING:
+    from ..interfaces import IBuffer, IEncodingFunction
+    from ..resource import Resource
 
-# NOTE:
-# We might consider making this class instalce of Metadata
-# It will alow providing detector options declaratively e.g. in validation Inquiry
 
+@attrs.define(kw_only=True)
+class Detector(Metadata):
+    """Detector representation"""
 
-class Detector:
-    """Detector representation
+    # State
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Detector`
+    name: Optional[str] = None
+    """NOTE: add docs"""
 
-    Parameters:
+    title: Optional[str] = None
+    """NOTE: add docs"""
 
-        buffer_size? (int): The amount of bytes to be extracted as a buffer.
-            It defaults to 10000
+    description: Optional[str] = None
+    """NOTE: add docs"""
 
-        sample_size? (int): The amount of rows to be extracted as a sample.
-            It defaults to 100
-
-        encoding_function? (func): A custom encoding function for the file.
-
-        encoding_confidence? (float): Confidence value for encoding function.
-
-        field_type? (str): Enforce all the inferred types to be this type.
-            For more information, please check "Describing  Data" guide.
-
-        field_names? (str[]): Enforce all the inferred fields to have provided names.
-            For more information, please check "Describing  Data" guide.
-
-        field_confidence? (float): A number from 0 to 1 setting the infer confidence.
-            If  1 the data is guaranteed to be valid against the inferred schema.
-            For more information, please check "Describing  Data" guide.
-            It defaults to 0.9
-
-        field_float_numbers? (bool): Flag to indicate desired number type.
-            By default numbers will be `Decimal`; if `True` - `float`.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `False`
-
-        field_missing_values? (str[]): String to be considered as missing values.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `['']`
-
-        field_true_values? (str[]): String to be considered as true values.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `["true", "True", "TRUE", "1"]`
-
-        field_false_values? (str[]): String to be considered as false values.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `["false", "False", "FALSE", "0"]`
-
-        schema_sync? (bool): Whether to sync the schema.
-            If it sets to `True` the provided schema will be mapped to
-            the inferred schema. It means that, for example, you can
-            provide a subset of fileds to be applied on top of the inferred
-            fields or the provided schema can have different order of fields.
-
-        schema_patch? (dict): A dictionary to be used as an inferred schema patch.
-            The form of this dictionary should follow the Schema descriptor form
-            except for the `fields` property which should be a mapping with the
-            key named after a field name and the values being a field patch.
-            For more information, please check "Extracting Data" guide.
+    buffer_size: int = settings.DEFAULT_BUFFER_SIZE
+    """
+    The amount of bytes to be extracted as a buffer.
+    It defaults to 10000
     """
 
-    validate = validate
+    sample_size: int = settings.DEFAULT_SAMPLE_SIZE
+    """
+    The amount of rows to be extracted as a sample.
+    It defaults to 100
+    """
 
-    def __init__(
-        self,
-        buffer_size=settings.DEFAULT_BUFFER_SIZE,
-        sample_size=settings.DEFAULT_SAMPLE_SIZE,
-        encoding_function=None,
-        encoding_confidence=settings.DEFAULT_ENCODING_CONFIDENCE,
-        field_type=None,
-        field_names=None,
-        field_confidence=settings.DEFAULT_FIELD_CONFIDENCE,
-        field_float_numbers=settings.DEFAULT_FLOAT_NUMBERS,
-        field_missing_values=settings.DEFAULT_MISSING_VALUES,
-        field_true_values=settings.DEFAULT_TRUE_VALUES,
-        field_false_values=settings.DEFAULT_FALSE_VALUES,
-        schema_sync=False,
-        schema_patch=None,
-    ):
-        self.__buffer_size = buffer_size
-        self.__sample_size = sample_size
-        self.__encoding_function = encoding_function
-        self.__encoding_confidence = encoding_confidence
-        self.__field_type = field_type
-        self.__field_names = field_names
-        self.__field_confidence = field_confidence
-        self.__field_float_numbers = field_float_numbers
-        self.__field_missing_values = field_missing_values
-        self.__field_true_values = field_true_values
-        self.__field_false_values = field_false_values
-        self.__schema_sync = schema_sync
-        self.__schema_patch = schema_patch
+    encoding_function: Optional[IEncodingFunction] = None
+    """
+    A custom encoding function for the file.
+    """
 
-    @property
-    def buffer_size(self) -> int:
-        """Returns buffer size of the detector. Default value is 10000.
+    encoding_confidence: float = settings.DEFAULT_ENCODING_CONFIDENCE
+    """
+    Confidence value for encoding function.
+    """
 
-        Returns:
-            int: detector buffer size
-        """
-        return self.__buffer_size
+    field_type: Optional[str] = None
+    """
+    Enforce all the inferred types to be this type.
+    For more information, please check "Describing  Data" guide.
+    """
 
-    @buffer_size.setter
-    def buffer_size(self, value: int):
-        """Sets buffer size for detector.
+    field_names: Optional[List[str]] = None
+    """
+    Enforce all the inferred fields to have provided names.
+    For more information, please check "Describing  Data" guide.
+    """
 
-        Parameters:
-            value (int): detector buffer size
-        """
-        self.__buffer_size = value
+    field_confidence: float = settings.DEFAULT_FIELD_CONFIDENCE
+    """
+    A number from 0 to 1 setting the infer confidence.
+    If  1 the data is guaranteed to be valid against the inferred schema.
+    For more information, please check "Describing  Data" guide.
+    It defaults to 0.9
+    """
 
-    @property
-    def sample_size(self) -> int:
-        """Returns sample size of the detector. Default value is 100.
+    field_float_numbers: bool = settings.DEFAULT_FLOAT_NUMBERS
+    """
+    Flag to indicate desired number type.
+    By default numbers will be `Decimal`; if `True` - `float`.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `False`
+    """
 
-        Returns:
-            int: detector sample size
-        """
-        return self.__sample_size
+    field_missing_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_MISSING_VALUES.copy,
+    )
+    """
+    String to be considered as missing values.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `['']`
+    """
 
-    @sample_size.setter
-    def sample_size(self, value: int):
-        """Sets sample size for detector.
+    field_true_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_TRUE_VALUES.copy,
+    )
+    """
+    String to be considered as true values.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `["true", "True", "TRUE", "1"]`
+    """
 
-        Parameters:
-            value (int): detector sample size
-        """
-        self.__sample_size = value
+    field_false_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_FALSE_VALUES.copy,
+    )
+    """
+    String to be considered as false values.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `["false", "False", "FALSE", "0"]`
+    """
 
-    @property
-    def encoding_function(self) -> any:
-        """Returns detector custom encoding function
+    schema_sync: bool = False
+    """
+    Whether to sync the schema.
+    If it sets to `True` the provided schema will be mapped to
+    the inferred schema. It means that, for example, you can
+    provide a subset of fileds to be applied on top of the inferred
+    fields or the provided schema can have different order of fields.
+    """
 
-        Returns:
-            any: detector custom encoding function
-        """
-        return self.__encoding_function
-
-    @encoding_function.setter
-    def encoding_function(self, value: any):
-        """Sets detector custom encoding function for the resource to be read.
-
-        Parameters:
-            value (any): detector custom encoding function
-        """
-        self.__encoding_function = value
-
-    @property
-    def encoding_confidence(self) -> float:
-        """Returns confidence value for detector encoding function.
-
-        Returns:
-            float: detector encoding function confidence
-        """
-        return self.__encoding_confidence
-
-    @encoding_confidence.setter
-    def encoding_confidence(self, value: float):
-        """Sets confidence value for detector encoding function. Default value
-        is None.
-
-        Parameters:
-            value (float): detector encoding function confidence
-        """
-        self.__encoding_confidence = value
-
-    @property
-    def field_type(self) -> str:
-        """Returns field type of the detector. Default value is None.
-
-        Returns:
-            str: detector inferred field types
-        """
-        return self.__field_type
-
-    @field_type.setter
-    def field_type(self, value: str):
-        """Sets field type for all inferred fields by the detector.
-
-        Parameters:
-            value (str): detector inferred field types
-        """
-        self.__field_type = value
-
-    @property
-    def field_names(self) -> List[str]:
-        """Returns inferred field names list.
-
-        Returns:
-            str[]: detector inferred field names
-        """
-        return self.__field_names
-
-    @field_names.setter
-    def field_names(self, value: List[str]):
-        """Sets field names for all inferred fields by the detector.
-
-        Parameters:
-            value (str[]): detector inferred field names
-        """
-        self.__field_names = value
-
-    @property
-    def field_confidence(self) -> float:
-        """Returns detector inference confidence value. Default value is 0.9.
-
-        Returns:
-            float: detector inference confidence value
-        """
-        return self.__field_confidence
-
-    @field_confidence.setter
-    def field_confidence(self, value: float):
-        """Sets inference confidence value for detector. Default value is 0.9.
-
-        Parameters:
-            value (float): detector inference confidence value
-        """
-        self.__field_confidence = value
-
-    @property
-    def field_float_numbers(self) -> bool:
-        """Returns detector convert decimal to float flag value.
-
-        Returns:
-            bool: detector convert decimal to float flag
-        """
-        return self.__field_float_numbers
-
-    @field_float_numbers.setter
-    def field_float_numbers(self, value: bool):
-        """Sets detector convert decimal to float flag.
-
-        Parameters:
-            value (bool): detector convert decimal to float flag
-        """
-        self.__field_float_numbers = value
-
-    @property
-    def field_missing_values(self) -> List[str]:
-        """Returns detector fields missing values list.
-
-        Returns:
-            str[]: detector fields missing values list
-        """
-        return self.__field_missing_values
-
-    @field_missing_values.setter
-    def field_missing_values(self, value: List[str]):
-        """Sets detector fields missing values list.
-
-        Parameters:
-            value (str[]): detector fields missing values list
-        """
-        self.__field_missing_values = value
-
-    @property
-    def field_true_values(self) -> List[str]:
-        """Returns detector fields true values list.
-
-        Returns:
-            str[]: detector fields true values list
-        """
-        return self.__field_true_values
-
-    @field_true_values.setter
-    def field_true_values(self, value: List[str]):
-        """Sets detector fields true values list.
-
-        Parameters:
-            value (str[]): detector fields true values list
-        """
-        self.__field_true_values = value
-
-    @property
-    def field_false_values(self) -> List[str]:
-        """Returns detector fields false values list.
-
-        Returns:
-            str[]: detector fields false values list
-        """
-        return self.__field_false_values
-
-    @field_false_values.setter
-    def field_false_values(self, value: List[str]):
-        """Sets detector fields false values list.
-
-        Parameters:
-            value (str[]): detector fields false values list
-        """
-        self.__field_false_values = value
-
-    @property
-    def schema_sync(self) -> bool:
-        """Returns detector schema_sync flag value.
-
-        Returns:
-            bool: detector schema_sync flag value
-        """
-        return self.__schema_sync
-
-    @schema_sync.setter
-    def schema_sync(self, value: bool):
-        """Sets detector schema_sync flag value. If set to true, it
-        syncs provided schema's field order based on the header's
-        field order.
-
-        Parameters:
-            value (bool): detector schema_sync flag value
-        """
-        self.__schema_sync = value
-
-    @property
-    def schema_patch(self) -> Dict:
-        """Returns detector resource fields to change.
-
-        Returns:
-            Dict: detector resource fields to change
-        """
-        return self.__schema_patch
-
-    @schema_patch.setter
-    def schema_patch(self, value: Dict):
-        """Sets detector resource fields to change.
-
-        Parameters:
-            value (Dict): detector resource fields to change
-        """
-        self.__schema_patch = value
+    schema_patch: Optional[dict] = None
+    """
+    A dictionary to be used as an inferred schema patch.
+    The form of this dictionary should follow the Schema descriptor form
+    except for the `fields` property which should be a mapping with the
+    key named after a field name and the values being a field patch.
+    For more information, please check "Extracting Data" guide.
+    """
 
     # Detect
 
-    def detect_encoding(self, buffer, *, encoding=None):
+    # TODO: support loading descriptor for detection?
+    @staticmethod
+    def detect_descriptor(source: Any) -> Optional[str]:
+        """Return an descriptor type as 'resource' or 'package'"""
+        if isinstance(source, Path):
+            source = str(source)
+        for name, trait in settings.ENTITY_TRAITS.items():
+            if isinstance(source, dict):
+                if set(trait).intersection(source.keys()):
+                    return name
+            elif isinstance(source, str):
+                if source.endswith((f"{name}.json", f"{name}.yaml")):
+                    return name
+
+    def detect_resource(self, resource: Resource) -> None:
+        """Detect resource's metadata
+
+        It works in-place updating a provided resource.
+        """
+
+        # Detect name
+        name = "memory"
+        if resource.path:
+            names = []
+            for part in [resource.path] + resource.extrapaths:
+                name = os.path.splitext(os.path.basename(part))[0]
+                names.append(name)
+            name = os.path.commonprefix(names)
+            name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
+            name = name or "name"
+
+        # Detect details
+        scheme = ""
+        format = ""
+        compression = None
+        innerpath = None
+        if resource.path:
+            normpath = resource.normpath
+            scheme, format = helpers.parse_scheme_and_format(normpath)
+            if format in settings.COMPRESSION_FORMATS:
+                compression = format
+                normpath = normpath[: -len(format) - 1]
+                if resource.innerpath:
+                    normpath = os.path.join(normpath, resource.innerpath)
+                scheme, format = helpers.parse_scheme_and_format(normpath)
+                if format:
+                    name = os.path.splitext(name)[0]
+
+        # Apply detected
+        resource.set_not_defined("name", name)
+        resource.set_not_defined("type", settings.DEFAULT_TYPE)
+        resource.set_not_defined("scheme", scheme)
+        resource.set_not_defined("format", format)
+        resource.set_not_defined("mediatype", f"application/{resource.format}")
+        resource.set_not_defined("compression", compression)
+        resource.set_not_defined("innerpath", innerpath)
+
+    def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
 
         Parameters:
@@ -359,23 +200,21 @@ class Detector:
         """
 
         # User defined
-        if self.__encoding_function:
-            return self.__encoding_function(buffer)
+        if self.encoding_function:
+            return self.encoding_function(buffer)
 
         # Detect encoding
         if not encoding:
-            detector = chardet.UniversalDetector()
+            detector = platform.chardet.UniversalDetector()
             for line in buffer.splitlines():
                 detector.feed(line)
             detector.close()
             encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
-            if confidence < self.__encoding_confidence:
+            if confidence < self.encoding_confidence:
                 encoding = settings.DEFAULT_ENCODING
             if encoding == "ascii":
                 encoding = settings.DEFAULT_ENCODING
-            if encoding is None:
-                encoding = self.resource.detector.detect_encoding(buffer)
 
         # Normalize encoding
         encoding = codecs.lookup(encoding).name
@@ -393,48 +232,65 @@ class Detector:
 
         return encoding
 
-    def detect_layout(self, sample, *, layout=None):
-        """Detect layout from sample
+    def detect_dialect(
+        self,
+        sample: List[list],
+        *,
+        dialect: Optional[Dialect] = None,
+    ) -> Dialect:
+        """Detect dialect from sample
 
         Parameters:
             sample (any[][]): data sample
-            layout? (Layout): data layout
+            dialect? (Dialect): file dialect
 
         Returns:
-            Layout: layout
+            Dialect: dialect
         """
-        layout = layout or Layout()
+        dialect = dialect or Dialect()
+        comment_filter = dialect.create_comment_filter()
 
         # Infer header
         widths = [len(cells) for cells in sample]
-        if layout.get("header") is None and layout.get("headerRows") is None and widths:
+        if (
+            widths
+            and not dialect.has_defined("header")
+            and not dialect.has_defined("header_rows")
+        ):
 
             # This algorithm tries to find a header row
             # that is close to average sample width or use default one
             # We use it to eleminate initial rows that are comments/etc
 
             # Get header rows
-            row_number = 0
-            header_rows = settings.DEFAULT_HEADER_ROWS
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
-            for row_position, cells in enumerate(sample, start=1):
-                if layout.read_filter_rows(cells, row_position=row_position):
-                    row_number += 1
-                    if len(cells) in match:
-                        header_rows = [row_number]
-                        break
+            header_rows = settings.DEFAULT_HEADER_ROWS.copy()
+            for row_number, cells in enumerate(sample, start=1):
+                if comment_filter:
+                    if not comment_filter(row_number, cells):
+                        continue
+                if len(cells) in match:
+                    header_rows = [row_number]
+                    break
 
             # Set header rows
             if not header_rows:
-                layout["header"] = False
+                dialect.header = False
             elif header_rows != settings.DEFAULT_HEADER_ROWS:
-                layout["headerRows"] = header_rows
+                dialect.header_rows = header_rows
 
-        return layout
+        return dialect
 
-    def detect_schema(self, fragment, *, labels=None, schema=None):
+    def detect_schema(
+        self,
+        fragment: List[list],
+        *,
+        labels: Optional[List[str]] = None,
+        schema: Optional[Schema] = None,
+        field_candidates=settings.DEFAULT_FIELD_CANDIDATES,
+    ) -> Schema:
         """Detect schema from fragment
 
         Parameters:
@@ -447,15 +303,15 @@ class Detector:
         """
 
         # Create schema
-        if not schema or not schema.fields:
-            schema = Schema()
+        if not schema:
+            schema = Schema(fields=[])
 
             # Missing values
-            if self.__field_missing_values != settings.DEFAULT_MISSING_VALUES:
-                schema.missing_values = self.__field_missing_values
+            if self.field_missing_values != settings.DEFAULT_MISSING_VALUES:
+                schema.missing_values = self.field_missing_values  # type: ignore
 
             # Prepare names
-            names = copy(self.__field_names or labels or [])
+            names = copy(self.field_names or labels or [])
             names = list(map(lambda cell: cell.replace("\n", " ").strip(), names))
             if not names:
                 if not fragment:
@@ -476,23 +332,28 @@ class Detector:
                     seen_names.append(name)
 
             # Handle type/empty
-            if self.__field_type or not fragment:
-                type = self.__field_type
-                schema.fields = [{"name": name, "type": type or "any"} for name in names]
+            if self.field_type or not fragment:
+                type = self.field_type or settings.DEFAULT_FIELD_TYPE
+                schema.fields = []
+                for name in names:
+                    field = Field.from_descriptor({"name": name, "type": type})
+                    schema.add_field(field)
                 return schema
 
             # Prepare runners
             runners = []
             runner_fields = []  # we use shared fields
-            for candidate in system.create_candidates():
-                field = Field(candidate)
-                if field.type == "number" and self.__field_float_numbers:
-                    field.float_number = True
+            for candidate in field_candidates:
+                descriptor = candidate.copy()
+                descriptor["name"] = "shared"
+                field = Field.from_descriptor(descriptor)
+                if field.type == "number" and self.field_float_numbers:
+                    field.float_number = True  # type: ignore
                 elif field.type == "boolean":
-                    if self.__field_true_values != settings.DEFAULT_TRUE_VALUES:
-                        field.true_values = self.__field_true_values
-                    if self.__field_false_values != settings.DEFAULT_FALSE_VALUES:
-                        field.false_values = self.__field_false_values
+                    if self.field_true_values != settings.DEFAULT_TRUE_VALUES:
+                        field.true_values = self.field_true_values  # type: ignore
+                    if self.field_false_values != settings.DEFAULT_FALSE_VALUES:
+                        field.false_values = self.field_false_values  # type: ignore
                 runner_fields.append(field)
             for index, name in enumerate(names):
                 runners.append([])
@@ -502,23 +363,23 @@ class Detector:
             # Infer fields
             fields = [None] * len(names)
             max_score = [len(fragment)] * len(names)
-            threshold = len(fragment) * (self.__field_confidence - 1)
+            threshold = len(fragment) * (self.field_confidence - 1)
             for cells in fragment:
                 for index, name in enumerate(names):
                     if fields[index] is not None:
                         continue
                     source = cells[index] if len(cells) > index else None
-                    is_field_missing_value = source in self.__field_missing_values
+                    is_field_missing_value = source in self.field_missing_values
                     if is_field_missing_value:
                         max_score[index] -= 1
                     for runner in runners[index]:
                         if runner["score"] < threshold:
                             continue
                         if not is_field_missing_value:
-                            target, notes = runner["field"].read_cell(source)
+                            _, notes = runner["field"].read_cell(source)
                             runner["score"] += 1 if not notes else -1
                         if max_score[index] > 0 and runner["score"] >= (
-                            max_score[index] * self.__field_confidence
+                            max_score[index] * self.field_confidence
                         ):
                             field = runner["field"].to_copy()
                             field.name = name
@@ -530,33 +391,57 @@ class Detector:
             # For not inferred fields we use the "any" type field as a default
             for index, name in enumerate(names):
                 if fields[index] is None:
-                    fields[index] = Field(name=name, type="any", schema=schema)
-            schema.fields = fields
+                    fields[index] = AnyField(name=name, schema=schema)  # type: ignore
+            schema.fields = fields  # type: ignore
 
         # Sync schema
-        if self.__schema_sync:
+        if self.schema_sync:
             if labels:
-                fields = []
-                mapping = {field.get("name"): field for field in schema.fields}
+                if len(labels) != len(set(labels)):
+                    note = '"schema_sync" requires unique labels in the header'
+                    raise FrictionlessException(note)
+                mapping = {field.name: field for field in schema.fields}  # type: ignore
+                schema.clear_fields()
                 for name in labels:
-                    fields.append(mapping.get(name, {"name": name, "type": "any"}))
-                schema.fields = fields
+                    field = mapping.get(name)
+                    if not field:
+                        field = Field.from_descriptor({"name": name, "type": "any"})
+                    schema.add_field(field)
 
         # Patch schema
-        if self.__schema_patch:
-            schema_patch = deepcopy(self.__schema_patch)
-            fields = schema_patch.pop("fields", {})
-            schema.update(schema_patch)
-            for field in schema.fields:
-                field.update((fields.get(field.get("name"), {})))
+        if self.schema_patch:
+            patch = deepcopy(self.schema_patch)
+            patch_fields = patch.pop("fields", {})
+            descriptor = schema.to_descriptor()
+            descriptor.update(patch)
+            for field_descriptor in descriptor.get("fields", []):
+                field_name = field_descriptor.get("name")
+                field_patch = patch_fields.get(field_name, {})
+                field_descriptor.update(field_patch)
+            schema = Schema.from_descriptor(descriptor)
 
-        # Validate schema
-        # NOTE: at some point we might need to remove it for transform needs
-        if len(schema.field_names) != len(set(schema.field_names)):
-            if self.__schema_sync:
-                note = 'Duplicate labels in header is not supported with "schema_sync"'
-                raise FrictionlessException(errors.GeneralError(note=note))
-            note = "Schemas with duplicate field names are not supported"
-            raise FrictionlessException(errors.SchemaError(note=note))
+        return schema  # type: ignore
 
-        return schema
+    # Metadata
+
+    metadata_type = "detector"
+    metadata_Error = errors.DetectorError
+    metadata_profile = {
+        "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "bufferSize": {"type": "integer"},
+            "sampleSize": {"type": "integer"},
+            "encodingConfidence": {"type": "number"},
+            "fieldType": {"type": "string"},
+            "fieldNames": {"type": "array"},
+            "fieldConfidence": {"type": "number"},
+            "fieldFloatNumbers": {"type": "boolean"},
+            "fieldMissingValues": {"type": "array"},
+            "fieldTrueValues": {"type": "array"},
+            "fieldFalseValues": {"type": "array"},
+            "schemaSync": {"type": "boolean"},
+            "schemaPatch": {"type": "object"},
+        }
+    }

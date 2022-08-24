@@ -1,76 +1,79 @@
+from __future__ import annotations
+import attrs
 import simpleeval
-from ...step import Step
-from ...field import Field
-from ... import helpers
+from copy import deepcopy
+from typing import TYPE_CHECKING, Optional, Any
+from ...pipeline import Step
+from ...schema import Field
+
+if TYPE_CHECKING:
+    from ...interfaces import IDescriptor
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
+@attrs.define(kw_only=True)
 class field_add(Step):
     """Add field"""
 
-    code = "field-add"
+    type = "field-add"
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        name=None,
-        value=None,
-        formula=None,
-        function=None,
-        position=None,
-        incremental=False,
-        **options,
-    ):
-        self.setinitial("name", name)
-        self.setinitial("value", value)
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        self.setinitial("position", position if not incremental else 1)
-        self.setinitial("incremental", incremental)
-        for key, value in helpers.create_descriptor(**options).items():
-            self.setinitial(key, value)
-        super().__init__(descriptor)
+    # State
+
+    name: str
+    """NOTE: add docs"""
+
+    value: Optional[Any] = None
+    """NOTE: add docs"""
+
+    formula: Optional[Any] = None
+    """NOTE: add docs"""
+
+    function: Optional[Any] = None
+    """NOTE: add docs"""
+
+    position: Optional[int] = None
+    """NOTE: add docs"""
+
+    descriptor: Optional[IDescriptor] = None
+    """NOTE: add docs"""
+
+    incremental: bool = False
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        value = self.value
+        position = self.position
+        function = self.function
         table = resource.to_petl()
-        descriptor = self.to_dict()
-        descriptor.pop("code", None)
-        name = descriptor.pop("name", None)
-        value = descriptor.pop("value", None)
-        formula = descriptor.pop("formula", None)
-        function = descriptor.pop("function", None)
-        position = descriptor.pop("position", None)
-        incremental = descriptor.pop("incremental", None)
-        field = Field(descriptor, name=name)
+        descriptor = deepcopy(self.descriptor) or {}
+        if self.name:
+            descriptor["name"] = self.name
+        descriptor.setdefault("type", "any")
+        if self.incremental:
+            position = position or 1
+            descriptor["type"] = "integer"
+        field = Field.from_descriptor(descriptor)
         index = position - 1 if position else None
-        if index is None:
-            resource.schema.add_field(field)
+        resource.schema.add_field(field, position=position)
+        if self.incremental:
+            resource.data = table.addrownumbers(field=self.name)  # type: ignore
         else:
-            resource.schema.fields.insert(index, field)
-        if incremental:
-            resource.data = table.addrownumbers(field=name)
-        else:
-            if formula:
-                function = lambda row: simpleeval.simple_eval(formula, names=row)
+            if self.formula:
+                function = lambda row: simpleeval.simple_eval(self.formula, names=row)
             value = value or function
-            resource.data = table.addfield(name, value=value, index=index)
+            resource.data = table.addfield(self.name, value=value, index=index)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name"],
         "properties": {
             "name": {"type": "string"},
             "value": {},
-            "position": {},
-            "incremental": {},
+            "formula": {"type": "string"},
+            "position": {"type": "integer"},
+            "descriptor": {"type": "object"},
+            "incremental": {"type": "boolean"},
         },
     }

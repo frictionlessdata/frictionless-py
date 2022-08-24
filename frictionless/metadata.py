@@ -1,162 +1,250 @@
-import io
+from __future__ import annotations
 import re
+import io
 import json
-import yaml
-import jsonschema
+import pprint
+import inspect
 import stringcase
-from collections.abc import Mapping
 from pathlib import Path
-from operator import setitem
-from functools import partial
-from importlib import import_module
+from copy import deepcopy
+from collections.abc import Mapping
+from typing import TYPE_CHECKING
+from typing import Generator, ClassVar, Optional, Union, List, Dict, Any, Set, Type
+from typing_extensions import Self
 from .exception import FrictionlessException
-from .helpers import cached_property, render_markdown
+from .platform import platform
 from . import helpers
-import pprint as pp
+
+if TYPE_CHECKING:
+    from .error import Error
+    from .report import Report
+    from .interfaces import IDescriptor
 
 
-# NOTE:
-# In general, it will be better to simplify magic used in Metadata
-# For exmple, we can make default values (like empty list) immutable
-# to get rid of metadata_attach and related complexity
-# Also, take a look at `resource.open` all these seitems trigger onchage (innefective)
-# We might consider having something like `with metadata.disable_onchange`
+# NOTE: review and clean this class
+# NOTE: can we generate metadata_profile from dataclasses?
+# NOTE: insert __init__ params docs using instance properties data?
 
 
-class Metadata(helpers.ControlledDict):
-    """Metadata representation
+class Metaclass(type):
+    # TODO: why it's called twice for every class?
+    def __init__(cls, *args, **kwarts):
+        if cls.metadata_profile_patch:  # type: ignore
+            cls.metadata_profile = helpers.merge_jsonschema(
+                cls.metadata_profile,  # type: ignore
+                cls.metadata_profile_patch,  # type: ignore
+            )
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Metadata`
+    def __call__(cls, *args, **kwargs):
+        obj = None
+        if hasattr(cls, "__create__"):
+            obj = cls.__create__(*args, **kwargs)  # type: ignore
+        if obj == None:
+            obj = type.__call__(cls, *args, **kwargs)
+        cls.__repr__ = Metadata.__repr__  # type: ignore
+        obj.metadata_initiated = True
+        return obj
 
-    Parameters:
-        descriptor? (str|dict): metadata descriptor
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
+class Metadata(metaclass=Metaclass):
+    """Metadata represenation"""
 
-    """
+    custom: dict[str, Any] = {}
+    """NOTE: add docs"""
 
-    metadata_Error = None
-    metadata_profile = None
-    metadata_duplicate = False
-
-    def __init__(self, descriptor=None):
-        self.__Error = self.metadata_Error or import_module("frictionless.errors").Error
-        metadata = self.metadata_extract(descriptor)
-        for key, value in metadata.items():
-            dict.setdefault(self, key, value)
-        self.__onchange__()
+    def __new__(cls, *args, **kwargs):
+        obj = super().__new__(cls)
+        obj.custom = obj.custom.copy()
+        obj.metadata_defaults = cls.metadata_defaults.copy()
+        obj.metadata_assigned = cls.metadata_assigned.copy()
+        obj.metadata_assigned.update(kwargs.keys())
+        return obj
 
     def __setattr__(self, name, value):
-        if hasattr(self, "_Metadata__Error"):
-            for Type in type(self).__mro__:
-                if Type is Metadata:
-                    break
-                attr = Type.__dict__.get(name)
-                if attr:
-                    write = getattr(attr, "metadata_write", None)
-                    if write:
-                        if callable(write):
-                            return write(self, value)
-                        return setitem(self, stringcase.camelcase(name), value)
-        if not name.startswith("_"):
-            message = f"'{type(self).__name__}' object has no attribute '{name}'"
-            raise AttributeError(message)
-        return super().__setattr__(name, value)
-
-    def __onchange__(self, onchange=None):
-        super().__onchange__(onchange)
-        if hasattr(self, "_Metadata__Error"):
-            for key, attr in type(self).__dict__.items():
-                reset = getattr(attr, "metadata_reset", None)
-                if reset and key in self.__dict__:
-                    self.__dict__.pop(key)
-            self.metadata_process()
-
-    def setinitial(self, key, value):
-        """Set an initial item in a subclass' constructor
-
-        Parameters:
-            key (str): key
-            value (any): value
-        """
-        if value is not None:
-            dict.__setitem__(self, key, value)
+        if not name.startswith(("_", "metadata_")):
+            if self.metadata_initiated:
+                if value is not None:
+                    self.metadata_assigned.add(name)
+                elif name in self.metadata_assigned:
+                    self.metadata_assigned.remove(name)
+            elif isinstance(value, (list, dict)):
+                self.metadata_defaults[name] = value.copy()
+            elif isinstance(value, type):
+                self.metadata_defaults[name] = value.__dict__.copy()
+        super().__setattr__(name, value)
 
     def __repr__(self) -> str:
-        """Returns string representation for metadata."""
-        return pp.pformat(self.to_dict())
+        return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
-    # Expand
+    # Props
 
-    def expand(self):
-        pass
+    @property
+    def description_html(self) -> str:
+        """Description in HTML"""
+        description = getattr(self, "description", "")
+        try:
+            html = platform.marko.convert(description)
+            html = html.replace("\n", "")
+            return html
+        except Exception:
+            return ""
 
-    # Infer
+    @property
+    def description_text(self) -> str:
+        """Description in Text"""
 
-    def infer(self):
-        pass
+        class HTMLFilter(platform.html_parser.HTMLParser):
+            text = ""
 
-    # Import/Export
+            def handle_data(self, data):
+                self.text += data
+                self.text += " "
 
-    def to_copy(self):
-        """Create a copy of the metadata
+        parser = HTMLFilter()
+        parser.feed(self.description_html)
+        return parser.text.strip()
 
-        Returns:
-            Metadata: a copy of the metadata
-        """
-        return type(self)(self.to_dict())
+    # Defined
 
-    def to_dict(self):
-        """Convert metadata to a plain dict
+    def list_defined(self) -> List[str]:
+        defined = list(self.metadata_assigned)
+        for name, default in self.metadata_defaults.items():
+            value = getattr(self, name, None)
+            if isinstance(value, type):
+                value = value.__dict__.copy()
+            if value != default:
+                defined.append(name)
+        return defined
 
-        Returns:
-            dict: metadata as a plain dict
-        """
-        return metadata_to_dict(self)
+    def add_defined(self, name: str) -> None:
+        self.metadata_assigned.add(name)
 
-    def to_json(self, path=None, encoder_class=None):
+    def has_defined(self, name: str) -> bool:
+        return name in self.list_defined()
+
+    def get_defined(self, name: str, *, default: Any = None) -> Any:
+        if self.has_defined(name):
+            return getattr(self, name)
+        if default is not None:
+            return default
+
+    def set_not_defined(self, name: str, value: Any, *, distinct=False) -> None:
+        if not self.has_defined(name) and value is not None:
+            if distinct and getattr(self, name, None) == value:
+                return
+            setattr(self, name, value)
+
+    # Validate
+
+    @classmethod
+    def validate_descriptor(cls, descriptor: Union[IDescriptor, str]) -> Report:
+        errors = []
+        timer = helpers.Timer()
+        try:
+            cls.from_descriptor(descriptor)
+        except FrictionlessException as exception:
+            errors = exception.reasons if exception.reasons else [exception.error]
+        return platform.frictionless.Report.from_validation(
+            time=timer.time, errors=errors
+        )
+
+    # Convert
+
+    @classmethod
+    def from_options(cls, *args, **options) -> Self:
+        return cls(*args, **helpers.remove_non_values(options))
+
+    @classmethod
+    def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options) -> Self:
+        descriptor_path = None
+        if isinstance(descriptor, str):
+            descriptor_path = descriptor
+            basepath = options.pop("basepath", None)
+            descriptor = helpers.join_basepath(descriptor, basepath)
+            if "basepath" in inspect.signature(cls.__init__).parameters:
+                options["basepath"] = helpers.parse_basepath(descriptor)
+        descriptor = cls.metadata_retrieve(descriptor)
+        Class = cls.metadata_specify(type=descriptor.get("type")) or cls
+        Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
+        Class.metadata_transform(descriptor)
+        errors = list(Class.metadata_validate(descriptor))
+        if errors:
+            error = Error(note="descriptor is not valid")
+            raise FrictionlessException(error, reasons=errors)
+        metadata = Class.metadata_import(descriptor, **options)
+        if descriptor_path:
+            metadata.metadata_descriptor_path = descriptor_path
+            metadata.metadata_descriptor_initial = metadata.to_descriptor()
+        return metadata
+
+    def to_descriptor(self) -> IDescriptor:
+        descriptor = self.metadata_export()
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
+        errors = list(self.metadata_validate(descriptor))
+        if errors:
+            error = Error(note="descriptor is not valid")
+            raise FrictionlessException(error, reasons=errors)
+        return descriptor
+
+    def to_descriptor_source(self) -> Union[IDescriptor, str]:
+        """Export metadata as a descriptor or a descriptor path"""
+        descriptor = self.to_descriptor()
+        if self.metadata_descriptor_path:
+            if self.metadata_descriptor_initial == descriptor:
+                return self.metadata_descriptor_path
+        return descriptor
+
+    def to_copy(self, **options) -> Self:
+        """Create a copy of the metadata"""
+        return type(self).from_descriptor(self.to_descriptor(), **options)
+
+    def to_dict(self) -> IDescriptor:
+        """Export metadata as dictionary (alias for "to_descriptor")"""
+        return self.to_descriptor()
+
+    def to_json(
+        self, path: Optional[str] = None, encoder_class: Optional[Any] = None
+    ) -> str:
         """Save metadata as a json
 
         Parameters:
             path (str): target path
-
-        Raises:
-            FrictionlessException: on any error
         """
-        text = json.dumps(self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class)
-        if path:
-            try:
-                helpers.write_file(path, text)
-            except Exception as exc:
-                raise FrictionlessException(self.__Error(note=str(exc))) from exc
-        return text
-
-    def to_yaml(self, path=None):
-        """Save metadata as a yaml
-
-        Parameters:
-            path (str): target path
-
-        Raises:
-            FrictionlessException: on any error
-        """
-        text = yaml.dump(
-            self.to_dict(),
-            sort_keys=False,
-            allow_unicode=True,
-            Dumper=IndentDumper,
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
+        text = json.dumps(
+            self.to_descriptor(),
+            indent=2,
+            ensure_ascii=False,
+            cls=encoder_class,
         )
         if path:
             try:
                 helpers.write_file(path, text)
             except Exception as exc:
-                raise FrictionlessException(self.__Error(note=str(exc))) from exc
+                raise FrictionlessException(Error(note=str(exc))) from exc
         return text
 
-    def to_markdown(self, path: str = None, table: bool = False) -> str:
+    def to_yaml(self, path: Optional[str] = None) -> str:
+        """Save metadata as a yaml
+
+        Parameters:
+            path (str): target path
+        """
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
+        text = platform.yaml.dump(
+            self.to_descriptor(),
+            sort_keys=False,
+            allow_unicode=True,
+            Dumper=helpers.create_yaml_dumper(),
+        )
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(Error(note=str(exc))) from exc
+        return text
+
+    def to_markdown(self, path: Optional[str] = None, table: bool = False) -> str:
         """Convert metadata as a markdown
 
         This feature has been contributed to the framwork by Ethan Welty (@ezwelty):
@@ -165,172 +253,172 @@ class Metadata(helpers.ControlledDict):
         Parameters:
             path (str): target path
             table (bool): if true converts markdown to tabular format
-
-        Raises:
-            FrictionlessException: on any error
         """
-
+        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
         filename = self.__class__.__name__.lower()
         template = f"{filename}-table.md" if table is True else f"{filename}.md"
-        md_output = render_markdown(f"{template}", {filename: self}).strip()
+        descriptor = self.to_descriptor()
+        md_output = helpers.render_markdown(f"{template}", {filename: descriptor}).strip()
         if path:
             try:
                 helpers.write_file(path, md_output)
             except Exception as exc:
-                raise FrictionlessException(self.__Error(note=str(exc))) from exc
+                raise FrictionlessException(Error(note=str(exc))) from exc
         return md_output
 
     # Metadata
 
-    @property
-    def metadata_valid(self):
-        """
-        Returns:
-            bool: whether the metadata is valid
-        """
-        return not len(self.metadata_errors)
+    # TODO: add/improve types
+    metadata_type: ClassVar[str]
+    metadata_Error = None
+    metadata_profile = {}
+    metadata_profile_patch = {}
+    metadata_profile_merged = {}
+    metadata_initiated: bool = False
+    metadata_assigned: Set[str] = set()
+    metadata_defaults: Dict[str, Union[list, dict]] = {}
+    metadata_descriptor_path: Optional[str] = None
+    metadata_descriptor_initial: Optional[IDescriptor] = None
 
-    @property
-    def metadata_errors(self):
-        """
-        Returns:
-            Errors[]: a list of the metadata errors
-        """
-        return list(self.metadata_validate())
-
-    def metadata_attach(self, name, value):
-        """Helper method for attaching a value to  the metadata
-
-        Parameters:
-            name (str): name
-            value (any): value
-        """
-        if self.get(name) is not value:
-            onchange = partial(metadata_attach, self, name)
-            if isinstance(value, dict):
-                if not isinstance(value, Metadata):
-                    value = helpers.ControlledDict(value)
-                value.__onchange__(onchange)
-            elif isinstance(value, list):
-                value = helpers.ControlledList(value)
-                value.__onchange__(onchange)
-        return value
-
-    def metadata_extract(self, descriptor):
-        """Helper method called during the metadata extraction
-
-        Parameters:
-            descriptor (any): descriptor
-        """
+    @classmethod
+    def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
         try:
-            if descriptor is None:
-                return {}
             if isinstance(descriptor, Mapping):
-                if not self.metadata_duplicate:
-                    return descriptor
-                try:
-                    return metadata_to_dict(descriptor)
-                except Exception:
-                    note = "descriptor is not serializable"
-                    errors = import_module("frictionless.errors")
-                    raise FrictionlessException(errors.GeneralError(note=note))
+                return deepcopy(descriptor)
             if isinstance(descriptor, (str, Path)):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
-                    system = import_module("frictionless.system").system
-                    http_session = system.get_http_session()
-                    response = http_session.get(descriptor)
+                    response = platform.frictionless.system.http_session.get(descriptor)
                     response.raise_for_status()
                     content = response.text
                 else:
                     with open(descriptor, encoding="utf-8") as file:
                         content = file.read()
-                if descriptor.endswith((".yaml", ".yml")):
-                    metadata = yaml.safe_load(io.StringIO(content))
+                if descriptor.endswith(".yaml"):
+                    metadata = platform.yaml.safe_load(io.StringIO(content))
                 else:
                     metadata = json.loads(content)
                 assert isinstance(metadata, dict)
                 return metadata
             raise TypeError("descriptor type is not supported")
         except Exception as exception:
-            note = f'cannot extract metadata "{descriptor}" because "{exception}"'
-            raise FrictionlessException(self.__Error(note=note)) from exception
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+            note = f'cannot retrieve metadata "{descriptor}" because "{exception}"'
+            raise FrictionlessException(Error(note=note)) from exception
 
-    def metadata_process(self):
-        """Helper method called on any metadata change"""
+    @classmethod
+    def metadata_specify(
+        cls, *, type: Optional[str] = None, property: Optional[str] = None
+    ) -> Optional[Type[Metadata]]:
         pass
 
-    def metadata_validate(self, profile=None):
-        """Helper method called on any metadata change
+    @classmethod
+    def metadata_transform(cls, descriptor: IDescriptor):
+        for name in cls.metadata_profile.get("properties", {}):
+            value = descriptor.get(name)
+            Class = cls.metadata_specify(property=name)
+            if Class:
+                if isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, dict):
+                            type = item.get("type")
+                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass.metadata_transform(item)
+                elif isinstance(value, dict):
+                    Class.metadata_transform(value)
 
-        Parameters:
-            profile (dict): a profile to validate against of
-        """
-        profile = profile or self.metadata_profile
-        if profile:
-            validator_class = jsonschema.validators.validator_for(profile)
-            validator = validator_class(profile)
-            for error in validator.iter_errors(self):
-                # Withouth this resource with both path/data is invalid
-                if "is valid under each of" in error.message:
-                    continue
-                metadata_path = "/".join(map(str, error.path))
-                profile_path = "/".join(map(str, error.schema_path))
-                # We need it because of the metadata.__repr__ overriding
-                message = re.sub(r"\s+", " ", error.message)
-                note = '"%s" at "%s" in metadata and at "%s" in profile'
-                note = note % (message, metadata_path, profile_path)
-                yield self.__Error(note=note)
-        yield from []
+    @classmethod
+    def metadata_validate(
+        cls,
+        descriptor: IDescriptor,
+        *,
+        profile: Optional[Union[IDescriptor, str]] = None,
+        error_class: Optional[Type[Error]] = None,
+    ) -> Generator[Error, None, None]:
+        Error = error_class
+        if not Error:
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+        profile = profile or cls.metadata_profile
+        if isinstance(profile, str):
+            profile = cls.metadata_retrieve(profile)
+        validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
+        validator = validator_class(profile)
+        for error in validator.iter_errors(descriptor):
+            metadata_path = "/".join(map(str, error.path))
+            message = re.sub(r"\s+", " ", error.message)
+            note = message
+            if metadata_path:
+                note = f"{note} at property '{metadata_path}'"
+            yield Error(note=note)
+        for name in cls.metadata_profile.get("properties", {}):
+            value = descriptor.get(name)
+            Class = cls.metadata_specify(property=name)
+            if Class:
+                if isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, dict):
+                            type = item.get("type")
+                            ItemClass = Class.metadata_specify(type=type) or Class
+                            yield from ItemClass.metadata_validate(item)
+                elif isinstance(value, dict):
+                    yield from Class.metadata_validate(value)
 
-    # Helpers
+    @classmethod
+    def metadata_import(
+        cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options
+    ) -> Self:
+        merged_options = {}
+        basepath = options.pop("basepath", None)
+        is_typed_class = isinstance(getattr(cls, "type", None), str)
+        for name in cls.metadata_profile.get("properties", {}):
+            value = descriptor.pop(name, None)
+            if value is None or value == {}:
+                continue
+            if name == "type" and is_typed_class:
+                continue
+            Class = cls.metadata_specify(property=name)
+            if Class:
+                if isinstance(value, list):
+                    for ix, item in enumerate(value):
+                        if isinstance(item, dict):
+                            type = item.get("type")
+                            ItemClass = Class.metadata_specify(type=type) or Class
+                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)
+                        elif isinstance(item, str):
+                            value[ix] = Class.from_descriptor(item, basepath=basepath)
+                elif isinstance(value, dict):
+                    value = Class.metadata_import(value, basepath=basepath)
+                elif isinstance(value, str):
+                    value = Class.from_descriptor(value, basepath=basepath)
+            merged_options.setdefault(stringcase.snakecase(name), value)
+        merged_options.update(options)
+        if with_basepath:
+            merged_options["basepath"] = basepath
+        metadata = cls(**merged_options)
+        metadata.custom = descriptor
+        return metadata
 
-    @staticmethod
-    def property(func=None, *, cache=True, reset=True, write=True):
-        """Create a metadata property
-
-        Parameters:
-            func (func): method
-            cache? (bool): cache
-            reset? (bool): reset
-            write? (func): write
-        """
-
-        # Not caching
-        if not cache:
-            return property
-
-        # Actual property
-        def metadata_property(func):
-            prop = cached_property(func)
-            setattr(prop, "metadata_reset", reset)
-            setattr(prop, "metadata_write", write)
-            return prop
-
-        # Allow both forms
-        return metadata_property(func) if func else metadata_property
-
-
-# Internal
-
-
-def metadata_to_dict(value):
-    process = lambda value: value.to_dict() if hasattr(value, "to_dict") else value
-    if isinstance(value, Mapping):
-        value = {key: metadata_to_dict(process(value)) for key, value in value.items()}
-    elif isinstance(value, list):
-        value = [metadata_to_dict(process(value)) for value in value]
-    elif isinstance(value, set):
-        value = {metadata_to_dict(process(value)) for value in value}
-    return value
-
-
-def metadata_attach(self, name, value):
-    # Using standalone `setitem` without a wrapper doesn't work for Python3.6
-    return setitem(self, name, value)
-
-
-class IndentDumper(yaml.SafeDumper):
-    def increase_indent(self, flow=False, indentless=False):
-        return super().increase_indent(flow, False)
+    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
+        descriptor = {}
+        for name in self.metadata_profile.get("properties", {}):
+            if name in exclude:
+                continue
+            if name != "type" and not self.has_defined(stringcase.snakecase(name)):
+                continue
+            value = getattr(self, stringcase.snakecase(name), None)
+            Class = self.metadata_specify(property=name)
+            if value is None or (isinstance(value, dict) and value == {}):
+                continue
+            if Class:
+                if isinstance(value, list):
+                    value = [item.to_descriptor_source() for item in value]  # type: ignore
+                else:
+                    value = value.to_descriptor_source()  # type: ignore
+                    if not value:
+                        continue
+            if isinstance(value, (list, dict)):
+                value = deepcopy(value)
+            descriptor[name] = value
+        descriptor.update(self.custom)
+        return descriptor

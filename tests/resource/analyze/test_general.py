@@ -1,7 +1,9 @@
-from frictionless import Resource, helpers
+from frictionless import Resource, platform
+
+IS_UNIX = platform.type != "windows"
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_analyze_resource():
@@ -14,7 +16,8 @@ def test_analyze_resource():
         "fieldStats",
         "averageRecordSizeInBytes",
         "timeTaken",
-        "hash",
+        "md5",
+        "sha256",
         "bytes",
         "fields",
         "rows",
@@ -38,7 +41,8 @@ def test_analyze_resource_detailed():
         "correlations",
         "averageRecordSizeInBytes",
         "timeTaken",
-        "hash",
+        "md5",
+        "sha256",
         "bytes",
         "fields",
         "rows",
@@ -185,8 +189,6 @@ def test_analyze_resource_with_empty_rows():
         "fieldStats",
         "averageRecordSizeInBytes",
         "timeTaken",
-        "hash",
-        "bytes",
         "fields",
         "rows",
     ]
@@ -204,8 +206,6 @@ def test_analyze_resource_detailed_with_empty_rows():
         "fieldStats",
         "averageRecordSizeInBytes",
         "timeTaken",
-        "hash",
-        "bytes",
         "fields",
         "rows",
     ]

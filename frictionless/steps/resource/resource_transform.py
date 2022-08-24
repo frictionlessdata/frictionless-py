@@ -1,40 +1,38 @@
-from ...step import Step
-from ...actions import transform_resource
+from __future__ import annotations
+import attrs
+from typing import List
+from ...pipeline import Pipeline, Step
 from ...exception import FrictionlessException
 from ... import errors
 
 
-# NOTE:
-# Some of the following step use **options - we need to review/fix it
-# The step updating resource might benefit from having schema_patch argument
-
-
+@attrs.define(kw_only=True)
 class resource_transform(Step):
     """Transform resource"""
 
-    code = "resource-transform"
+    type = "resource-transform"
 
-    def __init__(self, descriptor=None, *, name=None, steps=None):
-        self.setinitial("name", name)
-        self.setinitial("steps", steps)
-        super().__init__(descriptor)
+    # State
+
+    name: str
+    """NOTE: add docs"""
+
+    steps: List[Step]
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_package(self, package):
-        name = self.get("name")
-        steps = self.get("steps")
-        resource = package.get_resource(name)
+        resource = package.get_resource(self.name)
         index = package.resources.index(resource)
         if not resource:
-            error = errors.ResourceError(note=f'No resource "{name}"')
+            error = errors.ResourceError(note=f'No resource "{self.name}"')
             raise FrictionlessException(error=error)
-        package.resources[index] = transform_resource(resource, steps=steps)
+        package.resources[index] = resource.transform(Pipeline(steps=self.steps))  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name", "steps"],
         "properties": {
             "name": {"type": "string"},

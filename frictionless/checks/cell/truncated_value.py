@@ -1,22 +1,38 @@
+from __future__ import annotations
+import attrs
+from ...checklist import Check
 from ... import errors
-from ...check import Check
 
 
+TRUNCATED_STRING_LENGTHS = [255]
+TRUNCATED_INTEGER_VALUES = [
+    # BigInt
+    18446744073709551616,
+    9223372036854775807,
+    # Int
+    4294967295,
+    2147483647,
+    # SummedInt
+    2097152,
+    # SmallInt
+    65535,
+    32767,
+]
+
+
+@attrs.define(kw_only=True)
 class truncated_value(Check):
     """Check for possible truncated values
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=([{"code": "truncated-value"}])`
 
     This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     """
 
-    code = "truncated-value"
+    type = "truncated-value"
     Errors = [errors.TruncatedValueError]
+
+    # Validate
 
     def validate_row(self, row):
         for field_name, cell in row.items():
@@ -40,32 +56,3 @@ class truncated_value(Check):
                 yield errors.TruncatedValueError.from_row(
                     row, note=note, field_name=field_name
                 )
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "properties": {},
-    }
-
-
-# Internal
-
-
-# TODO: move to root settings?
-TRUNCATED_STRING_LENGTHS = [
-    255,
-]
-TRUNCATED_INTEGER_VALUES = [
-    # BigInt
-    18446744073709551616,
-    9223372036854775807,
-    # Int
-    4294967295,
-    2147483647,
-    # SummedInt
-    2097152,
-    # SmallInt
-    65535,
-    32767,
-]

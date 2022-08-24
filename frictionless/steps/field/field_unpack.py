@@ -1,46 +1,47 @@
-from ...step import Step
-from ...field import Field
+# type: ignore
+from __future__ import annotations
+import attrs
+from typing import List
+from ...pipeline import Step
+from ... import fields
 
 
-# NOTE:
-# Some of the following step can support WHERE/PREDICAT arguments (see petl)
-# Some of the following step use **options - we need to review/fix it
-
-
+@attrs.define(kw_only=True)
 class field_unpack(Step):
     """Unpack field"""
 
-    code = "field-unpack"
+    type = "field-unpack"
 
-    def __init__(self, descriptor=None, *, name=None, to_names=None, preserve=False):
-        self.setinitial("name", name)
-        self.setinitial("toNames", to_names)
-        self.setinitial("preserve", preserve)
-        super().__init__(descriptor)
+    # State
+
+    name: str
+    """NOTE: add docs"""
+
+    to_names: List[str]
+    """NOTE: add docs"""
+
+    preserve: bool = False
+    """NOTE: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        to_names = self.get("toNames")
-        preserve = self.get("preserve")
-        field = resource.schema.get_field(name)
-        for to_name in to_names:
-            resource.schema.add_field(Field(name=to_name))
-        if not preserve:
-            resource.schema.remove_field(name)
+        field = resource.schema.get_field(self.name)
+        for to_name in self.to_names:
+            resource.schema.add_field(fields.AnyField(name=to_name))
+        if not self.preserve:
+            resource.schema.remove_field(self.name)
+        processor = table.unpack
+        options = dict(include_original=self.preserve)
         if field.type == "object":
             processor = table.unpackdict
-            resource.data = processor(name, to_names, includeoriginal=preserve)
-        else:
-            processor = table.unpack
-            resource.data = processor(name, to_names, include_original=preserve)
+            options = dict(includeoriginal=self.preserve)
+        resource.data = processor(self.name, self.to_names, **options)
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
+    metadata_profile_patch = {
         "required": ["name", "toNames"],
         "properties": {
             "name": {"type": "string"},

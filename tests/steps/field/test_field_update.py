@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,13 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_update():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string", function=str),
+            steps.field_update(name="id", function=str, descriptor={"type": "string"}),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "string"},
             {"name": "name", "type": "string"},
@@ -28,13 +28,13 @@ def test_step_field_update():
 
 def test_step_field_update_with_exact_value():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", type="string", value="x"),
+            steps.field_update(name="id", value="x", descriptor={"type": "string"}),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "string"},
             {"name": "name", "type": "string"},
@@ -50,13 +50,13 @@ def test_step_field_update_with_exact_value():
 
 def test_step_field_update_new_name():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
-            steps.field_update(name="id", new_name="new-name"),
+            steps.field_update(name="id", descriptor={"name": "new-name"}),
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "new-name", "type": "integer"},
             {"name": "name", "type": "string"},

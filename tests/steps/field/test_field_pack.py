@@ -1,13 +1,18 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Pipeline, steps
 
 
-def test_step_field_pack_907():
+# General
+
+
+def test_step_field_pack():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
-        steps=[steps.field_pack(name="details", from_names=["name", "population"])],
+    pipeline = Pipeline(
+        steps=[
+            steps.field_pack(name="details", from_names=["name", "population"]),
+        ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "details", "type": "array"},
@@ -19,17 +24,17 @@ def test_step_field_pack_907():
     }
 
 
-def test_step_field_pack_header_preserve_907():
+def test_step_field_pack_header_preserve():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_pack(
                 name="details", from_names=["name", "population"], preserve=True
             )
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -45,20 +50,20 @@ def test_step_field_pack_header_preserve_907():
     }
 
 
-def test_step_field_pack_object_907():
+def test_step_field_pack_object():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    pipeline = Pipeline(
         steps=[
             steps.field_pack(
                 name="details",
                 from_names=["name", "population"],
-                field_type="object",
+                as_object=True,
                 preserve=True,
             )
         ],
     )
-    assert target.schema == {
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
