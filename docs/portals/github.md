@@ -2,6 +2,10 @@
 
 Github read and publish feature makes easy to share data between frictionless and the github repositories. All read/write functionalities are the wrapper around PyGithub library which is used under the hood to make connection to github api.
 
+## Installation
+
+We need to install github extra dependencies to use this feature:
+
 ```bash tabs=CLI
 pip install frictionless[github] --pre
 pip install 'frictionless[github]' --pre # for zsh shell
