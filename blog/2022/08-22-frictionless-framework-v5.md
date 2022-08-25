@@ -15,11 +15,11 @@ Since the initial Frictionless Framework release we'd been collecting feedback a
 
 ## Improved Metadata
 
-This year we started working on Frictionless Application, at the same time, as were thinking about next steps for [Frictionless Standards](https://specs.frictionlessdata.io/). For both we need well-defined and easy-to-understand metadata model as paritally it's already published as standards like Table Schema and partially it's going to be publised as standards like File Dialect and possibly validation/transform metadata.
+This year we started working on the Frictionless Application, at the same time, we were thinking about next steps for the [Frictionless Standards](https://specs.frictionlessdata.io/). For both we need well-defined and an easy-to-understand metadata model. Partially it's already published as standards like Table Schema and partially it's going to be publised as standards like File Dialect and possibly validation/transform metadata.
 
 ### Dialect
 
-In v4 of the framework we had Control/Dialect/Layout concpets to describe resource details related to different formats and schemes, as well as tabular details like header rows. In v5 it's merged into the only one concept called Dialect which is going to be standartised as File Dialect spec. Here is an example:
+In v4 of the framework we had Control/Dialect/Layout concepts to describe resource details related to different formats and schemes, as well as tabular details like header rows. In v5 it's merged into the only one concept called Dialect which is going to be standartised as a File Dialect spec. Here is an example:
 
 ```yaml tabs=YAML
 header: true
@@ -51,7 +51,7 @@ dialect = Dialect.from_descriptor({"header": True, "delimiter": ';'})
 print(dialect)
 ```
 
-For performance and codebase maintainability reasons some marginal Layout features have been removed completely such as `skip/pick/limit/offsetFields/etc`. It's possible to achieve the same results using the Pipeline concept as a part of transformation workflow.
+For performance and codebase maintainability reasons some marginal Layout features have been removed completely such as `skip/pick/limit/offsetFields/etc`. It's possible to achieve the same results using the Pipeline concept as a part of the transformation workflow.
 
 Read an article about [Dialect Class](../../docs/framework/dialect.html) for more information.
 
@@ -148,7 +148,7 @@ checklist: checklist.yaml
 pipeline: pipeline.yaml
 ```
 
-In this case the validation/transformation will use it by default providing an ability to ship validation rules and transformation pipelines within resources and packages.This is an important development for data publishers who wants to define what they consider to be valid for their datasets as well as sharing a raw data with a cleaning pipeline steps:
+In this case the validation/transformation will use it by default providing an ability to ship validation rules and transformation pipelines within resources and packages. This is an important development for data publishers who want to define what they consider to be valid for their datasets as well as sharing raw data with a cleaning pipeline steps:
 
 ```bash tabs=CLI
 frictionless validate resource.yaml  # will use the checklist above
@@ -219,7 +219,7 @@ Read an article about [Inquiry Class](../../docs/framework/inquiry.html) for mor
 
 ### Report
 
-The Report concpet has been significantly simplified by removing the `resource` property from `reportTask`. It's been replaced by `name/type/place` properties. Also `report.time` is now `report.stats.seconds`. The `report/reportTask.warnings: List[str]` have been added to provide non-error information like reached limits:
+The Report concept has been significantly simplified by removing the `resource` property from `reportTask`. It's been replaced by `name/type/place` properties. Also `report.time` is now `report.stats.seconds`. The `report/reportTask.warnings: List[str]` have been added to provide non-error information like reached limits:
 
 ```bash script tabs=CLI output=yaml
 frictionless validate table.csv --yaml
@@ -253,7 +253,7 @@ The new v5 version still supports old notation in descriptors for backward-compa
 
 ## Improved Model
 
-It's been many years when Frictionless were mixing declarative metadata and object model for historical reasons. Since the first implementation of `datapackage` library we used different approaches to sync internal state provide both interfaces descriptor and object model. In Frictionless Framework v4 this technique had been taken to a really sofisticated level with special observables dictionary classes. It was quite smart and nice-to-use for quick prototyping in REPL but it was really hard to maintain and error-prone.
+It's been many years that Frictionless were mixing declarative metadata and object model for historical reasons. Since the first implementation of `datapackage` library we used different approaches to sync internal state to provide both interfaces descriptor and object model. In Frictionless Framework v4 this technique had been taken to a really sofisticated level with special observables dictionary classes. It was quite smart and nice-to-use for quick prototyping in REPL but it was really hard to maintain and error-prone.
 
 In Framework v5 we finally decided to follow the "right way" for handling this problem and split descriptors and object model completely.
 
@@ -271,7 +271,7 @@ fields:
 
 ### Object Model
 
-The difference comes here we we create a metadata instance based on this descriptor. In v4 all the metadata classes were a sublasses of the dict class providing a mix between a descriptor and object model for state management. In v5 there is a clear boundary between descriptor and object model. All the state are managed as it should be in a normal Python class using class attributes:
+The difference comes here we we create a metadata instance based on this descriptor. In v4 all the metadata classes were a subclasses of the dict class providing a mix between a descriptor and object model for state management. In v5 there is a clear boundary between descriptor and object model. All the state are managed as it should be in a normal Python class using class attributes:
 
 ```python tabs=Python
 from frictionless import Schema
@@ -289,7 +289,7 @@ There are a few important traits of the new model:
 - it's not possible to mix dicts and classes in methods like `package.add_resource`
 - it's not possible to export an invalid descriptor
 
-This separation might make one to add a few additional lines of code but it gives us much less fragile programs in the end. It's especially important for software integrators who want to be sure that they write working code. At the same time, for quick prototyping and discovery Frictionless still provides high-level actions like `validate` function that are more forgiving regarding user input.
+This separation might make one to add a few additional lines of code, but it gives us much less fragile programs in the end. It's especially important for software integrators who want to be sure that they write working code. At the same time, for quick prototyping and discovery Frictionless still provides high-level actions like `validate` function that are more forgiving regarding user input.
 
 ### Static Typing
 
