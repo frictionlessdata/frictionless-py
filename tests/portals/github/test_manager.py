@@ -76,7 +76,6 @@ def test_github_manager_read_with_url_and_control(options_without_dp):
                 "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
                 "scheme": "https",
                 "format": "xlsx",
-                "encoding": "base64",
                 "mediatype": "application/vnd.ms-excel",
             }
         ],

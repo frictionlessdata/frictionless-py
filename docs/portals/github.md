@@ -1,16 +1,11 @@
 # Github Portal
 
-```markdown remark type=danger
-This functionality is currently disabled as being in active development in [#1185](https://github.com/frictionlessdata/frictionless-py/issues/1185)
-```
-
 Github read and publish feature makes easy to share data between frictionless and the github repositories. All read/write functionalities are the wrapper around PyGithub library which is used under the hood to
 make connection to github api.
 
-## Reading Data
+## Reading Package
 
 You can read data from a github repository as follows:
-> Github has 60 requests per hour limitation for unauthenticated user. So to increase the limit to 5000 use api token by passing 'apikey' as param.
 
 ```python tabs=Python
 from pprint import pprint
@@ -62,8 +57,7 @@ package = Package.from_github("https://github.com/fdtester/test-repo-without-dat
 print(package)
 ```
 
-The 'reader' function can read package from repos with/without data package descriptor. If the repo does not have the descriptor it will
-create the descriptor with the name same as the repo name as shown in the example above. By default, the function reads files of type 'csv, xlsx and xls' but we can set the file types using control parameters. 
+The `reader` function can read package from repos with/without data package descriptor. If the repo does not have the descriptor it will create the descriptor with the name same as the repo name as shown in the example above. By default, the function reads files of type csv, xlsx and xls but we can set the file types using control parameters.
 
 If the repo has a descriptor it simply returns the descriptor as shown below
 
@@ -86,20 +80,24 @@ print(package)
                                       {'name': 'name', 'type': 'string'}]}}]}
 ```
 Once you read the package from the repo, you can then easily access the resources and its data, for example:
+
 ```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Package
 
 package = Package("https://github.com/fdtester/test-repo-without-datapackage")
-print(package.resources[0].read_rows())
+pprint(package.get_resource('capitals').read_rows())
 ```
-```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
+``[{'id': 1, 'cid': 1, 'name': 'London'},
+ {'id': 2, 'cid': 2, 'name': 'Paris'},
+ {'id': 3, 'cid': 3, 'name': 'Berlin'},
+ {'id': 4, 'cid': 4, 'name': 'Rome'},
+ {'id': 5, 'cid': 5, 'name': 'Lisbon'}]`
 ```
 
-## Catalog
+## Reading Catalog
 
-Catalog is a container for the packages. We can read single/multiple repositories from github and create a catalog. You can read about its specification [here](https://specs.frictionlessdata.io/patterns/#describing-data-package-catalogs-using-the-data-package-format)
+Catalog is a container for the packages. We can read single/multiple repositories from github and create a catalog.
 
 ```python tabs=Python
 from pprint import pprint
@@ -188,7 +186,7 @@ for index,package in enumerate(catalog.packages):
     print(package)
 ```
 ```
-package:0 
+package:0
 
 {'name': 'test-repo-without-datapackage',
  'resources': [{'name': 'capitals',
@@ -212,7 +210,7 @@ package:0
                 'format': 'xlsx',
                 'encoding': 'base64',
                 'mediatype': 'application/vnd.ms-excel'}]}
-package:1 
+package:1
 
 {'name': 'test-repo-jquery',
  'resources': [{'name': 'country-1',
@@ -222,7 +220,7 @@ package:1
                 'format': 'csv',
                 'encoding': 'base64',
                 'mediatype': 'text/csv'}]}
-package:2 
+package:2
 
 {'resources': [{'name': 'capitals',
                 'type': 'table',
@@ -235,7 +233,7 @@ package:2
                 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                                       {'name': 'cid', 'type': 'integer'},
                                       {'name': 'name', 'type': 'string'}]}}]}
-package:3 
+package:3
 
 {'name': 'test-tabulator',
  'resources': [{'name': 'first-resource',
@@ -247,7 +245,8 @@ package:3
                 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                                       {'name': 'name', 'type': 'string'}]}}]}
 ```
-## Write/Publish Data
+
+## Publishing Data
 
 To write data to the repository, we use `Package.to_github` function as follows:
 ```python tabs=Python
@@ -266,8 +265,9 @@ We need to mention `name` and `email` explicitly if the user doesn't have name s
 
 If the package is successfully published, the response is a 'Repository' instance.
 
-## Controls
-We can control the behavior of all the above three functions using various params. 
+## Configuration
+
+We can control the behavior of all the above three functions using various params.
 
 For example, to read only 'csv' files in package we use the following code:
 
@@ -329,4 +329,11 @@ print(response)
 ```
 ```
 Repository(full_name="fdtester/test-repo")
+```
+
+## Reference
+
+```yaml reference
+references:
+  - frictionless.portals.GithubControl
 ```

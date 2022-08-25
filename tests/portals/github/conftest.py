@@ -90,7 +90,6 @@ def options_without_dp():
                     "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
                     "scheme": "https",
                     "format": "csv",
-                    "encoding": "base64",
                     "mediatype": "text/csv",
                 },
                 {
@@ -99,7 +98,6 @@ def options_without_dp():
                     "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
                     "scheme": "https",
                     "format": "csv",
-                    "encoding": "base64",
                     "mediatype": "text/csv",
                 },
             ],
@@ -113,7 +111,6 @@ def options_without_dp():
                     "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
                     "scheme": "https",
                     "format": "csv",
-                    "encoding": "base64",
                     "mediatype": "text/csv",
                 },
                 {
@@ -122,7 +119,6 @@ def options_without_dp():
                     "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
                     "scheme": "https",
                     "format": "csv",
-                    "encoding": "base64",
                     "mediatype": "text/csv",
                 },
                 {
@@ -131,7 +127,6 @@ def options_without_dp():
                     "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
                     "scheme": "https",
                     "format": "xlsx",
-                    "encoding": "base64",
                     "mediatype": "application/vnd.ms-excel",
                 },
             ],

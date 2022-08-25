@@ -206,7 +206,7 @@ def get_package(
         if file.path in ["datapackage.json", "datapackage.yaml"]:
             return Package.from_descriptor(fullpath)
         if any(file.path.endswith(ext) for ext in formats):
-            resource = Resource(path=fullpath, encoding=file.encoding)
+            resource = Resource(path=fullpath)
             resource.infer(sample=False)
             package.add_resource(resource)
     return package
