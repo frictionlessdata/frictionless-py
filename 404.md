@@ -16,7 +16,7 @@ Return to the <a href="/">home</a> page.
 <script>
 for (const item of JSON.parse('{{ document.get_plugin('redirect').items | tojson }}')) {
   if (location.href === item.prev) {
-    location.href = item.next`;
+    location.href = item.next;
   } else if (location.pathname === `/${item.prev}.html`) {
     location.href = `/${item.next}.html`;
   }
