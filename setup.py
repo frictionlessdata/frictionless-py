@@ -78,7 +78,6 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
-    "tableschema-to-template>=0.0.12",
     "tabulate>=0.8.10",
     "jinja2>=3.0.3",
 ]

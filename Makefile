@@ -27,12 +27,9 @@ install:
 lint:
 	black $(PACKAGE) tests --check
 	pylama $(PACKAGE) tests
-	# mypy $(PACKAGE) --ignore-missing-imports
 
 release:
 	git checkout main && git pull origin && git fetch -p
-	# TODO: recover (failing ATM)
-	# @make docs && echo '\nWe are including a docs update to the commit\n'
 	@git log --pretty=format:"%C(yellow)%h%Creset %s%Cgreen%d" --reverse -20
 	@echo "\nReleasing v$(VERSION) in 10 seconds. Press <CTRL+C> to abort\n" && sleep 10
 	make test && git commit -a -m 'v$(VERSION)' && git tag -a v$(VERSION) -m 'v$(VERSION)'
