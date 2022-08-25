@@ -114,7 +114,7 @@ class Package(Metadata):
         innerpath: Optional[str] = None,
         **options,
     ):
-        if source is not None:
+        if source is not None or control is not None:
 
             # Path
             if isinstance(source, Path):
@@ -126,12 +126,12 @@ class Package(Metadata):
 
             # Compressed
             elif helpers.is_zip_descriptor(source):
-                source = unzip_package(source, innerpath=innerpath)
+                source = unzip_package(source, innerpath=innerpath)  # type: ignore
 
             # Directory
             elif helpers.is_directory_source(source):
                 for name in ["datapackage.json", "datapackage.yaml"]:
-                    path = os.path.join(source, name)
+                    path = os.path.join(source, name)  # type: ignore
                     if os.path.isfile(path):
                         return Package.from_descriptor(path)
 
@@ -139,7 +139,7 @@ class Package(Metadata):
             elif helpers.is_expandable_source(source):
                 options["resources"] = []
                 basepath = options.get("basepath")
-                for path in helpers.expand_source(source, basepath=basepath):
+                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
 
@@ -151,7 +151,7 @@ class Package(Metadata):
 
             # Descriptor
             if helpers.is_descriptor_source(source):
-                return Package.from_descriptor(source, **options)
+                return Package.from_descriptor(source, **options)  # type: ignore
 
             # Path/data
             options["resources"] = [Resource(source)]
@@ -440,6 +440,58 @@ class Package(Metadata):
         storage = system.create_storage("ckan", target, control=control)
         storage.write_package(self, force=True)
         return storage
+
+    @staticmethod
+    def from_github(
+        source: Any = None, *, control: Optional[portals.GithubControl] = None
+    ):
+        """Import package from Github
+
+        Parameters:
+            source (string): Github repo url e.g. "https://github.com/frictionlessdata/repository-demo"
+            control (portals.GithubControl): Github control
+
+        Returns:
+            Package: package
+        """
+        manager = system.create_manager(source, control=control)
+        if not manager:
+            raise FrictionlessException(
+                f"Not supported Github source '{source}' or control"
+            )
+        return Package(source, control=control)
+
+    def to_github(
+        self, target: Any = None, *, control: Optional[portals.GithubControl] = None
+    ):
+        """Export package to Github
+
+        Parameters:
+            target (string): Github instance url e.g. "https://github.com/frictionlessdata/repository-demo"
+            control (portals.GithubControl): Github control
+
+        Returns:
+            NamedTuple: Reference to new repository and file created
+        """
+        return self.publish(target, control=control)
+
+    def publish(
+        self, target: Any = None, *, control: Optional[portals.GithubControl] = None
+    ) -> Any:
+        """Publish package to any supported data portal
+
+        Parameters:
+            target (string): url e.g. "https://github.com/frictionlessdata/repository-demo" of target[CKAN/Github...]
+            control (dict): Github control
+
+        Returns:
+            Any: Response from the target
+        """
+        manager = system.create_manager(target, control=control)
+        if not manager:
+            raise FrictionlessException(f"Not supported target: {target} or control")
+        response = manager.write_package(self.to_copy())
+        return response
 
     @staticmethod
     def from_sql(source, *, control=None):
