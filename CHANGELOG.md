@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.0.0b1
+
+- First beta version of [Frictionless Framework (v5)](https://framework.frictionlessdata.io/blog/2022/08-22-frictionless-framework-v5.html)
+
 ## v4.40.0
 
 - Added Dialect support to packages (#1137)
