@@ -3,13 +3,11 @@ name: general
 on:
   push:
     branches:
-      - main
       - v4
     tags:
       - v*.*.*
   pull_request:
     branches:
-      - main
       - v4
   schedule:
     - cron: "0 3 * * *"
