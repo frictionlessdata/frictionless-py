@@ -51,7 +51,7 @@ class Catalog(Metadata):
     def __create__(
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
-        if source is not None:
+        if source is not None or control is not None:
 
             # Manager
             manager = system.create_manager(source, control=control)
@@ -61,7 +61,7 @@ class Catalog(Metadata):
 
             # Descriptor
             if helpers.is_descriptor_source(source):
-                return Catalog.from_descriptor(source, **options)
+                return Catalog.from_descriptor(source, **options)  # type: ignore
 
     # State
 
