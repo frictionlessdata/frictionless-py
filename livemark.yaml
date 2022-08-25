@@ -213,3 +213,21 @@ redirect:
   items:
     - prev: https://framework.frictionlessdata.io/docs/guides/introduction
       next: https://v4.framework.frictionlessdata.io/docs/guides/introduction
+    - prev: https://framework.frictionlessdata.io/docs/guides/quick-start
+      next: https://v4.framework.frictionlessdata.io/docs/guides/quick-start
+    - prev: https://framework.frictionlessdata.io/docs/guides/basic-examples
+      next: https://v4.framework.frictionlessdata.io/docs/guides/basic-examples
+    - prev: https://framework.frictionlessdata.io/docs/guides/describing-data
+      next: https://v4.framework.frictionlessdata.io/docs/guides/describing-data
+    - prev: https://framework.frictionlessdata.io/docs/guides/extracting-data
+      next: https://v4.framework.frictionlessdata.io/docs/guides/extracting-data
+    - prev: https://framework.frictionlessdata.io/docs/guides/validation-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/validation-guide
+    - prev: https://framework.frictionlessdata.io/docs/guides/validation-checks
+      next: https://v4.framework.frictionlessdata.io/docs/guides/validation-checks
+    - prev: https://framework.frictionlessdata.io/docs/guides/transform-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/transform-guide
+    - prev: https://framework.frictionlessdata.io/docs/guides/transform-steps
+      next: https://v4.framework.frictionlessdata.io/docs/guides/transform-steps
+    - prev: https://framework.frictionlessdata.io/docs/development/contributing
+      next: https://v4.framework.frictionlessdata.io/docs/development/contributing
