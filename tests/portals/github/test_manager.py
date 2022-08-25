@@ -201,7 +201,6 @@ def test_github_manager_read_resources_without_dp(options_without_dp):
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_with_descriptor_empty_resources():
     repo = "test-write-package-with-descriptor-without-resources"
     descriptor = {
@@ -231,7 +230,6 @@ def test_github_manager_write_package_file_with_descriptor_empty_resources():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_with_descriptor():
     repo = "test-write-package-with-descriptor"
     descriptor = {"name": "test-tabulator", "resources": []}
@@ -247,7 +245,6 @@ def test_github_manager_write_package_file_with_descriptor():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file(options_write):
     target_url = options_write.pop("url")
     repo = options_write.pop("repo")
@@ -261,7 +258,6 @@ def test_github_manager_write_package_file(options_write):
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_with_bad_credentials(options_write):
     target_url = options_write.pop("url")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -273,7 +269,6 @@ def test_github_manager_write_package_file_with_bad_credentials(options_write):
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_with_no_credentials(options_write):
     target_url = options_write.pop("url")
     with pytest.raises(AssertionError) as excinfo:
@@ -283,7 +278,6 @@ def test_github_manager_write_package_file_with_no_credentials(options_write):
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_with_no_params():
     with pytest.raises(FrictionlessException) as excinfo:
         package = Package("data/datapackage.json")
@@ -293,7 +287,6 @@ def test_github_manager_write_package_file_with_no_params():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_with_additional_params(
     options_write_test_params,
 ):
@@ -313,7 +306,6 @@ def test_github_manager_write_package_file_with_additional_params(
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_package_file_without_target_url():
     repo = "test-write-without-url"
     package = Package("data/datapackage.json")
@@ -326,7 +318,6 @@ def test_github_manager_write_package_file_without_target_url():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_write_duplicate_repo():
     repo = "test-write-without-url"
     package = Package("data/datapackage.json")
@@ -341,7 +332,6 @@ def test_github_manager_write_duplicate_repo():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_github_manager_publish_to_github(options_publish_test_params):
     target_url = options_publish_test_params.pop("url")
     repo = options_publish_test_params.pop("repo")
