@@ -19,7 +19,7 @@ def test_report():
     assert report.task.name == "table"
     assert report.task.place == "data/table.csv"
     assert report.task.tabular is True
-    assert report.task.stats.seconds
+    assert report.task.stats.seconds is not None
     assert report.task.stats.errors == 0
     if platform.type != "windows":
         assert report.task.stats.bytes == 30
