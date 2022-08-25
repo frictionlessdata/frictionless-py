@@ -48,6 +48,7 @@ print(package)
 ```
 
 To increase the access limit, pass 'apikey' as the param to the reader function as follows:
+
 ```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Package
@@ -88,11 +89,12 @@ from frictionless import portals, Package
 package = Package("https://github.com/fdtester/test-repo-without-datapackage")
 pprint(package.get_resource('capitals').read_rows())
 ```
-``[{'id': 1, 'cid': 1, 'name': 'London'},
+```
+[{'id': 1, 'cid': 1, 'name': 'London'},
  {'id': 2, 'cid': 2, 'name': 'Paris'},
  {'id': 3, 'cid': 3, 'name': 'Berlin'},
  {'id': 4, 'cid': 4, 'name': 'Rome'},
- {'id': 5, 'cid': 5, 'name': 'Lisbon'}]`
+ {'id': 5, 'cid': 5, 'name': 'Lisbon'}]
 ```
 
 ## Reading Catalog
