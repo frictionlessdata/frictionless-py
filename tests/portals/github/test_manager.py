@@ -1,7 +1,7 @@
 # type: ignore
 import json
 import pytest
-from frictionless import portals, platform, Catalog, Package, FrictionlessException
+from frictionless import portals, Catalog, Package, FrictionlessException
 
 
 # Read
