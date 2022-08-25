@@ -73,8 +73,8 @@ def test_github_manager_read_with_url_and_control(options_without_dp):
             {
                 "name": "student",
                 "type": "table",
-                "path": "data/student.xlsx",
-                "scheme": "file",
+                "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
+                "scheme": "https",
                 "format": "xlsx",
                 "encoding": "base64",
                 "mediatype": "application/vnd.ms-excel",
@@ -192,7 +192,10 @@ def test_github_manager_read_resources_without_dp(options_without_dp):
     packages = Package.from_github(url)
     assert len(packages.resources) == 3
     assert packages.resources[0].name == "capitals"
-    assert packages.resources[0].path == "data/capitals.csv"
+    assert (
+        packages.resources[0].path
+        == "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv"
+    )
 
 
 # Write
@@ -576,3 +579,15 @@ def test_github_manager_catalog_qualifiers_sort_by_updated_in_asc_order():
     expected_file_path = "data/datapackage.json"
     with open(expected_file_path) as file:
         assert catalog.packages[0].to_descriptor() == json.loads(file.read())
+
+
+@pytest.mark.vcr
+def test_github_manager_catalog_bad_url():
+    bad_github_url = "https://github.com/test-repo-without-datapackage"
+    with pytest.raises(FrictionlessException) as excinfo:
+        Catalog(
+            bad_github_url,
+            control=portals.GithubControl(search="'TestAction: Read' in:readme"),
+        )
+    error = excinfo.value.error
+    assert "Github API errorGithubException" in error.message

@@ -202,11 +202,11 @@ def get_package(
 ) -> Package:
     package = Package(name=repository.name)
     for file in paths:
+        fullpath = f"{base_path}/{file.path}"
         if file.path in ["datapackage.json", "datapackage.yaml"]:
-            fullpath = f"{base_path}/{file.path}"
             return Package.from_descriptor(fullpath)
         if any(file.path.endswith(ext) for ext in formats):
-            resource = Resource(path=file.path, encoding=file.encoding)
+            resource = Resource(path=fullpath, encoding=file.encoding)
             resource.infer(sample=False)
             package.add_resource(resource)
     return package
