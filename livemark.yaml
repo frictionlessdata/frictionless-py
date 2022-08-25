@@ -209,3 +209,7 @@ pages:
           from: CONTRIBUTING.md
     - path: docs/universe
     - path: blog/index
+redirect:
+  items:
+    - prev: https://framework.frictionlessdata.io/docs/guides/introduction
+      next: https://v4.framework.frictionlessdata.io/docs/guides/introduction
