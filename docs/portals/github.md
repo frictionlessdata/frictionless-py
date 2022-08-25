@@ -21,21 +21,18 @@ print(package)
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'},
                {'name': 'countries',
                 'type': 'table',
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'},
                {'name': 'student',
                 'type': 'table',
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx',
                 'scheme': 'https',
                 'format': 'xlsx',
-                'encoding': 'base64',
                 'mediatype': 'application/vnd.ms-excel'}]}
 ```
 You can also use alias function instead, for example:
@@ -131,7 +128,6 @@ Total packages 4
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-jquery/main/country-1.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'}]}]
 ```
 To read catalog, we need authenticated user so we have to pass the token as 'apikey' to the function. In the above example we are using search text to filter the repositories to small number. The search field is not mandatory.
@@ -171,7 +167,6 @@ print(catalog.packages)
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-jquery/main/country-1.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'}]}]
 ```
 There is only one repository having 'jquery' in name for this user's account, so it returned only one repository.
@@ -196,21 +191,18 @@ package:0
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'},
                {'name': 'countries',
                 'type': 'table',
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'},
                {'name': 'student',
                 'type': 'table',
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx',
                 'scheme': 'https',
                 'format': 'xlsx',
-                'encoding': 'base64',
                 'mediatype': 'application/vnd.ms-excel'}]}
 package:1
 
@@ -220,7 +212,6 @@ package:1
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-jquery/main/country-1.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'}]}
 package:2
 
@@ -288,14 +279,12 @@ print(package)
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'},
                {'name': 'countries',
                 'type': 'table',
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'}]}
 ```
 
@@ -315,7 +304,6 @@ catalog = Catalog(control=control)
                 'path': 'https://raw.githubusercontent.com/fdtester/test-repo-jquery/main/country-1.csv',
                 'scheme': 'https',
                 'format': 'csv',
-                'encoding': 'base64',
                 'mediatype': 'text/csv'}]}]
 ```
 
