@@ -1,7 +1,11 @@
 # Github Portal
 
-Github read and publish feature makes easy to share data between frictionless and the github repositories. All read/write functionalities are the wrapper around PyGithub library which is used under the hood to
-make connection to github api.
+Github read and publish feature makes easy to share data between frictionless and the github repositories. All read/write functionalities are the wrapper around PyGithub library which is used under the hood to make connection to github api.
+
+```bash tabs=CLI
+pip install frictionless[github] --pre
+pip install 'frictionless[github]' --pre # for zsh shell
+```
 
 ## Reading Package
 
