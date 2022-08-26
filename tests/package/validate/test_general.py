@@ -344,7 +344,7 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = package.validate()
     assert report.flatten() == [
         [None, None, None, "package-error"],
-        [None, None, None, "package-error"]
+        [None, None, None, "package-error"],
     ]
 
 
