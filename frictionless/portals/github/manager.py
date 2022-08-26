@@ -1,7 +1,5 @@
 import os
-from typing import Any, Dict, List, Union
-from github.ContentFile import ContentFile
-from github.Repository import Repository
+from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
 from ...exception import FrictionlessException
 from ...catalog import Catalog
@@ -9,6 +7,10 @@ from ...package import Package
 from ...package import Manager
 from ...platform import platform
 from ...resource import Resource
+
+if TYPE_CHECKING:
+    from github.ContentFile import ContentFile
+    from github.Repository import Repository
 
 
 class GithubManager(Manager[GithubControl]):
