@@ -229,21 +229,32 @@ Read an article about [Detector Class](../../docs/framework/detector.html) for m
 
 There are few changes in the Inquiry concept which is known for using in the [Frictionless Repository](https://repository.frictionlessdata.io/) project:
 
-From (v4)         | To (v5)
------------------ | -------------------
-reportTask.source | reportTask.path
-reportTask.source | reportTask.resource
-reportTask.source | reportTask.package
+From (v4)          | To (v5)
+------------------ | -------------------
+inquiryTask.source | inquiryTask.path
+inquiryTask.source | inquiryTask.resource
+inquiryTask.source | inquiryTask.package
 
 Read an article about [Inquiry Class](../../docs/framework/inquiry.html) for more information.
 
 ### Report
 
-The Report concept has been significantly simplified by removing the `resource` property from `reportTask`. It's been replaced by `name/type/place` properties. Also `report.time` is now `report.stats.seconds`. The `report/reportTask.warnings: List[str]` have been added to provide non-error information like reached limits:
+The Report concept has been significantly simplified by removing the `resource` property from `reportTask`. It's been replaced by `name/type/place/labels` properties. Also `report.time` is now `report.stats.seconds`. The `report/reportTask.warnings: List[str]` have been added to provide non-error information like reached limits:
 
 ```bash script tabs=CLI output=yaml
 frictionless validate table.csv --yaml
 ```
+
+Here is a list of changes:
+
+From (v4)         | To (v5)
+----------------- | -------------------
+report.time | report.stats.seconds
+reportTask.time | reportTask.stats.seconds
+reportTask.resource.name | reportTask.name
+reportTask.resource.profile | reportTask.type
+reportTask.resoruce.path | reportTask.place
+reportTask.resoruce.schema | reportTask.labels
 
 Read an article about [Report Class](../../docs/framework/report.html) for more information.
 

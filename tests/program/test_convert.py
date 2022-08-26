@@ -306,6 +306,7 @@ def test_program_convert_dialect_markdown():
         assert result.stdout.count(file.read().strip())
 
 
+@pytest.mark.skip
 def test_program_convert_report_markdown():
     result = runner.invoke(program, "convert data/report.json --markdown")
     assert result.exit_code == 0

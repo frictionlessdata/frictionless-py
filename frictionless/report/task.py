@@ -29,6 +29,9 @@ class ReportTask(Metadata):
     place: str
     """NOTE: add docs"""
 
+    labels: List[str]
+    """NOTE: add docs"""
+
     stats: Stats
     """NOTE: add docs"""
 
@@ -122,9 +125,10 @@ class ReportTask(Metadata):
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "place": {"type": "string"},
+            "labels": {"type": "array", "arrayItem": {"type": "string"}},
             "stats": {"type": "object"},
-            "warnings": {"type": "array"},
-            "errors": {"type": "array"},
+            "warnings": {"type": "array", "arrayItem": {"type": "string"}},
+            "errors": {"type": "array", "arrayItem": {"type": "object"}},
         },
     }
 

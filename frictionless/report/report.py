@@ -118,6 +118,7 @@ class Report(Metadata):
         resource: Resource,
         *,
         time: float,
+        labels: List[str] = [],
         errors: List[Error] = [],
         warnings: List[str] = [],
     ):
@@ -145,6 +146,7 @@ class Report(Metadata):
                     name=resource.name,  # type: ignore
                     type=resource.type,  # type: ignore
                     place=resource.place,  # type: ignore
+                    labels=labels,
                     stats=task_stats,
                     errors=errors,
                     warnings=warnings,

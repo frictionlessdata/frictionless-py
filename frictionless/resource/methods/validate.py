@@ -31,6 +31,7 @@ def validate(
     # Create state
     partial = False
     timer = helpers.Timer()
+    labels: List[str] = []
     errors: List[Error] = []
     warnings: List[str] = []
 
@@ -78,6 +79,7 @@ def validate(
         # Validate table
         if self.tabular:
             row_count = 0
+            labels = self.labels
             while True:
                 row_count += 1
 
@@ -122,5 +124,5 @@ def validate(
 
     # Return report
     return Report.from_validation_task(
-        self, time=timer.time, errors=errors, warnings=warnings
+        self, time=timer.time, labels=labels, errors=errors, warnings=warnings
     )
