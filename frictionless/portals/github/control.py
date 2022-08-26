@@ -5,7 +5,7 @@ from typing import Optional, List
 from ...dialect import Control
 
 
-DEFAULT_FORMATS = ["csv", "xlsx", "xls"]
+DEFAULT_FORMATS = ["csv", "tsv", "xlsx", "xls"]
 DEFAULT_PER_PAGE = 30
 
 
