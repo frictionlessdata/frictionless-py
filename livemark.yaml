@@ -229,5 +229,9 @@ redirect:
       next: https://v4.framework.frictionlessdata.io/docs/guides/transform-guide
     - prev: https://framework.frictionlessdata.io/docs/guides/transform-steps
       next: https://v4.framework.frictionlessdata.io/docs/guides/transform-steps
+    - prev: https://framework.frictionlessdata.io/docs/guides/framework/package-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/framework/package-guide
+    - prev: https://framework.frictionlessdata.io/docs/guides/framework/resource-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/framework/resource-guide
     - prev: https://framework.frictionlessdata.io/docs/development/contributing
       next: https://v4.framework.frictionlessdata.io/docs/development/contributing
