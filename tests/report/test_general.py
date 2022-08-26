@@ -10,7 +10,7 @@ def test_report():
     report = resource.validate()
     # Report
     assert report.valid is True
-    assert report.stats.seconds
+    assert report.stats.seconds is not None
     assert report.stats.errors == 0
     assert report.stats.tasks == 1
     assert report.errors == []
