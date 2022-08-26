@@ -253,8 +253,8 @@ report.time | report.stats.seconds
 reportTask.time | reportTask.stats.seconds
 reportTask.resource.name | reportTask.name
 reportTask.resource.profile | reportTask.type
-reportTask.resoruce.path | reportTask.place
-reportTask.resoruce.schema | reportTask.labels
+reportTask.resource.path | reportTask.place
+reportTask.resource.schema | reportTask.labels
 
 Read an article about [Report Class](../../docs/framework/report.html) for more information.
 
@@ -274,6 +274,8 @@ From (v4)        | To (v5)
 ---------------- | -------------------
 error.code       | error.type
 error.name       | error.title
+error.rowPosition | error.rowNumber
+error.fieldPosition | error.fieldNumber
 
 ### Types
 
