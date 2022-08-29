@@ -151,6 +151,20 @@ def test_validate_package_with_schema_as_string():
     assert report.valid
 
 
+def test_validate_package_multiple_package_errors():
+    report = validate("data/multiple-errors.package.json")
+    assert report.flatten(["type", "message"]) == [
+        [
+            "package-error",
+            "The data package has an error: names of the resources are not unique",
+        ],
+        [
+            "package-error",
+            'The data package has an error: property "created" is not valid "datetime"',
+        ],
+    ]
+
+
 # Schema
 
 
