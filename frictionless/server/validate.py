@@ -2,20 +2,19 @@ from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import HTTPException
 from ..exception import FrictionlessException
-from ..inquiry import Inquiry
+from ..resource import Resource
 from .server import server
 
 
 class ValidatePayload(BaseModel):
-    inquiry: dict
+    resource: dict
 
 
-# TODO: split on validate/resource|package|inquiry|etc?
 @server.post("/validate")
 def server_validate(payload: ValidatePayload):
     try:
-        inquiry = Inquiry.from_descriptor(payload.inquiry)
+        resource = Resource.from_descriptor(payload.resource)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
-    report = inquiry.validate()
+    report = resource.validate()
     return dict(report=report.to_descriptor())
