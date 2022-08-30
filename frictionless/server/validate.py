@@ -10,6 +10,7 @@ class ValidatePayload(BaseModel):
     inquiry: dict
 
 
+# TODO: split on validate/resource|package|inquiry|etc?
 @server.post("/validate")
 def server_validate(payload: ValidatePayload):
     try:

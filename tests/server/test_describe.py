@@ -6,6 +6,20 @@ client = TestClient(server)
 
 
 def test_server_describe():
-    response = client.get("/describe")
+    response = client.post("/describe", json={"path": "data/table.csv"})
     assert response.status_code == 200
-    assert response.json() == {"Hello": "World"}
+    assert response.json()["resource"] == {
+        "name": "table",
+        "path": "data/table.csv",
+        "type": "table",
+        "scheme": "file",
+        "format": "csv",
+        "encoding": "utf-8",
+        "mediatype": "text/csv",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        },
+    }

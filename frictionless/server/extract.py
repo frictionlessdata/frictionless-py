@@ -21,5 +21,6 @@ def server_extract(payload: ValidatePayload):
         resource = Resource.from_descriptor(payload.resource)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
+    # TODO: handle errors
     rows = resource.extract(process=lambda row: row.to_dict(types=SUPPORTED_TYPES))
     return dict(rows=rows)
