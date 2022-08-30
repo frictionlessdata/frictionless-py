@@ -3,14 +3,14 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..server import server
+from ..router import router
 
 
 class ResourceValidatePayload(BaseModel):
     resource: dict
 
 
-@server.post("/resource/validate")
+@router.post("/resource/validate")
 def server_resource_validate(payload: ResourceValidatePayload):
     try:
         resource = Resource.from_descriptor(payload.resource)

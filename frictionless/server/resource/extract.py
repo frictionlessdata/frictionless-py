@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..server import server
+from ..router import router
 from ... import formats
 
 
@@ -18,7 +18,7 @@ class ResourceExtractPayload(BaseModel):
     resource: dict
 
 
-@server.post("/resource/extract")
+@router.post("/resource/extract")
 def server_resource_extract(payload: ResourceExtractPayload):
     try:
         resource = Resource.from_descriptor(payload.resource)

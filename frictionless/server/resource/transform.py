@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..server import server
+from ..router import router
 from ... import formats
 
 
@@ -15,7 +15,7 @@ class ResourceTransformPayload(BaseModel):
     resource: dict
 
 
-@server.post("/resource/transform")
+@router.post("/resource/transform")
 def server_resource_transform(payload: ResourceTransformPayload):
     try:
         source = Resource.from_descriptor(payload.resource)

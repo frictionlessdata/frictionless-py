@@ -1,6 +1,8 @@
 from __future__ import annotations
+from typing import Optional
 from ..platform import platform
-from .config import ServerConfig
+from .config import Config
+from .router import router
 from .. import settings
 
 
@@ -8,8 +10,11 @@ from .. import settings
 
 
 class Server(platform.fastapi.FastAPI):
-    config: ServerConfig
+    config: Config
 
-
-server = Server(title="Frictionless API", version=settings.VERSION)
-server.config = ServerConfig()
+    @staticmethod
+    def create(config: Optional[Config] = None):
+        server = Server(title="Frictionless API", version=settings.VERSION)
+        server.config = config or Config()
+        server.include_router(router)
+        return server

@@ -3,14 +3,14 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..server import server
+from ..router import router
 
 
 class ResourceDescribePayload(BaseModel):
     path: str
 
 
-@server.post("/resource/describe")
+@router.post("/resource/describe")
 def server_resource_describe(payload: ResourceDescribePayload):
     try:
         resource = Resource.from_descriptor(dict(path=payload.path))

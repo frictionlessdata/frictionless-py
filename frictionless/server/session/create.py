@@ -1,8 +1,8 @@
 from __future__ import annotations
 import secrets
-from ..server import server
+from ..router import router
 
 
-@server.post("/session/create")
+@router.post("/session/create")
 def server_session_create():
     return dict(token=secrets.token_urlsafe(16))

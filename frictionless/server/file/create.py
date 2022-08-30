@@ -1,8 +1,8 @@
 from fastapi import UploadFile
-from ..server import server
+from ..router import router
 
 
-@server.post("/file/create")
+@router.post("/file/create")
 def server_create_file(file: UploadFile):
     print(file)
     return {"filename": file.filename}

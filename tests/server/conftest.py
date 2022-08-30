@@ -1,11 +1,19 @@
-import os
 import pytest
 from fastapi.testclient import TestClient
-from frictionless.server import server
+from frictionless.server import Server, Config
 
 
-@pytest.fixture
-def api_client(tmpdir):
-    server.config.basepath = os.path.join(tmpdir, "server")
+@pytest.fixture(scope="session")
+def api_client(tmpdir_factory):
+    config = Config(basepath=tmpdir_factory.mktemp("server"))
+    server = Server.create(config)
+    client = TestClient(server)
+    return client
+
+
+@pytest.fixture(scope="session")
+def api_client_root(tmpdir_factory):
+    config = Config(basepath=tmpdir_factory.mktemp("server"), is_root=True)
+    server = Server.create(config)
     client = TestClient(server)
     return client

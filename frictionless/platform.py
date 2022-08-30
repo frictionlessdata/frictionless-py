@@ -94,6 +94,12 @@ class Platform:
         return frictionless.steps
 
     @cached_property
+    def frictionless_server(self):
+        import frictionless.server
+
+        return frictionless.server
+
+    @cached_property
     def gzip(self):
         import gzip
 

@@ -11,6 +11,5 @@ def program_api(
     """
     Start API server
     """
-    from ..server import server
-
-    platform.uvicorn.run(server, port=port)  # type: ignore
+    server = platform.frictionless_server.Server.create()
+    platform.uvicorn.run(server, port=port)

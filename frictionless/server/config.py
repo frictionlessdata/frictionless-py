@@ -5,6 +5,6 @@ DEFAULT_BASEPATH = ".frictionless/server"
 
 
 @attrs.define(kw_only=True)
-class ServerConfig:
+class Config:
     basepath: str = DEFAULT_BASEPATH
     is_root: bool = False

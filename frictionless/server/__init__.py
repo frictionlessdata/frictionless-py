@@ -1,4 +1,5 @@
-from .server import server
+from .config import Config
+from .server import Server
 
 # Register modules
 from . import file
