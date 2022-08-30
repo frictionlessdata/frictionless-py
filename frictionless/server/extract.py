@@ -7,6 +7,9 @@ from .server import server
 from .. import formats
 
 
+# TODO: support limit/offset_rows
+
+
 # TODO: encapsulate into extract (json-compat output)
 SUPPORTED_TYPES = formats.JsonlParser.supported_types
 
