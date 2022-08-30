@@ -1,12 +1,8 @@
-from fastapi.testclient import TestClient
-from frictionless.server import server
+# General
 
 
-client = TestClient(server)
-
-
-def test_server_file_create():
+def test_server_file_create(api_client):
     with open("data/table.csv", "rb") as file:
         files = {"file": ("table.csv", file, "text/csv")}
-        response = client.post("/file/create", files=files)
-    assert response.status_code == 202
+        response = api_client.post("/file/create", files=files)
+    assert response.status_code == 200

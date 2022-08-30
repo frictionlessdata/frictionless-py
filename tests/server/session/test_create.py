@@ -1,11 +1,7 @@
-from fastapi.testclient import TestClient
-from frictionless.server import server
+# General
 
 
-client = TestClient(server)
-
-
-def test_server_session_create():
-    response = client.post("/session/create")
+def test_server_session_create(api_client):
+    response = api_client.post("/session/create")
     assert response.status_code == 200
     assert len(response.json()["token"]) == 22

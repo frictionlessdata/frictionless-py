@@ -1,14 +1,12 @@
-from fastapi.testclient import TestClient
 from frictionless import Resource
-from frictionless.server import server
 
 
-client = TestClient(server)
+# General
 
 
-def test_server_resource_validate():
+def test_server_resource_validate(api_client):
     resource = Resource(path="data/table.csv")
-    response = client.post(
+    response = api_client.post(
         "/resource/validate", json={"resource": resource.to_descriptor()}
     )
     assert response.status_code == 200

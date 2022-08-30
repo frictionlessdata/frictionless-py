@@ -1,15 +1,13 @@
-from fastapi.testclient import TestClient
 from frictionless import Resource, Pipeline, steps
-from frictionless.server import server
 
 
-client = TestClient(server)
+# General
 
 
-def test_server_resource_transform():
+def test_server_resource_transform(api_client):
     pipeline = Pipeline(steps=[steps.cell_set(field_name="name", value="new")])
     resource = Resource(path="data/table.csv", pipeline=pipeline)
-    response = client.post(
+    response = api_client.post(
         "/resource/transform", json={"resource": resource.to_descriptor()}
     )
     assert response.status_code == 200
