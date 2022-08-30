@@ -6,7 +6,7 @@ from frictionless.server import server
 client = TestClient(server)
 
 
-def test_server_extract():
+def test_server_resource_extract():
     resource = Resource(path="data/table.csv")
     response = client.post(
         "/resource/extract", json={"resource": resource.to_descriptor()}

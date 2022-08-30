@@ -6,7 +6,7 @@ from frictionless.server import server
 client = TestClient(server)
 
 
-def test_server_transform():
+def test_server_resource_transform():
     pipeline = Pipeline(steps=[steps.cell_set(field_name="name", value="new")])
     resource = Resource(path="data/table.csv", pipeline=pipeline)
     response = client.post(

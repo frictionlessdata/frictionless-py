@@ -5,7 +5,7 @@ from frictionless.server import server
 client = TestClient(server)
 
 
-def test_server_describe():
+def test_server_resource_describe():
     response = client.post("/resource/describe", json={"path": "data/table.csv"})
     assert response.status_code == 200
     assert response.json()["resource"] == {

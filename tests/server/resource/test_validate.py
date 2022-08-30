@@ -6,7 +6,7 @@ from frictionless.server import server
 client = TestClient(server)
 
 
-def test_server_validate():
+def test_server_resource_validate():
     resource = Resource(path="data/table.csv")
     response = client.post(
         "/resource/validate", json={"resource": resource.to_descriptor()}
