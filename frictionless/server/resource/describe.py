@@ -1,17 +1,17 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import HTTPException
-from ..exception import FrictionlessException
-from ..resource import Resource
-from .server import server
+from ...exception import FrictionlessException
+from ...resource import Resource
+from ..server import server
 
 
-class DescribePayload(BaseModel):
+class ResourceDescribePayload(BaseModel):
     path: str
 
 
-@server.post("/describe")
-def server_describe(payload: DescribePayload):
+@server.post("/resource/describe")
+def server_resource_describe(payload: ResourceDescribePayload):
     try:
         resource = Resource.from_descriptor(dict(path=payload.path))
     except FrictionlessException as exception:

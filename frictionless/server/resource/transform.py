@@ -1,22 +1,22 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import HTTPException
-from ..exception import FrictionlessException
-from ..resource import Resource
-from .server import server
-from .. import formats
+from ...exception import FrictionlessException
+from ...resource import Resource
+from ..server import server
+from ... import formats
 
 
 # TODO: encapsulate into extract (json-compat output)
 SUPPORTED_TYPES = formats.JsonlParser.supported_types
 
 
-class TransformPayload(BaseModel):
+class ResourceTransformPayload(BaseModel):
     resource: dict
 
 
-@server.post("/transform")
-def server_transform(payload: TransformPayload):
+@server.post("/resource/transform")
+def server_resource_transform(payload: ResourceTransformPayload):
     try:
         source = Resource.from_descriptor(payload.resource)
     except FrictionlessException as exception:

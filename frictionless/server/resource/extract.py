@@ -1,10 +1,10 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import HTTPException
-from ..exception import FrictionlessException
-from ..resource import Resource
-from .server import server
-from .. import formats
+from ...exception import FrictionlessException
+from ...resource import Resource
+from ..server import server
+from ... import formats
 
 
 # TODO: support limit/offset_rows
@@ -14,12 +14,12 @@ from .. import formats
 SUPPORTED_TYPES = formats.JsonlParser.supported_types
 
 
-class ValidatePayload(BaseModel):
+class ResourceExtractPayload(BaseModel):
     resource: dict
 
 
-@server.post("/extract")
-def server_extract(payload: ValidatePayload):
+@server.post("/resource/extract")
+def server_resource_extract(payload: ResourceExtractPayload):
     try:
         resource = Resource.from_descriptor(payload.resource)
     except FrictionlessException as exception:
