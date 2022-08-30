@@ -8,7 +8,7 @@ from ..detector import Detector
 from ..dialect import Dialect
 from ..actions import extract
 from ..system import system
-from .main import program
+from .program import program
 from .. import formats
 from .. import helpers
 from . import common

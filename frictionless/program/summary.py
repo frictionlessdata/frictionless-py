@@ -2,7 +2,7 @@ from __future__ import annotations
 import typer
 from ..resource import Resource
 from ..system import system
-from .main import program
+from .program import program
 from . import common
 
 

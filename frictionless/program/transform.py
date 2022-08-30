@@ -5,7 +5,7 @@ from typing import List
 from ..pipeline import Pipeline, Step
 from ..actions import transform
 from ..system import system
-from .main import program
+from .program import program
 from .. import helpers
 from . import common
 

@@ -1,5 +1,5 @@
 import typer
-from .main import program
+from .program import program
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..inquiry import Inquiry

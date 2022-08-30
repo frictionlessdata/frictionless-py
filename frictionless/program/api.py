@@ -1,6 +1,6 @@
 from __future__ import annotations
 from ..platform import platform
-from .main import program
+from .program import program
 from . import common
 
 

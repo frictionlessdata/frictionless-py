@@ -9,7 +9,7 @@ from ..detector import Detector
 from ..checklist import Checklist, Check
 from ..dialect import Dialect
 from ..system import system
-from .main import program
+from .program import program
 from .. import formats
 from .. import helpers
 from . import common

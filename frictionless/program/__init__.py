@@ -1,4 +1,4 @@
-from .main import program
+from .program import program
 
 # Register modules
 from . import api

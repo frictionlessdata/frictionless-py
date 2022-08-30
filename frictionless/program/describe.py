@@ -6,7 +6,7 @@ from ..detector import Detector
 from ..actions import describe
 from ..dialect import Dialect
 from ..system import system
-from .main import program
+from .program import program
 from .. import helpers
 from . import common
 
