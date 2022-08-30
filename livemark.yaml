@@ -233,7 +233,13 @@ redirect:
       next: https://v4.framework.frictionlessdata.io/docs/guides/framework/package-guide
     - prev: https://framework.frictionlessdata.io/docs/guides/framework/resource-guide
       next: https://v4.framework.frictionlessdata.io/docs/guides/framework/resource-guide
+    - prev: https://framework.frictionlessdata.io/docs/guides/framework/schema-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/framework/schema-guide
+    - prev: https://framework.frictionlessdata.io/docs/guides/framework/layout-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/framework/layout-guide
     - prev: https://framework.frictionlessdata.io/docs/guides/framework/detector-guide
       next: https://v4.framework.frictionlessdata.io/docs/guides/framework/detector-guide
+    - prev: https://framework.frictionlessdata.io/docs/guides/framework/report-guide
+      next: https://v4.framework.frictionlessdata.io/docs/guides/framework/report-guide
     - prev: https://framework.frictionlessdata.io/docs/development/contributing
       next: https://v4.framework.frictionlessdata.io/docs/development/contributing
