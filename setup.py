@@ -42,7 +42,7 @@ TESTS_REQUIRE = [
     "pytest-timeout",
 ]
 EXTRAS_REQUIRE = {
-    "api": ["fastapi>=0.78", "uvicorn>=0.17", "pydantic>=1.9"],
+    "api": ["fastapi>=0.78", "uvicorn>=0.17", "pydantic>=1.9", "python-multipart>=0.0"],
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
