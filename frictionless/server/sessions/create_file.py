@@ -1,16 +1,11 @@
-from pydantic import BaseModel
-from fastapi import Request, UploadFile
+from fastapi import Request, UploadFile, File, Form
 from ..session import Session
 from ..router import router
 
 
-class SessionCreateFileProps(BaseModel):
-    token: str
-
-
 @router.post("/session/create-file")
-def server_file_create(request: Request, file: UploadFile, props: SessionCreateFileProps):
+def server_file_create(request: Request, file: UploadFile = File(), token: str = Form()):
     config = request.app.config
-    session = Session(config, token=props.token)
+    session = Session(config, token=token)
     path = session.create_file(file)
     return {"path": path}

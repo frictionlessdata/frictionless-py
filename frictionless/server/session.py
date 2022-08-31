@@ -18,8 +18,8 @@ class Session:
         base = Path(config.basepath)
         public = base / token / "public"
         private = base / token / "private"
-        public.mkdir(parents=True)
-        private.mkdir(parents=True)
+        public.mkdir(parents=True, exist_ok=True)
+        private.mkdir(parents=True, exist_ok=True)
         self.token = token
         self.public = public
         self.private = private
@@ -42,7 +42,7 @@ class Session:
         # TODO: sanitize filename
         path = str(self.public / file.filename)
         body = file.file.read()
-        helpers.write_file(path, body)
+        helpers.write_file(path, body, mode="wb")
         return file.filename
 
     def delete_file(self, path: str):
