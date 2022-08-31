@@ -16,8 +16,8 @@ class Session:
         # TODO: validate token
         token = token or secrets.token_urlsafe(16)
         base = Path(config.basepath)
-        public = base / token / "public"
-        private = base / token / "private"
+        public = base / token
+        private = base / token / ".frictionless"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
         self.token = token
@@ -27,12 +27,8 @@ class Session:
     # Props
 
     @property
-    def public_basepath(self):
+    def basepath(self):
         return str(self.public)
-
-    @property
-    def private_basepath(self):
-        return str(self.private)
 
     # Files
 
@@ -51,4 +47,4 @@ class Session:
         return path
 
     def list_files(self):
-        return os.listdir(self.public)
+        return [path for path in os.listdir(self.public) if not path.startswith(".")]

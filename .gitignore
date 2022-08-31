@@ -87,15 +87,10 @@ index.html
 404.html
 
 # Extras
-.projectile
-tabulator
-jsontableschema
-datapackage
-.mypy_cache
-!docs/build
+.frictionless/
 .google.json
+coverage/
 .vscode/
 .server/
-coverage/
 site/
 tmp/

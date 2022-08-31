@@ -17,9 +17,7 @@ def server_resource_validate(request: Request, props: ResourceValidateProps):
     config = request.app.config
     session = Session(config, token=props.token)
     try:
-        resource = Resource.from_descriptor(
-            props.resource, basepath=session.public_basepath
-        )
+        resource = Resource.from_descriptor(props.resource, basepath=session.basepath)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     report = resource.validate()

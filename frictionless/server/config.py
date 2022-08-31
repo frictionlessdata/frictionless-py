@@ -7,4 +7,4 @@ DEFAULT_BASEPATH = ".server"
 @attrs.define(kw_only=True)
 class Config:
     basepath: str = DEFAULT_BASEPATH
-    is_root: bool = False
+    root: bool = False

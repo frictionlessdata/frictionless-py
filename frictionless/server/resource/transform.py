@@ -22,9 +22,7 @@ def server_resource_transform(request: Request, props: ResourceTransformProps):
     config = request.app.config
     session = Session(config, token=props.token)
     try:
-        source = Resource.from_descriptor(
-            props.resource, basepath=session.public_basepath
-        )
+        source = Resource.from_descriptor(props.resource, basepath=session.basepath)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     # TODO: handle errors

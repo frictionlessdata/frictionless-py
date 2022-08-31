@@ -18,7 +18,7 @@ def server_resource_describe(request: Request, props: ResourceDescribeProps):
     session = Session(config, token=props.token)
     try:
         resource = Resource.from_descriptor(
-            dict(path=props.path), basepath=session.public_basepath
+            dict(path=props.path), basepath=session.basepath
         )
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
