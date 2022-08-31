@@ -24,6 +24,16 @@ class Session:
         self.public = public
         self.private = private
 
+    # Props
+
+    @property
+    def public_basepath(self):
+        return str(self.public)
+
+    @property
+    def private_basepath(self):
+        return str(self.private)
+
     # Files
 
     def create_file(self, file: UploadFile):
