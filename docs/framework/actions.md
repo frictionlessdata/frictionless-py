@@ -28,7 +28,7 @@ references:
 
 ## Extract
 
-Extract is a high-level function (action) to read tabular data from a data source.
+Extract is a high-level function (action) to read tabular data from a data source. The output is encoded in 'utf-8' scheme.
 
 ### Example
 
