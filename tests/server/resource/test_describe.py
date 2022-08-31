@@ -1,8 +1,8 @@
 # General
 
 
-def test_server_resource_describe(api_client):
-    response = api_client.post("/resource/describe", json={"path": "data/table.csv"})
+def test_server_resource_describe(api_client_root):
+    response = api_client_root.post("/resource/describe", json={"path": "data/table.csv"})
     assert response.status_code == 200
     assert response.json()["resource"] == {
         "name": "table",

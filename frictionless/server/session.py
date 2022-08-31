@@ -8,18 +8,29 @@ from .. import helpers
 
 
 class Session:
-    token: str
+    token: Optional[str]
     public: Path
     private: Path
 
     def __init__(self, config: Config, *, token: Optional[str] = None):
-        # TODO: validate token
-        token = token or secrets.token_urlsafe(16)
-        base = Path(config.basepath)
-        public = base / token
-        private = base / token / ".frictionless"
+        base = Path(config.basepath or "")
+
+        # Validate token
+        if token:
+            assert not config.root
+            assert os.path.isdir(base / token)
+
+        # Create token
+        elif not config.root:
+            token = secrets.token_urlsafe(16)
+
+        # Ensure session
+        public = base / (token or "")
+        private = public / ".frictionless"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
+
+        # Store attributes
         self.token = token
         self.public = public
         self.private = private

@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ..session import Session
@@ -5,7 +6,7 @@ from ..router import router
 
 
 class SessionListFilesProps(BaseModel):
-    token: str
+    token: Optional[str]
 
 
 @router.post("/session/list-files")

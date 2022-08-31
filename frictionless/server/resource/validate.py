@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
@@ -8,7 +9,7 @@ from ..router import router
 
 
 class ResourceValidateProps(BaseModel):
-    token: str
+    token: Optional[str]
     resource: dict
 
 

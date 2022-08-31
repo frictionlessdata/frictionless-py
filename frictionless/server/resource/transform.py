@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
@@ -13,7 +14,7 @@ SUPPORTED_TYPES = formats.JsonlParser.supported_types
 
 
 class ResourceTransformProps(BaseModel):
-    token: str
+    token: Optional[str]
     resource: dict
 
 

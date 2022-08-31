@@ -12,8 +12,8 @@ def api_client(tmpdir_factory):
 
 
 @pytest.fixture(scope="session")
-def api_client_root(tmpdir_factory):
-    config = Config(basepath=tmpdir_factory.mktemp("server"), root=True)
+def api_client_root():
+    config = Config(root=True)
     server = Server.create(config)
     client = TestClient(server)
     return client
