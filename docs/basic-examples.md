@@ -105,7 +105,7 @@ Actually, it doesn't look terrible, but in reality, data like this is not quite 
 - there is still a basically empty row we don't want to have
 - there are some mistakes in the neighbor_id column
 
-Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
+The output of the extract is in 'utf-8' encoding scheme. Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
 
 ```bash script tabs=CLI
 frictionless extract countries.resource.yaml

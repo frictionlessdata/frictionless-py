@@ -35,7 +35,7 @@ format = Option(
 
 encoding = Option(
     default=None,
-    help="Specify encoding  [default: inferred]",
+    help="Specify encoding  [default: inferred]. Output will be utf-8 encoded",
 )
 
 innerpath = Option(

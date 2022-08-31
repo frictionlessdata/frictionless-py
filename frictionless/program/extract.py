@@ -64,7 +64,7 @@ def program_extract(
     Extract a data source.
 
     Based on the inferred data source type it will return resource or package data.
-    Default output format is tabulated with a front matter.
+    Default output format is tabulated with a front matter. Output will be utf-8 encoded.
     """
 
     # Setup system
