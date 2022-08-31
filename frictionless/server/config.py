@@ -1,7 +1,7 @@
 import attrs
 
 
-DEFAULT_BASEPATH = ".frictionless/server"
+DEFAULT_BASEPATH = ".server"
 
 
 @attrs.define(kw_only=True)

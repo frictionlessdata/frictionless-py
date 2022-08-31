@@ -175,6 +175,11 @@ def ensure_dir(path):
         os.makedirs(dirpath)
 
 
+def ensure_folder(path):
+    if path and not os.path.exists(path):
+        os.makedirs(path)
+
+
 def move_file(source: str, target: str):
     ensure_dir(target)
     shutil.move(source, target)
