@@ -11,14 +11,14 @@ from ... import formats
 SUPPORTED_TYPES = formats.JsonlParser.supported_types
 
 
-class ResourceTransformPayload(BaseModel):
+class ResourceTransformProps(BaseModel):
     resource: dict
 
 
 @router.post("/resource/transform")
-def server_resource_transform(payload: ResourceTransformPayload):
+def server_resource_transform(props: ResourceTransformProps):
     try:
-        source = Resource.from_descriptor(payload.resource)
+        source = Resource.from_descriptor(props.resource)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     # TODO: handle errors

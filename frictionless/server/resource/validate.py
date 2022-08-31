@@ -6,14 +6,14 @@ from ...resource import Resource
 from ..router import router
 
 
-class ResourceValidatePayload(BaseModel):
+class ResourceValidateProps(BaseModel):
     resource: dict
 
 
 @router.post("/resource/validate")
-def server_resource_validate(payload: ResourceValidatePayload):
+def server_resource_validate(props: ResourceValidateProps):
     try:
-        resource = Resource.from_descriptor(payload.resource)
+        resource = Resource.from_descriptor(props.resource)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     report = resource.validate()

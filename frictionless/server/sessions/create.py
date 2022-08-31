@@ -1,5 +1,6 @@
 from __future__ import annotations
 from fastapi import Request
+from ..session import Session
 from ..router import router
 
 
@@ -8,5 +9,6 @@ from ..router import router
 
 @router.post("/session/create")
 def server_session_create(request: Request):
-    token = request.app.state.create_session()
-    return dict(token=token)
+    config = request.app.config
+    session = Session(config)
+    return dict(token=session.token)

@@ -6,14 +6,14 @@ from ...resource import Resource
 from ..router import router
 
 
-class ResourceDescribePayload(BaseModel):
+class ResourceDescribeProps(BaseModel):
     path: str
 
 
 @router.post("/resource/describe")
-def server_resource_describe(payload: ResourceDescribePayload):
+def server_resource_describe(props: ResourceDescribeProps):
     try:
-        resource = Resource.from_descriptor(dict(path=payload.path))
+        resource = Resource.from_descriptor(dict(path=props.path))
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     # TODO: handle errors

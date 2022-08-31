@@ -175,11 +175,6 @@ def ensure_dir(path):
         os.makedirs(dirpath)
 
 
-def ensure_folder(path):
-    if path and not os.path.exists(path):
-        os.makedirs(path)
-
-
 def move_file(source: str, target: str):
     ensure_dir(target)
     shutil.move(source, target)
@@ -194,9 +189,10 @@ def copy_file(source: str, target: str):
     shutil.copy(source, target)
 
 
-def write_file(path: str, text: str):
-    with tempfile.NamedTemporaryFile("wt", delete=False, encoding="utf-8") as file:
-        file.write(text)
+def write_file(path: str, body: Any, *, mode: str = "wt"):
+    encoding = "utf-8" if mode == "wt" else None
+    with tempfile.NamedTemporaryFile(mode, delete=False, encoding=encoding) as file:
+        file.write(body)
         file.flush()
     move_file(file.name, path)
     os.chmod(path, 0o644)
