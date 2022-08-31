@@ -46,6 +46,8 @@ class Session:
         return file.filename
 
     def delete_file(self, path: str):
+        # TODO: ensure that path is safe
+        os.remove(self.public / path)
         return path
 
     def list_files(self):
