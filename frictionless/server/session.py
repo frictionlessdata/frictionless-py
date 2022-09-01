@@ -16,6 +16,7 @@ class Session:
         base = Path(config.basepath or "")
 
         # Validate token
+        # TODO: raise not authorized access
         if token:
             assert not config.root
             assert os.path.isdir(base / token)

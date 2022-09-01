@@ -11,7 +11,7 @@ def test_server_resource_transform(api_client_root):
         "/resource/transform", json={"resource": resource.to_descriptor()}
     )
     assert response.status_code == 200
-    assert response.json()["rows"] == [
+    assert response.json()["table"]["rows"] == [
         {"id": 1, "name": "new"},
         {"id": 2, "name": "new"},
     ]

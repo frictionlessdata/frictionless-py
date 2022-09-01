@@ -31,4 +31,5 @@ def server_resource_extract(request: Request, props: ResourceExtractProps):
         raise HTTPException(status_code=422, detail=str(exception))
     # TODO: handle errors
     rows = resource.extract(process=lambda row: row.to_dict(types=SUPPORTED_TYPES))
-    return dict(rows=rows)
+    table = dict(header=resource.header.to_list(), rows=rows)
+    return dict(table=table)
