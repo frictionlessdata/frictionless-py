@@ -36,6 +36,10 @@ class IntegerField(Field):
             if isinstance(cell, str):
                 if pattern:
                     cell = pattern.sub("", cell)
+                # for numeric string starting with zero for example, 001, 00, 01
+                has_leading_zero = re.match(r"0\d+", cell.strip())
+                if self.bare_number and has_leading_zero:
+                    return None
                 try:
                     return int(cell)
                 except Exception:

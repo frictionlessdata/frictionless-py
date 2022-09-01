@@ -6,4 +6,4 @@ from frictionless import Schema
 
 def test_describe_schema():
     schema = Schema.describe("data/leading-zeros.csv")
-    assert schema.to_descriptor() == {"fields": [{"name": "value", "type": "integer"}]}
+    assert schema.to_descriptor() == {"fields": [{"name": "value", "type": "string"}]}
