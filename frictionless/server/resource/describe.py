@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
+from ...detector import Detector
 from ...resource import Resource
 from ..session import Session
 from ..router import router
@@ -11,6 +12,7 @@ from ..router import router
 class ResourceDescribeProps(BaseModel):
     token: Optional[str]
     path: str
+    detector: Optional[dict]
 
 
 @router.post("/resource/describe")
@@ -18,8 +20,9 @@ def server_resource_describe(request: Request, props: ResourceDescribeProps):
     config = request.app.config
     session = Session(config, token=props.token)
     try:
+        detector = Detector.from_descriptor(props.detector) if props.detector else None
         resource = Resource.from_descriptor(
-            dict(path=props.path), basepath=session.basepath
+            dict(path=props.path), basepath=session.basepath, detector=detector
         )
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
