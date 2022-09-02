@@ -7,6 +7,9 @@ from .config import Config
 from .. import helpers
 
 
+# TODO: fix create/validate logic
+
+
 class Project:
     session: Optional[str]
     public: Path
