@@ -1244,7 +1244,9 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if (data is not None) and (not isinstance(data, (str, bool, int, float, list, dict))):
+        if (data is not None) and (
+            not isinstance(data, (str, bool, int, float, list, dict))
+        ):
             descriptor["data"] = []
 
         # Path (standards/v1)
