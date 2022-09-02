@@ -72,12 +72,18 @@ class ForeignKeyError(RowError):
     description = "Values in the foreign key fields should exist in the reference table"
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
 
-    def __init__(self, descriptor=None, *, note, cells, row_number, row_position, target_keys,  source_keys, source_name, missing_values):
-        self.setinitial("targetKeys", target_keys)
-        self.setinitial("sourceKeys", source_keys)
-        self.setinitial("sourceName", source_name)
-        self.setinitial("missingValues", missing_values)
-        super().__init__(descriptor, note=note, cells=cells, row_number=row_number, row_position=row_position)
+
+    target_keys: List[str]
+    """NOTE: add docs"""
+
+    source_keys: List[int]
+    """NOTE: add docs"""
+
+    source_name: List[str]
+    """NOTE: add docs"""
+
+    missing_values: List[int]
+    """NOTE: add docs"""
 
     @classmethod
     def from_row(cls, row, *, target_keys,  source_keys, source_name, missing_values, note):
@@ -106,6 +112,18 @@ class ForeignKeyError(RowError):
             missing_values=missing_values
         )
 
+    # Metadata
+
+    metadata_profile_patch = {
+        "properties": {
+            "cells": {"type": "array", "items": {"type": "string"}},
+            "rowNumber": {"type": "integer"},
+            "targetKeys": {"type": "array", "items": {"type": "string"}},
+            "sourceKeys": {"type": "array", "items": {"type": "string"}},
+            "sourceName": {"type": "string"},
+            "missingValues": {"type": "array", "items": {"type": "string"}},
+        },
+    }
 
 class DuplicateRowError(RowError):
     type = "duplicate-row"
