@@ -892,7 +892,7 @@ class Resource(Metadata):
         Returns:
             any: resource data
         """
-        if self.data:
+        if self.data is not None:
             return self.data
         with helpers.ensure_open(self):
             text = self.read_text(size=size)
@@ -1101,7 +1101,7 @@ class Resource(Metadata):
         url = descriptor.pop("url", None)
         path = descriptor.get("path")
         data = descriptor.get("data")
-        if not path and not data and url:
+        if not path and (data is None) and url:
             descriptor.setdefault("path", url)
 
         # Path (standards/v1)
