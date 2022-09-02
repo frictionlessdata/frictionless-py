@@ -65,13 +65,18 @@ class PrimaryKeyError(RowError):
     description = "Values in the primary key fields should be unique for every row"
     template = 'Row at position "{rowNumber}" violates the primary key: {note}'
 
-
-class ForeignKeyError(RowError):
+@attrs.define(kw_only=True)
+class ForeignKeyError(TableError):
     type = "foreign-key"
     title = "ForeignKey Error"
     description = "Values in the foreign key fields should exist in the reference table"
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
 
+    cells: List[str]
+    """NOTE: add docs"""
+
+    row_number: int
+    """NOTE: add docs"""
 
     target_keys: List[str]
     """NOTE: add docs"""
@@ -105,7 +110,6 @@ class ForeignKeyError(RowError):
             note=note,
             cells=list(map(to_str, row.cells)),
             row_number=row.row_number,
-            row_position=row.row_position,
             target_keys=target_keys,
             source_keys=source_keys,
             source_name=source_name,

@@ -836,10 +836,10 @@ class Resource(Metadata):
                                 continue
                             match = cells in group_lookup.get(group["sourceKey"], set())
                             if not match:
-                                target_keys = group["targetKey"]
+                                target_keys = list(group["targetKey"])
                                 source_name = group["sourceName"]
-                                source_keys = group["sourceKey"]
-                                missing_values = cells
+                                source_keys = list(group["sourceKey"])
+                                missing_values = list(cells)
                                 note = 'for "%s": values "%s" not found in the lookup table "%s" as "%s"' % (
                                     ", ".join(target_keys),
                                     ", ".join(str(d) for d in cells),
