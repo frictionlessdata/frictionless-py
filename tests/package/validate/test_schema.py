@@ -130,6 +130,19 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
         ],
     ]
 
+def test_validate_package_schema_multiple_foreign_key_violations():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    # Add some wrong fks
+    descriptor["resources"][0]["data"][3][0] = 5
+    descriptor["resources"][0]["data"][3][0] = 6
+    descriptor["resources"].append(MULTI_FK_RESSOURCE)
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "targetKeys", "sourceKeys", "sourceName", "missingValues"]) == [
+        [3, ['next_id'], ['id'], '', [3]],
+        [4, ['id'], ['label'], 'people', [6]],
+        [4, ['from', 'to'], ['id', 'next_id'], 'cities', [3, 4]]
+    ]
 
 # Bugs
 
