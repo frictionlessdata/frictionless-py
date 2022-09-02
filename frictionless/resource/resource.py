@@ -327,7 +327,7 @@ class Resource(Metadata):
     @property
     def place(self) -> str:
         """Stringified resource location"""
-        if self.data:
+        if self.data is not None:
             return "<memory>"
         elif self.extrapaths:
             return f"{self.path} (multipart)"
@@ -1244,7 +1244,7 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if data and not isinstance(data, (str, bool, int, float, list, dict)):
+        if (data is not None) and (not isinstance(data, (str, bool, int, float, list, dict))):
             descriptor["data"] = []
 
         # Path (standards/v1)
