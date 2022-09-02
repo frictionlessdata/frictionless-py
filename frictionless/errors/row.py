@@ -72,6 +72,7 @@ class ForeignKeyError(TableError):
     title = "ForeignKey Error"
     description = "Values in the foreign key fields should exist in the reference table"
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
+    tags = ["#table", "#row"]
 
     cells: List[str]
     """NOTE: add docs"""
