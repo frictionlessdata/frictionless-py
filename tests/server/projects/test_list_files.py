@@ -1,19 +1,19 @@
 # General
 
 
-def test_server_file_create(api_client):
-    token = api_client.post("/session/create").json()["token"]
+def test_server_project_list_files(api_client):
+    session = api_client.post("/project/create").json()["session"]
 
     # Create
     with open("data/table.csv", "rb") as file:
         files = {"file": ("table.csv", file, "text/csv")}
         response = api_client.post(
-            "/session/create-file", files=files, data=dict(token=token)
+            "/project/create-file", files=files, data=dict(session=session)
         )
         assert response.status_code == 200
         assert response.json()["path"] == "table.csv"
 
     # List
-    response = api_client.post("/session/list-files", json=dict(token=token))
+    response = api_client.post("/project/list-files", json=dict(session=session))
     assert response.status_code == 200
     assert response.json()["paths"] == ["table.csv"]

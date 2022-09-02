@@ -1,18 +1,18 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ..session import Session
+from ..project import Project
 from ..router import router
 
 
 class SessionsDeleteFileProps(BaseModel):
-    token: Optional[str]
+    session: Optional[str]
     path: str
 
 
-@router.post("/session/delete-file")
+@router.post("/project/delete-file")
 def server_file_create(request: Request, props: SessionsDeleteFileProps):
     config = request.app.config
-    session = Session(config, token=props.token)
-    path = session.delete_file(props.path)
+    project = Project(config, session=props.session)
+    path = project.delete_file(props.path)
     return {"path": path}

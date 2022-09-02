@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..session import Session
+from ..project import Project
 from ..router import router
 from ... import formats
 
@@ -17,16 +17,16 @@ SUPPORTED_TYPES = formats.JsonlParser.supported_types
 
 
 class ResourceExtractProps(BaseModel):
-    token: Optional[str]
+    session: Optional[str]
     resource: dict
 
 
 @router.post("/resource/extract")
 def server_resource_extract(request: Request, props: ResourceExtractProps):
     config = request.app.config
-    session = Session(config, token=props.token)
+    project = Project(config, session=props.session)
     try:
-        resource = Resource.from_descriptor(props.resource, basepath=session.basepath)
+        resource = Resource.from_descriptor(props.resource, basepath=project.basepath)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     # TODO: handle errors
@@ -38,9 +38,9 @@ def server_resource_extract(request: Request, props: ResourceExtractProps):
 @router.post("/resource/extract-text")
 def server_resource_extract_text(request: Request, props: ResourceExtractProps):
     config = request.app.config
-    session = Session(config, token=props.token)
+    project = Project(config, session=props.session)
     try:
-        resource = Resource.from_descriptor(props.resource, basepath=session.basepath)
+        resource = Resource.from_descriptor(props.resource, basepath=project.basepath)
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
     # TODO: handle errors

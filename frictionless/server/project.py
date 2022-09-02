@@ -7,32 +7,32 @@ from .config import Config
 from .. import helpers
 
 
-class Session:
-    token: Optional[str]
+class Project:
+    session: Optional[str]
     public: Path
     private: Path
 
-    def __init__(self, config: Config, *, token: Optional[str] = None):
+    def __init__(self, config: Config, *, session: Optional[str] = None):
         base = Path(config.basepath or "")
 
-        # Validate token
+        # Validate session
         # TODO: raise not authorized access
-        if token:
+        if session:
             assert not config.root
-            assert os.path.isdir(base / token)
+            assert os.path.isdir(base / session)
 
-        # Create token
+        # Create session
         elif not config.root:
-            token = secrets.token_urlsafe(16)
+            session = secrets.token_urlsafe(16)
 
-        # Ensure session
-        public = base / (token or "")
+        # Ensure project
+        public = base / (session or "")
         private = public / ".frictionless"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
 
         # Store attributes
-        self.token = token
+        self.session = session
         self.public = public
         self.private = private
 

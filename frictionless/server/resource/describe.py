@@ -5,12 +5,12 @@ from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
 from ...detector import Detector
 from ...resource import Resource
-from ..session import Session
+from ..project import Project
 from ..router import router
 
 
 class ResourceDescribeProps(BaseModel):
-    token: Optional[str]
+    session: Optional[str]
     path: str
     detector: Optional[dict]
 
@@ -18,11 +18,11 @@ class ResourceDescribeProps(BaseModel):
 @router.post("/resource/describe")
 def server_resource_describe(request: Request, props: ResourceDescribeProps):
     config = request.app.config
-    session = Session(config, token=props.token)
+    project = Project(config, session=props.session)
     try:
         detector = Detector.from_descriptor(props.detector) if props.detector else None
         resource = Resource.from_descriptor(
-            dict(path=props.path), basepath=session.basepath, detector=detector
+            dict(path=props.path), basepath=project.basepath, detector=detector
         )
     except FrictionlessException as exception:
         raise HTTPException(status_code=422, detail=str(exception))
