@@ -207,7 +207,10 @@ def get_package(
     for file in paths:
         fullpath = f"{base_path}/{file.path}"
         if file.path in ["datapackage.json", "datapackage.yaml"]:
-            return Package.from_descriptor(fullpath)
+            package = Package.from_descriptor(fullpath)
+            for index, resource in enumerate(package.resources):
+                package.resources[index].path = f"{base_path}/{resource.path}"
+            return package
         if any(file.path.endswith(ext) for ext in formats):
             resource = Resource(path=fullpath)
             resource.infer(sample=False)

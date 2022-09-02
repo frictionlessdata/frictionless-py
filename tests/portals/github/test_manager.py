@@ -1,5 +1,4 @@
 # type: ignore
-import json
 import pytest
 from frictionless import portals, platform, Catalog, Package, FrictionlessException
 
@@ -9,7 +8,7 @@ OUTPUT_OPTIONS_WITH_DP_YAML = {
         {
             "name": "capitals",
             "type": "table",
-            "path": "data/capitals.csv",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv",
             "scheme": "file",
             "format": "csv",
             "encoding": "utf-8",
@@ -25,6 +24,22 @@ OUTPUT_OPTIONS_WITH_DP_YAML = {
         }
     ]
 }
+OUTPUT_OPTIONS_WITH_DP = {
+    "name": "test-package",
+    "resources": [
+        {
+            "name": "first-resource",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/table.xls",
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "number"},
+                    {"name": "name", "type": "string"},
+                ]
+            },
+        }
+    ],
+}
+
 OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
     "name": "test-repo-without-datapackage",
     "resources": [
@@ -76,6 +91,7 @@ OUTPUT_OPTIONS_WITHOUT_DP = {
     ],
 }
 
+
 # Read
 
 
@@ -97,11 +113,7 @@ def test_github_manager_read_without_apikey(options_without_dp):
 def test_github_manager_read_repo_with_datapackage(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert package.to_descriptor() == json.loads(file.read())
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -208,6 +220,7 @@ def test_github_manager_read_without_url_and_control_params():
 def test_github_manager_read_yaml(options_with_dp_yaml):
     url = options_with_dp_yaml.pop("url")
     package = Package(url)
+    print(package.to_descriptor())
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP_YAML
 
 
@@ -258,6 +271,21 @@ def test_github_manager_read_resources_without_dp(options_without_dp):
         packages.resources[0].path
         == "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv"
     )
+
+
+# Read - Data
+
+
+def test_github_manager_read_data_from_repo_with_datapackage(
+    options_with_dp,
+):
+    url = options_with_dp.pop("url")
+    package = Package.from_github(url)
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert package.resources[0].read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
 
 
 # Write
@@ -443,11 +471,7 @@ def test_github_manager_catalog_from_empty_repo(options_empty):
 def test_github_manager_catalog_from_single_repo(options_with_dp):
     repo_url = options_with_dp.pop("url")
     catalog = Catalog(repo_url)
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[0].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -576,11 +600,7 @@ def test_github_manager_catalog_qualifiers_sort_qualifier():
             search="sort:updated 'TestAction: Read' in:readme", user="fdtester"
         ),
     )
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[2].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -590,11 +610,7 @@ def test_github_manager_catalog_qualifiers_sort_param():
             search="'TestAction: Read' in:readme", sort="updated", user="fdtester"
         ),
     )
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[2].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -607,11 +623,7 @@ def test_github_manager_catalog_sort_by_updated_in_desc_order():
             order="desc",
         ),
     )
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[2].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -624,11 +636,7 @@ def test_github_manager_catalog_sort_by_updated_in_asc_order():
             order="asc",
         ),
     )
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[0].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[3].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -640,11 +648,7 @@ def test_github_manager_catalog_qualifiers_sort_by_updated_in_desc_order():
             order="desc",
         ),
     )
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[2].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -654,11 +658,7 @@ def test_github_manager_catalog_qualifiers_sort_by_updated_in_asc_order():
             search="sort:updated-asc 'TestAction: Read' in:readme", user="fdtester"
         ),
     )
-
-    # Read
-    expected_file_path = "data/datapackage.json"
-    with open(expected_file_path) as file:
-        assert catalog.packages[0].to_descriptor() == json.loads(file.read())
+    assert catalog.packages[3].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr

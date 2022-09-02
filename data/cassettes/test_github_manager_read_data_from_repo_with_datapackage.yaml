@@ -1,0 +1,613 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-datapackage-json
+  response:
+    body:
+      string: !!binary |
+        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
+        cbOCGw5cddip+FCYPf8HyieWOaYYAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 02 Sep 2022 05:57:11 GMT
+      ETag:
+      - W/"8590956af2224121ca988f06331fe74aa2eef0cf03515017de2657198644b1f3"
+      Last-Modified:
+      - Mon, 08 Aug 2022 09:56:19 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 5DFF:0A69:314F27:32E9BA:63119B36
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4997'
+      X-RateLimit-Reset:
+      - '1662101578'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '3'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-datapackage-json/contents/
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72V627jIBCF38W/E2NsY5tI1T7IqqqGW+0tvsgQpRfl3Rc2UcJmN5LbhvyyBHjO
+        mTN84udHMkAvk00iwMIE/AWeZfrLjEOySiaw7f93TAt+A5MGCypyVmKaY6HqktVFwYngNCMMM6Wy
+        pmTElTLduxMpCrpKtrN2/7bWTmaDEExd+tzZdstSPvZoltNokBJWGitn5D9rv7beuTPrwOPae0R8
+        HKwcrEGX7n/MUj304Is49db2+ulv3UBzsRrTI0OHov8IOhVX8kLke825eshLuu6WBy3G3aBHEBdO
+        ZtgdY94aOR9j+5P44u6vN27fJn+DVKeli+FJd8OLSTYfiZFa3XvULrSbSX5pAP6uBQ5ufs/2+9WJ
+        2VmC6GXaizOs4dKR0oaSGhPANWNVLhQG7KiVQtSCFLRseAmSVbQ6UVqRSJCevEWnM0whIpbLk42O
+        ZdjxfXm8MtVIIC6P/MYgngMOCbTAtExftTkTGC4dCMyyhsiMY6gp4ZBTkrm3UhHIVQbu6eQqb2id
+        157iwztZ4bKMxODJXXQGwxziMfiJbKMzGHZ8XwavTDUOg5+I/MYMngPe7x9/A3eGH3+7CgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 02 Sep 2022 05:57:11 GMT
+      ETag:
+      - W/"581979cc606fdc0f7c38eb2bb732f87d56196734"
+      Last-Modified:
+      - Mon, 08 Aug 2022 09:56:19 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 5DFF:0A69:314F6E:32E9ED:63119B37
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4996'
+      X-RateLimit-Reset:
+      - '1662101578'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '4'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/datapackage.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4WOQQ7CIBBF95yCzLp6AK9iXEA7WhKgDQyJhnD3AtaCC+MsYPLfzIPIOAcrDMKF
+        A6GnEwkZtKDFwVCYQ78EN6LPA9cccB7bwl25vPEZqQulYBU0V6GQGs9P7Rvy44xGZBj3hBcN6qk9
+        8K7Y9d0f1XS4dkKvtRIbjEQHHUzDf1+9fxg9OWUfX8ajv7E+SeVgJU1sA4L9qyZTAQAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '165'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Fri, 02 Sep 2022 05:57:12 GMT
+      ETag:
+      - W/"184e69c1c5da4fdacc8382aca55387ea7b54b0e72f6e9c9581e534d50404d7c1"
+      Expires:
+      - Fri, 02 Sep 2022 06:02:12 GMT
+      Source-Age:
+      - '252'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 43a1ff034c2d9f74630b3e8786e597285f2c5945
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B674:30A7:EE748:13C013:63119A3B
+      X-Served-By:
+      - cache-ccu830040-CCU
+      X-Timer:
+      - S1662098232.076205,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/table.xls
+  response:
+    body:
+      string: !!binary |
+        0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAOwADAP7/CQAGAAAAAAAAAAAAAAABAAAACQAAAAAAAAAA
+        EAAAAgAAAAEAAAD+////AAAAAAAAAAD/////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////9
+        //////////7///8EAAAABQAAAAYAAAAHAAAACAAAAP7///8KAAAA/v//////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////1IA
+        bwBvAHQAIABFAG4AdAByAHkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAWAAUA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        /v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAD+////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////
+        ////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAAAAAAAAAAAQAA
+        AAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAA
+        EAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAe
+        AAAAHwAAAP7///8hAAAA/v////7///8kAAAAJQAAACYAAAAnAAAAKAAAAP7///8qAAAA/v//////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////8JCBAA
+        AAYFALsNzAcAAAAABgAAAOEAAgCwBMEAAgAAAOIAAABcAHAABAAAQ2FsYyAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEIAAgCwBGEBAgAAAMABAAA9AQIAAQCc
+        AAIADgCvAQIAAAC8AQIAAAA9ABIAAAAAAABAACA4AAAAAAABAOADQAACAAAAjQACAAAAIgACAAAA
+        DgACAAEAtwECAAAA2gACAAAAMQAaAMgAAAD/f5ABAAAAAgAABQFBAHIAaQBhAGwAMQAaAMgAAAD/
+        f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgAAAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgA
+        AAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQA2AMgAAAD/f5ABAAAAAgAAEwFEAHIAbwBpAGQAIABT
+        AGEAbgBzACAARgBhAGwAbABiAGEAYwBrAB4EDACkAAcAAEdFTkVSQUweBAYApQABAAAw4AAUAAAA
+        pAD1/yAAAAAAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQA
+        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
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6144'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/octet-stream
+      Date:
+      - Fri, 02 Sep 2022 05:57:12 GMT
+      ETag:
+      - W/"5e9743142445cc16c21bad322b5572e58d0b7ee26d76ea911bd99bd9379c7f58"
+      Expires:
+      - Fri, 02 Sep 2022 06:02:12 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - d1eda742d909782e3bbba71e692e0d0b7c3e1180
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - F956:2388:F22FC:14102B:63119B38
+      X-Served-By:
+      - cache-ccu830040-CCU
+      X-Timer:
+      - S1662098232.204257,VS0,VE315
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/table.xls
+  response:
+    body:
+      string: !!binary |
+        0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAOwADAP7/CQAGAAAAAAAAAAAAAAABAAAACQAAAAAAAAAA
+        EAAAAgAAAAEAAAD+////AAAAAAAAAAD/////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////9
+        //////////7///8EAAAABQAAAAYAAAAHAAAACAAAAP7///8KAAAA/v//////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////1IA
+        bwBvAHQAIABFAG4AdAByAHkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAWAAUA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        /v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAD+////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////
+        ////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAAAAAAAAAAAQAA
+        AAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAA
+        EAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAe
+        AAAAHwAAAP7///8hAAAA/v////7///8kAAAAJQAAACYAAAAnAAAAKAAAAP7///8qAAAA/v//////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////8JCBAA
+        AAYFALsNzAcAAAAABgAAAOEAAgCwBMEAAgAAAOIAAABcAHAABAAAQ2FsYyAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEIAAgCwBGEBAgAAAMABAAA9AQIAAQCc
+        AAIADgCvAQIAAAC8AQIAAAA9ABIAAAAAAABAACA4AAAAAAABAOADQAACAAAAjQACAAAAIgACAAAA
+        DgACAAEAtwECAAAA2gACAAAAMQAaAMgAAAD/f5ABAAAAAgAABQFBAHIAaQBhAGwAMQAaAMgAAAD/
+        f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgAAAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgA
+        AAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQA2AMgAAAD/f5ABAAAAAgAAEwFEAHIAbwBpAGQAIABT
+        AGEAbgBzACAARgBhAGwAbABiAGEAYwBrAB4EDACkAAcAAEdFTkVSQUweBAYApQABAAAw4AAUAAAA
+        pAD1/yAAAAAAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQA
+        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
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6144'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/octet-stream
+      Date:
+      - Fri, 02 Sep 2022 05:57:12 GMT
+      ETag:
+      - W/"5e9743142445cc16c21bad322b5572e58d0b7ee26d76ea911bd99bd9379c7f58"
+      Expires:
+      - Fri, 02 Sep 2022 06:02:12 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 3657dc9d30ae6a8530c955d12326fbbd815efd08
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - F956:2388:F22FC:14102B:63119B38
+      X-Served-By:
+      - cache-ccu830038-CCU
+      X-Timer:
+      - S1662098233.751408,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
