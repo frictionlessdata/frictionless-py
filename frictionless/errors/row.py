@@ -129,7 +129,7 @@ class ForeignKeyError(TableError):
             "targetKeys": {"type": "array", "items": {"type": "string"}},
             "sourceKeys": {"type": "array", "items": {"type": "string"}},
             "sourceName": {"type": "string"},
-            "missingValues": {"type": "array", "items": {"type": "string"}},
+            "missingValues": {"type": "array", "items": {"type": "integer"}},
         },
     }
 
