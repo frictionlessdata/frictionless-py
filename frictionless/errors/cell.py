@@ -1,59 +1,31 @@
+from __future__ import annotations
+import attrs
 from ..exception import FrictionlessException
-from .general import GeneralError
 from .row import RowError
 
 
+@attrs.define(kw_only=True)
 class CellError(RowError):
-    """Cell error representation
+    """Cell error representation"""
 
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        cells (str[]): row cells
-        row_number (int): row number
-        row_position (int): row position
-        cell (str): errored cell
-        field_name (str): field name
-        field_number (int): field number
-        field_position (int): field position
-
-    # Raises
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    code = "cell-error"
-    name = "Cell Error"
-    tags = ["#table", "#row", "#cell"]
-    template = "Cell Error"
+    type = "cell-error"
+    title = "Cell Error"
     description = "Cell Error"
+    template = "Cell Error"
+    tags = ["#table", "#row", "#cell"]
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        note,
-        cells,
-        row_number,
-        row_position,
-        cell,
-        field_name,
-        field_number,
-        field_position,
-    ):
-        self.setinitial("cell", cell)
-        self.setinitial("fieldName", field_name)
-        self.setinitial("fieldNumber", field_number)
-        self.setinitial("fieldPosition", field_position)
-        super().__init__(
-            descriptor,
-            note=note,
-            cells=cells,
-            row_number=row_number,
-            row_position=row_position,
-        )
+    # State
 
-    # Create
+    cell: str
+    """NOTE: add docs"""
+
+    field_name: str
+    """NOTE: add docs"""
+
+    field_number: int
+    """NOTE: add docs"""
+
+    # Convert
 
     @classmethod
     def from_row(cls, row, *, note, field_name):
@@ -72,74 +44,86 @@ class CellError(RowError):
         for field_number, name in enumerate(row.field_names, start=1):
             if field_name == name:
                 cell = row[field_name]
-                field_position = row.field_positions[field_number - 1]
                 to_str = lambda v: str(v) if v is not None else ""
                 return cls(
                     note=note,
                     cells=list(map(to_str, row.cells)),
                     row_number=row.row_number,
-                    row_position=row.row_position,
                     cell=str(cell),
                     field_name=field_name,
                     field_number=field_number,
-                    field_position=field_position,
                 )
-        error = GeneralError(note=f"Field {field_name} is not in the row")
-        raise FrictionlessException(error)
+        raise FrictionlessException(f"Field {field_name} is not in the row")
+
+    # Metadata
+
+    metadata_profile_patch = {
+        "properties": {
+            "cell": {"type": "string"},
+            "fieldName": {"type": "string"},
+            "fieldNumber": {"type": "integer"},
+        },
+    }
 
 
 class ExtraCellError(CellError):
-    code = "extra-cell"
-    name = "Extra Cell"
-    template = 'Row at position "{rowPosition}" has an extra value in field at position "{fieldPosition}"'
+    type = "extra-cell"
+    title = "Extra Cell"
     description = "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
+    template = 'Row at position "{rowNumber}" has an extra value in field at position "{fieldNumber}"'
 
 
 class MissingCellError(CellError):
-    code = "missing-cell"
-    name = "Missing Cell"
-    tags = ["#table", "#row", "#cell"]
-    template = 'Row at position "{rowPosition}" has a missing cell in field "{fieldName}" at position "{fieldPosition}"'
+    type = "missing-cell"
+    title = "Missing Cell"
     description = "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
+    template = 'Row at position "{rowNumber}" has a missing cell in field "{fieldName}" at position "{fieldNumber}"'
 
 
 class TypeError(CellError):
-    code = "type-error"
-    name = "Type Error"
-    template = 'Type error in the cell "{cell}" in row "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}": {note}'
+    type = "type-error"
+    title = "Type Error"
     description = "The value does not match the schema type and format for this field."
+    template = 'Type error in the cell "{cell}" in row "{rowNumber}" and field "{fieldName}" at position "{fieldNumber}": {note}'
 
 
 class ConstraintError(CellError):
-    code = "constraint-error"
-    name = "Constraint Error"
-    template = 'The cell "{cell}" in row at position "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}" does not conform to a constraint: {note}'
+    type = "constraint-error"
+    title = "Constraint Error"
     description = "A field value does not conform to a constraint."
+    template = 'The cell "{cell}" in row at position "{rowNumber}" and field "{fieldName}" at position "{fieldNumber}" does not conform to a constraint: {note}'
 
 
 class UniqueError(CellError):
-    code = "unique-error"
-    name = "Unique Error"
-    template = 'Row at position "{rowPosition}" has unique constraint violation in field "{fieldName}" at position "{fieldPosition}": {note}'
+    type = "unique-error"
+    title = "Unique Error"
     description = "This field is a unique field but it contains a value that has been used in another row."
+    template = 'Row at position "{rowNumber}" has unique constraint violation in field "{fieldName}" at position "{fieldNumber}": {note}'
 
 
 class TruncatedValueError(CellError):
-    code = "truncated-value"
-    name = "Truncated Value"
-    template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
+    type = "truncated-value"
+    title = "Truncated Value"
     description = "The value is possible truncated."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
 
 
 class ForbiddenValueError(CellError):
-    code = "forbidden-value"
-    name = "Forbidden Value"
-    template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
+    type = "forbidden-value"
+    title = "Forbidden Value"
     description = "The value is forbidden."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
 
 
 class SequentialValueError(CellError):
-    code = "sequential-value"
-    name = "Sequential Value"
-    template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
+    type = "sequential-value"
+    title = "Sequential Value"
     description = "The value is not sequential."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"
+
+
+class AsciiValueError(CellError):
+    type = "ascii-value"
+    title = "Ascii Value"
+    description = "The cell contains non-ascii characters."
+    template = "The cell {cell} in row at position {rowNumber} and field {fieldName} at position {fieldNumber} has an error: {note}"

@@ -1,0 +1,6 @@
+# -------
+# invalid: ['data/datapackage.json']
+# -------
+type            message
+--------------  ----------------------------------------------------------------------------------
+resource-error  The data resource has an error: one of the properties "path" or "data" is required

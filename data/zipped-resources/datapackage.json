@@ -1,0 +1,252 @@
+{
+    "profile":"tabular-data-package",
+    "resources":[
+       {
+          "name":"ogd10_energieforschungstatistik_ch.csv",
+          "languages":[
+             "de",
+             "fr"
+          ],
+          "path":"ogd10_energieforschungstatistik_ch.csv",
+          "profile":"tabular-data-resource",
+          "schema":{
+             "fields":[
+                {
+                   "name":"jahr",
+                   "type":"year",
+                   "format":"default",
+                   "title@de":"Jahr",
+                   "title@fr":"Année",
+                   "description@de":"Kalenderjahr",
+                   "description@fr":"Année calendaire",
+                   "rdfType":"https://www.w3.org/2006/time#Year"
+                },
+                {
+                   "name":"klasse_ch",
+                   "title@de":"Forschungsgebiet CH",
+                   "title@fr":"Domaine de recherche CH",
+                   "description@de":"Forschungsgebiet gemäss Schweizer Klassifikation",
+                   "description@fr":"Domaine de recherche selon la classification suisse",
+                   "type":"integer",
+                   "format":"default"
+                },
+                {
+                   "name":"projekttyp",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Projekttyp",
+                   "title@fr":"Type de projet",
+                   "description@de":"Art der Forschung, für die die Beiträge verwendet werden",
+                   "description@fr":"Type de recherche pour laquelle les contributions sont utilisées"
+                },
+                {
+                   "name":"forschungsstaette",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Forschungsstätte",
+                   "title@fr":"Institution de recherche",
+                   "description@de":"Organisation, welche die Forschung durchführt",
+                   "description@fr":"Organisation effectuant la recherche"
+                },
+                {
+                   "name":"finanzquelle",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzquelle",
+                   "title@fr":"Source de financement",
+                   "description@de":"In- oder ausländische Stelle, welche die Forschung finanziert",
+                   "description@fr":"Entité nationale ou étrangère qui finance la recherche"
+                },
+                {
+                   "name":"finanzbeitrag",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzbeitrag",
+                   "title@fr":"Contribution financière",
+                   "description@de":"Beitrag der Finanzquelle zur Deckung des Aufwands der Forschungsstätte (in Schweizer Franken)",
+                   "description@fr":"Contribution de la source de financement pour couvrir les dépenses de l'institution de recherche (en francs suisses)"
+                }
+             ],
+            "missingValues":[
+               ""
+            ]
+          },
+          "title@de":"Energieforschungsstatistik (EFstat) gemäss Schweizer Klassifikation",
+          "title@fr":"Statistique de la recherche énergétique selon classification de recherche CH",
+          "format":"csv",
+          "mediatype":"text/csv",
+          "dialect":{
+             "delimiter":",",
+             "doubleQuote":true,
+             "lineTerminator":"\r\n",
+             "quoteChar":"\"",
+             "skipInitialSpace":true,
+             "header":true,
+             "caseSensitiveHeader":false
+          },
+          "encoding":"UTF-8",
+          "description@de":"Das BFE erstellt jährlich die EFstat des Bundes, die Auskunft über die Aufwendungen der mit öffentlichen Mitteln finanzierten Energieforschung sowie eine detaillierte Zusammenstellung der Geldflüsse gibt. Die Angaben sind gemäss der IEA-Klassifizierung zusammengestellt. Die Angaben beruhen auf den Datenbanken des Bundes sowie ergänzend der Deklaration der fördernden Stellen.",
+          "description@fr":"Chaque année, l'OFEN établit la statistique de la recherche énergétique de la Confédération, qui recense les projets de recherche énergétique financés par les pouvoirs publics et présente une vue d'ensemble détaillée des flux de trésorerie. Cette statistique reprend la classification de l'AIE. Le relevé est élaboré à partir de banques de données fédérales et des déclarations des centres de recherche concernés."
+       },
+       {
+          "name":"capital-invalid.csv",
+          "path":"ogd10_catalogs.zip",
+          "innerpath":"capital-invalid.csv",
+          "profile":"tabular-data-resource",
+          "schema":{
+             "fields":[
+                {
+                   "name":"id",
+                   "type":"integer"
+                },
+                {
+                   "name":"name",
+                   "type":"string",
+                   "format":"default"
+                },
+                {
+                   "name":"name",
+                   "type":"string",
+                   "format":"default"
+                }
+             ],
+            "missingValues":[
+               ""
+            ]
+          },
+          "title@de":"Forschungsstätten",
+          "title@fr":"Institutions de recherche",
+          "format":"csv",
+          "mediatype":"text/csv",
+          "dialect":{
+             "delimiter":",",
+             "doubleQuote":true,
+             "lineTerminator":"\r\n",
+             "quoteChar":"\"",
+             "skipInitialSpace":true,
+             "header":true,
+             "caseSensitiveHeader":false
+          },
+          "encoding":"UTF-8",
+          "description@de":"Liste der ungültigen Länder",
+          "description@fr":"liste des pays invalides"
+       },
+       {
+          "name":"finanzquellen.csv",
+          "path":"ogd10_catalogs.zip",
+          "innerpath":"finanzquellen.csv",
+          "profile":"tabular-data-resource",
+          "schema":{
+             "fields":[
+                {
+                   "name":"finanzquelle",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzquelle",
+                   "title@fr":"Source de financement",
+                   "description@de":"In- oder ausländische Stelle, welche die Forschung finanziert",
+                   "description@fr":"Entité nationale ou étrangère qui finance la recherche"
+                },
+                {
+                   "name":"seeAlso",
+                   "type":"string",
+                   "format":"uri",
+                   "title@de":"SeeAlso",
+                   "title@fr":"SeeAlso",
+                   "description@de":"URI zur Wikidataeintrag der Finanzquelle",
+                   "description@fr":"URI sur la page Wikidata de la source de financement",
+                   "rdfType":"http://www.w3.org/2000/01/rdf-schema#seeAlso"
+                },
+                {
+                   "name":"titel_de",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzquelle Titel (DE)",
+                   "title@fr":"Titre de la source de financement (DE)",
+                   "description@de":"Finanzquelle Titel auf Deutsch",
+                   "description@fr":"Titre du de la source de financement en allemand"
+                },
+                {
+                   "name":"beschreibung_de",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzquelle Beschreibung (DE)",
+                   "title@fr":"Description de la source de financement (DE)",
+                   "description@de":"Finanzquelle Beschreibung auf Deutsch",
+                   "description@fr":"Description de la source de financement en allemand"
+                },
+                {
+                   "name":"titel_fr",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzquelle Titel (FR)",
+                   "title@fr":"Titre de la source de financement (FR)",
+                   "description@de":"Finanzquelle Titel auf Französisch",
+                   "description@fr":"Titre de la source de financement en français"
+                },
+                {
+                   "name":"beschreibung_fr",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Finanzquelle Beschreibung (FR)",
+                   "title@fr":"Description de la source de financement (FR)",
+                   "description@de":"Finanzquelle Beschreibung auf Französisch",
+                   "description@fr":"Description de la source de financement en français"
+                },
+                {
+                   "name":"gruppierung",
+                   "type":"string",
+                   "format":"default",
+                   "title@de":"Gruppierung",
+                   "title@fr":"Groupement",
+                   "description@de":"Gruppierung der Finanzquelle",
+                   "description@fr":"Groupement de la source de financement"
+                }
+             ],
+            "missingValues":[
+               ""
+            ]
+          },          
+          "title@de":"Finanzquellen",
+          "title@fr":"Sources de financement",
+          "format":"csv",
+          "mediatype":"text/csv",
+          "dialect":{
+             "delimiter":",",
+             "doubleQuote":true,
+             "lineTerminator":"\r\n",
+             "quoteChar":"\"",
+             "skipInitialSpace":true,
+             "header":true,
+             "caseSensitiveHeader":false
+          },
+          "encoding":"UTF-8",
+          "description@de":"Liste der in- oder ausländische Stellen, welche die Forschung finanzieren",
+          "description@fr":"Liste des entités nationales ou étrangères qui financent la recherche"
+       }
+    ],
+    "name":"ogd10_bfe",
+    "title@de":"Energieforschungsstatistik (EFstat)",
+    "title@fr":"Statistique de la recherche énergétique",
+    "description@de":"Das BFE erstellt jährlich die EFstat des Bundes, die Auskunft über die Aufwendungen der mit öffentlichen Mitteln finanzierten Energieforschung sowie eine detaillierte Zusammenstellung der Geldflüsse gibt. Die Angaben sind gemäss der IEA-Klassifizierung zusammengestellt. Die Angaben beruhen auf den Datenbanken des Bundes sowie ergänzend der Deklaration der fördernden Stellen.",
+    "description@fr":"Chaque année, l'OFEN établit la statistique de la recherche énergétique de la Confédération, qui recense les projets de recherche énergétique financés par les pouvoirs publics et présente une vue d'ensemble détaillée des flux de trésorerie. Cette statistique reprend la classification de l'AIE. Le relevé est élaboré à partir de banques de données fédérales et des déclarations des centres de recherche concernés.",
+    "temporal":{
+       "name":"Zeitliche Abdeckung",
+       "start":"2015-01-01",
+       "end":"2020-12-31"
+    },
+    "homepage":"http://www.bfe.admin.ch/ogd10",
+    "contributors":[
+       {
+          "title":"OGD Fachstelle",
+          "role":"author"
+       }
+    ],
+    "licenses":[
+       {
+          "name":"O-By",
+          "title":"Freie Nutzung. Quellenangabe ist Pflicht.",
+          "path":"https://opendata.swiss/de/terms-of-use"
+       }
+    ]
+ }

@@ -1,0 +1,33 @@
+{
+  "name":"countries",
+  "type":"table",
+  "path":"countries.csv",
+  "scheme":"file",
+  "format":"csv",
+  "hashing":"md5",
+  "encoding":"utf-8",
+  "mediatype":"text/csv",
+  "schema":{
+     "fields":[
+        {
+           "name":"id",
+           "type":"integer",
+           "constraints":{
+              "required":true
+           }
+        },
+        {
+           "name":"neighbor_id",
+           "type":"integer"
+        },
+        {
+           "name":"name",
+           "type":"string"
+        },
+        {
+           "name":"population",
+           "type":"integer"
+        }
+     ]
+  }
+}

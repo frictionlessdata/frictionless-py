@@ -8,68 +8,68 @@ We use Github as a code and issues hosting platform. To report a bug or propose 
 
 ## Docs Contribution
 
-To contribute to the documentation, please find an article in the `docs` folder and update its contents. These sections can be edited manually:
-- `docs/guides`
-- `docs/tutorials`
+To contribute to the documentation, please find an article in the `docs` folder and update its contents. We write our documentation using [Livemark](https://livemark.frictionlessdata.io). Livemark provides an ability to provide examples without providing an output as it's generated automatically.
 
-Some documentation is auto-generated (for more information see `docs/build.py`). Here is a list of auto-generated sections (excluding `overview/whats-next` docs):
-- `docs/references` (from the codebase's docstrings)
-- `docs/development` (from the repository root's docs)
+It's possible to run this documentation portal locally:
 
-You can test this documentation using [Livemark](https://livemark.frictionlessdata.io). Livemark in a sync mode executes Python and Bash codeblocks in Markdown and writes the results back. Here is a quick example:
-
-> Run `livemark` against an article only if you consider the article to be a trusted source.It will execute codeblocks marked by the `script` header.
-
-```bash
-livemark sync docs/guides/basic-examples.md --diff # get the diff
-livemark sync docs/guides/basic-examples.md --print # print the doc
-livemark sync docs/guides/basic-examples.md # update inline
+```bash tabs=CLI
+livemark start
 ```
-
-It's possible to run this documentation portal locally. This requires Node.js 12+ installed on your computer, and can be run with the following code:
-
-```bash
-cd portal
-npm install
-npm start
-```
-
-Alternatively, you can run the documentation portal with Docker. With
-both Docker and Docker Compose installed on the system, first build the docker container with:
-
-```
-docker build --rm -t frictionless-docs .
-```
-
-then, every time you want to run the documentation portal locally, run:
-
-```
-docker-compose up
-```
-
-then open http://localhost:3000 on a web browser to see the portal.
-
-To update a reference in `docs/references` and some other auto-generated documents please update the codebase docstrings or root documents. For more information about auto-generated documentation see `docs/build.py`.
 
 ## Code Contribution
 
-Frictionless is a Python3.6+ framework, and it uses some common Python tools for the development process:
-- testing: `pytest`
-- linting: `pylama`
+Frictionless is a Python3.8+ framework, and it uses some common Python tools for the development process:
+- type checking: `pyright`
 - formatting: `black`
-- type checking: `mypy` (under construction)
+- linting: `pylama`
+- testing: `pytest`
 
-You also need `git` to work on the project, and `make` is recommended. After cloning the repository, we recommend creating a virtual environment and installing the dependencies by following this code:
+You also need `git` to work on the project, and `make` is recommended.
+
+After cloning the repository, you can set up the development environment
+either by creating a virtual environment or a docker container.
+
+### Using a virtual environment
+
+Create a virtual environment and install the dependencies by following this code:
 
 > this will install a `git commit` hook running the tests
 
-```bash
+```bash tabs=CLI
 python3.8 -m venv .python
 source .python/bin/activate
 pip install wheel
 make install
 alias "frictionless=python -m frictionless"
 ```
+
+Note: You may need to run `sudo apt-get install postgresql libpq-dev` on a Debian-based system, because the python Postgres module depends on some postgres CLI tools.
+
+### Using a Docker container
+
+Use the following command to build the container:
+
+```bash tabs=CLI
+make docker-setup
+```
+
+This should take care of setting up everything. If the container is
+built without errors, you can then run commands like `make` inside the
+container to accomplish various tasks (see the next section for details).
+
+To make things easier, we can create an alias:
+
+```bash tabs=CLI
+alias "frictionless-dev=docker run --rm -v $PWD:/home/frictionless -it frictionless-dev"
+```
+
+Then, for example, to run the tests, we can use:
+
+```bash tabs=CLI
+frictionless-dev make test
+```
+
+### Using make
 
 Then you can run various make commands:
 - `make docs` - build the docs

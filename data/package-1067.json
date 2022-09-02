@@ -1,0 +1,87 @@
+{
+  "name": "capitals-and-schools",
+  "resources": [
+    { "name": "capital-valid",
+      "path": "capital-valid.csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "number"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {"name": "capital-invalid",
+     "path": "capital-invalid.csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    { "name": "analysis-data",
+      "path": "analysis-data.csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "type_school",
+            "type": "string"
+          },
+          {
+            "name": "school_accreditation",
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "type": "string"
+          },
+          {
+            "name": "interest",
+            "type": "string"
+          },
+          {
+            "name": "residence",
+            "type": "string"
+          },
+          {
+            "name": "parent_age",
+            "type": "integer"
+          },
+          {
+            "name": "parent_salary",
+            "type": "integer"
+          },
+          {
+            "name": "house_area",
+            "type": "number"
+          },
+          {
+            "name": "average_grades",
+            "type": "number"
+          },
+          {
+            "name": "parent_was_in_college",
+            "type": "boolean"
+          },
+          {
+            "name": "in_college",
+            "type": "boolean"
+          }
+        ]
+      }
+    }
+  ]
+}
+

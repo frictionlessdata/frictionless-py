@@ -1,0 +1,12 @@
+- id: 1
+  name: Britain
+  neighbor_id: Ireland
+  population: '67'
+- id: 3
+  name: Germany
+  neighbor_id: '22'
+  population: '83'
+- id: 4
+  name: Italy
+  neighbor_id: null
+  population: '60'

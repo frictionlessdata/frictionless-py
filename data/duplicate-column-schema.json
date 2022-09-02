@@ -1,0 +1,7 @@
+{
+  "fields": [
+    { "name": "A", "type": "string" },
+    { "name": "B", "type": "string" },
+    { "name": "C", "type": "string" }
+  ]
+}

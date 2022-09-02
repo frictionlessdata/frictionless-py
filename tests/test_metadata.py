@@ -4,11 +4,11 @@ from frictionless import Metadata
 # General
 
 
-def test_descriptor():
-    metadata = Metadata({"key": "value"})
-    assert metadata["key"] == "value"
+def test_metadata():
+    descriptor = Metadata.metadata_retrieve({"key": "value"})
+    assert descriptor["key"] == "value"
 
 
-def test_descriptor_from_path():
-    metadata = Metadata("data/schema-valid.json")
-    assert metadata["primaryKey"] == "id"
+def test_metadata_from_path():
+    descriptor = Metadata.metadata_retrieve("data/schema-valid.json")
+    assert descriptor["primaryKey"] == "id"

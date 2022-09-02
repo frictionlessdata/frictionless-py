@@ -1,23 +1,31 @@
-from ..error import Error
+from __future__ import annotations
+from .data import DataError
 
 
-class FileError(Error):
-    code = "file-error"
-    name = "File Error"
-    tags = ["#file"]
-    template = "General file error: {note}"
+class FileError(DataError):
+    type = "file-error"
+    title = "File Error"
     description = "There is a file error."
+    template = "General file error: {note}"
+    tags = ["#file"]
 
 
-class HashCountError(FileError):
-    code = "hash-count-error"
-    name = "Hash Count Error"
-    template = "The data source does not match the expected hash count: {note}"
+class Md5CountError(FileError):
+    type = "md5-count"
+    title = "Md5 Count Error"
     description = "This error can happen if the data is corrupted."
+    template = "The data source does not match the expected md5 count: {note}"
+
+
+class Sha256CountError(FileError):
+    type = "sha256-count"
+    title = "Sha256 Count Error"
+    description = "This error can happen if the data is corrupted."
+    template = "The data source does not match the expected sha256 count: {note}"
 
 
 class ByteCountError(FileError):
-    code = "byte-count-error"
-    name = "Byte Count Error"
-    template = "The data source does not match the expected byte count: {note}"
+    type = "byte-count"
+    title = "Byte Count Error"
     description = "This error can happen if the data is corrupted."
+    template = "The data source does not match the expected byte count: {note}"

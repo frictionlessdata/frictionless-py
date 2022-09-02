@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <authors>
+    <author></author>
+  </authors>
+  <commentList>
+    <comment ref="A1" authorId="0">
+      <text>
+        <r>
+          <rPr>
+            <sz val="8"/>
+            <color indexed="81"/>
+            <rFont val="Tahoma"/>
+            <family val="2"/>
+          </rPr>
+          <t>Start of the alphabet</t>
+        </r>
+      </text>
+    </comment>
+    <comment ref="B1" authorId="0">
+      <text>
+        <r>
+          <rPr>
+            <sz val="8"/>
+            <color indexed="81"/>
+            <rFont val="Tahoma"/>
+            <family val="2"/>
+          </rPr>
+          <t>End of the alphabet</t>
+        </r>
+      </text>
+    </comment>
+    <comment ref="C1" authorId="0">
+      <text>
+        <r>
+          <rPr>
+            <sz val="8"/>
+            <color indexed="81"/>
+            <rFont val="Tahoma"/>
+            <family val="2"/>
+          </rPr>
+          <t>Any string</t>
+        </r>
+      </text>
+    </comment>
+    <comment ref="D1" authorId="0">
+      <text>
+        <r>
+          <rPr>
+            <sz val="8"/>
+            <color indexed="81"/>
+            <rFont val="Tahoma"/>
+            <family val="2"/>
+          </rPr>
+          <t>Any number &gt;= zero</t>
+        </r>
+      </text>
+    </comment>
+    <comment ref="E1" authorId="0">
+      <text>
+        <r>
+          <rPr>
+            <sz val="8"/>
+            <color indexed="81"/>
+            <rFont val="Tahoma"/>
+            <family val="2"/>
+          </rPr>
+          <t>An integer between 1 and 10</t>
+        </r>
+      </text>
+    </comment>
+    <comment ref="F1" authorId="0">
+      <text>
+        <r>
+          <rPr>
+            <sz val="8"/>
+            <color indexed="81"/>
+            <rFont val="Tahoma"/>
+            <family val="2"/>
+          </rPr>
+          <t>Any boolean</t>
+        </r>
+      </text>
+    </comment>
+  </commentList>
+</comments>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <fileVersion appName="xl" lastEdited="4" lowestEdited="4" rupBuild="4505"/>
+  <workbookPr defaultThemeVersion="124226"/>
+  <bookViews>
+    <workbookView xWindow="240" yWindow="15" windowWidth="16095" windowHeight="9660"/>
+  </bookViews>
+  <sheets>
+    <sheet name="Export this as TSV" sheetId="1" r:id="rId1"/>
+    <sheet name="abc list" sheetId="2" r:id="rId2"/>
+    <sheet name="xyz list" sheetId="3" r:id="rId3"/>
+  </sheets>
+  <calcPr calcId="124519" fullCalcOnLoad="1"/>
+</workbook>

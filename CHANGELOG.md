@@ -2,6 +2,105 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.0.0b2
+
+- Implemented [Github Integration](https://framework.frictionlessdata.io/docs/portals/github.html) ([#1185](https://github.com/frictionlessdata/frictionless-py/issues/1185))
+
+## v5.0.0b1
+
+- First beta version of [Frictionless Framework (v5)](https://framework.frictionlessdata.io/blog/2022/08-22-frictionless-framework-v5.html)
+
+## v4.40.0
+
+- Added Dialect support to packages (#1137)
+
+## v4.39.0
+
+- Fixed processing of incompatible decimal char in table schema and data   (#1089)
+- Added support for Time Zone data (#1097)
+- Improved validation messages by adding `summary` and partial validation details   (#1106)
+- Implemented new feature `summary`   (#1127)
+    - `schema.to_summary`
+    - `report.to_summary`
+    - Added CLI command `summary`
+- Fixed file compression `package.to_zip`   (#1104)
+- Implemented feature to validate single resource   (#1112)
+- Improved error message to notify about invalid fields   (#1117)
+- Fixed type conversion of NaN values for data of type Int64   (#1115)
+- Exposed valid/invalid flags in CLI `extract` command   (#1130)
+- Implemented feature `package.to_er_diagram`   (#1135)
+
+## v4.38.0
+
+- Implemented `checks.ascii_value` (#1064)
+- Implemented `checks.deviated_cell` (#1069)
+- Implemented `detector.field_true/false_values` (#1074)
+
+## v4.37.0
+
+- Deprecated high-level legacy actions (use class-based alternatives):
+  - `describe_*`
+  - `extract_*`
+  - `transform_*`
+  - `validate_*`
+
+## v4.36.0
+
+- Implemented pipeline actions:
+  - `pipeline.validate` (will replace `validate_pipeline` in v5)
+  - `pipeline.transform` (will replace `transform_pipeline` in v5)
+- Implemented inqiury actions:
+  - `inqiury.validate` (will replace `validate_inqiury` in v5)
+
+## v4.35.0
+
+- Implemented schema actions:
+  - `Schema.describe` (will replace `describe_schema` in v5)
+  - `schema.validate` (will replace `validate_schema` in v5)
+- Implemented new transform steps:
+  - `steps.field_merge`
+  - `steps.field_pack`
+
+## v4.34.0
+
+- Implemented package actions:
+  - `Package.describe` (will replace `describe_package` in v5)
+  - `package.extract` (will replace `extract_package` in v5)
+  - `package.validate` (will replace `validate_package` in v5)
+  - `package.transform` (will replace `transform_package` in v5)
+
+## v4.33.0
+
+- Implemented resource actions:
+  - `Resource.describe` (will replace `describe_resource` in v5)
+  - `resource.extract` (will replace `extract_resource` in v5)
+  - `resource.validate` (will replace `validate_resource` in v5)
+  - `resource.transform` (will replace `transform_resource` in v5)
+
+## v4.32.0
+
+- Added to_markdown() feature to metadata  (#1052)
+
+## v4.31.0
+
+- Added a feature that allows to export table schema as excel  (#1040)
+- Added nontabular note to validation results to indicate nontabular file  (#1046)
+- Excel stats now shows bytes and hash  (#1045)
+- Added pprint feature which displays metadata in a readable and pretty way  (#1039)
+- Improved error message if resource.data is not a string  (#1036)
+
+## v4.29.0
+
+- Made Detector's private properties public and writable (#1025)
+
+## v4.28.0
+
+- Improved an order of the metadata in YAML representation
+
+## v4.27.0
+
+- Exposed Dialect options via CLI such as `sheet`, `table`, `keys`, and `keyed` (#886)
+
 ## v4.26.0
 
 - Validate 'schema.fields[].example' (#998)

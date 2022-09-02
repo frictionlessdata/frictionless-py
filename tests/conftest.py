@@ -1,8 +1,7 @@
 import os
-import sys
 import pytest
 import sqlalchemy as sa
-from frictionless import helpers
+from frictionless import platform
 from pytest_cov.embed import cleanup_on_sigterm
 from dotenv import load_dotenv
 
@@ -23,8 +22,8 @@ def google_credentials_path():
     path = os.environ.get("GOOGLE_CREDENTIALS_PATH")
     if not path or not os.path.isfile(path):
         pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is not available')
-    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
-        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is Linux/Python3.8')
+    elif platform.type != "linux":
+        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is Linux only')
     return path
 
 
@@ -70,6 +69,11 @@ def database_url(sqlite_url):
     conn = engine.connect()
     conn.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
     conn.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
+
+    conn.execute(
+        "CREATE TABLE 'fruits' (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
+    )
+    conn.execute("INSERT INTO 'fruits' VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)")
     yield sqlite_url
     conn.close()
 

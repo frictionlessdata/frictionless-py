@@ -1,0 +1,5 @@
+fieldConfidence: 1
+fieldFloatNumbers: true
+fieldMissingValues:
+  - ''
+  - '67'

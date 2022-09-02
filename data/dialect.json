@@ -1,3 +1,5 @@
 {
-  "delimiter": ";"
+  "csv": {
+    "delimiter": ";"
+  }
 }

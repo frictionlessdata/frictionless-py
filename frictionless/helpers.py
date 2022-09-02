@@ -1,25 +1,23 @@
+from __future__ import annotations
 import io
 import re
 import os
 import csv
+import ast
 import json
 import glob
-import marko
-import atexit
 import shutil
-import zipfile
+import inspect
 import tempfile
 import datetime
-import platform
 import textwrap
 import stringcase
-from inspect import signature
-from html.parser import HTMLParser
-from importlib import import_module
+from copy import deepcopy
+from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
-from _thread import RLock  # type: ignore
-from . import settings
+from typing import List, Union, Any, Optional
+from .platform import platform
 
 
 # General
@@ -42,6 +40,11 @@ def create_descriptor(**options):
     return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
+def remove_default(descriptor, key, default):
+    if descriptor.get(key) == default:
+        descriptor.pop(key)
+
+
 def stringify_label(cells):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
@@ -51,7 +54,7 @@ def get_name(value):
 
 
 def pass_through(iterator):
-    for item in iterator:
+    for _ in iterator:
         pass
 
 
@@ -62,6 +65,10 @@ def safe_format(text, data):
 class SafeFormatDict(dict):
     def __missing__(self, key):
         return ""
+
+
+def cleaned_dict(**options):
+    return dict(**remove_non_values(options))
 
 
 def remove_non_values(mapping):
@@ -78,14 +85,9 @@ def rows_to_data(rows):
     return data
 
 
-def import_from_plugin(name, *, plugin):
-    try:
-        return import_module(name)
-    except ImportError:
-        module = import_module("frictionless.exception")
-        errors = import_module("frictionless.errors")
-        error = errors.GeneralError(note=f'Please install "frictionless[{plugin}]"')
-        raise module.FrictionlessException(error)
+def is_class_accept_option(cls, name):
+    sig = inspect.signature(cls.__init__)
+    return name in sig.parameters
 
 
 @contextmanager
@@ -100,18 +102,11 @@ def ensure_open(thing):
             thing.close()
 
 
-def copy_merge(source, patch):
+def copy_merge(source, patch={}, **kwargs):
     source = (source or {}).copy()
     source.update(patch)
+    source.update(kwargs)
     return source
-
-
-def filter_cells(cells, field_positions):
-    result = []
-    for field_position, cell in enumerate(cells, start=1):
-        if field_position in field_positions:
-            result.append(cell)
-    return result
 
 
 def compile_regex(items):
@@ -134,15 +129,23 @@ def parse_basepath(descriptor):
     return basepath
 
 
-def parse_scheme_and_format(source):
-    parsed = urlparse(source)
-    if re.search(r"\+.*://", source):
+def join_basepath(path: str, basepath: Optional[str] = None):
+    if not basepath:
+        return path
+    if is_remote_path(path):
+        return path
+    return os.path.join(basepath, path)
+
+
+def parse_scheme_and_format(path: str):
+    parsed = urlparse(path)
+    if re.search(r"\+.*://", path):
         # For sources like: db2+ibm_db://username:password@host:port/database
-        scheme, source = source.split("://", maxsplit=1)
-        parsed = urlparse(f"//{source}", scheme=scheme)
+        scheme, path = path.split("://", maxsplit=1)
+        parsed = urlparse(f"//{path}", scheme=scheme)
     scheme = parsed.scheme.lower()
     if len(scheme) < 2:
-        scheme = settings.DEFAULT_SCHEME
+        scheme = "file"
     format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower()
     if not format:
         # Test if query string contains a "format=" parameter.
@@ -153,18 +156,31 @@ def parse_scheme_and_format(source):
     return scheme, format
 
 
+def merge_jsonschema(base, head):
+    result = deepcopy(base)
+    base_required = base.get("required", [])
+    head_required = head.get("required", [])
+    if base_required or head_required:
+        result["required"] = list(set(base_required + head_required))
+    result["properties"] = copy_merge(
+        base.get("properties", {}),
+        head.get("properties", {}),
+    )
+    return result
+
+
 def ensure_dir(path):
     dirpath = os.path.dirname(path)
     if dirpath and not os.path.exists(dirpath):
         os.makedirs(dirpath)
 
 
-def move_file(source, target):
+def move_file(source: str, target: str):
     ensure_dir(target)
     shutil.move(source, target)
 
 
-def copy_file(source, target):
+def copy_file(source: str, target: str):
     if isinstance(source, (tuple, list)):
         source = os.path.join(*source)
     if isinstance(target, (tuple, list)):
@@ -173,7 +189,7 @@ def copy_file(source, target):
     shutil.copy(source, target)
 
 
-def write_file(path, text):
+def write_file(path: str, text: str):
     with tempfile.NamedTemporaryFile("wt", delete=False, encoding="utf-8") as file:
         file.write(text)
         file.flush()
@@ -182,7 +198,7 @@ def write_file(path, text):
 
 
 def create_byte_stream(bytes):
-    stream = io.BufferedRandom(io.BytesIO())
+    stream = io.BufferedRandom(io.BytesIO())  # type: ignore
     stream.write(bytes)
     stream.seek(0)
     return stream
@@ -198,7 +214,7 @@ def is_remote_path(path):
     return True
 
 
-def join_path(basepath, path):
+def normalize_path(path: str, *, basepath: Optional[str] = None):
     if not is_remote_path(path) and not os.path.isabs(path):
         if basepath:
             separator = os.path.sep
@@ -225,13 +241,40 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
-def is_expandable_path(path, basepath):
-    if not isinstance(path, str):
+def is_directory_source(source: Any):
+    if not isinstance(source, str):
         return False
-    if is_remote_path(path):
+    if is_remote_path(source):
         return False
-    fullpath = os.path.join(basepath, path)
-    return glob.has_magic(fullpath) or os.path.isdir(fullpath)
+    if not os.path.isdir(source):
+        return False
+    return True
+
+
+def is_expandable_source(source: Any):
+    if isinstance(source, list):
+        if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):
+            return True
+    if not isinstance(source, str):
+        return False
+    if is_remote_path(source):
+        return False
+    return glob.has_magic(source) or os.path.isdir(source)
+
+
+def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):
+    if isinstance(source, list):
+        return source
+    paths = []
+    if basepath:
+        source = os.path.join(basepath, source)
+    pattern = f"{source}/*" if os.path.isdir(source) else source
+    configs = {"recursive": True} if "**" in pattern else {}
+    for path in sorted(glob.glob(pattern, **configs)):
+        if basepath:
+            path = os.path.relpath(path, basepath)
+        paths.append(path)
+    return paths
 
 
 def is_zip_descriptor(descriptor):
@@ -241,19 +284,17 @@ def is_zip_descriptor(descriptor):
         return format == "zip"
 
 
+def is_descriptor_source(source):
+    if isinstance(source, Mapping):
+        return True
+    if isinstance(source, str):
+        if source.endswith((".json", ".yaml")):
+            return True
+    return False
+
+
 def is_type(object, name):
     return type(object).__name__ == name
-
-
-def is_platform(name):
-    current = platform.system()
-    if name == "linux":
-        return current == "Linux"
-    elif name == "macos":
-        return current == "Darwin"
-    elif name == "windows":
-        return current == "Windows"
-    return False
 
 
 def parse_json_string(string):
@@ -264,7 +305,26 @@ def parse_json_string(string):
     return string
 
 
-def parse_csv_string(string, *, convert=str, fallback=False):
+def parse_descriptors_string(string):
+    if string is None:
+        return None
+    descriptors = []
+    parts = string.split(" ")
+    for part in parts:
+        type, *props = part.split(":")
+        descriptor = dict(type=type)
+        for prop in props:
+            name, value = prop.split("=")
+            try:
+                value = ast.literal_eval(value)
+            except Exception:
+                pass
+            descriptor[name] = value
+        descriptors.append(descriptor)
+    return descriptors
+
+
+def parse_csv_string(string, *, convert: type = str, fallback=False):
     if string is None:
         return None
     reader = csv.reader(io.StringIO(string), delimiter=",")
@@ -289,55 +349,11 @@ def stringify_csv_string(cells):
     return result
 
 
-def unzip_descriptor(path, innerpath):
-    frictionless = import_module("frictionless")
-    resource = frictionless.Resource(path=path, compression="")
-    with frictionless.system.create_loader(resource) as loader:
-        byte_stream = loader.byte_stream
-        if loader.remote:
-            byte_stream = tempfile.TemporaryFile()
-            shutil.copyfileobj(loader.byte_stream, byte_stream)
-            byte_stream.seek(0)
-        with zipfile.ZipFile(byte_stream, "r") as zip:
-            tempdir = tempfile.mkdtemp()
-            zip.extractall(tempdir)
-            atexit.register(shutil.rmtree, tempdir)
-            descriptor = os.path.join(tempdir, innerpath)
-    return descriptor
-
-
-def parse_resource_hash(hash):
-    if not hash:
-        return (settings.DEFAULT_HASHING, "")
+def parse_resource_hash_v1(hash):
     parts = hash.split(":", maxsplit=1)
     if len(parts) == 1:
-        return (settings.DEFAULT_HASHING, parts[0])
+        return ("md5", parts[0])
     return parts
-
-
-def md_to_html(md):
-    try:
-        html = marko.convert(md)
-        html = html.replace("\n", "")
-        return html
-    except Exception:
-        return ""
-
-
-def html_to_text(html):
-    class HTMLFilter(HTMLParser):
-        text = ""
-
-        def handle_data(self, data):
-            self.text += data
-            self.text += " "
-
-    parser = HTMLFilter()
-    parser.feed(html)
-    return parser.text.strip()
-
-
-# Measurements
 
 
 class Timer:
@@ -352,10 +368,24 @@ class Timer:
         return round((self.__stop - self.__start).total_seconds(), 3)
 
 
+def slugify(text, **options):
+    """There is a conflict between python-slugify and awesome-slugify
+    So we import from a proper module manually
+    """
+
+    # Import
+    from slugify.slugify import slugify
+
+    # Slugify
+    slug = slugify(text, **options)
+    return slug
+
+
 def get_current_memory_usage():
-    # Current memory usage of the current process in MB
-    # This will only work on systems with a /proc file system (like Linux)
-    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
+    """Current memory usage of the current process in MB
+    This will only work on systems with a /proc file system (like Linux)
+    https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
+    """
     try:
         with open("/proc/self/status") as status:
             for line in status:
@@ -367,168 +397,107 @@ def get_current_memory_usage():
         pass
 
 
-# Collections
+def create_yaml_dumper():
+    class IndentDumper(platform.yaml.SafeDumper):
+        def increase_indent(self, flow=False, indentless=False):
+            return super().increase_indent(flow, False)
+
+    return IndentDumper
 
 
-# NOTE: we might need to move ControlledList/Dict to Metadata to incapsulate its behaviour
+def render_markdown(path: str, data: dict) -> str:
+    """Render any JSON-like object as Markdown, using jinja2 template"""
+
+    # Create environ
+    template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
+    environ = platform.jinja2.Environment(
+        loader=platform.jinja2.FileSystemLoader(template_dir),
+        lstrip_blocks=True,
+        trim_blocks=True,
+    )
+
+    # Render data
+    environ.filters["filter_dict"] = filter_dict
+    environ.filters["dict_to_markdown"] = dict_to_markdown
+    environ.filters["tabulate"] = dicts_to_markdown_table
+    template = environ.get_template(path)
+    return template.render(**data)
 
 
-class ControlledDict(dict):
-    def __onchange__(self, onchange=None):
-        if onchange is not None:
-            self.__onchange = onchange
-            return
-        onchange = getattr(self, "_ControlledDict__onchange", None)
-        if onchange:
-            onchange(self) if signature(onchange).parameters else onchange()
+def dict_to_markdown(
+    x: Union[dict, list, int, float, str, bool],
+    level: int = 0,
+    tab: int = 2,
+    flatten_scalar_lists: bool = True,
+) -> str:
+    """Render any JSON-like object as Markdown, using nested bulleted lists"""
 
-    def __setitem__(self, *args, **kwargs):
-        result = super().__setitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
+    def _scalar_list(x) -> bool:
+        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
 
-    def __delitem__(self, *args, **kwargs):
-        result = super().__delitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def clear(self, *args, **kwargs):
-        result = super().clear(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def pop(self, *args, **kwargs):
-        result = super().pop(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def popitem(self, *args, **kwargs):
-        result = super().popitem(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def setdefault(self, *args, **kwargs):
-        result = super().setdefault(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def update(self, *args, **kwargs):
-        result = super().update(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-
-class ControlledList(list):
-    def __onchange__(self, onchange=None):
-        if onchange is not None:
-            self.__onchange = onchange
-            return
-        onchange = getattr(self, "_ControlledList__onchange", None)
-        if onchange:
-            onchange(self) if signature(onchange).parameters else onchange()
-
-    def __setitem__(self, *args, **kwargs):
-        result = super().__setitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def __delitem__(self, *args, **kwargs):
-        result = super().__delitem__(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def append(self, *args, **kwargs):
-        result = super().append(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def clear(self, *args, **kwargs):
-        result = super().clear(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def extend(self, *args, **kwargs):
-        result = super().extend(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def insert(self, *args, **kwargs):
-        result = super().insert(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def pop(self, *args, **kwargs):
-        result = super().pop(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-    def remove(self, *args, **kwargs):
-        result = super().remove(*args, **kwargs)
-        self.__onchange__()
-        return result
-
-
-# Backports
-
-
-def slugify(text, **options):
-    # There is a conflict between python-slugify and awesome-slugify
-    # So we import from a proper module manually
-
-    # Import
-    from slugify.slugify import slugify
-
-    # Slugify
-    slug = slugify(text, **options)
-    return slug
-
-
-class cached_property:
-    # It can be removed after dropping support for Python 3.6 and Python 3.7
-
-    def __init__(self, func):
-        self.func = func
-        self.attrname = None
-        self.__doc__ = func.__doc__
-        self.lock = RLock()
-
-    def __set_name__(self, owner, name):
-        if self.attrname is None:
-            self.attrname = name
-        elif name != self.attrname:
-            raise TypeError(
-                "Cannot assign the same cached_property to two different names "
-                f"({self.attrname!r} and {name!r})."
-            )
-
-    def __get__(self, instance, owner=None):
-        if instance is None:
-            return self
-        if self.attrname is None:
-            raise TypeError(
-                "Cannot use cached_property instance without calling __set_name__ on it."
-            )
-        try:
-            cache = instance.__dict__
-        except AttributeError:  # not all objects have __dict__ (e.g. class defines slots)
-            msg = (
-                f"No '__dict__' attribute on {type(instance).__name__!r} "
-                f"instance to cache {self.attrname!r} property."
-            )
-            raise TypeError(msg) from None
-        val = cache.get(self.attrname, settings.UNDEFINED)
-        if val is settings.UNDEFINED:
-            with self.lock:
-                # check if another thread filled cache while we awaited lock
-                val = cache.get(self.attrname, settings.UNDEFINED)
-                if val is settings.UNDEFINED:
-                    val = self.func(instance)
-                    try:
-                        cache[self.attrname] = val
-                    except TypeError:
-                        msg = (
-                            f"The '__dict__' attribute on {type(instance).__name__!r} instance "
-                            f"does not support item assignment for caching {self.attrname!r} property."
+    def _iter(x: Union[dict, list, int, float, str, bool], level: int = 0) -> str:
+        if isinstance(x, (dict, list)):
+            if isinstance(x, dict):
+                labels = [f"- `{key}`" for key in x]
+            elif isinstance(x, list):
+                labels = [f"- [{i + 1}]" for i in range(len(x))]
+            values = x if isinstance(x, list) else list(x.values())
+            if isinstance(x, list) and flatten_scalar_lists:
+                scalar = [not isinstance(value, (dict, list)) for value in values]
+                if all(scalar):
+                    values = [f"{values}"]
+            lines = []
+            for label, value in zip(labels, values):
+                if isinstance(value, (dict, list)) and (
+                    not flatten_scalar_lists or not _scalar_list(value)
+                ):
+                    lines.append(f"{label}\n{_iter(value, level=level + 1)}")
+                else:
+                    if isinstance(value, str):
+                        # Indent to align following lines with '- '
+                        value = platform.jinja2_filters.do_indent(
+                            value, width=2, first=False
                         )
-                        raise TypeError(msg) from None
-        return val
+                    lines.append(f"{label} {value}")
+            txt = "\n".join(lines)
+        else:
+            txt = str(x)
+        if level > 0:
+            txt = platform.jinja2_filters.do_indent(
+                txt, width=tab, first=True, blank=False
+            )
+        return txt
+
+    return platform.jinja2_filters.do_indent(
+        _iter(x, level=0), width=tab * level, first=True, blank=False
+    )
+
+
+def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
+    """Tabulate dictionaries and render as a Markdown table"""
+    if kwargs:
+        dicts = [filter_dict(x, **kwargs) for x in dicts]
+    df = platform.pandas.DataFrame(dicts)
+    return df.where(df.notnull(), None).to_markdown(index=False)  # type: ignore
+
+
+def filter_dict(
+    x: dict,
+    include: Optional[list] = None,
+    exclude: Optional[list] = None,
+    order: Optional[list] = None,
+) -> dict:
+    """Filter and order dictionary by key names"""
+
+    if include:
+        x = {key: x[key] for key in x if key in include}
+    if exclude:
+        x = {key: x[key] for key in x if key not in exclude}
+    if order:
+        index = [
+            (order.index(key) if key in order else len(order), i)
+            for i, key in enumerate(x)
+        ]
+        sorted_keys = [key for _, key in sorted(zip(index, x.keys()))]
+        x = {key: x[key] for key in sorted_keys}
+    return x

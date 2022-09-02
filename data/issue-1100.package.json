@@ -1,0 +1,25 @@
+{
+    "name": "to_pandas_bug",
+    "resources": [
+        {
+            "profile": "tabular-data-resource",
+            "name": "issue1100",
+            "path": "issue-1100.csv",
+            "scheme": "file",
+            "format": "csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {
+                        "name": "timestamp",
+                        "type": "datetime",
+                        "format": "%Y-%m-%d %H.%M.%S"
+                    }
+                ],
+                "primaryKey": ["id"]
+            },
+            "dialect": {"delimiter": ";"}
+        }
+    ]
+}

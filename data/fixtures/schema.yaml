@@ -1,0 +1,41 @@
+
+fields:
+-
+  name: abc
+  type: string
+  description: Start of the alphabet
+  constraints:
+    enum:
+      - A
+      - B
+      - C
+-
+  name: xyz
+  type: string
+  description: End of the alphabet
+  constraints:
+    enum:
+      - X
+      - Y
+      - Z
+-
+  name: string
+  type: string
+  description: Any string
+-
+  name: number
+  description: Any number >= zero
+  type: number
+  constraints:
+    minimum: 0
+-
+  name: integer
+  description: An integer between 1 and 10
+  type: integer
+  constraints:
+    minimum: 1
+    maximum: 10
+-
+  name: boolean
+  description: Any boolean
+  type: boolean

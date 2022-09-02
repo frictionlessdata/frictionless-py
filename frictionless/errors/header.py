@@ -1,44 +1,39 @@
+from __future__ import annotations
+import attrs
+from typing import List
 from .table import TableError
 
 
+@attrs.define(kw_only=True)
 class HeaderError(TableError):
-    """Header error representation
+    """Header error representation"""
 
-    Parameters:
-        descriptor? (str|dict): error descriptor
-        note (str): an error note
-        labels (str[]): header labels
-        label (str): an errored label
-        field_name (str): field name
-        field_number (int): field number
-        field_position (int): field position
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    code = "header-error"
-    name = "Header Error"
-    tags = ["#table", "#header"]
-    template = "Cell Error"
+    type = "header-error"
+    title = "Header Error"
     description = "Cell Error"
+    template = "Cell Error"
+    tags = ["#table", "#header"]
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        note,
-        labels,
-        row_positions,
-    ):
-        self.setinitial("labels", labels)
-        self.setinitial("rowPositions", row_positions)
-        super().__init__(descriptor, note=note)
+    # State
+
+    labels: List[str]
+    """NOTE: add docs"""
+
+    row_numbers: List[int]
+    """NOTE: add docs"""
+
+    # Metadata
+
+    metadata_profile_patch = {
+        "properties": {
+            "labels": {"type": "array", "items": {"type": "string"}},
+            "rowNumbers": {"type": "array", "items": {"type": "integer"}},
+        },
+    }
 
 
 class BlankHeaderError(HeaderError):
-    code = "blank-header"
-    name = "Blank Header"
-    template = "Header is completely blank"
+    type = "blank-header"
+    title = "Blank Header"
     description = "This header is empty. A header should contain at least one value."
+    template = "Header is completely blank"

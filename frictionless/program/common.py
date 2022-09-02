@@ -1,5 +1,8 @@
+from __future__ import annotations
 from typer import Argument, Option
 from .. import settings
+
+# TODO: migrate to click options to encapsulate types (or we can set types here)?
 
 # Source
 
@@ -17,7 +20,7 @@ type = Option(
 
 path = Option(
     default=None,
-    help="Specify the data path explicetly (e.g. you need to use it if your data is JSON)",
+    help="Specify the data path explicitly (e.g. you need to use it if your data is JSON)",
 )
 
 scheme = Option(
@@ -30,14 +33,9 @@ format = Option(
     help="Specify format  [default: inferred]",
 )
 
-hashing = Option(
-    default=None,
-    help="Specify hashing algorithm  [default: inferred]",
-)
-
 encoding = Option(
     default=None,
-    help="Specify encoding  [default: inferred]",
+    help="Specify encoding  [default: inferred]. Output will be utf-8 encoded",
 )
 
 innerpath = Option(
@@ -50,21 +48,7 @@ compression = Option(
     help="Specify compression  [default: inferred]",
 )
 
-# Controls
-
-control = Option(
-    default=None,
-    help="Specify a path to a control",
-)
-
 # Dialect
-
-dialect = Option(
-    default=None,
-    help="Specify a path to a dialect",
-)
-
-# Layout
 
 header_rows = Option(
     default=None,
@@ -76,24 +60,14 @@ header_join = Option(
     help="Multiline header joiner [default: inferred]",
 )
 
-pick_fields = Option(
+comment_char = Option(
     default=None,
-    help='Comma-separated fields to pick e.g. "1,name1"',
+    help='A char indicating that the row is a comment e.g. "#"',
 )
 
-skip_fields = Option(
+comment_rows = Option(
     default=None,
-    help='Comma-separated fields to skip e.g. "2,name2"',
-)
-
-limit_fields = Option(
-    default=None,
-    help='Limit fields by this integer e.g. "10"',
-)
-
-offset_fields = Option(
-    default=None,
-    help='Offset fields by this integer e.g "5"',
+    help='Comma-separated rows to be considered as comments e.g. "2,3,4,5"',
 )
 
 pick_rows = Option(
@@ -111,9 +85,36 @@ limit_rows = Option(
     help='Limit rows by this integer e.g "100"',
 )
 
-offset_rows = Option(
+control = Option(
     default=None,
-    help='Offset rows by this integer e.g. "50"',
+    help="An inline JSON object or a path to a JSON file that provides the control (configuration for the data Loader)",
+)
+
+dialect = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the dialect (configuration for the parser)",
+)
+
+
+sheet = Option(
+    default=None,
+    help="The sheet to use from the input data (only with XLS and ODS files/plugins)",
+)
+
+table = Option(
+    default=None,
+    help="The table to use from the SQL database (SQL plugin)",
+)
+
+keys = Option(
+    default=None,
+    help="The keys to use as column names for the Inline or JSON data plugins",
+)
+
+
+keyed = Option(
+    default=False,
+    help="Whether the input data is keyed for the Inline or JSON data plugins",
 )
 
 # Schema
@@ -123,6 +124,40 @@ schema = Option(
     help="Specify a path to a schema",
 )
 
+# Checklist
+
+checklist = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the checklist",
+)
+
+checks = Option(
+    default=None,
+    help='Validation checks e.g "duplicate-row table-dimensions:numRows=1"',
+)
+
+pick_errors = Option(
+    default=None,
+    help='Comma-separated errors to pick e.g. "type-error"',
+)
+
+skip_errors = Option(
+    default=None,
+    help='Comma-separated errors to skip e.g. "blank-row"',
+)
+
+# Pipeline
+
+pipeline = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the pipeline",
+)
+
+steps = Option(
+    default=None,
+    help='Tranform steps e.g "table-recast cell-set:fieldName=id:value=3"',
+)
+
 # Stats
 
 stats = Option(
@@ -130,9 +165,14 @@ stats = Option(
     help="Infer stats",
 )
 
-stats_hash = Option(
+stats_md5 = Option(
     default=None,
-    help="Expected hash based on hashing option",
+    help="Expected MD5 hash",
+)
+
+stats_sha256 = Option(
+    default=None,
+    help="Expected SHA256 hash",
 )
 
 stats_bytes = Option(
@@ -195,21 +235,36 @@ schema_sync = Option(
     help="Sync the schema based on the data's header row",
 )
 
-# Command
+# Software
 
 basepath = Option(
     default=None,
     help="Basepath of the resource/package",
 )
 
-expand = Option(
+resource_name = Option(
     default=None,
-    help="Expand default values",
+    help="Name of resource to validate",
 )
 
-original = Option(
+valid_rows = Option(
+    default=False,
+    help="Return valid rows",
+)
+
+invalid_rows = Option(
+    default=False,
+    help="Return invalid rows",
+)
+
+limit_errors = Option(
+    default=settings.DEFAULT_LIMIT_ERRORS,
+    help="Limit errors by this integer",
+)
+
+limit_rows = Option(
     default=None,
-    help="Don't call infer on resources",
+    help="Limit rows by this integer",
 )
 
 parallel = Option(
@@ -217,29 +272,9 @@ parallel = Option(
     help="Enable multiprocessing",
 )
 
-pick_errors = Option(
+output_path = Option(
     default=None,
-    help='Comma-separated errors to pick e.g. "type-error"',
-)
-
-skip_errors = Option(
-    default=None,
-    help='Comma-separated errors to skip e.g. "blank-row"',
-)
-
-limit_errors = Option(
-    default=None,
-    help="Limit errors by this integer",
-)
-
-limit_memory = Option(
-    default=None,
-    help="Limit memory by this integer in MB",
-)
-
-trusted = Option(
-    default=None,
-    help="Follow unsafe paths",
+    help="Specify the output file path explicitly (e.g. package.yaml)",
 )
 
 yaml = Option(
@@ -255,4 +290,34 @@ json = Option(
 csv = Option(
     default=False,
     help="Return in CSV format",
+)
+
+markdown = Option(
+    default=False,
+    help="Return in Markdown format",
+)
+
+er_diagram = Option(
+    default=False,
+    help="Return er diagram. It is only available for package",
+)
+
+port = Option(
+    settings.DEFAULT_SERVER_PORT,
+    help="Specify server port",
+)
+
+debug = Option(
+    default=False,
+    help="Enable debug mode",
+)
+
+trusted = Option(
+    default=False,
+    help="Follow unsafe paths",
+)
+
+standards = Option(
+    default=None,
+    help="Possible options: v1, v2, v2-strict (default: v2)",
 )

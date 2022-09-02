@@ -1,0 +1,19 @@
+{
+   "name":"number-two",
+   "path":"table.csv",
+   "schema":{
+      "fields":[
+         {
+            "name":"id",
+            "type":"integer"
+         },
+         {
+            "name":"name",
+            "type":"string"
+         }
+      ]
+   },
+   "missingValues":[
+      "1"
+   ]
+}

@@ -1,0 +1,21 @@
+path: countries.csv
+name: countries
+profile: tabular-data-resource
+scheme: file
+format: csv
+hashing: md5
+encoding: utf-8-sig
+schema:
+  fields:
+    - type: integer
+      name: id
+      constraints:
+        required: true
+    - type: integer
+      name: neighbor_id
+    - type: string
+      name: name
+      constraints:
+        required: true
+    - type: integer
+      name: population

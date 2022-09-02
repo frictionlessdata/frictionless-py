@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.python
 env/
 build/
 develop-eggs/
@@ -23,6 +24,8 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+
+pip-wheel-metadata/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -77,6 +80,12 @@ target/
 # Spyder project settings
 .spyderproject
 
+# Livemark
+blog/**/*.html
+docs/**/*.html
+index.html
+404.html
+
 # Extras
 .projectile
 tabulator
@@ -85,4 +94,7 @@ datapackage
 .mypy_cache
 !docs/build
 .google.json
-tmp
+.vscode/
+coverage/
+site/
+tmp/

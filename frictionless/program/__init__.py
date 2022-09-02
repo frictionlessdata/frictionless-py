@@ -1,6 +1,10 @@
-from .api import program_api
-from .describe import program_describe
-from .extract import program_extract
-from .main import program, program_main
-from .transform import program_transform
-from .validate import program_validate
+from .program import program
+
+# Register modules
+from . import api
+from . import convert
+from . import describe
+from . import extract
+from . import summary
+from . import transform
+from . import validate

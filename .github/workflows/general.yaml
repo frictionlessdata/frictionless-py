@@ -17,15 +17,16 @@ jobs:
   # Test (Linux)
 
   test-linux:
+    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9, '3.10']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -36,11 +37,11 @@ jobs:
         if: env.GOOGLE_CREDENTIALS_DATA != null
         run: echo $GOOGLE_CREDENTIALS_DATA > .google.json
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_DATA }}
+          GOOGLE_CREDENTIALS_DATA: ${{ secrets.GOOGLE_CREDENTIALS_DATA }}
       - name: Test software
         run: make test-ci
       - name: Report coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
     services:
       postgres:
         image: postgres:12
@@ -70,6 +71,7 @@ jobs:
   # Test (MacOS)
 
   test-macos:
+    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -87,6 +89,7 @@ jobs:
   # Test (Windows)
 
   test-windows:
+    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -108,22 +111,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install Node
-        uses: actions/setup-node@v1
+      - name: Install Python
+        uses: actions/setup-python@v2
         with:
-          node-version: 14
+          python-version: 3.8
       - name: Install and build site
         run: |
-          cd site
-          npm install
-          npm run build
+          echo '!**/*.html' >> .gitignore
+          make install
+          livemark build
       - name: Publush to Github Pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: site
-          FOLDER: site/build
-          CLEAN: true
+          branch: site
+          create_branch: true
+          push_options: '--force'
 
   # Release
 
