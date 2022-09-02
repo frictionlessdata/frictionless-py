@@ -4,23 +4,93 @@ import pytest
 from frictionless import portals, platform, Catalog, Package, FrictionlessException
 
 
+OUTPUT_OPTIONS_WITH_DP_YAML = {
+    "resources": [
+        {
+            "name": "capitals",
+            "type": "table",
+            "path": "data/capitals.csv",
+            "scheme": "file",
+            "format": "csv",
+            "encoding": "utf-8",
+            "mediatype": "text/csv",
+            "dialect": {"csv": {"skipInitialSpace": True}},
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "cid", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                ]
+            },
+        }
+    ]
+}
+OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
+    "name": "test-repo-without-datapackage",
+    "resources": [
+        {
+            "name": "capitals",
+            "type": "table",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
+            "scheme": "https",
+            "format": "csv",
+            "mediatype": "text/csv",
+        },
+        {
+            "name": "countries",
+            "type": "table",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
+            "scheme": "https",
+            "format": "csv",
+            "mediatype": "text/csv",
+        },
+    ],
+}
+OUTPUT_OPTIONS_WITHOUT_DP = {
+    "name": "test-repo-without-datapackage",
+    "resources": [
+        {
+            "name": "capitals",
+            "type": "table",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
+            "scheme": "https",
+            "format": "csv",
+            "mediatype": "text/csv",
+        },
+        {
+            "name": "countries",
+            "type": "table",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
+            "scheme": "https",
+            "format": "csv",
+            "mediatype": "text/csv",
+        },
+        {
+            "name": "student",
+            "type": "table",
+            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
+            "scheme": "https",
+            "format": "xlsx",
+            "mediatype": "application/vnd.ms-excel",
+        },
+    ],
+}
+
 # Read
 
 
 @pytest.mark.vcr
 def test_github_manager_read(options_without_dp):
     url = options_without_dp.pop("url")
-    output = options_without_dp.pop("output")
     package = Package(url)
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
 def test_github_manager_read_without_apikey(options_without_dp):
     url = options_without_dp.pop("url")
-    output = options_without_dp.pop("output")
     package = Package.from_github(url, control=portals.GithubControl(apikey=None))
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
@@ -47,19 +117,17 @@ def test_github_manager_read_no_datapackage_found(options_empty):
 @pytest.mark.vcr
 def test_github_manager_read_default(options_without_dp):
     url = options_without_dp.pop("url")
-    output = options_without_dp.pop("output")
     control = portals.GithubControl()
     package = Package.from_github(url, control=control)
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
 def test_github_manager_read_other_file_types(options_without_dp):
     url = options_without_dp.pop("url")
-    output = options_without_dp.pop("output_csv_only")
     control = portals.GithubControl(formats=["csv"])
     package = Package.from_github(url, control=control)
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP_CSV
 
 
 @pytest.mark.vcr
@@ -95,35 +163,31 @@ def test_github_manager_read_with_wrongurl():
 def test_github_manager_read_without_url_with_controls(options_without_dp):
     user = options_without_dp.pop("user")
     repo = options_without_dp.pop("repo")
-    output = options_without_dp.pop("output")
     package = Package(control=portals.GithubControl(user=user, repo=repo))
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
 def test_github_manager_alias(options_without_dp):
     url = options_without_dp.pop("url")
-    output = options_without_dp.pop("output")
     package = Package.from_github(url)
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
 def test_github_manager_alias_read_custom_file_types(options_without_dp):
     url = options_without_dp.pop("url")
-    output = options_without_dp.pop("output_csv_only")
     control = portals.GithubControl(formats=["csv"])
     package = Package.from_github(url, control=control)
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP_CSV
 
 
 @pytest.mark.vcr
 def test_github_manager_alias_without_url_with_controls(options_without_dp):
     user = options_without_dp.pop("user")
     repo = options_without_dp.pop("repo")
-    output = options_without_dp.pop("output")
     package = Package.from_github(control=portals.GithubControl(user=user, repo=repo))
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 def test_github_manager_read_without_repo_user():
@@ -143,9 +207,8 @@ def test_github_manager_read_without_url_and_control_params():
 @pytest.mark.vcr
 def test_github_manager_read_yaml(options_with_dp_yaml):
     url = options_with_dp_yaml.pop("url")
-    output = options_with_dp_yaml.pop("output")
     package = Package(url)
-    assert package.to_descriptor() == output
+    assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP_YAML
 
 
 @pytest.mark.vcr
@@ -460,12 +523,11 @@ def test_github_manager_catalog_without_search_user_repo_params():
 
 
 @pytest.mark.vcr
-def test_github_manager_catalog_with_full_path_repo_only(options_without_dp):
-    output = options_without_dp.pop("output")
+def test_github_manager_catalog_with_full_path_repo_only():
     catalog = Catalog(
         control=portals.GithubControl(repo="fdtester/test-repo-without-datapackage"),
     )
-    assert catalog.packages[0].to_descriptor() == output
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
@@ -498,14 +560,13 @@ def test_github_manager_catalog_with_searchtext_with_no_matches():
 
 
 @pytest.mark.vcr
-def test_github_manager_catalog_qualifiers(options_without_dp):
-    output = options_without_dp.pop("output")
+def test_github_manager_catalog_qualifiers():
     catalog = Catalog(
         control=portals.GithubControl(
             search="Frictionlessdata in:readme", user="fdtester"
         ),
     )
-    assert catalog.packages[0].to_descriptor() == output
+    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
