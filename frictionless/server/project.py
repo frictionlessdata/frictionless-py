@@ -60,3 +60,9 @@ class Project:
 
     def list_files(self):
         return [path for path in os.listdir(self.public) if not path.startswith(".")]
+
+    def read_file(self, path: str):
+        # TODO: ensure that path is safe
+        with open(self.public / path) as file:
+            text = file.read()
+        return text
