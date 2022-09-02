@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 from ..platform import platform
 from .config import Config
 from .router import router
@@ -14,8 +13,22 @@ class Server(platform.fastapi.FastAPI):
     config: Config
 
     @staticmethod
-    def create(config: Optional[Config] = None):
-        server = Server(title="Frictionless API", version=settings.VERSION)
+    def create(config: Config):
+        server = Server(
+            title="Frictionless API",
+            version=settings.VERSION,
+            debug=config.debug,
+        )
         server.config = config or Config()
         server.include_router(router)
         return server
+
+    def run(self):
+        debug = self.config.debug
+        log_level = "debug" if self.config.debug else None
+        platform.uvicorn.run(
+            self,
+            port=self.config.port,
+            debug=debug,
+            log_level=log_level,
+        )

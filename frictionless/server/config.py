@@ -1,18 +1,23 @@
+import attrs
 from typing import Optional
 from typing_extensions import Self
+from .. import settings
 from .. import helpers
 
 
 DEFAULT_BASEPATH = ".server"
 
 
+@attrs.define(kw_only=True)
 class Config:
-    basepath: Optional[str]
-    root: bool
+    basepath: Optional[str] = None
+    root: bool = False
+    port: int = settings.DEFAULT_SERVER_PORT
+    debug: bool = False
 
-    def __init__(self, *, basepath: Optional[str] = None, root: bool = False):
-        self.basepath = basepath or (None if root else DEFAULT_BASEPATH)
-        self.root = root
+    def __attrs_post_init__(self):
+        if not self.basepath and not self.root:
+            self.basepath = DEFAULT_BASEPATH
 
     # Convert
 
