@@ -1,6 +1,8 @@
 from __future__ import annotations
 import attrs
-from typing import List
+from typing import List, Iterable
+
+from frictionless.table.row import Row
 from .table import TableError
 
 
@@ -73,41 +75,55 @@ class ForeignKeyError(RowError):
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
     tags = ["#table", "#row"]
 
-    target_keys: List[str]
-    """NOTE: add docs"""
+    target_keys: Iterable
+    """
+    Keys in the resource target column.
+    """
+    source_keys: Iterable
+    """
+    Key names in the lookup table defined as foreign keys in the resource.
+    """
 
-    source_keys: List[int]
-    """NOTE: add docs"""
+    source_name: str
+    """
+    Name of the lookup table the keys were searched on
+    """
 
-    source_name: List[str]
-    """NOTE: add docs"""
-
-    missing_values: List[int]
-    """NOTE: add docs"""
+    missing_values: Iterable
+    """
+    Cell values not found in the lookup table.
+    """
 
     @classmethod
     def from_row(
-        cls, row, *, target_keys, source_keys, source_name, missing_values, note
+        cls,
+        row: Row,
+        *,
+        target_keys: Iterable,
+        source_keys: Iterable,
+        source_name: str,
+        missing_values: Iterable,
+        note: str,
     ):
         """Create an foreign-key-error from a row
 
         Parameters:
-            row (Row): row
-            target_keys (tuple): target keys
-            source_keys (tuple): source keys
-            source_name: (str): source name
-            missing_values (tuple): values missing from the 
-            note (str): note
+            row: row
+            target_keys: target keys
+            source_keys: source keys
+            source_name: source name
+            missing_values: values from the source not found in the target.
+            note: note
 
         Returns:
             ForeignKeyError: error
         """
         cls = super().from_row(row=row, note=note)
         cls.row_number = row.row_number
-        cls.target_keys= target_keys
-        cls.source_keys= source_keys
-        cls.source_name= source_name
-        cls.missing_values= missing_values
+        cls.target_keys = target_keys
+        cls.source_keys = source_keys
+        cls.source_name = source_name
+        cls.missing_values = missing_values
         return cls
 
     # Metadata
