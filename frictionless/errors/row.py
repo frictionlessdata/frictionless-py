@@ -66,19 +66,12 @@ class PrimaryKeyError(RowError):
     template = 'Row at position "{rowNumber}" violates the primary key: {note}'
 
 
-@attrs.define(kw_only=True)
-class ForeignKeyError(TableError):
+class ForeignKeyError(RowError):
     type = "foreign-key"
     title = "ForeignKey Error"
     description = "Values in the foreign key fields should exist in the reference table"
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
     tags = ["#table", "#row"]
-
-    cells: List[str]
-    """NOTE: add docs"""
-
-    row_number: int
-    """NOTE: add docs"""
 
     target_keys: List[str]
     """NOTE: add docs"""
@@ -103,22 +96,19 @@ class ForeignKeyError(TableError):
             target_keys (tuple): target keys
             source_keys (tuple): source keys
             source_name: (str): source name
-            missing_values (tuple): missing values
+            missing_values (tuple): values missing from the 
             note (str): note
 
         Returns:
             ForeignKeyError: error
         """
-        to_str = lambda v: str(v) if v is not None else ""
-        return cls(
-            note=note,
-            cells=list(map(to_str, row.cells)),
-            row_number=row.row_number,
-            target_keys=target_keys,
-            source_keys=source_keys,
-            source_name=source_name,
-            missing_values=missing_values,
-        )
+        cls = super().from_row(row=row, note=note)
+        cls.row_number = row.row_number
+        cls.target_keys= target_keys
+        cls.source_keys= source_keys
+        cls.source_name= source_name
+        cls.missing_values= missing_values
+        return cls
 
     # Metadata
 
