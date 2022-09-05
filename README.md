@@ -5,7 +5,7 @@
 [![Release](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
 [![Citation](https://zenodo.org/badge/28409905.svg)](https://zenodo.org/badge/latestdoi/28409905)
 [![Codebase](https://img.shields.io/badge/codebase-github-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
-[![Support](https://img.shields.io/badge/support-discord-brightgreen)](https://discordapp.com/invite/Sewv6av)
+[![Support](https://img.shields.io/badge/support-slack-brightgreen)](https://join.slack.com/t/frictionlessdata/shared_invite/zt-17kpbffnm-tRfDW_wJgOw8tJVLvZTrBg)
 
 Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Standards](https://specs.frictionlessdata.io/).
 
