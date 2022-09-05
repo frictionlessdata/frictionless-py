@@ -95,6 +95,7 @@ datapackage
 !docs/build
 .google.json
 .vscode/
+.server/
 coverage/
 site/
 tmp/
