@@ -129,8 +129,6 @@ class ForeignKeyError(RowError):
 
     metadata_profile_patch = {
         "properties": {
-            "cells": {"type": "array", "items": {"type": "string"}},
-            "rowNumber": {"type": "integer"},
             "targetKeys": {"type": "array", "items": {"type": "string"}},
             "sourceKeys": {"type": "array", "items": {"type": "string"}},
             "sourceName": {"type": "string"},
