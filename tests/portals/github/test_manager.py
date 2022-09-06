@@ -554,6 +554,57 @@ def test_github_manager_publish_to_github(options_publish_test_params):
     )
 
 
+@pytest.mark.vcr
+def test_github_manager_publish_to_github_multiple_folders():
+    repo = "test-write-to-multiple-folders"
+    package = Package("data/multiple-folders.package.json")
+    response = package.to_github(
+        control=portals.GithubControl(
+            email="frictionlessdata@okfn.org", user="fdtester", repo=repo
+        )
+    )
+    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    assert (
+        repr(response.get_contents("datapackage.json"))
+        == 'ContentFile(path="datapackage.json")'
+    )
+    assert (
+        repr(response.get_contents("package/data.csv"))
+        == 'ContentFile(path="package/data.csv")'
+    )
+    assert (
+        repr(response.get_contents("countries.csv"))
+        == 'ContentFile(path="countries.csv")'
+    )
+
+
+@pytest.mark.vcr
+def test_github_manager_publish_to_github_multiple_folders_with_basepath():
+    repo = "test-write-to-multiple-folders-with-basepath"
+    package = Package("data/multiple-folders.package.json")
+    response = package.to_github(
+        control=portals.GithubControl(
+            email="frictionlessdata@okfn.org",
+            user="fdtester",
+            repo=repo,
+            basepath="fd-data",
+        )
+    )
+    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    assert (
+        repr(response.get_contents("fd-data/datapackage.json"))
+        == 'ContentFile(path="fd-data/datapackage.json")'
+    )
+    assert (
+        repr(response.get_contents("fd-data/package/data.csv"))
+        == 'ContentFile(path="fd-data/package/data.csv")'
+    )
+    assert (
+        repr(response.get_contents("fd-data/countries.csv"))
+        == 'ContentFile(path="fd-data/countries.csv")'
+    )
+
+
 # Search
 
 

@@ -146,6 +146,8 @@ class GithubManager(Manager[GithubControl]):
         # Write package file
         content = package.to_json()
         package_filename = self.control.filename or "datapackage.json"
+        if self.control.basepath:
+            package_filename = os.path.join(self.control.basepath, package_filename)
         repository = user.get_repo(self.control.repo)
         email = user.email or self.control.email
         username = self.control.name or user.name or self.control.user
@@ -169,10 +171,9 @@ class GithubManager(Manager[GithubControl]):
         # Write resource files
         try:
             for resource in package.resources:
-                base_path = self.control.basepath or resource.basepath
                 resource_path = resource.path or ""
-                if base_path:
-                    resource_path = os.path.join(base_path, resource_path)
+                if self.control.basepath:
+                    resource_path = os.path.join(self.control.basepath, resource_path)
                 repository.create_file(
                     path=resource_path,
                     message="Create package.json",
