@@ -62,7 +62,14 @@ class Project:
         return path
 
     def list_files(self):
-        return [path for path in os.listdir(self.public) if not path.startswith(".")]
+        paths = []
+        for basepath, _, names in os.walk(self.public):
+            for name in names:
+                path = os.path.join(basepath, name)
+                path = os.path.relpath(path, start=self.public)
+                paths.append(path)
+        paths = list(sorted(paths))
+        return paths
 
     def read_file(self, path: str):
         # TODO: ensure that path is safe
