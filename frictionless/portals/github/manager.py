@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import re
 from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
 from ...exception import FrictionlessException
@@ -209,7 +210,8 @@ def get_package(
         if file.path in ["datapackage.json", "datapackage.yaml"]:
             package = Package.from_descriptor(fullpath)
             for index, resource in enumerate(package.resources):
-                package.resources[index].path = f"{base_path}/{resource.path}"
+                if resource.path and not re.match(r"(?i)^https?", str(resource.path)):
+                    package.resources[index].path = f"{base_path}/{resource.path}"
             return package
         if any(file.path.endswith(ext) for ext in formats):
             resource = Resource(path=fullpath)

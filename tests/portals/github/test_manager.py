@@ -220,7 +220,6 @@ def test_github_manager_read_without_url_and_control_params():
 def test_github_manager_read_yaml(options_with_dp_yaml):
     url = options_with_dp_yaml.pop("url")
     package = Package(url)
-    print(package.to_descriptor())
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP_YAML
 
 
@@ -276,15 +275,115 @@ def test_github_manager_read_resources_without_dp(options_without_dp):
 # Read - Data
 
 
+@pytest.mark.vcr
+def test_github_manager_read_data_csv_files_in_different_folder_():
+    package = Package("https://github.com/fdtester/test-repo-with-datapackage-yaml")
+    package.resources[0].read_rows() == [
+        {"id": 1, "cid": 1, "name": "London"},
+        {"id": 2, "cid": 2, "name": "Paris"},
+        {"id": 3, "cid": 3, "name": "Berlin"},
+        {"id": 4, "cid": 4, "name": "Rome"},
+        {"id": 5, "cid": 5, "name": "Lisbon"},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_from_ods():
+    package = Package("https://github.com/fdtester/test-repo-with-ods-data-file")
+    assert package.resources[0].read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.vcr
 def test_github_manager_read_data_from_repo_with_datapackage(
     options_with_dp,
 ):
     url = options_with_dp.pop("url")
     package = Package.from_github(url)
+    print(package.to_descriptor())
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
     assert package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_from_repo_with_http_data_csv():
+    package = Package(
+        "https://github.com/fdtester/test-repo-resources-with-http-data-csv"
+    )
+    assert package.resources[0].read_rows() == [
+        {"id": 1, "cid": "1", "name": "London"},
+        {"id": 2, "cid": "2", "name": "Paris"},
+        {"id": 3, "cid": "3", "name": "Berlin"},
+        {"id": 4, "cid": "4", "name": "Rome"},
+        {"id": 5, "cid": "5", "name": "Lisbon"},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_from_repo_with_http_data_xls():
+    package = Package(
+        "https://github.com/fdtester/test-repo-resources-with-http-data-xls"
+    )
+    assert package.resources[0].read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_from_repo_with_inline_data():
+    package = Package("https://github.com/fdtester/test-repo-resources-with-inline-data")
+    assert package.resources[0].read_rows() == [
+        {"name": "Alex", "age": 33},
+        {"name": "Paul", "age": 44},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_ndjson():
+    package = Package("https://github.com/fdtester/test-repo-resources-with-json-data")
+    assert package.resources[0].read_rows() == [
+        {"id": 1, "name of language": "english"},
+        {"id": 2, "name of language": "中国人"},
+    ]
+    assert package.resources[1].read_rows() == [
+        {"id": 1, "name of language": "english"},
+        {"id": 2, "name of language": "中国人"},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_read_without_resource_file():
+    package = Package("https://github.com/fdtester/test-repo-without-resources-file")
+    with pytest.raises(FrictionlessException) as excinfo:
+        package.resources[0].read_rows()
+    error = excinfo.value.error
+    assert (
+        "The data source could not be successfully loaded: 404 Client Error"
+        in error.message
+    )
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_check_path_is_valid():
+    package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
+    assert (
+        package.resources[0].path
+        == "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/table.xls"
+    )
+
+
+@pytest.mark.vcr
+def test_github_manager_read_data_using_to_view():
+    package = Package("https://github.com/fdtester/test-repo-resources-with-inline-data")
+    assert package.resources[0].read_rows() == [
+        {"name": "Alex", "age": 33},
+        {"name": "Paul", "age": 44},
     ]
 
 
