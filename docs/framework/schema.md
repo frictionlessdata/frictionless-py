@@ -167,7 +167,7 @@ print(cell)
 
 ## Writing Cell
 
-During the process of data writing a schema uses a field internally. The same as with reasing a user can convert their data using this interface:
+During the process of data writing a schema uses a field internally. The same as with reading a user can convert their data using this interface:
 
 ```python script tabs=Python
 from frictionless import fields
