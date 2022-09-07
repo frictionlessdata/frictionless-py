@@ -302,7 +302,6 @@ def test_github_manager_read_data_from_repo_with_datapackage(
 ):
     url = options_with_dp.pop("url")
     package = Package.from_github(url)
-    print(package.to_descriptor())
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
     assert package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
@@ -367,6 +366,14 @@ def test_github_manager_read_without_resource_file():
         "The data source could not be successfully loaded: 404 Client Error"
         in error.message
     )
+
+
+@pytest.mark.vcr
+def test_github_manager_read_invalid_package():
+    with pytest.raises(FrictionlessException) as excinfo:
+        Package("https://github.com/fdtester/test-repo-with-invalid-package")
+    error = excinfo.value.error
+    assert "The data package has an error: descriptor is not valid" in error.message
 
 
 @pytest.mark.vcr
@@ -622,6 +629,38 @@ def test_github_manager_catalog_from_single_repo(options_with_dp):
     repo_url = options_with_dp.pop("url")
     catalog = Catalog(repo_url)
     assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+
+
+@pytest.mark.vcr
+def test_github_manager_catalog_from_single_repo_multiple_packages():
+    catalog = Catalog("https://github.com/fdtester/test-repo-with-multiple-packages")
+    assert len(catalog.packages) == 2
+    assert catalog.packages[0].name == "package-fddata-1"
+    assert catalog.packages[1].name == "package-fddata-2"
+    assert catalog.packages[0].resources[0].read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+    assert catalog.packages[1].resources[0].read_rows() == [
+        {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+        {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
+        {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+        {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+    ]
+
+
+@pytest.mark.vcr
+def test_github_manager_catalog_from_single_repo_multiple_packages_different_folder():
+    catalog = Catalog("https://github.com/fdtester/test-repo-with-multiple-packages")
+    assert len(catalog.packages) == 2
+    assert (
+        catalog.packages[0].resources[0].path
+        == "https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-1/data/table.xls"
+    )
+    assert (
+        catalog.packages[1].resources[0].path
+        == "https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-2/countries.csv"
+    )
 
 
 @pytest.mark.vcr

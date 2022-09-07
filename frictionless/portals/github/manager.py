@@ -42,11 +42,12 @@ class GithubManager(Manager[GithubControl]):
             base_path = f"https://raw.githubusercontent.com/{location}/{repository.default_branch}"
             contents = repository.get_contents("")
             resource_path = get_resources(contents, repository)
-            package = get_package(
-                resource_path, repository, base_path, self.control.formats
+            all_packages = get_package(
+                resource_path, repository, base_path, self.control.formats, catalog=True
             )
-            if package.resources:
-                return Catalog(name="catalog", packages=[package])
+            if all_packages and isinstance(all_packages, List):
+                packages = packages + all_packages
+                return Catalog(name="catalog", packages=packages)
             note = "Package/s not found"
             raise FrictionlessException(note)
 
@@ -86,7 +87,7 @@ class GithubManager(Manager[GithubControl]):
                 package = get_package(
                     resource_path, repository, base_path, self.control.formats
                 )
-                if package.resources:
+                if isinstance(package, Package) and package.resources:
                     packages.append(package)
         except Exception as exception:
             note = "Github API error" + repr(exception)
@@ -118,7 +119,7 @@ class GithubManager(Manager[GithubControl]):
         resource_path = get_resources(contents, repository)
         package = get_package(resource_path, repository, base_path, self.control.formats)
 
-        if package.resources:
+        if isinstance(package, Package) and package.resources:
             return package
 
         note = "Package/s not found"
@@ -203,8 +204,33 @@ def get_resources(
 
 
 def get_package(
-    paths: List[ContentFile], repository: Repository, base_path: str, formats: List[str]
-) -> Package:
+    paths: List[ContentFile],
+    repository: Repository,
+    base_path: str,
+    formats: List[str],
+    catalog: bool = False,
+) -> Union[Package, List[Package]]:
+    def multiple_packages(base_path):
+        packages = []
+        for file in paths:
+            fullpath = f"{base_path}/{file.path}"
+            if any(
+                file.path.endswith(filename)
+                for filename in ["datapackage.json", "datapackage.yaml"]
+            ):
+                package = Package.from_descriptor(fullpath)
+                for index, resource in enumerate(package.resources):
+                    if resource.path and not re.match(r"(?i)^https?", str(resource.path)):
+                        resource_base_path = os.path.split(fullpath)[0]
+                        package.resources[
+                            index
+                        ].path = f"{resource_base_path}/{resource.path}"
+                packages.append(package)
+        return packages
+
+    if catalog:
+        return multiple_packages(base_path)
+
     package = Package(name=repository.name)
     for file in paths:
         fullpath = f"{base_path}/{file.path}"
@@ -212,7 +238,10 @@ def get_package(
             package = Package.from_descriptor(fullpath)
             for index, resource in enumerate(package.resources):
                 if resource.path and not re.match(r"(?i)^https?", str(resource.path)):
-                    package.resources[index].path = f"{base_path}/{resource.path}"
+                    resource_base_path = os.path.split(fullpath)[0]
+                    package.resources[
+                        index
+                    ].path = f"{resource_base_path}/{resource.path}"
             return package
         if any(file.path.endswith(ext) for ext in formats):
             resource = Resource(path=fullpath)
