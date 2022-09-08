@@ -1,7 +1,7 @@
 # type: ignore
 import os
 import pytest
-from frictionless import portals, Catalog, Package, FrictionlessException
+from frictionless import portals, Catalog, Package, FrictionlessException, platform
 
 
 OUTPUT_OPTIONS_WITH_DP_YAML = {
@@ -9,7 +9,7 @@ OUTPUT_OPTIONS_WITH_DP_YAML = {
         {
             "name": "capitals",
             "type": "table",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv",
+            "path": "data/capitals.csv",
             "scheme": "file",
             "format": "csv",
             "encoding": "utf-8",
@@ -30,7 +30,7 @@ OUTPUT_OPTIONS_WITH_DP = {
     "resources": [
         {
             "name": "first-resource",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/table.xls",
+            "path": "table.xls",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "number"},
@@ -47,7 +47,7 @@ OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
         {
             "name": "capitals",
             "type": "table",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
+            "path": "data/capitals.csv",
             "scheme": "https",
             "format": "csv",
             "mediatype": "text/csv",
@@ -55,7 +55,7 @@ OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
         {
             "name": "countries",
             "type": "table",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
+            "path": "data/countries.csv",
             "scheme": "https",
             "format": "csv",
             "mediatype": "text/csv",
@@ -68,7 +68,7 @@ OUTPUT_OPTIONS_WITHOUT_DP = {
         {
             "name": "capitals",
             "type": "table",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
+            "path": "data/capitals.csv",
             "scheme": "https",
             "format": "csv",
             "mediatype": "text/csv",
@@ -76,7 +76,7 @@ OUTPUT_OPTIONS_WITHOUT_DP = {
         {
             "name": "countries",
             "type": "table",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
+            "path": "data/countries.csv",
             "scheme": "https",
             "format": "csv",
             "mediatype": "text/csv",
@@ -84,7 +84,7 @@ OUTPUT_OPTIONS_WITHOUT_DP = {
         {
             "name": "student",
             "type": "table",
-            "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
+            "path": "data/student.xlsx",
             "scheme": "https",
             "format": "xlsx",
             "mediatype": "application/vnd.ms-excel",
@@ -101,6 +101,10 @@ def test_github_manager_read(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
+    assert (
+        package.resources[0].basepath
+        == "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master"
+    )
 
 
 @pytest.mark.vcr
@@ -115,6 +119,10 @@ def test_github_manager_read_repo_with_datapackage(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert (
+        package.resources[0].basepath
+        == "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master"
+    )
 
 
 @pytest.mark.vcr
@@ -154,7 +162,7 @@ def test_github_manager_read_with_url_and_control(options_without_dp):
             {
                 "name": "student",
                 "type": "table",
-                "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/student.xlsx",
+                "path": "data/student.xlsx",
                 "scheme": "https",
                 "format": "xlsx",
                 "mediatype": "application/vnd.ms-excel",
@@ -267,10 +275,7 @@ def test_github_manager_read_resources_without_dp(options_without_dp):
     packages = Package.from_github(url)
     assert len(packages.resources) == 3
     assert packages.resources[0].name == "capitals"
-    assert (
-        packages.resources[0].path
-        == "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv"
-    )
+    assert packages.resources[0].path == "data/capitals.csv"
 
 
 # Read - Data
@@ -380,10 +385,7 @@ def test_github_manager_read_invalid_package():
 @pytest.mark.vcr
 def test_github_manager_read_data_check_path_is_valid():
     package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
-    assert (
-        package.resources[0].path
-        == "https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-json/master/table.xls"
-    )
+    assert package.resources[0].path == "table.xls"
 
 
 @pytest.mark.vcr
@@ -567,6 +569,7 @@ def test_github_manager_publish_to_github_multiple_folders():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(platform.type == "windows", reason="Path Error on Windows")
 def test_github_manager_publish_to_github_multiple_folders_with_basepath():
     repo = "test-write-to-multiple-folders-with-basepath"
     package_file_path = os.path.join("data", "multiple-folders.package.json")
@@ -591,6 +594,49 @@ def test_github_manager_publish_to_github_multiple_folders_with_basepath():
     assert (
         repr(response.get_contents("fd-data/countries.csv"))
         == 'ContentFile(path="fd-data/countries.csv")'
+    )
+
+
+@pytest.mark.vcr
+def test_github_manager_publish_package_read_from_github_repo_with_data_package():
+    repo_to_write = "test-write-package-read-from-github"
+    package = Package.from_github(
+        "https://github.com/fdtester/test-repo-with-datapackage-json"
+    )
+    control = portals.GithubControl(repo=repo_to_write)
+    response = package.to_github(control=control)
+    assert response.url == f"https://api.github.com/repos/fdtester/{repo_to_write}"
+    assert (
+        repr(response.get_contents("datapackage.json"))
+        == 'ContentFile(path="datapackage.json")'
+    )
+    assert repr(response.get_contents("table.xls")) == 'ContentFile(path="table.xls")'
+
+
+@pytest.mark.vcr
+def test_github_manager_publish_package_read_from_github_repo_without_data_package():
+    repo_to_write = "test-write-package-read-from-github-repo-without-datapackage"
+    package = Package.from_github(
+        "https://github.com/fdtester/test-repo-without-datapackage"
+    )
+    control = portals.GithubControl(repo=repo_to_write)
+    response = package.to_github(control=control)
+    assert response.url == f"https://api.github.com/repos/fdtester/{repo_to_write}"
+    assert (
+        repr(response.get_contents("datapackage.json"))
+        == 'ContentFile(path="datapackage.json")'
+    )
+    assert (
+        repr(response.get_contents("data/capitals.csv"))
+        == 'ContentFile(path="data/capitals.csv")'
+    )
+    assert (
+        repr(response.get_contents("data/countries.csv"))
+        == 'ContentFile(path="data/countries.csv")'
+    )
+    assert (
+        repr(response.get_contents("data/student.xlsx"))
+        == 'ContentFile(path="data/student.xlsx")'
     )
 
 
@@ -635,14 +681,8 @@ def test_github_manager_catalog_from_single_repo_multiple_packages():
 def test_github_manager_catalog_from_single_repo_multiple_packages_different_folder():
     catalog = Catalog("https://github.com/fdtester/test-repo-with-multiple-packages")
     assert len(catalog.packages) == 2
-    assert (
-        catalog.packages[0].resources[0].path
-        == "https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-1/data/table.xls"
-    )
-    assert (
-        catalog.packages[1].resources[0].path
-        == "https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-2/countries.csv"
-    )
+    assert catalog.packages[0].resources[0].path == "data/table.xls"
+    assert catalog.packages[1].resources[0].path == "countries.csv"
 
 
 @pytest.mark.vcr

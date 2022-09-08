@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import re
 from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
 from ...exception import FrictionlessException
@@ -219,12 +218,6 @@ def get_package(
                 for filename in ["datapackage.json", "datapackage.yaml"]
             ):
                 package = Package.from_descriptor(fullpath)
-                for index, resource in enumerate(package.resources):
-                    if resource.path and not re.match(r"(?i)^https?", str(resource.path)):
-                        resource_base_path = os.path.split(fullpath)[0]
-                        package.resources[
-                            index
-                        ].path = f"{resource_base_path}/{resource.path}"
                 packages.append(package)
         return packages
 
@@ -236,15 +229,9 @@ def get_package(
         fullpath = f"{base_path}/{file.path}"
         if file.path in ["datapackage.json", "datapackage.yaml"]:
             package = Package.from_descriptor(fullpath)
-            for index, resource in enumerate(package.resources):
-                if resource.path and not re.match(r"(?i)^https?", str(resource.path)):
-                    resource_base_path = os.path.split(fullpath)[0]
-                    package.resources[
-                        index
-                    ].path = f"{resource_base_path}/{resource.path}"
             return package
         if any(file.path.endswith(ext) for ext in formats):
-            resource = Resource(path=fullpath)
+            resource = Resource(path=file.path, basepath=base_path)
             resource.infer(sample=False)
             package.add_resource(resource)
     return package
