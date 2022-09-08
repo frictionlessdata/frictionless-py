@@ -37,7 +37,10 @@ class IntegerField(Field):
                 if pattern:
                     cell = pattern.sub("", cell)
                 # for numeric string starting with zero for example, 001, 00, 01
-                has_leading_zero = re.match(r"0\d+", cell.strip())
+                cell_s = cell.strip()
+                has_leading_zero = (
+                    cell_s.startswith("0") and len(cell_s) > 1 and cell_s.isnumeric()
+                )
                 if self.bare_number and has_leading_zero:
                     return None
                 try:

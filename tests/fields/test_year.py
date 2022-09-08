@@ -8,7 +8,6 @@ from frictionless import Field
 @pytest.mark.parametrize(
     "format, source, target",
     [
-        ("default", "0530", None),
         ("default", 2000, 2000),
         ("default", "2000", 2000),
         ("default", -2000, None),

@@ -121,7 +121,7 @@ def test_extract_resource_string_with_leading_zeros():
             "comune": "030151360",
             "codice_regione": "03",
             "codice_provincia": "015",
-            "codice_comune": "1360",
+            "codice_comune": 1360,
             "denominazione_comune": "POLPENAZZE DEL GARDA",
             "sigla_provincia": "BS",
             "data_entrata_in_carica": "13/10/2021",
