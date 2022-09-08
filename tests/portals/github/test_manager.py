@@ -1,4 +1,5 @@
 # type: ignore
+import os
 import pytest
 from frictionless import portals, Catalog, Package, FrictionlessException
 
@@ -568,7 +569,8 @@ def test_github_manager_publish_to_github_multiple_folders():
 @pytest.mark.vcr
 def test_github_manager_publish_to_github_multiple_folders_with_basepath():
     repo = "test-write-to-multiple-folders-with-basepath"
-    package = Package("data/multiple-folders.package.json")
+    package_file_path = os.path.join("data", "multiple-folders.package.json")
+    package = Package(package_file_path)
     response = package.to_github(
         control=portals.GithubControl(
             email="frictionlessdata@okfn.org",
