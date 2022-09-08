@@ -6,8 +6,8 @@ from frictionless import Resource, formats, platform
 # General
 
 
-@pytest.mark.skipif(platform.type == "darwin", reason="Skip in MacOS")
-@pytest.mark.skipif(platform.type == "windows", reason="Skip in Windows")
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_parser_write_timezone_postgresql(postgresql_url):
     source = Resource("data/timezone.csv")
     control = formats.SqlControl(table="timezone")
@@ -37,8 +37,8 @@ def test_sql_parser_write_timezone_postgresql(postgresql_url):
 # Bugs
 
 
-@pytest.mark.skipif(platform.type == "darwin", reason="Skip in MacOS")
-@pytest.mark.skipif(platform.type == "windows", reason="Skip in Windows")
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_parser_write_string_pk_issue_777_postgresql(postgresql_url):
     source = Resource("data/table.csv")
     source.infer()
