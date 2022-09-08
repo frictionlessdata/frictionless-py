@@ -146,9 +146,9 @@ class GithubManager(Manager[GithubControl]):
 
         # Write package file
         content = package.to_json()
-        package_filename = self.control.filename or "datapackage.json"
+        package_path = self.control.filename or "datapackage.json"
         if self.control.basepath:
-            package_filename = os.path.join(self.control.basepath, package_filename)
+            package_path = os.path.join(self.control.basepath, package_path)
         repository = user.get_repo(self.control.repo)
         email = user.email or self.control.email
         username = self.control.name or user.name or self.control.user
@@ -158,7 +158,7 @@ class GithubManager(Manager[GithubControl]):
         branch = repository.default_branch
         try:
             repository.create_file(
-                path=package_filename,
+                path=package_path,
                 message="Create package.json",
                 content=content,
                 branch=repository.default_branch,
