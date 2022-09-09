@@ -5,12 +5,12 @@ from ..project import Project
 from ..router import router
 
 
-class SessionListFilesProps(BaseModel):
+class ProjectListFilesProps(BaseModel):
     session: Optional[str]
 
 
 @router.post("/project/list-files")
-def server_file_create(request: Request, props: SessionListFilesProps):
+def server_file_create(request: Request, props: ProjectListFilesProps):
     config = request.app.config
     project = Project(config, session=props.session)
     paths = project.list_files()
