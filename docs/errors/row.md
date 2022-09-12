@@ -19,4 +19,5 @@
 ```yaml reference
 references:
   - frictionless.errors.RowError
+  - frictionless.errors.ForeignKeyError
 ```
