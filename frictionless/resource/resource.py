@@ -836,27 +836,23 @@ class Resource(Metadata):
                                 continue
                             match = cells in group_lookup.get(group["sourceKey"], set())
                             if not match:
-                                source_name = group["sourceName"]
-                                source_keys = list(group["sourceKey"])
-                                target_keys = list(group["targetKey"])
-                                target_cells = list(map(str, cells))
                                 note = (
                                     'for "%s": values "%s" not found in the lookup table "%s" as "%s"'
                                     % (
-                                        ", ".join(target_keys),
+                                        ", ".join(group["targetKey"]),
                                         ", ".join(str(d) for d in cells),
-                                        source_name,
-                                        ", ".join(source_keys),
+                                        group["sourceName"],
+                                        ", ".join(group["sourceKey"]),
                                     )
                                 )
 
                                 error = errors.ForeignKeyError.from_row(
                                     row,
                                     note=note,
-                                    source_name=source_name,
-                                    source_keys=source_keys,
-                                    target_keys=target_keys,
-                                    target_cells=target_cells,
+                                    field_names=list(group["targetKey"]),
+                                    field_values=list(cells),
+                                    reference_name=group["sourceName"],
+                                    reference_field_names=list(group["sourceKey"]),
                                 )
                                 row.errors.append(error)
 

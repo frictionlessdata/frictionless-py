@@ -140,13 +140,19 @@ def test_validate_package_schema_multiple_foreign_key_violations():
     package = Package(descriptor)
     report = package.validate()
     assert report.flatten(
-        ["rowNumber", "sourceName", "sourceKeys", "targetKeys", "targetCells"]
+        [
+            "rowNumber",
+            "fieldNames",
+            "fieldCells",
+            "referenceName",
+            "referenceFieldNames",
+        ]
     ) == [
-        [3, "", ["id"], ["next_id"], ["3"]],
-        [4, "", ["id"], ["next_id"], ["4"]],
-        [4, "people", ["label"], ["id"], ["5"]],
-        [5, "people", ["label"], ["id"], ["6"]],
-        [4, "cities", ["id", "next_id"], ["from", "to"], ["3", "4"]],
+        [3, ["next_id"], ["3"], "", ["id"]],
+        [4, ["next_id"], ["4"], "", ["id"]],
+        [4, ["id"], ["5"], "people", ["label"]],
+        [5, ["id"], ["6"], "people", ["label"]],
+        [4, ["from", "to"], ["3", "4"], "cities", ["id", "next_id"]],
     ]
 
 
