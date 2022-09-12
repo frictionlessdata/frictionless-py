@@ -1,6 +1,8 @@
 from __future__ import annotations
 import attrs
-from typing import List
+from typing import List, Iterable
+
+from frictionless.table.row import Row
 from .table import TableError
 
 
@@ -71,6 +73,68 @@ class ForeignKeyError(RowError):
     title = "ForeignKey Error"
     description = "Values in the foreign key fields should exist in the reference table"
     template = 'Row at position "{rowNumber}" violates the foreign key: {note}'
+
+    target_keys: Iterable
+    """
+    Keys in the resource target column.
+    """
+    source_keys: Iterable
+    """
+    Key names in the lookup table defined as foreign keys in the resource.
+    """
+
+    source_name: str
+    """
+    Name of the lookup table the keys were searched on
+    """
+
+    missing_values: Iterable
+    """
+    Cell values not found in the lookup table.
+    """
+
+    @classmethod
+    def from_row(
+        cls,
+        row: Row,
+        *,
+        target_keys: Iterable,
+        source_keys: Iterable,
+        source_name: str,
+        missing_values: Iterable,
+        note: str,
+    ):
+        """Create an foreign-key-error from a row
+
+        Parameters:
+            row: row
+            target_keys: target keys
+            source_keys: source keys
+            source_name: source name
+            missing_values: values from the source not found in the target.
+            note: note
+
+        Returns:
+            ForeignKeyError: error
+        """
+        cls = super().from_row(row=row, note=note)
+        cls.row_number = row.row_number
+        cls.target_keys = target_keys
+        cls.source_keys = source_keys
+        cls.source_name = source_name
+        cls.missing_values = missing_values
+        return cls
+
+    # Metadata
+
+    metadata_profile_patch = {
+        "properties": {
+            "targetKeys": {"type": "array", "items": {"type": "string"}},
+            "sourceKeys": {"type": "array", "items": {"type": "string"}},
+            "sourceName": {"type": "string"},
+            "missingValues": {"type": "array", "items": {"type": "integer"}},
+        },
+    }
 
 
 class DuplicateRowError(RowError):
