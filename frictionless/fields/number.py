@@ -69,7 +69,7 @@ class NumberField(Field):
                     cell_s = cell.strip()
                     has_leading_zero = (
                         cell_s.startswith("0")
-                        and not cell_s.startswith("0.")
+                        and not cell_s.startswith(f"0{self.decimal_char}")
                         and len(cell_s) > 1
                     )
                     if has_leading_zero:
