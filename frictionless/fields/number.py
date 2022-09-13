@@ -64,8 +64,10 @@ class NumberField(Field):
                 Primary = float
                 Secondary = Decimal
             if isinstance(cell, str):
+                if processor:
+                    cell = processor(cell)  # type: ignore
                 # for numeric string starting with zero for example, 001, 00, 01
-                if self.bare_number:
+                if cell and self.bare_number:
                     cell_s = cell.strip()
                     has_leading_zero = (
                         cell_s.startswith("0")
@@ -74,8 +76,6 @@ class NumberField(Field):
                     )
                     if has_leading_zero:
                         return None
-                if processor:
-                    cell = processor(cell)  # type: ignore
                 try:
                     return Primary(cell)  # type: ignore
                 except Exception:
