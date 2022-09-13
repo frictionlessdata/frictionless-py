@@ -1,0 +1,58 @@
+{
+    "name":"package-in-multiple-folders",
+    "resources":[
+       {
+          "name":"r-countries",
+          "path":"countries.csv",
+          "schema":{
+             "fields":[
+                {
+                   "name":"id",
+                   "type":"integer"
+                },
+                {
+                   "name":"capital_id",
+                   "type":"integer"
+                },
+                {
+                   "name":"name",
+                   "type":"string"
+                },
+                {
+                   "name":"population",
+                   "type":"integer"
+                }
+             ]
+          }
+       },
+       {
+        "name": "r-data",
+        "type": "table",
+        "path": "package/data.csv",
+        "scheme": "file",
+        "format": "csv",
+        "encoding": "utf-8",
+        "mediatype": "text/csv",
+        "schema": {
+          "fields": [
+            {
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "name": "amount",
+              "type": "number"
+            }
+          ]
+        }
+      }
+    ]
+ }

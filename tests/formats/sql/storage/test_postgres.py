@@ -1,12 +1,14 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, formats
+from frictionless import Package, Resource, formats, platform
 
 
 # General
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_types(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
@@ -61,6 +63,8 @@ def test_sql_storage_postgresql_types(postgresql_url):
     storage.delete_package(target.resource_names)  # type: ignore
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_integrity(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -116,6 +120,8 @@ def test_sql_storage_postgresql_integrity(postgresql_url):
     storage.delete_package(target.resource_names)  # type: ignore
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -126,6 +132,8 @@ def test_sql_storage_postgresql_integrity_different_order_issue_957(postgresql_u
     storage.delete_package(target.resource_names)  # type: ignore
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_constraints(postgresql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
@@ -174,6 +182,8 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
         ("maximum", 9),
     ],
 )
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name, cell):
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
@@ -186,6 +196,8 @@ def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name
         resource.write(postgresql_url, control=control)
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_views_support(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
@@ -207,6 +219,8 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
     ]
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_postgresql_comment_support(postgresql_url):
     control = formats.SqlControl(table="table")
 

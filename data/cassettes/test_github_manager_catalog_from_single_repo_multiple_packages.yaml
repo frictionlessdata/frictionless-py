@@ -1,0 +1,1085 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-multiple-packages
+  response:
+    body:
+      string: !!binary |
+        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
+        1P71xSfC0fMP5xVSW9EYAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:38 GMT
+      ETag:
+      - W/"bcb13b66111e32856ea3c68a2a5bea7df825759b922d8385954bd4f6c0535d71"
+      Last-Modified:
+      - Wed, 07 Sep 2022 07:36:58 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 08E4:2810:535E29:5657B0:631874EA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4974'
+      X-RateLimit-Reset:
+      - '1662550553'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '26'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-multiple-packages/contents/
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA82VT2vjMBDFv4vOcWTLsmIHllJoj73sdSllZI1qU/kPlkzYLfnulbbZNElzSNo4
+        LBgMg/3ezNP80K9X0kKDZEl+3t/ePdzPG0VmpAdXHZRsBb6SilxlvChYrotYgsylKEumQKgUijxe
+        lEmWSZEJr2HrP1425TMyDsb/WjnX2yWl0Nfz59pVo5yXXUMH7DtLtXJoHQ40vKJQi1b+m6gZjat7
+        g1EP5Qs8o6Vl1zpsnaXbfm8G1D8aqFtvWrnGPO377Xid7iJNJ2nQ/LDx6l7qQPybw3hBGqwsPSNY
+        1a1a04E6aGWA1SbX0eKwielvxKeP/Wli97sPu6Frg37+J1O3L5YsX4lFo691pj6ky1l9KfGwVTst
+        XGyj1uvZFj+tFDiIkg/6dirv8HHJUEuOiwUrlMh4rGNRMK5EkuepkIJr/+gk28IXT8Xev9amQM8N
+        iO/o7QQwCXnBydIzUt0nrx2NmZENIaoergHIseAvzsfZuVyCjyPHfgQP9gmPUNncTaBEnJaFv5S0
+        zmUhcMGTjDMRc8xL0BBnQqOQV8ODXQWPEMCEeKSnp/rf4LEX/ER4nJHLJHgwsl4/vgHfdn21vgkA
+        AA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:38 GMT
+      ETag:
+      - W/"481fb091946f85fa5403407b82d310e3c8cb2fe6"
+      Last-Modified:
+      - Wed, 07 Sep 2022 07:36:58 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 08E4:2810:535E60:5657EA:631874EA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4973'
+      X-RateLimit-Reset:
+      - '1662550553'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '27'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-multiple-packages/contents/fddata-1
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72U7W7CIBSG74XfrdBqPzRZdiHLYigcbCf9CNCYzfTeB9qYtnOJbtVfBALnPZzz
+        PuftiCpaAtogTg1FHmqoye1OcLf3A9wf65zaU8KjcB2wYMVZBmFIl4RBFiciSOOEBSlhKQBL1pGN
+        o4svG5V4qFXSvsyNafQGY9oUi11h8jZbsLrECppaY8ENaAMKu8V3Z/7B3vHLVpqikeA3lO3pDjRm
+        dWWgMu7JIL9XBeKlpEVldXNTyu1Yc6B3u5JRANjFHEtZBRtuIvDPT9mA2MlpfEd9eX2oZE35OZWq
+        ldJD5rM5dbJQNs2tLKq9Rpsj0iDFM1tg/zOf3J+K40wwSGFWA3SdN2Km9+biQ9fOf9f4mVw5sxST
+        MCOCpzSJGOchWYp1JkK+EutUhAFJIIuSJafxhaUViZ5C0zDbR5CVyTq7QtakSA+hzElrfEflx5Rd
+        ppiih36KtRpUP5ROA+32AfNztkwq0NMsCglPx/k3D8yO9t0dmQPtWxzYde/fEvCxBBwHAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:39 GMT
+      ETag:
+      - W/"481fb091946f85fa5403407b82d310e3c8cb2fe6"
+      Last-Modified:
+      - Wed, 07 Sep 2022 07:36:58 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 08E4:2810:535E8B:56581C:631874EB
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4972'
+      X-RateLimit-Reset:
+      - '1662550553'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '28'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-multiple-packages/contents/fddata-2
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WTa0/CMBSG/0s/s/UyxhiJ8YcYQ7r2lE27S9ZOomT/3VYJwQYNqINPTXo573ve
+        nudhhxpeA1oh0Q6N7SswsTAvaIY6bku3raTklkcMh+em5O6YsmUKS6XSIkl4rnKh0owKrjJBOUuS
+        OaWczBOiXEFTvTkdysgMDb12b0trO7PCmHdVvKlsORSxaGvcQ9carKQFY6HHfon8XrR1d6J60Lbq
+        NEQdF898A8YZayw01j85ZfW+B3VX86pxFkpb6/VX8SPh8yUL3RbY1/xG00m5uoHSH9t0BbHXNfiC
+        zGW7bXTLZWCl59t94oOBfh/gR/jnZ/Bz+/a180OlKg0ujLWummeDVjtkQKubfL2L7/90f/UXfviO
+        LEwzeOM4OxDtadhTEj+Z1gMQQn3iyifXZAEZ5FLSJaMZKVTBaCETyAVQcEuWzQkjkqQHrheMTs51
+        6PZKaIey09J9QfJXo/tEArcCPLRyPAMTMX7Bj0zEeNg0GsfHdw86mLW6BwAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:39 GMT
+      ETag:
+      - W/"481fb091946f85fa5403407b82d310e3c8cb2fe6"
+      Last-Modified:
+      - Wed, 07 Sep 2022 07:36:58 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 08E4:2810:535EBB:56584C:631874EB
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4971'
+      X-RateLimit-Reset:
+      - '1662550553'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '29'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-multiple-packages/contents/fddata-1/data
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8WS3W6DMAyF3yXXhQCCUZCmPcg0VYY4JWogUWLEtqrvvmTqBas2rfvTriI5tr/j
+        Y98f2QQjspYRdBrTR+3ZhlmgIYSkEECQ5Dw+fJ3gBwj/WbatMOtzqJuqh6KpslxIWUEhM+jKvJfF
+        tqmLWoSOXj0HyE1elhs2Ox2KByLrW87BqnSvaJi7tDcjd2iN51IQekLH45PEWLKEnGScNSmrMbHQ
+        H2CPnvdmIpwolrwr9s6hvB1BTUHEQKPevaWvyNczO206Hnt+BA2s0PgC9cNBQ0MewZ5/wXZhlkkb
+        EBdSHCxnz2eP7mzhq/3Xm/DJ/PRk41VJpTG4sdNqOnjWHplHLf9n+8HA3wN/axvx/lYS/uj2TqeH
+        F0Zduc7WAwAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:40 GMT
+      ETag:
+      - W/"481fb091946f85fa5403407b82d310e3c8cb2fe6"
+      Last-Modified:
+      - Wed, 07 Sep 2022 07:36:58 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - 08E4:2810:535EED:56587B:631874EB
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4970'
+      X-RateLimit-Reset:
+      - '1662550553'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '30'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-1/datapackage.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA32OwQ6DIBBE73wF2XNp06u/0njYwoqmSAnQpMb471ViW5TEvUwyb2dnR8Y5B4s9
+        QQUO5QM1iUYpjCiucErUU3i+vKQA1W0x5hlXzcJeRLwb+qZW6DC2M1zuXRI/v03YbATZUo9QZScX
+        u+nIqKzxN+PeyH7oVH76j+PgEraRNHnYr0xF6KgkyVFNiL6zumzZGDUrQNKaTewDixMfaZUBAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '170'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:40 GMT
+      ETag:
+      - W/"9a336b98a6b98087ba0f75f4bb2a0f79670aef5dd28de7aee2167da7d687f3a0"
+      Expires:
+      - Wed, 07 Sep 2022 10:44:40 GMT
+      Source-Age:
+      - '277'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - bbda0b6586a65fbf70fcb403202f59d0ce2a495c
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 4482:446C:2F812:590A1:631859D6
+      X-Served-By:
+      - cache-ccu830043-CCU
+      X-Timer:
+      - S1662547180.462783,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-2/datapackage.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA7WPwQrCMBBE7/mKsufWg8f+ihRZk20abJOQpIKU/rttEd1WUFDcy8DM7L5kEFmW
+        gcWOoASP8oyailopTFjsIV/SQNH1QVKE8jAb0wx3ZcvS9TYFM7VyFnpMDQ93Ml5WhSgb6hBKdnG2
+        a0OtYsDHDFuDPcEofvoZp6tfYptIU4BtZXxZegexZHRzcuH4gRan/1r9K2yWv1O8832LyTj7FWtl
+        VOIlWLQSo7gBxq+5w20CAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '188'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:40 GMT
+      ETag:
+      - W/"d4dcaab31902523d33c5e45711a95ceb7461e603e776a1727e1ee6a9e0373607"
+      Expires:
+      - Wed, 07 Sep 2022 10:44:40 GMT
+      Source-Age:
+      - '277'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 4c84b01bb3f28581d7ca0ef3b0185f327fdb18ba
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - A908:1C0E:70F6B:9AFDD:63185C99
+      X-Served-By:
+      - cache-ccu830043-CCU
+      X-Timer:
+      - S1662547181.547466,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-1/data/table.xls
+  response:
+    body:
+      string: !!binary |
+        0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAOwADAP7/CQAGAAAAAAAAAAAAAAABAAAACQAAAAAAAAAA
+        EAAAAgAAAAEAAAD+////AAAAAAAAAAD/////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////9
+        //////////7///8EAAAABQAAAAYAAAAHAAAACAAAAP7///8KAAAA/v//////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////1IA
+        bwBvAHQAIABFAG4AdAByAHkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAWAAUA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        /v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAD+////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////
+        ////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAAAAAAAAAAAQAA
+        AAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAA
+        EAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAe
+        AAAAHwAAAP7///8hAAAA/v////7///8kAAAAJQAAACYAAAAnAAAAKAAAAP7///8qAAAA/v//////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////8JCBAA
+        AAYFALsNzAcAAAAABgAAAOEAAgCwBMEAAgAAAOIAAABcAHAABAAAQ2FsYyAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEIAAgCwBGEBAgAAAMABAAA9AQIAAQCc
+        AAIADgCvAQIAAAC8AQIAAAA9ABIAAAAAAABAACA4AAAAAAABAOADQAACAAAAjQACAAAAIgACAAAA
+        DgACAAEAtwECAAAA2gACAAAAMQAaAMgAAAD/f5ABAAAAAgAABQFBAHIAaQBhAGwAMQAaAMgAAAD/
+        f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgAAAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgA
+        AAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQA2AMgAAAD/f5ABAAAAAgAAEwFEAHIAbwBpAGQAIABT
+        AGEAbgBzACAARgBhAGwAbABiAGEAYwBrAB4EDACkAAcAAEdFTkVSQUweBAYApQABAAAw4AAUAAAA
+        pAD1/yAAAAAAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQA
+        AAAAAAAAAMAg4AAUAAIAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAIAAAD1/yAAAPQAAAAAAAAAAMAg
+        4AAUAAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1
+        /yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1/yAAAPQAAAAA
+        AAAAAMAg4AAUAAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAU
+        AAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAAAAAD1/yAA
+        APQAAAAAAAAAAMAg4AAUAAAApAABACAAAAAAAAAAAAAAAMAg4AAUAAEAKwD1/yAAAPAAAAAAAAAA
+        AMAg4AAUAAEAKQD1/yAAAPAAAAAAAAAAAMAg4AAUAAEALAD1/yAAAPAAAAAAAAAAAMAg4AAUAAEA
+        KgD1/yAAAPAAAAAAAAAAAMAg4AAUAAEACQD1/yAAAPAAAAAAAAAAAMAg4AAUAAAApAABACIAABAA
+        AAAAAAAAAMAg4AAUAAAApQABACIAABQAAAAAAAAAAMAg4AAUAAUApAABACIAABgAAAAAAAAAAMAg
+        kwIEAACAAP+TAgQAEIAD/5MCBAARgAb/kwIEABKABP+TAgQAE4AH/5MCBAAUgAX/YAECAAAAhQAS
+        ABIFAAAAAAUBGwQ4BEEEQgQxAIwABAAHAAcAwQEIAMEBAABUjQEA6wBaAA8AAPBSAAAAAAAG8BgA
+        AAAABAAAAgAAAAEAAAABAAAAAQAAAAEAAAAzAAvwEgAAAL8ACAAIAIEBCQAACMABQAAACEAAHvEQ
+        AAAADQAACAwAAAgXAAAI9wAAEPwAJwAEAAAABAAAAAIAAGlkBAAAbmFtZQcAAGVuZ2xpc2gDAAEt
+        Tv1Wuk7/AAIACABjCBUAYwgAAAAAAAAAAAAAFQAAAAAAAAACCgAAAAkIEAAABhAAuw3MBwAAAAAG
+        AAAADAACAGQADwACAAEAEQACAAAAEAAIAPyp8dJNYlA/XwACAAEAgAAIAAAAAAAAAAAAJQIEAAAA
+        JQGBAAIAwQQqAAIAAAArAAIAAACCAAIAAQAUAEUAIQABJgBDACYAIgBUAGkAbQBlAHMAIABOAGUA
+        dwAgAFIAbwBtAGEAbgAsAB4EMQRLBEcEPQRLBDkEIgAmADEAMgAmAEEAFQBXACoAASYAQwAmACIA
+        VABpAG0AZQBzACAATgBlAHcAIABSAG8AbQBhAG4ALAAeBDEESwRHBD0ESwQ5BCIAJgAxADIAIQRC
+        BEAEMAQ9BDgERgQwBCAAJgBQAIMAAgAAAIQAAgAAACYACAAzMzMzMzPpPycACAAzMzMzMzPpPygA
+        CACDLdiCLdjwPykACACDLdiCLdjwP6EAIgAJAGQAAQABAAEAggAsASwBMzMzMzMz6T8zMzMzMzPp
+        PwEAVQACAAoAfQAMAAAAAAGICxUAAAAAAAACDgAAAAAAAwAAAAAAAgAAAAgCEAAAAAAAAgAlAQAA
+        AAAAAQ8ACAIQAAEAAAACACUBAAAAAAABDwAIAhAAAgAAAAIAJQEAAAAAAAEPAP0ACgAAAAAAFQAA
+        AAAA/QAKAAAAAQAVAAEAAAB+AgoAAQAAABYABgAAAP0ACgABAAEAFQACAAAAfgIKAAIAAAAWAAoA
+        AAD9AAoAAgABABcAAwAAAOwAUAAPAALwSAAAABAACPAIAAAAAQAAAAAEAAAPAAPwMAAAAA8ABPAo
+        AAAAAQAJ8BAAAAAAAAAAAAAAAAAAAAAAAAAAAgAK8AgAAAAABAAABQAAAD4CEgC2BgAAAABAAAAA
+        AAB4AAAAAACgAAQABgAFAB0ADwADBgAEAAAAAQAGAAYABARnCBcAZwgAAAAAAAAAAAAAAgAB////
+        /wAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA/v8DCgAA
+        /////xAIAgAAAAAAwAAAAAAAAEYbAAAATWljcm9zb2Z0IEV4Y2VsIDk3LVRhYmVsbGUABgAAAEJp
+        ZmY4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAQAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAP7/AAABAAIAAAAAAAAAAAAAAAAAAAAAAAEAAADghZ/y+U9oEKuRCAArJ7PZ
+        MAAAACABAAANAAAAAQAAAHAAAAACAAAAeAAAAAMAAACEAAAABAAAAJAAAAAFAAAAqAAAAAYAAAC0
+        AAAABwAAAMAAAAAIAAAAzAAAAAkAAADkAAAACgAAAPAAAAALAAAA/AAAAAwAAAAIAQAADQAAABQB
+        AAACAAAA6f0AAB4AAAABAAAAAAAAAB4AAAABAAAAAAAAAB4AAAAOAAAARXZnZW55ICBLYXJldgAA
+        AB4AAAABAAAAAAAAAB4AAAABAAAAAAAAAB4AAAABAAAAAAAAAB4AAAAOAAAARXZnZW55ICBLYXJl
+        dgAAAB4AAAACAAAANQAAAEAAAAAAvSX5AAAAAEAAAAAAAAAAAAAAAEAAAACwucGvOSjRAUAAAAAf
+        oUN8QSvRAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7/
+        AAABAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAC1c3VnC4bEJOXCAArLPmuRAAAAAXVzdWcLhsQk5cI
+        ACss+a5cAAAAGAAAAAEAAAABAAAAEAAAAAIAAADp/QAAGAAAAAEAAAABAAAAEAAAAAIAAADp/QAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSAG8AbwB0ACAA
+        RQBuAHQAcgB5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFgAF
+        AP//////////AQAAABAIAgAAAAAAwAAAAAAAAEYAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAADACgAA
+        AAAAAFcAbwByAGsAYgBvAG8AawAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAASAAIAAgAAAAQAAAD/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAANgHAAAAAAAAAQBDAG8AbQBwAE8AYgBqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIAAgADAAAA//////////8AAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAASQAAAAAAAAABAE8AbABlAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgACAP///////////////wAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIAAAAUAAAAAAAAAAUAUwB1AG0AbQBh
+        AHIAeQBJAG4AZgBvAHIAbQBhAHQAaQBvAG4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAIA
+        /////wUAAAD/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIwAAAFABAAAA
+        AAAABQBEAG8AYwB1AG0AZQBuAHQAUwB1AG0AbQBhAHIAeQBJAG4AZgBvAHIAbQBhAHQAaQBvAG4A
+        AAAAAAAAAAAAADgAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAApAAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAAAAAAAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6144'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/octet-stream
+      Date:
+      - Wed, 07 Sep 2022 10:39:40 GMT
+      ETag:
+      - W/"5e9743142445cc16c21bad322b5572e58d0b7ee26d76ea911bd99bd9379c7f58"
+      Expires:
+      - Wed, 07 Sep 2022 10:44:40 GMT
+      Source-Age:
+      - '277'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 24f70a9c80c86ad7789662dfba14ab0da552ae0d
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 76DC:14DE:87874:B447D:63186C2E
+      X-Served-By:
+      - cache-ccu830043-CCU
+      X-Timer:
+      - S1662547181.628049,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-1/data/table.xls
+  response:
+    body:
+      string: !!binary |
+        0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAOwADAP7/CQAGAAAAAAAAAAAAAAABAAAACQAAAAAAAAAA
+        EAAAAgAAAAEAAAD+////AAAAAAAAAAD/////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////9
+        //////////7///8EAAAABQAAAAYAAAAHAAAACAAAAP7///8KAAAA/v//////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////1IA
+        bwBvAHQAIABFAG4AdAByAHkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAWAAUA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        /v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAD+////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////
+        ////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAAAAAAAAAAAQAA
+        AAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAA
+        EAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAe
+        AAAAHwAAAP7///8hAAAA/v////7///8kAAAAJQAAACYAAAAnAAAAKAAAAP7///8qAAAA/v//////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////8JCBAA
+        AAYFALsNzAcAAAAABgAAAOEAAgCwBMEAAgAAAOIAAABcAHAABAAAQ2FsYyAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+        ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEIAAgCwBGEBAgAAAMABAAA9AQIAAQCc
+        AAIADgCvAQIAAAC8AQIAAAA9ABIAAAAAAABAACA4AAAAAAABAOADQAACAAAAjQACAAAAIgACAAAA
+        DgACAAEAtwECAAAA2gACAAAAMQAaAMgAAAD/f5ABAAAAAgAABQFBAHIAaQBhAGwAMQAaAMgAAAD/
+        f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgAAAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQAaAMgA
+        AAD/f5ABAAAAAAAABQFBAHIAaQBhAGwAMQA2AMgAAAD/f5ABAAAAAgAAEwFEAHIAbwBpAGQAIABT
+        AGEAbgBzACAARgBhAGwAbABiAGEAYwBrAB4EDACkAAcAAEdFTkVSQUweBAYApQABAAAw4AAUAAAA
+        pAD1/yAAAAAAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQAAAAAAAAAAMAg4AAUAAEAAAD1/yAAAPQA
+        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
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6144'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/octet-stream
+      Date:
+      - Wed, 07 Sep 2022 10:39:40 GMT
+      ETag:
+      - W/"5e9743142445cc16c21bad322b5572e58d0b7ee26d76ea911bd99bd9379c7f58"
+      Expires:
+      - Wed, 07 Sep 2022 10:44:40 GMT
+      Source-Age:
+      - '277'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - a6a241ae1651c711e5cb6f857783690ed726ea2d
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 76DC:14DE:87874:B447D:63186C2E
+      X-Served-By:
+      - cache-ccu830040-CCU
+      X-Timer:
+      - S1662547181.862232,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-2/countries.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA03LMQ7CMAwF0D1S7tADfAmaoJaZoVVPgQwxraXUiax06O1hZHvLkwRlWbdXsaf8
+        TDujlnpkalLUux6LcSZNeJg0EsUwehcQMRnpm6EXwkc0dW3j7n9GhICZbSc9cY/e3YClUT4xXL37
+        Ain/JG94AAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '123'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:41 GMT
+      ETag:
+      - W/"4b81a251754cd2db38bb01d4b58c0831c1db54120b2f0156220f90d7d6ca72c7"
+      Expires:
+      - Wed, 07 Sep 2022 10:44:41 GMT
+      Source-Age:
+      - '69'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 6601fb1cf61c061f70461ca8b5516433b4a5fcc8
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - DF00:6387:7DBFC:A7C77:63185C99
+      X-Served-By:
+      - cache-ccu830047-CCU
+      X-Timer:
+      - S1662547181.121981,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-multiple-packages/main/fddata-2/countries.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA03LMQ7CMAwF0D1S7tADfAmaoJaZoVVPgQwxraXUiax06O1hZHvLkwRlWbdXsaf8
+        TDujlnpkalLUux6LcSZNeJg0EsUwehcQMRnpm6EXwkc0dW3j7n9GhICZbSc9cY/e3YClUT4xXL37
+        Ain/JG94AAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '123'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 07 Sep 2022 10:39:41 GMT
+      ETag:
+      - W/"4b81a251754cd2db38bb01d4b58c0831c1db54120b2f0156220f90d7d6ca72c7"
+      Expires:
+      - Wed, 07 Sep 2022 10:44:41 GMT
+      Source-Age:
+      - '69'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - ee184b878aeab33d9d12ea9775efbafb6114cb7f
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - DF00:6387:7DBFC:A7C77:63185C99
+      X-Served-By:
+      - cache-ccu830021-CCU
+      X-Timer:
+      - S1662547181.360889,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
