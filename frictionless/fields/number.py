@@ -66,6 +66,16 @@ class NumberField(Field):
             if isinstance(cell, str):
                 if processor:
                     cell = processor(cell)  # type: ignore
+                # for numeric string starting with zero for example, 001, 00, 01
+                if cell and self.bare_number:
+                    cell_s = cell.strip()
+                    has_leading_zero = (
+                        cell_s.startswith("0")
+                        and not cell_s.startswith(f"0{self.decimal_char}")
+                        and len(cell_s) > 1
+                    )
+                    if has_leading_zero:
+                        return None
                 try:
                     return Primary(cell)  # type: ignore
                 except Exception:

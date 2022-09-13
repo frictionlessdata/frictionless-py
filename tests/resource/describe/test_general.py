@@ -159,11 +159,9 @@ def test_describe_resource_schema_increase_limit_issue_212():
 def test_describe_resource_values_with_leading_zeros_issue_492():
     resource = Resource.describe("data/leading-zeros.csv")
     assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "value", "type": "integer"},
-        ]
+        "fields": [{"name": "value", "type": "string"}]
     }
-    assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
+    assert resource.read_rows() == [{"value": "01"}, {"value": "002"}, {"value": "00003"}]
 
 
 def test_describe_file_with_different_characters_name_issue_600():
