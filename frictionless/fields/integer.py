@@ -34,18 +34,23 @@ class IntegerField(Field):
         # Create reader
         def value_reader(cell):
             if isinstance(cell, str):
+                cell = cell.strip()
+
+                # Process the cell
                 if pattern:
                     cell = pattern.sub("", cell)
-                # for numeric string starting with zero for example, 001, 00, 01
+
+                # Forbid leading zeroes (e.g. 001, 00, 01)
                 if self.bare_number:
-                    cell_s = cell.strip()
-                    has_leading_zero = cell_s.startswith("0") and len(cell_s) > 1
-                    if has_leading_zero:
+                    if len(cell) > 1 and cell[0] == "0":
                         return None
+
+                # Cast the cell
                 try:
                     return int(cell)
                 except Exception:
                     return None
+
             elif cell is True or cell is False:
                 return None
             elif isinstance(cell, int):
