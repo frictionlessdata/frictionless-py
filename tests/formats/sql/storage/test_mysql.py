@@ -1,12 +1,14 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, formats
+from frictionless import Package, Resource, formats, platform
 
 
 # General
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_mysql_types(mysql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
@@ -61,6 +63,8 @@ def test_sql_storage_mysql_types(mysql_url):
     storage.delete_package(target.resource_names)  # type: ignore
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_mysql_integrity(mysql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -116,6 +120,8 @@ def test_sql_storage_mysql_integrity(mysql_url):
     storage.delete_package(target.resource_names)  # type: ignore
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_mysql_constraints(mysql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
@@ -164,6 +170,8 @@ def test_sql_storage_mysql_constraints(mysql_url):
         ("maximum", 9),
     ],
 )
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_mysql_constraints_not_valid_error(mysql_url, field_name, cell):
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
@@ -178,6 +186,8 @@ def test_sql_storage_mysql_constraints_not_valid_error(mysql_url, field_name, ce
         resource.write(mysql_url, control=control)
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_mysql_views_support(mysql_url):
     engine = sa.create_engine(mysql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
@@ -199,6 +209,8 @@ def test_sql_storage_mysql_views_support(mysql_url):
     ]
 
 
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_storage_mysql_comment_support(mysql_url):
     control = formats.SqlControl(table="table")
 

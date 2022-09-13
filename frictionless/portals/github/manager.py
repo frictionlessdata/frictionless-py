@@ -41,11 +41,12 @@ class GithubManager(Manager[GithubControl]):
             base_path = f"https://raw.githubusercontent.com/{location}/{repository.default_branch}"
             contents = repository.get_contents("")
             resource_path = get_resources(contents, repository)
-            package = get_package(
-                resource_path, repository, base_path, self.control.formats
+            all_packages = get_package(
+                resource_path, repository, base_path, self.control.formats, catalog=True
             )
-            if package.resources:
-                return Catalog(name="catalog", packages=[package])
+            if all_packages and isinstance(all_packages, List):
+                packages = packages + all_packages
+                return Catalog(name="catalog", packages=packages)
             note = "Package/s not found"
             raise FrictionlessException(note)
 
@@ -85,7 +86,7 @@ class GithubManager(Manager[GithubControl]):
                 package = get_package(
                     resource_path, repository, base_path, self.control.formats
                 )
-                if package.resources:
+                if isinstance(package, Package) and package.resources:
                     packages.append(package)
         except Exception as exception:
             note = "Github API error" + repr(exception)
@@ -117,7 +118,7 @@ class GithubManager(Manager[GithubControl]):
         resource_path = get_resources(contents, repository)
         package = get_package(resource_path, repository, base_path, self.control.formats)
 
-        if package.resources:
+        if isinstance(package, Package) and package.resources:
             return package
 
         note = "Package/s not found"
@@ -144,7 +145,9 @@ class GithubManager(Manager[GithubControl]):
 
         # Write package file
         content = package.to_json()
-        package_filename = self.control.filename or "datapackage.json"
+        package_path = self.control.filename or "datapackage.json"
+        if self.control.basepath:
+            package_path = os.path.join(self.control.basepath, package_path)
         repository = user.get_repo(self.control.repo)
         email = user.email or self.control.email
         username = self.control.name or user.name or self.control.user
@@ -154,7 +157,7 @@ class GithubManager(Manager[GithubControl]):
         branch = repository.default_branch
         try:
             repository.create_file(
-                path=package_filename,
+                path=package_path,
                 message="Create package.json",
                 content=content,
                 branch=repository.default_branch,
@@ -168,10 +171,9 @@ class GithubManager(Manager[GithubControl]):
         # Write resource files
         try:
             for resource in package.resources:
-                base_path = self.control.basepath or resource.basepath
                 resource_path = resource.path or ""
-                if base_path:
-                    resource_path = os.path.join(base_path, resource_path)
+                if self.control.basepath:
+                    resource_path = os.path.join(self.control.basepath, resource_path)
                 repository.create_file(
                     path=resource_path,
                     message="Create package.json",
@@ -201,15 +203,35 @@ def get_resources(
 
 
 def get_package(
-    paths: List[ContentFile], repository: Repository, base_path: str, formats: List[str]
-) -> Package:
+    paths: List[ContentFile],
+    repository: Repository,
+    base_path: str,
+    formats: List[str],
+    catalog: bool = False,
+) -> Union[Package, List[Package]]:
+    def multiple_packages(base_path):
+        packages = []
+        for file in paths:
+            fullpath = f"{base_path}/{file.path}"
+            if any(
+                file.path.endswith(filename)
+                for filename in ["datapackage.json", "datapackage.yaml"]
+            ):
+                package = Package.from_descriptor(fullpath)
+                packages.append(package)
+        return packages
+
+    if catalog:
+        return multiple_packages(base_path)
+
     package = Package(name=repository.name)
     for file in paths:
         fullpath = f"{base_path}/{file.path}"
         if file.path in ["datapackage.json", "datapackage.yaml"]:
-            return Package.from_descriptor(fullpath)
+            package = Package.from_descriptor(fullpath)
+            return package
         if any(file.path.endswith(ext) for ext in formats):
-            resource = Resource(path=fullpath)
+            resource = Resource(path=file.path, basepath=base_path)
             resource.infer(sample=False)
             package.add_resource(resource)
     return package

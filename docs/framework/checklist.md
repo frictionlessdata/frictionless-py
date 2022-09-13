@@ -11,7 +11,7 @@ checklist = Checklist(checks=[checks.row_constraint(formula='id > 1')])
 print(checklist)
 ```
 
-## Validatation Checks
+## Validation Checks
 
 The Check concept is a part of the Validation API. You can create a custom Check to be used as part of resource or package validation.
 

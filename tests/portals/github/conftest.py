@@ -51,27 +51,6 @@ def options_with_dp_yaml():
         "url": "https://github.com/fdtester/test-repo-with-datapackage-yaml",
         "user": "fdtester",
         "repo": "test-repo-with-datapackage-yaml",
-        "output": {
-            "resources": [
-                {
-                    "name": "capitals",
-                    "type": "table",
-                    "path": "data/capitals.csv",
-                    "scheme": "file",
-                    "format": "csv",
-                    "encoding": "utf-8",
-                    "mediatype": "text/csv",
-                    "dialect": {"csv": {"skipInitialSpace": True}},
-                    "schema": {
-                        "fields": [
-                            {"name": "id", "type": "integer"},
-                            {"name": "cid", "type": "integer"},
-                            {"name": "name", "type": "string"},
-                        ]
-                    },
-                }
-            ]
-        },
     }
 
 
@@ -81,27 +60,6 @@ def options_without_dp():
         "url": "https://github.com/fdtester/test-repo-without-datapackage",
         "user": "fdtester",
         "repo": "test-repo-without-datapackage",
-        "output_csv_only": {
-            "name": "test-repo-without-datapackage",
-            "resources": [
-                {
-                    "name": "capitals",
-                    "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/capitals.csv",
-                    "scheme": "https",
-                    "format": "csv",
-                    "mediatype": "text/csv",
-                },
-                {
-                    "name": "countries",
-                    "type": "table",
-                    "path": "https://raw.githubusercontent.com/fdtester/test-repo-without-datapackage/master/data/countries.csv",
-                    "scheme": "https",
-                    "format": "csv",
-                    "mediatype": "text/csv",
-                },
-            ],
-        },
         "output": {
             "name": "test-repo-without-datapackage",
             "resources": [
