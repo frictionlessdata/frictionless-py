@@ -5,7 +5,7 @@ from ..router import router
 
 
 @router.post("/project/create-file")
-def server_file_create(
+def server_create_file(
     request: Request, file: UploadFile = File(), session: Optional[str] = Form()
 ):
     config = request.app.config

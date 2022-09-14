@@ -5,14 +5,14 @@ from ..project import Project
 from ..router import router
 
 
-class SessionsDeleteFileProps(BaseModel):
+class ProjectCreateRecordProps(BaseModel):
     session: Optional[str]
     path: str
 
 
-@router.post("/project/delete-file")
-def server_project_delete_file(request: Request, props: SessionsDeleteFileProps):
+@router.post("/project/create-record")
+def server_project_create_record(request: Request, props: ProjectCreateRecordProps):
     config = request.app.config
     project = Project(config, session=props.session)
-    path = project.delete_file(props.path)
-    return {"path": path}
+    record = project.create_record(props.path)
+    return {"record": record.to_descriptor()}

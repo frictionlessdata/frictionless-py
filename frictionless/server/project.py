@@ -1,13 +1,18 @@
 import os
 import secrets
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 from fastapi import UploadFile
 from .config import Config
+from .record import Record
+from ..resource import Resource
 from .. import helpers
 
 
 # TODO: fix create/validate logic
+
+# TODO: move to db
+RECORDS: Dict[str, Record] = {}
 
 
 class Project:
@@ -76,3 +81,23 @@ class Project:
         with open(self.public / path) as file:
             text = file.read()
         return text
+
+    # Records
+
+    def create_record(self, path: str):
+        if path in RECORDS:
+            resource = Resource(path=path)
+            report = resource.validate()
+            RECORDS[path] = Record(
+                # TODO: deduplicate
+                name=report.task.name,
+                type=report.task.type,
+                updated=os.path.getmtime(path),
+                resource=resource.to_descriptor(),
+                report=report.to_descriptor(),
+            )
+        record = RECORDS[path]
+        return record
+
+    def update_resord(self, resource: Resource):
+        print(resource)

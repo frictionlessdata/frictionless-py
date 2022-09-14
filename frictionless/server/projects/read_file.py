@@ -12,7 +12,7 @@ class ProjectReadFileProps(BaseModel):
 
 
 @router.post("/project/read-file")
-def server_resource_extract_text(request: Request, props: ProjectReadFileProps):
+def server_project_read_file(request: Request, props: ProjectReadFileProps):
     config = request.app.config
     project = Project(config, session=props.session)
     # TODO: handle errors

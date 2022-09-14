@@ -5,14 +5,13 @@ from ..project import Project
 from ..router import router
 
 
-class SessionsDeleteFileProps(BaseModel):
+class ProjectUpdateRecordProps(BaseModel):
     session: Optional[str]
-    path: str
+    resource: dict
 
 
-@router.post("/project/delete-file")
-def server_project_delete_file(request: Request, props: SessionsDeleteFileProps):
+@router.post("/project/create-record")
+def server_project_update_record(request: Request, props: ProjectUpdateRecordProps):
     config = request.app.config
     project = Project(config, session=props.session)
-    path = project.delete_file(props.path)
-    return {"path": path}
+    raise NotImplementedError(project)

@@ -15,7 +15,7 @@ class ProjectConnectProps(BaseModel):
 
 
 @router.post("/project/connect")
-def server_project(request: Request, props: ProjectConnectProps):
+def server_project_connect(request: Request, props: ProjectConnectProps):
     config = request.app.config
     try:
         project = Project(config, session=props.session)

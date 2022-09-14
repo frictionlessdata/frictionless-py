@@ -10,7 +10,7 @@ class ProjectListFilesProps(BaseModel):
 
 
 @router.post("/project/list-files")
-def server_file_create(request: Request, props: ProjectListFilesProps):
+def server_project_list_files(request: Request, props: ProjectListFilesProps):
     config = request.app.config
     project = Project(config, session=props.session)
     paths = project.list_files()
