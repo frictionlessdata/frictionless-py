@@ -85,14 +85,15 @@ class Project:
     # Records
 
     def create_record(self, path: str):
-        if path in RECORDS:
-            resource = Resource(path=path)
+        if path not in RECORDS:
+            resource = Resource(path=path, basepath=self.basepath)
             report = resource.validate()
             RECORDS[path] = Record(
+                path=path,
                 # TODO: deduplicate
                 name=report.task.name,
                 type=report.task.type,
-                updated=os.path.getmtime(path),
+                updated=os.path.getmtime(resource.normpath),
                 resource=resource.to_descriptor(),
                 report=report.to_descriptor(),
             )

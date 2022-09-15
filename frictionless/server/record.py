@@ -7,6 +7,7 @@ import attrs
 class Record:
     name: str
     type: str
+    path: str
     updated: float
     resource: dict
     report: dict
