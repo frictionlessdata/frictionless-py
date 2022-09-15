@@ -283,3 +283,33 @@ def test_sql_storage_dialect_basepath_issue_964(sqlite_url):
             {"id": 2, "name": "bar"},
             {"id": 3, "name": "baz"},
         ]
+
+
+def test_sql_storage_max_parameters_issue_1196(
+        sqlite_url,
+        sqlite_max_variable_number
+    ):
+    # SQLite applies limits for the max. number of characters in prepared
+    # parameterized SQL statements, see https://www.sqlite.org/limits.html.
+
+    # Ensure sufficiently 'wide' and 'long' table data to provoke SQLite param
+    # restrictions.
+    buffer_size = 1000  # see formats/sql/storage.py
+    number_of_rows = 10 * buffer_size
+    number_of_fields = divmod( sqlite_max_variable_number, buffer_size)[0] + 1
+    assert number_of_fields * buffer_size > sqlite_max_variable_number
+
+    # Create in-memory string csv test data.
+    data = '\n'.join([
+        ','.join(f'header{i}' for i in range(number_of_fields)),
+        '\n'.join(
+            ','.join(f'row{r}_col{c}' for c in range(number_of_fields))
+            for r in range(number_of_rows)
+            )
+        ]).encode('ascii')
+
+    # Write to the SQLite db. This must not raise an exception i.e. test is
+    # successful if it runs without error.
+    with Resource(data, format='csv') as resource:
+        resource.write(sqlite_url,
+            control=formats.SqlControl(table='test_max_param_table'))
