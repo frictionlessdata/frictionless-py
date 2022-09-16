@@ -37,16 +37,3 @@ def server_resource_extract(request: Request, props: ResourceExtractProps):
         rows=rows,
     )
     return dict(table=table)
-
-
-@router.post("/resource/extract-text")
-def server_resource_extract_text(request: Request, props: ResourceExtractProps):
-    config = request.app.config
-    project = Project(config, session=props.session)
-    try:
-        resource = Resource.from_descriptor(props.resource, basepath=project.basepath)
-    except FrictionlessException as exception:
-        raise HTTPException(status_code=422, detail=str(exception))
-    # TODO: handle errors
-    text = resource.read_text()
-    return dict(text=text)

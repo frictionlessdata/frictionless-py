@@ -5,7 +5,9 @@ from typing import Optional, Dict
 from fastapi import UploadFile
 from .config import Config
 from .record import Record
+from ..package import Package
 from ..resource import Resource
+from .. import settings
 from .. import helpers
 
 
@@ -50,6 +52,8 @@ class Project:
     def basepath(self):
         return str(self.public)
 
+    # Config
+
     # Files
 
     def create_file(self, file: UploadFile):
@@ -82,6 +86,22 @@ class Project:
             text = file.read()
         return text
 
+    # Links
+
+    # Packages
+
+    def create_package(self):
+        package_path = settings.PACKAGE_PATH
+        paths = self.list_files()
+        if package_path not in paths:
+            package = Package(basepath=self.basepath)
+            for path in paths:
+                record = self.create_record(path)
+                resource = Resource.from_descriptor(record.resource)
+                package.add_resource(resource)
+            package.to_json(str(self.public / package_path))
+        return package_path
+
     # Records
 
     def create_record(self, path: str):
@@ -92,6 +112,7 @@ class Project:
                 path=path,
                 # TODO: deduplicate
                 name=report.task.name,
+                # TODO: support package/etc types?
                 type=report.task.type,
                 updated=os.path.getmtime(resource.normpath),
                 resource=resource.to_descriptor(),
