@@ -5,5 +5,4 @@ from . import create_package
 from . import create_record
 from . import delete_file
 from . import list_files
-from . import read_file
 from . import update_record

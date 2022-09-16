@@ -52,6 +52,20 @@ class Project:
     def basepath(self):
         return str(self.public)
 
+    # Project
+
+    def read_bytes(self, path: str):
+        # TODO: ensure that path is safe
+        resource = Resource(path=path, basepath=self.basepath)
+        bytes = resource.read_bytes()
+        return bytes
+
+    def read_text(self, path: str):
+        # TODO: ensure that path is safe
+        resource = Resource(path=path, basepath=self.basepath)
+        text = resource.read_text()
+        return text
+
     # Config
 
     # Files
@@ -79,12 +93,6 @@ class Project:
                 paths.append(path)
         paths = list(sorted(paths))
         return paths
-
-    def read_file(self, path: str):
-        # TODO: ensure that path is safe
-        with open(self.public / path) as file:
-            text = file.read()
-        return text
 
     # Links
 
