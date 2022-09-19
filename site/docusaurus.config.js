@@ -94,27 +94,27 @@ module.exports = {
           items: [
             {
               label: "Frictionless Cars",
-              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-cars.ipynb",
+              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/v4/site/docs/tutorials/notebooks/frictionless-cars.ipynb",
             },
             {
               label: "Frictionless Biology",
-              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/reshaping-data-frictionless.ipynb",
+              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/v4/site/docs/tutorials/notebooks/reshaping-data-frictionless.ipynb",
             },
             {
               label: "Frictionless Describe and Extract",
-              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-tutorial-describe-extract.ipynb",
+              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/v4/site/docs/tutorials/notebooks/frictionless-tutorial-describe-extract.ipynb",
             },
             {
               label: "Frictionless Excel",
-              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-excel.ipynb",
+              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/v4/site/docs/tutorials/notebooks/frictionless-excel.ipynb",
             },
             {
               label: "Frictionless Research Data Management Workflows",
-              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-RDM-workflows.ipynb",
+              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/v4/site/docs/tutorials/notebooks/frictionless-RDM-workflows.ipynb",
             },
             {
               label: "Frictionless Export, Markdown and Other",
-              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/tutorial-markdown-export-feature.ipynb",
+              href: "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/v4/site/docs/tutorials/notebooks/tutorial-markdown-export-feature.ipynb",
             },
           ],
         },
