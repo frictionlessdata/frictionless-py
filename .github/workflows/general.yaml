@@ -103,31 +103,6 @@ jobs:
       - name: Test software
         run: make test
 
-  # Deploy
-
-  deploy:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - name: Install and build site
-        run: |
-          cd site
-          npm install
-          npm run build
-      - name: Publush to Github Pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: site
-          FOLDER: site/build
-          CLEAN: true
-
   # Release
 
   release:
