@@ -475,9 +475,41 @@ class Package(Metadata):
         """
         return self.publish(target, control=control)
 
-    def publish(
-        self, target: Any = None, *, control: Optional[portals.GithubControl] = None
-    ) -> Any:
+    @staticmethod
+    def from_zenodo(
+        source: Any = None, *, control: Optional[portals.ZenodoControl] = None
+    ):
+        """Import package from Zenodo
+
+        Parameters:
+            source (string): Zenodo record url e.g. "https://zenodo.org/deposit/7089860"
+            control (portals.ZenodoControl): Zenodo control
+
+        Returns:
+            Package: package
+        """
+        manager = system.create_manager(source, control=control)
+        if not manager:
+            raise FrictionlessException(
+                f"Not supported Zenodo source '{source}' or control"
+            )
+        return Package(source, control=control)
+
+    def to_zenodo(
+        self, target: Any = None, *, control: Optional[portals.ZenodoControl] = None
+    ):
+        """Export package to Zenodo
+
+        Parameters:
+            target (string): Zenodo instance url e.g. "https://zenodo.org/deposit/1106323"
+            control (portals.ZenodoControl): Zenodo control
+
+        Returns:
+            str: Deposition id of the deposition resource
+        """
+        return self.publish(target, control=control)
+
+    def publish(self, target: Any = None, *, control: Optional[Control] = None) -> Any:
         """Publish package to any supported data portal
 
         Parameters:
