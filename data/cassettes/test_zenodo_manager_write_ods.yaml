@@ -1,0 +1,441 @@
+interactions:
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions
+  response:
+    body:
+      string: '{"conceptrecid":"7098738","created":"2022-09-21T04:23:13.712638+00:00","files":[],"id":7098739,"links":{"bucket":"https://zenodo.org/api/files/05f476da-831b-4c82-a750-2f589e993be9","discard":"https://zenodo.org/api/deposit/depositions/7098739/actions/discard","edit":"https://zenodo.org/api/deposit/depositions/7098739/actions/edit","files":"https://zenodo.org/api/deposit/depositions/7098739/files","html":"https://zenodo.org/deposit/7098739","latest_draft":"https://zenodo.org/api/deposit/depositions/7098739","latest_draft_html":"https://zenodo.org/deposit/7098739","publish":"https://zenodo.org/api/deposit/depositions/7098739/actions/publish","self":"https://zenodo.org/api/deposit/depositions/7098739"},"metadata":{"prereserve_doi":{"doi":"10.5281/zenodo.7098739","recid":7098739}},"modified":"2022-09-21T04:23:13.712673+00:00","owner":405552,"record_id":7098739,"state":"unsubmitted","submitted":false,"title":""}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '920'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:14 GMT
+      ETag:
+      - '"0"'
+      Last-Modified:
+      - Wed, 21 Sep 2022 04:23:13 GMT
+      Link:
+      - <https://zenodo.org/api/deposit/depositions/7098739/files>; rel="files", <https://zenodo.org/api/deposit/depositions/7098739/actions/edit>;
+        rel="edit", <https://zenodo.org/api/deposit/depositions/7098739>; rel="self",
+        <https://zenodo.org/api/deposit/depositions/7098739/actions/publish>; rel="publish",
+        <https://zenodo.org/deposit/7098739>; rel="html", <https://zenodo.org/api/deposit/depositions/7098739/actions/discard>;
+        rel="discard"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '99'
+      X-RateLimit-Reset:
+      - '1663734254'
+      X-Request-ID:
+      - 4d8e9be9b2b8f0878648268e4fad6078
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+      location:
+      - https://zenodo.org/api/deposit/depositions/7098739
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "{\n   \"metadata\":{\n      \"creators\":[{\"name\":\"FD Tester\", \"affiliation\":\"FD
+      Testing Write\"}],\n      \"upload_type\":\"dataset\",\n      \"title\":\"Test
+      Write File - ODS\",\n      \"description\":\"Test Write File - ODS\"\n   }\n}\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '214'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: PUT
+    uri: https://zenodo.org/api//deposit/depositions/7098739
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6RUyW7bMBD9FYPXShZFSbGka4Jce2iAHopCoMmRPQgtCiSVoDX87yW1OAuStHVO
+        ooYzbx5neUcidCegdwYESlKTDa3KTVaSiAgD3EGwMcpYTKuYpXc0r1lWp9l6k7KrrPxCaU2pd5Ya
+        veN0aAaj/M/eud7WSeIta212ib9sUYEl9Y+fEQnJplxVRBR2995+JNtB3IN7FvwbOi31GM97TEaA
+        hBZtvrmSPC6zdBvnomQx3xQ0Zm1RVlBV2RaqQAWt4Ea+jyah1xbd8kXd2WTmlHAx/S8gEQGJHzD7
+        F6wR4VyFS5Cm0MiHHtTbCEv0HOF9le+idY00vL2M/yuM5n+Sd/D4AMZ6uItSn0v3DCci/bBVaPef
+        Q1xAImJgh9aBmTdhGuVPIL+BFxELqr0IlpwicgDHJXc8rAgXAqxtDO72oZ26h25ZVm3CcnmX1s8J
+        cjdV/fZmdeebh91u9d2gg9AVfoCnGzDk5DdSghUG+zkqXEz+q1s/dKt49fXm2/NFVyigswHm+prG
+        6TqoQG/AgAXzAM3od5zdU7ouWJkur34aj1l1ZsNpbq0YqTf+xfBCfXyAQ6fgA3pDrzSXjfvVB69Q
+        M+v1JJRQS2zxHTkr1jRnWZmf5Uw/dr4qdU6LomAjTW1k80KzrJvoDZ0dtgd0QSq99XyuW64s/I3x
+        6Q8AAAD//wMABFaGbIEFAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:15 GMT
+      ETag:
+      - W/"1"
+      Last-Modified:
+      - Wed, 21 Sep 2022 04:23:15 GMT
+      Link:
+      - <https://zenodo.org/api/deposit/depositions/7098739/files>; rel="files", <https://zenodo.org/api/deposit/depositions/7098739/actions/edit>;
+        rel="edit", <https://zenodo.org/api/deposit/depositions/7098739>; rel="self",
+        <https://zenodo.org/api/deposit/depositions/7098739/actions/publish>; rel="publish",
+        <https://zenodo.org/api/deposit/depositions/7098739/actions/registerconceptdoi>;
+        rel="registerconceptdoi", <https://zenodo.org/deposit/7098739>; rel="html",
+        <https://zenodo.org/api/deposit/depositions/7098739/actions/discard>; rel="discard",
+        <https://zenodo.org/api/deposit/depositions/7098739/actions/newversion>; rel="newversion"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '98'
+      X-RateLimit-Reset:
+      - '1663734255'
+      X-Request-ID:
+      - 2c9c3eaccbed4e3d02bf13b41bd7ff25
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--d930dda44b7488662167d8b873f782bc\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\n/tmp/pytest-of-shashi/pytest-40/test_zenodo_manager_write_ods0/datapackage.json\r\n--d930dda44b7488662167d8b873f782bc\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"datapackage.json\"\r\n\r\n{\n  \"name\":
+      \"ods-package\",\n  \"resources\": [\n    {\n      \"name\": \"table3\",\n      \"type\":
+      \"table\",\n      \"path\": \"table.ods\",\n      \"scheme\": \"file\",\n      \"format\":
+      \"ods\",\n      \"encoding\": \"utf-8\",\n      \"mediatype\": \"application/vnd.oasis.opendocument.spreadsheet\",\n
+      \     \"dialect\": {\n        \"csv\": {\n          \"delimiter\": \"\\t\",\n
+      \         \"skipInitialSpace\": true\n        },\n        \"json\": {\n          \"keyed\":
+      true\n        }\n      },\n      \"schema\": {\n        \"fields\": [\n          {\n
+      \           \"name\": \"id\",\n            \"type\": \"integer\"\n          },\n
+      \         {\n            \"name\": \"name\",\n            \"type\": \"string\"\n
+      \         }\n        ]\n      }\n    }\n  ]\n}\r\n--d930dda44b7488662167d8b873f782bc--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '988'
+      Content-Type:
+      - multipart/form-data; boundary=d930dda44b7488662167d8b873f782bc
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098739/files
+  response:
+    body:
+      string: '{"checksum": "3a7b5767ef1f477f4ad269092b12b000", "filename": "datapackage.json",
+        "filesize": 668, "id": "19608f17-4e8c-4307-91e3-d055fe540139", "links": {"download":
+        "https://zenodo.org/api/files/05f476da-831b-4c82-a750-2f589e993be9/datapackage.json",
+        "self": "https://zenodo.org/api/deposit/depositions/7098739/files/19608f17-4e8c-4307-91e3-d055fe540139"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '357'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:16 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '97'
+      X-RateLimit-Reset:
+      - '1663734257'
+      X-Request-ID:
+      - 1afef9002e7e8981aca32b01392e1b7b
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: !!binary |
+      LS0zZmNiYTEzZjdkNGQ5NzQ1YmYzMWY2Y2ZjMzBlMDg5OQ0KQ29udGVudC1EaXNwb3NpdGlvbjog
+      Zm9ybS1kYXRhOyBuYW1lPSJmaWxlbmFtZSINCg0KZGF0YS90YWJsZS5vZHMNCi0tM2ZjYmExM2Y3
+      ZDRkOTc0NWJmMzFmNmNmYzMwZTA4OTkNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsg
+      bmFtZT0iZmlsZSI7IGZpbGVuYW1lPSJ0YWJsZS5vZHMiDQoNClBLAwQUAAAIAABuYFpJhWw5ii4A
+      AAAuAAAACAAAAG1pbWV0eXBlYXBwbGljYXRpb24vdm5kLm9hc2lzLm9wZW5kb2N1bWVudC5zcHJl
+      YWRzaGVldFBLAwQUAAAIAABuYFpJQ8DbTqUFAAClBQAAGAAAAFRodW1ibmFpbHMvdGh1bWJuYWls
+      LnBuZ4lQTkcNChoKAAAADUlIRFIAAAC9AAAA/wgDAAAAk5knZQAAAnBQTFRFJS0+NjE1PDk7MUJE
+      P0hGQjk4Uks7TUVESEdPSEpPQUdSQktWSVZdVk9EVkxKWU9IV05XUVBOXVVPUlBbXFNRXFNZXFpb
+      S1BhTFhkS1x3UVBgU1pjUlxsXVphVFx3T2B2VmJrXWJqVWZwWmZ9WGhxX2p7Yk5LZVpVY1xcZVth
+      ZmVedGRWempaY2JjZmNoZWhsbGlmbm9tYmx4aW10b3Bsa3V7fW9lenBhenRpdXZ4eXd0fnt3eXl5
+      ZnaGYXaJZHmManSCaniLcnyOboGXdoKRdIOadYide4aWdoiifY+mhHZjg3Jpj3xsgH59jX9xkXxt
+      g4B9j4N3nodymId4nYx8oYt3pZN9g4SFh4iNiYaDhYyUkYmDmIqAkI6TlpGMm5OFl5eXnJydg5Kh
+      gpSpiZinipionJyklaGqm6Gkn6GtkaW2mKq6pJeDrZ2NopqUq52UuZ+Kt6GOt6GQsKaeuamaoaOm
+      o6aroqmuqKKgrKiloa24ta6luK6isbGxvbuxvbq9mKvFn7HEobXEo73NrLrGtb7Ju7vBtcDKucbU
+      u8nWuMrhv9Pjv9Hqx7efwbOjwbmvzLqmyLyuw7u0wLy5yb60176szcS3zMG41cOu2sCu08S11cm7
+      28Kx3c2948+55NC7zsjExszUytHb1MzF29jP0tLS19rc2trYxNblwdPqytrsytrw1Nvi197o2+Tr
+      4M/A4tPC59zM697N5dvT6d7R5OHc6+PX7OTa8eXP9u7d+ezc5ubn7ujg6+vs5ezz6u7x7PH06fb9
+      6/n89O/k8e7r9PHt+vHm+vTt//zv9PT09/f49/n7+/n1/v7+AAAA////D5YpBwAAAvBJREFUeNrt
+      19lPU0EUx3FAoxLcAm5sBpSICwTBIiIuCCEY2yaVqBVwoUAQRRCr4kLQaoW4IdqIGhB3XKqiSKAu
+      ERBBtp7/yan64ovpW5nk+7vJublvn0xmzj0TJDonSOpUdfXrqv+qqvGNrvqIiXBrsN/6jjDzEk9E
+      VrYpPTw9I687OSsnwPqHWyXJf/02WTBYUzjNdK01dyS2IM4c8j2w+kdbZI3bb32eLKwulemmG61l
+      o7G7nfItsGsfO564aabf+vd5suputDU0/MaDstGUvkUb8wOr17tjotdRP64eFe+kFvo7h/79Nror
+      fC+7Qwd934Flqp6wNvZUWs55LHWHld5TaO2y51gaNVj7Lwki9zf3zm2J9M5Kun4r0vg6as+R3if2
+      3B+LNdHXxpWUtGyX+SuGPi81uiOGi5Mv1zq80VNfP9I2+4V8iHm5t03pd1ysjjS6o+obb2fbHd6o
+      qa/vsdlOizyzvfU8lQu9tvPLHw80jZytG+x5J02adcy2lLVXtez37VdUqbf50qW6faVO+jO2jDRb
+      xeRqV0NDwz6nyM94TfSuyn4Zi+88WtqZOGRwHYw+dUzpPwZNaqG/me+KkbF0aXbI+iHDvQ1hRSeV
+      /njoK012TneCjIWkzgkzBA8Z5FP+fqX3rnyerYe+fd2AqLtU8yUZltQaS6a52CkFVbKrSgd9R9rA
+      75my2TeVzchUmec0lauus7Nch32faS7ynVDvhO/H+2c2Hv87KnM7QY8ePXr06NGjR48ePXr06NGj
+      R48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48e
+      PXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr06NGjR48ePXr0
+      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
+      19dXfnexXik6Rui4XTnRtGgiYO4/9ZpcZRt7+ptSUFQQ4dQLino1J29Dc2ZjrUfDqGsZfpKG37Pl
+      Xea9qd/FTlh32bOu6fipal2K0Eca3Llf4SSRtAmpPj/oGaJ1UmtJJ1HndBig8OgsBROaBXn6MQeS
+      Kwgfe2HgLR+7W5VYnv6pWSjg9nvHEAb2QbDWP5b0UAi1+f2rceX4TaB+PtyuVk1gtfaV4s8fznp/
+      +K+g278BUEsHCF79r8pXBgAARR0AAFBLAwQUAAgICABuYFpJAAAAAAAAAAAAAAAAJwAAAENvbmZp
+      Z3VyYXRpb25zMi9hY2NlbGVyYXRvci9jdXJyZW50LnhtbAMAUEsHCAAAAAACAAAAAAAAAFBLAwQU
+      AAAIAABuYFpJAAAAAAAAAAAAAAAAGgAAAENvbmZpZ3VyYXRpb25zMi90b29scGFuZWwvUEsDBBQA
+      AAgAAG5gWkkAAAAAAAAAAAAAAAAYAAAAQ29uZmlndXJhdGlvbnMyL2Zsb2F0ZXIvUEsDBBQAAAgA
+      AG5gWkkAAAAAAAAAAAAAAAAYAAAAQ29uZmlndXJhdGlvbnMyL21lbnViYXIvUEsDBBQAAAgAAG5g
+      WkkAAAAAAAAAAAAAAAAfAAAAQ29uZmlndXJhdGlvbnMyL2ltYWdlcy9CaXRtYXBzL1BLAwQUAAAI
+      AABuYFpJAAAAAAAAAAAAAAAAGgAAAENvbmZpZ3VyYXRpb25zMi9wb3B1cG1lbnUvUEsDBBQAAAgA
+      AG5gWkkAAAAAAAAAAAAAAAAcAAAAQ29uZmlndXJhdGlvbnMyL3Byb2dyZXNzYmFyL1BLAwQUAAAI
+      AABuYFpJAAAAAAAAAAAAAAAAGAAAAENvbmZpZ3VyYXRpb25zMi90b29sYmFyL1BLAwQUAAAIAABu
+      YFpJAAAAAAAAAAAAAAAAGgAAAENvbmZpZ3VyYXRpb25zMi9zdGF0dXNiYXIvUEsDBBQACAgIAG5g
+      WkkAAAAAAAAAAAAAAAAMAAAAbWFuaWZlc3QucmRmzZPNboMwEITvPIVlzthALwUFcijKuWqfwDWG
+      WAUv8poS3r6Ok1ZRpKrqn9TjrkYz3460m+1hHMiLsqjBVDRjKSXKSGi16Ss6uy65pds62ti2Kx+a
+      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
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '8587'
+      Content-Type:
+      - multipart/form-data; boundary=3fcba13f7d4d9745bf31f6cfc30e0899
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098739/files
+  response:
+    body:
+      string: '{"checksum": "4b71478e8803c50468310d2cd002c146", "filename": "table.ods",
+        "filesize": 8339, "id": "38fff452-f0a3-4e40-8c5f-49d526867bf3", "links": {"download":
+        "https://zenodo.org/api/files/05f476da-831b-4c82-a750-2f589e993be9/table.ods",
+        "self": "https://zenodo.org/api/deposit/depositions/7098739/files/38fff452-f0a3-4e40-8c5f-49d526867bf3"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '344'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:18 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '96'
+      X-RateLimit-Reset:
+      - '1663734258'
+      X-Request-ID:
+      - 4d899256b87a627dec7bdaf81d9cd77a
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+version: 1

@@ -428,7 +428,7 @@ def test_zenodo_manager_write(tmp_path):
     )
     package = Package("data/datapackage.json")
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7096849
+    assert deposition_id == 7098723
 
 
 @pytest.mark.vcr
@@ -439,7 +439,7 @@ def test_zenodo_manager_write_ods(tmp_path):
     )
     package = Package("data/ods.datapackage.json")
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7096851
+    assert deposition_id == 7098739
 
 
 @pytest.mark.vcr
@@ -450,7 +450,7 @@ def test_zenodo_manager_write_jsonl(tmp_path):
     )
     package = Package("data/jsonl.datapackage.json")
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7096855
+    assert deposition_id == 7098741
 
 
 @pytest.mark.vcr
@@ -461,7 +461,7 @@ def test_zenodo_manager_write_ndjson(tmp_path):
     )
     package = Package("data/ndjson.datapackage.json")
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7096975
+    assert deposition_id == 7098743
 
 
 @pytest.mark.vcr
@@ -487,7 +487,7 @@ def test_zenodo_manager_write_with_descriptor(tmp_path):
     )
     package = Package(descriptor)
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7096857
+    assert deposition_id == 7098745
 
 
 @pytest.mark.vcr
@@ -568,7 +568,7 @@ def test_zenodo_manager_write_resources_with_inline_data(tmp_path):
     )
     package = Package(descriptor)
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7097144
+    assert deposition_id == 7098747
 
 
 @pytest.mark.vcr
@@ -595,7 +595,7 @@ def test_zenodo_manager_write_resources_with_remote_url(tmp_path):
     )
     package = Package(descriptor)
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7097299
+    assert deposition_id == 7098749
 
 
 @pytest.mark.vcr
@@ -603,11 +603,11 @@ def test_zenodo_manager_write_resources_with_deposition_id(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/deposition.metadata.json",
         tmp_path=tmp_path,
-        deposition_id=7097488,
+        deposition_id=7098476,
     )
     package = Package("data/datapackage.json")
     deposition_id = package.to_zenodo(control=control)
-    assert deposition_id == 7097488
+    assert deposition_id == 7098476
 
 
 @pytest.mark.vcr
@@ -618,9 +618,9 @@ def test_zenodo_manager_write_resources_with_deposition_url(tmp_path):
     )
     package = Package("data/datapackage.json")
     deposition_id = package.to_zenodo(
-        "https://zenodo.org/deposit/7097508", control=control
+        "https://zenodo.org/deposit/7098479", control=control
     )
-    assert deposition_id == 7097508
+    assert deposition_id == 7098479
 
 
 @pytest.mark.vcr
@@ -631,7 +631,7 @@ def test_zenodo_manager_write_resources_to_publish(tmp_path):
     )
     package = Package("data/datapackage.json")
     deposition_id = package.publish(control=control)
-    assert deposition_id == 7097536
+    assert deposition_id == 7098751
 
 
 # Read - Catalog
@@ -700,13 +700,16 @@ def test_zenodo_manager_catalog_search_by_subtype():
 @pytest.mark.vcr
 def test_zenodo_manager_catalog_search_by_bounds():
     control = portals.ZenodoControl(
-        bounds="-124.277344,30.221102,-78.310547,49.152970", rtype="dataset"
+        bounds="-124.277344,30.221102,-78.310547,49.152970",
+        rtype="dataset",
+        page=1,
+        size=4,
     )
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 3
+    assert len(catalog.packages) == 1
     assert (
-        catalog.packages[1].title
-        == "Crystal Cove Marine Conservation Area Citizen Science Monitoring"
+        catalog.packages[0].title
+        == "Predicting drought tolerance from slope aspect preference in restored plant communities"
     )
 
 
@@ -736,12 +739,12 @@ def test_zenodo_manager_catalog_search_with_sort(sort, target):
 
 @pytest.mark.vcr
 def test_zenodo_manager_catalog_search_with_communities():
-    control = portals.ZenodoControl(rtype="dataset", communities="zenodo", page=1, size=1)
+    control = portals.ZenodoControl(rtype="dataset", communities="zenodo", page=3, size=1)
     catalog = Catalog(control=control)
     assert len(catalog.packages) == 1
     assert (
         catalog.packages[0].title.strip()
-        == "BIP4COVID19: Impact metrics and indicators for coronavirus related publications"
+        == "Electrical half hourly raw and cleaned datasets for Great Britain from 2008-11-05"
     )
 
 

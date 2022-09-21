@@ -21,36 +21,37 @@ class ZenodoControl(Control):
     """Show (true or 1) or hide (false or 0) all versions of records."""
 
     apikey: Optional[str] = os.environ.get("ZENODO_ACCESS_TOKEN", None)
-    """The access token to authenticate to the github API. It is required 
-    to write files to github repo. 
+    """The access token to authenticate to the zenodo API. It is required 
+    to write files to zenodo deposit resource. 
     For reading, it is optional however using apikey increases the api 
-    access limit from 60 to 5000 requests per hour. To write, access 
-    token has to have write repository access.
+    access limit from 60 to 100 requests per hour. To write, access 
+    token has to have deposit:write access.
     """
 
     base_url: Optional[str] = BASE_URL
-    """Endpoint for zenodo. By default it is set to live site. For testing(only write), we can 
-    pass url of sandbox for example, https://sandbox.zenodo.org/api. Sandbox doesnot work for
+    """Endpoint for zenodo. By default it is set to live site (https://zenodo.org/api). For testing upload, 
+    we can use sandbox for example, https://sandbox.zenodo.org/api. Sandbox doesnot work for
     reading."""
 
     bounds: Optional[str] = None
     """Return records filtered by a geolocation bounding box. 
-    (Format bounds=143.37158,-38.99357,146.90918,-37.35269)"""
+    For example, (Format bounds=143.37158,-38.99357,146.90918,-37.35269)"""
 
     communities: Optional[str] = None
     """Return records that are part of the specified communities. (Use of community identifier)."""
 
     deposition_id: Optional[int] = None
-    """Id of the deposition resource. Deposition resource is the state of a resource for 
-    uploading and editing records on Zenodo."""
+    """Id of the deposition resource. Deposition resource is used for uploading and 
+    editing files to Zenodo."""
 
     doi: Optional[str] = None
     """Digital Object Identifier(DOI). When the deposition is published, a unique DOI is registered by 
-    Zenodo. This is only for the published depositions."""
+    Zenodo or user can set it manually. This is only for the published depositions. If set, it returns
+    record that matches this DOI"""
 
     formats: Optional[List[str]] = DEFAULT_FORMATS
     """Formats instructs plugin to only read specified types of files. By default it is set to 
-    'csv,xls,xlsx'.
+    '"csv", "tsv", "xlsx", "xls", "jsonl", "ndjson"'.
     """
 
     name: Optional[str] = None
@@ -61,7 +62,7 @@ class ZenodoControl(Control):
     and editing records on Zenodo."""
 
     page: Optional[str] = None
-    """Page number for pagination."""
+    """Page number to retrieve from the search result."""
 
     rcustom: Optional[str] = None
     """Return records containing the specified custom keywords. (Format custom=[field_name]:field_value)"""
@@ -74,8 +75,8 @@ class ZenodoControl(Control):
     """Return records of the specified type. (Publication, Poster, Presentation…)"""
 
     search: Optional[str] = None
-    """Search query containing one or more search keywords and qualifiers to filter the repositories. 
-    For example, 'windows+label:bug+language:python'."""
+    """Search query containing one or more search keywords to filter the records. 
+    For example, 'notes:"TDBASIC"."""
 
     size: Optional[int] = None
     """Number of results to return per page."""

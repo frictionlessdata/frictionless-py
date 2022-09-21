@@ -482,7 +482,7 @@ class Package(Metadata):
         """Import package from Zenodo
 
         Parameters:
-            source (string): Zenodo record url e.g. "https://zenodo.org/deposit/7089860"
+            source (string): Zenodo record url e.g. "https://zenodo.org/record/7089860"
             control (portals.ZenodoControl): Zenodo control
 
         Returns:
@@ -501,7 +501,7 @@ class Package(Metadata):
         """Export package to Zenodo
 
         Parameters:
-            target (string): Zenodo instance url e.g. "https://zenodo.org/deposit/1106323"
+            target (string): Zenodo deposit url e.g. "https://zenodo.org/deposit/1106323"
             control (portals.ZenodoControl): Zenodo control
 
         Returns:

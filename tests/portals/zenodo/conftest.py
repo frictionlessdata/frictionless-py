@@ -6,7 +6,10 @@ import pytest
 
 @pytest.fixture(scope="module")
 def vcr_config():
-    return {"filter_headers": ["authorization"]}
+    return {
+        "filter_headers": ["authorization"],
+        "filter_query_parameters": ["access_token"],
+    }
 
 
 @pytest.fixture
