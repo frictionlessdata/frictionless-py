@@ -645,22 +645,29 @@ def test_zenodo_manager_catalog_search():
 
 
 @pytest.mark.vcr
-@pytest.mark.parametrize(
-    "query, target",
-    [
-        ('notes:"TDBASIC"', "Frictionless Data Test Dataset"),
-        (
-            'title:"Frictionless Data Test Dataset Without Descriptor"',
-            "Frictionless Data Test Dataset Without Descriptor",
-        ),
-        ['creators.name:"FD Tester"', "Frictionless Data Test Dataset - Draft"],
-    ],
-)
-def test_zenodo_manager_catalog_search_queries(query, target):
-    control = portals.ZenodoControl(search=query)
+def test_zenodo_manager_catalog_search_by_notes():
+    control = portals.ZenodoControl(search='notes:"TDBASIC"')
     catalog = Catalog(control=control)
     package = catalog.packages[0].to_descriptor()
-    assert package["title"] == target
+    assert package["title"] == "Frictionless Data Test Dataset"
+
+
+@pytest.mark.vcr
+def test_zenodo_manager_catalog_search_by_title():
+    control = portals.ZenodoControl(
+        search='title:"Frictionless Data Test Dataset Without Descriptor"'
+    )
+    catalog = Catalog(control=control)
+    package = catalog.packages[0].to_descriptor()
+    assert package["title"] == "Frictionless Data Test Dataset Without Descriptor"
+
+
+@pytest.mark.vcr
+def test_zenodo_manager_catalog_search_by_creators_name():
+    control = portals.ZenodoControl(search='creators.name:"FD Tester Creator"')
+    catalog = Catalog(control=control)
+    package = catalog.packages[0].to_descriptor()
+    assert package["title"] == "Frictionless Data Test Dataset"
 
 
 @pytest.mark.vcr
@@ -714,27 +721,30 @@ def test_zenodo_manager_catalog_search_by_bounds():
 
 
 @pytest.mark.vcr
-@pytest.mark.parametrize("page, size, target", [(1, 2, 2), (2, 3, 3)])
-def test_zenodo_manager_catalog_search_by_size_and_page(page, size, target):
+def test_zenodo_manager_catalog_search_by_size_and_page():
     control = portals.ZenodoControl(
-        page=page, size=size, search='title:"Frictionless Data Test"'
+        page=1, size=2, search='title:"Frictionless Data Test"'
     )
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == target
+    assert len(catalog.packages) == 2
 
 
 @pytest.mark.vcr
-@pytest.mark.parametrize(
-    "sort, target",
-    [
-        ("bestmatch", "Frictionless Data Test Dataset - Draft"),
-        ("mostrecent", "Frictionless Data Test Publication Journal"),
-    ],
-)
-def test_zenodo_manager_catalog_search_with_sort(sort, target):
-    control = portals.ZenodoControl(search='creators.name:"FD Tester"', sort=sort)
+def test_zenodo_manager_catalog_search_sort_by_bestmatch():
+    control = portals.ZenodoControl(
+        search='creators.name:"FD Tester"', sort="bestmatch", page=1, size=1
+    )
     catalog = Catalog(control=control)
-    assert catalog.packages[0].title == target
+    assert catalog.packages[0].title == "Frictionless Data Test Dataset - Draft"
+
+
+@pytest.mark.vcr
+def test_zenodo_manager_catalog_search_sort_by_mostrecent():
+    control = portals.ZenodoControl(
+        search='creators.name:"FD Tester"', sort="mostrecent", page=1, size=1
+    )
+    catalog = Catalog(control=control)
+    assert catalog.packages[0].title == "Test Write File - Remote"
 
 
 @pytest.mark.vcr
