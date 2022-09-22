@@ -357,7 +357,8 @@ def test_resource_validate_inline_not_a_binary_issue_349():
 
 
 def test_resource_validate_newline_inside_label_issue_811():
-    resource = Resource("data/issue-811.csv")
+    detector = Detector(sample_size=8000)
+    resource = Resource("data/issue-811.csv", detector=detector)
     report = resource.validate()
     assert report.valid
 

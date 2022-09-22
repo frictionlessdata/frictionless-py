@@ -111,3 +111,19 @@ def test_extract_resource_basepath_and_abspath_issue_856():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_extract_resource_string_with_leading_zeros():
+    resource = Resource("data/issue-1232.csv")
+    rows = resource.extract(limit_rows=1)
+    assert rows == [
+        {
+            "comune": "030151360",
+            "codice_regione": "03",
+            "codice_provincia": "015",
+            "codice_comune": 1360,
+            "denominazione_comune": "POLPENAZZE DEL GARDA",
+            "sigla_provincia": "BS",
+            "data_entrata_in_carica": "13/10/2021",
+        }
+    ]

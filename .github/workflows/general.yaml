@@ -83,6 +83,8 @@ jobs:
       - name: Install dependencies
         # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Test software
         run: make test
 
@@ -100,6 +102,8 @@ jobs:
           python-version: 3.8
       - name: Install dependencies
         run: make install
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Test software
         run: make test
 

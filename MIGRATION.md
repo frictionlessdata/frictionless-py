@@ -4,7 +4,7 @@ Frictionless is a logical continuation of many existing packages created for Fri
 
 ## From v4 to v5
 
-Since the initial Frictionless Framework release we'd been collecting feedback and analyzing both high-level users' needs and bug reports to identify shorcomings and areas that can be improved in the next version of the framework. Read about a new version of the framework and migration details in this blog:
+Since the initial Frictionless Framework release we'd been collecting feedback and analyzing both high-level users' needs and bug reports to identify shortcomings and areas that can be improved in the next version of the framework. Read about a new version of the framework and migration details in this blog:
 
 - [Welcome Frictionless Framework (v5)](../../blog/2022-08-22-frictionless-framework-v5.html)
 
