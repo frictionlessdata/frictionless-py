@@ -191,7 +191,7 @@ def extract_row_values(row, preserve_formatting=False, adjust_floating_point_err
                     value = new_value
             values.append(value)
         return values
-    return list(cell.value for cell in row)
+    return list(str(cell.value) if cell.value else cell.value for cell in row)
 
 
 def convert_excel_number_format_string(excel_number, value):

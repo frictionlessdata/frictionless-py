@@ -132,7 +132,7 @@ def test_describe_resource_schema_xlsx_file_with_boolean_column_issue_203():
     assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
-            {"name": "number", "type": "integer"},
+            {"name": "number", "type": "number"},
             {"name": "string", "type": "string"},
             {"name": "boolean", "type": "boolean"},
         ],
