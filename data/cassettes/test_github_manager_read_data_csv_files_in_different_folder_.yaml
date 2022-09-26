@@ -1,0 +1,490 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-datapackage-yaml
+  response:
+    body:
+      string: !!binary |
+        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
+        qbhZYxkOlurwpuJTYf7yHy/YAHqmGAAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Sep 2022 06:46:50 GMT
+      ETag:
+      - W/"f3614d91b0b13041c60119fbd59910cfeaf95da0d55a74108b19ed0d37a3aa17"
+      Last-Modified:
+      - Mon, 08 Aug 2022 09:55:38 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A334:3F8E:3724F5:3943CD:6316ECD9
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4915'
+      X-RateLimit-Reset:
+      - '1662448797'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '85'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-datapackage-yaml/contents/
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72Vb2+bMBDGv4tfJzEEgk2kqaq0vtybvZ2m6myfC6r5I+wo6qp899kLTQmtprJB
+        JSSEgXvuHt/P9+OZ1FAh2ZPvd7dfv91tKkVWpAVXjJZsAX4Fowy2LEe5YzHLtttIMc13ERcpalCQ
+        KoYJ50z7GLb85cOmbEUOnfG/Fs61dk8ptOXmoXTFQWxkU9EO28ZSrRxahx0Nt3VYWx/9N2sFDlqQ
+        j/CA6yeoDJVN7bB2ll7SvelQf6kg/O1VC1eZ+2vBgdiHZYRpBD0HfVXy4X2sUfT/K8fHo0HL0gnO
+        quZYmwbUKJMOjr2xB4tdb9Qfjz9c9jsVu6c2dIcuDfr6701ZP1qyfyYWjf60XfU2zab1T5aHthpk
+        MF9LnU6rC4Gh2V/h65/O3HGFQuYqUiJPsogzyEWumfbXLkkUJmkqNSSaX7iLFsIuZLUIca5DfCGu
+        L30J2IKMpRPsvIatPhizIj0TqgwnztJIvHV8bhomezIDDW+2ewxCf+pvwql/DcXozRmQLJFblcRc
+        CClihZlMIUqRs1SJWCICzyIGYjCYknhJRIY5LoLLcEANhuSLXUugc55TE4xefE69U/jnjqtxAtdb
+        PTenkzdgBk7/2men08/f3RdwGkAKAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Sep 2022 06:46:50 GMT
+      ETag:
+      - W/"3a4b2c7679776e17c9084a468844f81e78303d74"
+      Last-Modified:
+      - Mon, 08 Aug 2022 09:55:38 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A334:3F8E:37253D:394411:6316ECDA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4914'
+      X-RateLimit-Reset:
+      - '1662448797'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '86'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/fdtester/test-repo-with-datapackage-yaml/contents/data
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72S3U7DMAyF3yXXa8Pof6WJB0FoctJ0rZY2UeJSjWnvjgO7GJ2EBkxcRXKS8x0f
+        +/nIRhgUq5kE2yNoH0v/ylbMAnZUbQCBL658B3STJVVagKjWMi3zrG0f83UOCWRCVkkphRJSpQ9l
+        UZGW79+IUOQrNjlNXztE62vOiRjveuwmEUszcKes8bxtUHlUjocjCrVopjdRcGJB7mGnogMMmksz
+        ohrR8yuPT061mwGCCtE7HPT2K/gCejNOaCP4p+g1kTCkuaD8rT3S44Hp+Q+Sbsw8agPNwomD+Rz0
+        5JU7B/eR+c3tf9M5HmxYoLbXinLY6n7ce1YfmVe6/fdpU2x3Y/5qBGHdLhzcf9VOp5d33LZxH7YD
+        AAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Sep 2022 06:46:51 GMT
+      ETag:
+      - W/"3a4b2c7679776e17c9084a468844f81e78303d74"
+      Last-Modified:
+      - Mon, 08 Aug 2022 09:55:38 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - A334:3F8E:372585:39445F:6316ECDA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4913'
+      X-RateLimit-Reset:
+      - '1662448797'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '87'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-09-08 09:16:16 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/datapackage.yaml
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5WPMQ7DIAxF95zCF6BZK27jGoegAomwUzW3L0GhHTJ1Qf6P5y/ImNjCivREz2bH
+        FIfCsmyFWOwAYCA3g3ANilEqgqrrbMGh4tj5jeTV7qalJNS6cGbOtLiQvYVNJ3NvLLELqPtae5Xf
+        Onb3RPiI3LLQzAltm2tz4Oikp9/TgvuiXhGysudyUekP9zgvsmipfxk+FQSOaTYBAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '164'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 06 Sep 2022 06:46:51 GMT
+      ETag:
+      - W/"92a6dafe4be56029d244e0371f4e540d562d4d7d323cec6a461fc2e929c10e6b"
+      Expires:
+      - Tue, 06 Sep 2022 06:51:51 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - b219c254a56cea8c8e3a40d2164f0bf5c1897c52
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 4126:30A6:176AE3:27CB86:6315BA2D
+      X-Served-By:
+      - cache-ccu830043-CCU
+      X-Timer:
+      - S1662446811.372036,VS0,VE322
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tM0VFIzgQSeYm5qVyGOgpA5JOfl5Kfx2WkowBEAYlFmcVcxjoKQOSUWpSTmcdl
+        oqMAREH5QA2mOgpA5JNZnATUAAAxQHv2TAAAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '85'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 06 Sep 2022 06:46:52 GMT
+      ETag:
+      - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
+      Expires:
+      - Tue, 06 Sep 2022 06:51:52 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 8a610846f9eb73b031cb889405387c093140feb5
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B850:4C41:14009F:1CAECA:631582F3
+      X-Served-By:
+      - cache-ccu830043-CCU
+      X-Timer:
+      - S1662446812.779810,VS0,VE318
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tM0VFIzgQSeYm5qVyGOgpA5JOfl5Kfx2WkowBEAYlFmcVcxjoKQOSUWpSTmcdl
+        oqMAREH5QA2mOgpA5JNZnATUAAAxQHv2TAAAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '85'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 06 Sep 2022 06:46:52 GMT
+      ETag:
+      - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
+      Expires:
+      - Tue, 06 Sep 2022 06:51:52 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 70940d7137e358ffef37f0894484790e798b20bd
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B850:4C41:14009F:1CAECA:631582F3
+      X-Served-By:
+      - cache-ccu830038-CCU
+      X-Timer:
+      - S1662446812.325861,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

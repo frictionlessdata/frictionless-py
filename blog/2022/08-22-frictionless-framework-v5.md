@@ -9,7 +9,7 @@ blog:
 
 # Welcome Frictionless Framework (v5)
 
-We're releasing a first beta of Firctionless Framework (v5)!
+We're releasing a first beta of Frictionless Framework (v5)!
 
 Since the initial Frictionless Framework release we'd been collecting feedback and analyzing both high-level users' needs and bug reports to identify shortcomings and areas that can be improved in the next version for the framework. Once that process had been done we started working on a new v5 with a goal to make the framework more bullet-proof, easy to maintain and simplify user interface. Today, this version is almost stable and ready to be published. Let's go through the main improvements we have made:
 
