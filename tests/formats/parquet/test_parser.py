@@ -23,6 +23,16 @@ def test_parquet_parser_columns():
         ]
 
 
+def test_parquet_parser_remote():
+    with Resource(
+        "https://raw.githubusercontent.com/fdtester/test-repo-with-parquet-data-file/main/table.parq"
+    ) as resource:
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
 # Write
 
 
