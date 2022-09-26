@@ -64,12 +64,25 @@ class NumberField(Field):
                 Primary = float
                 Secondary = Decimal
             if isinstance(cell, str):
+                cell = cell.strip()
+
+                # Process the cell
                 if processor:
                     cell = processor(cell)  # type: ignore
+                    if cell is None:
+                        return None
+
+                # Forbid leading zeroes (e.g. 001, 00, 01)
+                if self.bare_number:
+                    if len(cell) > 1 and cell[0] == "0" and cell[1] != ".":
+                        return None
+
+                # Cast the cell
                 try:
                     return Primary(cell)  # type: ignore
                 except Exception:
                     return None
+
             elif isinstance(cell, Primary):
                 return cell
             elif cell is True or cell is False:

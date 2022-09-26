@@ -845,7 +845,15 @@ class Resource(Metadata):
                                         ", ".join(group["sourceKey"]),
                                     )
                                 )
-                                error = errors.ForeignKeyError.from_row(row, note=note)
+
+                                error = errors.ForeignKeyError.from_row(
+                                    row,
+                                    note=note,
+                                    field_names=list(group["targetKey"]),
+                                    field_values=list(cells),
+                                    reference_name=group["sourceName"],
+                                    reference_field_names=list(group["sourceKey"]),
+                                )
                                 row.errors.append(error)
 
                 # Handle errors

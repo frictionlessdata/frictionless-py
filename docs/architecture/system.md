@@ -2,7 +2,7 @@
 
 ## System Object
 
-The most important undelaying object in the Frictionless Framework is `system`. It's an singletone object avaialble as `frictionless.system`. This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Field`. Here is a quick example of using the `system` object:
+The most important undelaying object in the Frictionless Framework is `system`. It's an singleton object avaialble as `frictionless.system`. This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Field`. Here is a quick example of using the `system` object:
 
 ```python tabs=Python
 from frictionless import Resource, system
@@ -45,7 +45,7 @@ It's important to understand that creating low-level objects in general is more 
 
 ## Plugin API
 
-The Plugin API almost fully follows the system object's API. So as a plugin author you need to hook into the same methods. For example, let's take a look at a buitin Csv Plugin:
+The Plugin API almost fully follows the system object's API. So as a plugin author you need to hook into the same methods. For example, let's take a look at a builtin Csv Plugin:
 
 ```python tabs=Python
 class CsvPlugin(Plugin):
