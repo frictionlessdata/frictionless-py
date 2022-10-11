@@ -179,14 +179,14 @@ class Row(dict):
 
     # Convert
 
-    def to_str(self):
+    def to_str(self, **options):
         """
         Returns:
             str: a row as a CSV string
         """
         types = platform.frictionless_formats.CsvParser.supported_types
         cells = self.to_list(types=types)
-        return helpers.stringify_csv_string(cells)
+        return helpers.stringify_csv_string(cells, **options)
 
     def to_list(self, *, json=False, types=None):
         """

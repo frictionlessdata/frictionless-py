@@ -107,6 +107,8 @@ def program_extract(
                     keyed=keyed,
                 )
             )
+        elif csv and not dialect:
+            controls.append(formats.CsvControl.from_options(delimiter=","))
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
@@ -192,11 +194,14 @@ def program_extract(
     # Return CSV
     # TODO: rework
     if csv:
+        options = {}
+        if dialect:
+            options = pyjson.loads(dialect)
         for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
             for index, row in enumerate(rows):
                 if index == 0:
-                    typer.secho(helpers.stringify_csv_string(row.field_names))  # type: ignore
-                typer.secho(row.to_str())  # type: ignore
+                    typer.secho(helpers.stringify_csv_string(row.field_names, **options))  # type: ignore
+                typer.secho(row.to_str(**options))  # type: ignore
             if number < len(normdata):  # type: ignore
                 typer.secho("")
         raise typer.Exit()
