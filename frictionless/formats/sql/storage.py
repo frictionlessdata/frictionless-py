@@ -325,10 +325,12 @@ class SqlStorage(Storage):
                                 row[field.name] = dt.time()
                 buffer.append(row)
                 if len(buffer) > buffer_size:
-                    self.__connection.execute(sql_table.insert().values(buffer))
+                    # sqlalchemy conn.execute(sql_table.insert(), buffer)
+                    # syntax applies executemany DB API invocation.
+                    self.__connection.execute(sql_table.insert(), buffer)
                     buffer = []
             if len(buffer):
-                self.__connection.execute(sql_table.insert().values(buffer))
+                self.__connection.execute(sql_table.insert(), buffer)
 
     def __write_convert_type(self, type=None):
         sa = platform.sqlalchemy
