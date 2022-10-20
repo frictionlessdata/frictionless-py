@@ -9,6 +9,7 @@ def test_step_field_update():
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", function=str, descriptor={"type": "string"}),
+            steps.field_update(name="population", formula="int(population)*2"),
         ],
     )
     target = source.transform(pipeline)
@@ -20,9 +21,9 @@ def test_step_field_update():
         ]
     }
     assert target.read_rows() == [
-        {"id": "1", "name": "germany", "population": 83},
-        {"id": "2", "name": "france", "population": 66},
-        {"id": "3", "name": "spain", "population": 47},
+        {"id": "1", "name": "germany", "population": 83 * 2},
+        {"id": "2", "name": "france", "population": 66 * 2},
+        {"id": "3", "name": "spain", "population": 47 * 2},
     ]
 
 
