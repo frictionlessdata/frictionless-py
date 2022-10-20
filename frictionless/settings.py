@@ -19,6 +19,7 @@ UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z])+$"
 VERSION = read_asset("VERSION")
+PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
@@ -62,7 +63,7 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
-DEFAULT_SERVER_PORT = 8000
+DEFAULT_SERVER_PORT = 4040
 DEFAULT_HTTP_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "

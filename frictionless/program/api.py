@@ -6,11 +6,20 @@ from . import common
 
 @program.command(name="api")
 def program_api(
+    basepath: str = common.basepath,
+    root: bool = common.root,
     port: int = common.port,
+    debug: bool = common.debug,
 ):
     """
     Start API server
     """
-    from ..server import server
-
-    platform.uvicorn.run(server, port=port)  # type: ignore
+    module = platform.frictionless_server
+    config = module.Config.from_options(
+        basepath=basepath,
+        root=root,
+        port=port,
+        debug=debug,
+    )
+    server = module.Server.create(config)
+    server.run()

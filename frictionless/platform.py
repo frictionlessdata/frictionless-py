@@ -187,6 +187,13 @@ class Platform:
 
     @cached_property
     @extras(name="api")
+    def frictionless_server(self):
+        import frictionless.server
+
+        return frictionless.server
+
+    @cached_property
+    @extras(name="api")
     def fastapi(self):
         import fastapi
 
