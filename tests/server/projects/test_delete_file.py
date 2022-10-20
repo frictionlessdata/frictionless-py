@@ -1,6 +1,10 @@
+import pytest
+
+
 # General
 
 
+@pytest.mark.skip
 def test_server_project_file_create(api_client):
     session = api_client.post("/project/create").json()["session"]
 
