@@ -24,11 +24,9 @@ class Server(platform.fastapi.FastAPI):
         return server
 
     def run(self):
-        debug = self.config.debug
         log_level = "debug" if self.config.debug else None
         platform.uvicorn.run(
             self,
             port=self.config.port,
-            debug=debug,
             log_level=log_level,
         )
