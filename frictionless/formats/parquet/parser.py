@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import os
 from ...platform import platform
 from ...resource import Resource
 from .control import ParquetControl
@@ -25,10 +27,13 @@ class ParquetParser(Parser):
 
     def read_cell_stream_create(self):
         control = ParquetControl.from_dialect(self.resource.dialect)
-        handles = platform.pandas.io.common.get_handle(
-            self.resource.normpath, "rb", is_text=False
-        )
-        file = platform.fastparquet.ParquetFile(handles.handle)
+        handle = self.resource.normpath
+        if not os.path.isfile(self.resource.normpath):
+            handles = platform.pandas.io.common.get_handle(
+                self.resource.normpath, "rb", is_text=False
+            )
+            handle = handles.handle
+        file = platform.fastparquet.ParquetFile(handle)
         for group, df in enumerate(file.iter_row_groups(**control.to_python()), start=1):
             with Resource(data=df, format="pandas") as resource:
                 for line, cells in enumerate(resource.cell_stream, start=1):
