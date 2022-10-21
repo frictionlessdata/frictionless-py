@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, formats
 
 
@@ -32,6 +33,7 @@ def test_parquet_parser_columns():
         ]
 
 
+@pytest.mark.ci
 def test_parquet_parser_remote():
     with Resource(
         "https://raw.githubusercontent.com/fdtester/test-repo-with-parquet-data-file/main/table.parq"

@@ -28,7 +28,7 @@ class ParquetParser(Parser):
     def read_cell_stream_create(self):
         control = ParquetControl.from_dialect(self.resource.dialect)
         handle = self.resource.normpath
-        if not os.path.isfile(self.resource.normpath):
+        if self.resource.remote:
             handles = platform.pandas.io.common.get_handle(
                 self.resource.normpath, "rb", is_text=False
             )
