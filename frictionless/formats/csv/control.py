@@ -35,9 +35,6 @@ class CsvControl(Control):
     skip_initial_space: bool = False
     """NOTE: add docs"""
 
-    comment_char: Optional[str] = None
-    """NOTE: add docs"""
-
     # Convert
 
     def to_python(self):
@@ -63,7 +60,5 @@ class CsvControl(Control):
             "escapeChar": {"type": "string"},
             "nullSequence": {"type": "string"},
             "skipInitialSpace": {"type": "boolean"},
-            "commentChar": {"type": "string"},
-            "caseSensitiveHeader": {"type": "boolean"},
         },
     }

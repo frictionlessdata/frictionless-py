@@ -6,7 +6,7 @@ from decimal import Decimal
 from dateutil.tz import tzoffset, tzutc
 from datetime import datetime, date, time
 from pandas.core.dtypes.common import is_datetime64_ns_dtype
-from frictionless import Package, Resource
+from frictionless import Package, Resource, Schema, validate
 
 
 # Read
@@ -311,3 +311,23 @@ def test_pandas_parser_test_issue_sample_data_1138():
     resource = Resource(descriptor)
     df = resource.to_pandas()
     assert is_datetime64_ns_dtype(df.dtypes.values[0])  # type: ignore
+
+
+def test_validate_package_with_in_code_resources_1245():
+    datapackage = Package(name="package", basepath="")
+
+    dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
+
+    schema = {
+        "fields": [
+            {"name": "id", "title": "ID", "type": "number"},
+            {"name": "name", "title": "Name", "type": "string"},
+        ]
+    }
+    resource = Resource(dataframe, name="resource", schema=Schema.from_descriptor(schema))
+
+    datapackage.add_resource(resource)
+
+    report = validate(datapackage)
+
+    assert len(report.errors) == 0

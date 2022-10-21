@@ -43,7 +43,7 @@ class duplicate_row(Check):
     }
 ```
 
-It's usuall to create a custom [Error](error-guide.md) along side with a Custom Check.
+It's usual to create a custom [Error](../../docs/framework/classes.html) along side with a Custom Check.
 
 ## Reference
 

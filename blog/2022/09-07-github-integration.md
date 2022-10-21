@@ -53,4 +53,4 @@ catalog = Catalog(
 
 We will have more updates in future and would love to hear from you about this new feature. Let's chat in our [Slack](https://join.slack.com/t/frictionlessdata/shared_invite/zt-17kpbffnm-tRfDW_wJgOw8tJVLvZTrBg) if you have questions or just want to say hi.
 
-Read [Github Plugin Docs](https://framework.frictionlessdata.io/docs/portals/github.html/) for more information.
+Read [Github Plugin Docs](../../docs/portals/github.html) for more information.
