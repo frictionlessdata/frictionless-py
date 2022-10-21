@@ -1,0 +1,36 @@
+{
+   "profile":"tabular-data-resource",
+   "name":"test-optional-fields",
+   "data":[
+      {
+         "id":1,
+         "name":"Smith",
+         "age":10
+      }
+   ],
+   "schema":{
+      "fields":[
+         {
+            "name":"age",
+            "type":"integer"
+         },
+         {
+            "name":"name",
+            "type":"string",
+            "constraints":{
+               "required":true
+            }
+         },
+         {
+            "name":"id",
+            "type":"integer",
+            "constraints":{
+               "required":true
+            }
+         }
+      ],
+      "primaryKey":[
+         "id"
+      ]
+   }
+}
