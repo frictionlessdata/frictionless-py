@@ -1,7 +1,6 @@
-from .server import server
+from .config import Config
+from .server import Server
 
 # Register modules
-from . import describe
-from . import extract
-from . import transform
-from . import validate
+from . import projects
+from . import resource

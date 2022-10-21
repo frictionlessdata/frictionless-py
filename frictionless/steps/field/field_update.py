@@ -36,14 +36,16 @@ class field_update(Step):
 
     def transform_resource(self, resource):
         function = self.function
+        pass_row = False
         table = resource.to_petl()
         descriptor = deepcopy(self.descriptor) or {}
         new_name = descriptor.get("name")
         resource.schema.update_field(self.name, descriptor)
         if self.formula:
             function = lambda _, row: simpleeval.simple_eval(self.formula, names=row)
+            pass_row = True
         if function:
-            resource.data = table.convert(self.name, function)  # type: ignore
+            resource.data = table.convert(self.name, function, pass_row=pass_row)  # type: ignore
         elif self.value:
             resource.data = table.update(self.name, self.value)  # type: ignore
         elif new_name:
