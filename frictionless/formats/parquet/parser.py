@@ -1,6 +1,4 @@
 from __future__ import annotations
-
-import os
 from ...platform import platform
 from ...resource import Resource
 from .control import ParquetControl
