@@ -9,7 +9,7 @@ script:
 This documentation covers Frictionless Framework v5 which currently in a pre-release and can be installed using the `pip --pre` modifier. If you're interested in Frictionless Framework v4 docs please follow [this link](https://v4.framework.frictionlessdata.io).
 ```
 
-Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
+Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](/index.html).
 
 ## Installation
 
@@ -21,7 +21,7 @@ pip install frictionless[sql] --pre # to install a core plugin (optional)
 pip install 'frictionless[sql]' --pre # for zsh shell
 ```
 
-The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. There are plugins for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
+The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. There are plugins for SQL, Pandas, HTML, and others (all supported plugins are listed in the "File Formats" and schemes in "File Schemes" menu). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
 
 ### Troubleshooting
 
@@ -55,7 +55,7 @@ rows = extract('data/table.csv')
 [POST] /extract {"path': 'data/table.csv"}
 ```
 
-All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time. You can find the API reference [here](../references/api-reference.md).
+All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time. You can find the API reference at the bottom of the respective page, for example: [Schema  API Reference](../../docs/framework/schema.html#reference).
 
 Arguments conform to the following naming convention:
 - for Python interfaces, they are snake_cased, e.g. `missing_values`

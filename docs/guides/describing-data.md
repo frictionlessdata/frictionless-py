@@ -142,7 +142,7 @@ Later we're going to show how to use the schema we created to ensure the validit
 
 To continue learning about table schemas please read:
 - [Table Schema Spec](https://specs.frictionlessdata.io/table-schema/)
-- [API Reference: Schema](../references/api-reference.md#schema)
+- [API Reference: Schema](../../docs/framework/schema.html#reference-schema)
 
 ## Describing a Resource
 
@@ -219,7 +219,7 @@ We will show the practical difference in the "Using Metadata" section, but in th
 
 To continue learning about data resources please read:
 - [Data Resource Spec](https://specs.frictionlessdata.io/data-resource/)
-- [API Reference: Resource](../references/api-reference.md#resource)
+- [API Reference: Resource](../../docs/framework/resource.html#reference-resource)
 
 ## Describing a Package
 
@@ -308,7 +308,7 @@ The main role of the Data Package descriptor is describing a dataset; as we can 
 
 To continue learning about data resources please read:
 - [Data Package Spec](https://specs.frictionlessdata.io/data-package/)
-- [API Reference: Package](../references/api-reference.md#package)
+- [API Reference: Package](../../docs/framework/package.html#reference-package)
 
 ## Metadata Importance
 
