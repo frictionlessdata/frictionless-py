@@ -81,7 +81,6 @@ class Pipeline(Metadata):
     metadata_Error = errors.PipelineError
     metadata_profile = {
         "type": "object",
-        "required": ["steps"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "title": {"type": "string"},
