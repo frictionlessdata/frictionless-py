@@ -5,7 +5,20 @@ from typing import Optional, List
 from ...dialect import Control
 
 
-DEFAULT_FORMATS = ["csv", "tsv", "xlsx", "xls", "jsonl", "ndjson"]
+DEFAULT_FORMATS = [
+    "csv",
+    "tsv",
+    "xlsx",
+    "xls",
+    "jsonl",
+    "ndjson",
+    "csv.zip",
+    "tsv.zip",
+    "xlsx.zip",
+    "xls.zip",
+    "jsonl.zip",
+    "ndjson.zip",
+]
 BASE_URL = "https://zenodo.org/api/"
 
 

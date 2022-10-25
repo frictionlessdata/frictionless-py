@@ -212,6 +212,18 @@ def test_zenodo_manager_read_record_with_datapackage_descriptor_zipped_files(
 
 
 @pytest.mark.vcr
+def test_zenodo_manager_read_record_without_datapackage_descriptor_zipped_files(
+    options_without_dp_with_zipped_files,
+):
+    # zipped folder but without package.json file
+    url = options_without_dp_with_zipped_files.pop("url")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Package(url)
+    error = excinfo.value.error
+    assert error.message == "Package/s not found"
+
+
+@pytest.mark.vcr
 def test_zenodo_manager_read_record_data_with_wrong_record():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("https://zenodo.org/record/68358988")
@@ -332,6 +344,15 @@ def test_zenodo_manager_read_record_data_with_datapackage_descriptor_zipped_file
             "amount": Decimal("2000.5"),
         },
     ]
+
+
+@pytest.mark.vcr
+def test_zenodo_manager_read_record_data_from_zipped_file(
+    options_with_zipped_resource_file,
+):
+    url = options_with_zipped_resource_file.pop("url")
+    package = Package(url)
+    assert package.resources[0].name == "address3"
 
 
 @pytest.mark.vcr
@@ -745,6 +766,15 @@ def test_zenodo_manager_catalog_search_sort_by_mostrecent():
     )
     catalog = Catalog(control=control)
     assert catalog.packages[0].title == "Test Write File - Remote"
+
+
+@pytest.mark.vcr
+def test_zenodo_manager_catalog_search_sort_by_mostrecent_desc():
+    control = portals.ZenodoControl(
+        search='creators.name:"FD Tester"', sort="-mostrecent", page=1, size=1
+    )
+    catalog = Catalog(control=control)
+    assert catalog.packages[0].title == "Frictionless Data Test Dataset"
 
 
 @pytest.mark.vcr

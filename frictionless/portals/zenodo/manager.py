@@ -160,15 +160,18 @@ def get_package(files: List, title: str, formats: List[str]) -> Package:
     package.title = title
     for file in files:
         path = file["links"]["self"]
+        is_resource_file = any(path.endswith(ext) for ext in formats)
         if path.endswith(("datapackage.json", "datapackage.yaml")):
             return Package.from_descriptor(path, title=title)
-        if path.endswith(("zip")):
+        if path.endswith("zip") and not is_resource_file:
             try:
-                package = Package.from_zip(path, title=title)
+                return Package.from_zip(path, title=title)
             except FrictionlessException as exception:
+                # Skips package descriptor not found exception
+                # and continues reading files.
                 if not "[Errno 2] No such file or directory" in str(exception):
                     raise exception
-        if any(path.endswith(ext) for ext in formats):
+        if is_resource_file:
             base_path = f'https://zenodo.org/api/files/{file["bucket"]}'
             resource = Resource(path=file["key"], basepath=base_path)
             resource.infer()

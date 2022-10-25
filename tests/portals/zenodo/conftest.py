@@ -53,8 +53,24 @@ def options_with_dp_multiple_files_with_zipped_files():
 
 
 @pytest.fixture
+def options_without_dp_with_zipped_files():
+    return {
+        "url": "https://zenodo.org/record/7247979",
+        "record": "7077932",
+    }
+
+
+@pytest.fixture
 def options_with_dp_with_remote_resources():
     return {
         "url": "https://zenodo.org/record/7097299",
         "record": "7097299",
+    }
+
+
+@pytest.fixture
+def options_with_zipped_resource_file():
+    return {
+        "url": "https://zenodo.org/record/7248153",
+        "record": "7248153",
     }
