@@ -798,11 +798,16 @@ class Package(Metadata):
         # Profiles
         profiles = descriptor.get("profiles", [])
         for profile in profiles:
-            yield from Metadata.metadata_validate(
-                descriptor,
-                profile=profile,
-                error_class=errors.PackageError,
-            )
+            if (
+                isinstance(profile, dict)
+                or Path(profile).exists()
+                or helpers.is_remote_path(profile)
+            ):
+                yield from Metadata.metadata_validate(
+                    descriptor,
+                    profile=profile,
+                    error_class=errors.PackageError,
+                )
 
         # Misleading
         for name in ["missingValues", "fields"]:
