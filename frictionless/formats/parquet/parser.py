@@ -25,7 +25,13 @@ class ParquetParser(Parser):
 
     def read_cell_stream_create(self):
         control = ParquetControl.from_dialect(self.resource.dialect)
-        file = platform.fastparquet.ParquetFile(self.resource.normpath)
+        handle = self.resource.normpath
+        if self.resource.remote:
+            handles = platform.pandas.io.common.get_handle(
+                self.resource.normpath, "rb", is_text=False
+            )
+            handle = handles.handle
+        file = platform.fastparquet.ParquetFile(handle)
         for group, df in enumerate(file.iter_row_groups(**control.to_python()), start=1):
             with Resource(data=df, format="pandas") as resource:
                 for line, cells in enumerate(resource.cell_stream, start=1):
