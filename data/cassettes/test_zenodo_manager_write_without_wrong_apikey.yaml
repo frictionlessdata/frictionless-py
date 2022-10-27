@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions?access_token=test
+  response:
+    body:
+      string: '{"message":"The server could not verify that you are authorized to
+        access the URL requested. You either supplied the wrong credentials (e.g.
+        a bad password), or your browser doesn''t understand how to supply the credentials
+        required.","status":401}
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '248'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 20 Sep 2022 12:19:35 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '60'
+      X-RateLimit-Remaining:
+      - '59'
+      X-RateLimit-Reset:
+      - '1663676436'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 401
+      message: UNAUTHORIZED
+version: 1

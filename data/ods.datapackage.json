@@ -1,0 +1,35 @@
+{
+   "name":"ods-package",
+   "resources":[
+      {
+         "name":"table3",
+         "type":"table",
+         "path":"table.ods",
+         "scheme":"file",
+         "format":"ods",
+         "encoding":"utf-8",
+         "mediatype":"application/vnd.oasis.opendocument.spreadsheet",
+         "dialect":{
+            "csv":{
+               "delimiter":"\t",
+               "skipInitialSpace":true
+            },
+            "json":{
+               "keyed":true
+            }
+         },
+         "schema":{
+            "fields":[
+               {
+                  "name":"id",
+                  "type":"integer"
+               },
+               {
+                  "name":"name",
+                  "type":"string"
+               }
+            ]
+         }
+      }
+   ]
+}

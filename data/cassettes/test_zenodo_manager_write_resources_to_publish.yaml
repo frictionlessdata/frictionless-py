@@ -1,0 +1,466 @@
+interactions:
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions
+  response:
+    body:
+      string: '{"conceptrecid":"7098750","created":"2022-09-21T04:24:07.880403+00:00","files":[],"id":7098751,"links":{"bucket":"https://zenodo.org/api/files/d5584365-c271-4c3c-98ee-59b229a8d616","discard":"https://zenodo.org/api/deposit/depositions/7098751/actions/discard","edit":"https://zenodo.org/api/deposit/depositions/7098751/actions/edit","files":"https://zenodo.org/api/deposit/depositions/7098751/files","html":"https://zenodo.org/deposit/7098751","latest_draft":"https://zenodo.org/api/deposit/depositions/7098751","latest_draft_html":"https://zenodo.org/deposit/7098751","publish":"https://zenodo.org/api/deposit/depositions/7098751/actions/publish","self":"https://zenodo.org/api/deposit/depositions/7098751"},"metadata":{"prereserve_doi":{"doi":"10.5281/zenodo.7098751","recid":7098751}},"modified":"2022-09-21T04:24:07.880414+00:00","owner":405552,"record_id":7098751,"state":"unsubmitted","submitted":false,"title":""}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '920'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:24:08 GMT
+      ETag:
+      - '"0"'
+      Last-Modified:
+      - Wed, 21 Sep 2022 04:24:07 GMT
+      Link:
+      - <https://zenodo.org/api/deposit/depositions/7098751/files>; rel="files", <https://zenodo.org/api/deposit/depositions/7098751/actions/edit>;
+        rel="edit", <https://zenodo.org/api/deposit/depositions/7098751>; rel="self",
+        <https://zenodo.org/api/deposit/depositions/7098751/actions/publish>; rel="publish",
+        <https://zenodo.org/deposit/7098751>; rel="html", <https://zenodo.org/api/deposit/depositions/7098751/actions/discard>;
+        rel="discard"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '68'
+      X-RateLimit-Reset:
+      - '1663734308'
+      X-Request-ID:
+      - b60f161612caa76df5975b075b2c9059
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+      location:
+      - https://zenodo.org/api/deposit/depositions/7098751
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "{\n    \"metadata\":{\n       \"creators\":[{\"name\":\"FD Tester\", \"affiliation\":\"FD
+      Testing Write\"}],\n       \"upload_type\":\"dataset\",\n       \"title\":\"Test
+      Write File - Publish\",\n       \"description\":\"Test Write File - Publish\"\n
+      \   }\n}\n "
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '229'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: PUT
+    uri: https://zenodo.org/api//deposit/depositions/7098751
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6RUyW7bMBD9FYPXShZFS7aka4qcewjQQ1EINDmyB6FFgaQStIb/vaS2LEja1DmJ
+        Gs68eZzlnYnQrYDOGRAoSUV2tCx2OSUREQa4g2BjlLGYljFL72hWsayiu3VR0IxuvlBa0eAsNXrH
+        8VD3Rvmfo3OdrZLEW9baHBJ/2aACS6ofPyMSko250ogobO+9/Uz2vbgH9yz4N7Ra6iGed5gMAInM
+        8yLbbPNYsF0aZ2Ij4rIAiPNyz1jJC7lNt4EKWsGNfB9NQqctuvmLurXJxCnhYvyfQSICEv/C7CNY
+        A8JShWuQxtDIh57U2whz9BThfZXvonW1NLy5jv8rjPp/krfw+ADGerirUi+le4YTka7fK7THzyHO
+        IBExcEDrwEybMI7yJ5DfwIuIBdVcBUsuETmB45I7HlaECwHW1gYPx9BO3UE7L6s2Ybm8S+PnBLkb
+        q377dXXnm4ftYfXdoIPQFX6Cpxsw5OI3UoIVBrspKlyM/qtbP3SrePVtKdiy7AoFtDZA3dzQOF0H
+        JegMGLBgHqAe/M6Te0rXOSvS+eVPIzIpz2S4TO0VA/3avxpeKJAPcOgU/INi3ynNZe1+dcEz1M56
+        XQml1BIbfEfWyjXdUZami6zpx9ZXp8ponudsoKqNrF9ol3Ujxb61/f6ELkimty7nquHKwkdYX/4A
+        AAD//wMAhq4oeY0FAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:24:09 GMT
+      ETag:
+      - W/"1"
+      Last-Modified:
+      - Wed, 21 Sep 2022 04:24:09 GMT
+      Link:
+      - <https://zenodo.org/api/deposit/depositions/7098751/files>; rel="files", <https://zenodo.org/api/deposit/depositions/7098751/actions/edit>;
+        rel="edit", <https://zenodo.org/api/deposit/depositions/7098751>; rel="self",
+        <https://zenodo.org/api/deposit/depositions/7098751/actions/publish>; rel="publish",
+        <https://zenodo.org/api/deposit/depositions/7098751/actions/registerconceptdoi>;
+        rel="registerconceptdoi", <https://zenodo.org/deposit/7098751>; rel="html",
+        <https://zenodo.org/api/deposit/depositions/7098751/actions/discard>; rel="discard",
+        <https://zenodo.org/api/deposit/depositions/7098751/actions/newversion>; rel="newversion"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '67'
+      X-RateLimit-Reset:
+      - '1663734310'
+      X-Request-ID:
+      - 2f995d9a35431c23508d076b8ab64837
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--9ab999f1bcbbc6be869944f8bf1b28b5\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\n/tmp/pytest-of-shashi/pytest-40/test_zenodo_manager_write_reso4/datapackage.json\r\n--9ab999f1bcbbc6be869944f8bf1b28b5\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"datapackage.json\"\r\n\r\n{\n  \"name\":
+      \"test-tabulator\",\n  \"resources\": [\n    {\n      \"name\": \"first-resource\",\n
+      \     \"path\": \"table.xls\",\n      \"schema\": {\n        \"fields\": [\n
+      \         {\n            \"name\": \"id\",\n            \"type\": \"number\"\n
+      \         },\n          {\n            \"name\": \"name\",\n            \"type\":
+      \"string\"\n          }\n        ]\n      }\n    },\n    {\n      \"name\":
+      \"number-two\",\n      \"path\": \"table-reverse.csv\",\n      \"schema\": {\n
+      \       \"fields\": [\n          {\n            \"name\": \"id\",\n            \"type\":
+      \"integer\"\n          },\n          {\n            \"name\": \"name\",\n            \"type\":
+      \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\r\n--9ab999f1bcbbc6be869944f8bf1b28b5--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '955'
+      Content-Type:
+      - multipart/form-data; boundary=9ab999f1bcbbc6be869944f8bf1b28b5
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098751/files
+  response:
+    body:
+      string: '{"checksum": "3da470a8515f0e074ccc73af2e256969", "filename": "datapackage.json",
+        "filesize": 634, "id": "8d2dc598-e67c-4708-a46f-79b16d5ea147", "links": {"download":
+        "https://zenodo.org/api/files/d5584365-c271-4c3c-98ee-59b229a8d616/datapackage.json",
+        "self": "https://zenodo.org/api/deposit/depositions/7098751/files/8d2dc598-e67c-4708-a46f-79b16d5ea147"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '357'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:24:11 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '66'
+      X-RateLimit-Reset:
+      - '1663734311'
+      X-Request-ID:
+      - 93a2aa3e2d8399e261c917fcec161cbb
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: !!binary |
+      LS1mMTc1ZTI0N2RmOWY4NTMyMGRhYWJmZDJiMjE1ZjEyMw0KQ29udGVudC1EaXNwb3NpdGlvbjog
+      Zm9ybS1kYXRhOyBuYW1lPSJmaWxlbmFtZSINCg0KZGF0YS90YWJsZS54bHMNCi0tZjE3NWUyNDdk
+      ZjlmODUzMjBkYWFiZmQyYjIxNWYxMjMNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsg
+      bmFtZT0iZmlsZSI7IGZpbGVuYW1lPSJ0YWJsZS54bHMiDQoNCtDPEeChsRrhAAAAAAAAAAAAAAAA
+      AAAAADsAAwD+/wkABgAAAAAAAAAAAAAAAQAAAAkAAAAAAAAAABAAAAIAAAABAAAA/v///wAAAAAA
+      AAAA////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////f/////////+////BAAAAAUAAAAG
+      AAAABwAAAAgAAAD+////CgAAAP7/////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////9SAG8AbwB0ACAARQBuAHQAcgB5AAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFgAFAP//////////////
+      /wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAD+////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAEAAAACAAAAAwAAAAQAAAAFAAAABgAA
+      AAcAAAAIAAAACQAAAAoAAAALAAAADAAAAA0AAAAOAAAADwAAABAAAAARAAAAEgAAABMAAAAUAAAA
+      FQAAABYAAAAXAAAAGAAAABkAAAAaAAAAGwAAABwAAAAdAAAAHgAAAB8AAAD+////IQAAAP7////+
+      ////JAAAACUAAAAmAAAAJwAAACgAAAD+////KgAAAP7/////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////CQgQAAAGBQC7DcwHAAAAAAYAAADhAAIA
+      sATBAAIAAADiAAAAXABwAAQAAENhbGMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+      ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+      ICAgICAgICAgICAgICBCAAIAsARhAQIAAADAAQAAPQECAAEAnAACAA4ArwECAAAAvAECAAAAPQAS
+      AAAAAAAAQAAgOAAAAAAAAQDgA0AAAgAAAI0AAgAAACIAAgAAAA4AAgABALcBAgAAANoAAgAAADEA
+      GgDIAAAA/3+QAQAAAAIAAAUBQQByAGkAYQBsADEAGgDIAAAA/3+QAQAAAAAAAAUBQQByAGkAYQBs
+      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
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUgBvAG8AdAAgAEUAbgB0AHIAeQAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABYABQD//////////wEAAAAQCAIAAAAA
+      AMAAAAAAAABGAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAwAoAAAAAAABXAG8AcgBrAGIAbwBvAGsA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgACAAIAAAAE
+      AAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYBwAAAAAAAAEA
+      QwBvAG0AcABPAGIAagAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAASAAIAAwAAAP//////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      IAAAAEkAAAAAAAAAAQBPAGwAZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAoAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAiAAAAFAAAAAAAAAAFAFMAdQBtAG0AYQByAHkASQBuAGYAbwByAG0AYQB0
+      AGkAbwBuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAACAP////8FAAAA/////wAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMAAABQAQAAAAAAAAUARABvAGMAdQBtAGUAbgB0
+      AFMAdQBtAG0AYQByAHkASQBuAGYAbwByAG0AYQB0AGkAbwBuAAAAAAAAAAAAAAA4AAIA////////
+      ////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKQAAAHQAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+
+      ////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAA0KLS1mMTc1ZTI0N2RmOWY4NTMyMGRhYWJmZDJiMjE1
+      ZjEyMy0tDQo=
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6392'
+      Content-Type:
+      - multipart/form-data; boundary=f175e247df9f85320daabfd2b215f123
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098751/files
+  response:
+    body:
+      string: '{"checksum": "3a980d1a559c48978c63c0c1d0d2a8f3", "filename": "table.xls",
+        "filesize": 6144, "id": "150c5633-a23b-4da3-b4c0-66412b4488aa", "links": {"download":
+        "https://zenodo.org/api/files/d5584365-c271-4c3c-98ee-59b229a8d616/table.xls",
+        "self": "https://zenodo.org/api/deposit/depositions/7098751/files/150c5633-a23b-4da3-b4c0-66412b4488aa"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '344'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:24:12 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '65'
+      X-RateLimit-Reset:
+      - '1663734312'
+      X-Request-ID:
+      - f96b9b659809914fc816ba72047d7ead
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "--78df1b8524268455f2523bfc1fc8ea2b\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/table-reverse.csv\r\n--78df1b8524268455f2523bfc1fc8ea2b\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"table-reverse.csv\"\r\n\r\nid,name\n1,\u4E2D\u56FD\u4EBA\n2,english\n\r\n--78df1b8524268455f2523bfc1fc8ea2b--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '294'
+      Content-Type:
+      - multipart/form-data; boundary=78df1b8524268455f2523bfc1fc8ea2b
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098751/files
+  response:
+    body:
+      string: '{"checksum": "4eff9a682845a2fa4896bbba16851de7", "filename": "table-reverse.csv",
+        "filesize": 30, "id": "2eea5a29-f759-4189-aa18-98ee7897f7d6", "links": {"download":
+        "https://zenodo.org/api/files/d5584365-c271-4c3c-98ee-59b229a8d616/table-reverse.csv",
+        "self": "https://zenodo.org/api/deposit/depositions/7098751/files/2eea5a29-f759-4189-aa18-98ee7897f7d6"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '358'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:24:14 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '65'
+      X-RateLimit-Reset:
+      - '1663734314'
+      X-Request-ID:
+      - fa7769a80085ee5160a936bcb83f002f
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+version: 1
