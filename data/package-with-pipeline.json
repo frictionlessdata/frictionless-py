@@ -1,0 +1,91 @@
+{
+  "name": "petites_villes_de_demain",
+  "resources": [
+    {
+      "name": "commune",
+      "type": "table",
+      "path": "sqlite:///database.db",
+      "format": "sql",
+      "mediatype": "application/sql",
+      "dialect": {
+        "sql": {
+          "table": "commune"
+        }
+      },
+      "schema": {
+        "fields": [
+          {
+            "name": "insee_com",
+            "type": "string",
+            "constraints": {
+              "required": true
+            }
+          }
+        ],
+        "primaryKey": [
+          "insee_com"
+        ]
+      }
+    },
+    {
+      "name": "diffusion-zonages-zrr-cog2021",
+      "type": "table",
+      "path": "https://github.com/fdtester/temp-files/blob/main/diffusion-zonages-zrr-cog2021.xls?raw=true",
+      "scheme": "https",
+      "format": "xls",
+      "encoding": "utf-8",
+      "mediatype": "application/vnd.ms-excel",
+      "dialect": {
+        "headerRows": [
+          6
+        ]
+      },
+      "schema": {
+        "fields": [
+          {
+            "name": "CODGEO",
+            "type": "string"
+          },
+          {
+            "name": "LIBGEO",
+            "type": "string"
+          },
+          {
+            "name": "ZRR_SIMP",
+            "type": "string"
+          },
+          {
+            "name": "ZONAGE_ZRR",
+            "type": "string"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "CODGEO"
+            ],
+            "reference": {
+              "resource": "commune",
+              "fields": [
+                "insee_com"
+              ]
+            }
+          }
+        ]
+      },
+      "pipeline": {
+        "steps": [
+          {
+            "type": "table-write",
+            "path": "sqlite:///database.db",
+            "dialect": {
+              "sql": {
+                "table": "zrr"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
