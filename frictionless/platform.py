@@ -367,5 +367,12 @@ class Platform:
 
         return pyzenodo3
 
+    @cached_property
+    @extras(name="zenodo")
+    def pyzenodo3_upload(self):
+        import pyzenodo3.upload
+
+        return pyzenodo3.upload
+
 
 platform = Platform()

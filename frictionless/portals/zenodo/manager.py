@@ -88,8 +88,7 @@ class ZenodoManager(Manager[ZenodoControl]):
 
     # Write
     def write_package(self, package: Package) -> int:
-        client = platform.pyzenodo3.client
-        upload = platform.pyzenodo3.upload
+        client = platform.pyzenodo3_upload
 
         assert self.control.base_url
         assert self.control.apikey
