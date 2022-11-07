@@ -14,7 +14,7 @@ pip install 'frictionless[zenodo]' --pre # for zsh shell
 
 ## Reading Package
 
-You can read data from a github repository as follows:
+You can read data from a zenodo repository as follows:
 
 ```python tabs=Python
 from pprint import pprint

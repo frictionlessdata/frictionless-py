@@ -18,7 +18,7 @@ You can simply read the package or create a new package from the zenodo reposito
 ```python tabs=Python 
 from frictionless import Package
 
-package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
+package = Package("https://zenodo.org/record/7078760")
 print(package)
 ```
 
