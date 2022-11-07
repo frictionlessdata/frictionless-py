@@ -35,25 +35,42 @@ class Schema(Metadata):
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Schema.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Schema.
+    """
 
     fields: List[Field] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    A List of fields in the schema.
+    """
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
-    """NOTE: add docs"""
+    """
+    List of string values to be set as missing values in the schema fields. If any of string in 
+    missing values is found in any of the field value then it is set as None.
+    """
 
     primary_key: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    Specifies primary key for the schema.
+    """
 
     foreign_keys: List[dict] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    Specifies the foreign keys for the schema.
+    """
 
     # Props
 

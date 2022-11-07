@@ -243,7 +243,9 @@ class Package(Metadata):
     """
 
     catalog: Optional[Catalog]
-    """NOTE: add docs
+    """
+    It returns reference to catalog of which the package is part of. If package 
+    is not part of any catalog, then it is set to None.
     """
 
     # Props
