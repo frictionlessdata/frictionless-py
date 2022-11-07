@@ -6,7 +6,7 @@ from ... import errors
 
 @attrs.define(kw_only=True)
 class sequential_value(Check):
-    """Check that a column having sequential values"""
+    """Check that a column having sequential values."""
 
     type = "sequential-value"
     Errors = [errors.SequentialValueError]
@@ -14,7 +14,10 @@ class sequential_value(Check):
     # State
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    The name of the field to apply the check. Check will not be 
+    applied to other fields.
+    """
 
     # Connect
 

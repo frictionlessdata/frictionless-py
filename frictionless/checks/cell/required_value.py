@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class required_value(Check):
-    """Check for required values in a field"""
+    """Check for required values in a field."""
 
     type = "required-value"
     Errors = [errors.RequiredValueError]
@@ -20,10 +20,16 @@ class required_value(Check):
     # State
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    The name of the field to apply the check. Check will not be applied 
+    to other fields.
+    """
 
     values: List[Any]
-    """NOTE: add docs"""
+    """
+    List of required values that needs to be present in the field specified by "field_name". 
+    The value should be present at least one or more times in the field.
+    """
 
     # Connect
 

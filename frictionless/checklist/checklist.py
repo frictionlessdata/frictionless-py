@@ -15,27 +15,49 @@ if TYPE_CHECKING:
 # TODO: raise an exception if we try export a checklist with function based checks?
 @attrs.define(kw_only=True)
 class Checklist(Metadata):
-    """Checklist representation"""
+    """Checklist representation.
+
+    A class that combines multiple checks to be applied while validating
+    a resource or package.
+
+    """
 
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short name(preferably human-readable) for the Checklist.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with "-" or "_".
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-readable title for the Checklist.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A detailed description for the Checklist.
+    """
 
     checks: List[Check] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of checks to be applied during validation such as "deviated-cell", 
+    "required-value" etc. 
+    """
 
     pick_errors: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    Specify the errors names to be picked while validation such as "sha256-count",
+    "byte-count". Errors other than specified will be ignored.
+    """
 
     skip_errors: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    Specify the errors names to be skipped while validation such as "sha256-count", 
+    "byte-count". Other errors will be included.
+    """
 
     # Props
 
