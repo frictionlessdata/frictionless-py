@@ -17,16 +17,26 @@ class Pipeline(Metadata):
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Pipeline.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Pipeline.
+    """
 
     steps: List[Step] = attrs.field(factory=list)
-    """List of transform steps"""
+    """
+    List of transformation steps to apply. 
+    """
 
     # Props
 

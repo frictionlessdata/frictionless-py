@@ -24,18 +24,30 @@ if TYPE_CHECKING:
 # TODO: support something like "step.transform_resource_row"
 @attrs.define(kw_only=True)
 class Step(Metadata):
-    """Step representation"""
+    """Step representation.
+
+    A base class for all the step subclasses.
+
+    """
 
     type: ClassVar[str]
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name/type.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters. For example: "cell-fill".
+    """
 
     # State
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Step.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Step.
+    """
 
     # Transform
 

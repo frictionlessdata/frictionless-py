@@ -13,7 +13,14 @@ class RemoteControl(Control):
     # State
 
     http_timeout: int = settings.DEFAULT_HTTP_TIMEOUT
-    """NOTE: add docs"""
+    """
+    Specifies the time to wait, if the remote server
+    does not respond before raising an error. The default
+    value is 10.
+    """
 
     http_preload: bool = False
-    """NOTE: add docs"""
+    """
+    Preloads data to the memory if set to True. It is set
+    to False by default.
+    """
