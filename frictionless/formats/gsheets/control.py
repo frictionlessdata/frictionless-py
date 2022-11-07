@@ -6,14 +6,20 @@ from ...dialect import Control
 
 @attrs.define(kw_only=True)
 class GsheetsControl(Control):
-    """Gsheets control representation"""
+    """Gsheets control representation.
+
+    Control class to set params for Gsheets api.
+
+    """
 
     type = "gsheets"
 
     # State
 
     credentials: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    API key to access google sheets.
+    """
 
     # Metadata
 
