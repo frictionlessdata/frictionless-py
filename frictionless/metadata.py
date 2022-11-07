@@ -50,7 +50,10 @@ class Metadata(metaclass=Metaclass):
     """Metadata represenation"""
 
     custom: dict[str, Any] = {}
-    """NOTE: add docs"""
+    """
+    List of custom parameters. Any extra properties will be added 
+    to the custom property.
+    """
 
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
