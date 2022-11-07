@@ -23,49 +23,91 @@ class InquiryTask(Metadata):
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     type: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Type of the source to be validated such as "package", "resource" etc.
+    """
 
     path: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Path to the data source.
+    """
 
     scheme: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Scheme for loading the file (file, http, ...). If not set, it'll be 
+    inferred from `source`.
+    """
 
     format: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    File source's format (csv, xls, ...). If not set, it'll be 
+    inferred from `source`.
+    """
 
     encoding: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Source encoding. If not set, it'll be inferred from `source`.
+    """
 
     mediatype: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Mediatype/mimetype of the resource e.g. “text/csv”, or “application/vnd.ms-excel”.  
+    Mediatypes are maintained by the Internet Assigned Numbers Authority (IANA) in a 
+    media type registry.
+    """
 
     compression: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Source file compression (zip, ...). If not set, it'll be inferred from `source`.
+    """
 
     extrapaths: Optional[List[str]] = None
-    """NOTE: add docs"""
+    """
+    List of paths to concatenate to the main path. It's used for multipart resources.
+    """
 
     innerpath: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Path within the compressed file. It defaults to the first file in the archive 
+    (if the source is an archive).
+    """
 
     dialect: Optional[Dialect] = None
-    """NOTE: add docs"""
+    """
+    Specific set of formatting parameters applied while reading data source. 
+    The parameters are set as a Dialect class. For more information, please
+    check the Dialect Class documentation.
+    """
 
     schema: Optional[Schema] = None
-    """NOTE: add docs"""
+    """
+    Schema descriptor. A string descriptor or path to schema file.
+    """
 
     checklist: Optional[Checklist] = None
-    """NOTE: add docs"""
+    """
+    Checklist class with a set of validation checks to be applied to the 
+    data source being read. For more information, please check the 
+    Validation Checks documentation.
+    """
 
     resource: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Resource descriptor. A string descriptor or path to resource file.
+    """
 
     package: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Package descriptor. A string descriptor or path to package
+    file.
+    """
 
     # Validate
 
