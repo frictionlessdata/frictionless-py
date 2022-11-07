@@ -6,7 +6,10 @@ from .row import RowError
 
 @attrs.define(kw_only=True)
 class CellError(RowError):
-    """Cell error representation"""
+    """Cell error representation.
+
+    A base class for all the errors related to the cell value.
+    """
 
     type = "cell-error"
     title = "Cell Error"
@@ -17,13 +20,19 @@ class CellError(RowError):
     # State
 
     cell: str
-    """NOTE: add docs"""
+    """
+    Cell where the error occurred.
+    """
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Name of the field that has an error.
+    """
 
     field_number: int
-    """NOTE: add docs"""
+    """
+    Index of the field that has an error.
+    """
 
     # Convert
 
