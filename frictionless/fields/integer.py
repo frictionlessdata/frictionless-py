@@ -20,7 +20,11 @@ class IntegerField(Field):
     # Properties
 
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
-    """NOTE: add docs"""
+    """
+    It specifies that the value is a bare number. If true, the pattern to 
+    remove non digit character does not get applied and vice versa. 
+    The default value is True.
+    """
 
     # Read
 
