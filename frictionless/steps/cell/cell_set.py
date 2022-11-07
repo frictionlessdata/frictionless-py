@@ -13,10 +13,14 @@ class cell_set(Step):
     # State
 
     value: Any
-    """NOTE: add docs"""
+    """
+    Value to be set in cell of the given field.
+    """
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Specifies the field name where to set/replace the value.
+    """
 
     # Transform
 

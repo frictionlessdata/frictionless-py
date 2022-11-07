@@ -16,7 +16,7 @@ from . import helpers
 class Error(Metadata):
     """Error representation.
 
-    It is a parent or baseclass for where other subclasses of errors are inherited or
+    It is a baseclass from which other subclasses of errors are inherited or
     derived from.
     """
 

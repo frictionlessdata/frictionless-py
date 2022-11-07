@@ -8,7 +8,7 @@ from .table import TableError
 class RowError(TableError):
     """Row error representation.
 
-    A base class for all the errors in a row of the
+    A base class for all the errors related to a row of the
     tabular data.
 
     """

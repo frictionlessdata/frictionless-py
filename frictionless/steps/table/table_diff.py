@@ -8,22 +8,34 @@ from ...resource import Resource
 
 @attrs.define(kw_only=True)
 class table_diff(Step):
-    """Diff tables"""
+    """Diff tables.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-diff"
 
     # State
 
     resource: Union[Resource, str]
-    """NOTE: add docs
+    """
+    Resource with which to compare.
     """
 
     ignore_order: bool = False
-    """NOTE: add docs
+    """
+    Specifies whether to ignore the order of the rows.
     """
 
     use_hash: bool = False
-    """NOTE: add docs
+    """
+    Specifies whether to use hash or not. If yes, alternative implementation will
+    be used where the complement is executed by constructing an in-memory set for 
+    all rows found in the right hand table. For more information
+    please see the link below:
+    https://petl.readthedocs.io/en/stable/transform.html#petl.transform.setops.hashcomplement
     """
 
     # Transform

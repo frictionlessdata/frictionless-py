@@ -7,20 +7,33 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_search(Step):
-    """Search rows"""
+    """Search rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "row-search"
 
     # State
 
     regex: str
-    """NOTE: add docs"""
+    """
+    Regex pattern to search for rows. If field_name is set it 
+    will only be applied to the specified field. For example, regex=r"^e.*".
+    """
 
     field_name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Field name in which to search for.
+    """
 
     negate: bool = False
-    """NOTE: add docs"""
+    """
+    Whether to revert the result. If True, all the rows that does 
+    not match the pattern will be returned.
+    """
 
     # Transform
 

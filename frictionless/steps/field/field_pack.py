@@ -11,23 +11,37 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class field_pack(Step):
-    """Pack fields"""
+    """Pack fields.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "field-pack"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the new field.
+    """
 
     from_names: List[str]
-    """NOTE: add docs"""
+    """
+    List of fields to be packed.
+    """
 
     as_object: bool = False
-    """NOTE: add docs"""
+    """
+    The packed value of the field will be stored as object if set to 
+    True.
+    """
 
     preserve: bool = False
-    """NOTE: add docs"""
+    """
+    Specifies if the field should be preserved or not. If True, fields 
+    part of packing process will be preserved.
+    """
 
     # Transform
 

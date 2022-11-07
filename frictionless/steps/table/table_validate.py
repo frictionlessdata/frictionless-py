@@ -6,7 +6,12 @@ from ...exception import FrictionlessException
 
 @attrs.define(kw_only=True)
 class table_validate(Step):
-    """Validate table"""
+    """Validate table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-validate"
 

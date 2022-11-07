@@ -6,14 +6,22 @@ from ...dialect import Control
 
 @attrs.define(kw_only=True)
 class BigqueryControl(Control):
-    """Bigquery control representation"""
+    """Bigquery control representation.
+    
+    Control class to set params for Bigquery api.
+
+    """
 
     type = "bigquery"
 
     # State
 
     table: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Name of the table in Bigquery from where to read the data.
+    Table name is unique per dataset. The convention for naming
+    a table can be found here.
+    """
 
     dataset: Optional[str] = None
     """NOTE: add docs"""
