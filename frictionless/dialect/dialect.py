@@ -18,34 +18,59 @@ class Dialect(Metadata):
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Dialect.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Dialect.
+    """
 
     header: bool = settings.DEFAULT_HEADER
-    """NOTE: add docs"""
+    """
+    If true, the header will be read else header will be skipped.
+    """
 
     header_rows: List[int] = attrs.field(factory=settings.DEFAULT_HEADER_ROWS.copy)
-    """NOTE: add docs"""
+    """
+    Specifies the row numbers for the header. Default is [1].
+    """
 
     header_join: str = settings.DEFAULT_HEADER_JOIN
-    """NOTE: add docs"""
+    """
+    Separator to join text of two column's. The default value is " " and other values
+    could be ":", "-" etc.
+    """
 
     header_case: bool = settings.DEFAULT_HEADER_CASE
-    """NOTE: add docs"""
+    """
+    If set to false, it does case insensitive matching of header. The default value
+    is True.
+    """
 
     comment_char: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Specifies char used to comment the rows. The default value is None.
+    For example: "#".
+    """
 
     comment_rows: List[int] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    A list of rows to ignore. For example: [1, 2]
+    """
 
     controls: List[Control] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    A list of controls which defines different aspects of reading data. 
+    """
 
     # Describe
 
