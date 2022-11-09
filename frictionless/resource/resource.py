@@ -1227,16 +1227,16 @@ class Resource(Metadata):
         # Profiles
         profiles = descriptor.get("profiles", [])
         for profile in profiles:
-            if (
-                isinstance(profile, dict)
-                or Path(profile).exists()
-                or helpers.is_remote_path(profile)
-            ):
-                yield from Metadata.metadata_validate(
-                    descriptor,
-                    profile=profile,
-                    error_class=cls.metadata_Error,
-                )
+            if profile in ["data-resource"]:
+                continue
+            if profile == "tabular-data-resource":
+                descriptor["type"] = "table"
+                break
+            yield from Metadata.metadata_validate(
+                descriptor,
+                profile=profile,
+                error_class=cls.metadata_Error,
+            )
 
         # Misleading
         for name in ["missingValues", "fields"]:
