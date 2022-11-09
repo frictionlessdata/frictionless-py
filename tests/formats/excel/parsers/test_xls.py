@@ -128,39 +128,14 @@ def test_xls_parser_write_sheet_name(tmpdir):
 # Bugs
 
 
-def test_xls_parser_cast_int_to_string_1251_xlsx():
+@pytest.mark.skip
+def test_xls_parser_cast_int_to_string_1251():
     descriptor = {
         "name": "example",
         "type": "table",
-        "path": "data/cast-int-to-string-issue-1251.xlsx",
+        "path": "data/cast-int-to-string-issue-1251.xls",
         "scheme": "file",
-        "format": "xlsx",
-        "encoding": "utf-8",
-        "mediatype": "application/vnd.ms-excel",
-        "schema": {
-            "fields": [
-                {"name": "A", "type": "string"},
-                {"name": "B", "type": "string"},
-                {"name": "C", "type": "string"},
-                {"name": "D", "type": "any"},
-                {"name": "E", "type": "integer"},
-            ]
-        },
-    }
-    resource = Resource(descriptor, control=formats.ExcelControl(stringified=True))
-    assert resource.read_rows() == [
-        {"A": "001", "B": "b", "C": "1", "D": "a", "E": 1},
-        {"A": "002", "B": "c", "C": "1", "D": "1", "E": 1},
-    ]
-
-
-def test_xls_parser_cast_int_to_string_1251_xls():
-    descriptor = {
-        "name": "example",
-        "type": "table",
-        "path": "data/cast-int-to-string-issue-1251.xlsx",
-        "scheme": "file",
-        "format": "xlsx",
+        "format": "xls",
         "encoding": "utf-8",
         "mediatype": "application/vnd.ms-excel",
         "schema": {
