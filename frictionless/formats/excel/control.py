@@ -28,6 +28,12 @@ class ExcelControl(Control):
     adjust_floating_point_error: bool = False
     """NOTE: add docs"""
 
+    stringified: bool = False
+    """
+    Stringifies all the cell values. Default value
+    is False.
+    """
+
     # Metadata
 
     metadata_profile_patch = {

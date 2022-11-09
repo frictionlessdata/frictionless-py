@@ -147,7 +147,7 @@ def test_xls_parser_cast_int_to_string_1251_xlsx():
             ]
         },
     }
-    resource = Resource(descriptor)
+    resource = Resource(descriptor, control=formats.ExcelControl(stringified=True))
     assert resource.read_rows() == [
         {"A": "001", "B": "b", "C": "1", "D": "a", "E": 1},
         {"A": "002", "B": "c", "C": "1", "D": "1", "E": 1},
@@ -173,7 +173,7 @@ def test_xls_parser_cast_int_to_string_1251_xls():
             ]
         },
     }
-    resource = Resource(descriptor)
+    resource = Resource(descriptor, control=formats.ExcelControl(stringified=True))
     assert resource.read_rows() == [
         {"A": "001", "B": "b", "C": "1", "D": "a", "E": 1},
         {"A": "002", "B": "c", "C": "1", "D": "1", "E": 1},
