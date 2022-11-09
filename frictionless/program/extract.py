@@ -175,7 +175,7 @@ def program_extract(
     # Normalize data
     normdata = data
     if isinstance(data, list):
-        normdata = {prepare_source(): data}
+        normdata = {prepare_source(): data}  # type: ignore
 
     # Return JSON
     if json:
