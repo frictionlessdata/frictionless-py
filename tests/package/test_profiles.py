@@ -57,6 +57,14 @@ def test_package_external_profile_invalid_remote_from_descriptor():
         assert "required" in error.message
 
 
+@pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
+def test_package_profile_type(profile):
+    resource = Resource(name="table", path="data/table.csv")
+    package = Package(resources=[resource], profiles=[profile])
+    descriptor = package.to_descriptor()
+    assert descriptor["profiles"] == [profile]
+
+
 # Legacy
 
 

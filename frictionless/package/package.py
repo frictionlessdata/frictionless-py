@@ -832,10 +832,12 @@ class Package(Metadata):
         # Profiles
         profiles = descriptor.get("profiles", [])
         for profile in profiles:
+            if profile in ["data-package", "tabular-data-package"]:
+                continue
             yield from Metadata.metadata_validate(
                 descriptor,
                 profile=profile,
-                error_class=errors.PackageError,
+                error_class=cls.metadata_Error,
             )
 
         # Misleading
