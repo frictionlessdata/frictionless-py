@@ -6,17 +6,26 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class table_recast(Step):
-    """Recast table"""
+    """Recast table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-recast"
 
     # State
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Recast table by the field 'field_name'.
+    """
 
     from_field_names: List[str] = attrs.field(factory=lambda: ["variable", "value"])
-    """NOTE: add docs"""
+    """
+    List of field names for the output table.
+    """
 
     # Transform
 

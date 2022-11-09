@@ -6,17 +6,27 @@ from ... import fields
 
 @attrs.define(kw_only=True)
 class table_aggregate(Step):
-    """Aggregate table"""
+    """Aggregate table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-aggregate"
 
     # State
 
     aggregation: dict
-    """NOTE: add docs"""
+    """
+    A dictionary with aggregation function. The values
+    could be max, min, len and sum.
+    """
 
     group_name: str
-    """NOTE: add docs"""
+    """
+    Field by which the rows will be grouped.
+    """
 
     # Transform
 

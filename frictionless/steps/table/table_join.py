@@ -11,26 +11,38 @@ DEFAULT_MODE = "inner"
 
 @attrs.define(kw_only=True)
 class table_join(Step):
-    """Join tables"""
+    """Join tables.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-join"
 
     # State
 
     resource: Union[Resource, str]
-    """NOTE: add docs
+    """
+    Resource with which to apply join.
     """
 
     field_name: Optional[str] = None
-    """NOTE: add docs
+    """
+    Field name with which the join will be performed comparing it's value between two tables. 
+    If not provided natural join is tried. For more information, please see the following document:
+    https://petl.readthedocs.io/en/stable/_modules/petl/transform/joins.html
     """
 
     use_hash: bool = False
-    """NOTE: add docs
+    """
+    Specify whether to use hash or not. If True, an alternative implementation of join will be used.
     """
 
     mode: str = DEFAULT_MODE
-    """NOTE: add docs
+    """
+    Specifies which mode to use. The available modes are: "inner", "left", "right", "outer", "cross" and 
+    "negate". The default mode is "inner".
     """
 
     # Transform

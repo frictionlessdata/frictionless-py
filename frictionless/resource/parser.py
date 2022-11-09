@@ -21,10 +21,15 @@ class Parser:
     """
 
     requires_loader: ClassVar[bool] = False
-    """NOTE: add docs"""
+    """
+    Specifies if parser requires the loader to load the
+    data.
+    """
 
     supported_types: ClassVar[List[str]] = []
-    """NOTE: add docs"""
+    """
+    Data types supported by the parser.
+    """
 
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource

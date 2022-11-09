@@ -6,26 +6,44 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_slice(Step):
-    """Slice rows"""
+    """Slice rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "row-slice"
 
     # State
 
     start: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Starting point from where to read the rows. If None, 
+    defaults to the beginning.
+    """
 
     stop: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Stopping point for reading row. If None, defaults to 
+    the end.
+    """
 
     step: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    It is the step size to read next row. If None, it defaults 
+    to 1.
+    """
 
     head: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Number of rows to read from head.
+    """
 
     tail: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Number of rows to read from the bottom.
+    """
 
     # Transform
 

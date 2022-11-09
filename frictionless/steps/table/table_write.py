@@ -7,7 +7,12 @@ from ...dialect import Dialect
 
 @attrs.define(kw_only=True)
 class table_write(Step):
-    """Write table"""
+    """Write table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-write"
 
@@ -15,7 +20,8 @@ class table_write(Step):
 
     # TODO: rebase on resource?
     path: str
-    """NOTE: add docs
+    """
+    Path of the file to write the table content.
     """
 
     # Transform

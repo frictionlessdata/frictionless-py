@@ -9,6 +9,9 @@ from ....system import system
 from .... import errors
 
 
+# TODO: support ExcelControl.stringified
+
+
 class XlsParser(Parser):
     """XLS parser implementation."""
 

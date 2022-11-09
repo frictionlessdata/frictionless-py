@@ -7,14 +7,20 @@ from . import settings
 
 @attrs.define(kw_only=True)
 class OdsControl(Control):
-    """Ods control representation"""
+    """Ods control representation.
+
+    Control class to set params for ODS reader/writer.
+
+    """
 
     type = "ods"
 
     # State
 
     sheet: Union[str, int] = settings.DEFAULT_SHEET
-    """NOTE: add docs"""
+    """
+    Name or index of the sheet to read/write.
+    """
 
     # Metadata
 

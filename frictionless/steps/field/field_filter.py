@@ -6,14 +6,20 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class field_filter(Step):
-    """Filter fields"""
+    """Filter fields.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "field-filter"
 
     # State
 
     names: List[str]
-    """NOTE: add docs"""
+    """
+    Names of the field to be read. Other fields will be ignored.
+    """
 
     # Transform
 

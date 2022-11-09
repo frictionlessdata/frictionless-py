@@ -6,7 +6,10 @@ from .table import TableError
 
 @attrs.define(kw_only=True)
 class HeaderError(TableError):
-    """Header error representation"""
+    """Header error representation.
+
+    A base class for all the errors related to the resource header.
+    """
 
     type = "header-error"
     title = "Header Error"
@@ -17,10 +20,14 @@ class HeaderError(TableError):
     # State
 
     labels: List[str]
-    """NOTE: add docs"""
+    """
+    List of labels that has errors.
+    """
 
     row_numbers: List[int]
-    """NOTE: add docs"""
+    """
+    Row number where the error occurred.
+    """
 
     # Metadata
 

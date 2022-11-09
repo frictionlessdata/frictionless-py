@@ -11,26 +11,42 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class field_update(Step):
-    """Update field"""
+    """Update field.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "field-update"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the field to update.
+    """
 
     value: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Cell value to set for the field.
+    """
 
     formula: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Evaluatable expressions to set the value for the field. The expressions 
+    are processed using simpleeval library.
+    """
 
     function: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Python function to set the value for the field.
+    """
 
     descriptor: Optional[IDescriptor] = None
-    """NOTE: add docs"""
+    """
+    A descriptor for the field to set the metadata.
+    """
 
     # Transform
 

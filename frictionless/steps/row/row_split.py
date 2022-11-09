@@ -5,17 +5,26 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_split(Step):
-    """Split rows"""
+    """Split rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "row-add"
 
     # State
 
     pattern: str
-    """NOTE: add docs"""
+    """
+    Pattern to search for in one or more fields.
+    """
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Field name whose cell value will be splitted.
+    """
 
     # Transform
 

@@ -123,3 +123,33 @@ def test_xls_parser_write_sheet_name(tmpdir):
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+# Bugs
+
+
+@pytest.mark.skip
+def test_xls_parser_cast_int_to_string_1251():
+    descriptor = {
+        "name": "example",
+        "type": "table",
+        "path": "data/cast-int-to-string-issue-1251.xls",
+        "scheme": "file",
+        "format": "xls",
+        "encoding": "utf-8",
+        "mediatype": "application/vnd.ms-excel",
+        "schema": {
+            "fields": [
+                {"name": "A", "type": "string"},
+                {"name": "B", "type": "string"},
+                {"name": "C", "type": "string"},
+                {"name": "D", "type": "any"},
+                {"name": "E", "type": "integer"},
+            ]
+        },
+    }
+    resource = Resource(descriptor, control=formats.ExcelControl(stringified=True))
+    assert resource.read_rows() == [
+        {"A": "001", "B": "b", "C": "1", "D": "a", "E": 1},
+        {"A": "002", "B": "c", "C": "1", "D": "1", "E": 1},
+    ]

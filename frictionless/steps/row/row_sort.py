@@ -6,17 +6,28 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_sort(Step):
-    """Sort rows"""
+    """Sort rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "row-sort"
 
     # State
 
     field_names: List[str]
-    """NOTE: add docs"""
+    """
+    List of field names by which the rows will be
+    sorted. If fields more than 1, sort applies from
+    left to right.
+    """
 
     reverse: bool = False
-    """NOTE: add docs"""
+    """
+    The sort will be reversed if it is set to True.
+    """
 
     # Transform
 

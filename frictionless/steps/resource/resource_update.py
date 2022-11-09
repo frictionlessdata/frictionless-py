@@ -10,17 +10,26 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class resource_update(Step):
-    """Update resource"""
+    """Update resource.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "resource-update"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the resource to update.
+    """
 
     descriptor: IDescriptor
-    """NOTE: add docs"""
+    """
+    New descriptor for the resource to update metadata.
+    """
 
     # Transform
 

@@ -14,7 +14,11 @@ from . import helpers
 
 @attrs.define(kw_only=True)
 class Error(Metadata):
-    """Error representation"""
+    """Error representation.
+
+    It is a baseclass from which other subclasses of errors are inherited or
+    derived from.
+    """
 
     type: ClassVar[str] = "error"
     title: ClassVar[str] = "Error"
@@ -37,10 +41,15 @@ class Error(Metadata):
     # State
 
     message: str = attrs.field(init=False)
-    """NOTE: add docs"""
+    """
+    A human readable informative comprehensive description of the error. It can be set to any custom text. 
+    If not set, default description is more comprehensive with error type, message and reasons included.
+    """
 
     note: str
-    """NOTE: add docs"""
+    """
+    A short human readable description of the error. It can be set to any custom text.
+    """
 
     # List
 

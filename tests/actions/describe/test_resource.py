@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Detector, Dialect, describe, platform
+from frictionless import formats, Resource, Detector, Dialect, describe, platform
 
 
 # General
@@ -128,11 +128,14 @@ def test_describe_resource_schema_check_type_boolean_string_tie():
 
 
 def test_describe_resource_schema_xlsx_file_with_boolean_column_issue_203():
-    resource = describe("data/table-infer-boolean.xlsx")
+    resource = describe(
+        "data/table-infer-boolean.xlsx", control=formats.ExcelControl(stringified=True)
+    )
     assert isinstance(resource, Resource)
+    print(resource.schema.to_descriptor())
     assert resource.schema.to_descriptor() == {
         "fields": [
-            {"name": "number", "type": "integer"},
+            {"name": "number", "type": "number"},
             {"name": "string", "type": "string"},
             {"name": "boolean", "type": "boolean"},
         ],

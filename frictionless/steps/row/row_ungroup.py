@@ -7,20 +7,34 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_ungroup(Step):
-    """Ungroup rows"""
+    """Ungroup rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "row-ungroup"
 
     # State
 
     selection: str
-    """NOTE: add docs"""
+    """
+    Specifies whether to return first or last row. The value
+    can be "first", "last", "min" and "max".
+    """
 
     group_name: str
-    """NOTE: add docs"""
+    """
+    Field name which will be used to group the rows. And it returns the 
+    first or last row with each group based on the 'selection'.
+    """
 
     value_name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    If the selection is set to "min" or "max", the rows will be grouped by 
+    "group_name" field and min or max value will be then selected from the 
+    "value_name" field.
+    """
 
     def transform_resource(self, resource):
         table = resource.to_petl()

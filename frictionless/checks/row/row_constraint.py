@@ -7,7 +7,7 @@ from ... import errors
 
 @attrs.define(kw_only=True)
 class row_constraint(Check):
-    """Check that every row satisfies a provided Python expression"""
+    """Check that every row satisfies a provided Python expression."""
 
     type = "row-constraint"
     Errors = [errors.RowConstraintError]
@@ -15,7 +15,10 @@ class row_constraint(Check):
     # Properties
 
     formula: str
-    """NOTE: add docs"""
+    """
+    Python expression to apply to all rows. To evaluate the forumula
+    simpleeval library is used. 
+    """
 
     # Validate
 

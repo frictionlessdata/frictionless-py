@@ -18,28 +18,46 @@ class ReportTask(Metadata):
     # State
 
     valid: bool
-    """NOTE: add docs"""
+    """
+    Flag to specify if the data is valid or not.
+    """
 
     name: str
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     type: str
-    """NOTE: add docs"""
+    """
+    Sets the property tabular to True if the type is "table".
+    """
 
     place: str
-    """NOTE: add docs"""
+    """
+    Specifies the place of the file. For example: "<memory>", "data/table.csv" etc.
+    """
 
     labels: List[str]
-    """NOTE: add docs"""
+    """
+    List of labels of the task resource.
+    """
 
     stats: Stats
-    """NOTE: add docs"""
+    """
+    Additional statistics of the data as defined in Stats class.
+    """
 
     warnings: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of warnings raised while validating the data.
+    """
 
     errors: List[Error] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of errors raised while validating the data.
+    """
 
     # Props
 

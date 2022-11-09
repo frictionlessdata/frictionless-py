@@ -8,23 +8,36 @@ from ... import fields
 
 @attrs.define(kw_only=True)
 class field_split(Step):
-    """Split field"""
+    """Split field.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "field-split"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the field to split.
+    """
 
     to_names: List[str]
-    """NOTE: add docs"""
+    """
+    List of names of new fields.
+    """
 
     pattern: str
-    """NOTE: add docs"""
+    """
+    Pattern to split the field value, for example: "a". 
+    """
 
     preserve: bool = False
-    """NOTE: add docs"""
+    """
+    Whether to preserve the fields after the split. If True,
+    the fields are not removed after split.
+    """
 
     # Transform
 

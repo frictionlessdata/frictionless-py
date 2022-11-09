@@ -16,7 +16,10 @@ class Manager(Generic[ControlType]):
     # State
 
     control: ControlType
-    """NOTE: add docs"""
+    """
+    Control used to initialize the properties of the class while
+    reading/writing package or catalog.
+    """
 
     # Read
 

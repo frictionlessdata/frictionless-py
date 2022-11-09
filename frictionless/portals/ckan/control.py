@@ -13,28 +13,44 @@ class CkanControl(Control):
     # State
 
     baseurl: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Endpoint url for CKAN instance.
+    """
 
     dataset: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Unique identifier of the dataset to read.
+    """
 
     resource: Optional[str] = None
     """NOTE: add docs"""
 
     apikey: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    The access token to authenticate to the CKAN instance. It is required 
+    to write files to CKAN instance.
+    """
 
     fields: Optional[List[str]] = None
-    """NOTE: add docs"""
+    """
+    Specify the number of fields to read. Other fields
+    will not be read.
+    """
 
     limit: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Limit the number of records to read.
+    """
 
     sort: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Field by which to sort the data before reading the data.
+    """
 
     filters: Optional[dict] = None
-    """NOTE: add docs"""
+    """
+    Params as a list of dict to filter the data while reading.
+    """
 
     # Metadata
 

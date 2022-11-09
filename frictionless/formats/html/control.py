@@ -6,14 +6,22 @@ from . import settings
 
 @attrs.define(kw_only=True)
 class HtmlControl(Control):
-    """Html control representation"""
+    """Html control representation.
+
+
+    Control class to set params for Html reader/writer.
+
+    """
 
     type = "html"
 
     # State
 
     selector: str = settings.DEFAULT_SELECTOR
-    """NOTE: add docs"""
+    """
+    Any valid css selector. Default selector is 'table'.
+    For example: "table", "#id", ".meme" etc.
+    """
 
     # Metadata
 

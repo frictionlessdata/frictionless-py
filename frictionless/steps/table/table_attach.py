@@ -8,14 +8,20 @@ from ...resource import Resource
 
 @attrs.define(kw_only=True)
 class table_attach(Step):
-    """Attach table"""
+    """Attach table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-attach"
 
     # State
 
     resource: Union[Resource, str]
-    """NOTE: add docs
+    """
+    Data Resource to attach to the existing table.
     """
 
     # Transform
