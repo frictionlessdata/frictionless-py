@@ -6,17 +6,26 @@ from ...resource import Resource
 
 @attrs.define(kw_only=True)
 class resource_add(Step):
-    """Add resource"""
+    """Add resource.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "resource-add"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the resource to add.
+    """
 
     descriptor: dict
-    """NOTE: add docs"""
+    """
+    A descriptor for the resource.
+    """
 
     # Transform
 

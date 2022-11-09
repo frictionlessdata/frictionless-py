@@ -19,7 +19,10 @@ class ArrayField(Field):
     # Properties
 
     array_item: Optional[dict] = attrs.field(factory=dict)
-    """NOTE: add docs"""
+    """
+    A dictionary that specifies the type and other constraints for the
+    data that will be read in this data type field.
+    """
 
     # Read
 

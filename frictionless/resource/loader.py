@@ -34,7 +34,9 @@ class Loader:
     """
 
     remote: bool = False
-    """TODO: add docs"""
+    """
+    Specifies if the resource is remote.
+    """
 
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource

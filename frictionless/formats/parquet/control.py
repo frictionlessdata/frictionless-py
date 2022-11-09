@@ -7,20 +7,35 @@ from ... import helpers
 
 @attrs.define(kw_only=True)
 class ParquetControl(Control):
-    """Json control representation"""
+    """Parquet control representation.
+
+    Control class to set params for Parquet read/write class.
+
+    """
 
     type = "parquet"
 
     # State
 
     columns: Optional[List[str]] = None
-    """NOTE: add docs"""
+    """
+    A list of columns to load. By selecting columns, we can only access
+    parts of file that we are interested in and skip columns that are
+    not of interest. Default value is None.
+    """
 
     categories: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    List of columns that should be returned as Pandas Category-type column.
+    The second example specifies the number of expected labels for that column.
+    For example: categories=['col1'] or categories={'col1': 12}
+    """
 
     filters: Optional[Any] = False
-    """NOTE: add docs"""
+    """
+    Specifies the condition to filter data(row-groups).
+    For example: [('col3', 'in', [1, 2, 3, 4])])
+    """
 
     # Convert
 

@@ -6,14 +6,21 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class table_debug(Step):
-    """Debug table"""
+    """Debug table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-debug"
 
     # State
 
     function: Any
-    """NOTE: add docs"""
+    """
+    Debug function to apply to the table row.
+    """
 
     # Transform
 

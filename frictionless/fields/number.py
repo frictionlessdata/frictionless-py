@@ -20,16 +20,27 @@ class NumberField(Field):
     # Properties
 
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
-    """NOTE: add docs"""
+    """
+    It specifies that the value is a bare number. If true, the pattern to remove non digit 
+    character does not get applied and vice versa. The default value is True.
+    """
 
     float_number: bool = settings.DEFAULT_FLOAT_NUMBER
-    """NOTE: add docs"""
+    """
+    It specifies that the value is a float number.
+    """
 
     decimal_char: str = settings.DEFAULT_DECIMAL_CHAR
-    """NOTE: add docs"""
+    """
+    It specifies the char to be used as decimal character. The default
+    value is ".". It values can be: ".", "@" etc.
+    """
 
     group_char: str = settings.DEFAULT_GROUP_CHAR
-    """NOTE: add docs"""
+    """
+    It specifies the char to be used as group character. The default value
+    is "". It can take values such as: ",", "#" etc. 
+    """
 
     # Read
 

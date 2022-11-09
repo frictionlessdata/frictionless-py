@@ -6,26 +6,36 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class table_pivot(Step):
-    """Pivot table"""
+    """Pivot table.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-pivot"
 
     # State
 
     f1: str
-    """NOTE: add docs
+    """
+    Field that makes the rows in the output pivot table.
     """
 
     f2: str
-    """NOTE: add docs
+    """
+    Field that makes the columns in the output pivot table.
     """
 
     f3: str
-    """NOTE: add docs
+    """
+    Field that forms the data in the output pivot table.
     """
 
     aggfun: Any
-    """NOTE: add docs
+    """
+    Function to process and create data in the output pivot table. 
+    The function can be "sum", "max", "min", "len" etc.
     """
 
     # Transform

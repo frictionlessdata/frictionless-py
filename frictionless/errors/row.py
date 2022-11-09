@@ -6,7 +6,12 @@ from .table import TableError
 
 @attrs.define(kw_only=True)
 class RowError(TableError):
-    """Row error representation"""
+    """Row error representation.
+
+    A base class for all the errors related to a row of the
+    tabular data.
+
+    """
 
     type = "row-error"
     title = "Row Error"
@@ -17,10 +22,14 @@ class RowError(TableError):
     # State
 
     cells: List[str]
-    """NOTE: add docs"""
+    """
+    Values of all the cells in the row that has an error.
+    """
 
     row_number: int
-    """NOTE: add docs"""
+    """
+    Index of the row that has an error.
+    """
 
     # Convert
 

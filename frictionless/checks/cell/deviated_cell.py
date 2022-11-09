@@ -23,10 +23,17 @@ class deviated_cell(Check):
     # State
 
     interval: int = DEFAULT_INTERVAL
-    """NOTE: add docs"""
+    """
+    Interval specifies number of standard deviation away from the center. 
+    The median is used to find the center of the data. The default value
+    is 3.
+    """
 
     ignore_fields: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of data columns to be skipped by check. To all the data columns 
+    listed here, check will not be applied. The default value is [].
+    """
 
     # Connect
 

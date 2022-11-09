@@ -6,17 +6,25 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class field_move(Step):
-    """Move field"""
+    """Move field.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "field-move"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Field name to move.
+    """
 
     position: int
-    """NOTE: add docs"""
+    """
+    New position for the field being moved.
+    """
 
     # Transform
 

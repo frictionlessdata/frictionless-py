@@ -15,33 +15,55 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class Report(Metadata):
-    """Report representation."""
+    """Report representation.
+
+    A class that stores the summary of the validation action.
+
+    """
 
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Report.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Detector.
+    """
 
     valid: bool
-    """NOTE: add docs"""
+    """
+    Flag to specify if the data is valid or not.
+    """
 
     stats: Stats
-    """NOTE: add docs"""
+    """
+    Additional statistics of the data as defined in Stats class.
+    """
 
     warnings: List[str] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of warnings raised while validating the data.
+    """
 
     errors: List[Error] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of errors raised while validating the data.
+    """
 
     tasks: List[ReportTask] = attrs.field(factory=list)
-    """NOTE: add docs"""
+    """
+    List of task that were applied during data validation.
+    """
 
     # Props
 

@@ -13,7 +13,7 @@ DEFAULT_SEPARATOR = "-"
 
 @attrs.define(kw_only=True)
 class field_merge(Step):
-    """Merge fields
+    """Merge fields.
 
     This step can be added using the `steps` parameter
     for the `transform` function.
@@ -25,16 +25,25 @@ class field_merge(Step):
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the new field that will be created after merge.
+    """
 
     from_names: List[str]
-    """NOTE: add docs"""
+    """
+    List of field names to merge.
+    """
 
     separator: str = DEFAULT_SEPARATOR
-    """NOTE: add docs"""
+    """
+    Separator to use while merging values of the two fields.
+    """
 
     preserve: bool = False
-    """NOTE: add docs"""
+    """
+    It indicates if the fields are preserved or not after merging. If True,
+    fields will not be removed and vice versa.
+    """
 
     # Transform
 

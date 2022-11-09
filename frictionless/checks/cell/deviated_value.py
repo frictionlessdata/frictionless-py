@@ -16,7 +16,7 @@ AVERAGE_FUNCTIONS = {
 
 @attrs.define(kw_only=True)
 class deviated_value(Check):
-    """Check for deviated values in a field"""
+    """Check for deviated values in a field."""
 
     type = "deviated-value"
     Errors = [errors.DeviatedValueError]
@@ -24,13 +24,23 @@ class deviated_value(Check):
     # State
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Name of the field to which the check will be applied.
+    Check will not be applied to fields other than this.
+    """
 
     interval: int = DEFAULT_INTERVAL
-    """NOTE: add docs"""
+    """
+    Interval specifies number of standard deviation away from the mean. 
+    The default value is 3.
+    """
 
     average: str = DEFAULT_AVERAGE
-    """NOTE: add docs"""
+    """
+    It specifies preferred method to calculate average of the data.
+    Default value is "mean". Supported average calculation methods
+    are "mean", "median", and "mode".
+    """
 
     # Connect
 

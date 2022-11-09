@@ -18,48 +18,76 @@ class Field(Metadata):
     """Field representation"""
 
     type: ClassVar[str]
-    """NOTE: add docs"""
+    """
+    Type of the field such as "boolean", "integer" etc.
+    """
 
     builtin: ClassVar[bool] = False
-    """NOTE: add docs"""
+    """
+    Specifies if field is the builtin feature.
+    """
 
     supported_constraints: ClassVar[List[str]] = []
-    """NOTE: add docs"""
+    """
+    List of supported constraints for a field.
+    """
 
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Field.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Field.
+    """
 
     format: str = settings.DEFAULT_FIELD_FORMAT
-    """NOTE: add docs"""
+    """
+    Format of the field to specify different value readers for the field type.
+    For example: "default","array" etc.
+    """
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
-    """NOTE: add docs"""
+    """
+    List of string values to be set as missing values in the field. If any of string in missing values 
+    is found in the field value then it is set as None.
+    """
 
     constraints: dict = attrs.field(factory=dict)
-    """NOTE: add docs"""
+    """
+    A dictionary with rules that constraints the data value permitted for a field.
+    """
 
     rdf_type: Optional[str] = None
-    """NOTE: add docs"""
+    """ 
+    RDF type. Indicates whether the field is of RDF type.
+    """
 
     example: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    An example of a value for the field.
+    """
 
     schema: Optional[Schema] = None
-    """NOTE: add docs"""
+    """
+    Schema class of which the field is part of.
+    """
 
     # Props
 
     @property
     def required(self):
-        """TODO: add docs"""
+        """Indicates if field is mandatory."""
         return self.constraints.get("required", False)
 
     @required.setter

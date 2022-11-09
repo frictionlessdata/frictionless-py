@@ -58,15 +58,19 @@ class System:
     # State
 
     trusted: bool = settings.DEFAULT_TRUSTED
-    """NOTE: add docs
+    """
+    A flag that indicates if resource, path or package is trusted.
     """
 
     onerror: IOnerror = settings.DEFAULT_ONERROR
-    """NOTE: add docs
+    """
+    Type of action to take on Error such as "warn", "raise" or "ignore".
     """
 
     standards: IStandards = settings.DEFAULT_STANDARDS
-    """NOTE: add docs
+    """
+    Setting this value user can use feature of the specific version.
+    The default value is v2.
     """
 
     # Props

@@ -26,10 +26,15 @@ class Platform:
     """Platform representation"""
 
     type: ClassVar[str] = python_platform.system().lower()
-    """NOTE: add docs"""
+    """
+    Type of the platform(OS) framework is running on. For example, windows, 
+    linux etc.
+    """
 
     python: ClassVar[str] = f"{sys.version_info.major}.{sys.version_info.minor}"
-    """NOTE: add docs"""
+    """
+    Python version
+    """
 
     # Core
 

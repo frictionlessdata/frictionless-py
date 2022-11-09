@@ -21,16 +21,26 @@ class Inquiry(Metadata):
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Inquiry.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Inquiry.
+    """
 
     tasks: List[InquiryTask] = attrs.field(factory=list)
-    """List of underlaying tasks"""
+    """
+    List of underlaying task to be validated.
+    """
 
     # Validate
 

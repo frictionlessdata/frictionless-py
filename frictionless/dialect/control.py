@@ -12,18 +12,30 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class Control(Metadata):
-    """Control representation"""
+    """Control representation.
+
+    This class is the base class for all the control classes that are
+    used to set the states of various different components.
+
+    """
 
     type: ClassVar[str]
-    """NOTE: add docs"""
+    """
+    Type of the control. It could be a zenodo plugin control, csv control etc.
+    For example: "csv", "zenodo" etc
+    """
 
     # State
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the control.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the control.
+    """
 
     # Convert
 

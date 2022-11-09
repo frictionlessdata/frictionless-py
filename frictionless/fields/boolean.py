@@ -17,10 +17,16 @@ class BooleanField(Field):
     # Properties
 
     true_values: List[str] = attrs.field(factory=settings.DEFAULT_TRUE_VALUES.copy)
-    """NOTE: add docs"""
+    """
+    It defines the values to be read as true values while reading data. The default
+    true values are ["true", "True", "TRUE", "1"].
+    """
 
     false_values: List[str] = attrs.field(factory=settings.DEFAULT_FALSE_VALUES.copy)
-    """NOTE: add docs"""
+    """
+    It defines the values to be read as false values while reading data. The default
+    true values are ["false", "False", "FALSE", "0"].
+    """
 
     # Read
 

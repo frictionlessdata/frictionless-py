@@ -7,29 +7,53 @@ from . import settings
 
 @attrs.define(kw_only=True)
 class SqlControl(Control):
-    """SQL control representation"""
+    """SQL control representation.
+
+    Control class to set params for Sql read/write class.
+
+    """
 
     type = "sql"
 
     # State
 
     table: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Table name from which to read the data.
+    """
 
     prefix: str = settings.DEFAULT_PREFIX
-    """NOTE: add docs"""
+    """
+    It specifies prefix to filter tables to read. If prefix is
+    set, only tables those match the prefix will be read. The 
+    default value is "". For example: prefix="students_"
+    """
 
     order_by: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    It specifies the ORDER BY keyword for SQL queries to sort the
+    results that are being read. The default value is None.
+    """
 
     where: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    It specifies the WHERE clause to filter the records in SQL
+    queries. The default value is None.
+    """
 
     namespace: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    To refer to table using schema or namespace or database such as 
+    `FOO`.`TABLEFOO1` we can specify namespace. For example:
+    control = formats.SqlControl(table="test_table", namespace="FOO")
+    """
 
     basepath: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    It specifies the base path for the database. The basepath will
+    be appended to the db path. The default value is None. For example:
+    formats.SqlControl(table="test_table", basepath="data")
+    """
 
     # Metadata
 
