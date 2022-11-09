@@ -2,6 +2,7 @@ from __future__ import annotations
 import attrs
 from ...pipeline import Step
 from ...resource import Resource
+from ...dialect import Dialect
 
 
 @attrs.define(kw_only=True)
@@ -20,7 +21,10 @@ class table_write(Step):
     # Transform
 
     def transform_resource(self, resource):
-        target = Resource(path=self.path, type="table")
+        dialect = None
+        if "dialect" in self.custom:
+            dialect = Dialect.from_descriptor(self.custom["dialect"])
+        target = Resource(path=self.path, type="table", dialect=dialect)
         resource.write(target)
 
     # Metadata
