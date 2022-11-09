@@ -150,7 +150,7 @@ catalog = Catalog(control=control)
 print("Total packages", len(catalog.packages))
 print(catalog.packages[:2])
 ```
-As shown in the example above, we can use different qualifiers to search the repos. The above example searches for all the repos which has 'TestAction: Read' text in readme files. Similary we can use many different qualifiers and comibination of those. To get full list of qualifiers you can check the github document [here](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories).
+As shown in the example above, we can use different qualifiers to search the repos. The above example searches for all the repos which has 'TestAction: Read' text in readme files. Similary we can use many different qualifiers and combination of those. To get full list of qualifiers you can check the github document [here](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories).
 
 Some examples of the qualifiers:
 
