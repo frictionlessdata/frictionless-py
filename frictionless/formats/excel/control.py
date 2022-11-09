@@ -46,6 +46,12 @@ class ExcelControl(Control):
     For example: 274.65999999999997 -> 274.66 (When True).
     """
 
+    stringified: bool = False
+    """
+    Stringifies all the cell values. Default value
+    is False.
+    """
+
     # Metadata
 
     metadata_profile_patch = {
