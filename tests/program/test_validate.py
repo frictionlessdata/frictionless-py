@@ -168,6 +168,16 @@ def test_program_validate_summary():
     )
 
 
+def test_program_validate_schema_sync():
+    actual = runner.invoke(
+        program,
+        "validate data/resource-sync.json --json --schema-sync",
+    )
+    expect = validate("data/resource-sync.json", detector=Detector(schema_sync=True))
+    assert actual.exit_code == 0
+    assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
+
+
 # Bugs
 
 
@@ -220,6 +230,19 @@ def test_program_validate_multipart_zipped_resource_1140():
     actual = runner.invoke(program, "validate data/multipart-zipped.package.json")
     assert actual.exit_code == 0
     assert actual.stdout.count("chunk1.csv.zip,chunk2.csv.zip")
+
+
+def test_program_validate_enforce_required_fields_only_for_data_using_schema_sync_1258():
+    actual = runner.invoke(
+        program,
+        "validate data/issue-1258.json --schema-sync --json",
+    )
+    output = json.loads(actual.stdout)
+    expect = [error for error in output["tasks"][0]["errors"]]
+    # using schema-sync to skip type-error due to positional matching of
+    # fields and data, incase any field data is missing
+    assert "type-error" not in expect
+    assert "incorrect-label" not in expect
 
 
 # Helpers

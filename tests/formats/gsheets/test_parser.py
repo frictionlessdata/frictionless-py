@@ -45,6 +45,7 @@ def test_gsheets_parser_bad_url():
 # Write
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_gsheets_parser_write(google_credentials_path):
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"

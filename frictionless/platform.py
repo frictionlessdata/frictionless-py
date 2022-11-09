@@ -187,6 +187,13 @@ class Platform:
 
     @cached_property
     @extras(name="api")
+    def frictionless_server(self):
+        import frictionless.server
+
+        return frictionless.server
+
+    @cached_property
+    @extras(name="api")
     def fastapi(self):
         import fastapi
 
@@ -359,6 +366,13 @@ class Platform:
         import pyzenodo3
 
         return pyzenodo3
+
+    @cached_property
+    @extras(name="zenodo")
+    def pyzenodo3_upload(self):
+        import pyzenodo3.upload
+
+        return pyzenodo3.upload
 
 
 platform = Platform()

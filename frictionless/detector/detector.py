@@ -407,6 +407,10 @@ class Detector(Metadata):
                     if not field:
                         field = Field.from_descriptor({"name": name, "type": "any"})
                     schema.add_field(field)
+                # For required fields that are missing
+                for _, field in mapping.items():
+                    if field and field.required and field.name not in labels:
+                        schema.add_field(field)
 
         # Patch schema
         if self.schema_patch:

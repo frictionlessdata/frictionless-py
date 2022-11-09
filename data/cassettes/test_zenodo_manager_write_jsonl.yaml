@@ -1,0 +1,292 @@
+interactions:
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions
+  response:
+    body:
+      string: '{"conceptrecid":"7098740","created":"2022-09-21T04:23:19.570914+00:00","files":[],"id":7098741,"links":{"bucket":"https://zenodo.org/api/files/0df93e83-fb31-4267-857b-d08007935a85","discard":"https://zenodo.org/api/deposit/depositions/7098741/actions/discard","edit":"https://zenodo.org/api/deposit/depositions/7098741/actions/edit","files":"https://zenodo.org/api/deposit/depositions/7098741/files","html":"https://zenodo.org/deposit/7098741","latest_draft":"https://zenodo.org/api/deposit/depositions/7098741","latest_draft_html":"https://zenodo.org/deposit/7098741","publish":"https://zenodo.org/api/deposit/depositions/7098741/actions/publish","self":"https://zenodo.org/api/deposit/depositions/7098741"},"metadata":{"prereserve_doi":{"doi":"10.5281/zenodo.7098741","recid":7098741}},"modified":"2022-09-21T04:23:19.570922+00:00","owner":405552,"record_id":7098741,"state":"unsubmitted","submitted":false,"title":""}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '920'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:20 GMT
+      ETag:
+      - '"0"'
+      Last-Modified:
+      - Wed, 21 Sep 2022 04:23:19 GMT
+      Link:
+      - <https://zenodo.org/api/deposit/depositions/7098741/files>; rel="files", <https://zenodo.org/api/deposit/depositions/7098741/actions/edit>;
+        rel="edit", <https://zenodo.org/api/deposit/depositions/7098741>; rel="self",
+        <https://zenodo.org/api/deposit/depositions/7098741/actions/publish>; rel="publish",
+        <https://zenodo.org/deposit/7098741>; rel="html", <https://zenodo.org/api/deposit/depositions/7098741/actions/discard>;
+        rel="discard"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '95'
+      X-RateLimit-Reset:
+      - '1663734260'
+      X-Request-ID:
+      - 228e539197765a0dbece659b9c08afe3
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+      location:
+      - https://zenodo.org/api/deposit/depositions/7098741
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "{\n    \"metadata\":{\n       \"creators\":[{\"name\":\"FD Tester\", \"affiliation\":\"FD
+      Testing Write\"}],\n       \"upload_type\":\"dataset\",\n       \"title\":\"Test
+      Write File - JSONL\",\n       \"description\":\"Test Write File - JSONL\"\n
+      \   }\n}\n "
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '225'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: PUT
+    uri: https://zenodo.org/api//deposit/depositions/7098741
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6RUyW7bMBD9FYPXShYlS9VyTZFDUbSHBuihKASaHNlEaFEgqQSt4X/vUIvtBG6a
+        OCdRwzdvHmfbE65bDp0zwKUgFclpWeQpJQHhBpgDb0tokoS0DJP4jqZVsqricpkhME4/UFpRDxZa
+        InA81L1R+LN1rrNVFKFlqc0mwstGKrCk+vkrID7YGCsOiJLtPdr3ZN3ze3Bnzn+g1UIP/qyT0UAQ
+        UdGUKyhWYbNexWGafMzDIsvXoaAFpXm5yliReSnScmbEv9kEdNpKN3+lbm00aYoYH/9nkoCAkC8o
+        ew3XwHDMwjVMo2uArjt1mWH2njwQq7CK1tXCsOY6/c846rcEb+HxAYxFuqtCH1N3xhOQrl8rabfv
+        Y5xJAmJgI60DM03C2MrvYL7AFxALqrmKlhwCsgPHBHPMjwjjHKytjdxsfTl1B+08rNr44UJIg30i
+        mRuzfvtpcYfFk+1m8cNIB74qbAenGzDkgBMpwHIju8nLX4z4xS023SJcfP7+7euX81FXkkNrPdHN
+        DQ3jpd8DnQEDFswD1ANuP8FjusySIp7ffWqQae9MhsNUXD6Ir/HN8GT/oIOTTsGLAvtOaSZq97vz
+        OJ83izvFp1EL2cjLKy1B/TlN89NK048tZqZKaZZlySBUG1E/2VvWjQL71vbrnXR+XaL1eK4apiz8
+        X/PhLwAAAP//AwAEXPiqhwUAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:21 GMT
+      ETag:
+      - W/"1"
+      Last-Modified:
+      - Wed, 21 Sep 2022 04:23:21 GMT
+      Link:
+      - <https://zenodo.org/api/deposit/depositions/7098741/files>; rel="files", <https://zenodo.org/api/deposit/depositions/7098741/actions/edit>;
+        rel="edit", <https://zenodo.org/api/deposit/depositions/7098741>; rel="self",
+        <https://zenodo.org/api/deposit/depositions/7098741/actions/publish>; rel="publish",
+        <https://zenodo.org/api/deposit/depositions/7098741/actions/registerconceptdoi>;
+        rel="registerconceptdoi", <https://zenodo.org/deposit/7098741>; rel="html",
+        <https://zenodo.org/api/deposit/depositions/7098741/actions/discard>; rel="discard",
+        <https://zenodo.org/api/deposit/depositions/7098741/actions/newversion>; rel="newversion"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '94'
+      X-RateLimit-Reset:
+      - '1663734261'
+      X-Request-ID:
+      - 2b832ad6e890b364751ebd26f4b8227c
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--5af01eda1cb8f307952660d3e0267ddc\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\n/tmp/pytest-of-shashi/pytest-40/test_zenodo_manager_write_json0/datapackage.json\r\n--5af01eda1cb8f307952660d3e0267ddc\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"datapackage.json\"\r\n\r\n{\n  \"name\":
+      \"jsonl-package\",\n  \"resources\": [\n    {\n      \"name\": \"table\",\n
+      \     \"type\": \"table\",\n      \"path\": \"table.jsonl\",\n      \"scheme\":
+      \"file\",\n      \"format\": \"jsonl\",\n      \"encoding\": \"utf-8\",\n      \"mediatype\":
+      \"text/jsonl\",\n      \"dialect\": {\n        \"csv\": {\n          \"delimiter\":
+      \"\\t\",\n          \"skipInitialSpace\": true\n        },\n        \"json\":
+      {\n          \"keyed\": true\n        }\n      },\n      \"schema\": {\n        \"fields\":
+      [\n          {\n            \"name\": \"id\",\n            \"type\": \"integer\"\n
+      \         },\n          {\n            \"name\": \"name\",\n            \"type\":
+      \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\r\n--5af01eda1cb8f307952660d3e0267ddc--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '958'
+      Content-Type:
+      - multipart/form-data; boundary=5af01eda1cb8f307952660d3e0267ddc
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098741/files
+  response:
+    body:
+      string: '{"checksum": "53669233f3aac2ab9c2ecba2a8a57074", "filename": "datapackage.json",
+        "filesize": 637, "id": "c61e2b3d-903a-41e9-8883-10744eea3237", "links": {"download":
+        "https://zenodo.org/api/files/0df93e83-fb31-4267-857b-d08007935a85/datapackage.json",
+        "self": "https://zenodo.org/api/deposit/depositions/7098741/files/c61e2b3d-903a-41e9-8883-10744eea3237"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '357'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:22 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '93'
+      X-RateLimit-Reset:
+      - '1663734263'
+      X-Request-ID:
+      - 2667c4ff022708e9ed2ee77a3982ee93
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "--15aac402aca2ec6bc2d3755de593d9ce\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/table.jsonl\r\n--15aac402aca2ec6bc2d3755de593d9ce\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"table.jsonl\"\r\n\r\n{\"id\":1,\"name\":\"english\"}\n{\"id\":2,\"name\":\"\u4E2D\u56FD\u4EBA\"}\n\r\n--15aac402aca2ec6bc2d3755de593d9ce--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '306'
+      Content-Type:
+      - multipart/form-data; boundary=15aac402aca2ec6bc2d3755de593d9ce
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://zenodo.org/api//deposit/depositions/7098741/files
+  response:
+    body:
+      string: '{"checksum": "ede814f1c4be172cbee337596131924c", "filename": "table.jsonl",
+        "filesize": 54, "id": "e00ca619-8eea-414f-bfa7-f95617d45813", "links": {"download":
+        "https://zenodo.org/api/files/0df93e83-fb31-4267-857b-d08007935a85/table.jsonl",
+        "self": "https://zenodo.org/api/deposit/depositions/7098741/files/e00ca619-8eea-414f-bfa7-f95617d45813"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '346'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Sep 2022 04:23:24 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '92'
+      X-RateLimit-Reset:
+      - '1663734264'
+      X-Request-ID:
+      - a657f6f84f3d2f8aff62b7830b8e7efe
+      X-User-ID:
+      - '405552'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+version: 1

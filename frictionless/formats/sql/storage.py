@@ -178,16 +178,22 @@ class SqlStorage(Storage):
     # Write
 
     def write_resource(self, resource, *, force=False):
-        package = Package(resources=[resource])
-        self.write_package(package, force=force)
+        package = resource.package or Package(resources=[resource])
+        ignore_resources = []
+        for resource in package.resources:
+            if resource.format == "sql" and not resource.data:
+                ignore_resources.append(resource.name)
+        self.write_package(package, ignore_resources, force=force)
 
-    def write_package(self, package, force=False):
+    def write_package(self, package, ignore_resources=None, force=False):
         existent_names = list(self)
 
         # Check existent
         delete_names = []
         for resource in package.resources:
             if resource.name in existent_names:
+                if ignore_resources and resource.name in ignore_resources:
+                    continue
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
                     raise FrictionlessException(note)
@@ -200,6 +206,8 @@ class SqlStorage(Storage):
             sql_tables = []
             self.delete_package(delete_names)
             for resource in package.resources:
+                if ignore_resources and resource.name in ignore_resources:
+                    continue
                 if not resource.has_schema:
                     resource.infer()
                 sql_table = self.__write_convert_schema(resource)
@@ -209,6 +217,8 @@ class SqlStorage(Storage):
             # Write data
             existent_names = list(self)
             for name in existent_names:
+                if ignore_resources and name in ignore_resources:
+                    continue
                 if package.has_resource(name):
                     self.__write_convert_data(package.get_resource(name))
 
@@ -325,10 +335,12 @@ class SqlStorage(Storage):
                                 row[field.name] = dt.time()
                 buffer.append(row)
                 if len(buffer) > buffer_size:
-                    self.__connection.execute(sql_table.insert().values(buffer))
+                    # sqlalchemy conn.execute(sql_table.insert(), buffer)
+                    # syntax applies executemany DB API invocation.
+                    self.__connection.execute(sql_table.insert(), buffer)
                     buffer = []
             if len(buffer):
-                self.__connection.execute(sql_table.insert().values(buffer))
+                self.__connection.execute(sql_table.insert(), buffer)
 
     def __write_convert_type(self, type=None):
         sa = platform.sqlalchemy

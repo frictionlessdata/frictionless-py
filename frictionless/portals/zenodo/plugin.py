@@ -22,7 +22,12 @@ class ZenodoPlugin(Plugin):
                     control = control or ZenodoControl()
                     if parsed.path.startswith("/record/"):
                         control.record = parsed.path.replace("/record/", "")
+                    if parsed.path.startswith("/deposit/"):
+                        control.deposition_id = int(parsed.path.replace("/deposit/", ""))
                     return ZenodoManager(control)
+
+        if not source and isinstance(control, ZenodoControl):
+            return ZenodoManager(control=control)
 
     def select_Control(self, type):
         if type == "zenodo":
