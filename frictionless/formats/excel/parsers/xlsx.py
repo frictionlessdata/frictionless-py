@@ -163,7 +163,7 @@ class XlsxParser(Parser):
 
 
 def extract_row_values(
-    row, preserve_formatting=False, adjust_floating_point_error=False, stringified=True
+    row, preserve_formatting=False, adjust_floating_point_error=False, stringified=False
 ):
     if preserve_formatting:
         values = []
@@ -194,9 +194,11 @@ def extract_row_values(
                     value = new_value
             values.append(value)
         return values
-    return list(
-        str(cell.value) if (stringified and cell.value) else cell.value for cell in row
-    )
+    if stringified:
+        return list(
+            str(cell.value) if cell.value is not None else cell.value for cell in row
+        )
+    return list(cell.value for cell in row)
 
 
 def convert_excel_number_format_string(excel_number, value):
