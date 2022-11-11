@@ -9,8 +9,10 @@ def test_sql_mapper_from_schema(sqlite_url):
     mapper = formats.sql.SqlMapper()
     engine = sa.create_engine(sqlite_url)
     schema = Schema.describe("data/table.csv")
-    items = mapper.from_schema(schema, engine=engine, table_name="mapper")
-    assert len(items) == 2
+    table = mapper.from_schema(schema, engine=engine, table_name="table")
+    assert table.name == "table"
+    assert len(table.columns) == 2
+    assert len(table.constraints) == 1
 
 
 def test_sql_mapper_from_field(sqlite_url):

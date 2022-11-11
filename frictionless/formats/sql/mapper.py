@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 from ...platform import platform
 
 if TYPE_CHECKING:
     from ...schema import Schema, Field
-    from sqlalchemy.schema import SchemaItem
+    from sqlalchemy.schema import Table
     from sqlalchemy.engine.base import Engine
     from sqlalchemy.types import TypeEngine
 
@@ -14,9 +14,7 @@ class SqlMapper:
 
     # Import
 
-    def from_schema(
-        self, schema: Schema, *, engine: Engine, table_name: str
-    ) -> List[SchemaItem]:
+    def from_schema(self, schema: Schema, *, engine: Engine, table_name: str) -> Table:
         """Convert frictionless schema to sqlalchemy schema items
         as columns and constraints
         """
@@ -85,7 +83,9 @@ class SqlMapper:
             constraint = sa.ForeignKeyConstraint(fields, foreign_fields)
             constraints.append(constraint)
 
-        return columns + constraints
+        # Table
+        table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
+        return table
 
     def from_field(self, field: Field, *, engine: Engine) -> TypeEngine:
         """Convert frictionless field to sqlalchemy type
