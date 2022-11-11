@@ -7,10 +7,10 @@ from frictionless import Resource
 
 def test_resource_index(postgresql_url):
     engine = sa.create_engine(postgresql_url)
-    resource = Resource("data/table.csv")
-    resource.index(engine=engine)
-    result = engine.execute(
-        "SELECT table_name FROM information_schema.tables WHERE table_schema='public'"
-    )
-    print(list(result))
-    assert False
+    resource = Resource("data/table.csv", name="index")
+    resource.index(postgresql_url)
+    result = engine.execute("SELECT * FROM index")
+    assert list(result) == [
+        (1, "english"),
+        (2, "中国人"),
+    ]

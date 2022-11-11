@@ -82,7 +82,7 @@ class SqlMapper:
             constraints.append(constraint)
 
         # Table
-        table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
+        table = sa.Table(table_name, sa.MetaData(engine), *(columns + constraints))
         return table
 
     def from_field(self, field: Field, *, engine: Engine) -> Type[TypeEngine]:
