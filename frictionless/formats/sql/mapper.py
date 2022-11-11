@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Type
 from ...platform import platform
+from ...schema import Schema, Field
 
 if TYPE_CHECKING:
-    from ...schema import Schema, Field
     from sqlalchemy.schema import Table
     from sqlalchemy.engine.base import Engine
     from sqlalchemy.types import TypeEngine
@@ -87,9 +87,9 @@ class SqlMapper:
         table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
         return table
 
-    def from_field(self, field: Field, *, engine: Engine) -> TypeEngine:
+    def from_field(self, field: Field, *, engine: Engine) -> Type[TypeEngine]:
         """Convert frictionless field to sqlalchemy type
-        as e.g. sa.Text or sa.Integer
+        as e.g. Field(type=string) -> sa.Text
         """
 
         # Prepare
@@ -97,7 +97,7 @@ class SqlMapper:
         sapg = platform.sqlalchemy_dialects_postgresql
 
         # Default dialect
-        mapping = {
+        mapping: Dict[str, Type[TypeEngine]] = {
             "any": sa.Text,
             "boolean": sa.Boolean,
             "date": sa.Date,
@@ -120,12 +120,49 @@ class SqlMapper:
                 }
             )
 
-        return mapping.get(field.type, sa.Text)
+        # Get type
+        sql_type = mapping.get(field.type, sa.Text)
+        return sql_type
 
     # Export
 
     def to_schema(self):
         pass
 
-    def to_field(self):
-        pass
+    def to_field(self, sql_type: Type[TypeEngine], *, name: str):
+        """Convert sqlalchemy type to frictionless field
+        as e.g. sa.Text -> Field(type=string)
+        """
+
+        # Prepare
+        sa = platform.sqlalchemy
+        sapg = platform.sqlalchemy_dialects_postgresql
+        sams = platform.sqlalchemy_dialects_mysql
+
+        # Create mapping
+        mapping = {
+            sapg.ARRAY: "array",
+            sams.BIT: "string",
+            sa.Boolean: "boolean",
+            sa.Date: "date",
+            sa.DateTime: "datetime",
+            sa.Float: "number",
+            sa.Integer: "integer",
+            sapg.JSONB: "object",
+            sapg.JSON: "object",
+            sa.Numeric: "number",
+            sa.Text: "string",
+            sa.Time: "time",
+            sams.VARBINARY: "string",
+            sams.VARCHAR: "string",
+            sa.VARCHAR: "string",
+            sapg.UUID: "string",
+        }
+
+        # Get type
+        type = "string"
+        for key, value in mapping.items():
+            if sql_type is key:
+                type = value
+
+        return Field.from_descriptor(dict(name=name, type=type))

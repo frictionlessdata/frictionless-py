@@ -20,7 +20,18 @@ def test_sql_mapper_from_field(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     schema = Schema.describe("data/table.csv")
     field1, field2 = schema.fields
-    type1 = mapper.from_field(field1, engine=engine)
-    type2 = mapper.from_field(field2, engine=engine)
-    assert type1 is sa.Integer
-    assert type2 is sa.Text
+    sql_type1 = mapper.from_field(field1, engine=engine)
+    sql_type2 = mapper.from_field(field2, engine=engine)
+    assert sql_type1 is sa.Integer
+    assert sql_type2 is sa.Text
+
+
+# Export
+
+
+def test_sql_mapper_to_field():
+    mapper = formats.sql.SqlMapper()
+    field1 = mapper.to_field(sa.Integer, name="id")
+    field2 = mapper.to_field(sa.Text, name="name")
+    assert field1.type == "integer"
+    assert field2.type == "string"
