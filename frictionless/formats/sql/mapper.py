@@ -15,9 +15,7 @@ class SqlMapper:
     # Import
 
     def from_schema(self, schema: Schema, *, engine: Engine, table_name: str) -> Table:
-        """Convert frictionless schema to sqlalchemy schema items
-        as columns and constraints
-        """
+        """Convert frictionless schema to sqlalchemy table"""
 
         # Prepare
         columns = []
@@ -121,15 +119,51 @@ class SqlMapper:
             )
 
         # Get type
-        sql_type = mapping.get(field.type, sa.Text)
-        return sql_type
+        type = mapping.get(field.type, sa.Text)
+        return type
 
     # Export
 
-    def to_schema(self):
-        pass
+    def to_schema(self, table: Table) -> Schema:
+        """Convert sqlalchemy table to frictionless schema"""
 
-    def to_field(self, sql_type: Type[TypeEngine], *, name: str):
+        # Prepare
+        sa = platform.sqlalchemy
+        schema = Schema()
+
+        # Fields
+        for column in table.columns:
+            field = self.to_field(type(column.type), name=column.name)
+            if not column.nullable:
+                field.required = True
+            if column.comment:
+                field.description = column.comment
+            schema.add_field(field)
+
+        # Primary key
+        for constraint in table.constraints:
+            if isinstance(constraint, sa.PrimaryKeyConstraint):
+                for column in constraint.columns:
+                    schema.primary_key.append(str(column.name))
+
+        # Foreign keys
+        for constraint in table.constraints:
+            if isinstance(constraint, sa.ForeignKeyConstraint):
+                resource = ""
+                own_fields = []
+                foreign_fields = []
+                for element in constraint.elements:
+                    own_fields.append(str(element.parent.name))
+                    if element.column.table.name != table.name:
+                        resource = element.column.table.name
+                    foreign_fields.append(str(element.column.name))
+                ref = {"resource": resource, "fields": foreign_fields}
+                schema.foreign_keys.append({"fields": own_fields, "reference": ref})
+
+        # Return schema
+        return schema
+
+    def to_field(self, type: Type[TypeEngine], *, name: str) -> Field:
         """Convert sqlalchemy type to frictionless field
         as e.g. sa.Text -> Field(type=string)
         """
@@ -160,9 +194,9 @@ class SqlMapper:
         }
 
         # Get type
-        type = "string"
+        field_type = "string"
         for key, value in mapping.items():
-            if sql_type is key:
-                type = value
+            if type is key:
+                field_type = value
 
-        return Field.from_descriptor(dict(name=name, type=type))
+        return Field.from_descriptor(dict(name=name, type=field_type))
