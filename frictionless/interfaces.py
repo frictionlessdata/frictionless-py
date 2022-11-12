@@ -50,6 +50,11 @@ class IProcessFunction(Protocol):
         ...
 
 
+class ICallbackFunction(Protocol):
+    def __call__(self, row: Row) -> None:
+        ...
+
+
 class IStepFunction(Protocol):
     def __call__(self, source: Union[Resource, Package]) -> None:
         ...
