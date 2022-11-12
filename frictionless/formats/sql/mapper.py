@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Dict, Type
+import json
+from datetime import datetime, date, timezone
+from typing import TYPE_CHECKING, Dict, Type, List, Any
 from ...platform import platform
 from ...schema import Schema, Field
 
@@ -122,6 +124,26 @@ class SqlMapper:
         # Get type
         type = mapping.get(field.type, sa.Text)
         return type
+
+    def from_row(self, row: Row) -> List[Any]:
+        """Convert frictionless row to list of sql cells"""
+        cells = []
+        for field in row.fields:
+            cell = row[field.name]
+            if cell is not None:
+                if field.type in ["object", "geojson"]:
+                    cell = json.dumps(cell)
+                elif field.type == "datetime":
+                    if cell.tzinfo is not None:
+                        dt = cell.astimezone(timezone.utc)
+                        cell = dt.replace(tzinfo=None)
+                elif field.type == "time":
+                    if cell.tzinfo is not None:
+                        dt = datetime.combine(date.min, cell)
+                        dt = dt.astimezone(timezone.utc)
+                        cell = dt.time()
+            cells.append(cell)
+        return cells
 
     # Export
 
