@@ -55,13 +55,14 @@ def validate(
         warnings.append(warning)
 
     # Prepare resource
-    try:
-        self.open()
-    except FrictionlessException as exception:
-        self.close()
-        return Report.from_validation_task(
-            self, time=timer.time, errors=exception.to_errors()
-        )
+    if self.closed:
+        try:
+            self.open()
+        except FrictionlessException as exception:
+            self.close()
+            return Report.from_validation_task(
+                self, time=timer.time, errors=exception.to_errors()
+            )
 
     # Validate data
     with self:
