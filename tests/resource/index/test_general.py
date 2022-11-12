@@ -7,8 +7,8 @@ from frictionless import Resource
 
 def test_resource_index(postgresql_url):
     engine = sa.create_engine(postgresql_url)
-    resource = Resource("data/table.csv", name="index")
-    resource.index(postgresql_url)
+    resource = Resource("data/table.csv")
+    resource.index(postgresql_url, table_name="index")
     result = engine.execute("SELECT * FROM index")
     assert list(result) == [
         (1, "english"),

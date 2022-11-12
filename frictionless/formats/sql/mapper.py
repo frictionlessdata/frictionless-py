@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from sqlalchemy.schema import Table
     from sqlalchemy.engine import Engine
     from sqlalchemy.types import TypeEngine
+    from ...table import Row
 
 
 class SqlMapper:
