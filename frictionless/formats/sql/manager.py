@@ -11,6 +11,7 @@ from .mapper import SqlMapper
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData
+    from sqlalchemy.engine import Engine
     from sqlalchemy.engine import Connection
 
 
@@ -31,11 +32,11 @@ class SqlManager(Manager[SqlControl]):
                 # Path for sqlite looks like this 'sqlite:///path' (unix/windows)
                 basepath = f"/{basepath}"
             source = urlunsplit((url.scheme, basepath, url.path, url.query, url.fragment))
-        engine = sa.create_engine(source) if isinstance(source, str) else source
+        self.engine = sa.create_engine(source) if isinstance(source, str) else source
 
         # Set attributes
         control = control or SqlControl()
-        self.connection = engine.connect()
+        self.connection = self.engine.connect()
         self.mapper = SqlMapper()
 
         # Add regex support
@@ -51,6 +52,9 @@ class SqlManager(Manager[SqlControl]):
 
     database_url: str
     """Database url"""
+
+    engine: Engine
+    """SqlAlchemy's engine"""
 
     metadata: MetaData
     """SqlAlchemy's metadata"""
