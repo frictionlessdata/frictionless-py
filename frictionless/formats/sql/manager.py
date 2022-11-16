@@ -1,11 +1,17 @@
 from __future__ import annotations
 import re
+from typing import TYPE_CHECKING
 from urllib.parse import urlsplit, urlunsplit
 from .control import SqlControl
 from ...package import Package
 from ...package import Manager
 from ...platform import platform
 from ...resource import Resource
+from .mapper import SqlMapper
+
+if TYPE_CHECKING:
+    from sqlalchemy import MetaData
+    from sqlalchemy.engine import Connection
 
 
 class SqlManager(Manager[SqlControl]):
@@ -29,28 +35,37 @@ class SqlManager(Manager[SqlControl]):
 
         # Set attributes
         control = control or SqlControl()
-        self.__namespace = control.namespace
-        self.__connection = engine.connect()
+        self.connection = engine.connect()
+        self.mapper = SqlMapper()
 
         # Add regex support
         # It will fail silently if this function already exists
-        if self.__connection.engine.dialect.name.startswith("sqlite"):
-            self.__connection.connection.create_function("REGEXP", 2, regexp)  # type: ignore
+        if self.connection.engine.dialect.name.startswith("sqlite"):
+            self.connection.connection.create_function("REGEXP", 2, regexp)  # type: ignore
 
         # Create metadata and reflect
-        self.__metadata = sa.MetaData(bind=self.__connection, schema=self.__namespace)
-        self.__metadata.reflect(views=True)
+        self.metadata = sa.MetaData(bind=self.connection, schema=control.namespace)
+        self.metadata.reflect(views=True)
 
     # State
 
     database_url: str
     """Database url"""
 
+    metadata: MetaData
+    """SqlAlchemy's metadata"""
+
+    connection: Connection
+    """SqlAlchemy's connection"""
+
+    mapper: SqlMapper
+    """Mapper instance"""
+
     # Read
 
     def read_package(self) -> Package:
         package = Package(resources=[])
-        for sql_table in self.__metadata.sorted_tables:
+        for sql_table in self.metadata.sorted_tables:
             control = SqlControl(table=sql_table.name)
             resource = Resource(self.database_url, control=control)
             package.add_resource(resource)
