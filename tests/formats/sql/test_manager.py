@@ -6,5 +6,4 @@ from frictionless import Package
 
 def test_sql_manager_read_package(database_url):
     package = Package(database_url)
-    print(package)
-    assert False
+    assert len(package.resources) == 2
