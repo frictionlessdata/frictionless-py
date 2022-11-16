@@ -21,6 +21,7 @@ PACKAGE = "frictionless"
 NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
     "moto",
+    "httpx",
     "black",
     "yattag",
     # TODO: remove after the fix
