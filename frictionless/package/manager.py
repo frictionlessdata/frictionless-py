@@ -10,6 +10,7 @@ ControlType = TypeVar("ControlType", bound=Control)
 
 
 class Manager(Generic[ControlType]):
+    # TODO: shall we accept aslo source?
     def __init__(self, control: ControlType):
         self.control = control
 

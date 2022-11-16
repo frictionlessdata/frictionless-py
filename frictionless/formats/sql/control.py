@@ -22,13 +22,6 @@ class SqlControl(Control):
     Table name from which to read the data.
     """
 
-    prefix: str = settings.DEFAULT_PREFIX
-    """
-    It specifies prefix to filter tables to read. If prefix is
-    set, only tables those match the prefix will be read. The 
-    default value is "". For example: prefix="students_"
-    """
-
     order_by: Optional[str] = None
     """
     It specifies the ORDER BY keyword for SQL queries to sort the
@@ -43,7 +36,7 @@ class SqlControl(Control):
 
     namespace: Optional[str] = None
     """
-    To refer to table using schema or namespace or database such as 
+    To refer to table using schema or namespace or database such as
     `FOO`.`TABLEFOO1` we can specify namespace. For example:
     control = formats.SqlControl(table="test_table", namespace="FOO")
     """
