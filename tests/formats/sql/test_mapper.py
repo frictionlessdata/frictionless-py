@@ -41,7 +41,7 @@ def test_sql_mapper_to_schema(sqlite_url):
 
 def test_sql_mapper_to_field():
     mapper = formats.sql.SqlMapper()
-    field1 = mapper.to_field(sa.Integer, name="id")
-    field2 = mapper.to_field(sa.Text, name="name")
+    field1 = mapper.to_field(sa.Integer(), name="id")
+    field2 = mapper.to_field(sa.Text(), name="name")
     assert field1.type == "integer"
     assert field2.type == "string"

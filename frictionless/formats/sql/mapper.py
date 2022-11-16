@@ -156,7 +156,7 @@ class SqlMapper:
 
         # Fields
         for column in table.columns:
-            field = self.to_field(type(column.type), name=column.name)
+            field = self.to_field(column.type, name=column.name)
             if not column.nullable:
                 field.required = True
             if column.comment:
@@ -186,7 +186,7 @@ class SqlMapper:
         # Return schema
         return schema
 
-    def to_field(self, type: Type[TypeEngine], *, name: str) -> Field:
+    def to_field(self, type: TypeEngine, *, name: str) -> Field:
         """Convert sqlalchemy type to frictionless field
         as e.g. sa.Text -> Field(type=string)
         """
@@ -218,8 +218,8 @@ class SqlMapper:
 
         # Get type
         field_type = "string"
-        for key, value in mapping.items():
-            if type is key:
+        for type_class, value in mapping.items():
+            if isinstance(type, type_class):
                 field_type = value
 
         return Field.from_descriptor(dict(name=name, type=field_type))
