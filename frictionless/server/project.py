@@ -79,6 +79,11 @@ class Project:
         helpers.write_file(path, body, mode="wb")
         return file.filename
 
+    def create_directory(self, path: str):
+        path = str(self.public / path)
+        Path(path).mkdir(parents=True, exist_ok=True)
+        return path
+
     def delete_file(self, path: str):
         # TODO: ensure that path is safe
         os.remove(self.public / path)
@@ -93,6 +98,25 @@ class Project:
                 paths.append(path)
         paths = list(sorted(paths))
         return paths
+
+    def list_folders(self):
+        folders = []
+        for basepath, names, _ in os.walk(self.public):
+            for name in names:
+                if name.startswith("."):
+                    continue
+                path = os.path.join(basepath, name)
+                path = os.path.relpath(path, start=self.public)
+                folders.append(path)
+        folders = list(sorted(folders))
+        return folders
+
+    def move_file(self, filename: str, destination: str):
+        source = str(self.public / filename)
+        destination = str(self.public / destination)
+        newpath = os.path.join(destination, filename)
+        helpers.move_file(source, newpath)
+        return newpath
 
     # Links
 
