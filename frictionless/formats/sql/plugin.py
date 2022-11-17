@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 from ...plugin import Plugin
 from .control import SqlControl
 from .parser import SqlParser
-from .storage import SqlStorage
 from .manager import SqlManager
 from . import settings
 
@@ -27,10 +26,6 @@ class SqlPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format == "sql":
             return SqlParser(resource)
-
-    def create_storage(self, name, source, **options):
-        if name == "sql":
-            return SqlStorage(source, **options)
 
     def detect_resource(self, resource):
         if resource.scheme:
