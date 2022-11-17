@@ -83,11 +83,27 @@ class SqlManager(Manager[SqlControl]):
             package.add_resource(resource)
         return package
 
-    def read_schema(self):
-        pass
+    def read_schema(self, table_name: str):
+        table = self.metadata.tables[table_name]
+        return self.mapper.to_schema(table)
 
-    def read_row_stream(self):
-        pass
+    def read_cell_stream(self, control):
+        sa = platform.sqlalchemy
+        self.metadata.reflect()
+        table = self.metadata.tables[control.table]
+        with self.connection.begin():
+            # Streaming could be not working for some backends:
+            # http://docs.sqlalchemy.org/en/latest/core/connections.html
+            select = table.select().execution_options(stream_results=True)
+            if control.order_by:
+                select = select.order_by(sa.sql.text(control.order_by))
+            if control.where:
+                select = select.where(sa.sql.text(control.where))
+            result = select.execute()
+            yield list(result.keys())
+            for item in result:
+                cells = list(item)
+                yield cells
 
     # Write
 

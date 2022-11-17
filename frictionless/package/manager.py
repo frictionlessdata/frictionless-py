@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 ControlType = TypeVar("ControlType", bound=Control)
 
 
+# TODO: rename to adapter/client/storage?
 class Manager(Generic[ControlType]):
     # TODO: shall we accept aslo source?
     def __init__(self, control: ControlType):

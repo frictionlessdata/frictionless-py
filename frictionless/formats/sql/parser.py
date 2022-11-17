@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from ...exception import FrictionlessException
 from ...resource import Parser
-from ...platform import platform
 from .control import SqlControl
 from .manager import SqlManager
 
@@ -27,28 +26,14 @@ class SqlParser(Parser):
 
     # TODO: rebase on copy (when possible)?
     def read_cell_stream_create(self):
-        sa = platform.sqlalchemy
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for reading')
         manager = SqlManager.from_source(self.resource.normpath)
         if not manager:
             raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
-        table = manager.metadata.tables.get(control.table)
-        self.resource.schema = manager.mapper.to_schema(table)
-        with manager.connection.begin():
-            # Streaming could be not working for some backends:
-            # http://docs.sqlalchemy.org/en/latest/core/connections.html
-            select = table.select().execution_options(stream_results=True)
-            if control.order_by:
-                select = select.order_by(sa.sql.text(control.order_by))
-            if control.where:
-                select = select.where(sa.sql.text(control.where))
-            result = select.execute()
-            yield list(result.keys())
-            for item in result:
-                cells = list(item)
-                yield cells
+        self.resource.schema = manager.read_schema(control.table)
+        return manager.read_cell_stream(control)
 
     # Write
 
