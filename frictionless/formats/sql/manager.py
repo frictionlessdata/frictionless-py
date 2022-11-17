@@ -78,7 +78,9 @@ class SqlManager(Manager[SqlControl]):
     # Write
 
     def write_package(self, package: Package) -> None:
-        pass
+        for resource in package.resources:
+            control = SqlControl(table=resource.name)
+            resource.write(self.database_url, control=control)
 
 
 # Internal

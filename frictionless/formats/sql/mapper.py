@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
+# TODO: accept engine in constructor?
 class SqlMapper:
     """Metadata mapper Frictionless from/to SQL"""
 
