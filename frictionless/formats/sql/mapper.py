@@ -156,7 +156,7 @@ class SqlMapper:
 
         # Fields
         for column in table.columns:
-            field = self.to_field(column.type, name=column.name)
+            field = self.to_field(column.type, name=str(column.name))
             if not column.nullable:
                 field.required = True
             if column.comment:

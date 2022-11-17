@@ -73,7 +73,7 @@ class SqlParser(Parser):
                 if len(buffer) > buffer_size:
                     # sqlalchemy conn.execute(sql_table.insert(), buffer)
                     # syntax applies executemany DB API invocation.
-                    manager.connection.execute(table.insert(), buffer)
+                    manager.connection.execute(table.insert().values(buffer))
                     buffer = []
             if len(buffer):
-                manager.connection.execute(table.insert(), buffer)
+                manager.connection.execute(table.insert().values(buffer))
