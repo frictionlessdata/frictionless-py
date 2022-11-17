@@ -63,7 +63,7 @@ class PandasParser(Parser):
                 schema.primary_key.append(name)
 
         # Fields
-        for name, dtype in dataframe.dtypes.iteritems():  # type: ignore
+        for name, dtype in dataframe.dtypes.items():  # type: ignore
             sample = dataframe[name].iloc[0] if len(dataframe) else None  # type: ignore
             type = self.__read_convert_type(dtype, sample=sample)
             field = Field.from_descriptor({"name": name, "type": type})
