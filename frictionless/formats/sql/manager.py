@@ -138,17 +138,15 @@ class SqlManager(Manager[SqlControl]):
     @classmethod
     def from_source(cls, source: str, *, control=None):
         engine = platform.sqlalchemy.create_engine(source)
-        for prefix in settings.SCHEME_PREFIXES:
-            if engine.url.drivername.startswith(prefix):
-                control = SqlControl()
-                control.driver = engine.url.drivername
-                control.user = engine.url.username
-                control.password = engine.url.password  # type: ignore
-                control.host = engine.url.host
-                control.port = engine.url.port
-                control.database = engine.url.database
-                # TODO: improve
-                return cls(control)  # type: ignore
+        control = SqlControl()
+        control.driver = engine.url.drivername
+        control.user = engine.url.username
+        control.password = engine.url.password  # type: ignore
+        control.host = engine.url.host
+        control.port = engine.url.port
+        control.database = engine.url.database
+        # TODO: improve
+        return cls(control)  # type: ignore
 
 
 # Internal

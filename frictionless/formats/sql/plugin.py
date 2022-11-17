@@ -1,4 +1,5 @@
 from __future__ import annotations
+from urllib.parse import urlparse
 from ...plugin import Plugin
 from .control import SqlControl
 from .parser import SqlParser
@@ -16,13 +17,16 @@ class SqlPlugin(Plugin):
 
     # Hooks
 
+    def create_manager(self, source, *, control=None):
+        if isinstance(source, str):
+            parsed = urlparse(source)
+            for prefix in settings.SCHEME_PREFIXES:
+                if parsed.scheme.startswith(prefix):
+                    return SqlManager.from_source(source, control=control)  # type: ignore
+
     def create_parser(self, resource):
         if resource.format == "sql":
             return SqlParser(resource)
-
-    def create_manager(self, source, *, control=None):
-        if isinstance(source, str):
-            return SqlManager.from_source(source, control=control)
 
     def create_storage(self, name, source, **options):
         if name == "sql":
