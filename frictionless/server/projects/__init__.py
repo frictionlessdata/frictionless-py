@@ -6,3 +6,6 @@ from . import create_record
 from . import delete_file
 from . import list_files
 from . import update_record
+from . import list_folders
+from . import create_directory
+from . import move_file
