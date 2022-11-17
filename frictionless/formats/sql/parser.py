@@ -58,22 +58,6 @@ class SqlParser(Parser):
             note = 'Please provide "dialect.sql.table" for writing'
             raise FrictionlessException(note)
         manager = SqlManager(control, database_url=self.resource.normpath)
-        buffer = []
-        buffer_size = 1000
         with source:
-            table = manager.mapper.from_schema(
-                source.schema,
-                engine=manager.engine,
-                table_name=control.table,
-            )
-            manager.metadata.create_all(tables=[table])
-            for row in source.row_stream:
-                cells = manager.mapper.from_row(row)
-                buffer.append(cells)
-                if len(buffer) > buffer_size:
-                    # sqlalchemy conn.execute(sql_table.insert(), buffer)
-                    # syntax applies executemany DB API invocation.
-                    manager.connection.execute(table.insert().values(buffer))
-                    buffer = []
-            if len(buffer):
-                manager.connection.execute(table.insert().values(buffer))
+            manager.write_schema(source.schema, table_name=control.table)
+            manager.write_row_stream(source.row_stream, table_name=control.table)
