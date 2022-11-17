@@ -2,7 +2,6 @@ from __future__ import annotations
 import attrs
 from typing import Optional
 from ...dialect import Control
-from . import settings
 
 
 @attrs.define(kw_only=True)
@@ -16,6 +15,36 @@ class SqlControl(Control):
     type = "sql"
 
     # State
+
+    driver: Optional[str] = None
+    """
+    Database driver
+    """
+
+    user: Optional[str] = None
+    """
+    Database user
+    """
+
+    password: Optional[str] = None
+    """
+    Database password
+    """
+
+    host: Optional[str] = None
+    """
+    Database host
+    """
+
+    port: Optional[int] = None
+    """
+    Database port
+    """
+
+    database: Optional[str] = None
+    """
+    Database name
+    """
 
     table: Optional[str] = None
     """

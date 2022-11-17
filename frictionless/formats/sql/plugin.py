@@ -1,5 +1,4 @@
 from __future__ import annotations
-from urllib.parse import urlparse
 from ...plugin import Plugin
 from .control import SqlControl
 from .parser import SqlParser
@@ -23,12 +22,7 @@ class SqlPlugin(Plugin):
 
     def create_manager(self, source, *, control=None):
         if isinstance(source, str):
-            parsed = urlparse(source)
-            for prefix in settings.SCHEME_PREFIXES:
-                if parsed.scheme.startswith(prefix):
-                    control = control or SqlControl()
-                    # TODO: improve logic
-                    return SqlManager(control, database_url=source)  # type: ignore
+            return SqlManager.from_source(source, control=control)
 
     def create_storage(self, name, source, **options):
         if name == "sql":

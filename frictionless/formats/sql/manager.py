@@ -1,6 +1,6 @@
 from __future__ import annotations
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlsplit, urlunsplit
 from .control import SqlControl
 from ...package import Package
@@ -8,6 +8,7 @@ from ...package import Manager
 from ...platform import platform
 from ...resource import Resource
 from .mapper import SqlMapper
+from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData
@@ -19,13 +20,22 @@ if TYPE_CHECKING:
 class SqlManager(Manager[SqlControl]):
     """Read and write data from/to SQL database"""
 
-    def __init__(self, control: SqlControl, *, database_url: str):
+    def __init__(self, control: SqlControl):
         super().__init__(control)
-        self.database_url = database_url
-        source = database_url
         sa = platform.sqlalchemy
 
+        # TODO: rework
         # Create engine
+        assert control.driver
+        source = sa.engine.URL(
+            drivername=control.driver,
+            username=control.user,
+            password=control.password,
+            host=control.host,
+            port=control.port,
+            database=control.database,
+            query={},  # type: ignore
+        ).render_as_string()
         if control and control.basepath:
             url = urlsplit(source)
             basepath = control.basepath
@@ -51,9 +61,6 @@ class SqlManager(Manager[SqlControl]):
 
     # State
 
-    database_url: str
-    """Database url"""
-
     engine: Engine
     """SqlAlchemy's engine"""
 
@@ -72,7 +79,7 @@ class SqlManager(Manager[SqlControl]):
         package = Package(resources=[])
         for table in self.metadata.sorted_tables:
             control = SqlControl(table=table.name)
-            resource = Resource(self.database_url, control=control)
+            resource = Resource(self.engine.url.render_as_string(), control=control)
             package.add_resource(resource)
         return package
 
@@ -87,7 +94,7 @@ class SqlManager(Manager[SqlControl]):
     def write_package(self, package: Package) -> None:
         for resource in package.resources:
             control = SqlControl(table=resource.name)
-            resource.write(self.database_url, control=control)
+            resource.write(self.engine.url.render_as_string(), control=control)
 
     def write_schema(self, schema: Schema, *, table_name: str):
         table = self.mapper.from_schema(schema, engine=self.engine, table_name=table_name)
@@ -109,6 +116,23 @@ class SqlManager(Manager[SqlControl]):
                 buffer = []
         if len(buffer):
             self.connection.execute(table.insert().values(buffer))
+
+    # Convert
+
+    @classmethod
+    def from_source(cls, source: str, *, control=None):
+        engine = platform.sqlalchemy.create_engine(source)
+        for prefix in settings.SCHEME_PREFIXES:
+            if engine.url.drivername.startswith(prefix):
+                control = SqlControl()
+                control.driver = engine.url.drivername
+                control.user = engine.url.username
+                control.password = engine.url.password  # type: ignore
+                control.host = engine.url.host
+                control.port = engine.url.port
+                control.database = engine.url.database
+                # TODO: improve
+                return cls(control)  # type: ignore
 
 
 # Internal

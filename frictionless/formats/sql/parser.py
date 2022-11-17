@@ -1,5 +1,4 @@
 from __future__ import annotations
-from sys import platform
 from typing import TYPE_CHECKING
 from ...exception import FrictionlessException
 from ...resource import Parser
@@ -26,13 +25,15 @@ class SqlParser(Parser):
 
     # Read
 
+    # TODO: rebase on copy (when possible)?
     def read_cell_stream_create(self):
         sa = platform.sqlalchemy
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
-            note = 'Please provide "dialect.sql.table" for reading'
-            raise FrictionlessException(note)
-        manager = SqlManager(control, database_url=self.resource.normpath)
+            raise FrictionlessException('Please provide "dialect.sql.table" for reading')
+        manager = SqlManager.from_source(self.resource.normpath)
+        if not manager:
+            raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
         table = manager.metadata.tables.get(control.table)
         self.resource.schema = manager.mapper.to_schema(table)
         with manager.connection.begin():
@@ -57,7 +58,9 @@ class SqlParser(Parser):
         if not control.table:
             note = 'Please provide "dialect.sql.table" for writing'
             raise FrictionlessException(note)
-        manager = SqlManager(control, database_url=self.resource.normpath)
+        manager = SqlManager.from_source(self.resource.normpath)
+        if not manager:
+            raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
         with source:
             manager.write_schema(source.schema, table_name=control.table)
             manager.write_row_stream(source.row_stream, table_name=control.table)
