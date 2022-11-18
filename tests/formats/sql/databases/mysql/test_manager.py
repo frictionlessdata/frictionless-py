@@ -9,27 +9,27 @@ from frictionless import Package, Resource, formats, platform
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_types(postgresql_url):
+def test_sql_manager_mysql_types(mysql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
-    storage = source.to_sql(postgresql_url, control=control)
-    target = Package.from_sql(postgresql_url, control=control)
+    storage = source.to_sql(mysql_url, control=control)
+    target = Package.from_sql(mysql_url, control=control)
 
     # Assert metadata
     assert target.get_resource("types").schema.to_descriptor() == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
-            {"name": "array", "type": "object"},  # type downgrade
-            {"name": "boolean", "type": "boolean"},
+            {"name": "array", "type": "string"},  # type fallback
+            {"name": "boolean", "type": "integer"},  # type downgrade
             {"name": "date", "type": "date"},
             {"name": "date_year", "type": "date"},  # format removal
             {"name": "datetime", "type": "datetime"},
             {"name": "duration", "type": "string"},  # type fallback
-            {"name": "geojson", "type": "object"},  # type downgrade
+            {"name": "geojson", "type": "string"},  # type fallback
             {"name": "geopoint", "type": "string"},  # type fallback
             {"name": "integer", "type": "integer"},
             {"name": "number", "type": "number"},
-            {"name": "object", "type": "object"},
+            {"name": "object", "type": "string"},  # type fallback
             {"name": "string", "type": "string"},
             {"name": "time", "type": "time"},
             {"name": "year", "type": "integer"},  # type downgrade
@@ -41,17 +41,17 @@ def test_sql_adapter_postgresql_types(postgresql_url):
     assert target.get_resource("types").read_rows() == [
         {
             "any": "中国人",
-            "array": None,  # NOTE: review why it's None
+            "array": '["Mike", "John"]',
             "boolean": True,
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
             "datetime": datetime.datetime(2015, 1, 1, 3, 0),
             "duration": "P1Y1M",
-            "geojson": {"type": "Point", "coordinates": [33, 33.33]},
+            "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
             "geopoint": "30,70",
             "integer": 1,
             "number": 7,
-            "object": {"chars": 560},
+            "object": '{"chars": 560}',
             "string": "english",
             "time": datetime.time(3, 0),
             "year": 2015,
@@ -65,11 +65,11 @@ def test_sql_adapter_postgresql_types(postgresql_url):
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_integrity(postgresql_url):
+def test_sql_manager_mysql_integrity(mysql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
-    storage = source.to_sql(postgresql_url, control=control)
-    target = Package.from_sql(postgresql_url, control=control)
+    storage = source.to_sql(mysql_url, control=control)
+    target = Package.from_sql(mysql_url, control=control)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema.to_descriptor() == {
@@ -122,23 +122,11 @@ def test_sql_adapter_postgresql_integrity(postgresql_url):
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_integrity_different_order_issue_957(postgresql_url):
-    control = formats.SqlControl(prefix="prefix_")
-    source = Package("data/storage/integrity.json")
-    source.add_resource(source.remove_resource("integrity_main"))
-    storage = source.to_sql(postgresql_url, control=control)
-    target = Package.from_sql(postgresql_url, control=control)
-    assert len(target.resources) == 2
-    storage.delete_package(target.resource_names)  # type: ignore
-
-
-@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
-@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_constraints(postgresql_url):
+def test_sql_manager_mysql_constraints(mysql_url):
     control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
-    storage = source.to_sql(postgresql_url, control=control)
-    target = Package.from_sql(postgresql_url, control=control)
+    storage = source.to_sql(mysql_url, control=control)
+    target = Package.from_sql(mysql_url, control=control)
 
     # Assert metadata
     assert target.get_resource("constraints").schema.to_descriptor() == {
@@ -171,7 +159,7 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
 
 
 @pytest.mark.parametrize(
-    "name, cell",
+    "field_name, cell",
     [
         ("required", ""),
         ("minLength", "bad"),
@@ -184,22 +172,24 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
 )
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_constraints_not_valid_error(postgresql_url, name, cell):
+def test_sql_manager_mysql_constraints_not_valid_error(mysql_url, field_name, cell):
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
-        if field.name == name:
+        if field.name == field_name:
             resource.data[1][index] = cell  # type: ignore
-    with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):  # type: ignore
+    # NOTE: should we wrap these exceptions? (why other exceptions for mysql here?)
+    types = (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)  # type: ignore
+    with pytest.raises(types):
         control = formats.SqlControl(table="table")
-        resource.write(postgresql_url, control=control)
+        resource.write(mysql_url, control=control)
 
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_views_support(postgresql_url):
-    engine = sa.create_engine(postgresql_url)
+def test_sql_manager_mysql_views_support(mysql_url):
+    engine = sa.create_engine(mysql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
     engine.execute("DROP TABLE IF EXISTS data")
     engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
@@ -221,7 +211,7 @@ def test_sql_adapter_postgresql_views_support(postgresql_url):
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
-def test_sql_adapter_postgresql_comment_support(postgresql_url):
+def test_sql_manager_mysql_comment_support(mysql_url):
     control = formats.SqlControl(table="table")
 
     # Write
@@ -229,10 +219,10 @@ def test_sql_adapter_postgresql_comment_support(postgresql_url):
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
-    source.write(postgresql_url, control=control)
+    source.write(mysql_url, control=control)
 
     # Read
-    target = Resource(postgresql_url, control=control)
+    target = Resource(mysql_url, control=control)
     with target:
         assert target.schema.to_descriptor() == {
             "fields": [

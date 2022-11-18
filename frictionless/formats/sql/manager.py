@@ -3,7 +3,7 @@ import re
 from typing import TYPE_CHECKING
 from urllib.parse import urlsplit, urlunsplit
 from .control import SqlControl
-from ...package import Package, Adapter
+from ...package import Package, Manager
 from ...platform import platform
 from ...resource import Resource
 from .mapper import SqlMapper
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ...schema import Schema
 
 
-class SqlAdapter(Adapter[SqlControl]):
+class SqlManager(Manager[SqlControl]):
     """Read and write data from/to SQL database"""
 
     def __init__(self, control: SqlControl):
@@ -117,9 +117,10 @@ class SqlAdapter(Adapter[SqlControl]):
                 tables.append(table)
             self.metadata.create_all(tables=tables)
             for table in self.metadata.sorted_tables:
-                resource = package.get_resource(table.name)
-                with resource:
-                    self.write_row_stream(resource.row_stream, table_name=table.name)
+                if package.has_resource(table.name):
+                    resource = package.get_resource(table.name)
+                    with resource:
+                        self.write_row_stream(resource.row_stream, table_name=table.name)
 
     def write_schema(self, schema: Schema, *, table_name: str):
         table = self.mapper.write_schema(schema, table_name=table_name)

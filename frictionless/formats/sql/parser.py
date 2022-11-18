@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from ...exception import FrictionlessException
 from ...resource import Parser
 from .control import SqlControl
-from .adapter import SqlAdapter
+from .manager import SqlManager
 
 if TYPE_CHECKING:
     from ...resource import Resource
@@ -28,12 +28,12 @@ class SqlParser(Parser):
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for reading')
-        adapter = SqlAdapter.from_source(self.resource.normpath)
-        if not adapter:
+        manager = SqlManager.from_source(self.resource.normpath)
+        if not manager:
             raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
         if not self.resource.has_schema:
-            self.resource.schema = adapter.read_schema(control.table)
-        return adapter.read_cell_stream(control)
+            self.resource.schema = manager.read_schema(control.table)
+        return manager.read_cell_stream(control)
 
     # Write
 
@@ -41,9 +41,9 @@ class SqlParser(Parser):
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for writing')
-        adapter = SqlAdapter.from_source(self.resource.normpath)
-        if not adapter:
+        manager = SqlManager.from_source(self.resource.normpath)
+        if not manager:
             raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
         with source:
-            adapter.write_schema(source.schema, table_name=control.table)
-            adapter.write_row_stream(source.row_stream, table_name=control.table)
+            manager.write_schema(source.schema, table_name=control.table)
+            manager.write_row_stream(source.row_stream, table_name=control.table)
