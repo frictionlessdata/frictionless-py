@@ -602,6 +602,7 @@ def test_github_manager_publish_package_read_from_github_repo_with_data_package(
     assert repr(response.get_contents("table.xls")) == 'ContentFile(path="table.xls")'
 
 
+@pytest.mark.ci
 @pytest.mark.vcr
 def test_github_manager_publish_package_read_from_github_repo_without_data_package():
     repo_to_write = "test-write-package-read-from-github-repo-without-datapackage"
@@ -704,6 +705,7 @@ def test_github_manager_catalog_with_search_and_user_param():
     assert catalog.packages[0].resources[0].name == "capitals"
 
 
+@pytest.mark.ci
 @pytest.mark.vcr
 def test_github_manager_catalog_with_search_text_and_without_user_or_userqualifier():
     catalog = Catalog(

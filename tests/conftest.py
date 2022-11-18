@@ -37,6 +37,7 @@ def sqlite_url(tmpdir):
     return "sqlite:///%s" % path
 
 
+# TODO: create fixture to keep connection to speed up tests?
 @pytest.fixture
 def postgresql_url():
     url = os.environ.get("POSTGRESQL_URL")
@@ -51,6 +52,7 @@ def postgresql_url():
             conn.execute(f'DROP TABLE "{table.name}" CASCADE')
 
 
+# TODO: create fixture to keep connection to speed up tests?
 @pytest.fixture
 def mysql_url():
     url = os.environ.get("MYSQL_URL")
@@ -61,6 +63,7 @@ def mysql_url():
     with engine.connect() as conn:
         metadata = sa.MetaData(bind=conn)
         metadata.reflect()
+        conn.execute("DROP VIEW IF EXISTS `view`")
         for table in reversed(metadata.sorted_tables):
             conn.execute(f"DROP TABLE `{table.name}` CASCADE")
 

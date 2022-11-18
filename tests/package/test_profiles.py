@@ -5,6 +5,7 @@ from frictionless import Package, Resource, FrictionlessException, system
 # General
 
 
+@pytest.mark.vcr
 def test_package_profiles_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -17,6 +18,7 @@ def test_package_profiles_invalid_local():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_profiles_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -68,6 +70,7 @@ def test_package_profile_type(profile):
 # Legacy
 
 
+@pytest.mark.vcr
 def test_package_profiles_from_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -79,6 +82,7 @@ def test_package_profiles_from_descriptor_standards_v1():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_profiles_to_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

@@ -162,8 +162,6 @@ pages:
           name: Stream
     - name: File Formats
       items:
-        - path: docs/formats/bigquery
-          name: Bigquery
         - path: docs/formats/csv
           name: Csv
         - path: docs/formats/excel

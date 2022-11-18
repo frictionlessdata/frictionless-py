@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 from frictionless import Package
 
@@ -51,6 +52,7 @@ def test_resource_transform_cell_set():
     ]
 
 
+@pytest.mark.ci
 def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     # write table
     resource = Resource(
@@ -92,6 +94,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     }
 
 
+@pytest.mark.ci
 def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url):
     # write table
     resource = Resource(
