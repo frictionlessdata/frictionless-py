@@ -78,7 +78,8 @@ class SqlAdapter(Adapter[SqlControl]):
             name = str(table.name)
             control = SqlControl(table=name)
             path = self.engine.url.render_as_string()
-            resource = Resource(path, name=name, control=control)
+            schema = self.mapper.read_schema(table)
+            resource = Resource(path, name=name, schema=schema, control=control)
             package.add_resource(resource)
         return package
 
@@ -107,17 +108,25 @@ class SqlAdapter(Adapter[SqlControl]):
     # Write
 
     def write_package(self, package: Package) -> None:
-        for resource in package.resources:
-            control = SqlControl(table=resource.name)
-            resource.write(self.engine.url.render_as_string(), control=control)
+        with self.connection.begin():
+            tables = []
+            for res in package.resources:
+                assert res.name
+                table = self.mapper.write_schema(res.schema, table_name=res.name)
+                table = table.to_metadata(self.metadata)
+                tables.append(table)
+            self.metadata.create_all(tables=tables)
+            for table in self.metadata.sorted_tables:
+                resource = package.get_resource(table.name)
+                with resource:
+                    self.write_row_stream(resource.row_stream, table_name=table.name)
 
     def write_schema(self, schema: Schema, *, table_name: str):
         table = self.mapper.write_schema(schema, table_name=table_name)
+        table = table.to_metadata(self.metadata)
         self.metadata.create_all(tables=[table])
 
     def write_row_stream(self, row_stream, *, table_name: str):
-        # TODO: review
-        self.metadata.reflect()
         table = self.metadata.tables[table_name]
         buffer = []
         buffer_size = 1000

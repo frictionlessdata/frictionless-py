@@ -1,3 +1,4 @@
+import pytest
 import datetime
 from frictionless import Package
 
@@ -17,7 +18,6 @@ def test_sql_adapter_write_package_types(sqlite_url):
     source = Package("data/storage/types.json")
     source.publish(sqlite_url)
     target = Package(sqlite_url)
-    target.infer()
 
     # Assert metadata
     assert target.get_resource("types").schema.to_descriptor() == {
@@ -61,4 +61,53 @@ def test_sql_adapter_write_package_types(sqlite_url):
             "year": 2015,
             "yearmonth": "2015-01",
         },
+    ]
+
+
+def test_sql_adapter_write_package_integrity(sqlite_url):
+    source = Package("data/storage/integrity.json")
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
+
+    # Assert metadata (main)
+    assert target.get_resource("integrity_main").schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "parent", "type": "integer"},
+            {"name": "description", "type": "string"},
+        ],
+        "primaryKey": ["id"],
+        "foreignKeys": [
+            {"fields": ["parent"], "reference": {"resource": "", "fields": ["id"]}}
+        ],
+    }
+
+    # Assert metadata (link)
+    assert target.get_resource("integrity_link").schema.to_descriptor() == {
+        "fields": [
+            {"name": "main_id", "type": "integer"},
+            # removed unique
+            {"name": "some_id", "type": "integer"},
+            # removed unique
+            {"name": "description", "type": "string"},
+        ],
+        "primaryKey": ["main_id", "some_id"],
+        "foreignKeys": [
+            {
+                "fields": ["main_id"],
+                "reference": {"resource": "integrity_main", "fields": ["id"]},
+            }
+        ],
+    }
+
+    # Assert data (main)
+    assert target.get_resource("integrity_main").read_rows() == [
+        {"id": 1, "parent": None, "description": "english"},
+        {"id": 2, "parent": 1, "description": "中国人"},
+    ]
+
+    # Assert data (link)
+    assert target.get_resource("integrity_link").read_rows() == [
+        {"main_id": 1, "some_id": 1, "description": "note1"},
+        {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
