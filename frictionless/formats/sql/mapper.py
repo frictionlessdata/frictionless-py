@@ -232,5 +232,6 @@ class SqlMapper:
                         dt = datetime.combine(date.min, cell)
                         dt = dt.astimezone(timezone.utc)
                         cell = dt.time()
+            print(cells)
             cells.append(cell)
         return cells

@@ -5,7 +5,7 @@ from frictionless import Package
 # Read
 
 
-def test_sql_manager_read_package(database_url):
+def test_sql_adapter_read_package(database_url):
     package = Package(database_url)
     assert len(package.resources) == 2
 
@@ -13,7 +13,7 @@ def test_sql_manager_read_package(database_url):
 # Write
 
 
-def test_sql_manager_write_package_types(sqlite_url):
+def test_sql_adapter_write_package_types(sqlite_url):
     source = Package("data/storage/types.json")
     source.publish(sqlite_url)
     target = Package(sqlite_url)
