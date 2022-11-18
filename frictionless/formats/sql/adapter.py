@@ -83,7 +83,7 @@ class SqlAdapter(Adapter[SqlControl]):
 
     def read_schema(self, table_name: str):
         table = self.metadata.tables[table_name]
-        return self.mapper.to_schema(table)
+        return self.mapper.read_schema(table)
 
     def read_cell_stream(self, control):
         sa = platform.sqlalchemy
@@ -111,7 +111,7 @@ class SqlAdapter(Adapter[SqlControl]):
             resource.write(self.engine.url.render_as_string(), control=control)
 
     def write_schema(self, schema: Schema, *, table_name: str):
-        table = self.mapper.from_schema(schema, table_name=table_name)
+        table = self.mapper.write_schema(schema, table_name=table_name)
         self.metadata.create_all(tables=[table])
 
     def write_row_stream(self, row_stream, *, table_name: str):
@@ -121,7 +121,7 @@ class SqlAdapter(Adapter[SqlControl]):
         buffer = []
         buffer_size = 1000
         for row in row_stream:
-            cells = self.mapper.from_row(row)
+            cells = self.mapper.write_row(row)
             buffer.append(cells)
             if len(buffer) > buffer_size:
                 # sqlalchemy conn.execute(table.insert(), buffer)

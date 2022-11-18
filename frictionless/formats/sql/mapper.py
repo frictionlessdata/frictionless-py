@@ -23,9 +23,88 @@ class SqlMapper:
 
     engine: Engine
 
-    # Import
+    # Read
 
-    def from_schema(self, schema: Schema, *, table_name: str) -> Table:
+    def read_schema(self, table: Table) -> Schema:
+        """Convert sqlalchemy table to frictionless schema"""
+
+        # Prepare
+        sa = platform.sqlalchemy
+        schema = Schema()
+
+        # Fields
+        for column in table.columns:
+            field = self.read_field(column.type, name=str(column.name))
+            if not column.nullable:
+                field.required = True
+            if column.comment:
+                field.description = column.comment
+            schema.add_field(field)
+
+        # Primary key
+        for constraint in table.constraints:
+            if isinstance(constraint, sa.PrimaryKeyConstraint):
+                for column in constraint.columns:
+                    schema.primary_key.append(str(column.name))
+
+        # Foreign keys
+        for constraint in table.constraints:
+            if isinstance(constraint, sa.ForeignKeyConstraint):
+                resource = ""
+                own_fields = []
+                foreign_fields = []
+                for element in constraint.elements:
+                    own_fields.append(str(element.parent.name))
+                    if element.column.table.name != table.name:
+                        resource = element.column.table.name
+                    foreign_fields.append(str(element.column.name))
+                ref = {"resource": resource, "fields": foreign_fields}
+                schema.foreign_keys.append({"fields": own_fields, "reference": ref})
+
+        # Return schema
+        return schema
+
+    def read_field(self, type: TypeEngine, *, name: str) -> Field:
+        """Convert sqlalchemy type to frictionless field
+        as e.g. sa.Text -> Field(type=string)
+        """
+
+        # Prepare
+        sa = platform.sqlalchemy
+        sapg = platform.sqlalchemy_dialects_postgresql
+        sams = platform.sqlalchemy_dialects_mysql
+
+        # Create mapping
+        mapping = {
+            sapg.ARRAY: "array",
+            sams.BIT: "string",
+            sa.Boolean: "boolean",
+            sa.Date: "date",
+            sa.DateTime: "datetime",
+            sa.Float: "number",
+            sa.Integer: "integer",
+            sapg.JSONB: "object",
+            sapg.JSON: "object",
+            sa.Numeric: "number",
+            sa.Text: "string",
+            sa.Time: "time",
+            sams.VARBINARY: "string",
+            sams.VARCHAR: "string",
+            sa.VARCHAR: "string",
+            sapg.UUID: "string",
+        }
+
+        # Get type
+        field_type = "string"
+        for type_class, value in mapping.items():
+            if isinstance(type, type_class):
+                field_type = value
+
+        return Field.from_descriptor(dict(name=name, type=field_type))
+
+    # Write
+
+    def write_schema(self, schema: Schema, *, table_name: str) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
 
         # Prepare
@@ -40,7 +119,7 @@ class SqlMapper:
             checks = []
             nullable = not field.required
             quoted_name = quote(field.name)
-            column_type = self.from_field(field)
+            column_type = self.write_field(field)
             unique = field.constraints.get("unique", False)
             # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
             if self.engine.dialect.name.startswith("mysql"):
@@ -96,7 +175,7 @@ class SqlMapper:
         table = sa.Table(table_name, sa.MetaData(self.engine), *(columns + constraints))
         return table
 
-    def from_field(self, field: Field) -> Type[TypeEngine]:
+    def write_field(self, field: Field) -> Type[TypeEngine]:
         """Convert frictionless field to sqlalchemy type
         as e.g. Field(type=string) -> sa.Text
         """
@@ -133,13 +212,13 @@ class SqlMapper:
         type = mapping.get(field.type, sa.Text)
         return type
 
-    def from_row(self, row: Row) -> List[Any]:
+    def write_row(self, row: Row) -> List[Any]:
         """Convert frictionless row to list of sql cells"""
         cells = []
         for field in row.fields:
             cell = row[field.name]
             if cell is not None:
-                type = self.from_field(field)
+                type = self.write_field(field)
                 if type is None:
                     cell = field.write_cell(cell)
                 elif field.type in ["object", "geojson"]:
@@ -155,82 +234,3 @@ class SqlMapper:
                         cell = dt.time()
             cells.append(cell)
         return cells
-
-    # Export
-
-    def to_schema(self, table: Table) -> Schema:
-        """Convert sqlalchemy table to frictionless schema"""
-
-        # Prepare
-        sa = platform.sqlalchemy
-        schema = Schema()
-
-        # Fields
-        for column in table.columns:
-            field = self.to_field(column.type, name=str(column.name))
-            if not column.nullable:
-                field.required = True
-            if column.comment:
-                field.description = column.comment
-            schema.add_field(field)
-
-        # Primary key
-        for constraint in table.constraints:
-            if isinstance(constraint, sa.PrimaryKeyConstraint):
-                for column in constraint.columns:
-                    schema.primary_key.append(str(column.name))
-
-        # Foreign keys
-        for constraint in table.constraints:
-            if isinstance(constraint, sa.ForeignKeyConstraint):
-                resource = ""
-                own_fields = []
-                foreign_fields = []
-                for element in constraint.elements:
-                    own_fields.append(str(element.parent.name))
-                    if element.column.table.name != table.name:
-                        resource = element.column.table.name
-                    foreign_fields.append(str(element.column.name))
-                ref = {"resource": resource, "fields": foreign_fields}
-                schema.foreign_keys.append({"fields": own_fields, "reference": ref})
-
-        # Return schema
-        return schema
-
-    def to_field(self, type: TypeEngine, *, name: str) -> Field:
-        """Convert sqlalchemy type to frictionless field
-        as e.g. sa.Text -> Field(type=string)
-        """
-
-        # Prepare
-        sa = platform.sqlalchemy
-        sapg = platform.sqlalchemy_dialects_postgresql
-        sams = platform.sqlalchemy_dialects_mysql
-
-        # Create mapping
-        mapping = {
-            sapg.ARRAY: "array",
-            sams.BIT: "string",
-            sa.Boolean: "boolean",
-            sa.Date: "date",
-            sa.DateTime: "datetime",
-            sa.Float: "number",
-            sa.Integer: "integer",
-            sapg.JSONB: "object",
-            sapg.JSON: "object",
-            sa.Numeric: "number",
-            sa.Text: "string",
-            sa.Time: "time",
-            sams.VARBINARY: "string",
-            sams.VARCHAR: "string",
-            sa.VARCHAR: "string",
-            sapg.UUID: "string",
-        }
-
-        # Get type
-        field_type = "string"
-        for type_class, value in mapping.items():
-            if isinstance(type, type_class):
-                field_type = value
-
-        return Field.from_descriptor(dict(name=name, type=field_type))
