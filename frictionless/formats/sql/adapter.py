@@ -1,14 +1,12 @@
 from __future__ import annotations
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from urllib.parse import urlsplit, urlunsplit
 from .control import SqlControl
-from ...package import Package
-from ...package import Manager
+from ...package import Package, Adapter
 from ...platform import platform
 from ...resource import Resource
 from .mapper import SqlMapper
-from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData
@@ -17,7 +15,7 @@ if TYPE_CHECKING:
     from ...schema import Schema
 
 
-class SqlManager(Manager[SqlControl]):
+class SqlAdapter(Adapter[SqlControl]):
     """Read and write data from/to SQL database"""
 
     def __init__(self, control: SqlControl):
@@ -48,7 +46,7 @@ class SqlManager(Manager[SqlControl]):
         # Set attributes
         control = control or SqlControl()
         self.connection = self.engine.connect()
-        self.mapper = SqlMapper()
+        self.mapper = SqlMapper(self.engine)
 
         # Add regex support
         # It will fail silently if this function already exists
@@ -113,7 +111,7 @@ class SqlManager(Manager[SqlControl]):
             resource.write(self.engine.url.render_as_string(), control=control)
 
     def write_schema(self, schema: Schema, *, table_name: str):
-        table = self.mapper.from_schema(schema, engine=self.engine, table_name=table_name)
+        table = self.mapper.from_schema(schema, table_name=table_name)
         self.metadata.create_all(tables=[table])
 
     def write_row_stream(self, row_stream, *, table_name: str):

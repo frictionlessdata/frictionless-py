@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
     from .resource import Resource, Loader, Parser
-    from .package import Manager, Storage
+    from .package import Manager, Storage, Adapter
     from .checklist import Check
     from .dialect import Control
     from .error import Error
@@ -29,6 +29,21 @@ class Plugin:
 
         Returns:
             Loader: loader
+        """
+        pass
+
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+    ) -> Optional[Adapter]:
+        """Create adapter
+
+        Parameters:
+            source: source
+            control: control
+
         """
         pass
 

@@ -16,9 +16,16 @@ if TYPE_CHECKING:
 class SqlMapper:
     """Metadata mapper Frictionless from/to SQL"""
 
+    def __init__(self, engine: Engine):
+        self.engine = engine
+
+    # State
+
+    engine: Engine
+
     # Import
 
-    def from_schema(self, schema: Schema, *, engine: Engine, table_name: str) -> Table:
+    def from_schema(self, schema: Schema, *, table_name: str) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
 
         # Prepare
@@ -28,15 +35,15 @@ class SqlMapper:
 
         # Fields
         Check = sa.CheckConstraint
-        quote = engine.dialect.identifier_preparer.quote  # type: ignore
+        quote = self.engine.dialect.identifier_preparer.quote  # type: ignore
         for field in schema.fields:
             checks = []
             nullable = not field.required
             quoted_name = quote(field.name)
-            column_type = self.from_field(field, engine=engine)
+            column_type = self.from_field(field)
             unique = field.constraints.get("unique", False)
             # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            if engine.dialect.name.startswith("mysql"):
+            if self.engine.dialect.name.startswith("mysql"):
                 unique = unique and field.type != "string"
             for const, value in field.constraints.items():
                 if const == "minLength":
@@ -45,7 +52,7 @@ class SqlMapper:
                     # Some databases don't support TEXT as a Primary Key
                     # https://github.com/frictionlessdata/frictionless-py/issues/777
                     for prefix in ["mysql", "db2", "ibm"]:
-                        if engine.dialect.name.startswith(prefix):
+                        if self.engine.dialect.name.startswith(prefix):
                             column_type = sa.VARCHAR(length=value)
                     checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
                 elif const == "minimum":
@@ -53,7 +60,7 @@ class SqlMapper:
                 elif const == "maximum":
                     checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
-                    if engine.dialect.name.startswith("postgresql"):
+                    if self.engine.dialect.name.startswith("postgresql"):
                         checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
                     else:
                         check = Check("%s REGEXP '%s'" % (quoted_name, value))
@@ -86,10 +93,10 @@ class SqlMapper:
             constraints.append(constraint)
 
         # Table
-        table = sa.Table(table_name, sa.MetaData(engine), *(columns + constraints))
+        table = sa.Table(table_name, sa.MetaData(self.engine), *(columns + constraints))
         return table
 
-    def from_field(self, field: Field, *, engine: Engine) -> Type[TypeEngine]:
+    def from_field(self, field: Field) -> Type[TypeEngine]:
         """Convert frictionless field to sqlalchemy type
         as e.g. Field(type=string) -> sa.Text
         """
@@ -112,7 +119,7 @@ class SqlMapper:
         }
 
         # Postgresql dialect
-        if engine.dialect.name.startswith("postgresql"):
+        if self.engine.dialect.name.startswith("postgresql"):
             mapping.update(
                 {
                     "array": sapg.JSONB,
@@ -132,7 +139,10 @@ class SqlMapper:
         for field in row.fields:
             cell = row[field.name]
             if cell is not None:
-                if field.type in ["object", "geojson"]:
+                type = self.from_field(field)
+                if type is None:
+                    cell = field.write_cell(cell)
+                elif field.type in ["object", "geojson"]:
                     cell = json.dumps(cell)
                 elif field.type == "datetime":
                     if cell.tzinfo is not None:

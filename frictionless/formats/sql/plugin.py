@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from ...plugin import Plugin
 from .control import SqlControl
 from .parser import SqlParser
-from .manager import SqlManager
+from .adapter import SqlAdapter
 from . import settings
 
 
@@ -21,7 +21,7 @@ class SqlPlugin(Plugin):
             parsed = urlparse(source)
             for prefix in settings.SCHEME_PREFIXES:
                 if parsed.scheme.startswith(prefix):
-                    return SqlManager.from_source(source, control=control)  # type: ignore
+                    return SqlAdapter.from_source(source, control=control)  # type: ignore
 
     def create_parser(self, resource):
         if resource.format == "sql":

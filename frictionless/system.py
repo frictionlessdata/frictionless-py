@@ -15,7 +15,7 @@ from . import errors
 if TYPE_CHECKING:
     from .interfaces import IStandards, IOnerror
     from .resource import Resource, Loader, Parser
-    from .package import Manager, Storage
+    from .package import Manager, Storage, Adapter
     from .plugin import Plugin
     from .checklist import Check
     from .error import Error
@@ -37,7 +37,9 @@ class System:
     """
 
     supported_hooks: ClassVar[List[str]] = [
+        "create_adapter",
         "create_loader",
+        # TODO: remove after rebase on Adapter API
         "create_manager",
         "create_parser",
         "detect_field_candidates",
@@ -185,6 +187,26 @@ class System:
         self.__http_session = current_http_session
 
     # Hooks
+
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+    ) -> Optional[Adapter]:
+        """Create adapter
+
+        Parameters:
+            resource (Resource): loader resource
+
+        Returns:
+            Loader: loader
+        """
+        adapter = None
+        for func in self.methods["create_adapter"].values():
+            adapter = func(source, control=control)
+            if adapter is not None:
+                return adapter
 
     def create_loader(self, resource: Resource) -> Loader:
         """Create loader
