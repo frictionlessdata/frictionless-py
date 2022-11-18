@@ -52,7 +52,7 @@ You can also use alias function instead, for example:
 from pprint import pprint
 from frictionless import portals, Package
 
-package = Package.from_zenodo("https://zenodo.org/record/7078768")
+package = Package("https://zenodo.org/record/7078768")
 print(package)
 ```
 
@@ -237,7 +237,7 @@ Total packages 1
                 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                                       {'name': 'name', 'type': 'string'}]}}]}]
 ```
-As shown in the first catalog example above, we can use different search queries to filter the repos. The above example searches for all the repos which has 'notes:"TDWD"' text in readme files. Similary we can use many different queries combining many terms, phrases or field 
+As shown in the first catalog example above, we can use different search queries to filter the repos. The above example searches for all the repos which has 'notes:"TDWD"' text in readme files. Similary we can use many different queries combining many terms, phrases or field
 search. To get full list of different queries you can check the zenodo official document [here](https://help.zenodo.org/guides/search).
 
 Some examples of the search queries are:
@@ -291,7 +291,7 @@ catalog = Catalog(
 
 ## Publishing Data
 
-To write data to the repository, we use `Package.to_zenodo` function as follows:
+To write data to the repository, we use `Package.publish` function as follows:
 ```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Package
@@ -302,7 +302,7 @@ control = portals.ZenodoControl(
         base_url="https://sandbox.zenodo.org/api/"
     )
 package = Package("484/package-to-write/datapackage.json")
-deposition_id = package.to_zenodo(control=control)
+deposition_id = package.publish(control=control)
 print(deposition_id)
 ```
 ```

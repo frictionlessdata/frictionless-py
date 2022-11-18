@@ -1,18 +1,17 @@
 import pytest
+import sqlite3
 import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource, formats
-from frictionless import FrictionlessException
 
 
 # General
 
 
-def test_sql_storage_sqlite_types(sqlite_url):
-    control = formats.SqlControl(prefix="prefix_")
+def test_sql_manager_types(sqlite_url):
     source = Package("data/storage/types.json")
-    storage = source.to_sql(sqlite_url, control=control)
-    target = Package.from_sql(sqlite_url, control=control)
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
 
     # Assert metadata
     assert target.get_resource("types").schema.to_descriptor() == {
@@ -58,15 +57,11 @@ def test_sql_storage_sqlite_types(sqlite_url):
         },
     ]
 
-    # Cleanup storage
-    storage.delete_package(target.resource_names)  # type: ignore
 
-
-def test_sql_storage_sqlite_integrity(sqlite_url):
-    control = formats.SqlControl(prefix="prefix_")
+def test_sql_manager_integrity(sqlite_url):
     source = Package("data/storage/integrity.json")
-    storage = source.to_sql(sqlite_url, control=control)
-    target = Package.from_sql(sqlite_url, control=control)
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema.to_descriptor() == {
@@ -111,15 +106,11 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
 
-    # Cleanup storage
-    storage.delete_package(target.resource_names)  # type: ignore
 
-
-def test_sql_storage_sqlite_constraints(sqlite_url):
-    control = formats.SqlControl(prefix="prefix_")
+def test_sql_manager_constraints(sqlite_url):
     source = Package("data/storage/constraints.json")
-    storage = source.to_sql(sqlite_url, control=control)
-    target = Package.from_sql(sqlite_url, control=control)
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
 
     # Assert metadata
     assert target.get_resource("constraints").schema.to_descriptor() == {
@@ -147,9 +138,6 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
         },
     ]
 
-    # Cleanup storage
-    storage.delete_package(target.resource_names)  # type: ignore
-
 
 @pytest.mark.parametrize(
     "field_name, cell",
@@ -164,7 +152,7 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
         ("maximum", 9),
     ],
 )
-def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, cell):
+def test_sql_manager_constraints_not_valid_error(sqlite_url, field_name, cell):
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
@@ -177,57 +165,25 @@ def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, 
         resource.write(sqlite_url, control=control)
 
 
-def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
-    storage = formats.SqlStorage(sqlite_url)
-    with pytest.raises(FrictionlessException) as excinfo:
-        storage.read_resource("bad")
-    error = excinfo.value.error
-    assert error.type == "error"
-    assert error.note.count("does not exist")
-
-
-def test_sql_storage_sqlite_write_resource_existent_error(sqlite_url):
-    storage = formats.SqlStorage(sqlite_url)
-    resource = Resource(path="data/table.csv")
-    storage.write_resource(resource)
-    with pytest.raises(FrictionlessException) as excinfo:
-        storage.write_resource(resource)
-    error = excinfo.value.error
-    assert error.type == "error"
-    assert error.note.count("already exists")
-    # Cleanup storage
-    storage.delete_package(list(storage))
-
-
-def test_sql_storage_sqlite_delete_resource_not_existent_error(sqlite_url):
-    storage = formats.SqlStorage(sqlite_url)
-    with pytest.raises(FrictionlessException) as excinfo:
-        storage.delete_resource("bad")
-    error = excinfo.value.error
-    assert error.type == "error"
-    assert error.note.count("does not exist")
-
-
-def test_sql_storage_sqlite_views_support(sqlite_url):
+def test_sql_manager_views_support(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
     engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
-    engine.execute("CREATE VIEW 'table_view' AS SELECT * FROM 'table'")
-    storage = formats.SqlStorage(engine)
-    resource = storage.read_resource("table_view")
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
+    engine.execute("CREATE VIEW 'view' AS SELECT * FROM 'table'")
+    with Resource(sqlite_url, control=formats.sql.SqlControl(table="view")) as res:
+        assert res.schema.to_descriptor() == {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        }
+        assert res.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
-    }
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
 
 
-def test_sql_storage_sqlite_resource_url_argument(sqlite_url):
+def test_sql_manager_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
     control = formats.SqlControl(table="table")
     target = source.write(sqlite_url, control=control)
@@ -244,10 +200,11 @@ def test_sql_storage_sqlite_resource_url_argument(sqlite_url):
         ]
 
 
-def test_sql_storage_sqlite_package_url_argument(sqlite_url):
+def test_sql_manager_package_url_argument(sqlite_url):
     source = Package(resources=[Resource(path="data/table.csv")])
-    source.to_sql(sqlite_url)
-    target = Package.from_sql(sqlite_url)
+    source.infer()
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
     assert target.get_resource("table").schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -263,7 +220,7 @@ def test_sql_storage_sqlite_package_url_argument(sqlite_url):
 # Bugs
 
 
-def test_sql_storage_sqlite_integer_enum_issue_776(sqlite_url):
+def test_sql_manager_integer_enum_issue_776(sqlite_url):
     control = formats.SqlControl(table="table")
     source = Resource(path="data/table.csv")
     source.infer()
@@ -275,7 +232,9 @@ def test_sql_storage_sqlite_integer_enum_issue_776(sqlite_url):
     ]
 
 
-def test_sql_storage_dialect_basepath_issue_964(sqlite_url):
+# TODO: recover
+@pytest.mark.skip
+def test_sql_manager_dialect_basepath_issue_964(sqlite_url):
     control = formats.SqlControl(table="test_table", basepath="data")
     with Resource(path="sqlite:///sqlite.db", control=control) as resource:
         assert resource.read_rows() == [
@@ -285,7 +244,9 @@ def test_sql_storage_dialect_basepath_issue_964(sqlite_url):
         ]
 
 
-def test_sql_storage_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_number):
+# TODO: recover
+@pytest.mark.skip
+def test_sql_manager_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_number):
     # SQLite applies limits for the max. number of characters in prepared
     # parameterized SQL statements, see https://www.sqlite.org/limits.html.
 
@@ -313,3 +274,28 @@ def test_sql_storage_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_n
         resource.write(
             sqlite_url, control=formats.SqlControl(table="test_max_param_table")
         )
+
+
+# Fixtures
+
+
+@pytest.fixture
+def sqlite_max_variable_number():
+    # Return SQLite max. variable number limit, set as compile option, or
+    # default.
+    #
+    # Default value for stock SQLite >= 3.32.0
+    # (https://www.sqlite.org/limits.html#max_variable_number): 32766
+    #
+    # Note that distributions *do* customize this e.g. Ubuntu 20.04:
+    # MAX_VARIABLE_NUMBER=250000
+    conn = sqlite3.connect(":memory:")
+    try:
+        with conn:
+            result = conn.execute("pragma compile_options;").fetchall()
+    finally:
+        conn.close()
+    for item in result:
+        if item[0].startswith("MAX_VARIABLE_NUMBER="):
+            return int(item[0].split("=")[-1])
+    return 32766

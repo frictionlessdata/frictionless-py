@@ -48,7 +48,7 @@ You can also use alias function instead, for example:
 from pprint import pprint
 from frictionless import portals, Package
 
-package = Package.from_github("https://github.com/fdtester/test-repo-without-datapackage")
+package = Package("https://github.com/fdtester/test-repo-without-datapackage")
 print(package)
 ```
 
@@ -59,7 +59,7 @@ from pprint import pprint
 from frictionless import portals, Package
 
 control = portals.GithubControl(apikey=apikey)
-package = Package.from_github("https://github.com/fdtester/test-repo-without-datapackage", control=control)
+package = Package("https://github.com/fdtester/test-repo-without-datapackage", control=control)
 print(package)
 ```
 
@@ -249,14 +249,14 @@ package:3
 
 ## Publishing Data
 
-To write data to the repository, we use `Package.to_github` function as follows:
+To write data to the repository, we use `Package.publish` function as follows:
 ```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Package
 
 package = Package('1174/datapackage.json')
 control = portals.GithubControl(repo="test-new-repo-doc", name='FD', email=email, apikey=apikey)
-response = Package.to_github(package, control=control)
+response = package.publish(control=control)
 print(response)
 ```
 ```
@@ -322,7 +322,7 @@ from frictionless import portals, Package
 
 package = Package('datapackage.json')
 control = portals.GithubControl(repo="test-repo", name='FD Test', email="test@gmail", apikey=apikey)
-response = Package.to_github(package, control=control)
+response = package.publish(control=control)
 print(response)
 ```
 ```

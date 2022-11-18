@@ -127,7 +127,7 @@ def test_zenodo_manager_read_record_without_descriptor(options_without_dp):
 @pytest.mark.vcr
 def test_zenodo_manager_read_record_using_alias_function(options_without_dp):
     url = options_without_dp.pop("url")
-    package = Package.from_zenodo(url)
+    package = Package(url)
     assert len(package.resources) == 2
     assert package.to_descriptor() == PACKAGE_WITHOUT_DP
 
@@ -448,7 +448,7 @@ def test_zenodo_manager_write(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098723
 
 
@@ -459,7 +459,7 @@ def test_zenodo_manager_write_ods(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/ods.datapackage.json")
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098739
 
 
@@ -470,7 +470,7 @@ def test_zenodo_manager_write_jsonl(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/jsonl.datapackage.json")
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098741
 
 
@@ -481,7 +481,7 @@ def test_zenodo_manager_write_ndjson(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/ndjson.datapackage.json")
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098743
 
 
@@ -507,7 +507,7 @@ def test_zenodo_manager_write_with_descriptor(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package(descriptor)
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098745
 
 
@@ -519,7 +519,7 @@ def test_zenodo_manager_write_without_apikey():
     )
     package = Package("data/datapackage.json")
     with pytest.raises(AssertionError) as excinfo:
-        package.to_zenodo(control=control)
+        package.publish(control=control)
     assert "AssertionError" in str(excinfo)
 
 
@@ -531,7 +531,7 @@ def test_zenodo_manager_write_without_wrong_apikey():
     )
     package = Package("data/datapackage.json")
     with pytest.raises(FrictionlessException) as excinfo:
-        package.to_zenodo(control=control)
+        package.publish(control=control)
     error = excinfo.value.error
     assert (
         "You either supplied the wrong credentials (e.g. a bad password),"
@@ -546,7 +546,7 @@ def test_zenodo_manager_write_without_metadata(tmp_path):
     )
     package = Package("data/datapackage.json")
     with pytest.raises(FrictionlessException) as excinfo:
-        package.to_zenodo(control=control)
+        package.publish(control=control)
     error = excinfo.value.error
     assert "Metafn(metadata file) is required" in error.message
 
@@ -564,7 +564,7 @@ def test_zenodo_manager_write_without_base_url():
     control = portals.ZenodoControl(base_url=None)
     package = Package("data/datapackage.json")
     with pytest.raises(AssertionError) as excinfo:
-        package.to_zenodo(control=control)
+        package.publish(control=control)
     assert "AssertionError" in str(excinfo)
 
 
@@ -588,7 +588,7 @@ def test_zenodo_manager_write_resources_with_inline_data(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package(descriptor)
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098747
 
 
@@ -615,7 +615,7 @@ def test_zenodo_manager_write_resources_with_remote_url(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package(descriptor)
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098749
 
 
@@ -627,7 +627,7 @@ def test_zenodo_manager_write_resources_with_deposition_id(tmp_path):
         deposition_id=7098476,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.to_zenodo(control=control)
+    deposition_id = package.publish(control=control)
     assert deposition_id == 7098476
 
 
@@ -638,9 +638,7 @@ def test_zenodo_manager_write_resources_with_deposition_url(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.to_zenodo(
-        "https://zenodo.org/deposit/7098479", control=control
-    )
+    deposition_id = package.publish("https://zenodo.org/deposit/7098479", control=control)
     assert deposition_id == 7098479
 
 

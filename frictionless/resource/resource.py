@@ -51,6 +51,7 @@ class Resource(Metadata):
     analyze = methods.analyze
     describe = methods.describe
     extract = methods.extract
+    index = methods.index
     validate = methods.validate
     transform = methods.transform
 

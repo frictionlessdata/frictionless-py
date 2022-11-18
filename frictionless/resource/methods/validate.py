@@ -7,6 +7,7 @@ from ... import settings
 from ... import helpers
 
 if TYPE_CHECKING:
+    from ...interfaces import ICallbackFunction
     from ..resource import Resource
     from ...error import Error
 
@@ -17,6 +18,7 @@ def validate(
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
+    callback: Optional[ICallbackFunction] = None,
 ):
     """Validate resource
 
@@ -53,13 +55,14 @@ def validate(
         warnings.append(warning)
 
     # Prepare resource
-    try:
-        self.open()
-    except FrictionlessException as exception:
-        self.close()
-        return Report.from_validation_task(
-            self, time=timer.time, errors=exception.to_errors()
-        )
+    if self.closed:
+        try:
+            self.open()
+        except FrictionlessException as exception:
+            self.close()
+            return Report.from_validation_task(
+                self, time=timer.time, errors=exception.to_errors()
+            )
 
     # Validate data
     with self:
@@ -91,6 +94,10 @@ def validate(
                     continue
                 except StopIteration:
                     break
+
+                # Callback row
+                if callback:
+                    callback(row)
 
                 # Validate row
                 for check in checks:

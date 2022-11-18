@@ -23,7 +23,6 @@ if TYPE_CHECKING:
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Catalog
-    from .. import portals
 
 
 # TODO: think about package/resource/schema/etc extension mechanism (e.g. FiscalPackage)
@@ -244,7 +243,7 @@ class Package(Metadata):
 
     catalog: Optional[Catalog]
     """
-    It returns reference to catalog of which the package is part of. If package 
+    It returns reference to catalog of which the package is part of. If package
     is not part of any catalog, then it is set to None.
     """
 
@@ -358,6 +357,24 @@ class Package(Metadata):
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
 
+    # Publish
+
+    def publish(self, target: Any = None, *, control: Optional[Control] = None) -> Any:
+        """Publish package to any supported data portal
+
+        Parameters:
+            target (string): url e.g. "https://github.com/frictionlessdata/repository-demo" of target[CKAN/Github...]
+            control (dict): Github control
+
+        Returns:
+            Any: Response from the target
+        """
+        manager = system.create_manager(target, control=control)
+        if not manager:
+            raise FrictionlessException(f"Not supported target: {target} or control")
+        response = manager.write_package(self.to_copy())
+        return response
+
     # Flatten
 
     def flatten(self, spec=["name", "path"]):
@@ -383,177 +400,6 @@ class Package(Metadata):
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources]
         )
-
-    @staticmethod
-    def from_bigquery(source, *, control=None):
-        """Import package from Bigquery
-
-        Parameters:
-            source (string): BigQuery `Service` object
-            control (dict): BigQuery control
-
-        Returns:
-            Package: package
-        """
-        storage = system.create_storage("bigquery", source, control=control)
-        return storage.read_package()
-
-    def to_bigquery(self, target, *, control=None):
-        """Export package to Bigquery
-
-        Parameters:
-            target (string): BigQuery `Service` object
-            control (dict): BigQuery control
-
-        Returns:
-            BigqueryStorage: storage
-        """
-        storage = system.create_storage("bigquery", target, control=control)
-        storage.write_package(self, force=True)
-        return storage
-
-    @staticmethod
-    def from_ckan(source: Any, *, control: Optional[portals.CkanControl] = None):
-        """Import package from CKAN
-
-        Parameters:
-            source (string): CKAN instance url e.g. "https://demo.ckan.org"
-            control (dict): CKAN control
-
-        Returns:
-            Package: package
-        """
-        manager = system.create_manager(source, control=control)
-        if not manager:
-            raise FrictionlessException(f"not supported CKAN source: {source}")
-        package = manager.read_package()
-        return package
-
-    def to_ckan(self, target, *, control=None):
-        """Export package to CKAN
-
-        Parameters:
-            target (string): CKAN instance url e.g. "https://demo.ckan.org"
-            control (dict): CKAN control
-
-        Returns:
-            CkanStorage: storage
-        """
-        storage = system.create_storage("ckan", target, control=control)
-        storage.write_package(self, force=True)
-        return storage
-
-    @staticmethod
-    def from_github(
-        source: Any = None, *, control: Optional[portals.GithubControl] = None
-    ):
-        """Import package from Github
-
-        Parameters:
-            source (string): Github repo url e.g. "https://github.com/frictionlessdata/repository-demo"
-            control (portals.GithubControl): Github control
-
-        Returns:
-            Package: package
-        """
-        manager = system.create_manager(source, control=control)
-        if not manager:
-            raise FrictionlessException(
-                f"Not supported Github source '{source}' or control"
-            )
-        return Package(source, control=control)
-
-    def to_github(
-        self, target: Any = None, *, control: Optional[portals.GithubControl] = None
-    ):
-        """Export package to Github
-
-        Parameters:
-            target (string): Github instance url e.g. "https://github.com/frictionlessdata/repository-demo"
-            control (portals.GithubControl): Github control
-
-        Returns:
-            NamedTuple: Reference to new repository and file created
-        """
-        return self.publish(target, control=control)
-
-    @staticmethod
-    def from_zenodo(
-        source: Any = None, *, control: Optional[portals.ZenodoControl] = None
-    ):
-        """Import package from Zenodo
-
-        Parameters:
-            source (string): Zenodo record url e.g. "https://zenodo.org/record/7089860"
-            control (portals.ZenodoControl): Zenodo control
-
-        Returns:
-            Package: package
-        """
-        manager = system.create_manager(source, control=control)
-        if not manager:
-            raise FrictionlessException(
-                f"Not supported Zenodo source '{source}' or control"
-            )
-        return Package(source, control=control)
-
-    def to_zenodo(
-        self, target: Any = None, *, control: Optional[portals.ZenodoControl] = None
-    ):
-        """Export package to Zenodo
-
-        Parameters:
-            target (string): Zenodo deposit url e.g. "https://zenodo.org/deposit/1106323"
-            control (portals.ZenodoControl): Zenodo control
-
-        Returns:
-            str: Deposition id of the deposition resource
-        """
-        return self.publish(target, control=control)
-
-    def publish(self, target: Any = None, *, control: Optional[Control] = None) -> Any:
-        """Publish package to any supported data portal
-
-        Parameters:
-            target (string): url e.g. "https://github.com/frictionlessdata/repository-demo" of target[CKAN/Github...]
-            control (dict): Github control
-
-        Returns:
-            Any: Response from the target
-        """
-        manager = system.create_manager(target, control=control)
-        if not manager:
-            raise FrictionlessException(f"Not supported target: {target} or control")
-        response = manager.write_package(self.to_copy())
-        return response
-
-    @staticmethod
-    def from_sql(source, *, control=None):
-        """Import package from SQL
-
-        Parameters:
-            source (any): SQL connection string of engine
-            control (dict): SQL control
-
-        Returns:
-            Package: package
-        """
-        storage = system.create_storage("sql", source, control=control)
-        return storage.read_package()
-
-    def to_sql(self, target, *, control=None):
-        """Export package to SQL
-
-        Parameters:
-            target (any): SQL connection string of engine
-            control (dict): SQL control
-
-        Returns:
-            SqlStorage: storage
-        """
-        storage = system.create_storage("sql", target, control=control)
-        storage.write_package(self, force=True)
-        return storage
 
     @staticmethod
     def from_zip(path, **options):

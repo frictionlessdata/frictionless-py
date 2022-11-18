@@ -9,7 +9,9 @@ if TYPE_CHECKING:
 ControlType = TypeVar("ControlType", bound=Control)
 
 
+# TODO: remove here and in the system after rebase to Adapter
 class Manager(Generic[ControlType]):
+    # TODO: shall we accept aslo source?
     def __init__(self, control: ControlType):
         self.control = control
 

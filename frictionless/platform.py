@@ -27,7 +27,7 @@ class Platform:
 
     type: ClassVar[str] = python_platform.system().lower()
     """
-    Type of the platform(OS) framework is running on. For example, windows, 
+    Type of the platform(OS) framework is running on. For example, windows,
     linux etc.
     """
 
@@ -153,6 +153,12 @@ class Platform:
         return petl
 
     @cached_property
+    def psycopg(self):
+        import psycopg
+
+        return psycopg
+
+    @cached_property
     def requests(self):
         import requests
 
@@ -217,20 +223,6 @@ class Platform:
         import boto3
 
         return boto3
-
-    @cached_property
-    @extras(name="bigquery")
-    def googleapiclient_http(self):
-        import googleapiclient.http
-
-        return googleapiclient.http
-
-    @cached_property
-    @extras(name="bigquery")
-    def googleapiclient_errors(self):
-        import googleapiclient.errors
-
-        return googleapiclient.errors
 
     @cached_property
     @extras(name="ckan")
@@ -350,6 +342,13 @@ class Platform:
         import sqlalchemy
 
         return sqlalchemy
+
+    @cached_property
+    @extras(name="sql")
+    def sqlalchemy_schema(self):
+        import sqlalchemy.schema
+
+        return sqlalchemy.schema
 
     @cached_property
     @extras(name="sql")

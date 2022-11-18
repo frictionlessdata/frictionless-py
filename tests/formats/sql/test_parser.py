@@ -149,4 +149,5 @@ def test_sql_parser_describe_to_yaml_failing_issue_821(database_url):
     control = formats.SqlControl(table="table")
     resource = Resource(database_url, control=control)
     resource.infer()
+    print(resource)
     assert resource.to_yaml()

@@ -8,8 +8,6 @@ from ...schema import Schema, Field
 from ..inline import InlineControl
 from ...resource import Resource
 from ...package import Package
-from ...package import Storage
-from ...system import system
 from .control import CkanControl
 
 
@@ -17,7 +15,7 @@ from .control import CkanControl
 
 
 # TODO: finish merging this with Manager and remove Storage
-class CkanStorage(Storage):
+class CkanStorage:
     """Ckan storage implementation"""
 
     def __init__(self, source, *, control=None):
@@ -299,9 +297,9 @@ def make_ckan_request(url, method="GET", headers=None, apikey=None, **options):
         headers.update({"Authorization": apikey})
 
     # Make a request
-    return system.http_session.request(
-        method=method, url=url, headers=headers, allow_redirects=True, **options
-    ).json()
+    #  return system.http_session.request(
+    #  method=method, url=url, headers=headers, allow_redirects=True, **options
+    #  ).json()
 
 
 def get_ckan_error(response):

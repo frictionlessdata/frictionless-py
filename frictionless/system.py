@@ -15,7 +15,7 @@ from . import errors
 if TYPE_CHECKING:
     from .interfaces import IStandards, IOnerror
     from .resource import Resource, Loader, Parser
-    from .package import Manager, Storage
+    from .package import Manager
     from .plugin import Plugin
     from .checklist import Check
     from .error import Error
@@ -47,8 +47,6 @@ class System:
         "select_Error",
         "select_Field",
         "select_Step",
-        # TODO: remove after rebase on Manager API
-        "create_storage",
     ]
 
     def __init__(self):
@@ -314,23 +312,6 @@ class System:
                 return Class
         note = f'step type "{type}" is not supported'
         raise FrictionlessException(errors.StepError(note=note))
-
-    def create_storage(self, name: str, source: Any, **options) -> Storage:
-        """Create storage
-
-        Parameters:
-            name (str): storage name
-            options (str): storage options
-
-        Returns:
-            Storage: storage
-        """
-        for func in self.methods["create_storage"].values():
-            storage = func(name, source, **options)
-            if storage is not None:
-                return storage
-        note = f'storage "{name}" is not supported'
-        raise FrictionlessException(note)
 
 
 system = System()

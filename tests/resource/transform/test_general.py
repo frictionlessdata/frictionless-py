@@ -64,7 +64,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
         }
     )
     source = Package(resources=[resource])
-    source.to_sql(sqlite_url)
+    source.publish(sqlite_url)
 
     # write table using pipeline step
     package = Package("data/package-with-pipeline.json")
@@ -75,7 +75,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
             resource.transform()
 
     # read tables
-    target = Package.from_sql(sqlite_url)
+    target = Package(sqlite_url)
     assert target.get_resource("zrr").schema.to_descriptor() == {
         "fields": [
             {"name": "CODGEO", "type": "string"},
@@ -105,7 +105,7 @@ def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url)
         }
     )
     source = Package(resources=[resource])
-    source.to_sql(sqlite_url)
+    source.publish(sqlite_url)
 
     # write table using pipeline step
     package = Package("data/package-with-pipeline-multiple-tables-to-write.json")
@@ -118,7 +118,7 @@ def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url)
             resource.transform()
 
     # read tables
-    target = Package.from_sql(sqlite_url)
+    target = Package(sqlite_url)
     assert target.get_resource("zrr").schema.to_descriptor() == {
         "fields": [
             {"name": "CODGEO", "type": "string"},
