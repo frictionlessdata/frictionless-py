@@ -11,11 +11,11 @@ def index(self: Resource, database_url: str, *, table_name: str) -> Report:
     """Index resource into a database"""
     with self, platform.psycopg.connect(database_url) as connection:
         engine = platform.sqlalchemy.create_engine(database_url)
-        mapper = platform.frictionless_formats.sql.SqlMapper()
+        mapper = platform.frictionless_formats.sql.SqlMapper(engine)
         sql = platform.sqlalchemy_schema
 
         # Write metadata
-        table = mapper.from_schema(self.schema, engine=engine, table_name=table_name)
+        table = mapper.write_schema(self.schema, table_name=table_name)
         with connection.cursor() as cursor:
             cursor.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))
             cursor.execute(str(sql.CreateTable(table, bind=engine)))
@@ -26,7 +26,7 @@ def index(self: Resource, database_url: str, *, table_name: str) -> Report:
 
                 # Write row
                 def callback(row):
-                    cells = mapper.from_row(row)
+                    cells = mapper.write_row(row)
                     copy.write_row(cells)
 
                 # Return report
