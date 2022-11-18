@@ -1,4 +1,5 @@
 import pytest
+import sqlite3
 import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource, formats
@@ -273,3 +274,28 @@ def test_sql_manager_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_n
         resource.write(
             sqlite_url, control=formats.SqlControl(table="test_max_param_table")
         )
+
+
+# Fixtures
+
+
+@pytest.fixture
+def sqlite_max_variable_number():
+    # Return SQLite max. variable number limit, set as compile option, or
+    # default.
+    #
+    # Default value for stock SQLite >= 3.32.0
+    # (https://www.sqlite.org/limits.html#max_variable_number): 32766
+    #
+    # Note that distributions *do* customize this e.g. Ubuntu 20.04:
+    # MAX_VARIABLE_NUMBER=250000
+    conn = sqlite3.connect(":memory:")
+    try:
+        with conn:
+            result = conn.execute("pragma compile_options;").fetchall()
+    finally:
+        conn.close()
+    for item in result:
+        if item[0].startswith("MAX_VARIABLE_NUMBER="):
+            return int(item[0].split("=")[-1])
+    return 32766
