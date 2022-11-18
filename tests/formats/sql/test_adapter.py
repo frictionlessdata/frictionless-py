@@ -1,20 +1,14 @@
 import pytest
 import datetime
-from frictionless import Package
+import sqlalchemy as sa
+from frictionless import Package, Resource, formats
+from frictionless import FrictionlessException
 
 
-# Read
+# General
 
 
-def test_sql_adapter_read_package(database_url):
-    package = Package(database_url)
-    assert len(package.resources) == 2
-
-
-# Write
-
-
-def test_sql_adapter_write_package_types(sqlite_url):
+def test_sql_adapter_types(sqlite_url):
     source = Package("data/storage/types.json")
     source.publish(sqlite_url)
     target = Package(sqlite_url)
@@ -64,7 +58,7 @@ def test_sql_adapter_write_package_types(sqlite_url):
     ]
 
 
-def test_sql_adapter_write_package_integrity(sqlite_url):
+def test_sql_adapter_integrity(sqlite_url):
     source = Package("data/storage/integrity.json")
     source.publish(sqlite_url)
     target = Package(sqlite_url)
@@ -111,3 +105,172 @@ def test_sql_adapter_write_package_integrity(sqlite_url):
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
+
+
+def test_sql_adapter_constraints(sqlite_url):
+    source = Package("data/storage/constraints.json")
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
+
+    # Assert metadata
+    assert target.get_resource("constraints").schema.to_descriptor() == {
+        "fields": [
+            {"name": "required", "type": "string", "constraints": {"required": True}},
+            {"name": "minLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "pattern", "type": "string"},  # constraint removal
+            {"name": "enum", "type": "string"},  # constraint removal
+            {"name": "minimum", "type": "integer"},  # constraint removal
+            {"name": "maximum", "type": "integer"},  # constraint removal
+        ],
+    }
+
+    # Assert data
+    assert target.get_resource("constraints").read_rows() == [
+        {
+            "required": "passing",
+            "minLength": "passing",
+            "maxLength": "passing",
+            "pattern": "passing",
+            "enum": "passing",
+            "minimum": 5,
+            "maximum": 5,
+        },
+    ]
+
+
+@pytest.mark.parametrize(
+    "field_name, cell",
+    [
+        ("required", ""),
+        ("minLength", "bad"),
+        ("maxLength", "badbadbad"),
+        ("pattern", "bad"),
+        # NOTE: It doesn't raise since sqlalchemy@1.4 (an underlaying bug?)
+        # ("enum", "bad"),
+        ("minimum", 3),
+        ("maximum", 9),
+    ],
+)
+def test_sql_adapter_constraints_not_valid_error(sqlite_url, field_name, cell):
+    package = Package("data/storage/constraints.json")
+    resource = package.get_resource("constraints")
+    # We set an invalid cell to the data property
+    for index, field in enumerate(resource.schema.fields):
+        if field.name == field_name:
+            resource.data[1][index] = cell  # type: ignore
+    # NOTE: should we wrap these exceptions?
+    with pytest.raises(sa.exc.IntegrityError):  # type: ignore
+        control = formats.SqlControl(table="table")
+        resource.write(sqlite_url, control=control)
+
+
+def test_sql_adapter_views_support(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
+    engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
+    engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
+    engine.execute("CREATE VIEW 'table_view' AS SELECT * FROM 'table'")
+    with Resource(sqlite_url, control=formats.sql.SqlControl(table="table_view")) as res:
+        assert res.schema.to_descriptor() == {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        }
+        assert res.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_sql_adapter_resource_url_argument(sqlite_url):
+    source = Resource(path="data/table.csv")
+    control = formats.SqlControl(table="table")
+    target = source.write(sqlite_url, control=control)
+    with target:
+        assert target.schema.to_descriptor() == {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        }
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_sql_adapter_package_url_argument(sqlite_url):
+    source = Package(resources=[Resource(path="data/table.csv")])
+    source.infer()
+    source.publish(sqlite_url)
+    target = Package(sqlite_url)
+    assert target.get_resource("table").schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert target.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+# Bugs
+
+
+def test_sql_adapter_integer_enum_issue_776(sqlite_url):
+    control = formats.SqlControl(table="table")
+    source = Resource(path="data/table.csv")
+    source.infer()
+    source.schema.get_field("id").constraints["enum"] = [1, 2]
+    target = source.write(sqlite_url, control=control)
+    assert target.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+# TODO: recover
+@pytest.mark.skip
+def test_sql_storage_dialect_basepath_issue_964(sqlite_url):
+    control = formats.SqlControl(table="test_table", basepath="data")
+    with Resource(path="sqlite:///sqlite.db", control=control) as resource:
+        assert resource.read_rows() == [
+            {"id": 1, "name": "foo"},
+            {"id": 2, "name": "bar"},
+            {"id": 3, "name": "baz"},
+        ]
+
+
+# TODO: recover
+@pytest.mark.skip
+def test_sql_storage_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_number):
+    # SQLite applies limits for the max. number of characters in prepared
+    # parameterized SQL statements, see https://www.sqlite.org/limits.html.
+
+    # Ensure sufficiently 'wide' and 'long' table data to provoke SQLite param
+    # restrictions.
+    buffer_size = 1000  # see formats/sql/storage.py
+    number_of_rows = 10 * buffer_size
+    number_of_fields = divmod(sqlite_max_variable_number, buffer_size)[0] + 1
+    assert number_of_fields * buffer_size > sqlite_max_variable_number
+
+    # Create in-memory string csv test data.
+    data = "\n".join(
+        [
+            ",".join(f"header{i}" for i in range(number_of_fields)),
+            "\n".join(
+                ",".join(f"row{r}_col{c}" for c in range(number_of_fields))
+                for r in range(number_of_rows)
+            ),
+        ]
+    ).encode("ascii")
+
+    # Write to the SQLite db. This must not raise an exception i.e. test is
+    # successful if it runs without error.
+    with Resource(data, format="csv") as resource:
+        resource.write(
+            sqlite_url, control=formats.SqlControl(table="test_max_param_table")
+        )
