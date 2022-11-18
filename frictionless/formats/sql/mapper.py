@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
-# TODO: accept engine in constructor?
 class SqlMapper:
     """Metadata mapper Frictionless from/to SQL"""
 
@@ -215,12 +214,13 @@ class SqlMapper:
     def write_row(self, row: Row) -> List[Any]:
         """Convert frictionless row to list of sql cells"""
         cells = []
+        sa = platform.sqlalchemy
         for field in row.fields:
             cell = row[field.name]
             if cell is not None:
                 type = self.write_field(field)
-                if type is None:
-                    cell = field.write_cell(cell)
+                if field.type != "string" and type is sa.Text:
+                    cell, _ = field.write_cell(cell)
                 elif field.type in ["object", "geojson"]:
                     cell = json.dumps(cell)
                 elif field.type == "datetime":
@@ -232,6 +232,5 @@ class SqlMapper:
                         dt = datetime.combine(date.min, cell)
                         dt = dt.astimezone(timezone.utc)
                         cell = dt.time()
-            print(cells)
             cells.append(cell)
         return cells

@@ -5,7 +5,7 @@ from frictionless import Schema, formats
 # Read
 
 
-def test_sql_mapper_to_schema(sqlite_url):
+def test_sql_mapper_read_schema(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     mapper = formats.sql.SqlMapper(engine)
     schema = Schema.describe("data/table.csv")
@@ -15,7 +15,7 @@ def test_sql_mapper_to_schema(sqlite_url):
     assert schema.get_field("name").type == "string"
 
 
-def test_sql_mapper_to_field(sqlite_url):
+def test_sql_mapper_read_field(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     mapper = formats.sql.SqlMapper(engine)
     field1 = mapper.read_field(sa.Integer(), name="id")
@@ -27,7 +27,7 @@ def test_sql_mapper_to_field(sqlite_url):
 # Write
 
 
-def test_sql_mapper_from_schema(sqlite_url):
+def test_sql_mapper_write_schema(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     mapper = formats.sql.SqlMapper(engine)
     schema = Schema.describe("data/table.csv")
@@ -37,7 +37,7 @@ def test_sql_mapper_from_schema(sqlite_url):
     assert len(table.constraints) == 1
 
 
-def test_sql_mapper_from_field(sqlite_url):
+def test_sql_mapper_write_field(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     mapper = formats.sql.SqlMapper(engine)
     schema = Schema.describe("data/table.csv")

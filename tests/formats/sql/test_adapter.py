@@ -17,6 +17,7 @@ def test_sql_adapter_write_package_types(sqlite_url):
     source = Package("data/storage/types.json")
     source.publish(sqlite_url)
     target = Package(sqlite_url)
+    target.infer()
 
     # Assert metadata
     assert target.get_resource("types").schema.to_descriptor() == {

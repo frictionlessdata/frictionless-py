@@ -25,14 +25,13 @@ class SqlAdapter(Adapter[SqlControl]):
         # TODO: rework
         # Create engine
         assert control.driver
-        source = sa.engine.URL(
+        source = sa.engine.URL.create(
             drivername=control.driver,
             username=control.user,
             password=control.password,
             host=control.host,
             port=control.port,
             database=control.database,
-            query={},  # type: ignore
         ).render_as_string()
         if control and control.basepath:
             url = urlsplit(source)
@@ -76,8 +75,10 @@ class SqlAdapter(Adapter[SqlControl]):
     def read_package(self) -> Package:
         package = Package(resources=[])
         for table in self.metadata.sorted_tables:
-            control = SqlControl(table=table.name)
-            resource = Resource(self.engine.url.render_as_string(), control=control)
+            name = str(table.name)
+            control = SqlControl(table=name)
+            path = self.engine.url.render_as_string()
+            resource = Resource(path, name=name, control=control)
             package.add_resource(resource)
         return package
 
