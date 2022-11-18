@@ -50,14 +50,16 @@ class Detector(Metadata):
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
     """
-    The amount of bytes to be extracted as a buffer.
-    It defaults to 10000
+    The amount of bytes to be extracted as a buffer. It defaults to 10000.
+    The buffer_size can be increased to improve the inference accuracy to
+    detect file encoding.
     """
 
     sample_size: int = settings.DEFAULT_SAMPLE_SIZE
     """
-    The amount of rows to be extracted as a sample.
-    It defaults to 100
+    The amount of rows to be extracted as a sample for dialect/schema infering. 
+    It defaults to 100. The sample_size can be increased to improve the inference 
+    accuracy.
     """
 
     encoding_function: Optional[IEncodingFunction] = None

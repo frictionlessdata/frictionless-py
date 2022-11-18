@@ -38,7 +38,7 @@ You just need to create a Detector instance using desired options and pass to th
 
 ## Buffer Size
 
-By default, Frictionless will use the first 10000 bytes to detect encoding. The following code will be slower but the encoding detection will be more accurate:
+By default, Frictionless will use the first 10000 bytes to detect encoding. Including more bytes by increasing buffer_size can improve the inference. However, it will be slower, but the encoding detection will be more accurate. 
 
 ```python script tabs=Python
 from frictionless import Detector, describe
@@ -50,7 +50,7 @@ print(resource.encoding)
 
 ## Sample Size
 
-By default, Frictionless will use the first 100 rows to detect field types. This can be customized. The following code will be slower but the result can be more accurate
+By default, Frictionless will use the first 100 rows to detect field types. Including more samples by increasing sample_size can improve the inference. However, it will be slower, but the result will be more accurate. 
 
 ```python script tabs=Python
 from frictionless import Detector, describe
