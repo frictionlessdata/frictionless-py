@@ -2,7 +2,6 @@ import pytest
 import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource, formats
-from frictionless import FrictionlessException
 
 
 # General

@@ -225,20 +225,6 @@ class Platform:
         return boto3
 
     @cached_property
-    @extras(name="bigquery")
-    def googleapiclient_http(self):
-        import googleapiclient.http
-
-        return googleapiclient.http
-
-    @cached_property
-    @extras(name="bigquery")
-    def googleapiclient_errors(self):
-        import googleapiclient.errors
-
-        return googleapiclient.errors
-
-    @cached_property
     @extras(name="ckan")
     def frictionless_ckan_mapper_ckan_to_frictionless(self):
         import frictionless_ckan_mapper.ckan_to_frictionless

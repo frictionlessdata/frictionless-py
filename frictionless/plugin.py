@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
     from .resource import Resource, Loader, Parser
-    from .package import Manager, Storage
+    from .package import Manager
     from .checklist import Check
     from .dialect import Control
     from .error import Error
@@ -88,16 +88,4 @@ class Plugin:
         pass
 
     def select_Step(self, type: str) -> Optional[Type[Step]]:
-        pass
-
-    def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
-        """Create storage
-
-        Parameters:
-            name (str): storage name
-            options (str): storage options
-
-        Returns:
-            Storage: storage
-        """
         pass

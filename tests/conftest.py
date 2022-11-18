@@ -2,7 +2,6 @@ import os
 import pytest
 import sqlite3
 import sqlalchemy as sa
-import sqlalchemy.schema as sql
 from frictionless import platform
 from pytest_cov.embed import cleanup_on_sigterm
 from dotenv import load_dotenv
