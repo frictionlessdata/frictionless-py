@@ -46,6 +46,11 @@ class SqlControl(Control):
     Database name
     """
 
+    params: Optional[dict] = None
+    """
+    Database query string parameters
+    """
+
     table: Optional[str] = None
     """
     Table name from which to read the data.

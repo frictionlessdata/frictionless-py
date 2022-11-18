@@ -10,10 +10,9 @@ from frictionless import Package, Resource, formats, platform
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_manager_mysql_types(mysql_url):
-    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/types.json")
-    storage = source.to_sql(mysql_url, control=control)
-    target = Package.from_sql(mysql_url, control=control)
+    source.publish(mysql_url)
+    target = Package(mysql_url)
 
     # Assert metadata
     assert target.get_resource("types").schema.to_descriptor() == {
@@ -59,17 +58,13 @@ def test_sql_manager_mysql_types(mysql_url):
         },
     ]
 
-    # Cleanup storage
-    storage.delete_package(target.resource_names)  # type: ignore
-
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_manager_mysql_integrity(mysql_url):
-    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/integrity.json")
-    storage = source.to_sql(mysql_url, control=control)
-    target = Package.from_sql(mysql_url, control=control)
+    source.publish(mysql_url)
+    target = Package(mysql_url)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema.to_descriptor() == {
@@ -116,17 +111,13 @@ def test_sql_manager_mysql_integrity(mysql_url):
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
 
-    # Cleanup storage
-    storage.delete_package(target.resource_names)  # type: ignore
-
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_manager_mysql_constraints(mysql_url):
-    control = formats.SqlControl(prefix="prefix_")
     source = Package("data/storage/constraints.json")
-    storage = source.to_sql(mysql_url, control=control)
-    target = Package.from_sql(mysql_url, control=control)
+    source.publish(mysql_url)
+    target = Package(mysql_url)
 
     # Assert metadata
     assert target.get_resource("constraints").schema.to_descriptor() == {
@@ -153,9 +144,6 @@ def test_sql_manager_mysql_constraints(mysql_url):
             "maximum": 5,
         },
     ]
-
-    # Cleanup storage
-    storage.delete_package(target.resource_names)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -190,23 +178,22 @@ def test_sql_manager_mysql_constraints_not_valid_error(mysql_url, field_name, ce
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_manager_mysql_views_support(mysql_url):
     engine = sa.create_engine(mysql_url)
-    engine.execute("DROP VIEW IF EXISTS data_view")
+    engine.execute("DROP VIEW IF EXISTS view")
     engine.execute("DROP TABLE IF EXISTS data")
     engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
     engine.execute("INSERT INTO data VALUES (1, 'english'), (2, '中国人')")
-    engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
-    storage = formats.SqlStorage(engine)
-    resource = storage.read_resource("data_view")
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
+    engine.execute("CREATE VIEW view AS SELECT * FROM data")
+    with Resource(mysql_url, control=formats.sql.SqlControl(table="view")) as resource:
+        assert resource.schema.to_descriptor() == {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        }
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
-    }
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
 
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")

@@ -176,14 +176,12 @@ def test_sql_manager_postgresql_constraints_not_valid_error(postgresql_url, name
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_manager_postgresql_views_support(postgresql_url):
     engine = sa.create_engine(postgresql_url)
-    engine.execute("DROP VIEW IF EXISTS data_view")
+    engine.execute("DROP VIEW IF EXISTS view")
     engine.execute("DROP TABLE IF EXISTS data")
     engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
     engine.execute("INSERT INTO data VALUES (1, 'english'), (2, '中国人')")
-    engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
-    with Resource(
-        postgresql_url, control=formats.sql.SqlControl(table="data_view")
-    ) as res:
+    engine.execute("CREATE VIEW view AS SELECT * FROM data")
+    with Resource(postgresql_url, control=formats.sql.SqlControl(table="view")) as res:
         assert res.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},

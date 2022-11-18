@@ -32,7 +32,8 @@ class SqlManager(Manager[SqlControl]):
             host=control.host,
             port=control.port,
             database=control.database,
-        ).render_as_string()
+            query=control.params,
+        ).render_as_string(hide_password=False)
         if control and control.basepath:
             url = urlsplit(source)
             basepath = control.basepath
@@ -77,7 +78,7 @@ class SqlManager(Manager[SqlControl]):
         for table in self.metadata.sorted_tables:
             name = str(table.name)
             control = SqlControl(table=name)
-            path = self.engine.url.render_as_string()
+            path = self.engine.url.render_as_string(hide_password=False)
             schema = self.mapper.read_schema(table)
             resource = Resource(path, name=name, schema=schema, control=control)
             package.add_resource(resource)
@@ -147,15 +148,15 @@ class SqlManager(Manager[SqlControl]):
     @classmethod
     def from_source(cls, source: str, *, control=None):
         engine = platform.sqlalchemy.create_engine(source)
-        control = SqlControl()
-        control.driver = engine.url.drivername
-        control.user = engine.url.username
-        control.password = engine.url.password  # type: ignore
-        control.host = engine.url.host
-        control.port = engine.url.port
-        control.database = engine.url.database
-        # TODO: improve
-        return cls(control)  # type: ignore
+        control = control.to_copy() if control else SqlControl()
+        control.set_not_defined("driver", engine.url.drivername)
+        control.set_not_defined("user", engine.url.username)
+        control.set_not_defined("password", engine.url.password)
+        control.set_not_defined("host", engine.url.host)
+        control.set_not_defined("port", engine.url.port)
+        control.set_not_defined("database", engine.url.database)
+        control.set_not_defined("params", engine.url.query)
+        return cls(control)
 
 
 # Internal

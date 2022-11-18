@@ -86,7 +86,7 @@ def mysql_url():
         metadata = sa.MetaData(bind=conn)
         metadata.reflect()
         for table in reversed(metadata.sorted_tables):
-            conn.execute(f'DROP TABLE "{table.name}" CASCADE')
+            conn.execute(f"DROP TABLE `{table.name}` CASCADE")
 
 
 @pytest.fixture
