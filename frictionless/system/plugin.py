@@ -2,13 +2,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
-    from .resource import Resource, Loader, Parser
+    from ..resource import Resource
+    from ..checklist import Check
+    from ..dialect import Control
+    from ..error import Error
+    from ..schema import Field
+    from ..pipeline import Step
     from .adapter import Adapter
-    from .checklist import Check
-    from .dialect import Control
-    from .error import Error
-    from .schema import Field
-    from .pipeline import Step
+    from .loader import Loader
+    from .parser import Parser
 
 
 class Plugin:

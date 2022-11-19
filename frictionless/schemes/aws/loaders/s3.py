@@ -2,7 +2,7 @@ from __future__ import annotations
 import io
 from urllib.parse import urlparse
 from ..control import AwsControl
-from ....resource import Loader
+from ....system import Loader
 from ....platform import platform
 
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from ...exception import FrictionlessException
-from ...resource import Parser
+from ...system import Parser
 from .control import SqlControl
 from .adapter import SqlAdapter
 

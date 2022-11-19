@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
-from ...adapter import Adapter
+from ...system import Adapter
 from ...exception import FrictionlessException
 from ...catalog import Catalog
 from ...package import Package

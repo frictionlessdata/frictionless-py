@@ -3,7 +3,7 @@ import datetime
 import decimal
 from ...platform import platform
 from ...schema import Schema, Field
-from ...resource import Parser
+from ...system import Parser
 
 
 class PandasParser(Parser):

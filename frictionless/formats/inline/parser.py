@@ -1,8 +1,8 @@
 from __future__ import annotations
 from ...exception import FrictionlessException
-from .control import InlineControl
-from ...resource import Parser
+from ...system import Parser
 from ... import errors
+from .control import InlineControl
 
 
 class InlineParser(Parser):

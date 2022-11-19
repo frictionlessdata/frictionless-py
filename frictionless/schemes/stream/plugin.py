@@ -1,6 +1,6 @@
 from __future__ import annotations
 import io
-from ...plugin import Plugin
+from ...system import Plugin
 from .control import StreamControl
 from .loader import StreamLoader
 

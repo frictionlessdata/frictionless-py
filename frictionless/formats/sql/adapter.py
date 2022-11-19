@@ -3,7 +3,7 @@ import re
 from typing import TYPE_CHECKING
 from urllib.parse import urlsplit, urlunsplit
 from .control import SqlControl
-from ...adapter import Adapter
+from ...system import Adapter
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource

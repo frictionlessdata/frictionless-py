@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from ...resource import Loader
+from ...system import Loader
 from ...exception import FrictionlessException
 from ... import errors
 

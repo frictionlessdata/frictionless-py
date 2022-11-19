@@ -23,9 +23,8 @@ from . import methods
 
 
 if TYPE_CHECKING:
-    from .loader import Loader
-    from .parser import Parser
     from ..package import Package
+    from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 

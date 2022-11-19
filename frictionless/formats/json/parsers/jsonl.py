@@ -4,8 +4,7 @@ from ....platform import platform
 from ...inline import InlineControl
 from ....resource import Resource
 from ..control import JsonControl
-from ....resource import Parser
-from ....system import system
+from ....system import system, Parser
 
 
 class JsonlParser(Parser):

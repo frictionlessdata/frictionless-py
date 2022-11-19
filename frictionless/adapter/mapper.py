@@ -1,2 +1,0 @@
-class Mapper:
-    pass

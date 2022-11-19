@@ -6,21 +6,23 @@ from importlib import import_module
 from contextlib import contextmanager
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional, List, Any, Dict, Type, ClassVar
-from .exception import FrictionlessException
-from .platform import platform
-from .dialect import Control
-from . import settings
-from . import errors
+from ..exception import FrictionlessException
+from ..platform import platform
+from ..dialect import Control
+from .. import settings
+from .. import errors
 
 if TYPE_CHECKING:
-    from .interfaces import IStandards, IOnerror
-    from .resource import Resource, Loader, Parser
+    from ..interfaces import IStandards, IOnerror
+    from ..resource import Resource
+    from ..checklist import Check
+    from ..error import Error
+    from ..schema import Field
+    from ..pipeline import Step
     from .adapter import Adapter
+    from .loader import Loader
+    from .parser import Parser
     from .plugin import Plugin
-    from .checklist import Check
-    from .error import Error
-    from .schema import Field
-    from .pipeline import Step
 
 
 # NOTE:
@@ -184,24 +186,6 @@ class System:
 
     # Hooks
 
-    def create_loader(self, resource: Resource) -> Loader:
-        """Create loader
-
-        Parameters:
-            resource (Resource): loader resource
-
-        Returns:
-            Loader: loader
-        """
-        loader = None
-        name = resource.scheme
-        for func in self.methods["create_loader"].values():
-            loader = func(resource)
-            if loader is not None:
-                return loader
-        note = f'scheme "{name}" is not supported'
-        raise FrictionlessException(errors.SchemeError(note=note))
-
     def create_adapter(
         self,
         source: Any,
@@ -221,6 +205,24 @@ class System:
             adapter = func(source, control=control)
             if adapter is not None:
                 return adapter
+
+    def create_loader(self, resource: Resource) -> Loader:
+        """Create loader
+
+        Parameters:
+            resource (Resource): loader resource
+
+        Returns:
+            Loader: loader
+        """
+        loader = None
+        name = resource.scheme
+        for func in self.methods["create_loader"].values():
+            loader = func(resource)
+            if loader is not None:
+                return loader
+        note = f'scheme "{name}" is not supported'
+        raise FrictionlessException(errors.SchemeError(note=note))
 
     def create_parser(self, resource: Resource) -> Parser:
         """Create parser

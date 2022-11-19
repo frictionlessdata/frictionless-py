@@ -1,6 +1,6 @@
 from __future__ import annotations
 from urllib.parse import urlparse
-from ...plugin import Plugin
+from ...system import Plugin
 from .control import SqlControl
 from .parser import SqlParser
 from .adapter import SqlAdapter

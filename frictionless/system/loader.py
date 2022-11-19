@@ -13,7 +13,7 @@ from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
-    from .resource import Resource
+    from ..resource import Resource
     from ..interfaces import IBuffer, IByteStream, ITextStream
 
 

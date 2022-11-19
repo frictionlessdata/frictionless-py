@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 import warnings
 from ...platform import platform
-from ...resource import Parser
+from ...system import Parser
 from ...schema import Schema, Field
 from . import settings
 

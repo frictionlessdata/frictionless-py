@@ -4,8 +4,7 @@ import tempfile
 from ....platform import platform
 from ....exception import FrictionlessException
 from ..control import ExcelControl
-from ....resource import Parser
-from ....system import system
+from ....system import system, Parser
 from .... import errors
 
 
