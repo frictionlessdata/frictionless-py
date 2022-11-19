@@ -1,2 +1,2 @@
-from .manager import Manager
+from .adapter import Adapter
 from .package import Package

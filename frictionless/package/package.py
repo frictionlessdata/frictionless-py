@@ -142,11 +142,12 @@ class Package(Metadata):
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
 
-            # Manager
-            manager = system.create_manager(source, control=control)
-            if manager:
-                package = manager.read_package()
-                return package
+            # Adapter
+            adapter = system.create_adapter(source, control=control)
+            if adapter:
+                package = adapter.read_package()
+                if package:
+                    return package
 
             # Descriptor
             if helpers.is_descriptor_source(source):
@@ -369,10 +370,12 @@ class Package(Metadata):
         Returns:
             Any: Response from the target
         """
-        manager = system.create_manager(target, control=control)
-        if not manager:
+        adapter = system.create_adapter(target, control=control)
+        if not adapter:
             raise FrictionlessException(f"Not supported target: {target} or control")
-        response = manager.write_package(self.to_copy())
+        response = adapter.write_package(self.to_copy())
+        if not response:
+            raise FrictionlessException(f"Not supported action")
         return response
 
     # Flatten

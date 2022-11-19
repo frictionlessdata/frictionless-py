@@ -10,7 +10,7 @@ ControlType = TypeVar("ControlType", bound=Control)
 
 
 # TODO: remove here and in the system after rebase to Adapter
-class Manager(Generic[ControlType]):
+class Adapter(Generic[ControlType]):
     # TODO: shall we accept aslo source?
     def __init__(self, control: ControlType):
         self.control = control
@@ -26,15 +26,15 @@ class Manager(Generic[ControlType]):
     # Read
 
     def read_catalog(self) -> Catalog:
-        raise NotImplementedError()
+        pass
 
     def read_package(self) -> Package:
-        raise NotImplementedError()
+        pass
 
     # Write
 
     def write_catalog(self, catalog: Catalog):
-        raise NotImplementedError()
+        pass
 
     def write_package(self, package: Package):
-        raise NotImplementedError()
+        pass

@@ -9,9 +9,9 @@ from frictionless import Resource, system
 
 # Create
 
+adapter = system.create_adapter(source, control=control)
 loader = system.create_loader(resource)
 parser = system.create_parser(resource)
-parser = system.create_manager(source, control=control)
 
 # Detect
 

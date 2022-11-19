@@ -5,13 +5,12 @@ from ...exception import FrictionlessException
 from .control import CkanControl
 from ...platform import platform
 from ...catalog import Catalog
-from ...package import Package
-from ...package import Manager
+from ...package import Package, Adapter
 from ...system import system
 from ... import helpers
 
 
-class CkanManager(Manager[CkanControl]):
+class CkanAdapter(Adapter[CkanControl]):
 
     # Read
 

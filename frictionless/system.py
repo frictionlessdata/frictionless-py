@@ -15,7 +15,7 @@ from . import errors
 if TYPE_CHECKING:
     from .interfaces import IStandards, IOnerror
     from .resource import Resource, Loader, Parser
-    from .package import Manager
+    from .package import Adapter
     from .plugin import Plugin
     from .checklist import Check
     from .error import Error
@@ -37,8 +37,8 @@ class System:
     """
 
     supported_hooks: ClassVar[List[str]] = [
+        "create_adapter",
         "create_loader",
-        "create_manager",
         "create_parser",
         "detect_field_candidates",
         "detect_resource",
@@ -202,13 +202,13 @@ class System:
         note = f'scheme "{name}" is not supported'
         raise FrictionlessException(errors.SchemeError(note=note))
 
-    def create_manager(
+    def create_adapter(
         self,
         source: Any,
         *,
         control: Optional[Control] = None,
-    ) -> Optional[Manager]:
-        """Create manager
+    ) -> Optional[Adapter]:
+        """Create adapter
 
         Parameters:
             resource (Resource): loader resource
@@ -216,11 +216,11 @@ class System:
         Returns:
             Loader: loader
         """
-        manager = None
-        for func in self.methods["create_manager"].values():
-            manager = func(source, control=control)
-            if manager is not None:
-                return manager
+        adapter = None
+        for func in self.methods["create_adapter"].values():
+            adapter = func(source, control=control)
+            if adapter is not None:
+                return adapter
 
     def create_parser(self, resource: Resource) -> Parser:
         """Create parser

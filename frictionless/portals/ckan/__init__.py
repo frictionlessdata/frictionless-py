@@ -1,3 +1,3 @@
 from .control import CkanControl
-from .manager import CkanManager
+from .adapter import CkanAdapter
 from .plugin import CkanPlugin

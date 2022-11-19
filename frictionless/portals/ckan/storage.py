@@ -14,7 +14,7 @@ from .control import CkanControl
 # General
 
 
-# TODO: finish merging this with Manager and remove Storage
+# TODO: finish merging this with Adapter and remove Storage
 class CkanStorage:
     """Ckan storage implementation"""
 

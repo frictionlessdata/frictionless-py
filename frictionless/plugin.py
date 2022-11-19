@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
     from .resource import Resource, Loader, Parser
-    from .package import Manager
+    from .package import Adapter
     from .checklist import Check
     from .dialect import Control
     from .error import Error
@@ -32,13 +32,13 @@ class Plugin:
         """
         pass
 
-    def create_manager(
+    def create_adapter(
         self,
         source: Any,
         *,
         control: Optional[Control] = None,
-    ) -> Optional[Manager]:
-        """Create manager
+    ) -> Optional[Adapter]:
+        """Create adapter
 
         Parameters:
             source: source

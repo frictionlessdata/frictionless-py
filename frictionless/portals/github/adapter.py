@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
 from ...exception import FrictionlessException
 from ...catalog import Catalog
-from ...package import Package
-from ...package import Manager
+from ...package import Package, Adapter
 from ...platform import platform
 from ...resource import Resource
 
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
     from github.Repository import Repository
 
 
-class GithubManager(Manager[GithubControl]):
+class GithubAdapter(Adapter[GithubControl]):
     """Read and write data from/to Github"""
 
     # Read
