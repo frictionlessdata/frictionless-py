@@ -8,12 +8,12 @@ from .exception import FrictionlessException
 from .inquiry import Inquiry, InquiryTask
 from .metadata import Metadata
 from .package import Package
-from .platform import platform
+from .platform import Platform, platform
 from .pipeline import Pipeline, Step
 from .report import Report, ReportTask
 from .resource import Resource
 from .schema import Schema, Field
 from .settings import VERSION as __version__
 from .stats import Stats
-from .system import Adapter, Loader, Parser, Plugin, system
+from .system import Adapter, Loader, Parser, Plugin, System, system
 from .table import Header, Lookup, Row
