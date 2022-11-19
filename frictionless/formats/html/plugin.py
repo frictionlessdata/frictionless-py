@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ...plugin import Plugin
+from ...system import Plugin
 from .control import HtmlControl
 from .parser import HtmlParser
 

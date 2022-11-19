@@ -2,7 +2,7 @@ from __future__ import annotations
 from ...platform import platform
 from ...resource import Resource
 from .control import ParquetControl
-from ...resource import Parser
+from ...system import Parser
 
 
 class ParquetParser(Parser):

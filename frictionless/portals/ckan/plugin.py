@@ -1,8 +1,8 @@
 from __future__ import annotations
-from ...plugin import Plugin
+from ...system import Plugin
 from urllib.parse import urlparse
 from .control import CkanControl
-from .manager import CkanManager
+from .adapter import CkanAdapter
 
 
 # Plugin
@@ -14,7 +14,7 @@ class CkanPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_manager(self, source, *, control=None):
+    def create_adapter(self, source, *, control=None):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, CkanControl):
@@ -24,7 +24,7 @@ class CkanPlugin(Plugin):
                     control.baseurl = baseurl
                     if dataset:
                         control.dataset = dataset
-                    return CkanManager(control)
+                    return CkanAdapter(control)
 
     def select_Control(self, type):
         if type == "ckan":

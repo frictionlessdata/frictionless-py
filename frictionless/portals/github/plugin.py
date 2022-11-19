@@ -1,8 +1,8 @@
 from __future__ import annotations
-from ...plugin import Plugin
+from ...system import Plugin
 from urllib.parse import urlparse
 from .control import GithubControl
-from .manager import GithubManager
+from .adapter import GithubAdapter
 from typing import TYPE_CHECKING, Optional
 
 
@@ -19,7 +19,7 @@ class GithubPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_manager(
+    def create_adapter(
         self, source: str, *, control: Optional[portals.GithubControl] = None
     ):
         if isinstance(source, str):
@@ -30,12 +30,12 @@ class GithubPlugin(Plugin):
                     splited_url = parsed.path.split("/")[1:]
                     if len(splited_url) == 1:
                         control.user = splited_url[0]
-                        return GithubManager(control)
+                        return GithubAdapter(control)
                     if len(splited_url) == 2:
                         control.user, control.repo = splited_url
-                    return GithubManager(control)
+                    return GithubAdapter(control)
         if not source and isinstance(control, GithubControl):
-            return GithubManager(control=control)
+            return GithubAdapter(control=control)
 
     def select_Control(self, type):
         if type == "github":

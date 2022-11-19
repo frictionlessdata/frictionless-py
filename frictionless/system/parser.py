@@ -3,12 +3,12 @@ from itertools import chain
 from typing import TYPE_CHECKING, ClassVar, Optional, List
 from ..exception import FrictionlessException
 from ..platform import platform
-from ..system import system
+from .system import system
 from .. import errors
 
 if TYPE_CHECKING:
     from .loader import Loader
-    from .resource import Resource
+    from ..resource import Resource
     from ..interfaces import ICellStream, ISample
 
 

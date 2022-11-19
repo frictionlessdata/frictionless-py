@@ -117,7 +117,7 @@ ZIPPED_PACKAGE_WITH_DP = {
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_without_descriptor(options_without_dp):
+def test_zenodo_adapter_read_record_without_descriptor(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert len(package.resources) == 2
@@ -125,7 +125,7 @@ def test_zenodo_manager_read_record_without_descriptor(options_without_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_using_alias_function(options_without_dp):
+def test_zenodo_adapter_read_record_using_alias_function(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert len(package.resources) == 2
@@ -133,7 +133,7 @@ def test_zenodo_manager_read_record_using_alias_function(options_without_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_basepath_isset(options_without_dp):
+def test_zenodo_adapter_read_record_basepath_isset(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert package.resources[0].path == "capitals.csv"
@@ -144,7 +144,7 @@ def test_zenodo_manager_read_record_basepath_isset(options_without_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_with_descriptor_basepath_isset(options_with_dp):
+def test_zenodo_adapter_read_record_with_descriptor_basepath_isset(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
     assert package.resources[0].path == "data.csv"
@@ -155,7 +155,7 @@ def test_zenodo_manager_read_record_with_descriptor_basepath_isset(options_with_
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_without_apikey(options_without_dp):
+def test_zenodo_adapter_read_record_without_apikey(options_without_dp):
     url = options_without_dp.pop("url")
     control = portals.ZenodoControl(apikey=None)
     package = Package(url, control=control)
@@ -164,7 +164,7 @@ def test_zenodo_manager_read_record_without_apikey(options_without_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_only_csv(options_with_dp_multiple_files_without_dp):
+def test_zenodo_adapter_read_record_only_csv(options_with_dp_multiple_files_without_dp):
     url = options_with_dp_multiple_files_without_dp.pop("url")
     control = portals.ZenodoControl(formats=["csv"])
     package = Package(url, control=control)
@@ -194,7 +194,7 @@ def test_zenodo_manager_read_record_only_csv(options_with_dp_multiple_files_with
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_with_datapackage_descriptor(options_with_dp):
+def test_zenodo_adapter_read_record_with_datapackage_descriptor(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
     assert len(package.resources) == 2
@@ -202,7 +202,7 @@ def test_zenodo_manager_read_record_with_datapackage_descriptor(options_with_dp)
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_with_datapackage_descriptor_zipped_files(
+def test_zenodo_adapter_read_record_with_datapackage_descriptor_zipped_files(
     options_with_dp_multiple_files_with_zipped_files,
 ):
     url = options_with_dp_multiple_files_with_zipped_files.pop("url")
@@ -212,7 +212,7 @@ def test_zenodo_manager_read_record_with_datapackage_descriptor_zipped_files(
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_without_datapackage_descriptor_zipped_files(
+def test_zenodo_adapter_read_record_without_datapackage_descriptor_zipped_files(
     options_without_dp_with_zipped_files,
 ):
     # zipped folder but without package.json file
@@ -224,7 +224,7 @@ def test_zenodo_manager_read_record_without_datapackage_descriptor_zipped_files(
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_with_wrong_record():
+def test_zenodo_adapter_read_record_data_with_wrong_record():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("https://zenodo.org/record/68358988")
     error = excinfo.value.error
@@ -232,7 +232,7 @@ def test_zenodo_manager_read_record_data_with_wrong_record():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_with_wrong_url():
+def test_zenodo_adapter_read_record_data_with_wrong_url():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("https://zenodo.org/6835898")
     error = excinfo.value.error
@@ -240,7 +240,7 @@ def test_zenodo_manager_read_record_data_with_wrong_url():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_with_control_param_record(options_without_dp):
+def test_zenodo_adapter_read_record_with_control_param_record(options_without_dp):
     record = options_without_dp.pop("record")
     control = portals.ZenodoControl(record=record)
     package = Package(control=control)
@@ -249,7 +249,7 @@ def test_zenodo_manager_read_record_with_control_param_record(options_without_dp
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_without_record_and_url():
+def test_zenodo_adapter_read_record_without_record_and_url():
     control = portals.ZenodoControl()
     with pytest.raises(FrictionlessException) as excinfo:
         Package(control=control)
@@ -258,7 +258,7 @@ def test_zenodo_manager_read_record_without_record_and_url():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_with_empty_package(
+def test_zenodo_adapter_read_record_with_empty_package(
     options_with_dp_multiple_files_without_dp,
 ):
     record = options_with_dp_multiple_files_without_dp.pop("record")
@@ -272,7 +272,7 @@ def test_zenodo_manager_read_record_with_empty_package(
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data(options_without_dp):
+def test_zenodo_adapter_read_record_data(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert len(package.resources) == 2
@@ -286,7 +286,7 @@ def test_zenodo_manager_read_record_data(options_without_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_with_datapackage_descriptor(options_with_dp):
+def test_zenodo_adapter_read_record_data_with_datapackage_descriptor(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
     assert len(package.resources) == 2
@@ -307,7 +307,7 @@ def test_zenodo_manager_read_record_data_with_datapackage_descriptor(options_wit
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_and_validate(options_with_dp):
+def test_zenodo_adapter_read_record_and_validate(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
     report = package.validate()
@@ -315,7 +315,7 @@ def test_zenodo_manager_read_record_and_validate(options_with_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_and_analyze(options_with_dp):
+def test_zenodo_adapter_read_record_and_analyze(options_with_dp):
     url = options_with_dp.pop("url")
     package = Package(url)
     analysis = package.analyze()
@@ -324,7 +324,7 @@ def test_zenodo_manager_read_record_and_analyze(options_with_dp):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_with_datapackage_descriptor_zipped_files(
+def test_zenodo_adapter_read_record_data_with_datapackage_descriptor_zipped_files(
     options_with_dp_multiple_files_with_zipped_files,
 ):
     url = options_with_dp_multiple_files_with_zipped_files.pop("url")
@@ -347,7 +347,7 @@ def test_zenodo_manager_read_record_data_with_datapackage_descriptor_zipped_file
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_from_zipped_file(
+def test_zenodo_adapter_read_record_data_from_zipped_file(
     options_with_zipped_resource_file,
 ):
     url = options_with_zipped_resource_file.pop("url")
@@ -356,7 +356,7 @@ def test_zenodo_manager_read_record_data_from_zipped_file(
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_xls(options_with_dp_multiple_files_without_dp):
+def test_zenodo_adapter_read_record_data_xls(options_with_dp_multiple_files_without_dp):
     record = options_with_dp_multiple_files_without_dp.pop("record")
     package = Package(control=portals.ZenodoControl(record=record, formats=["xls"]))
     assert package.resources[0].name == "table"
@@ -367,7 +367,7 @@ def test_zenodo_manager_read_record_data_xls(options_with_dp_multiple_files_with
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_xlsx(options_with_dp_multiple_files_without_dp):
+def test_zenodo_adapter_read_record_data_xlsx(options_with_dp_multiple_files_without_dp):
     record = options_with_dp_multiple_files_without_dp.pop("record")
     package = Package(control=portals.ZenodoControl(record=record, formats=["xlsx"]))
     assert package.resources[0].name == "table"
@@ -378,7 +378,7 @@ def test_zenodo_manager_read_record_data_xlsx(options_with_dp_multiple_files_wit
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_tsv(options_with_dp_multiple_files_without_dp):
+def test_zenodo_adapter_read_record_data_tsv(options_with_dp_multiple_files_without_dp):
     record = options_with_dp_multiple_files_without_dp.pop("record")
     package = Package(control=portals.ZenodoControl(record=record, formats=["tsv"]))
     assert package.resources[0].name == "table"
@@ -390,7 +390,7 @@ def test_zenodo_manager_read_record_data_tsv(options_with_dp_multiple_files_with
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_ods(options_with_dp_multiple_files_without_dp):
+def test_zenodo_adapter_read_record_data_ods(options_with_dp_multiple_files_without_dp):
     record = options_with_dp_multiple_files_without_dp.pop("record")
     package = Package(control=portals.ZenodoControl(record=record, formats=["ods"]))
     assert package.resources[0].name == "table"
@@ -401,7 +401,7 @@ def test_zenodo_manager_read_record_data_ods(options_with_dp_multiple_files_with
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_ndjson(
+def test_zenodo_adapter_read_record_data_ndjson(
     options_with_dp_multiple_files_without_dp,
 ):
     record = options_with_dp_multiple_files_without_dp.pop("record")
@@ -414,7 +414,7 @@ def test_zenodo_manager_read_record_data_ndjson(
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_jsonl(options_with_dp_multiple_files_without_dp):
+def test_zenodo_adapter_read_record_data_jsonl(options_with_dp_multiple_files_without_dp):
     record = options_with_dp_multiple_files_without_dp.pop("record")
     package = Package(control=portals.ZenodoControl(record=record, formats=["jsonl"]))
     assert package.resources[0].name == "table"
@@ -425,7 +425,7 @@ def test_zenodo_manager_read_record_data_jsonl(options_with_dp_multiple_files_wi
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_read_record_data_remote(options_with_dp_with_remote_resources):
+def test_zenodo_adapter_read_record_data_remote(options_with_dp_with_remote_resources):
     record = options_with_dp_with_remote_resources.pop("record")
     package = Package(control=portals.ZenodoControl(record=record))
     assert package.resources[0].name == "first-http-resource"
@@ -442,7 +442,7 @@ def test_zenodo_manager_read_record_data_remote(options_with_dp_with_remote_reso
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write(tmp_path):
+def test_zenodo_adapter_write(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/metadata.json",
         tmp_path=tmp_path,
@@ -453,7 +453,7 @@ def test_zenodo_manager_write(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_ods(tmp_path):
+def test_zenodo_adapter_write_ods(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/ods.metadata.json",
         tmp_path=tmp_path,
@@ -464,7 +464,7 @@ def test_zenodo_manager_write_ods(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_jsonl(tmp_path):
+def test_zenodo_adapter_write_jsonl(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/jsonl.metadata.json",
         tmp_path=tmp_path,
@@ -475,7 +475,7 @@ def test_zenodo_manager_write_jsonl(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_ndjson(tmp_path):
+def test_zenodo_adapter_write_ndjson(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/ndjson.metadata.json",
         tmp_path=tmp_path,
@@ -486,7 +486,7 @@ def test_zenodo_manager_write_ndjson(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_with_descriptor(tmp_path):
+def test_zenodo_adapter_write_with_descriptor(tmp_path):
     descriptor = {
         "name": "test-tabulator",
         "resources": [
@@ -512,7 +512,7 @@ def test_zenodo_manager_write_with_descriptor(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_without_apikey():
+def test_zenodo_adapter_write_without_apikey():
     control = portals.ZenodoControl(
         metafn="data/zenodo/metadata.json",
         apikey=None,
@@ -524,7 +524,7 @@ def test_zenodo_manager_write_without_apikey():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_without_wrong_apikey():
+def test_zenodo_adapter_write_without_wrong_apikey():
     control = portals.ZenodoControl(
         metafn="data/zenodo/metadata.json",
         apikey="test",
@@ -540,7 +540,7 @@ def test_zenodo_manager_write_without_wrong_apikey():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_without_metadata(tmp_path):
+def test_zenodo_adapter_write_without_metadata(tmp_path):
     control = portals.ZenodoControl(
         tmp_path=tmp_path,
     )
@@ -552,7 +552,7 @@ def test_zenodo_manager_write_without_metadata(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_default_base_url(tmp_path):
+def test_zenodo_adapter_write_default_base_url(tmp_path):
     control = portals.ZenodoControl(
         tmp_path=tmp_path,
     )
@@ -560,7 +560,7 @@ def test_zenodo_manager_write_default_base_url(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_without_base_url():
+def test_zenodo_adapter_write_without_base_url():
     control = portals.ZenodoControl(base_url=None)
     package = Package("data/datapackage.json")
     with pytest.raises(AssertionError) as excinfo:
@@ -569,7 +569,7 @@ def test_zenodo_manager_write_without_base_url():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_read_package_published_to_zenodo():
+def test_zenodo_adapter_write_read_package_published_to_zenodo():
     package = Package("https://zenodo.org/record/7096849")
     assert package.resources[1].read_rows() == [
         {"id": 1, "name": "中国人"},
@@ -578,7 +578,7 @@ def test_zenodo_manager_write_read_package_published_to_zenodo():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_resources_with_inline_data(tmp_path):
+def test_zenodo_adapter_write_resources_with_inline_data(tmp_path):
     descriptor = {
         "name": "test-package-with_inline-data",
         "resources": [{"name": "test", "data": [{"a": 1, "b": 2}]}],
@@ -593,7 +593,7 @@ def test_zenodo_manager_write_resources_with_inline_data(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_resources_with_remote_url(tmp_path):
+def test_zenodo_adapter_write_resources_with_remote_url(tmp_path):
     descriptor = {
         "name": "test-repo-resources-with-http-data-csv",
         "resources": [
@@ -620,7 +620,7 @@ def test_zenodo_manager_write_resources_with_remote_url(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_resources_with_deposition_id(tmp_path):
+def test_zenodo_adapter_write_resources_with_deposition_id(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/deposition.metadata.json",
         tmp_path=tmp_path,
@@ -632,7 +632,7 @@ def test_zenodo_manager_write_resources_with_deposition_id(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_resources_with_deposition_url(tmp_path):
+def test_zenodo_adapter_write_resources_with_deposition_url(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/depositionurl.metadata.json",
         tmp_path=tmp_path,
@@ -643,7 +643,7 @@ def test_zenodo_manager_write_resources_with_deposition_url(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_write_resources_to_publish(tmp_path):
+def test_zenodo_adapter_write_resources_to_publish(tmp_path):
     control = portals.ZenodoControl(
         metafn="data/zenodo/publish.metadata.json",
         tmp_path=tmp_path,
@@ -657,14 +657,14 @@ def test_zenodo_manager_write_resources_to_publish(tmp_path):
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search():
+def test_zenodo_adapter_catalog_search():
     control = portals.ZenodoControl(search='notes:"TDWD"')
     catalog = Catalog(control=control)
     assert catalog.packages[0].to_descriptor() == PACKAGE_WITHOUT_DP
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_notes():
+def test_zenodo_adapter_catalog_search_by_notes():
     control = portals.ZenodoControl(search='notes:"TDBASIC"')
     catalog = Catalog(control=control)
     package = catalog.packages[0].to_descriptor()
@@ -672,7 +672,7 @@ def test_zenodo_manager_catalog_search_by_notes():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_title():
+def test_zenodo_adapter_catalog_search_by_title():
     control = portals.ZenodoControl(
         search='title:"Frictionless Data Test Dataset Without Descriptor"'
     )
@@ -682,7 +682,7 @@ def test_zenodo_manager_catalog_search_by_title():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_creators_name():
+def test_zenodo_adapter_catalog_search_by_creators_name():
     control = portals.ZenodoControl(search='creators.name:"FD Tester Creator"')
     catalog = Catalog(control=control)
     package = catalog.packages[0].to_descriptor()
@@ -690,7 +690,7 @@ def test_zenodo_manager_catalog_search_by_creators_name():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_doi():
+def test_zenodo_adapter_catalog_search_by_doi():
     control = portals.ZenodoControl(doi="10.5281/zenodo.7078768")
     catalog = Catalog(control=control)
     assert len(catalog.packages) == 1
@@ -698,7 +698,7 @@ def test_zenodo_manager_catalog_search_by_doi():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_all_versions():
+def test_zenodo_adapter_catalog_search_by_all_versions():
     control = portals.ZenodoControl(search='creators.name:"FD Tester"', all_versions=True)
     catalog = Catalog(control=control)
     assert len(catalog.packages) == 6
@@ -706,14 +706,14 @@ def test_zenodo_manager_catalog_search_by_all_versions():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_type():
+def test_zenodo_adapter_catalog_search_by_type():
     control = portals.ZenodoControl(search='creators.name:"FD Tester"', rtype="dataset")
     catalog = Catalog(control=control)
     assert len(catalog.packages) == 3
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_subtype():
+def test_zenodo_adapter_catalog_search_by_subtype():
     control = portals.ZenodoControl(
         search='creators.name:"FD Tester"', rtype="publication"
     )
@@ -724,7 +724,7 @@ def test_zenodo_manager_catalog_search_by_subtype():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_bounds():
+def test_zenodo_adapter_catalog_search_by_bounds():
     control = portals.ZenodoControl(
         bounds="-124.277344,30.221102,-78.310547,49.152970",
         rtype="dataset",
@@ -740,7 +740,7 @@ def test_zenodo_manager_catalog_search_by_bounds():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_size_and_page():
+def test_zenodo_adapter_catalog_search_by_size_and_page():
     control = portals.ZenodoControl(
         page=1, size=2, search='title:"Frictionless Data Test"'
     )
@@ -749,7 +749,7 @@ def test_zenodo_manager_catalog_search_by_size_and_page():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_sort_by_bestmatch():
+def test_zenodo_adapter_catalog_search_sort_by_bestmatch():
     control = portals.ZenodoControl(
         search='creators.name:"FD Tester"', sort="bestmatch", page=1, size=1
     )
@@ -758,7 +758,7 @@ def test_zenodo_manager_catalog_search_sort_by_bestmatch():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_sort_by_mostrecent():
+def test_zenodo_adapter_catalog_search_sort_by_mostrecent():
     control = portals.ZenodoControl(
         search='creators.name:"FD Tester"', sort="mostrecent", page=1, size=1
     )
@@ -767,7 +767,7 @@ def test_zenodo_manager_catalog_search_sort_by_mostrecent():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_sort_by_mostrecent_desc():
+def test_zenodo_adapter_catalog_search_sort_by_mostrecent_desc():
     control = portals.ZenodoControl(
         search='creators.name:"FD Tester"', sort="-mostrecent", page=1, size=1
     )
@@ -776,7 +776,7 @@ def test_zenodo_manager_catalog_search_sort_by_mostrecent_desc():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_with_communities():
+def test_zenodo_adapter_catalog_search_with_communities():
     control = portals.ZenodoControl(rtype="dataset", communities="zenodo", page=3, size=1)
     catalog = Catalog(control=control)
     assert len(catalog.packages) == 1
@@ -787,7 +787,7 @@ def test_zenodo_manager_catalog_search_with_communities():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_search_by_custom():
+def test_zenodo_adapter_catalog_search_by_custom():
     control = portals.ZenodoControl(rcustom="[dwc:family]:[Felidae]")
     # No data package matches with the above custom keyword so
     # empty packages are returned
@@ -798,7 +798,7 @@ def test_zenodo_manager_catalog_search_by_custom():
 
 
 @pytest.mark.vcr
-def test_zenodo_manager_catalog_single_record():
+def test_zenodo_adapter_catalog_single_record():
     control = portals.ZenodoControl(record="7078768")
     catalog = Catalog(control=control)
     assert catalog.packages[0].to_descriptor() == PACKAGE_WITHOUT_DP

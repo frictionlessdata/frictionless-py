@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re
 from ...platform import platform
-from ...resource import Parser
+from ...system import Parser
 from ...resource import Resource
 from ...exception import FrictionlessException
 from .control import GsheetsControl

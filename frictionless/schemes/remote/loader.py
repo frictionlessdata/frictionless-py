@@ -2,8 +2,7 @@ from __future__ import annotations
 import io
 from .control import RemoteControl
 from ...platform import platform
-from ...resource import Loader
-from ...system import system
+from ...system import system, Loader
 
 
 class RemoteLoader(Loader):

@@ -53,11 +53,12 @@ class Catalog(Metadata):
     ):
         if source is not None or control is not None:
 
-            # Manager
-            manager = system.create_manager(source, control=control)
-            if manager:
-                catalog = manager.read_catalog()
-                return catalog
+            # Adapter
+            adapter = system.create_adapter(source, control=control)
+            if adapter:
+                catalog = adapter.read_catalog()
+                if catalog:
+                    return catalog
 
             # Descriptor
             if helpers.is_descriptor_source(source):
@@ -74,13 +75,13 @@ class Catalog(Metadata):
 
     title: Optional[str]
     """
-    A Catalog title according to the specs. It should be a 
+    A Catalog title according to the specs. It should be a
     human-oriented title of the resource.
     """
 
     description: Optional[str]
     """
-    A Catalog description according to the specs. It should be a 
+    A Catalog description according to the specs. It should be a
     human-oriented description of the resource.
     """
 
@@ -91,7 +92,7 @@ class Catalog(Metadata):
 
     basepath: Optional[str]
     """
-    A basepath of the catalog. The normpath of the resource is joined 
+    A basepath of the catalog. The normpath of the resource is joined
     `basepath` and `/path`
     """
 

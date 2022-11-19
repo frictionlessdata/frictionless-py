@@ -2,13 +2,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
-    from .resource import Resource, Loader, Parser
-    from .package import Manager
-    from .checklist import Check
-    from .dialect import Control
-    from .error import Error
-    from .schema import Field
-    from .pipeline import Step
+    from ..resource import Resource
+    from ..checklist import Check
+    from ..dialect import Control
+    from ..error import Error
+    from ..schema import Field
+    from ..pipeline import Step
+    from .adapter import Adapter
+    from .loader import Loader
+    from .parser import Parser
 
 
 class Plugin:
@@ -32,13 +34,13 @@ class Plugin:
         """
         pass
 
-    def create_manager(
+    def create_adapter(
         self,
         source: Any,
         *,
         control: Optional[Control] = None,
-    ) -> Optional[Manager]:
-        """Create manager
+    ) -> Optional[Adapter]:
+        """Create adapter
 
         Parameters:
             source: source

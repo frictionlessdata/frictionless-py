@@ -7,14 +7,13 @@ from .error import Error
 from .exception import FrictionlessException
 from .inquiry import Inquiry, InquiryTask
 from .metadata import Metadata
-from .package import Package, Manager
+from .package import Package
 from .platform import platform
-from .plugin import Plugin
 from .pipeline import Pipeline, Step
 from .report import Report, ReportTask
-from .resource import Resource, Loader, Parser
+from .resource import Resource
 from .schema import Schema, Field
 from .settings import VERSION as __version__
 from .stats import Stats
-from .system import System, system
+from .system import Adapter, Loader, Parser, Plugin, system
 from .table import Header, Lookup, Row

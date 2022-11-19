@@ -2,15 +2,15 @@ import os
 from pathlib import Path
 from typing import List, Dict, Any, Union
 from .control import ZenodoControl
+from ...system import Adapter
 from ...catalog import Catalog
 from ...exception import FrictionlessException
 from ...package import Package
-from ...package import Manager
 from ...platform import platform
 from ...resource import Resource
 
 
-class ZenodoManager(Manager[ZenodoControl]):
+class ZenodoAdapter(Adapter[ZenodoControl]):
 
     # Read
 

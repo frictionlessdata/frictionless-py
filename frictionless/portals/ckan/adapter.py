@@ -2,16 +2,15 @@ import os
 import json
 from typing import Optional
 from ...exception import FrictionlessException
-from .control import CkanControl
+from ...system import system, Adapter
 from ...platform import platform
 from ...catalog import Catalog
 from ...package import Package
-from ...package import Manager
-from ...system import system
 from ... import helpers
+from .control import CkanControl
 
 
-class CkanManager(Manager[CkanControl]):
+class CkanAdapter(Adapter[CkanControl]):
 
     # Read
 

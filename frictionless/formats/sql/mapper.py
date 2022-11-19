@@ -55,7 +55,7 @@ class SqlMapper:
                 for element in constraint.elements:
                     own_fields.append(str(element.parent.name))
                     if element.column.table.name != table.name:
-                        resource = element.column.table.name
+                        resource = str(element.column.table.name)
                     foreign_fields.append(str(element.column.name))
                 ref = {"resource": resource, "fields": foreign_fields}
                 schema.foreign_keys.append({"fields": own_fields, "reference": ref})

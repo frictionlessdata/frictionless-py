@@ -11,8 +11,7 @@ from ....exception import FrictionlessException
 from ....platform import platform
 from ..control import ExcelControl
 from ....resource import Resource
-from ....resource import Parser
-from ....system import system
+from ....system import system, Parser
 from .... import errors
 from .. import settings
 
