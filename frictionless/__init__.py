@@ -1,4 +1,5 @@
 from .actions import describe, extract, transform, validate
+from .adapter import Adapter, Mapper
 from .catalog import Catalog
 from .checklist import Checklist, Check
 from .detector import Detector
@@ -7,7 +8,7 @@ from .error import Error
 from .exception import FrictionlessException
 from .inquiry import Inquiry, InquiryTask
 from .metadata import Metadata
-from .package import Package, Adapter
+from .package import Package
 from .platform import platform
 from .plugin import Plugin
 from .pipeline import Pipeline, Step

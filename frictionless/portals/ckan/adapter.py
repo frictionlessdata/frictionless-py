@@ -2,12 +2,13 @@ import os
 import json
 from typing import Optional
 from ...exception import FrictionlessException
-from .control import CkanControl
+from ...adapter import Adapter
 from ...platform import platform
 from ...catalog import Catalog
-from ...package import Package, Adapter
+from ...package import Package
 from ...system import system
 from ... import helpers
+from .control import CkanControl
 
 
 class CkanAdapter(Adapter[CkanControl]):

@@ -15,7 +15,7 @@ from . import errors
 if TYPE_CHECKING:
     from .interfaces import IStandards, IOnerror
     from .resource import Resource, Loader, Parser
-    from .package import Adapter
+    from .adapter import Adapter
     from .plugin import Plugin
     from .checklist import Check
     from .error import Error

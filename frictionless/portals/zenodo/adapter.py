@@ -2,9 +2,10 @@ import os
 from pathlib import Path
 from typing import List, Dict, Any, Union
 from .control import ZenodoControl
+from ...adapter import Adapter
 from ...catalog import Catalog
 from ...exception import FrictionlessException
-from ...package import Package, Adapter
+from ...package import Package
 from ...platform import platform
 from ...resource import Resource
 

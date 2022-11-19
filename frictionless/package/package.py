@@ -375,7 +375,7 @@ class Package(Metadata):
             raise FrictionlessException(f"Not supported target: {target} or control")
         response = adapter.write_package(self.to_copy())
         if not response:
-            raise FrictionlessException(f"Not supported action")
+            raise FrictionlessException("Not supported action")
         return response
 
     # Flatten
