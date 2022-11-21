@@ -232,6 +232,13 @@ class Platform:
         return frictionless_ckan_mapper.ckan_to_frictionless
 
     @cached_property
+    @extras(name="ckan")
+    def frictionless_ckan_mapper_frictionless_to_ckan(self):
+        import frictionless_ckan_mapper.frictionless_to_ckan
+
+        return frictionless_ckan_mapper.frictionless_to_ckan
+
+    @cached_property
     @extras(name="excel")
     def xlrd(self):
         import xlrd

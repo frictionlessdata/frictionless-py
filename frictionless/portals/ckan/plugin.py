@@ -1,8 +1,12 @@
 from __future__ import annotations
 from ...system import Plugin
 from urllib.parse import urlparse
+from typing import TYPE_CHECKING, Optional
 from .control import CkanControl
 from .adapter import CkanAdapter
+
+if TYPE_CHECKING:
+    from ... import portals
 
 
 class CkanPlugin(Plugin):
@@ -21,7 +25,11 @@ class CkanPlugin(Plugin):
                     control.baseurl = baseurl
                     if dataset:
                         control.dataset = dataset
+
+                if isinstance(control, CkanControl):
                     return CkanAdapter(control)
+        if not source and isinstance(control, CkanControl):
+            return CkanAdapter(control)
 
     def select_Control(self, type):
         if type == "ckan":

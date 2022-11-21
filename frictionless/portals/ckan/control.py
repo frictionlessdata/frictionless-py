@@ -31,25 +31,30 @@ class CkanControl(Control):
     to write files to CKAN instance.
     """
 
-    fields: Optional[List[str]] = None
+    ignore_package_errors: Optional[bool] = False
     """
-    Specify the number of fields to read. Other fields
-    will not be read.
-    """
-
-    limit: Optional[int] = None
-    """
-    Limit the number of records to read.
+    Ignore Package errors in a Catalog. If multiple packages are being downloaded
+    and one fails with an invalid descriptor, continue downloading the rest.
     """
 
-    sort: Optional[str] = None
+    ignore_schema: Optional[bool] = False
     """
-    Field by which to sort the data before reading the data.
+    Ignore dataset resources schemas
     """
 
-    filters: Optional[dict] = None
+    group_id: Optional[str] = None
     """
-    Params as a list of dict to filter the data while reading.
+    CKAN Group id to get datasets in a Catalog
+    """
+
+    organization_name: Optional[str] = None
+    """
+    CKAN Organization name to get datasets in a Catalog
+    """
+
+    search: Optional[dict] = None
+    """
+    CKAN Organization name to get datasets in a Catalog
     """
 
     # Metadata
@@ -60,9 +65,10 @@ class CkanControl(Control):
             "dataset": {"type": "string"},
             "resource": {"type": "string"},
             "apikey": {"type": "string"},
-            "fields": {"type": "array", "items": {"type": "string"}},
-            "limit": {"type": "integer"},
-            "sort": {"type": "string"},
-            "filters": {"type": "object"},
+            "group_id": {"type": "string"},
+            "organization_name": {"type": "string"},
+            "search": {"type": "string"},
+            "ignore_package_errors": {"type": "bool"},
+            "ignore_schema": {"type": "bool"},
         },
     }
