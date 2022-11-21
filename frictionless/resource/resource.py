@@ -23,9 +23,8 @@ from . import methods
 
 
 if TYPE_CHECKING:
-    from .loader import Loader
-    from .parser import Parser
     from ..package import Package
+    from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
 
@@ -51,6 +50,7 @@ class Resource(Metadata):
     analyze = methods.analyze
     describe = methods.describe
     extract = methods.extract
+    index = methods.index
     validate = methods.validate
     transform = methods.transform
 
@@ -327,7 +327,7 @@ class Resource(Metadata):
     @property
     def place(self) -> str:
         """Stringified resource location"""
-        if self.data:
+        if self.data is not None:
             return "<memory>"
         elif self.extrapaths:
             return f"{self.path} (multipart)"
@@ -900,7 +900,7 @@ class Resource(Metadata):
         Returns:
             any: resource data
         """
-        if self.data:
+        if self.data is not None:
             return self.data
         with helpers.ensure_open(self):
             text = self.read_text(size=size)
@@ -1109,7 +1109,7 @@ class Resource(Metadata):
         url = descriptor.pop("url", None)
         path = descriptor.get("path")
         data = descriptor.get("data")
-        if not path and not data and url:
+        if not path and (data is None) and url:
             descriptor.setdefault("path", url)
 
         # Path (standards/v1)
@@ -1227,6 +1227,11 @@ class Resource(Metadata):
         # Profiles
         profiles = descriptor.get("profiles", [])
         for profile in profiles:
+            if profile in ["data-resource"]:
+                continue
+            if profile == "tabular-data-resource":
+                descriptor["type"] = "table"
+                break
             yield from Metadata.metadata_validate(
                 descriptor,
                 profile=profile,
@@ -1252,7 +1257,9 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if data and not isinstance(data, (str, bool, int, float, list, dict)):
+        if (data is not None) and (
+            not isinstance(data, (str, bool, int, float, list, dict))
+        ):
             descriptor["data"] = []
 
         # Path (standards/v1)

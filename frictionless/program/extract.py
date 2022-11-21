@@ -59,6 +59,7 @@ def program_extract(
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
+    keep_delimiter: bool = common.keep_limiter,
 ):
     """
     Extract a data source.
@@ -107,8 +108,6 @@ def program_extract(
                     keyed=keyed,
                 )
             )
-        elif csv and not dialect:
-            controls.append(formats.CsvControl.from_options(delimiter=","))
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
@@ -177,7 +176,7 @@ def program_extract(
     # Normalize data
     normdata = data
     if isinstance(data, list):
-        normdata = {prepare_source(): data}
+        normdata = {prepare_source(): data}  # type: ignore
 
     # Return JSON
     if json:
@@ -195,8 +194,8 @@ def program_extract(
     # TODO: rework
     if csv:
         options = {}
-        if dialect:
-            options = pyjson.loads(dialect)
+        if dialect and keep_delimiter:
+            options = prepare_dialect().to_dict().get("csv")
         for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
             for index, row in enumerate(rows):
                 if index == 0:

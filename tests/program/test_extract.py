@@ -295,20 +295,11 @@ def test_program_extract_single_resource_csv():
     )
 
 
-# Bugs
-
-
-def test_extract_resource_from_csv_semicolon_delimiter_issue_1009():
-    actual = runner.invoke(program, "extract data/issue-1009-semicolon.csv --csv")
-    assert actual.exit_code == 0
-    assert (
-        json.dumps(actual.stdout, ensure_ascii=False)
-        == '"fieldNameA;fieldNameB\\n0123;c\\n"'
+def test_extract_resource_from_csv_semicolon_delimiter_1009():
+    actual = runner.invoke(
+        program,
+        'extract data/issue-1009-semicolon.csv --dialect \'{"delimiter": ";"}\' --csv',
     )
-
-
-def test_extract_resource_from_csv_comma_delimiter_issue_1009():
-    actual = runner.invoke(program, "extract data/issue-1009-comma.csv --csv")
     assert actual.exit_code == 0
     assert (
         json.dumps(actual.stdout, ensure_ascii=False)
@@ -316,10 +307,10 @@ def test_extract_resource_from_csv_comma_delimiter_issue_1009():
     )
 
 
-def test_extract_resource_from_csv_semicolon_delimiter_param_issue_1009():
+def test_extract_resource_from_csv_semicolon_delimiter_keep_delimiter_1009():
     actual = runner.invoke(
         program,
-        'extract data/issue-1009-semicolon.csv --dialect \'{"delimiter": ";"}\' --csv',
+        'extract data/issue-1009-semicolon.csv --dialect \'{"delimiter": ";"}\' --csv --keep-delimiter',
     )
     assert actual.exit_code == 0
     assert (
@@ -328,10 +319,10 @@ def test_extract_resource_from_csv_semicolon_delimiter_param_issue_1009():
     )
 
 
-def test_extract_resource_from_csv_comma_delimiter_param_issue_1009():
+def test_extract_resource_from_csv_comma_delimiter_1009():
     actual = runner.invoke(
         program,
-        'extract data/issue-1009-comma.csv --dialect \'{"delimiter": ","}\' --csv',
+        "extract data/issue-1009-comma.csv --csv",
     )
     assert actual.exit_code == 0
     assert (
