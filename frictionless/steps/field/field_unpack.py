@@ -8,20 +8,32 @@ from ... import fields
 
 @attrs.define(kw_only=True)
 class field_unpack(Step):
-    """Unpack field"""
+    """Unpack field.
+
+    This step can be added using the `steps` parameter for the
+    `transform` function.
+
+    """
 
     type = "field-unpack"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the field to unpack.
+    """
 
     to_names: List[str]
-    """NOTE: add docs"""
+    """
+    List of names for new fields that will be created
+    after unpacking.
+    """
 
     preserve: bool = False
-    """NOTE: add docs"""
+    """
+    Whether to preserve the source fields after unpacking.
+    """
 
     # Transform
 

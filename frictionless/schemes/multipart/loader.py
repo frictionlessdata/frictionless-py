@@ -2,7 +2,7 @@ from __future__ import annotations
 import tempfile
 from .control import MultipartControl
 from ...resource import Resource
-from ...resource import Loader
+from ...system import Loader
 from ... import helpers
 
 

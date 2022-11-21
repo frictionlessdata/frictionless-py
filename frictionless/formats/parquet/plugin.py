@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ...plugin import Plugin
+from ...system import Plugin
 from .control import ParquetControl
 from .parser import ParquetParser
 
@@ -10,11 +10,11 @@ class ParquetPlugin(Plugin):
     # Hooks
 
     def create_parser(self, resource):
-        if resource.format == "parq":
+        if resource.format == "parq" or resource.format == "parquet":
             return ParquetParser(resource)
 
     def detect_resource(self, resource):
-        if resource.format == "parq":
+        if resource.format == "parq" or resource.format == "parquet":
             resource.type = "table"
             resource.mediatype = "appliction/parquet"
 

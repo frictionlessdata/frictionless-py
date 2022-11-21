@@ -1,0 +1,37 @@
+{
+  "profile": "tabular-data-resource",
+  "name": "test-optional-fields",
+  "data": [
+    {
+      "last_name": "Smith"
+    }
+  ],
+  "schema": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "constraints": {
+          "required": true
+        }
+      },
+      {
+        "name": "first_name",
+        "type": "string",
+        "constraints": {
+          "required": false
+        }
+      },
+      {
+        "name": "last_name",
+        "type": "string",
+        "constraints": {
+          "required": false
+        }
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ]
+  }
+}

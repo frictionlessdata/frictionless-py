@@ -26,10 +26,15 @@ class Platform:
     """Platform representation"""
 
     type: ClassVar[str] = python_platform.system().lower()
-    """NOTE: add docs"""
+    """
+    Type of the platform(OS) framework is running on. For example, windows,
+    linux etc.
+    """
 
     python: ClassVar[str] = f"{sys.version_info.major}.{sys.version_info.minor}"
-    """NOTE: add docs"""
+    """
+    Python version
+    """
 
     # Core
 
@@ -148,6 +153,12 @@ class Platform:
         return petl
 
     @cached_property
+    def psycopg(self):
+        import psycopg
+
+        return psycopg
+
+    @cached_property
     def requests(self):
         import requests
 
@@ -187,6 +198,13 @@ class Platform:
 
     @cached_property
     @extras(name="api")
+    def frictionless_server(self):
+        import frictionless.server
+
+        return frictionless.server
+
+    @cached_property
+    @extras(name="api")
     def fastapi(self):
         import fastapi
 
@@ -205,20 +223,6 @@ class Platform:
         import boto3
 
         return boto3
-
-    @cached_property
-    @extras(name="bigquery")
-    def googleapiclient_http(self):
-        import googleapiclient.http
-
-        return googleapiclient.http
-
-    @cached_property
-    @extras(name="bigquery")
-    def googleapiclient_errors(self):
-        import googleapiclient.errors
-
-        return googleapiclient.errors
 
     @cached_property
     @extras(name="ckan")
@@ -341,6 +345,13 @@ class Platform:
 
     @cached_property
     @extras(name="sql")
+    def sqlalchemy_schema(self):
+        import sqlalchemy.schema
+
+        return sqlalchemy.schema
+
+    @cached_property
+    @extras(name="sql")
     def sqlalchemy_dialects_postgresql(self):
         import sqlalchemy.dialects.postgresql
 
@@ -359,6 +370,13 @@ class Platform:
         import pyzenodo3
 
         return pyzenodo3
+
+    @cached_property
+    @extras(name="zenodo")
+    def pyzenodo3_upload(self):
+        import pyzenodo3.upload
+
+        return pyzenodo3.upload
 
 
 platform = Platform()

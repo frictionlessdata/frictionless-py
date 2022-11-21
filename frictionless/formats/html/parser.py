@@ -2,8 +2,7 @@ from __future__ import annotations
 import tempfile
 from .control import HtmlControl
 from ...platform import platform
-from ...resource import Parser
-from ...system import system
+from ...system import system, Parser
 
 
 class HtmlParser(Parser):

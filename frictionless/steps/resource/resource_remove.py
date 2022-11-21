@@ -7,14 +7,21 @@ from ... import errors
 
 @attrs.define(kw_only=True)
 class resource_remove(Step):
-    """Remove resource"""
+    """Remove resource.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "resource-remove"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the resource to remove.
+    """
 
     # Transform
 

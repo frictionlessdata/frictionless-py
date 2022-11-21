@@ -6,8 +6,7 @@ from ....platform import platform
 from ...inline import InlineControl
 from ..control import JsonControl
 from ....resource import Resource
-from ....resource import Parser
-from ....system import system
+from ....system import system, Parser
 from .... import errors
 
 

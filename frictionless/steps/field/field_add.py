@@ -12,32 +12,54 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class field_add(Step):
-    """Add field"""
+    """Add field.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "field-add"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    A human-oriented name for the field.
+    """
 
     value: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Specifies value for the field.
+    """
 
     formula: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Evaluatable expressions to set the value for the field. The expressions are 
+    processed using simpleeval library.
+    """
 
     function: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Python function to set the value for the field.
+    """
 
     position: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Position index where to add the field. For example, to 
+    add the field in second position, we need to set it as 'position=2'.
+    """
 
     descriptor: Optional[IDescriptor] = None
-    """NOTE: add docs"""
+    """
+    A dictionary, which contains metadata for the field which
+    describes the properties of the field.
+    """
 
     incremental: bool = False
-    """NOTE: add docs"""
+    """
+    Indicates if it is an incremental value. If True, the sequential value is set
+    to the new field. The default value is false.
+    """
 
     # Transform
 

@@ -17,7 +17,7 @@ topics:
 news:
   text: |
     It's a beta version of Frictionless Framework (v5).
-    Read <a href="https://v4.framework.frictionlessdata.io/">Frictionless Framework (v4)</a>
+    Read <a href="https://v4.framework.frictionlessdata.io/docs/guides/guides-overview">Frictionless Framework (v4)</a>
     docs for a version that is currently installed by default by pip.
 links:
   items:
@@ -162,8 +162,6 @@ pages:
           name: Stream
     - name: File Formats
       items:
-        - path: docs/formats/bigquery
-          name: Bigquery
         - path: docs/formats/csv
           name: Csv
         - path: docs/formats/excel

@@ -22,29 +22,44 @@ if TYPE_CHECKING:
 
 @attrs.define(kw_only=True)
 class Detector(Metadata):
-    """Detector representation"""
+    """Detector representation.
+
+    This main purpose of this class is to set the parameters to define
+    how different aspects of metadata are detected.
+
+    """
 
     # State
 
     name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-oriented title for the Detector.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A brief description of the Detector.
+    """
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
     """
-    The amount of bytes to be extracted as a buffer.
-    It defaults to 10000
+    The amount of bytes to be extracted as a buffer. It defaults to 10000.
+    The buffer_size can be increased to improve the inference accuracy to
+    detect file encoding.
     """
 
     sample_size: int = settings.DEFAULT_SAMPLE_SIZE
     """
-    The amount of rows to be extracted as a sample.
-    It defaults to 100
+    The amount of rows to be extracted as a sample for dialect/schema infering. 
+    It defaults to 100. The sample_size can be increased to improve the inference 
+    accuracy.
     """
 
     encoding_function: Optional[IEncodingFunction] = None
@@ -407,6 +422,10 @@ class Detector(Metadata):
                     if not field:
                         field = Field.from_descriptor({"name": name, "type": "any"})
                     schema.add_field(field)
+                # For required fields that are missing
+                for _, field in mapping.items():
+                    if field and field.required and field.name not in labels:
+                        schema.add_field(field)
 
         # Patch schema
         if self.schema_patch:

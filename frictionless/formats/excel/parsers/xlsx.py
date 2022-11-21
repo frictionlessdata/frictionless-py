@@ -11,8 +11,7 @@ from ....exception import FrictionlessException
 from ....platform import platform
 from ..control import ExcelControl
 from ....resource import Resource
-from ....resource import Parser
-from ....system import system
+from ....system import system, Parser
 from .... import errors
 from .. import settings
 
@@ -120,6 +119,7 @@ class XlsxParser(Parser):
                 cells,
                 control.preserve_formatting,
                 control.adjust_floating_point_error,
+                stringified=control.stringified,
             )
 
         # Calculate stats
@@ -161,7 +161,9 @@ class XlsxParser(Parser):
 # Internal
 
 
-def extract_row_values(row, preserve_formatting=False, adjust_floating_point_error=False):
+def extract_row_values(
+    row, preserve_formatting=False, adjust_floating_point_error=False, stringified=False
+):
     if preserve_formatting:
         values = []
         for cell in row:
@@ -191,6 +193,10 @@ def extract_row_values(row, preserve_formatting=False, adjust_floating_point_err
                     value = new_value
             values.append(value)
         return values
+    if stringified:
+        return list(
+            str(cell.value) if cell.value is not None else cell.value for cell in row
+        )
     return list(cell.value for cell in row)
 
 

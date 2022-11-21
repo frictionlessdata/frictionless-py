@@ -21,6 +21,7 @@ PACKAGE = "frictionless"
 NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
     "moto",
+    "httpx",
     "black",
     "yattag",
     # TODO: remove after the fix
@@ -30,9 +31,7 @@ TESTS_REQUIRE = [
     "pytest",
     "pyright",
     "ipython",
-    "pymysql",
     "livemark",
-    "psycopg2",
     "pytest-cov",
     "pytest-vcr",
     "pytest-only",
@@ -42,7 +41,7 @@ TESTS_REQUIRE = [
     "pytest-timeout",
 ]
 EXTRAS_REQUIRE = {
-    "api": ["fastapi>=0.78", "uvicorn>=0.17"],
+    "api": ["fastapi>=0.78", "uvicorn>=0.17", "pydantic>=1.9", "python-multipart>=0.0"],
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
@@ -52,9 +51,11 @@ EXTRAS_REQUIRE = {
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
+    "mysql": ["sqlalchemy>=1.3", "pymysql>=1.0"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
     "parquet": ["fastparquet>=0.8"],
+    "postgresql": ["sqlalchemy>=1.3", "psycopg>=3.0", "psycopg2>=2.9"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
     "zenodo": ["pyzenodo3>=1.0"],

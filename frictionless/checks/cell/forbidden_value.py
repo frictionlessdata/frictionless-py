@@ -7,7 +7,7 @@ from ... import errors
 
 @attrs.define(kw_only=True)
 class forbidden_value(Check):
-    """Check for forbidden values in a field"""
+    """Check for forbidden values in a field."""
 
     type = "forbidden-value"
     Errors = [errors.ForbiddenValueError]
@@ -15,10 +15,16 @@ class forbidden_value(Check):
     # State
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    The name of the field to apply the check. Check will not be applied to 
+    other fields.
+    """
 
     values: List[Any]
-    """NOTE: add docs"""
+    """
+    Specify the forbidden values to check for, in the field specified by 
+    "field_name".
+    """
 
     # Validate
 

@@ -7,20 +7,33 @@ from ... import fields
 
 @attrs.define(kw_only=True)
 class table_melt(Step):
-    """Melt tables"""
+    """Melt tables.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-melt"
 
     # State
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Field name which will be use to melt table. It will keep
+    the field 'field_name' as it is but melt other fields into
+    data.
+    """
 
     variables: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    List of name of fields which will be melted into data.
+    """
 
     to_field_names: List[str] = attrs.field(factory=lambda: ["variable", "value"])
-    """NOTE: add docs"""
+    """
+    Labels for new fields that will be created "variable" and "value".
+    """
 
     # Transform
 

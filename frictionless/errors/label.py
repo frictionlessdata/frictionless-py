@@ -5,7 +5,11 @@ from .header import HeaderError
 
 @attrs.define(kw_only=True)
 class LabelError(HeaderError):
-    """Label error representation"""
+    """Label error representation.
+
+    A base class for all the errors related to the labels of the columns/fields.
+
+    """
 
     type = "label-error"
     title = "Label Error"
@@ -16,13 +20,19 @@ class LabelError(HeaderError):
     # State
 
     label: str
-    """NOTE: add docs"""
+    """
+    Label of the field that has an error.
+    """
 
     field_name: str
-    """NOTE: add docs"""
+    """
+    Name of the field that has an error.
+    """
 
     field_number: int
-    """NOTE: add docs"""
+    """
+    Index of the field that has an error.
+    """
 
     # Metadata
 

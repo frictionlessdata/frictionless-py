@@ -312,6 +312,11 @@ debug = Option(
     help="Enable debug mode",
 )
 
+root = Option(
+    default=False,
+    help="Run server as root",
+)
+
 trusted = Option(
     default=False,
     help="Follow unsafe paths",

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import io
-from ...resource import Loader
+from ...system import Loader
 from ... import helpers
 
 

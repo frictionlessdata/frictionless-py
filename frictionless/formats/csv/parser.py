@@ -4,8 +4,7 @@ import tempfile
 from itertools import chain
 from typing import TYPE_CHECKING
 from .control import CsvControl
-from ...resource import Parser
-from ...system import system
+from ...system import system, Parser
 from . import settings
 
 if TYPE_CHECKING:

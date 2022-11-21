@@ -1,6 +1,6 @@
 from __future__ import annotations
 import typing
-from ...plugin import Plugin
+from ...system import Plugin
 from .control import InlineControl
 from .parser import InlineParser
 

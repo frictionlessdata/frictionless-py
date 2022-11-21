@@ -103,5 +103,4 @@ package.to_yaml('datapackage.yaml') # Save as YAML
 ```yaml reference
 references:
   - frictionless.Package
-  - frictionless.Manager
 ```

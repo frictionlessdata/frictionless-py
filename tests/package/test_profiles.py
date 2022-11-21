@@ -5,6 +5,7 @@ from frictionless import Package, Resource, FrictionlessException, system
 # General
 
 
+@pytest.mark.vcr
 def test_package_profiles_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -17,6 +18,7 @@ def test_package_profiles_invalid_local():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_profiles_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -57,9 +59,18 @@ def test_package_external_profile_invalid_remote_from_descriptor():
         assert "required" in error.message
 
 
+@pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
+def test_package_profile_type(profile):
+    resource = Resource(name="table", path="data/table.csv")
+    package = Package(resources=[resource], profiles=[profile])
+    descriptor = package.to_descriptor()
+    assert descriptor["profiles"] == [profile]
+
+
 # Legacy
 
 
+@pytest.mark.vcr
 def test_package_profiles_from_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -71,6 +82,7 @@ def test_package_profiles_from_descriptor_standards_v1():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_profiles_to_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

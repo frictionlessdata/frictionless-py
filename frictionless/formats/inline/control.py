@@ -6,17 +6,26 @@ from ...dialect import Control
 
 @attrs.define(kw_only=True)
 class InlineControl(Control):
-    """Inline control representation"""
+    """Inline control representation.
+
+    Control class to set params for Inline reader/writer.
+
+    """
 
     type = "inline"
 
     # State
 
     keys: Optional[List[str]] = None
-    """NOTE: add docs"""
+    """
+    Specify the keys/columns to read from the resource.
+    For example: keys=["id","name"].
+    """
 
     keyed: bool = False
-    """NOTE: add docs"""
+    """
+    If set to True, It returns the data as key:value pair.
+    """
 
     # Metadata
 

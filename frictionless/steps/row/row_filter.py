@@ -7,17 +7,28 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_filter(Step):
-    """Filter rows"""
+    """Filter rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "row-filter"
 
     # State
 
     formula: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Evaluatable expressions to filter the rows. Rows that matches the formula 
+    are returned and others are ignored. The expressions are processed using 
+    simpleeval library.
+    """
 
     function: Optional[Any] = None
-    """NOTE: add docs"""
+    """
+    Python function to filter the row.
+    """
 
     # Transform
 

@@ -7,14 +7,20 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class field_remove(Step):
-    """Remove field"""
+    """Remove field.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+    """
 
     type = "field-remove"
 
     # State
 
     names: List[str]
-    """NOTE: add docs"""
+    """
+    List of fields to remove.
+    """
 
     # Transform
 

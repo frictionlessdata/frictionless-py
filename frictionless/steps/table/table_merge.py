@@ -8,26 +8,36 @@ from ...resource import Resource
 
 @attrs.define(kw_only=True)
 class table_merge(Step):
-    """Merge tables"""
+    """Merge tables.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "table-merge"
 
     # State
 
     resource: Union[Resource, str]
-    """NOTE: add docs
+    """
+    Resource to merge with.
     """
 
     field_names: List[str] = attrs.field(factory=list)
-    """NOTE: add docs
+    """
+    Specifies fixed headers for output table.
     """
 
     sort_by_field: Optional[str] = None
-    """NOTE: add docs
+    """
+    Field name by which to sort the record after merging.
     """
 
     ignore_fields: bool = False
-    """NOTE: add docs
+    """
+    If ignore_fields is set to True, it will merge two resource 
+    without matching headers.
     """
 
     # Transform

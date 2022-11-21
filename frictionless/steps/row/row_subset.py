@@ -6,17 +6,27 @@ from ...pipeline import Step
 
 @attrs.define(kw_only=True)
 class row_subset(Step):
-    """Subset rows"""
+    """Subset rows.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "row-subset"
 
     # State
 
     subset: str
-    """NOTE: add docs"""
+    """
+    It can take different values such as "conflicts","distinct","duplicates"
+    and "unique".
+    """
 
     field_name: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    Name of field to which the subset functions will be applied. 
+    """
 
     # Transform
 

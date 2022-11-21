@@ -870,6 +870,7 @@ def test_validate_inline_not_a_binary_issue_349():
         assert report.valid
 
 
+@pytest.mark.ci
 def test_validate_newline_inside_label_issue_811():
     detector = Detector(sample_size=8000)
     report = validate("data/issue-811.csv", detector=detector)

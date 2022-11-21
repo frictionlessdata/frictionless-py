@@ -6,20 +6,32 @@ from ...dialect import Control
 
 @attrs.define(kw_only=True)
 class JsonControl(Control):
-    """Json control representation"""
+    """Json control representation.
+
+    Control class to set params for JSON reader/writer class.
+
+    """
 
     type = "json"
 
     # State
 
     keys: Optional[List[str]] = None
-    """NOTE: add docs"""
+    """
+    Specifies the keys/columns to read from the resource.
+    For example: keys=["id","name"].
+    """
 
     keyed: bool = False
-    """NOTE: add docs"""
+    """
+    If set to True, It returns the data as key:value pair. Default value is False.
+    """
 
     property: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    This property specifies the path to the attribute in a json file, it it has
+    nested fields. 
+    """
 
     # Metadata
 

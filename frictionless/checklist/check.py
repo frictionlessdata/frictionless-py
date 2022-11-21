@@ -18,21 +18,36 @@ if TYPE_CHECKING:
 # TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
 @attrs.define(kw_only=True)
 class Check(Metadata):
-    """Check representation."""
+    """Check representation.
+
+    A base class for all the checks. To add a new custom check, it has to be derived
+    from this class.
+
+    """
 
     type: ClassVar[str]
-    """NOTE: add docs"""
+    """
+    A short name(preferably human-readable) for the Check.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with "-" or "_".
+    """
 
     Errors: ClassVar[List[Type[Error]]] = []
-    """NOTE: add docs"""
+    """
+    List of errors that are being used in the Check.    
+    """
 
     # State
 
     title: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A human-readable title for the Check.
+    """
 
     description: Optional[str] = None
-    """NOTE: add docs"""
+    """
+    A detailed description for the Check.
+    """
 
     # Props
 

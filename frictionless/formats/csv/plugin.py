@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ...plugin import Plugin
+from ...system import Plugin
 from .control import CsvControl
 from .parser import CsvParser
 

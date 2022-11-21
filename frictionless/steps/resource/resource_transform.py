@@ -8,17 +8,27 @@ from ... import errors
 
 @attrs.define(kw_only=True)
 class resource_transform(Step):
-    """Transform resource"""
+    """Transform resource.
+
+    This step can be added using the `steps` parameter
+    for the `transform` function.
+
+    """
 
     type = "resource-transform"
 
     # State
 
     name: str
-    """NOTE: add docs"""
+    """
+    Name of the resource to transform.
+    """
 
     steps: List[Step]
-    """NOTE: add docs"""
+    """
+    List of transformation steps to apply to the given 
+    resource.
+    """
 
     # Transform
 

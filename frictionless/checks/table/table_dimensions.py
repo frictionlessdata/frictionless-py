@@ -7,7 +7,7 @@ from ... import errors
 
 @attrs.define(kw_only=True)
 class table_dimensions(Check):
-    """Check for minimum and maximum table dimensions"""
+    """Check for minimum and maximum table dimensions."""
 
     type = "table-dimensions"
     Errors = [errors.TableDimensionsError]
@@ -15,22 +15,46 @@ class table_dimensions(Check):
     # State
 
     num_rows: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Specify the number of rows to compare with actual rows in
+    the table. If the actual number of rows are less than num_rows it will 
+    notify user as errors.
+    """
 
     min_rows: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Specify the minimum number of rows that should be in the table. 
+    If the actual number of rows are less than min_rows it will notify user 
+    as errors.
+    """
 
     max_rows: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Specify the maximum number of rows allowed. 
+    If the actual number of rows are more than max_rows it will notify user 
+    as errors.
+    """
 
     num_fields: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Specify the number of fields to compare with actual fields in
+    the table. If the actual number of fields are less than num_fields it will 
+    notify user as errors.
+    """
 
     min_fields: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Specify the minimum number of fields that should be in the table. 
+    If the actual number of fields are less than min_fields it will notify user 
+    as errors.
+    """
 
     max_fields: Optional[int] = None
-    """NOTE: add docs"""
+    """
+    Specify the maximum number of expected fields. 
+    If the actual number of fields are more than max_fields it will notify user 
+    as errors.
+    """
 
     # Validate
 

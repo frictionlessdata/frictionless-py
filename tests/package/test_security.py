@@ -41,6 +41,7 @@ def test_package_resource_from_path_error_unsafe():
     assert reasons[0].note.count('resource.json" is not safe')
 
 
+@pytest.mark.vcr
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
@@ -56,6 +57,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     assert reasons[0].note.count('camtrap.json" is not safe')
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
