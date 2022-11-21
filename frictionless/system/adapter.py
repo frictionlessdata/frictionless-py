@@ -9,6 +9,12 @@ if TYPE_CHECKING:
 ControlType = TypeVar("ControlType", bound=Control)
 
 
+# NOTE:
+# There should be a way to check the supported functionality of a concrete adapter
+# For example, does it suport `read_catalog`? We can implement it based on what
+# methods return (or not) or use some kins of `supported_actions` property
+
+
 class Adapter(Generic[ControlType]):
     def __init__(self, control: ControlType):
         self.control = control
