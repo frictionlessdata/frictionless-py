@@ -58,7 +58,7 @@ class Schema(Metadata):
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
-    List of string values to be set as missing values in the schema fields. If any of string in 
+    List of string values to be set as missing values in the schema fields. If any of string in
     missing values is found in any of the field value then it is set as None.
     """
 
@@ -233,37 +233,9 @@ class Schema(Metadata):
         Returns:
             Schema: schema instance
         """
-        schema = Schema()
         profile = cls.metadata_retrieve(profile)
-        required = profile.get("required", [])
-        assert isinstance(required, list)
-        properties = profile.get("properties", {})
-        assert isinstance(properties, dict)
-        for name, prop in properties.items():
-
-            # Type
-            type = prop.get("type", "any")
-            assert isinstance(type, str)
-            if type not in ["string", "integer", "number", "boolean", "object", "array"]:
-                type = "any"
-
-            # Field
-            assert isinstance(name, str)
-            assert isinstance(prop, dict)
-            field = Field.from_descriptor({"type": type, "name": name})
-            schema.add_field(field)
-
-            # Description
-            description = prop.get("description")
-            if description:
-                assert isinstance(description, str)
-                field.description = description
-
-            # Required
-            if name in required:
-                field.required = True
-
-        return schema
+        mapper = platform.frictionless_formats.jsonschema.JsonschemaMapper()
+        return mapper.read_schema(profile)
 
     def to_excel_template(self, path: str):
         """Export schema as an excel template
