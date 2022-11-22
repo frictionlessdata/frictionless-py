@@ -164,6 +164,8 @@ pages:
       items:
         - path: docs/formats/csv
           name: Csv
+        - path: docs/formats/erd
+          name: Erd
         - path: docs/formats/excel
           name: Excel
         - path: docs/formats/gsheets
