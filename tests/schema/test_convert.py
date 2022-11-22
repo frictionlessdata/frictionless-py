@@ -137,43 +137,6 @@ def test_schema_to_summary_with_name_missing_for_some_fields():
     assert error.description == "Provided schema is not valid."
 
 
-# Markdown
-
-
-def test_schema_to_markdown():
-    schema = Schema.from_descriptor(DESCRIPTOR)
-    md_file_path = "data/fixtures/output-markdown/schema.md"
-    with open(md_file_path, encoding="utf-8") as file:
-        expected = file.read()
-    assert schema.to_markdown().strip() == expected
-
-
-def test_schema_to_markdown_table():
-    schema = Schema.from_descriptor(DESCRIPTOR)
-
-    # Read
-    expected_file_path = "data/fixtures/output-markdown/schema-table.md"
-    with open(expected_file_path, encoding="utf-8") as file:
-        assert schema.to_markdown(table=True).strip() == file.read().strip()
-
-
-def test_schema_to_markdown_file(tmpdir):
-    schema = Schema.from_descriptor(DESCRIPTOR)
-
-    # Read - expected
-    expected_file_path = "data/fixtures/output-markdown/schema.md"
-    with open(expected_file_path, encoding="utf-8") as file:
-        expected = file.read()
-
-    # Write
-    output_file_path = str(tmpdir.join("schema.md"))
-    schema.to_markdown(path=output_file_path).strip()
-
-    # Read - output
-    with open(output_file_path, encoding="utf-8") as file:
-        assert expected == file.read()
-
-
 # Excel template
 
 

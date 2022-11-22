@@ -1,5 +1,4 @@
 import json
-import pytest
 from frictionless import Resource, Report
 
 
@@ -88,14 +87,3 @@ def test_report_to_json():
     output_file_path = "data/report.json"
     with open(output_file_path) as file:
         assert json.loads(report.to_json()) == json.loads(file.read())
-
-
-# Markdown
-
-
-@pytest.mark.skip
-def test_report_to_markdown():
-    report = Report.from_descriptor("data/report.json")
-    output_file_path = "data/fixtures/convert/report.md"
-    with open(output_file_path) as file:
-        assert report.to_markdown().strip() == file.read()

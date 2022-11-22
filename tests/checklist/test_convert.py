@@ -43,13 +43,3 @@ def test_checklist_to_json():
             {"type": "ascii-value"},
         ]
     }
-
-
-# Markdown
-
-
-def test_checklist_markdown():
-    checklist = Checklist.from_descriptor("data/checklist.json")
-    output_file_path = "data/fixtures/convert/checklist.md"
-    with open(output_file_path) as file:
-        assert checklist.to_markdown().strip() == file.read()

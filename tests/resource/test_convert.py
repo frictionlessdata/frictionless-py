@@ -86,44 +86,6 @@ def test_resource_to_yaml(tmpdir):
         }
 
 
-# Markdown
-
-
-def test_resource_to_markdown_path_schema():
-    resource = Resource(DESCRIPTOR)
-    expected_file_path = "data/fixtures/output-markdown/resource.md"
-
-    # Read
-    with open(expected_file_path, encoding="utf-8") as file:
-        assert resource.to_markdown().strip() == file.read()
-
-
-def test_resource_to_markdown_path_schema_table():
-    resource = Resource(DESCRIPTOR)
-    expected_file_path = "data/fixtures/output-markdown/resource-table.md"
-
-    # Read
-    with open(expected_file_path, encoding="utf-8") as file:
-        print("")
-        print(resource.to_markdown(table=True).strip())
-        assert resource.to_markdown(table=True).strip() == file.read().strip()
-
-
-def test_resource_to_markdown_file(tmpdir):
-    resource = Resource(DESCRIPTOR)
-    expected_file_path = "data/fixtures/output-markdown/resource.md"
-    target = str(tmpdir.join("resource.md"))
-    resource.to_markdown(path=target).strip()
-
-    # Read - expected
-    with open(expected_file_path, encoding="utf-8") as file:
-        expected = file.read()
-
-    # Read - output
-    with open(target, encoding="utf-8") as file:
-        assert expected == file.read()
-
-
 # Bugs
 
 
