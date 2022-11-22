@@ -393,8 +393,7 @@ class Package(Metadata):
             resources=[resource.to_copy() for resource in self.resources]
         )
 
-    # TODO: if path is not provided return as a string
-    def to_er_diagram(self, path=None) -> str:
+    def to_er_diagram(self, path: Optional[str] = None) -> str:
         """Generate ERD(Entity Relationship Diagram) from package resources
         and exports it as .dot file
 
@@ -406,50 +405,9 @@ class Package(Metadata):
 
         Returns:
             path(str): location of the .dot file
-
         """
-
-        # Infer
-        self.infer()
-
-        # Render
-        template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
-        environ = platform.jinja2.Environment(
-            loader=platform.jinja2.FileSystemLoader(template_dir),
-            lstrip_blocks=True,
-            trim_blocks=True,
-        )
-        table_template = environ.get_template("table.html")
-        field_template = environ.get_template("field.html")
-        primary_key_template = environ.get_template("primary_key_field.html")
-        graph = environ.get_template("graph.html")
-        edges = []
-        nodes = []
-        for t_name in self.resource_names:
-            resource = self.get_resource(t_name)  # type: ignore
-            templates = {k: primary_key_template for k in resource.schema.primary_key}
-            t_fields = [
-                templates.get(f.name, field_template).render(name=f.name, type=f.type)  # type: ignore
-                for f in resource.schema.fields
-            ]
-            nodes.append(table_template.render(name=t_name, rows="".join(t_fields)))
-            child_table = t_name
-            for fk in resource.schema.foreign_keys:
-                for foreign_key in fk["fields"]:
-                    if fk["reference"]["resource"] == "":
-                        continue
-                    parent_table = fk["reference"]["resource"]
-                    for parent_primary_key in fk["reference"]["fields"]:
-                        edges.append(
-                            f'"{parent_table}":{parent_primary_key}n -> "{child_table}":{foreign_key}n;'
-                        )
-        text = graph.render(
-            name=self.name,
-            tables="\n\t".join(nodes),
-            edges="\n\t".join(edges),
-        )
-
-        # Output
+        mapper = platform.frictionless_formats.erd.ErdMapper()
+        text = mapper.write_package(self)
         if path:
             try:
                 helpers.write_file(path, text)
