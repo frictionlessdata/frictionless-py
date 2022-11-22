@@ -1,8 +1,7 @@
 import os
 import json
 import yaml
-import pytest
-from frictionless import Package, Resource, formats, platform
+from frictionless import Package
 
 
 DESCRIPTOR = {
