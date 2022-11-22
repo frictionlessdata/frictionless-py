@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from .interfaces import IDescriptor
 
 
+# TODO: review how "defined" API logic works
 # NOTE: review and clean this class
 # NOTE: can we generate metadata_profile from dataclasses?
 # NOTE: insert __init__ params docs using instance properties data?
@@ -51,7 +52,7 @@ class Metadata(metaclass=Metaclass):
 
     custom: dict[str, Any] = {}
     """
-    List of custom parameters. Any extra properties will be added 
+    List of custom parameters. Any extra properties will be added
     to the custom property.
     """
 

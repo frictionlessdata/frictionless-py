@@ -1,25 +1,18 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypeVar, Generic, Optional, Any
-from ..dialect import Control
+from typing import TYPE_CHECKING, Optional, Any
 
 if TYPE_CHECKING:
     from ..catalog import Catalog
     from ..package import Package
 
-ControlType = TypeVar("ControlType", bound=Control)
+
+# NOTE:
+# There should be a way to check the supported functionality of a concrete adapter
+# For example, does it suport `read_catalog`? We can implement it based on what
+# methods return (or not) or use some kins of `supported_actions` property
 
 
-class Adapter(Generic[ControlType]):
-    def __init__(self, control: ControlType):
-        self.control = control
-
-    # State
-
-    control: ControlType
-    """
-    Control used to initialize the properties of the class while
-    reading/writing package or catalog.
-    """
+class Adapter:
 
     # Read
 

@@ -9,3 +9,4 @@ from .pandas import *
 from .parquet import *
 from .spss import *
 from .sql import *
+from .zip import *

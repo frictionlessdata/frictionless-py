@@ -184,6 +184,8 @@ pages:
           name: Spss
         - path: docs/formats/sql
           name: Sql
+        - path: docs/formats/zip
+          name: Zip
     - name: Data Portals
       items:
         - path: docs/portals/ckan

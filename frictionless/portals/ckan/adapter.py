@@ -10,7 +10,11 @@ from ... import helpers
 from .control import CkanControl
 
 
-class CkanAdapter(Adapter[CkanControl]):
+class CkanAdapter(Adapter):
+    """Read and write data from/to Ckan"""
+
+    def __init__(self, control: CkanControl):
+        self.control = control
 
     # Read
 

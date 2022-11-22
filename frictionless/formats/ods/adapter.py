@@ -15,7 +15,7 @@ from .control import OdsControl
 
 class OdsAdapter(Adapter):
     def __init__(self, control: OdsControl, *, resource: Resource):
-        super().__init__(control)
+        self.control = control
         self.resource = resource
 
     # Read

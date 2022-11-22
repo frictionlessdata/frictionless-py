@@ -44,20 +44,6 @@ def test_validate_package_from_path_invalid():
     ]
 
 
-def test_validate_package_from_zip():
-    report = validate("data/package.zip", type="package")
-    assert report.valid
-
-
-def test_validate_package_from_zip_invalid():
-    report = validate("data/package-invalid.zip", type="package")
-    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
-        [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key"],
-        [2, 4, None, "blank-row"],
-    ]
-
-
 def test_validate_package_with_non_tabular():
     report = validate(
         {

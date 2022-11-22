@@ -10,17 +10,14 @@ from ...resource import Resource
 from .mapper import SqlMapper
 
 if TYPE_CHECKING:
-    from sqlalchemy import MetaData
-    from sqlalchemy.engine import Engine
-    from sqlalchemy.engine import Connection
     from ...schema import Schema
 
 
-class SqlAdapter(Adapter[SqlControl]):
+class SqlAdapter(Adapter):
     """Read and write data from/to SQL database"""
 
     def __init__(self, control: SqlControl):
-        super().__init__(control)
+        self.control = control
         sa = platform.sqlalchemy
 
         # TODO: rework
@@ -57,20 +54,6 @@ class SqlAdapter(Adapter[SqlControl]):
         # Create metadata and reflect
         self.metadata = sa.MetaData(bind=self.connection, schema=control.namespace)
         self.metadata.reflect(views=True)
-
-    # State
-
-    engine: Engine
-    """SqlAlchemy's engine"""
-
-    metadata: MetaData
-    """SqlAlchemy's metadata"""
-
-    connection: Connection
-    """SqlAlchemy's connection"""
-
-    mapper: SqlMapper
-    """Mapper instance"""
 
     # Read
 

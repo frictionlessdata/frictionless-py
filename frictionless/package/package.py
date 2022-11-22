@@ -1,9 +1,5 @@
 from __future__ import annotations
 import os
-import json
-import atexit
-import shutil
-import tempfile
 from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union
@@ -50,7 +46,6 @@ class Package(Metadata):
         self,
         source: Optional[Any] = None,
         control: Optional[Control] = None,
-        innerpath: Optional[str] = None,
         *,
         # Standard
         name: Optional[str] = None,
@@ -101,7 +96,6 @@ class Package(Metadata):
         # Handled by the create hook
         assert source is None
         assert control is None
-        assert innerpath is None
 
     # TODO: support list of paths as resource paths?
     @classmethod
@@ -110,7 +104,6 @@ class Package(Metadata):
         source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
-        innerpath: Optional[str] = None,
         **options,
     ):
         if source is not None or control is not None:
@@ -122,10 +115,6 @@ class Package(Metadata):
             # Mapping
             elif isinstance(source, Mapping):
                 source = {key: value for key, value in source.items()}
-
-            # Compressed
-            elif helpers.is_zip_descriptor(source):
-                source = unzip_package(source, innerpath=innerpath)  # type: ignore
 
             # Directory
             elif helpers.is_directory_source(source):
@@ -404,92 +393,6 @@ class Package(Metadata):
             resources=[resource.to_copy() for resource in self.resources]
         )
 
-    @staticmethod
-    def from_zip(path, **options):
-        """Create a package from ZIP
-
-        Parameters:
-            path(str): file path
-            **options(dict): resouce options
-        """
-        return Package(path, **options)
-
-    def to_zip(self, path, *, encoder_class=None, compression=None):
-        """Save package to a zip
-
-        Parameters:
-            path (str): target path
-            encoder_class (object): json encoder class
-            compression (int): the ZIP compression method to use when
-                writing the archive. Possible values are the ones supported
-                by Python's `zipfile` module. Defaults: zipfile.ZIP_DEFLATED
-
-        Raises:
-            FrictionlessException: on any error
-        """
-
-        # Infer
-        self.infer(sample=False)
-
-        # Save
-        try:
-            compression = compression or platform.zipfile.ZIP_DEFLATED
-            with platform.zipfile.ZipFile(path, "w", compression=compression) as archive:
-                package_descriptor = self.to_descriptor()
-                for index, resource in enumerate(self.resources):
-                    descriptor = package_descriptor["resources"][index]
-
-                    # Memory data
-                    if resource.memory:
-                        if not isinstance(resource.data, list):
-                            path = f"{resource.name}.csv"
-                            descriptor.pop("data", None)
-                            descriptor["path"] = path
-                            descriptor["scheme"] = "file"
-                            descriptor["format"] = "csv"
-                            descriptor["mediatype"] = "text/csv"
-                            with tempfile.NamedTemporaryFile() as file:
-                                target = Resource(path=file.name, format="csv")
-                                resource.write(target)
-                                archive.write(file.name, path)
-
-                    # Multipart data
-                    elif resource.multipart:
-                        for path, normpath in zip(resource.paths, resource.normpaths):
-                            if os.path.isfile(normpath):
-                                if not helpers.is_safe_path(normpath):
-                                    note = f'Zipping usafe "{normpath}" is not supported'
-                                    error = errors.PackageError(note=note)
-                                    raise FrictionlessException(error)
-                                archive.write(normpath, path)
-
-                    # Local Data
-                    elif resource.scheme == "file":
-                        path = resource.path
-                        normpath = resource.normpath
-                        if os.path.isfile(normpath):
-                            if not helpers.is_safe_path(normpath):
-                                note = f'Zipping usafe "{normpath}" is not supported'
-                                error = errors.PackageError(note=note)
-                                raise FrictionlessException(error)
-                            archive.write(normpath, path)
-
-                # Metadata
-                archive.writestr(
-                    "datapackage.json",
-                    json.dumps(
-                        package_descriptor,
-                        indent=2,
-                        ensure_ascii=False,
-                        cls=encoder_class,
-                    ),
-                )
-
-        # Error
-        except Exception as exception:
-            error = errors.PackageError(note=str(exception))
-            raise FrictionlessException(error) from exception
-
     # TODO: if path is not provided return as a string
     def to_er_diagram(self, path=None) -> str:
         """Generate ERD(Entity Relationship Diagram) from package resources
@@ -714,30 +617,3 @@ class Package(Metadata):
                 descriptor["profile"] = profiles[0]
 
         return descriptor
-
-
-# Internal
-
-
-# NOTE: review if we can improve this code / move to a better place
-def unzip_package(path: str, *, innerpath: Optional[str] = None) -> str:
-    with Resource(path=path, compression=None) as resource:
-        byte_stream = resource.byte_stream
-        if resource.remote:
-            byte_stream = tempfile.TemporaryFile()
-            shutil.copyfileobj(resource.byte_stream, byte_stream)
-            byte_stream.seek(0)
-        with platform.zipfile.ZipFile(byte_stream, "r") as zip:
-            tempdir = tempfile.mkdtemp()
-            zip.extractall(tempdir)
-            atexit.register(shutil.rmtree, tempdir)
-            if innerpath is None:
-                innerpath = "datapackage.json"
-                extensions = ("json", "yaml")
-                default_names = (f"datapackage.{ext}" for ext in extensions)
-                for name in default_names:
-                    if os.path.isfile(os.path.join(tempdir, name)):
-                        innerpath = name
-                        break
-            descriptor = os.path.join(tempdir, innerpath)
-    return descriptor
