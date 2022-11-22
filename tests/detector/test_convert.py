@@ -24,13 +24,3 @@ def test_detector_to_json():
         "fieldFloatNumbers": True,
         "fieldMissingValues": ["", "67"],
     }
-
-
-# Markdown
-
-
-def test_detector_to_markdown():
-    detector = Detector.from_descriptor("data/detector.json")
-    output_file_path = "data/fixtures/convert/detector.md"
-    with open(output_file_path) as file:
-        assert detector.to_markdown().strip() == file.read()

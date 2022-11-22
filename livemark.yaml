@@ -178,6 +178,8 @@ pages:
           name: Json
         - path: docs/formats/jsonschema
           name: JsonSchema
+        - path: docs/formats/markdown
+          name: Markdown
         - path: docs/formats/ods
           name: Ods
         - path: docs/formats/pandas

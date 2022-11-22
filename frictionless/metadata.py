@@ -259,16 +259,14 @@ class Metadata(metaclass=Metaclass):
             table (bool): if true converts markdown to tabular format
         """
         Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        filename = self.__class__.__name__.lower()
-        template = f"{filename}-table.md" if table is True else f"{filename}.md"
-        descriptor = self.to_descriptor()
-        md_output = helpers.render_markdown(f"{template}", {filename: descriptor}).strip()
+        mapper = platform.frictionless_formats.markdown.MarkdownMapper()
+        text = mapper.write_metadata(self, table=table)
         if path:
             try:
-                helpers.write_file(path, md_output)
+                helpers.write_file(path, text)
             except Exception as exc:
                 raise FrictionlessException(Error(note=str(exc))) from exc
-        return md_output
+        return text
 
     # Metadata
 

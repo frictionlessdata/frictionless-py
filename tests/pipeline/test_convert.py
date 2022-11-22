@@ -40,15 +40,3 @@ def test_pipeline_to_json():
         "name": "pipeline",
         "steps": [{"type": "cell-set", "fieldName": "population", "value": 100}],
     }
-
-
-# Markdown
-
-
-def test_pipeline_to_markdown():
-    pipeline = Pipeline.from_descriptor("data/pipeline.json")
-    expected_file_path = "data/fixtures/convert/pipeline.md"
-
-    # Read
-    with open(expected_file_path) as file:
-        assert pipeline.to_markdown().strip() == file.read()

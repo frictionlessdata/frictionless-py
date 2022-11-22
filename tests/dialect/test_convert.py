@@ -26,13 +26,3 @@ def test_dialect_to_yaml():
 def test_dialect_to_json():
     dialect = Dialect.from_descriptor("data/dialect.yaml")
     assert json.loads(dialect.to_json()) == {"csv": {"delimiter": ";"}}
-
-
-# Markdown
-
-
-def test_dialect_to_markdown():
-    dialect = Dialect.from_descriptor("data/dialect.json")
-    output_file_path = "data/fixtures/convert/dialect.md"
-    with open(output_file_path) as file:
-        assert dialect.to_markdown().strip() == file.read()

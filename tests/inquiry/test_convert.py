@@ -44,15 +44,3 @@ def test_inquiry_to_json():
             {"path": "data/capital-invalid.csv"},
         ]
     }
-
-
-# Markdown
-
-
-def test_inquiry_to_markdown():
-    inquiry = Inquiry.from_descriptor("data/inquiry.json")
-    expected_file_path = "data/fixtures/convert/inquiry.md"
-
-    # Read
-    with open(expected_file_path) as file:
-        assert inquiry.to_markdown().strip() == file.read()

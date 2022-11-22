@@ -6,6 +6,7 @@ from .html import *
 from .inline import *
 from .json import *
 from .jsonschema import *
+from .markdown import *
 from .ods import *
 from .pandas import *
 from .parquet import *
