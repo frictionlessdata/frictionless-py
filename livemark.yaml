@@ -176,6 +176,8 @@ pages:
           name: Inline
         - path: docs/formats/json
           name: Json
+        - path: docs/formats/jsonschema
+          name: JsonSchema
         - path: docs/formats/ods
           name: Ods
         - path: docs/formats/pandas
