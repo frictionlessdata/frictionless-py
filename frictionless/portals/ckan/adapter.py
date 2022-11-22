@@ -29,16 +29,8 @@ class CkanAdapter(Adapter):
         response: dict = {}
         descriptor: dict = {}
 
-        search_endpoint = False
         assert self.control.baseurl
-        if (
-            not self.control.group_id
-            and not self.control.organization_name
-            and not self.control.search
-        ):
-            # Get all packages from a CKAN instance
-            endpoint = f"{self.control.baseurl}/api/3/action/package_list"
-        elif self.control.group_id:
+        if self.control.group_id:
             # Search only packages from a group
             params = {"id": self.control.group_id}
             endpoint = f"{self.control.baseurl}/api/3/action/group_package_show"
@@ -46,20 +38,16 @@ class CkanAdapter(Adapter):
             # Search only packages from an organization using search
             params = {"q": f"organization:{self.control.organization_name}"}
             endpoint = f"{self.control.baseurl}/api/3/action/package_search"
-            search_endpoint = True
         elif self.control.search:
             params = self.control.search
             endpoint = f"{self.control.baseurl}/api/3/action/package_search"
-            search_endpoint = True
-
-        if endpoint:
-            response = make_ckan_request(endpoint, params=params)
-
-        results = []
-        if search_endpoint:
-            results = response["result"]["results"]
         else:
-            results = response["result"]
+            # Get all packages from a CKAN instance
+            params = {"q": "*:*"}
+            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
+
+        response = make_ckan_request(endpoint, params=params)
+        results = response["result"]["results"]
 
         for dataset in results:
             try:
