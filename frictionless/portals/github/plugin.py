@@ -10,9 +10,6 @@ if TYPE_CHECKING:
     from ... import portals
 
 
-# Plugin
-
-
 class GithubPlugin(Plugin):
     """Plugin for Github"""
 

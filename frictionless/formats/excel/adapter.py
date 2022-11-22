@@ -14,7 +14,7 @@ from .control import ExcelControl
 
 class ExcelAdapter(Adapter):
     def __init__(self, control: ExcelControl, *, resource: Resource):
-        super().__init__(control)
+        self.control = control
         self.resource = resource
 
     # Read

@@ -5,9 +5,6 @@ from .control import ZenodoControl
 from .adapter import ZenodoAdapter
 
 
-# Plugin
-
-
 class ZenodoPlugin(Plugin):
     """Plugin for Zenodo"""
 

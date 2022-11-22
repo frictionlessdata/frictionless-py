@@ -10,7 +10,11 @@ from ...platform import platform
 from ...resource import Resource
 
 
-class ZenodoAdapter(Adapter[ZenodoControl]):
+class ZenodoAdapter(Adapter):
+    """Read and write data from/to Zenodo"""
+
+    def __init__(self, control: ZenodoControl):
+        self.control = control
 
     # Read
 

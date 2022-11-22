@@ -1,0 +1,170 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/package.zip
+  response:
+    body:
+      string: !!binary |
+        UEsDBBQACAAIAMdKzVAAAAAAAAAAAHIAAAAIACAAZGF0YS5jc3ZVVA0AB5dw5F5pBQdfl3DkXnV4
+        CwABBOgDAAAE6AMAAMtM0clLzE3VSUktTi7KLCjJzM/TSczNL80r4XI0NjAw1AlJrEgthpAK5akK
+        yfk5OanJJTqGBkCgZ8rlaGpgbKQTkFiUnZmXruCWClQL46SlomoxgugAAFBLBwiAZhecVwAAAHIA
+        AABQSwMEFAAIAAgAx0rNUAAAAAAAAAAAPAAAAAkAIABkYXRhMi5jc3ZVVA0AB5dw5F5pBQdfl3Dk
+        XnV4CwABBOgDAAAE6AMAACtILErNK9FJzs/NBdJcjsYGBoYwniEq14jL0dTA2AjGNeYCAFBLBwjE
+        ZfTEJAAAADwAAABQSwMEFAAIAAgAx0rNUAAAAAAAAAAAOgYAABAAIABkYXRhcGFja2FnZS5qc29u
+        VVQNAAeXcOReaQUHX5dw5F51eAsAAQToAwAABOgDAADFVEtuwyAQ3fsUEeuqiyx7hR6h6oLCOEEq
+        nw5DJSvy3Uvt2DHGWLSK2tnY4j2YN99Lc4jGDNfAng6MwJMyJ/YwHiN4G1CAj9jLcPRtl/kvuSs5
+        8evFGXOczhP2KPznGvfiDJpHRvrmgLUK3mXqeWn5jUyRkit/CYs6N7A84S3kTaawJpK4MuQ3pSZk
+        hI+gEGRkEgYokvtNpN+WURHs8K0P987eJXiBypGy5v9EcG2DoRr/Jug3wIL/7PQ1f5E5VJpj9wzd
+        tdMSyu2NRTQ7c3PcG5zj301O/UxM6h1HiDm/UyV/7l9YrcsCqkrZWgR1MrGUv8rZnO0pFzuqEVqI
+        HAE1e2TcvYXVuiNj3YxLK2ydPE+ldm5GtG++AFBLBwhj5+yeGQEAADoGAABQSwECFAMUAAgACADH
+        Ss1QgGYXnFcAAAByAAAACAAgAAAAAAAAAAAApIEAAAAAZGF0YS5jc3ZVVA0AB5dw5F5pBQdfl3Dk
+        XnV4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAIAMdKzVDEZfTEJAAAADwAAAAJACAAAAAAAAAAAACk
+        ga0AAABkYXRhMi5jc3ZVVA0AB5dw5F5pBQdfl3DkXnV4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAI
+        AMdKzVBj5+yeGQEAADoGAAAQACAAAAAAAAAAAACkgSgBAABkYXRhcGFja2FnZS5qc29uVVQNAAeX
+        cOReaQUHX5dw5F51eAsAAQToAwAABOgDAABQSwUGAAAAAAMAAwALAQAAnwIAAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '960'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/zip
+      Date:
+      - Tue, 22 Nov 2022 12:16:29 GMT
+      ETag:
+      - W/"80bc02060313f0614c746350412affbfc9893846d1b21f6d69b3cffc284ef5a8"
+      Expires:
+      - Tue, 22 Nov 2022 12:21:29 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - da1df1c76bb0e8dca91edf1fd09aa8cb2a2afa74
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - C71A:34DF:24DBE3:27660D:637CBD9D
+      X-Served-By:
+      - cache-fra-eddf8230101-FRA
+      X-Timer:
+      - S1669119390.605591,VS0,VE180
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/package.zip
+  response:
+    body:
+      string: !!binary |
+        UEsDBBQACAAIAMdKzVAAAAAAAAAAAHIAAAAIACAAZGF0YS5jc3ZVVA0AB5dw5F5pBQdfl3DkXnV4
+        CwABBOgDAAAE6AMAAMtM0clLzE3VSUktTi7KLCjJzM/TSczNL80r4XI0NjAw1AlJrEgthpAK5akK
+        yfk5OanJJTqGBkCgZ8rlaGpgbKQTkFiUnZmXruCWClQL46SlomoxgugAAFBLBwiAZhecVwAAAHIA
+        AABQSwMEFAAIAAgAx0rNUAAAAAAAAAAAPAAAAAkAIABkYXRhMi5jc3ZVVA0AB5dw5F5pBQdfl3Dk
+        XnV4CwABBOgDAAAE6AMAACtILErNK9FJzs/NBdJcjsYGBoYwniEq14jL0dTA2AjGNeYCAFBLBwjE
+        ZfTEJAAAADwAAABQSwMEFAAIAAgAx0rNUAAAAAAAAAAAOgYAABAAIABkYXRhcGFja2FnZS5qc29u
+        VVQNAAeXcOReaQUHX5dw5F51eAsAAQToAwAABOgDAADFVEtuwyAQ3fsUEeuqiyx7hR6h6oLCOEEq
+        nw5DJSvy3Uvt2DHGWLSK2tnY4j2YN99Lc4jGDNfAng6MwJMyJ/YwHiN4G1CAj9jLcPRtl/kvuSs5
+        8evFGXOczhP2KPznGvfiDJpHRvrmgLUK3mXqeWn5jUyRkit/CYs6N7A84S3kTaawJpK4MuQ3pSZk
+        hI+gEGRkEgYokvtNpN+WURHs8K0P987eJXiBypGy5v9EcG2DoRr/Jug3wIL/7PQ1f5E5VJpj9wzd
+        tdMSyu2NRTQ7c3PcG5zj301O/UxM6h1HiDm/UyV/7l9YrcsCqkrZWgR1MrGUv8rZnO0pFzuqEVqI
+        HAE1e2TcvYXVuiNj3YxLK2ydPE+ldm5GtG++AFBLBwhj5+yeGQEAADoGAABQSwECFAMUAAgACADH
+        Ss1QgGYXnFcAAAByAAAACAAgAAAAAAAAAAAApIEAAAAAZGF0YS5jc3ZVVA0AB5dw5F5pBQdfl3Dk
+        XnV4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAIAMdKzVDEZfTEJAAAADwAAAAJACAAAAAAAAAAAACk
+        ga0AAABkYXRhMi5jc3ZVVA0AB5dw5F5pBQdfl3DkXnV4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAI
+        AMdKzVBj5+yeGQEAADoGAAAQACAAAAAAAAAAAACkgSgBAABkYXRhcGFja2FnZS5qc29uVVQNAAeX
+        cOReaQUHX5dw5F51eAsAAQToAwAABOgDAABQSwUGAAAAAAMAAwALAQAAnwIAAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '960'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/zip
+      Date:
+      - Tue, 22 Nov 2022 12:16:30 GMT
+      ETag:
+      - W/"80bc02060313f0614c746350412affbfc9893846d1b21f6d69b3cffc284ef5a8"
+      Expires:
+      - Tue, 22 Nov 2022 12:21:30 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 635fcdbaf65037d4af927d0a161e925c24b8e42d
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 4940:5A01:D39A4:11503D:637CBD9E
+      X-Served-By:
+      - cache-hhn4042-HHN
+      X-Timer:
+      - S1669119390.002760,VS0,VE109
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

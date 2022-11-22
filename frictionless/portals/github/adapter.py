@@ -14,8 +14,11 @@ if TYPE_CHECKING:
     from github.Repository import Repository
 
 
-class GithubAdapter(Adapter[GithubControl]):
+class GithubAdapter(Adapter):
     """Read and write data from/to Github"""
+
+    def __init__(self, control: GithubControl):
+        self.control = control
 
     # Read
 

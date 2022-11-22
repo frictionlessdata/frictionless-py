@@ -5,9 +5,6 @@ from .control import CkanControl
 from .adapter import CkanAdapter
 
 
-# Plugin
-
-
 class CkanPlugin(Plugin):
     """Plugin for Ckan"""
 
