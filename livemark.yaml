@@ -190,6 +190,8 @@ pages:
           name: Spss
         - path: docs/formats/sql
           name: Sql
+        - path: docs/formats/yaml
+          name: Yaml
         - path: docs/formats/zip
           name: Zip
     - name: Data Portals

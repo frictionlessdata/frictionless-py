@@ -12,4 +12,5 @@ from .pandas import *
 from .parquet import *
 from .spss import *
 from .sql import *
+from .yaml import *
 from .zip import *
