@@ -14,16 +14,13 @@ class CkanControl(Control):
 
     baseurl: Optional[str] = None
     """
-    Endpoint url for CKAN instance.
+    Endpoint url for CKAN instance. e.g. https://dados.gov.br
     """
 
     dataset: Optional[str] = None
     """
     Unique identifier of the dataset to read.
     """
-
-    resource: Optional[str] = None
-    """NOTE: add docs"""
 
     apikey: Optional[str] = None
     """
@@ -54,7 +51,17 @@ class CkanControl(Control):
 
     search: Optional[dict] = None
     """
-    CKAN Organization name to get datasets in a Catalog
+    CKAN Search parameters as defined on https://docs.ckan.org/en/2.9/api/#ckan.logic.action.get.package_search
+    """
+
+    num_packages: Optional[int] = None
+    """
+    Maximum number of packages to fetch
+    """
+
+    results_offset: Optional[int] = None
+    """
+    Results page number
     """
 
     # Metadata
@@ -63,12 +70,13 @@ class CkanControl(Control):
         "properties": {
             "baseurl": {"type": "string"},
             "dataset": {"type": "string"},
-            "resource": {"type": "string"},
             "apikey": {"type": "string"},
             "group_id": {"type": "string"},
             "organization_name": {"type": "string"},
-            "search": {"type": "string"},
+            "search": {"type": "object"},
             "ignore_package_errors": {"type": "bool"},
             "ignore_schema": {"type": "bool"},
+            "num_packages": {"type": "int"},
+            "results_offset": {"type": "int"},
         },
     }

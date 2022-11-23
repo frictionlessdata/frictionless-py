@@ -46,8 +46,20 @@ class CkanAdapter(Adapter):
             params = {"q": "*:*"}
             endpoint = f"{self.control.baseurl}/api/3/action/package_search"
 
+        if self.control.num_packages:
+            if not self.control.group_id:
+                params["rows"] = str(self.control.num_packages)
+            else:
+                params["limit"] = str(self.control.num_packages)
+
+        if self.control.results_offset:
+            params["start"] = str(self.control.results_offset)
+
         response = make_ckan_request(endpoint, params=params)
-        results = response["result"]["results"]
+        if not self.control.group_id:
+            results = response["result"]["results"]
+        else:
+            results = response["result"]
 
         for dataset in results:
             try:
@@ -64,9 +76,9 @@ class CkanAdapter(Adapter):
         return Catalog(name="catalog", packages=packages)
 
     # Read a package from a CKAN instance
-    def read_package(self, *, dataset: Optional[str] = None) -> Package:
+    def read_package(self) -> Package:
         baseurl = self.control.baseurl
-        dataset = dataset or self.control.dataset
+        dataset = self.control.dataset
         assert baseurl
         assert dataset
         params = {"id": dataset}
@@ -84,6 +96,7 @@ class CkanAdapter(Adapter):
         except FrictionlessException as e:
             if self.control.ignore_schema:
                 for res in descriptor["resources"]:
+                    res["original_schema"] = res["schema"]
                     del res["schema"]
                 package = Package.from_descriptor(descriptor)
             else:
@@ -160,13 +173,13 @@ def make_ckan_request(
         method=method, url=endpoint, headers=headers, allow_redirects=True, **options
     )
 
-    if response:
+    if response is not None:
         response_json = response.json()
 
     # Handle error
     try:
         ckan_error = None
-        if not response_json["success"] and response_json["error"]:
+        if not response_json.get("success") and response_json["error"]:
             ckan_error = response_json["error"]
     except TypeError:
         ckan_error = response
