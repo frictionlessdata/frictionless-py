@@ -342,9 +342,9 @@ def parse_csv_string(string, *, convert: type = str, fallback=False):
         return result
 
 
-def stringify_csv_string(cells):
+def stringify_csv_string(cells, **options):
     stream = io.StringIO()
-    writer = csv.writer(stream)
+    writer = csv.writer(stream, **options)
     writer.writerow(cells)
     result = stream.getvalue().rstrip("\r\n")
     return result
