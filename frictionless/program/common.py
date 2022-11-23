@@ -326,3 +326,8 @@ standards = Option(
     default=None,
     help="Possible options: v1, v2, v2-strict (default: v2)",
 )
+
+keep_limiter = Option(
+    default=False,
+    help="Keep input delimiter",
+)

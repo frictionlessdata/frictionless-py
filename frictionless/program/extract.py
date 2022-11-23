@@ -59,6 +59,7 @@ def program_extract(
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
+    keep_delimiter: bool = common.keep_limiter,
 ):
     """
     Extract a data source.
@@ -192,11 +193,14 @@ def program_extract(
     # Return CSV
     # TODO: rework
     if csv:
+        options = {}
+        if dialect and keep_delimiter:
+            options = prepare_dialect().to_dict().get("csv")
         for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
             for index, row in enumerate(rows):
                 if index == 0:
-                    typer.secho(helpers.stringify_csv_string(row.field_names))  # type: ignore
-                typer.secho(row.to_str())  # type: ignore
+                    typer.secho(helpers.stringify_csv_string(row.field_names, **options))  # type: ignore
+                typer.secho(row.to_str(**options))  # type: ignore
             if number < len(normdata):  # type: ignore
                 typer.secho("")
         raise typer.Exit()
