@@ -22,7 +22,7 @@ news:
 links:
   items:
     - name: Framework (v4) (docs)
-      path: https://v4.framework.frictionlessdata.io
+      path: https://v4.framework.frictionlessdata.io/docs/guides/guides-overview
     - name: Open Knowledge
       path: https://okfn.org
     - name: Frictionless
