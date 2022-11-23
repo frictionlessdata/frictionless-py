@@ -3,11 +3,11 @@ script:
   basepath: data
 blog:
   author: Shashi Gharti
-  image: ../assets/logo-bright.png
+  image: ../assets/github.png
   description: This blog gives the introduction of the github plugin which helps to seamlessly transfer/read data to/from Github.
 ---
 
-# New Feature - Github Integration
+# Github Integration
 
 We are happy to announce github plugin which makes sharing data between frictionless and github easier without any extra work and configuration. All the github plugin functionalities are wrapped around the PyGithub library. The main idea is to make the interaction between the framework and github seamless using read and write functions developed on top of the Frictionless python library. Here is a short introduction and examples of the features.
 
@@ -15,7 +15,7 @@ We are happy to announce github plugin which makes sharing data between friction
 
 Reading package from github repository is made easy! The existing ```Package``` class can identify the github url and read the packages and resources from the repo. It can read packages from repos with or without packages descriptors. If a package descriptor is not defined, it will create a package descriptor with resources that it finds in the repo.
 
-```python tabs=Python 
+```python tabs=Python
 from frictionless import Package
 
 package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
@@ -24,14 +24,14 @@ print(package)
 
 ## Writing/Publishing to the repo
 
-Writing and publishing can be easily done by passing the repository link using ```to_github``` function.
+Writing and publishing can be easily done by passing the repository link using `publish` function.
 
-```python tabs=Python 
+```python tabs=Python
 from frictionless import Package, portals
 
 apikey = 'YOUR-GITHUB-API-KEY'
 package = Package('data/datapackage.json')
-response = package.to_github("https://github.com/fdtester/test-repo-write",
+response = package.publish("https://github.com/fdtester/test-repo-write",
         control=portals.GithubControl(apikey=apikey)
     )
 ```
@@ -40,7 +40,7 @@ response = package.to_github("https://github.com/fdtester/test-repo-write",
 
 Catalog can be created from a single repository by using 'search' queries. Repositories can be searched using combination of any search text and github qualifiers. A simple example of creating catalog from search is as follows:
 
-```python tabs=Python 
+```python tabs=Python
 from frictionless import Catalog, portals
 
 catalog = Catalog(

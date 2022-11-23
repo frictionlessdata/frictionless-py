@@ -1,7 +1,7 @@
 # Blog
 
 ```html markup
-{% for item in document.get_plugin('blog').items %}
+{% for item in document.get_plugin('blog').items|reverse %}
 <div class="livemark-blog-item">
   <h2><a href="{{ item.relpath }}.html">{{ item.document.name }}</a></h2>
   <div class="row">
