@@ -1,12 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from ...platform import platform
+from ...system import Mapper
 
 if TYPE_CHECKING:
     from ...schema import Schema
 
 
-class ExcelMapper:
+class ExcelMapper(Mapper):
     """Excel mapper"""
 
     def write_schema(self, schema: Schema, *, path: str) -> None:

@@ -2,12 +2,13 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Union, Optional, List
 from ...platform import platform
+from ...system import Mapper
 
 if TYPE_CHECKING:
     from ...metadata import Metadata
 
 
-class MarkdownMapper:
+class MarkdownMapper(Mapper):
     """Markdown mapper"""
 
     def write_metadata(self, metadata: Metadata, *, table: bool = False):

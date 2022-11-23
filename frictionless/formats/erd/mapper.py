@@ -2,12 +2,13 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 from ...platform import platform
+from ...system import Mapper
 
 if TYPE_CHECKING:
     from ...package import Package
 
 
-class ErdMapper:
+class ErdMapper(Mapper):
     """ERD Mapper"""
 
     # Write

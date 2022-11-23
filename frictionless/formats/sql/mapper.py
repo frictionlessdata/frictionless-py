@@ -4,6 +4,7 @@ from datetime import datetime, date, timezone
 from typing import TYPE_CHECKING, Dict, Type, List, Any
 from ...platform import platform
 from ...schema import Schema, Field
+from ...system import Mapper
 
 if TYPE_CHECKING:
     from sqlalchemy.schema import Table
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
-class SqlMapper:
+class SqlMapper(Mapper):
     """Metadata mapper Frictionless from/to SQL"""
 
     def __init__(self, engine: Engine):

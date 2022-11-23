@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import Dict, Any
 from ...schema import Schema, Field
+from ...system import Mapper
 
 
-class JsonschemaMapper:
+class JsonschemaMapper(Mapper):
     """ERD Mapper"""
 
     # Write
