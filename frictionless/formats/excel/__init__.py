@@ -1,4 +1,5 @@
 from .adapter import ExcelAdapter
-from .plugin import ExcelPlugin
 from .control import ExcelControl
+from .mapper import ExcelMapper
 from .parsers import XlsxParser, XlsParser
+from .plugin import ExcelPlugin

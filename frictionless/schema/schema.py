@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -224,36 +224,28 @@ class Schema(Metadata):
     # Convert
 
     @classmethod
-    def from_jsonschema(cls, profile):
+    def from_jsonschema(cls, profile: Union[IDescriptor, str]) -> Schema:
         """Create a Schema from JSONSchema profile
 
         Parameters:
-            profile (str|dict): path or dict with JSONSchema profile
-
-        Returns:
-            Schema: schema instance
+            profile: path or dict with JSONSchema profile
         """
         profile = cls.metadata_retrieve(profile)
         mapper = platform.frictionless_formats.jsonschema.JsonschemaMapper()
         return mapper.read_schema(profile)
 
-    def to_excel_template(self, path: str):
+    def to_excel_template(self, path: str) -> None:
         """Export schema as an excel template
 
         Parameters:
             path: path of excel file to create with ".xlsx" extension
-
-        Returns:
-            any: excel template
         """
-        return platform.tableschema_to_template.create_xlsx(self.to_descriptor(), path)
+        mapper = platform.frictionless_formats.excel.ExcelMapper()
+        return mapper.write_schema(self, path=path)
 
     def to_summary(self) -> str:
         """Summary of the schema in table format"""
-        content = [
-            [field.name, field.type, True if field.required else ""]
-            for field in self.fields
-        ]
+        content = [[f.name, f.type, True if f.required else ""] for f in self.fields]
         return tabulate(content, headers=["name", "type", "required"], tablefmt="grid")
 
     # Metadata
