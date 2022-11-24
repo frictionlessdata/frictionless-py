@@ -298,8 +298,7 @@ from frictionless import portals, Package
 
 control = portals.ZenodoControl(
         metafn="data/zenodo/meta.json",
-        apikey=apikey_sandbox,
-        base_url="https://sandbox.zenodo.org/api/"
+        apikey=apikey
     )
 package = Package("484/package-to-write/datapackage.json")
 deposition_id = package.publish(control=control)
@@ -308,9 +307,36 @@ print(deposition_id)
 ```
 1123500
 ```
-To publish the data, we need to provide metadata for the Zenodo repo which we are sending using "meta.json". In order to be able to publish/write to respository, we need to have the api token with 'repository write' access.
+To publish the data, we need to provide metadata for the Zenodo repo which we are sending using "meta.json". In order to be able to publish/write to respository, we need to have the api token with 'repository write' access. If the package is successfully published, the deposition_id will be returned as shown in the example above.
 
-If the package is successfully published, the deposition_id will be returned as shown in the example above.
+For testing, we can pass sandbox url using base_url param
+
+```python tabs=Python
+from pprint import pprint
+from frictionless import portals, Package
+
+control = portals.ZenodoControl(
+        metafn="data/zenodo/meta.json",
+        apikey=apikey_sandbox,
+        base_url="https://sandbox.zenodo.org/api/"
+    )
+package = Package("484/package-to-write/datapackage.json")
+deposition_id = package.publish(control=control)
+```
+
+If the metadata file is not provided, then the api will read available data from the package file. Metadata will be generated using title, contributors and description from Package descriptor.
+
+```python tabs=Python
+from pprint import pprint
+from frictionless import portals, Package
+
+control = portals.ZenodoControl(
+        apikey=apikey_sandbox,
+        base_url="https://sandbox.zenodo.org/api/"
+    )
+package = Package("484/package-to-write/datapackage.json")
+deposition_id = package.publish(control=control)
+```
 
 ## Configuration
 
