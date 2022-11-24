@@ -167,6 +167,7 @@ class Catalog(Metadata):
             package.infer(sample=sample, stats=stats)
             package.name = package.name or f"package{number}"
 
+        # TODO: move to helpers and re-use
         # Deduplicate names
         if len(self.package_names) != len(set(self.package_names)):
             seen_names = []
