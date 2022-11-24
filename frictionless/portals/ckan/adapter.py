@@ -28,6 +28,7 @@ class CkanAdapter(Adapter):
         endpoint: str = ""
         response: dict = {}
         descriptor: dict = {}
+        num_packages: int = None
 
         assert self.control.baseurl
         if self.control.group_id:
@@ -58,6 +59,7 @@ class CkanAdapter(Adapter):
         response = make_ckan_request(endpoint, params=params)
         if not self.control.group_id:
             results = response["result"]["results"]
+            num_packages = response["result"]["count"]
         else:
             results = response["result"]
 
@@ -72,6 +74,9 @@ class CkanAdapter(Adapter):
                     continue
                 else:
                     raise e
+
+        if num_packages:
+            print(f"Total number of packages: {num_packages}")
 
         return Catalog(name="catalog", packages=packages)
 
