@@ -28,7 +28,7 @@ class CkanAdapter(Adapter):
         endpoint: str = ""
         response: dict = {}
         descriptor: dict = {}
-        num_packages: int = None
+        num_packages: Union[int, None] = None
 
         assert self.control.baseurl
         if self.control.group_id:

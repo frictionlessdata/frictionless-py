@@ -22,7 +22,7 @@ from frictionless.portals import CkanControl
 from frictionless import Package
 
 ckan_control = CkanControl()
-package = Package.from_ckan('https://dados.gov.br/dataset/bolsa-familia-pagamentos', control=ckan_control)
+package = Package('https://dados.gov.br/dataset/bolsa-familia-pagamentos', control=ckan_control)
 ```
 
 Where 'https://dados.gov.br/dataset/bolsa-familia-pagamentos' is the URL for
@@ -48,7 +48,7 @@ from frictionless.portals import CkanControl
 from frictionless import Package
 
 ckan_control = CkanControl(baseurl='https://dados.gov.br')
-package = Package.from_ckan('bolsa-familia-pagamentos', control=ckan_control)
+package = Package('bolsa-familia-pagamentos', control=ckan_control)
 ```
 
 ## Ignoring a Resource Schema
@@ -62,7 +62,7 @@ from frictionless.portals import CkanControl
 from frictionless import Package
 
 ckan_control = CkanControl(baseurl='https://dados.gov.br', ignore_schema=True)
-package = Package.from_ckan('bolsa-familia-pagamentos', control=ckan_control)
+package = Package('bolsa-familia-pagamentos', control=ckan_control)
 ```
 
 This will download the dataset and all its resources, saving the resources'
@@ -79,7 +79,7 @@ from frictionless.portals import CkanControl
 from frictionless import Package
 
 ckan_control = CkanControl(baseurl='https://dados.gov.br', apikey='YOUR-SECRET-API-KEY')
-package = Package() # Create your package
+package = Package(...) # Create your package
 package.publish(control=ckan_control)
 ```
 
