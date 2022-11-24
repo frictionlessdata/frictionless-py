@@ -43,7 +43,8 @@ class BooleanField(Field):
         def value_reader(cell):
             if cell is True or cell is False:
                 return cell
-            return mapping.get(cell)
+            if isinstance(cell, str):
+                return mapping.get(cell)
 
         return value_reader
 
