@@ -12,14 +12,14 @@
           {"name": "datetime", "type": "datetime"},
           {"name": "duration", "type": "duration"},
           {"name": "geojson", "type": "geojson"},
-          {"name": "geopoint", "type": "geopoint"},
+          {"name": "geopoint", "type": "string"},
           {"name": "integer", "type": "integer"},
           {"name": "number", "type": "number"},
           {"name": "object", "type": "object"},
           {"name": "string", "type": "string"},
           {"name": "time", "type": "time"},
           {"name": "year", "type": "year"},
-          {"name": "yearmonth", "type": "yearmonth"}
+          {"name": "yearmonth", "type": "string"}
         ]
       },
       "data": [

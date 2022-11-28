@@ -952,6 +952,8 @@ class Resource(Metadata):
         """
         resource = target
         if not isinstance(resource, Resource):
+            if self.has_schema:
+                options["schema"] = self.schema
             resource = Resource(target, control=control, **options)
         resource.infer(sample=False)
         parser = system.create_parser(resource)

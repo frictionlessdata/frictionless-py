@@ -1,5 +1,4 @@
 import pytz
-import pytest
 import isodate
 import pandas as pd
 from decimal import Decimal
@@ -90,7 +89,6 @@ def test_pandas_parser_nan_in_integer_csv_column():
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
-@pytest.mark.skip(reason="issue-1210")
 def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")
@@ -99,22 +97,22 @@ def test_pandas_parser_write_types():
         # Assert schema
         assert target.schema.to_descriptor() == {
             "fields": [
-                {"name": "any", "type": "string"},  # type fallback
+                {"name": "any", "type": "any"},
                 {"name": "array", "type": "array"},
                 {"name": "boolean", "type": "boolean"},
-                {"name": "date", "type": "datetime"},
-                {"name": "date_year", "type": "datetime"},  # format removal
+                {"name": "date", "type": "date"},
+                {"name": "date_year", "type": "date", "format": "%Y"},
                 {"name": "datetime", "type": "datetime"},
                 {"name": "duration", "type": "duration"},
-                {"name": "geojson", "type": "object"},
-                {"name": "geopoint", "type": "array"},
+                {"name": "geojson", "type": "geojson"},
+                {"name": "geopoint", "type": "string"},
                 {"name": "integer", "type": "integer"},
                 {"name": "number", "type": "number"},
                 {"name": "object", "type": "object"},
                 {"name": "string", "type": "string"},
                 {"name": "time", "type": "time"},
-                {"name": "year", "type": "integer"},  # type downgrade
-                {"name": "yearmonth", "type": "array"},  # type downgrade
+                {"name": "year", "type": "year"},
+                {"name": "yearmonth", "type": "string"},
             ],
         }
 
@@ -126,18 +124,18 @@ def test_pandas_parser_write_types():
                 "boolean": True,
                 "date": date(2015, 1, 1),
                 "date_year": date(2015, 1, 1),
-                "datetime": datetime(2015, 1, 1, 3, 0),
-                "duration": isodate.parse_duration("P1Y1M"),
+                "datetime": pd.Timestamp("2015-01-01 03:00:00"),
+                "duration": isodate.duration.Duration(0, 0, 0, years=1, months=1),
                 "geojson": {"type": "Point", "coordinates": [33, 33.33]},
-                "geopoint": [30, 70],
+                "geopoint": "30,70",
                 "integer": 1,
-                "number": 7,
+                "number": Decimal("7.0"),
                 "object": {"chars": 560},
                 "string": "english",
                 "time": time(3, 0),
                 "year": 2015,
-                "yearmonth": [2015, 1],
-            },
+                "yearmonth": "2015-01",
+            }
         ]
 
 
@@ -149,14 +147,18 @@ def test_pandas_write_constraints():
         # Assert schema
         assert target.schema.to_descriptor() == {
             "fields": [
-                {"name": "required", "type": "string"},  # constraint removal
-                {"name": "minLength", "type": "string"},  # constraint removal
-                {"name": "maxLength", "type": "string"},  # constraint removal
-                {"name": "pattern", "type": "string"},  # constraint removal
-                {"name": "enum", "type": "string"},  # constraint removal
-                {"name": "minimum", "type": "integer"},  # constraint removal
-                {"name": "maximum", "type": "integer"},  # constraint removal
-            ],
+                {"name": "required", "type": "string", "constraints": {"required": True}},
+                {"name": "minLength", "type": "string", "constraints": {"minLength": 4}},
+                {"name": "maxLength", "type": "string", "constraints": {"maxLength": 8}},
+                {
+                    "name": "pattern",
+                    "type": "string",
+                    "constraints": {"pattern": "passing"},
+                },
+                {"name": "enum", "type": "string", "constraints": {"enum": ["passing"]}},
+                {"name": "minimum", "type": "integer", "constraints": {"minimum": 4}},
+                {"name": "maximum", "type": "integer", "constraints": {"maximum": 8}},
+            ]
         }
 
         # Assert rows
