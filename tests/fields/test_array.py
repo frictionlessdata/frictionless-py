@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Field, fields
+from frictionless import Field, Package, fields
 
 
 # General
@@ -61,3 +61,14 @@ def test_array_read_cell_array_item_with_constraint_error():
     cell, notes = field.read_cell('["val1", "val2"]')
     assert cell == ["val1", "val2"]
     assert notes == {"enum": 'array item constraint "enum" is "[\'val1\']"'}
+
+
+# Bugs
+
+
+def test_array_unhashable_type_list_issue_1293():
+    package = Package("data/issue-1293/datapackage.json")
+    assert package.get_resource("sample").extract() == [
+        {"field": ["aaa", "bbb"]},
+        {"field": []},
+    ]
