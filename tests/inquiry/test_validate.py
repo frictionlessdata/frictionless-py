@@ -135,6 +135,8 @@ def test_inquiry_validate_parallel_multiple():
     assert report.valid
 
 
+# TODO: recover -- it randomly/sometimes fails on CI because of a time limit
+@pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_parallel_multiple_invalid():
     inquiry = Inquiry.from_descriptor(

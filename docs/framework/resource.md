@@ -205,32 +205,19 @@ with Resource('table.csv.zip', compression='zip') as resource:
 
 ## Dialect
 
-The Dialect adjusts the way the parsers work. The concept is similar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
-
-```python title="Python"
-from frictionless import Resource
-from frictionless.plugins.csv import CsvDialect
-
-source = b'header1;header2\nvalue1;value2'
-dialect = CsvDialect(delimiter=';')
-with Resource(source, format='csv', dialect=dialect) as resource:
-  print(resource.dialect)
-  print(resource.to_view())
-```
-```
-{'delimiter': ';'}
-+----------+----------+
-| header1  | header2  |
-+==========+==========+
-| 'value1' | 'value2' |
-+----------+----------+
-```
-
-There are a great deal of options available for different dialects that can be found in "Formats Reference". We will list the properties that can be used with every dialect:
+Please read [Table Dialect Guide](dialect.html) for more information.
 
 ## Schema
 
-Please read [Schema Guide](schema.html) for more information.
+Please read [Table Schema Guide](schema.html) for more information.
+
+## Checklist
+
+Please read [Checklist Guide](checklist.html) for more information.
+
+## Pipeline
+
+Please read [Pipeline Guide](pipeline.html) for more information.
 
 ## Stats
 

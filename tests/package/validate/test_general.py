@@ -296,3 +296,9 @@ def test_validate_package_metadata_errors_with_fields_993():
     assert error.note == "descriptor is not valid"
     assert reasons[0].type == "package-error"
     assert reasons[0].note == '"fields" should be set as "resource.schema.fields"'
+
+
+def test_package_licenses_required_path_or_name_issue_1290():
+    descriptor = {"resources": [], "licenses": [{"title": "title"}]}
+    report = Package.validate_descriptor(descriptor)
+    assert report.errors[0].note.count('license requires "path" or "name"')

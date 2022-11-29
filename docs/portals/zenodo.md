@@ -21,6 +21,7 @@ from pprint import pprint
 from frictionless import portals, Package
 
 package = Package("https://zenodo.org/record/7078768")
+package.infer()
 print(package)
 ```
 ```
@@ -47,15 +48,6 @@ print(package)
                                       {'name': 'name', 'type': 'string'}]}}]}
 ```
 
-You can also use alias function instead, for example:
-```python tabs=Python
-from pprint import pprint
-from frictionless import portals, Package
-
-package = Package("https://zenodo.org/record/7078768")
-print(package)
-```
-
 To increase the access limit, pass 'apikey' as the param to the reader function as follows:
 
 ```python tabs=Python
@@ -76,6 +68,7 @@ from pprint import pprint
 from frictionless import portals, Package
 
 package = Package("https://zenodo.org/record/7078760")
+package.infer()
 print(package)
 ```
 ```
@@ -161,6 +154,7 @@ from frictionless import portals, Catalog
 
 control = portals.ZenodoControl(search='notes:"TDWD"')
 catalog = Catalog(control=control)
+catalog.infer()
 print("Total packages", len(catalog.packages))
 print(catalog.packages)
 ```
@@ -210,6 +204,7 @@ from frictionless import portals, Catalog
 
 control = portals.ZenodoControl(record="7078768")
 catalog = Catalog(control=control)
+catalog.infer()
 print("Total packages", len(catalog.packages))
 print(catalog.packages)
 ```
@@ -278,6 +273,7 @@ catalog = Catalog(
            size=1,
        ),
    )
+catalog.infer()
 ```
 ```
 [{'name': 'test-repo-resources-with-http-data-csv',

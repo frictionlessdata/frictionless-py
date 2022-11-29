@@ -1,0 +1,20 @@
+{
+  "name": "sample",
+  "resources": [
+    {
+      "name": "sample",
+      "path": "sample.json",
+      "format": "json",
+      "schema": {
+        "fields": [
+          {
+            "name": "field",
+            "type": "array"
+          }
+        ]
+      },
+      "profile": "tabular-data-resource"
+    }
+  ],
+  "profile": "tabular-data-package"
+}

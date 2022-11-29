@@ -7,7 +7,7 @@ topics:
 
 # Dialect Class
 
-The Dialect concept give us an ability to manage table header and any details related to specific formats.
+The Table Dialect is a core Frictionless Data concept meaning a metadata information regarding tabular data source. The Table Dialect concept give us an ability to manage table header and any details related to specific formats.
 
 ## Dialect
 
