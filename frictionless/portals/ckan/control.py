@@ -64,6 +64,11 @@ class CkanControl(Control):
     Results page number
     """
 
+    allow_update: Optional[bool] = False
+    """
+    Update a dataset on publish with an id is provided on the package descriptor
+    """
+
     # Metadata
 
     metadata_profile_patch = {
@@ -78,5 +83,6 @@ class CkanControl(Control):
             "ignore_schema": {"type": "bool"},
             "num_packages": {"type": "int"},
             "results_offset": {"type": "int"},
+            "allow_update": {"type": "bool"},
         },
     }

@@ -146,6 +146,10 @@ class CkanAdapter(Adapter):
             note = "Your package has no name. CKAN requires a name to publish a package"
             raise FrictionlessException(note)
 
+        # if "id" exist and control is set to allow updates, try to update dataset
+        if "id" in package_data and self.control.allow_update:
+            endpoint = f"{baseurl}/api/action/package_update"
+
         try:
             # Make request
             response = system.http_session.request(
@@ -177,10 +181,10 @@ class CkanAdapter(Adapter):
         baseurl = self.control.baseurl
         endpoint = f"{baseurl}/api/action/resource_create"
         headers = set_headers(self)
-
-        resource_data = self.mapper["fric_to_ckan"].resource(resource.to_descriptor())
+        resource_descriptor = resource.to_descriptor()
+        resource_data = self.mapper["fric_to_ckan"].resource(resource_descriptor)
         resource_data["package_id"] = dataset_id
-        resource_url = resource_data["url"].split("/")[-1]
+        resource_filename = resource_data["url"].split("/")[-1]
 
         del resource_data["url"]
 
@@ -193,7 +197,7 @@ class CkanAdapter(Adapter):
                 data=resource_data,
                 files={
                     "upload": (
-                        resource_url,
+                        resource_filename,
                         resource.read_bytes(),
                         "application/octet-stream",
                     )
@@ -222,7 +226,6 @@ def set_headers(adapter: CkanAdapter) -> dict:
     return headers
 
 
-# Internal
 def make_ckan_request(
     endpoint, *, method="GET", headers=None, apikey=None, **options
 ) -> dict:
