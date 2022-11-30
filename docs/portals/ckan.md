@@ -22,10 +22,10 @@ from frictionless.portals import CkanControl
 from frictionless import Package
 
 ckan_control = CkanControl()
-package = Package('https://dados.gov.br/dataset/bolsa-familia-pagamentos', control=ckan_control)
+package = Package('https://legado.dados.gov.br/dataset/bolsa-familia-pagamentos', control=ckan_control)
 ```
 
-Where 'https://dados.gov.br/dataset/bolsa-familia-pagamentos' is the URL for
+Where 'https://legado.dados.gov.br/dataset/bolsa-familia-pagamentos' is the URL for
 the CKAN dataset. This will download the dataset and all its resources
 metadata.
 
@@ -36,7 +36,7 @@ base URL (`baseurl`) and the dataset that you do want to download (`dataset`):
 from frictionless.portals import CkanControl
 from frictionless import Package
 
-ckan_control = CkanControl(baseurl='https://dados.gov.br', dataset='bolsa-familia-pagamentos')
+ckan_control = CkanControl(baseurl='https://legado.dados.gov.br', dataset='bolsa-familia-pagamentos')
 package = Package(control=ckan_control)
 ```
 
@@ -47,7 +47,7 @@ you pass only the `baseurl` you can download a package as:
 from frictionless.portals import CkanControl
 from frictionless import Package
 
-ckan_control = CkanControl(baseurl='https://dados.gov.br')
+ckan_control = CkanControl(baseurl='https://legado.dados.gov.br')
 package = Package('bolsa-familia-pagamentos', control=ckan_control)
 ```
 
@@ -61,7 +61,7 @@ CKAN Control:
 from frictionless.portals import CkanControl
 from frictionless import Package
 
-ckan_control = CkanControl(baseurl='https://dados.gov.br', ignore_schema=True)
+ckan_control = CkanControl(baseurl='https://legado.dados.gov.br', ignore_schema=True)
 package = Package('bolsa-familia-pagamentos', control=ckan_control)
 ```
 
@@ -78,7 +78,7 @@ Control as the parameter `apikey`.
 from frictionless.portals import CkanControl
 from frictionless import Package
 
-ckan_control = CkanControl(baseurl='https://dados.gov.br', apikey='YOUR-SECRET-API-KEY')
+ckan_control = CkanControl(baseurl='https://legado.dados.gov.br', apikey='YOUR-SECRET-API-KEY')
 package = Package(...) # Create your package
 package.publish(control=ckan_control)
 ```
@@ -92,7 +92,7 @@ You can download a list of CKAN datasets using the Catalog.
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br')
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br')
 c = Catalog(control=ckan_control)
 ```
 
@@ -107,7 +107,7 @@ datasets you can do as:
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br', num_packages=1000)
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', num_packages=1000)
 c = Catalog(control=ckan_control)
 ```
 
@@ -123,7 +123,7 @@ pass the parameter `ignore_package_errors=True`:
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br', ignore_package_erros=True, num_packages=1000)
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', ignore_package_errors=True, num_packages=1000)
 c = Catalog(control=ckan_control)
 ```
 
@@ -145,7 +145,7 @@ You can see in the example above that 1000 packages were download from a total
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br', ignore_package_erros=True, results_offset=1000)
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', ignore_package_erros=True, results_offset=1000)
 c = Catalog(control=ckan_control)
 ```
 
@@ -155,7 +155,7 @@ This will download 1000 packages after the the first 1000 packages.
 
 To fetch all packages from a organization will can use the CKAN Control
 parameter `organization_name`. e.g. if you want to fetch all datasets from the
-organization `https://dados.gov.br/organization/agencia-espacial-brasileira-aeb` you can do
+organization `https://legado.dados.gov.br/organization/agencia-espacial-brasileira-aeb` you can do
 as follows:
 
 
@@ -163,7 +163,7 @@ as follows:
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br', organization_name='agencia-espacial-brasileira-aeb')
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', organization_name='agencia-espacial-brasileira-aeb')
 c = Catalog(control=ckan_control)
 ```
 
@@ -174,7 +174,7 @@ the parameter `group_id` to the CKAN Control as:
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br', group_id='ciencia-informacao-e-comunicacao')
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', group_id='ciencia-informacao-e-comunicacao')
 c = Catalog(control=ckan_control)
 ```
 
@@ -188,7 +188,7 @@ You can pass the search parameters as the parameter `search` to CKAN Control.
 import frictionless
 from frictionless import portals, Catalog
     
-ckan_control = portals.CkanControl(baseurl='https://dados.gov.br', search={'q': 'name:bolsa*'})
+ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', search={'q': 'name:bolsa*'})
 c = Catalog(control=ckan_control)
 ```
 
