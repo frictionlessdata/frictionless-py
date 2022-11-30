@@ -1,11 +1,12 @@
 import os
 import json
-from typing import TYPE_CHECKING, Optional, List, Union
+from typing import List, Union
 from ...exception import FrictionlessException
 from ...system import system, Adapter
 from ...platform import platform
 from ...catalog import Catalog
 from ...package import Package
+from ...resource import Resource
 from ... import helpers
 from .control import CkanControl
 
@@ -29,6 +30,7 @@ class CkanAdapter(Adapter):
         response: dict = {}
         descriptor: dict = {}
         num_packages: Union[int, None] = None
+        headers = set_headers(self)
 
         assert self.control.baseurl
         if self.control.group_id:
@@ -56,7 +58,7 @@ class CkanAdapter(Adapter):
         if self.control.results_offset:
             params["start"] = str(self.control.results_offset)
 
-        response = make_ckan_request(endpoint, params=params)
+        response = make_ckan_request(endpoint, headers=headers, params=params)
         if not self.control.group_id:
             results = response["result"]["results"]
             num_packages = response["result"]["count"]
@@ -125,17 +127,25 @@ class CkanAdapter(Adapter):
     def write_package(self, package: Package) -> Union[None, str]:
         baseurl = self.control.baseurl
         endpoint = f"{baseurl}/api/action/package_create"
-        headers = {}
+        headers = set_headers(self)
 
-        if self.control.apikey:
-            if self.control.apikey.startswith("env:"):
-                apikey = os.environ.get(self.control.apikey[4:])
+        remote_resources = []
+        not_remote_resources = []
+        for res in package.resources:
+            if res.remote:
+                remote_resources.append(res)
             else:
-                apikey = self.control.apikey
+                not_remote_resources.append(res)
 
-            headers.update({"Authorization": apikey})
+        package.resources = remote_resources
+        package_descriptor = package.to_descriptor()
+        package_data = self.mapper["fric_to_ckan"].package(package_descriptor)
 
-        package_data = self.mapper["fric_to_ckan"].package(package.to_descriptor())
+        # Assure that the package has a name
+        if "name" not in package_data:
+            note = "Your package has no name. CKAN requires a name to publish a package"
+            raise FrictionlessException(note)
+
         try:
             # Make request
             response = system.http_session.request(
@@ -150,11 +160,66 @@ class CkanAdapter(Adapter):
                 response_dict = json.loads(response.content)
                 dataset_id = response_dict["result"]["id"]
 
+                # upload resources
+                for resource in not_remote_resources:
+                    self.write_resource(dataset_id, resource)
+
                 return f"{self.control.baseurl}/dataset/{dataset_id}"
+            else:
+                note = response.text
+                raise FrictionlessException(note)
 
         except Exception as exception:
             note = "CKAN API error:" + repr(exception)
             raise FrictionlessException(note)
+
+    def write_resource(self, dataset_id: str, resource: Resource):
+        baseurl = self.control.baseurl
+        endpoint = f"{baseurl}/api/action/resource_create"
+        headers = set_headers(self)
+
+        resource_data = self.mapper["fric_to_ckan"].resource(resource.to_descriptor())
+        resource_data["package_id"] = dataset_id
+        resource_url = resource_data["url"].split("/")[-1]
+
+        del resource_data["url"]
+
+        try:
+            response = system.http_session.request(
+                method="POST",
+                url=endpoint,
+                headers=headers,
+                allow_redirects=True,
+                data=resource_data,
+                files={
+                    "upload": (
+                        resource_url,
+                        resource.read_bytes(),
+                        "application/octet-stream",
+                    )
+                },
+            )
+
+            if response.status_code != 200:
+                note = response.text
+                raise FrictionlessException(note)
+        except Exception as exception:
+            note = "CKAN API error:" + repr(exception)
+            raise FrictionlessException(note)
+
+
+def set_headers(adapter: CkanAdapter) -> dict:
+    headers = {}
+
+    if adapter.control.apikey:
+        if adapter.control.apikey.startswith("env:"):
+            apikey = os.environ.get(adapter.control.apikey[4:])
+        else:
+            apikey = adapter.control.apikey
+
+        headers.update({"Authorization": apikey})
+
+    return headers
 
 
 # Internal

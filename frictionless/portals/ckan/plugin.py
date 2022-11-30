@@ -1,12 +1,8 @@
 from __future__ import annotations
 from ...system import Plugin
 from urllib.parse import urlparse
-from typing import TYPE_CHECKING, Optional
 from .control import CkanControl
 from .adapter import CkanAdapter
-
-if TYPE_CHECKING:
-    from ... import portals
 
 
 class CkanPlugin(Plugin):
