@@ -1,0 +1,372 @@
+interactions:
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions
+  response:
+    body:
+      string: '{"conceptrecid":"1132343","created":"2022-11-28T17:42:30.748347+00:00","files":[],"id":1132344,"links":{"bucket":"https://sandbox.zenodo.org/api/files/5251937b-c998-4394-9f07-6e1aa2125b27","discard":"https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/discard","edit":"https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/edit","files":"https://sandbox.zenodo.org/api/deposit/depositions/1132344/files","html":"https://sandbox.zenodo.org/deposit/1132344","latest_draft":"https://sandbox.zenodo.org/api/deposit/depositions/1132344","latest_draft_html":"https://sandbox.zenodo.org/deposit/1132344","publish":"https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/publish","self":"https://sandbox.zenodo.org/api/deposit/depositions/1132344"},"metadata":{"prereserve_doi":{"doi":"10.5072/zenodo.1132344","recid":1132344}},"modified":"2022-11-28T17:42:30.748355+00:00","owner":130558,"record_id":1132344,"state":"unsubmitted","submitted":false,"title":""}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '992'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 28 Nov 2022 17:42:30 GMT
+      ETag:
+      - '"0"'
+      Last-Modified:
+      - Mon, 28 Nov 2022 17:42:30 GMT
+      Link:
+      - <https://sandbox.zenodo.org/api/deposit/depositions/1132344/files>; rel="files",
+        <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/edit>;
+        rel="edit", <https://sandbox.zenodo.org/api/deposit/depositions/1132344>;
+        rel="self", <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/publish>;
+        rel="publish", <https://sandbox.zenodo.org/deposit/1132344>; rel="html", <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/discard>;
+        rel="discard"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '99'
+      X-RateLimit-Reset:
+      - '1669657411'
+      X-Request-ID:
+      - 31695f1cad5e9f2bf1a1401e97f578bf
+      X-User-ID:
+      - '130558'
+      X-XSS-Protection:
+      - 1; mode=block
+      location:
+      - https://sandbox.zenodo.org/api/deposit/depositions/1132344
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "{\n  \"metadata\": {\n    \"title\": \"Test Package Partial Meta\",\n    \"description\":
+      \"This is a test package to test zenodo write function\",\n    \"publication_date\":
+      \"1985-04-12T23:20:50.52Z\",\n    \"upload_type\": \"dataset\",\n    \"access_right\":
+      \"open\",\n    \"creators\": [\n      {\n        \"name\": \"Test FD\",\n        \"affiliation\":
+      \"OKFN\"\n      }\n    ],\n    \"keywords\": [\n      \"frictionlessdata\"\n
+      \   ]\n  }\n}"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '396'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: PUT
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/1132344
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6yUTY+bMBCG/wrytRCwgSVw3WovVds95FatkGMPiRWCkW023a7y3zsGkqZVP6Jm
+        JSSwGT9+Z+x5X4nQnYDeGRBKkopQmrI0S0lIhAHuwM+xhLGI0ogtV7SoMlalyaLIlmlWvEuSKkkw
+        WGqFgdNHPZgWB1vnelvFMc4stNnE+LNRLVhSfXkKid9s2isLSau6Hc6/kvUgduAuFlveybX+uvgG
+        nZZ65PBexSMozllOy7RYR6Isl1GWlllUNkkR3QHlnFGWr1nhJSkruJH/pkrotVXu9Fa6s/GsMeZi
+        Gp9gIQGprlB6DXMknatzC3FChIjYt38nnSjzSlzT4mlbV0vDm9vy+oVV/4+YDg7PYCxib5JyLvEF
+        LyT9sG6V3b4N+QQLiYGNsg7M3FFTS7zBDr/hhsRC29yEJ8eQ7MFxyR33rceFAGtrozZbf/y6h+5k
+        Atr4psWQBu+X4m46lc8fHj75k+J7wNEKzzt4eE+O2NsSrDCqn+NWW2UDfHjg70TQc7HjGwicnsaT
+        4uBglIOgGbox6UtH2cHLQRvpJZDGqPE/3nI7Cn/y5iGgs17D/X0S0YW3o96AAQvmGeqR8zrjaLLI
+        k4LFc5l+3LfZ/uaJ43xHxJhrjTt5PC2XeZRkEWW4wCnXnvN+nHN65MYp3gYfsa4YM/St5rJ2L72P
+        9Hotmpuvu5aqUX/wVoreelcU2dlb9aEDg9rSJM+Xo1QsR/2TgVo3SRw6O6z3ynnfxtnzd9Xw1sI1
+        qo/fAQAA//8DAPwe8wsSBgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 28 Nov 2022 17:42:31 GMT
+      ETag:
+      - W/"1"
+      Last-Modified:
+      - Mon, 28 Nov 2022 17:42:31 GMT
+      Link:
+      - <https://sandbox.zenodo.org/api/deposit/depositions/1132344/files>; rel="files",
+        <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/edit>;
+        rel="edit", <https://sandbox.zenodo.org/api/deposit/depositions/1132344>;
+        rel="self", <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/publish>;
+        rel="publish", <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/registerconceptdoi>;
+        rel="registerconceptdoi", <https://sandbox.zenodo.org/deposit/1132344>; rel="html",
+        <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/discard>;
+        rel="discard", <https://sandbox.zenodo.org/api/deposit/depositions/1132344/actions/newversion>;
+        rel="newversion"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '98'
+      X-RateLimit-Reset:
+      - '1669657412'
+      X-Request-ID:
+      - c3a8af616157a4879bde0da38da3461b
+      X-User-ID:
+      - '130558'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--051a8e05c38b42ddc7bbd8b3aececf52\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndatapackage.json\r\n--051a8e05c38b42ddc7bbd8b3aececf52\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"datapackage.json\"\r\n\r\n{\n  \"name\":
+      \"testing\",\n  \"title\": \"Test Package Partial Meta\",\n  \"description\":
+      \"This is a test package to test zenodo write function\",\n  \"contributors\":
+      [\n    {\n      \"title\": \"Test FD\",\n      \"role\": \"author\",\n      \"organization\":
+      \"OKFN\"\n    }\n  ],\n  \"created\": \"1985-04-12T23:20:50.52Z\",\n  \"resources\":
+      [\n    {\n      \"name\": \"data\",\n      \"path\": \"data.csv\",\n      \"schema\":
+      {\n        \"fields\": [\n          {\n            \"name\": \"id\",\n            \"type\":
+      \"string\",\n            \"constraints\": {\n              \"required\": true\n
+      \           }\n          },\n          {\n            \"name\": \"name\",\n
+      \           \"type\": \"string\"\n          },\n          {\n            \"name\":
+      \"description\",\n            \"type\": \"string\"\n          },\n          {\n
+      \           \"name\": \"amount\",\n            \"type\": \"number\"\n          }\n
+      \       ],\n        \"primaryKey\": [\n          \"id\"\n        ]\n      }\n
+      \   },\n    {\n      \"name\": \"data2\",\n      \"path\": \"data2.csv\",\n
+      \     \"schema\": {\n        \"fields\": [\n          {\n            \"name\":
+      \"parent\",\n            \"type\": \"string\"\n          },\n          {\n            \"name\":
+      \"comment\",\n            \"type\": \"string\"\n          }\n        ],\n        \"foreignKeys\":
+      [\n          {\n            \"fields\": [\n              \"parent\"\n            ],\n
+      \           \"reference\": {\n              \"resource\": \"data\",\n              \"fields\":
+      [\n                \"id\"\n              ]\n            }\n          }\n        ]\n
+      \     }\n    }\n  ]\n}\r\n--051a8e05c38b42ddc7bbd8b3aececf52--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1693'
+      Content-Type:
+      - multipart/form-data; boundary=051a8e05c38b42ddc7bbd8b3aececf52
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/1132344/files
+  response:
+    body:
+      string: '{"checksum": "67d48c724f3a1ea1cc536ef33a27fae4", "filename": "datapackage.json",
+        "filesize": 1436, "id": "76b48c40-6ec2-45dd-840a-8520055552b9", "links": {"download":
+        "https://sandbox.zenodo.org/api/files/5251937b-c998-4394-9f07-6e1aa2125b27/datapackage.json",
+        "self": "https://sandbox.zenodo.org/api/deposit/depositions/1132344/files/76b48c40-6ec2-45dd-840a-8520055552b9"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '374'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 28 Nov 2022 17:42:33 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '59'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '97'
+      X-RateLimit-Reset:
+      - '1669657413'
+      X-Request-ID:
+      - 69f8b8ab950ac2401b33fd84ee8c3d7b
+      X-User-ID:
+      - '130558'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "--c97a2b292c475354ccde42bccfe61825\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/package/data.csv\r\n--c97a2b292c475354ccde42bccfe61825\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"data.csv\"\r\n\r\nid,name,description,amount\nA3001,Taxes,Taxes
+      we collect,10000.5\nA5032,Parking Fees,Parking fees we collect,2000.5\n\r\n--c97a2b292c475354ccde42bccfe61825--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '368'
+      Content-Type:
+      - multipart/form-data; boundary=c97a2b292c475354ccde42bccfe61825
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/1132344/files
+  response:
+    body:
+      string: '{"checksum": "c028f525f314c49ea48ed09e82292ed2", "filename": "data.csv",
+        "filesize": 114, "id": "bbc05d14-4554-4cde-a71c-fcc591bf8d7d", "links": {"download":
+        "https://sandbox.zenodo.org/api/files/5251937b-c998-4394-9f07-6e1aa2125b27/data.csv",
+        "self": "https://sandbox.zenodo.org/api/deposit/depositions/1132344/files/bbc05d14-4554-4cde-a71c-fcc591bf8d7d"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '357'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 28 Nov 2022 17:42:34 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '96'
+      X-RateLimit-Reset:
+      - '1669657415'
+      X-Request-ID:
+      - f971891d891d3658f558c92d5b4323c1
+      X-User-ID:
+      - '130558'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "--edafb2ef8f786e1ff615a65ad5561f5a\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/package/data2.csv\r\n--edafb2ef8f786e1ff615a65ad5561f5a\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"data2.csv\"\r\n\r\nparent,comment\nA3001,comment1\nA3001,comment2\nA5032,comment3\n\r\n--edafb2ef8f786e1ff615a65ad5561f5a--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '316'
+      Content-Type:
+      - multipart/form-data; boundary=edafb2ef8f786e1ff615a65ad5561f5a
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/1132344/files
+  response:
+    body:
+      string: '{"checksum": "cb4a683d8eecb72c9ac9beea91fd592e", "filename": "data2.csv",
+        "filesize": 60, "id": "3ee638d7-a547-421c-8bf6-74b7d9a81b2e", "links": {"download":
+        "https://sandbox.zenodo.org/api/files/5251937b-c998-4394-9f07-6e1aa2125b27/data2.csv",
+        "self": "https://sandbox.zenodo.org/api/deposit/depositions/1132344/files/3ee638d7-a547-421c-8bf6-74b7d9a81b2e"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      Content-Length:
+      - '358'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 28 Nov 2022 17:42:35 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Retry-After:
+      - '60'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-RateLimit-Limit:
+      - '100'
+      X-RateLimit-Remaining:
+      - '95'
+      X-RateLimit-Reset:
+      - '1669657416'
+      X-Request-ID:
+      - 22583b0101d6bbec60b957573d02a9c1
+      X-User-ID:
+      - '130558'
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+version: 1
