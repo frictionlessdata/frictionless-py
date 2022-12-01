@@ -2,7 +2,7 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import describe, Dialect, Detector, platform
+from frictionless import describe, Dialect, Detector, platform, formats
 from frictionless.program import program
 
 
@@ -119,6 +119,21 @@ def test_program_describe_basepath():
     expect = describe("*-3.csv", basepath="data")
     assert result.exit_code == 0
     assert yaml.safe_load(result.stdout) == expect.to_descriptor()
+
+
+def test_program_describe_extract_dialect_sheet_option():
+    actual = runner.invoke(program, "describe data/sheet2.xls --sheet Sheet2 --json")
+    expect = describe("data/sheet2.xls", control=formats.ExcelControl(sheet="Sheet2"))
+    assert actual.exit_code == 0
+    assert json.loads(actual.stdout) == expect.to_descriptor()
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_program_describe_extract_dialect_table_option_sql(database_url):
+    actual = runner.invoke(program, f"describe {database_url} --table fruits --json")
+    expect = describe(database_url, control=formats.SqlControl(table="fruits"))
+    assert actual.exit_code == 0
+    assert json.loads(actual.stdout) == expect.to_descriptor()
 
 
 # Bugs
