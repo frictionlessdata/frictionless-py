@@ -17,11 +17,20 @@ class CkanPlugin(Plugin):
             if not control or isinstance(control, CkanControl):
                 if parsed.path.startswith("/dataset/"):
                     control = control or CkanControl()
-                    baseurl, dataset = source.split("/dataset/")
-                    control.baseurl = baseurl
+                    if not control.baseurl:
+                        baseurl, dataset = source.split("/dataset/")
+                        control.baseurl = baseurl
+                    else:
+                        dataset = source.split("/dataset/")[1]
                     if dataset:
                         control.dataset = dataset
+                elif control:
+                    control.dataset = source
+
+                if isinstance(control, CkanControl):
                     return CkanAdapter(control)
+        if not source and isinstance(control, CkanControl):
+            return CkanAdapter(control)
 
     def select_Control(self, type):
         if type == "ckan":

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, List
+from typing import Optional
 from ...dialect import Control
 
 
@@ -14,7 +14,7 @@ class CkanControl(Control):
 
     baseurl: Optional[str] = None
     """
-    Endpoint url for CKAN instance.
+    Endpoint url for CKAN instance. e.g. https://dados.gov.br
     """
 
     dataset: Optional[str] = None
@@ -22,34 +22,51 @@ class CkanControl(Control):
     Unique identifier of the dataset to read.
     """
 
-    resource: Optional[str] = None
-    """NOTE: add docs"""
-
     apikey: Optional[str] = None
     """
     The access token to authenticate to the CKAN instance. It is required 
     to write files to CKAN instance.
     """
 
-    fields: Optional[List[str]] = None
+    ignore_package_errors: Optional[bool] = False
     """
-    Specify the number of fields to read. Other fields
-    will not be read.
-    """
-
-    limit: Optional[int] = None
-    """
-    Limit the number of records to read.
+    Ignore Package errors in a Catalog. If multiple packages are being downloaded
+    and one fails with an invalid descriptor, continue downloading the rest.
     """
 
-    sort: Optional[str] = None
+    ignore_schema: Optional[bool] = False
     """
-    Field by which to sort the data before reading the data.
+    Ignore dataset resources schemas
     """
 
-    filters: Optional[dict] = None
+    group_id: Optional[str] = None
     """
-    Params as a list of dict to filter the data while reading.
+    CKAN Group id to get datasets in a Catalog
+    """
+
+    organization_name: Optional[str] = None
+    """
+    CKAN Organization name to get datasets in a Catalog
+    """
+
+    search: Optional[dict] = None
+    """
+    CKAN Search parameters as defined on https://docs.ckan.org/en/2.9/api/#ckan.logic.action.get.package_search
+    """
+
+    num_packages: Optional[int] = None
+    """
+    Maximum number of packages to fetch
+    """
+
+    results_offset: Optional[int] = None
+    """
+    Results page number
+    """
+
+    allow_update: Optional[bool] = False
+    """
+    Update a dataset on publish with an id is provided on the package descriptor
     """
 
     # Metadata
@@ -58,11 +75,14 @@ class CkanControl(Control):
         "properties": {
             "baseurl": {"type": "string"},
             "dataset": {"type": "string"},
-            "resource": {"type": "string"},
             "apikey": {"type": "string"},
-            "fields": {"type": "array", "items": {"type": "string"}},
-            "limit": {"type": "integer"},
-            "sort": {"type": "string"},
-            "filters": {"type": "object"},
+            "group_id": {"type": "string"},
+            "organization_name": {"type": "string"},
+            "search": {"type": "object"},
+            "ignore_package_errors": {"type": "bool"},
+            "ignore_schema": {"type": "bool"},
+            "num_packages": {"type": "int"},
+            "results_offset": {"type": "int"},
+            "allow_update": {"type": "bool"},
         },
     }
