@@ -91,11 +91,23 @@ class Project:
 
     def list_files(self):
         paths = []
-        for basepath, _, names in os.walk(self.public):
-            for name in names:
-                path = os.path.join(basepath, name)
+        temp_folders = set()
+        for basepath, folders, files in os.walk(self.public):
+            for file in files:
+                path = os.path.join(basepath, file)
                 path = os.path.relpath(path, start=self.public)
                 paths.append(path)
+                temp_folders.add(os.path.dirname(path))
+
+            for folder in folders:
+                if folder.startswith("."):
+                    continue
+                if folder in temp_folders:
+                    continue
+                path = os.path.join(basepath, folder)
+                path = os.path.relpath(path, start=self.public)
+                paths.append(path)
+
         paths = list(sorted(paths))
         return paths
 
@@ -128,6 +140,8 @@ class Project:
         if package_path not in paths:
             package = Package(basepath=self.basepath)
             for path in paths:
+                if os.path.isdir(path):
+                    continue
                 record = self.create_record(path)
                 resource = Resource.from_descriptor(record.resource)
                 package.add_resource(resource)
