@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.0.0b19
+
+- Implemented [CKAN Integration](https://framework.frictionlessdata.io/docs/portals/ckan.html) ([#1185](https://github.com/frictionlessdata/frictionless-py/issues/1332))
+
 ## v5.0.0b8
 
 - ForeignKeyError has been extended with additional information: `fieldNames`, `fieldCells`, `referenceName`, and `referenceFieldNames`
