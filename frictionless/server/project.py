@@ -130,6 +130,19 @@ class Project:
         helpers.move_file(source, newpath)
         return newpath
 
+    def copy_file(self, filename: str):
+        source = str(self.public / filename)
+        new_filename = filename
+        while True:
+            new_filename = f"copyof{new_filename}"
+            new_filepath = str(self.public / new_filename)
+            if not os.path.exists(new_filepath): break
+        if os.path.isdir(source):
+            helpers.copy_folder(source, new_filepath)
+        else:
+            helpers.copy_file(source, new_filepath)
+        return new_filepath
+
     # Links
 
     # Packages
