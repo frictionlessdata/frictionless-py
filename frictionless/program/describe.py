@@ -7,6 +7,7 @@ from ..actions import describe
 from ..dialect import Dialect
 from ..system import system
 from .program import program
+from .. import formats
 from .. import helpers
 from . import common
 
@@ -29,6 +30,8 @@ def program_describe(
     header_join: str = common.header_join,
     comment_char: str = common.comment_char,
     comment_rows: str = common.comment_rows,
+    sheet: str = common.sheet,
+    table: str = common.table,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -82,11 +85,17 @@ def program_describe(
         descriptor = helpers.parse_json_string(dialect)
         if descriptor:
             return Dialect.from_descriptor(descriptor)
+        controls = []
+        if sheet:
+            controls.append(formats.ExcelControl(sheet=sheet))
+        elif table:
+            controls.append(formats.SqlControl(table=table))
         return Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
             comment_char=comment_char,
             comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
+            controls=controls,
         )
 
     # Prepare detector

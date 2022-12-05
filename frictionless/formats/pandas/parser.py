@@ -198,12 +198,12 @@ class PandasParser(Parser):
 
         # Mapping
         mapping = {
-            "array": np.dtype(list),
+            "array": np.dtype(list),  # type: ignore
             "boolean": np.dtype(bool),
             "datetime": pd.DatetimeTZDtype(tz="UTC"),
             "integer": np.dtype(int),
             "number": np.dtype(float),
-            "object": np.dtype(dict),
+            "object": np.dtype(dict),  # type: ignore
             "year": np.dtype(int),
         }
 

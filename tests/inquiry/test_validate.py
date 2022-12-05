@@ -160,6 +160,7 @@ def test_inquiry_validate_parallel_multiple_invalid():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_with_multiple_packages_with_parallel():
     inquiry = Inquiry.from_descriptor(

@@ -1,7 +1,11 @@
 import os
+import datetime
+import json
+import tempfile
 from pathlib import Path
 from typing import List, Dict, Any, Union
 from .control import ZenodoControl
+from ... import helpers
 from ...system import Adapter
 from ...catalog import Catalog
 from ...exception import FrictionlessException
@@ -63,7 +67,7 @@ class ZenodoAdapter(Adapter):
                 if isinstance(package, Package) and package.resources:
                     packages.append(package)
         except Exception as exception:
-            note = "Github API error" + repr(exception)
+            note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
         if packages:
             return Catalog(name=self.control.name or "catalog", packages=packages)
@@ -97,9 +101,15 @@ class ZenodoAdapter(Adapter):
         assert self.control.base_url
         assert self.control.apikey
         client.BASE_URL = self.control.base_url
-        if not self.control.metafn:
-            note = "Metafn(metadata file) is required."
-            raise FrictionlessException(note)
+        metafn = self.control.metafn
+
+        if not metafn:
+            meta_data = generate_metadata(package)
+            with tempfile.NamedTemporaryFile("wt", delete=False) as file:
+                print("filename", file.name)
+                json.dump(meta_data, file, indent=2)
+                metafn = file.name
+
         try:
             deposition_id = self.control.deposition_id
             if not deposition_id:
@@ -107,7 +117,7 @@ class ZenodoAdapter(Adapter):
                 deposition_id = client.create(
                     token=self.control.apikey, base_url=self.control.base_url
                 )
-            metafn = Path(self.control.metafn).expanduser()
+            metafn = Path(metafn).expanduser()
             client.upload_meta(
                 token=self.control.apikey,
                 metafn=metafn,
@@ -183,3 +193,37 @@ def get_package(files: List, title: str, formats: List[str]) -> Package:
             resource.infer(sample=False)
             package.add_resource(resource)
     return package
+
+
+def generate_metadata(package: Package) -> dict:
+    meta_data: Union[str, dict, None] = {"metadata": {}}
+    if not package.title or not package.description or not package.contributors:
+        note = "Zenodo API Metadata Creation error: Unable to read title or description or contributors from package descriptor."
+        raise FrictionlessException(note)
+
+    meta_data["metadata"] = {
+        "title": package.title,
+        "description": package.description,
+        "publication_date": package.created or datetime.datetime.now(),
+        "upload_type": "dataset",
+        "access_right": "open",
+    }
+    if package.licenses:
+        meta_data["metadata"]["creators"] = package.licenses[0].get("name")
+
+    creators = []
+    for contributor in package.contributors:
+        creators.append(
+            {
+                "name": contributor.get("title"),
+                "affiliation": contributor.get("organization"),
+            }
+        )
+    keywords = package.keywords or []
+    if "frictionlessdata" not in package.keywords:
+        keywords.append("frictionlessdata")
+
+    if creators:
+        meta_data["metadata"]["creators"] = creators
+    meta_data["metadata"]["keywords"] = keywords
+    return helpers.remove_non_values(meta_data)

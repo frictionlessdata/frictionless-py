@@ -437,6 +437,7 @@ def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
         assert rows[1].cells == []
 
 
+@pytest.mark.skip
 def test_resource_wrong_encoding_detection_issue_265():
     with Resource("data/accent.csv") as resource:
         assert resource.encoding == "iso8859-1"

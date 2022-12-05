@@ -1,3 +1,4 @@
+import os
 import pytest
 
 
@@ -74,3 +75,9 @@ def options_with_zipped_resource_file():
         "url": "https://zenodo.org/record/7248153",
         "record": "7248153",
     }
+
+
+@pytest.fixture
+def sandbox_api():
+    sandbox_api = os.environ.get("ZENODO_SANDBOX_ACCESS_TOKEN")
+    return sandbox_api

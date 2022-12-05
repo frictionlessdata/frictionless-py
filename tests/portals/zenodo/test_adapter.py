@@ -553,7 +553,7 @@ def test_zenodo_adapter_write_without_metadata(tmp_path):
     with pytest.raises(FrictionlessException) as excinfo:
         package.publish(control=control)
     error = excinfo.value.error
-    assert "Metafn(metadata file) is required" in error.message
+    assert "Zenodo API Metadata Creation error" in error.message
 
 
 @pytest.mark.vcr
@@ -656,6 +656,38 @@ def test_zenodo_adapter_write_resources_to_publish(tmp_path):
     package = Package("data/datapackage.json")
     deposition_id = package.publish(control=control)
     assert deposition_id == 7098751
+
+
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_package_metadata(
+    sandbox_api, tmp_path
+):
+    control = portals.ZenodoControl(
+        apikey=sandbox_api, base_url="https://sandbox.zenodo.org/api/", tmp_path=tmp_path
+    )
+    package = Package("data/package/zenodo.packagepartialmeta.json")
+    deposition_id = package.publish(control=control)
+    assert deposition_id == 1132344
+
+
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
+    sandbox_api, tmp_path
+):
+    control = portals.ZenodoControl(
+        apikey=sandbox_api, base_url="https://sandbox.zenodo.org/api/", tmp_path=tmp_path
+    )
+    package = Package("data/package/zenodo.packagewithmeta.json")
+    deposition_id = package.publish(control=control)
+    assert deposition_id == 1132346
+
+
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_without_metafile(tmp_path):
+    control = portals.ZenodoControl(tmp_path=tmp_path)
+    package = Package("data/package/zenodo.packagewithmeta.json")
+    deposition_id = package.publish(control=control)
+    assert deposition_id == 7373765
 
 
 # Read - Catalog
@@ -811,3 +843,13 @@ def test_zenodo_adapter_catalog_single_record():
     control = portals.ZenodoControl(record="7078768")
     catalog = Catalog(control=control)
     assert catalog.packages[0].to_descriptor() == PACKAGE_WITHOUT_DP
+
+
+# Extra
+
+
+def test_zenodo_adapter_metadata():
+    metafn = portals.zenodo.adapter.generate_metadata
+    package = Package("https://zenodo.org/record/7373765")
+    metadata = metafn(package)
+    assert "frictionlessdata" in metadata["metadata"]["keywords"]
