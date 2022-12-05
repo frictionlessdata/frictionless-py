@@ -123,24 +123,28 @@ class Project:
         folders = list(sorted(folders))
         return folders
 
-    def move_file(self, filename: str, destination: str):
-        source = str(self.public / filename)
+    def move_file(self, filepath: str, destination: str):
+        filename = os.path.basename(filepath)
+        source = str(self.public / filepath)
         destination = str(self.public / destination)
         newpath = os.path.join(destination, filename)
         helpers.move_file(source, newpath)
         return newpath
 
-    def copy_file(self, filename: str):
-        source = str(self.public / filename)
-        new_filename = filename
+    def copy_file(self, source: str):
+        new_filename = os.path.basename(source)
+        filepath = os.path.dirname(source)
+        # Set new filename if it already exists
         while True:
             new_filename = f"copyof{new_filename}"
-            new_filepath = str(self.public / new_filename)
-            if not os.path.exists(new_filepath): break
+            new_filepath = str(self.public / filepath / new_filename)
+            if not os.path.exists(new_filepath):
+                break
+        source_fullpath = str(self.public / source)
         if os.path.isdir(source):
-            helpers.copy_folder(source, new_filepath)
+            helpers.copy_folder(source_fullpath, new_filepath)
         else:
-            helpers.copy_file(source, new_filepath)
+            helpers.copy_file(source_fullpath, new_filepath)
         return new_filepath
 
     # Links
@@ -153,7 +157,7 @@ class Project:
         if package_path not in paths:
             package = Package(basepath=self.basepath)
             for path in paths:
-                if os.path.isdir(path):
+                if os.path.isdir(self.public / path):
                     continue
                 record = self.create_record(path)
                 resource = Resource.from_descriptor(record.resource)
