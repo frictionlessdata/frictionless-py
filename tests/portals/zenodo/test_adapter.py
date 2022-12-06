@@ -658,6 +658,7 @@ def test_zenodo_adapter_write_resources_to_publish(tmp_path):
     assert deposition_id == 7098751
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_package_metadata(
     sandbox_api, tmp_path
@@ -670,6 +671,7 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
     assert deposition_id == 1132344
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
     sandbox_api, tmp_path
