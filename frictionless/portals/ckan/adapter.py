@@ -14,13 +14,12 @@ from .control import CkanControl
 class CkanAdapter(Adapter):
     """Read and write data from/to Ckan"""
 
-    mapper = {
-        "ckan_to_fric": platform.frictionless_ckan_mapper_ckan_to_frictionless,
-        "fric_to_ckan": platform.frictionless_ckan_mapper_frictionless_to_ckan,
-    }
-
     def __init__(self, control: CkanControl):
         self.control = control
+        self.mapper = {
+            "ckan_to_fric": platform.frictionless_ckan_mapper_ckan_to_frictionless,
+            "fric_to_ckan": platform.frictionless_ckan_mapper_frictionless_to_ckan,
+        }
 
     # Read a set of CKAN datasets as a Catalog
     def read_catalog(self) -> Catalog:
