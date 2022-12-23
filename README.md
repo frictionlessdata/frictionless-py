@@ -1,6 +1,6 @@
 # Frictionless Framework (v5)
 
-[![Build](https://img.shields.io/github/workflow/status/frictionlessdata/framework/general/main)](https://github.com/frictionlessdata/framework/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/frictionlessdata/framework/general.yaml?branch=main)](https://github.com/frictionlessdata/framework/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/framework/main)](https://codecov.io/gh/frictionlessdata/framework)
 [![Release](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
 [![Citation](https://zenodo.org/badge/28409905.svg)](https://zenodo.org/badge/latestdoi/28409905)
