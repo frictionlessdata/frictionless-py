@@ -18,11 +18,11 @@ def index(self: Resource, database_url: str, *, table_name: str) -> Report:
         table = mapper.write_schema(self.schema, table_name=table_name)
         with connection.cursor() as cursor:
             cursor.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
-            cursor.execute(str(sql.CreateTable(table, bind=engine)))
+            cursor.execute(str(sql.CreateTable(table, bind=engine)))  # type: ignore
 
         # Write data
         with connection.cursor() as cursor:
-            with cursor.copy('COPY "%s" FROM STDIN' % table_name) as copy:
+            with cursor.copy('COPY "%s" FROM STDIN' % table_name) as copy:  # type: ignore
 
                 # Write row
                 def callback(row):
