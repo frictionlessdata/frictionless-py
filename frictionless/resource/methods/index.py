@@ -17,7 +17,7 @@ def index(self: Resource, database_url: str, *, table_name: str) -> Report:
         # Write metadata
         table = mapper.write_schema(self.schema, table_name=table_name)
         with connection.cursor() as cursor:
-            cursor.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))
+            cursor.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
             cursor.execute(str(sql.CreateTable(table, bind=engine)))
 
         # Write data
