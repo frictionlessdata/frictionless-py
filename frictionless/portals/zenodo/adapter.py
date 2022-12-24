@@ -3,7 +3,7 @@ import datetime
 import json
 import tempfile
 from pathlib import Path
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Optional, Union
 from .control import ZenodoControl
 from ... import helpers
 from ...system import Adapter
@@ -106,9 +106,17 @@ class ZenodoAdapter(Adapter):
         if not metafn:
             meta_data = generate_metadata(package)
             with tempfile.NamedTemporaryFile("wt", delete=False) as file:
-                print("filename", file.name)
                 json.dump(meta_data, file, indent=2)
                 metafn = file.name
+
+        if metafn:
+            # Check if metadata is a JSON Object
+            if isinstance(metafn, dict):
+                meta_data = generate_metadata(metadata=metafn)
+                print(meta_data)
+                with tempfile.NamedTemporaryFile("wt", delete=False) as file:
+                    json.dump(meta_data, file, indent=2)
+                    metafn = file.name
 
         try:
             deposition_id = self.control.deposition_id
@@ -195,8 +203,31 @@ def get_package(files: List, title: str, formats: List[str]) -> Package:
     return package
 
 
-def generate_metadata(package: Package) -> dict:
+def generate_metadata(
+    package: Optional[Package] = None, *, metadata: Optional[dict] = None
+) -> dict:
     meta_data: Union[str, dict, None] = {"metadata": {}}
+    if not metadata and not package:
+        note = "Zenodo API Metadata Creation error: Either metadata or package should be provided to generate metadata."
+        raise FrictionlessException(note)
+
+    if metadata:
+        if (
+            not metadata.get("title")
+            or not metadata.get("description")
+            or not metadata.get("creators")
+        ):
+            note = "Zenodo API Metadata Creation error: missing title or description or creators."
+            raise FrictionlessException(note)
+
+        meta_data["metadata"] = metadata
+        if "keywords" not in meta_data["metadata"]:
+            meta_data["metadata"]["keywords"] = ["frictionlessdata"]
+
+        return helpers.remove_non_values(meta_data)
+
+    assert package
+
     if not package.title or not package.description or not package.contributors:
         note = "Zenodo API Metadata Creation error: Unable to read title or description or contributors from package descriptor."
         raise FrictionlessException(note)
@@ -204,7 +235,7 @@ def generate_metadata(package: Package) -> dict:
     meta_data["metadata"] = {
         "title": package.title,
         "description": package.description,
-        "publication_date": package.created or datetime.datetime.now(),
+        "publication_date": package.created or str(datetime.datetime.now()),
         "upload_type": "dataset",
         "access_right": "open",
     }
