@@ -113,7 +113,6 @@ class ZenodoAdapter(Adapter):
             # Check if metadata is a JSON Object
             if isinstance(metafn, dict):
                 meta_data = generate_metadata(metadata=metafn)
-                print(meta_data)
                 with tempfile.NamedTemporaryFile("wt", delete=False) as file:
                     json.dump(meta_data, file, indent=2)
                     metafn = file.name
