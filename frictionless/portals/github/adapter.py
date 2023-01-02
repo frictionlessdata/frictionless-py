@@ -48,7 +48,7 @@ class GithubAdapter(Adapter):
                 resource_path, repository, base_path, self.control.formats, catalog=True
             )
             if all_packages and isinstance(all_packages, List):
-                packages = packages + all_packages
+                packages = packages + all_packages  # type: ignore
                 return Catalog(name="catalog", packages=packages)
             note = "Package/s not found"
             raise FrictionlessException(note)
