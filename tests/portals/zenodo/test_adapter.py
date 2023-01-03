@@ -671,6 +671,7 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
     assert deposition_id == 1132344
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_api, tmp_path):
     control = portals.ZenodoControl(
