@@ -1,11 +1,14 @@
 import os
+import datetime
 import secrets
 import shutil
 from pathlib import Path
 from typing import Optional, Dict
 from fastapi import UploadFile
-
 from frictionless.exception import FrictionlessException
+from frictionless.portals.ckan.control import CkanControl
+from frictionless.portals.github.control import GithubControl
+from frictionless.portals.zenodo.control import ZenodoControl
 from .config import Config
 from .record import Record
 from ..package import Package
@@ -180,6 +183,42 @@ class Project:
 
             package.to_json(str(self.public / package_path))
         return package_path
+
+    def publish_package(self, **params):
+        response = {}
+        controls = {"github": GithubControl, "zenodo": ZenodoControl, "ckan": CkanControl}
+        control_type = params["type"]
+        allow_update = params["allow_update"]
+
+        del params["type"]
+        del params["sandbox"]
+        if not allow_update:
+            del params["allow_update"]
+
+        package = Package(str(self.public / settings.PACKAGE_PATH))
+        if not package.name and not allow_update:
+            now = datetime.datetime.now()
+            date_time = now.strftime("%H-%M-%S")
+            package.name = f"test_package_{date_time}"
+
+        control = controls.get(control_type)
+        if not control:
+            response["error"] = "Matching control[Github|Zenodo|CKAN] not found"
+            return response
+        try:
+            if "url" in params:
+                target = params["url"]
+                del params["url"]
+                result = package.publish(target=target, control=control(**params))
+            else:
+                result = package.publish(control=control(**params))
+            if control_type == "github":
+                result = result.full_name
+            response["url"] = result
+        except FrictionlessException as exception:
+            response["error"] = exception.error.message
+
+        return response
 
     # Records
 

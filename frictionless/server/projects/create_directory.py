@@ -12,7 +12,6 @@ class ProjectCreateDirectoryProps(BaseModel):
 
 @router.post("/project/create-directory")
 def server_project_create_directory(request: Request, props: ProjectCreateDirectoryProps):
-    print("props", props)
     config = request.app.config
     project = Project(config, session=props.session)
     newdirectory = project.create_directory(props.directoryname)

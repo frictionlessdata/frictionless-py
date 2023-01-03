@@ -9,4 +9,5 @@ from . import update_record
 from . import list_folders
 from . import create_directory
 from . import move_file
+from . import publish_package
 from . import copy_file

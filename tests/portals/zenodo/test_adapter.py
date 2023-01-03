@@ -671,6 +671,24 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
     assert deposition_id == 1132344
 
 
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_api, tmp_path):
+    control = portals.ZenodoControl(
+        apikey=sandbox_api,
+        tmp_path=tmp_path,
+        base_url="https://sandbox.zenodo.org/api/",
+        metafn={
+            "creators": [{"name": "FD Tester", "affiliation": "FD Testing"}],
+            "upload_type": "dataset",
+            "title": "Test File",
+            "description": "Test File",
+        },
+    )
+    package = Package("data/package.json")
+    deposition_id = package.publish(control=control)
+    assert deposition_id == 1139855
+
+
 @pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
@@ -854,4 +872,16 @@ def test_zenodo_adapter_metadata():
     metafn = portals.zenodo.adapter.generate_metadata
     package = Package("https://zenodo.org/record/7373765")
     metadata = metafn(package)
+    assert "frictionlessdata" in metadata["metadata"]["keywords"]
+
+
+def test_zenodo_adapter_metadata_json():
+    metadata = portals.zenodo.adapter.generate_metadata(
+        metadata={
+            "creators": [{"name": "FD Tester", "affiliation": "FD Testing"}],
+            "upload_type": "dataset",
+            "title": "Test File",
+            "description": "Test File",
+        }
+    )
     assert "frictionlessdata" in metadata["metadata"]["keywords"]
