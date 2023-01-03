@@ -1,8 +1,11 @@
 import os
 import secrets
+import shutil
 from pathlib import Path
 from typing import Optional, Dict
 from fastapi import UploadFile
+
+from frictionless.exception import FrictionlessException
 from .config import Config
 from .record import Record
 from ..package import Package
@@ -86,16 +89,32 @@ class Project:
 
     def delete_file(self, path: str):
         # TODO: ensure that path is safe
-        os.remove(self.public / path)
+        fullpath = self.public / path
+        if os.path.isdir(fullpath):
+            shutil.rmtree(fullpath)
+        else:
+            os.remove(fullpath)
         return path
 
     def list_files(self):
         paths = []
-        for basepath, _, names in os.walk(self.public):
-            for name in names:
-                path = os.path.join(basepath, name)
+        temp_folders = set()
+        for basepath, folders, files in os.walk(self.public):
+            for file in files:
+                path = os.path.join(basepath, file)
                 path = os.path.relpath(path, start=self.public)
                 paths.append(path)
+                temp_folders.add(os.path.dirname(path))
+
+            for folder in folders:
+                if folder.startswith("."):
+                    continue
+                path = os.path.join(basepath, folder)
+                path = os.path.relpath(path, start=self.public)
+                if path in temp_folders:
+                    continue
+                paths.append(path)
+
         paths = list(sorted(paths))
         return paths
 
@@ -111,12 +130,30 @@ class Project:
         folders = list(sorted(folders))
         return folders
 
-    def move_file(self, filename: str, destination: str):
-        source = str(self.public / filename)
+    def move_file(self, filepath: str, destination: str):
+        filename = os.path.basename(filepath)
+        source = str(self.public / filepath)
         destination = str(self.public / destination)
         newpath = os.path.join(destination, filename)
         helpers.move_file(source, newpath)
         return newpath
+
+    def copy_file(self, source: str, destination: str):
+        new_filename = os.path.basename(source)
+        source_fullpath = str(self.public / source)
+        destination_filepath = str(self.public / destination / new_filename)
+        # Set new filename if it already exists
+        if os.path.exists(destination_filepath):
+            while True:
+                new_filename = f"copyof{new_filename}"
+                destination_filepath = str(self.public / destination / new_filename)
+                if not os.path.exists(destination_filepath):
+                    break
+        if os.path.isdir(source_fullpath):
+            helpers.copy_folder(source_fullpath, destination_filepath)
+        else:
+            helpers.copy_file(source_fullpath, destination_filepath)
+        return destination_filepath
 
     # Links
 
@@ -128,9 +165,19 @@ class Project:
         if package_path not in paths:
             package = Package(basepath=self.basepath)
             for path in paths:
-                record = self.create_record(path)
-                resource = Resource.from_descriptor(record.resource)
-                package.add_resource(resource)
+                try:
+                    if os.path.isdir(self.public / path):
+                        continue
+                    record = self.create_record(path)
+                    resource = Resource.from_descriptor(record.resource)
+                    package.add_resource(resource)
+                except FrictionlessException as exception:
+                    if "already exists" in exception.error.note:
+                        continue
+                    raise exception
+                except Exception as exception:
+                    raise exception
+
             package.to_json(str(self.public / package_path))
         return package_path
 
