@@ -189,6 +189,11 @@ def copy_file(source: str, target: str):
     shutil.copy(source, target)
 
 
+def copy_folder(source: str, target: str):
+    ensure_dir(target)
+    shutil.copytree(source, target)
+
+
 def write_file(path: str, body: Any, *, mode: str = "wt"):
     encoding = "utf-8" if mode == "wt" else None
     with tempfile.NamedTemporaryFile(mode, delete=False, encoding=encoding) as file:

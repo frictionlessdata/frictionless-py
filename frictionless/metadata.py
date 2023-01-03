@@ -72,9 +72,9 @@ class Metadata(metaclass=Metaclass):
                 elif name in self.metadata_assigned:
                     self.metadata_assigned.remove(name)
             elif isinstance(value, (list, dict)):
-                self.metadata_defaults[name] = value.copy()
+                self.metadata_defaults[name] = value.copy()  # type: ignore
             elif isinstance(value, type):
-                self.metadata_defaults[name] = value.__dict__.copy()
+                self.metadata_defaults[name] = value.__dict__.copy()  # type: ignore
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
@@ -115,7 +115,7 @@ class Metadata(metaclass=Metaclass):
         for name, default in self.metadata_defaults.items():
             value = getattr(self, name, None)
             if isinstance(value, type):
-                value = value.__dict__.copy()
+                value = value.__dict__.copy()  # type: ignore
             if value != default:
                 defined.append(name)
         return defined
