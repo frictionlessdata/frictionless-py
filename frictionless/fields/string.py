@@ -3,7 +3,7 @@ import attrs
 import base64
 from ..schema import Field
 from ..platform import platform
-
+from ..wkt_parser import WktParser
 
 @attrs.define(kw_only=True)
 class StringField(Field):
@@ -56,6 +56,19 @@ class StringField(Field):
                     return None
                 return cell
 
+        # WKT
+        elif self.format == "wkt":
+
+            def value_reader(cell):
+                if not isinstance(cell, str):
+                    return None
+                try:
+                    parser = WktParser()
+                    parser.parse(cell, rule_name='wkt_representation')
+                except Exception:
+                    return None
+                return cell
+
         # Binary
         elif self.format == "binary":
 
@@ -95,7 +108,7 @@ class StringField(Field):
         "properties": {
             "format": {
                 "type": "string",
-                "enum": ["default", "email", "uri", "binary", "uuid"],
+                "enum": ["default", "email", "uri", "binary", "uuid", "wkt"],
             },
         }
     }

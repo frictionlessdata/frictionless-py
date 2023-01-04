@@ -25,6 +25,16 @@ from frictionless import Field
         ("binary", "", None),
         ("binary", "string", None),
         ("binary", 0, None),
+        ("wkt", "POINT (30 10)", "POINT (30 10)"),
+        ("wkt", "LINESTRING (30 10, 10 30, 40 40)", "LINESTRING (30 10, 10 30, 40 40)"),
+        (
+            "wkt",
+            "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))",
+            "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))",
+        ),
+        ("wkt", "string", None),
+        ("wkt", "", None),
+        ("wkt", 0, None),
     ],
 )
 def test_string_read_cell(format, source, target):
