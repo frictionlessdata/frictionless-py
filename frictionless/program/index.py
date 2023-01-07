@@ -12,6 +12,7 @@ def program_index(
     database: str = common.database,
     table: str = common.table,
     fast: bool = common.fast,
+    qsv: str = common.qsv,
     # Command
     debug: bool = common.debug,
     trusted: bool = common.trusted,
@@ -35,7 +36,7 @@ def program_index(
     try:
         resource = Resource(source)
         resource.infer()
-        resource.index(database_url=database, table_name=table, fast=fast)
+        resource.index(database_url=database, table_name=table, fast=fast, qsv=qsv)
     except Exception as exception:
         if not debug:
             typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)

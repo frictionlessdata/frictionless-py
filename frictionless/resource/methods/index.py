@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+import subprocess
+from typing import TYPE_CHECKING, Optional
 from frictionless.exception import FrictionlessException
+from ...schema import Schema, Field
 from ...platform import platform
 
 if TYPE_CHECKING:
@@ -16,10 +18,40 @@ def index(
     *,
     table_name: str,
     fast: bool = False,
+    qsv: Optional[str] = None,
 ):
     """Index resource into a database"""
     sa = platform.sqlalchemy
     url = sa.engine.make_url(database_url)
+
+    # Infer schema (qsv)
+    if qsv:
+        command = [qsv, "stats", "--infer-dates", "--dates-whitelist", "all"]
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        with self.open(as_file=True):
+            while True:
+                chunk = self.read_bytes(size=BLOCK_SIZE)
+                if not chunk:
+                    break
+                process.stdin.write(chunk)
+            process.stdin.close()
+            result = process.stdout.read()
+            process.wait()
+            schema = Schema()
+            with self.__class__(result, format="csv") as info:
+                for row in info.row_stream:
+                    type = "string"
+                    if row["type"] == "Integer":
+                        type = "integer"
+                    elif row["type"] == "Float":
+                        type = "number"
+                    elif row["type"] == "DateTime":
+                        type = "datetime"
+                    elif row["type"] == "Date":
+                        type = "date"
+                    descriptor = {"name": row["field"], "type": type}
+                    schema.add_field(Field.from_descriptor(descriptor))
+            self.schema = schema
 
     # Postgresql
     if url.drivername.startswith("postgresql"):

@@ -341,3 +341,8 @@ fast = Option(
     default=None,
     help="Fast database indexing",
 )
+
+qsv = Option(
+    default=None,
+    help="QSV binary path",
+)
