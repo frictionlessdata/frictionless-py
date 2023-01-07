@@ -331,3 +331,8 @@ keep_limiter = Option(
     default=False,
     help="Keep input delimiter",
 )
+
+database = Option(
+    default=None,
+    help="Database url",
+)
