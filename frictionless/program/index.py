@@ -11,6 +11,7 @@ def program_index(
     source: str = common.source,
     database: str = common.database,
     table: str = common.table,
+    fast: bool = common.fast,
     # Command
     debug: bool = common.debug,
     trusted: bool = common.trusted,
@@ -34,7 +35,7 @@ def program_index(
     try:
         resource = Resource(source)
         resource.infer()
-        resource.index(database_url=database, table_name=table)
+        resource.index(database_url=database, table_name=table, fast=fast)
     except Exception as exception:
         if not debug:
             typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)

@@ -5,10 +5,18 @@ from ...platform import platform
 
 if TYPE_CHECKING:
     from ..resource import Resource
-    from ...report import Report
 
 
-def index(self: Resource, database_url: str, *, table_name: str) -> Report:
+BLOCK_SIZE = 8096
+
+
+def index(
+    self: Resource,
+    database_url: str,
+    *,
+    table_name: str,
+    fast: bool = False,
+):
     """Index resource into a database"""
     sa = platform.sqlalchemy
     url = sa.engine.make_url(database_url)
@@ -27,18 +35,31 @@ def index(self: Resource, database_url: str, *, table_name: str) -> Report:
                 cursor.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
                 cursor.execute(str(sql.CreateTable(table, bind=engine)))  # type: ignore
 
-            # Write data
-            with connection.cursor() as cursor:
-                with cursor.copy('COPY "%s" FROM STDIN' % table_name) as copy:  # type: ignore
+            # Write data (fast)
+            # TODO: raise if header is not in the first row
+            if fast:
+                with connection.cursor() as cursor:
+                    query = 'COPY "%s" FROM STDIN CSV HEADER' % table_name
+                    with cursor.copy(query) as copy:  # type: ignore
+                        while True:
+                            chunk = self.read_bytes(size=BLOCK_SIZE)
+                            if not chunk:
+                                break
+                            copy.write(chunk)
 
-                    # Write row
-                    def callback(row):
-                        cells = mapper.write_row(row)
-                        copy.write_row(cells)
+            # Write data (general)
+            else:
+                with connection.cursor() as cursor:
+                    query = 'COPY "%s" FROM STDIN' % table_name
+                    with cursor.copy(query) as copy:  # type: ignore
 
-                    # Return report
-                    report = self.validate(callback=callback)
-                    return report
+                        # Write row
+                        def callback(row):
+                            cells = mapper.write_row(row)
+                            copy.write_row(cells)
+
+                        # Validate/iterate
+                        self.validate(callback=callback)
 
     # Not supported
     else:

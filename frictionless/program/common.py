@@ -336,3 +336,8 @@ database = Option(
     default=None,
     help="Database url",
 )
+
+fast = Option(
+    default=None,
+    help="Fast database indexing",
+)
