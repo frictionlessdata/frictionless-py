@@ -236,6 +236,4 @@ print(resource.stats)
 ```yaml reference
 references:
   - frictionless.Resource
-  - frictionless.Loader
-  - frictionless.Parser
 ```
