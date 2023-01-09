@@ -45,7 +45,9 @@ pages:
     - name: Framework In-Depth
       items:
         - path: docs/framework/program
+          name: Program
         - path: docs/framework/server
+          name: Server
         - path: docs/framework/actions
           name: Actions
         - path: docs/framework/catalog
