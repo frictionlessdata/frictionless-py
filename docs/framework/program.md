@@ -1,4 +1,4 @@
-# Running CLI
+# Program (CLI)
 
 The Command-Line interface is a vital part for the Frictionless Framework. While working within Python provides more flexibility, CLI is the easist way to interact with Frictionless.
 

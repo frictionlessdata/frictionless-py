@@ -1,4 +1,4 @@
-# Running API
+# Server (API)
 
 ```markdown remark type=danger
 This functionality is currently disabled as being in active development in [#472](https://github.com/frictionlessdata/frictionless-py/issues/472) [#1368](https://github.com/frictionlessdata/frictionless-py/issues/1368)
