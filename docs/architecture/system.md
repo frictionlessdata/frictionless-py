@@ -1,4 +1,4 @@
-# System/Plugin
+# System
 
 ## System Object
 
@@ -71,6 +71,10 @@ class CsvPlugin(Plugin):
 
 ```yaml reference
 references:
-  - frictionless.System
+  - frictionless.Adapter
+  - frictionless.Loader
+  - frictionless.Mapper
+  - frictionless.Parser
   - frictionless.Plugin
+  - frictionless.System
 ```
