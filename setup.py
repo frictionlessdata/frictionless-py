@@ -29,6 +29,7 @@ TESTS_REQUIRE = [
     "pyflakes==2.4.0",
     "pylama",
     "pytest",
+    # TODO: remove after the fix
     # https://github.com/microsoft/pyright/issues/4424
     "pyright==1.1.286",
     "ipython",
