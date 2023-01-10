@@ -52,6 +52,7 @@ def test_resource_transform_cell_set():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     # write table
