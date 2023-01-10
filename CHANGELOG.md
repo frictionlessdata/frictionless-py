@@ -2,7 +2,7 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
-## v5.0.0
+## v5.0
 
 - Frictionless Framework (v5) is out of Beta and released on PyPi
 
@@ -22,11 +22,11 @@ Here described only the breaking and most significant changes. The full changelo
 
 - First beta version of [Frictionless Framework (v5)](https://framework.frictionlessdata.io/blog/2022/08-22-frictionless-framework-v5.html)
 
-## v4.40.0
+## v4.40
 
 - Added Dialect support to packages (#1137)
 
-## v4.39.0
+## v4.39
 
 - Fixed processing of incompatible decimal char in table schema and data   (#1089)
 - Added support for Time Zone data (#1097)
@@ -42,13 +42,13 @@ Here described only the breaking and most significant changes. The full changelo
 - Exposed valid/invalid flags in CLI `extract` command   (#1130)
 - Implemented feature `package.to_er_diagram`   (#1135)
 
-## v4.38.0
+## v4.38
 
 - Implemented `checks.ascii_value` (#1064)
 - Implemented `checks.deviated_cell` (#1069)
 - Implemented `detector.field_true/false_values` (#1074)
 
-## v4.37.0
+## v4.37
 
 - Deprecated high-level legacy actions (use class-based alternatives):
   - `describe_*`
@@ -56,7 +56,7 @@ Here described only the breaking and most significant changes. The full changelo
   - `transform_*`
   - `validate_*`
 
-## v4.36.0
+## v4.36
 
 - Implemented pipeline actions:
   - `pipeline.validate` (will replace `validate_pipeline` in v5)
@@ -64,7 +64,7 @@ Here described only the breaking and most significant changes. The full changelo
 - Implemented inqiury actions:
   - `inqiury.validate` (will replace `validate_inqiury` in v5)
 
-## v4.35.0
+## v4.35
 
 - Implemented schema actions:
   - `Schema.describe` (will replace `describe_schema` in v5)
@@ -73,7 +73,7 @@ Here described only the breaking and most significant changes. The full changelo
   - `steps.field_merge`
   - `steps.field_pack`
 
-## v4.34.0
+## v4.34
 
 - Implemented package actions:
   - `Package.describe` (will replace `describe_package` in v5)
@@ -81,7 +81,7 @@ Here described only the breaking and most significant changes. The full changelo
   - `package.validate` (will replace `validate_package` in v5)
   - `package.transform` (will replace `transform_package` in v5)
 
-## v4.33.0
+## v4.33
 
 - Implemented resource actions:
   - `Resource.describe` (will replace `describe_resource` in v5)
@@ -89,11 +89,11 @@ Here described only the breaking and most significant changes. The full changelo
   - `resource.validate` (will replace `validate_resource` in v5)
   - `resource.transform` (will replace `transform_resource` in v5)
 
-## v4.32.0
+## v4.32
 
 - Added to_markdown() feature to metadata  (#1052)
 
-## v4.31.0
+## v4.31
 
 - Added a feature that allows to export table schema as excel  (#1040)
 - Added nontabular note to validation results to indicate nontabular file  (#1046)
@@ -101,124 +101,124 @@ Here described only the breaking and most significant changes. The full changelo
 - Added pprint feature which displays metadata in a readable and pretty way  (#1039)
 - Improved error message if resource.data is not a string  (#1036)
 
-## v4.29.0
+## v4.29
 
 - Made Detector's private properties public and writable (#1025)
 
-## v4.28.0
+## v4.28
 
 - Improved an order of the metadata in YAML representation
 
-## v4.27.0
+## v4.27
 
 - Exposed Dialect options via CLI such as `sheet`, `table`, `keys`, and `keyed` (#886)
 
-## v4.26.0
+## v4.26
 
 - Validate 'schema.fields[].example' (#998)
 
-## v4.25.0
+## v4.25
 
 - Allows descriptors that subclass collections.abc.Mapping (#985)
 
-## v4.24.0
+## v4.24
 
 - Added support for `SqlDialect.basepath` (#982) (https://framework.frictionlessdata.io/docs/tutorials/formats/sql-tutorial)
 
-## v4.23.0
+## v4.23
 
 - Added table dimensions check (#985)
 
-## v4.22.0
+## v4.22
 
 - Added "extract --trusted" flag
 
-## v4.21.0
+## v4.21
 
 - Added "--json/yaml" CLI options for transform
 
-## v4.20.0
+## v4.20
 
 - Improved layout/schema detection algorithms (#945)
 
-## v4.19.0
+## v4.19
 
 - Renamed `inlineDialect.keys` to `inlineDialect.data_keys` due to a conflict with `dict.keys` property
 
-## v4.18.0
+## v4.18
 
 - Normalized metadata properties (increased type safety)
 
-## v4.17.0
+## v4.17
 
 - Add fields, limit, sort and filter options to CkanDialect (#912)
 
-## v4.16.0
+## v4.16
 
 - Implemented `system/plugin.create_candidates` (#893)
 
-## v4.15.0
+## v4.15
 
 - Implemented `system.get/use_http_session` (#892)
 
-## v4.14.0
+## v4.14
 
 - SQL Where Clause (#882)
 
-## v4.13.0
+## v4.13
 
 - Implemented descriptor type detection for `extract/validate` (#881)
 
-## v4.12.0
+## v4.12
 
 - Support external profiles for data package (#864)
 
-## v4.11.0
+## v4.11
 
 - Added `json` argument to `resource.to_snap`
 
-## v4.10.0
+## v4.10
 
 - Support resource/field renaming in transform (#843)
 
-## v4.9.0
+## v4.9
 
 - Support `--path` CLI argument (#829)
 
-## v4.8.0
+## v4.8
 
 - Added support for `Package(innerpath)` argument for unzipping a data package's descriptor
 
-## v4.7.0
+## v4.7
 
 - Support control/dialect as JSON in CLI (#806)
 
-## v4.6.0
+## v4.6
 
 - Implemented `describe_dialect` and `describe(path, type="dialect")`
 - Support `--dialect` argument in CLI
 
-## v4.5.0
+## v4.5
 
 - Implemented `Schema.from_jsonschema` (#797)
 
-## v4.4.0
+## v4.4
 
 - Use `field.constraints.maxLength` for SQL's VARCHAR (#795)
 
-## v4.3.0
+## v4.3
 
 - Implemented `resource.to_view()` (#781)
 
-## v4.2.0
+## v4.2
 
 - Make `fields[].arrayItem` errors more granular (#767)
 
-## v4.1.0
+## v4.1
 
 - Added support for `fields[].arrayItem` (#750)
 
-## v4.0.0
+## v4.0
 
 - Released `frictionless@4` :tada:
 
