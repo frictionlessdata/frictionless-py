@@ -5,6 +5,7 @@ from ..schema import Field
 from ..platform import platform
 from ..wkt_parser import WktParser
 
+
 @attrs.define(kw_only=True)
 class StringField(Field):
     type = "string"
@@ -64,7 +65,7 @@ class StringField(Field):
                     return None
                 try:
                     parser = WktParser()
-                    parser.parse(cell, rule_name='wkt_representation')
+                    parser.parse(cell, rule_name="wkt_representation")
                 except Exception:
                     return None
                 return cell
