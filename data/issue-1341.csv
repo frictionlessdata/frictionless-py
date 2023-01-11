@@ -1,0 +1,100 @@
+location_id,location,iso_code,sex,age_group,age,ihme_cause_id,ihme_cause_name,scenario,measure,metric,c1980,c1981,c1982,c1983,c1984,c1985,c1986,c1987,c1988,c1989,c1990,c1991,c1992,c1993,c1994,c1995,c1996,c1997,c1998,c1999,c2000,c2001,c2002,c2003,c2004,c2005,c2006,c2007,c2008,c2009,c2010,c2011,c2012,c2013,c2014,c2015,c2016,c2017,c2018,c2019
+26,Papua New Guinea,PNG,Male,30 to 34,31,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5.33015841993795E-06,1.84948438633046E-05,3.49082542781901E-05,4.92771913914649E-05,5.58160768497372E-05,2.80798324237677E-05,0,0,0
+6,China,CHN,Both,45 to 49,49,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,10 to 14,11,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6,China,CHN,Female,65 to 69,67,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,45 to 49,47,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6,China,CHN,Female,75 to 79,76,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,60 to 64,62,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6,China,CHN,Female,80 to 84,80,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,65 to 69,65,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6,China,CHN,Male,10 to 14,13,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,75 to 79,76,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6,China,CHN,Male,40 to 44,41,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,80 to 84,80,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Both,20 to 24,21,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,80 to 84,83,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Both,25 to 29,26,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,85 to 89,88,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Both,45 to 49,48,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Both,90 to 94,92,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Both,50 to 54,54,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Female,10 to 14,13,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Both,95 plus,97,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Female,40 to 44,40,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Female,10 to 14,12,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Female,65 to 69,65,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Female,30 to 34,30,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Female,80 to 84,82,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Female,60 to 64,64,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Female,85 to 89,89,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Female,85 to 89,86,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Female,95 plus,100,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7,Democratic People's Republic of Korea,PRK,Male,50 to 54,50,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Male,15 to 19,16,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Both,85 to 89,88,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Male,35 to 39,35,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Female,30 to 34,30,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Male,40 to 44,42,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Female,75 to 79,79,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+27,Samoa,WSM,Male,80 to 84,83,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Female,75 to 79,79,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Both,40 to 44,41,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Male,1 to 4,4,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Both,45 to 49,49,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Male,25 to 29,29,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Both,65 to 69,67,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Male,65 to 69,67,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Both,70 to 74,72,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,Taiwan (Province of China),TWN,Male,Post Neonatal,0.925824175824176,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Both,90 to 94,92,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Both,55 to 59,56,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Female,20 to 24,23,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Both,55 to 59,58,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Female,40 to 44,43,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Both,70 to 74,72,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Female,55 to 59,57,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Both,80 to 84,82,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Female,60 to 64,60,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Both,95 plus,100,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Male,5 to 9,8,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Female,65 to 69,65,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,Solomon Islands,SLB,Male,85 to 89,85,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Female,80 to 84,84,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Female,50 to 54,50,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Female,95 plus,98,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Female,60 to 64,62,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Male,55 to 59,57,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Female,60 to 64,63,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Male,60 to 64,62,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Female,80 to 84,82,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Cambodia,KHM,Male,70 to 74,71,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Male,10 to 14,13,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+11,Indonesia,IDN,Both,Post Neonatal,0.925824175824176,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Male,20 to 24,21,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+11,Indonesia,IDN,Female,80 to 84,80,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+29,Tonga,TON,Male,30 to 34,32,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+11,Indonesia,IDN,Male,20 to 24,23,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Both,15 to 19,16,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+11,Indonesia,IDN,Male,60 to 64,62,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Female,15 to 19,19,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+11,Indonesia,IDN,Male,75 to 79,76,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Female,75 to 79,79,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Both,10 to 14,14,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Female,80 to 84,82,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Both,40 to 44,44,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Female,90 to 94,94,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Both,5 to 9,8,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,5 to 9,7,935,Zika virus,Reference,DALYs (Disability-Adjusted Life Years),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Both,50 to 54,51,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,50 to 54,53,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Both,50 to 54,54,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,60 to 64,61,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Male,25 to 29,27,935,Zika virus,Reference,Deaths,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,60 to 64,63,935,Zika virus,Reference,Prevalence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Male,40 to 44,40,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,70 to 74,70,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Male,45 to 49,46,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,75 to 79,75,935,Zika virus,Reference,YLDs (Years Lived with Disability),Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+12,Lao People's Democratic Republic,LAO,Male,60 to 64,60,935,Zika virus,Reference,Incidence,Number,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,Vanuatu,VUT,Male,75 to 79,75,935,Zika virus,Reference,YLLs (Years of Life Lost),Number,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
