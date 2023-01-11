@@ -34,7 +34,7 @@ def extract(
             for row in self.row_stream:  # type: ignore
                 row_count += 1
                 yield row
-                if limit_rows and limit_rows >= row_count:
+                if limit_rows and limit_rows <= row_count:
                     break
 
     # Return
