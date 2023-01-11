@@ -881,7 +881,18 @@ class Resource(Metadata):
         if self.memory:
             return b""
         with helpers.ensure_open(self):
-            return self.byte_stream.read(size)  # type: ignore
+            # Without size we need to read chunk by chunk because read1 doesn't return
+            # the full contents by default (just an arbitrary amount of bytes)
+            # and we use read1 as it includes stats calculation (system.loader)
+            if not size:
+                buffer = b""
+                while True:
+                    chunk = self.byte_stream.read1()  # type: ignore
+                    buffer += chunk
+                    if not chunk:
+                        break
+                return buffer
+            return self.byte_stream.read1(size)  # type: ignore
 
     def read_text(self, *, size: Optional[int] = None) -> str:
         """Read text into memory
