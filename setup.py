@@ -60,6 +60,7 @@ EXTRAS_REQUIRE = {
     "postgresql": ["sqlalchemy>=1.3", "psycopg>=3.0", "psycopg2>=2.9"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
+    "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
 }
 INSTALL_REQUIRES = [
