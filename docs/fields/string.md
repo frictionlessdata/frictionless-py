@@ -8,7 +8,7 @@ The field contains strings, that is, sequences of characters. Read more in [Tabl
 - email
 - uuid
 - binary
-- wkt
+- wkt (doesn't work in Python3.10+)
 
 ## Example
 
