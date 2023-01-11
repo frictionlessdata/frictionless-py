@@ -881,7 +881,7 @@ class Resource(Metadata):
         if self.memory:
             return b""
         with helpers.ensure_open(self):
-            return self.byte_stream.read1(size)  # type: ignore
+            return self.byte_stream.read(size)  # type: ignore
 
     def read_text(self, *, size: Optional[int] = None) -> str:
         """Read text into memory
