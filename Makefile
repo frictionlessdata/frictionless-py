@@ -22,7 +22,7 @@ format:
 	black $(PACKAGE) tests
 
 install:
-	pip install --upgrade -e .[api,aws,bigquery,ckan,dev,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,zenodo]
+	pip install --upgrade -e .[api,aws,bigquery,ckan,dev,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,wkt,zenodo]
 
 lint:
 	black $(PACKAGE) tests --check
