@@ -45,6 +45,8 @@ class PandasParser(Parser):
                     value = item[field.name]
                 if field.type == "number" and np.isnan(value):  # type: ignore
                     value = None
+                elif isinstance(value, pd.Timestamp):
+                    value = value.to_pydatetime()
                 cells.append(value)
             yield cells
 
