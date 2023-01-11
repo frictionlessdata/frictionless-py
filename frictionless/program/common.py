@@ -327,7 +327,12 @@ standards = Option(
     help="Possible options: v1, v2, v2-strict (default: v2)",
 )
 
-keep_limiter = Option(
+descriptor = Option(
+    default=None,
+    help="Excplicit path to the descriptor instead of guessing by providing a source",
+)
+
+keep_delimiter = Option(
     default=False,
     help="Keep input delimiter",
 )

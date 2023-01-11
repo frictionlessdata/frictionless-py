@@ -9,7 +9,7 @@ from .. import helpers
 if TYPE_CHECKING:
     from ..schema import Schema
     from ..dialect import Dialect
-    from ..interfaces import IFilterFunction, IProcessFunction
+    from ..interfaces import IDescriptor, IFilterFunction, IProcessFunction
 
 
 def extract(
@@ -22,21 +22,27 @@ def extract(
     process: Optional[IProcessFunction] = None,
     filter: Optional[IFilterFunction] = None,
     stream: bool = False,
+    descriptor: Optional[Union[IDescriptor, str]] = None,
     resource_name: Optional[str] = None,
     **options,
 ):
     """Extract resource rows
 
     Parameters:
-        source (dict|str): data source
-        type (str): source type - package of resource (default: infer)
-        filter? (bool): a row filter function
-        process? (func): a row processor function
-        stream? (bool): return a row stream(s) instead of loading into memory
-        **options (dict): options for the underlaying function
+        source: data source
+        type: source type - package of resource (default: infer)
+        dialect: Table Dialect for the resource
+        schema: Table Schema for the resource
+        limit_rows: maximum amount of rows to be returned
+        process: a row processor function
+        filter: a row filter function
+        stream: return a row stream(s) instead of loading into memory
+        descriptor: provide a descriptor explicitely instead of guessing from source
+        resource_name: extract from a resource by name if a package provided
+        **options: options for the underlaying classes
 
     Returns:
-        Row[]|{path: Row[]}: rows in a form depending on the source type
+        rows in a form depending on the source type and the options
     """
 
     # Detect type
@@ -55,12 +61,16 @@ def extract(
     if type == "resource":
         if resource_name:
             package = source
-            if not isinstance(package, Package):
+            if descriptor:
+                package = Package.from_descriptor(descriptor, **options)
+            elif not isinstance(package, Package):
                 package = Package.from_options(source, **options)
             resource = package.get_resource(resource_name)
         else:
             resource = source
-            if not isinstance(resource, Resource):
+            if descriptor:
+                resource = Resource.from_descriptor(descriptor, **options)
+            elif not isinstance(resource, Resource):
                 resource = Resource.from_options(
                     source,
                     type="table",
@@ -78,7 +88,9 @@ def extract(
     # Extract package
     if type == "package":
         package = source
-        if not isinstance(package, Package):
+        if descriptor:
+            package = Package.from_descriptor(descriptor, **options)
+        elif not isinstance(package, Package):
             package = Package.from_options(source, **options)
         return package.extract(
             limit_rows=limit_rows,
