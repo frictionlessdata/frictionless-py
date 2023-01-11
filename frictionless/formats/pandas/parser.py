@@ -26,6 +26,7 @@ class PandasParser(Parser):
 
     def read_cell_stream_create(self):
         np = platform.numpy
+        pd = platform.pandas
         dataframe = self.resource.normdata
 
         # Schema
@@ -45,6 +46,8 @@ class PandasParser(Parser):
                     value = item[field.name]
                 if field.type == "number" and np.isnan(value):  # type: ignore
                     value = None
+                elif isinstance(value, pd.Timestamp):
+                    value = value.to_pydatetime()  # type: ignore
                 cells.append(value)
             yield cells
 
