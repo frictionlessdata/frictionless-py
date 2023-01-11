@@ -1,10 +1,9 @@
 import pytz
-import pytest
 import isodate
 import pandas as pd
 from decimal import Decimal
 from dateutil.tz import tzoffset, tzutc
-from datetime import datetime, date, time
+from datetime import datetime, time
 from pandas.core.dtypes.common import is_datetime64_ns_dtype
 from frictionless import Package, Resource, Schema, validate
 
