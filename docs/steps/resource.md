@@ -5,7 +5,7 @@ script:
 
 # Resource Steps
 
-The Resource steps are only available for a package transformation. This includes some basic resource management operations like adding or removing resources along with the hierarchical `transform_resource` step.
+The Resource steps are only available for a package transformation (except for `steps.resource_update` available for standalone resources). This includes some basic resource management operations like adding or removing resources along with the hierarchical `transform_resource` step.
 
 ## Add Resource
 
@@ -99,7 +99,7 @@ references:
 
 ## Update Resource
 
-This step update a resource's metadata.
+This step update a resource's metadata. It can be used for both resource and package transformations.
 
 ### Example
 
