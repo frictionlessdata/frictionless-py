@@ -39,8 +39,6 @@ pages:
         - path: docs/guides/transforming-data
     - name: Framework In-Depth
       items:
-        - path: docs/framework/program
-        - path: docs/framework/server
         - path: docs/framework/actions
           name: Actions
         - path: docs/framework/catalog
@@ -67,11 +65,13 @@ pages:
           name: Table
         - path: docs/framework/classes
           name: Other
-    - name: Writing a Plugin
+    - name: Advanced Topics
       items:
-        - path: docs/architecture/design
-        - path: docs/architecture/system
-        - path: docs/architecture/extending
+        - path: docs/advanced/program
+        - path: docs/advanced/server
+        - path: docs/advanced/design
+        - path: docs/advanced/system
+        - path: docs/advanced/extending
     - name: Data Sources
       items:
         - path: docs/schemes/aws
