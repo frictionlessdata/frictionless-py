@@ -21,8 +21,8 @@ class IntegerField(Field):
 
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
     """
-    It specifies that the value is a bare number. If true, the pattern to 
-    remove non digit character does not get applied and vice versa. 
+    It specifies that the value is a bare number. If true, the pattern to
+    remove non digit character does not get applied and vice versa.
     The default value is True.
     """
 
@@ -43,11 +43,6 @@ class IntegerField(Field):
                 # Process the cell
                 if pattern:
                     cell = pattern.sub("", cell)
-
-                # Forbid leading zeroes (e.g. 001, 00, 01)
-                if self.bare_number:
-                    if len(cell) > 1 and cell[0] == "0":
-                        return None
 
                 # Cast the cell
                 try:

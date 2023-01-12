@@ -21,7 +21,7 @@ class NumberField(Field):
 
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
     """
-    It specifies that the value is a bare number. If true, the pattern to remove non digit 
+    It specifies that the value is a bare number. If true, the pattern to remove non digit
     character does not get applied and vice versa. The default value is True.
     """
 
@@ -39,7 +39,7 @@ class NumberField(Field):
     group_char: str = settings.DEFAULT_GROUP_CHAR
     """
     It specifies the char to be used as group character. The default value
-    is "". It can take values such as: ",", "#" etc. 
+    is "". It can take values such as: ",", "#" etc.
     """
 
     # Read
@@ -81,11 +81,6 @@ class NumberField(Field):
                 if processor:
                     cell = processor(cell)  # type: ignore
                     if cell is None:
-                        return None
-
-                # Forbid leading zeroes (e.g. 001, 00, 01)
-                if self.bare_number:
-                    if len(cell) > 1 and cell[0] == "0" and cell[1] != ".":
                         return None
 
                 # Cast the cell
