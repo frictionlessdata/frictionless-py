@@ -33,9 +33,9 @@ def index(
                 chunk = self.read_bytes(size=BLOCK_SIZE)
                 if not chunk:
                     break
-                process.stdin.write(chunk)
-            process.stdin.close()
-            result = process.stdout.read()
+                process.stdin.write(chunk)  # type: ignore
+            process.stdin.close()  # type: ignore
+            result = process.stdout.read()  # type: ignore
             process.wait()
             schema = Schema()
             with self.__class__(result, format="csv") as info:
