@@ -1,7 +1,7 @@
 from __future__ import annotations
 import subprocess
 from typing import TYPE_CHECKING, Optional
-from frictionless.exception import FrictionlessException
+from ...exception import FrictionlessException
 from ...schema import Schema, Field
 from ...platform import platform
 
@@ -22,6 +22,10 @@ def index(
 ):
     """Index resource into a database"""
     sa = platform.sqlalchemy
+
+    # Prepare url
+    if "://" not in database_url:
+        database_url = f"sqlite:///{database_url}"
     url = sa.engine.make_url(database_url)
 
     # Infer schema (qsv)
@@ -92,6 +96,37 @@ def index(
 
                         # Validate/iterate
                         self.validate(callback=callback)
+
+    # Sqlite
+    elif url.drivername.startswith("sqlite"):
+        engine = sa.create_engine(database_url)
+        mapper = platform.frictionless_formats.sql.SqlMapper(engine)
+        sql = platform.sqlalchemy_schema
+
+        # Write metadata
+        table = mapper.write_schema(self.schema, table_name=table_name)
+        engine.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
+        engine.execute(str(sql.CreateTable(table, bind=engine)))  # type: ignore
+
+        # Write data
+        with self:
+            buffer = []
+            buffer_size = 1000
+
+            def callback(row):
+                cells = mapper.write_row(row)
+                buffer.append(cells)
+                if len(buffer) > buffer_size:
+                    # sqlalchemy conn.execute(table.insert(), buffer)
+                    # syntax applies executemany DB API invocation.
+                    engine.execute(table.insert().values(buffer))
+                    buffer.clear()
+
+            # Validate/iterate
+            self.validate(callback=callback)
+
+            if len(buffer):
+                engine.execute(table.insert().values(buffer))
 
     # Not supported
     else:
