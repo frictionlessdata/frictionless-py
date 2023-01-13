@@ -385,5 +385,12 @@ class Platform:
 
         return pyzenodo3.upload
 
+    @cached_property
+    @extras(name="wkt")
+    def wkt(self):
+        import frictionless.vendor.wkt
+
+        return frictionless.vendor.wkt
+
 
 platform = Platform()

@@ -1,10 +1,9 @@
 import pytz
-import pytest
 import isodate
 import pandas as pd
 from decimal import Decimal
 from dateutil.tz import tzoffset, tzutc
-from datetime import datetime, date, time
+from datetime import datetime, time
 from pandas.core.dtypes.common import is_datetime64_ns_dtype
 from frictionless import Package, Resource, Schema, validate
 
@@ -90,7 +89,6 @@ def test_pandas_parser_nan_in_integer_csv_column():
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
-@pytest.mark.skip(reason="issue-1210")
 def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")
@@ -102,8 +100,8 @@ def test_pandas_parser_write_types():
                 {"name": "any", "type": "string"},  # type fallback
                 {"name": "array", "type": "array"},
                 {"name": "boolean", "type": "boolean"},
-                {"name": "date", "type": "datetime"},
-                {"name": "date_year", "type": "datetime"},  # format removal
+                {"name": "date", "type": "datetime"},  # type downgrade
+                {"name": "date_year", "type": "datetime"},  # type downgrade/fmt removal
                 {"name": "datetime", "type": "datetime"},
                 {"name": "duration", "type": "duration"},
                 {"name": "geojson", "type": "object"},
@@ -124,8 +122,8 @@ def test_pandas_parser_write_types():
                 "any": "中国人",
                 "array": ["Mike", "John"],
                 "boolean": True,
-                "date": date(2015, 1, 1),
-                "date_year": date(2015, 1, 1),
+                "date": datetime(2015, 1, 1),
+                "date_year": datetime(2015, 1, 1),
                 "datetime": datetime(2015, 1, 1, 3, 0),
                 "duration": isodate.parse_duration("P1Y1M"),
                 "geojson": {"type": "Point", "coordinates": [33, 33.33]},

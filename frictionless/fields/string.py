@@ -68,6 +68,19 @@ class StringField(Field):
                     return None
                 return cell
 
+        # WKT
+        elif self.format == "wkt":
+            parser = platform.wkt.WktParser()
+
+            def value_reader(cell):
+                if not isinstance(cell, str):
+                    return None
+                try:
+                    parser.parse(cell, rule_name="wkt_representation")
+                except Exception:
+                    return None
+                return cell
+
         # Default
         else:
 
@@ -95,7 +108,7 @@ class StringField(Field):
         "properties": {
             "format": {
                 "type": "string",
-                "enum": ["default", "email", "uri", "binary", "uuid"],
+                "enum": ["default", "email", "uri", "binary", "uuid", "wkt"],
             },
         }
     }

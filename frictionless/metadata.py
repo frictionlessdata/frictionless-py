@@ -175,7 +175,7 @@ class Metadata(metaclass=Metaclass):
         if errors:
             error = Error(note="descriptor is not valid")
             raise FrictionlessException(error, reasons=errors)
-        metadata = Class.metadata_import(descriptor, **options)
+        metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()

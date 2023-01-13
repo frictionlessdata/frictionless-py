@@ -2,7 +2,54 @@
 
 ## System Object
 
-The most important undelaying object in the Frictionless Framework is `system`. It's an singleton object avaialble as `frictionless.system`. This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Field`. Here is a quick example of using the `system` object:
+The most important undelaying object in the Frictionless Framework is `system`. It's an singleton object avaialble as `frictionless.system`.
+
+## System Context
+
+Using the `system` object a user can alter the execution context. It uses a Python context manager so it can be used in anyway that it's possible in Python, for example, it can be nested or combined.
+
+### trusted
+
+If data or metadata comes from a trusted origin, it's possible to disable safety checks for paths:
+
+```python
+with system.use_context(trusted=True):
+    extract('/path/to/file/is/absolute.csv')
+```
+
+### onerror
+
+To raise warning or errors on data problems, it's possible to use `onerror` context value. It's default to `ignore` and can be set to `warn` or `error`:
+
+```python
+with system.use_context(onerror='error'):
+    extract('table-with-error-will-raise-an-exeption.csv')
+```
+
+### standards
+
+By default, the framework uses coming `v2` version of the standards for outputing metadata. It's possible to alter this behaviour:
+
+
+```python
+with system.use_context(standards='v1'):
+    describe('metadata-will-be-in-v1.csv')
+```
+
+### http_session
+
+It's possible to provide a custom `requests.Session`:
+
+```python
+session = requests.Session()
+with system.use_context(http_session=session):
+    with Resource(BASEURL % "data/table.csv") as resource:
+        assert resource.header == ["id", "name"]
+```
+
+## System methods
+
+This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Field`. Here is a quick example of using the `system` object:
 
 ```python tabs=Python
 from frictionless import Resource, system

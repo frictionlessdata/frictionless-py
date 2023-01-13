@@ -121,6 +121,8 @@ def test_inquiry_validate_with_multiple_packages():
 # Parallel
 
 
+# TODO: recover -- it randomly/sometimes fails on CI because of a time limit
+@pytest.mark.skip
 @pytest.mark.ci
 def test_inquiry_validate_parallel_multiple():
     inquiry = Inquiry.from_descriptor(

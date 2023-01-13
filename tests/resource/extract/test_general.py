@@ -113,14 +113,14 @@ def test_extract_resource_basepath_and_abspath_issue_856():
         ]
 
 
-def test_extract_resource_string_with_leading_zeros():
+def test_extract_resource_string_with_leading_zeros_issue_1232_1364():
     resource = Resource("data/issue-1232.csv")
     rows = resource.extract(limit_rows=1)
     assert rows == [
         {
-            "comune": "030151360",
-            "codice_regione": "03",
-            "codice_provincia": "015",
+            "comune": 30151360,
+            "codice_regione": 3,
+            "codice_provincia": 15,
             "codice_comune": 1360,
             "denominazione_comune": "POLPENAZZE DEL GARDA",
             "sigla_provincia": "BS",

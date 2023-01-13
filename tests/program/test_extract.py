@@ -329,3 +329,14 @@ def test_extract_resource_from_csv_comma_delimiter_1009():
         json.dumps(actual.stdout, ensure_ascii=False)
         == '"fieldNameA,fieldNameB\\n123,c\\n"'
     )
+
+
+@pytest.mark.vcr
+def test_extract_description_option_issue_1362():
+    descriptor = "https://umweltanwendungen.schleswig-holstein.de/pegel/jsp/frictionless.jsp?mstnr=114069&thema=w"
+    actual = runner.invoke(
+        program,
+        f"extract --descriptor '{descriptor}' --json --limit-rows 1",
+    )
+    assert actual.exit_code == 0
+    assert json.loads(actual.stdout)[0]["Wasserstand"] == 690

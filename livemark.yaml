@@ -14,11 +14,6 @@ counter:
   code: framework.frictionlessdata.io
 topics:
   selector: h2
-news:
-  text: |
-    It's a beta version of Frictionless Framework (v5).
-    Read <a href="https://v4.framework.frictionlessdata.io/docs/guides/guides-overview">Frictionless Framework (v4)</a>
-    docs for a version that is currently installed by default by pip.
 links:
   items:
     - name: Framework (v4) (docs)
@@ -44,10 +39,6 @@ pages:
         - path: docs/guides/transforming-data
     - name: Framework In-Depth
       items:
-        - path: docs/framework/program
-          name: Program
-        - path: docs/framework/server
-          name: Server
         - path: docs/framework/actions
           name: Actions
         - path: docs/framework/catalog
@@ -74,11 +65,13 @@ pages:
           name: Table
         - path: docs/framework/classes
           name: Other
-    - name: Writing a Plugin
+    - name: Advanced Topics
       items:
-        - path: docs/architecture/design
-        - path: docs/architecture/system
-        - path: docs/architecture/extending
+        - path: docs/advanced/program
+        - path: docs/advanced/server
+        - path: docs/advanced/design
+        - path: docs/advanced/system
+        - path: docs/advanced/extending
     - name: Data Sources
       items:
         - path: docs/schemes/aws

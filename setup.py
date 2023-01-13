@@ -29,7 +29,9 @@ TESTS_REQUIRE = [
     "pyflakes==2.4.0",
     "pylama",
     "pytest",
-    "pyright",
+    # TODO: remove after the fix
+    # https://github.com/microsoft/pyright/issues/4424
+    "pyright==1.1.286",
     "ipython",
     "livemark",
     "pytest-cov",
@@ -58,6 +60,7 @@ EXTRAS_REQUIRE = {
     "postgresql": ["sqlalchemy>=1.3", "psycopg>=3.0", "psycopg2>=2.9"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
+    "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
 }
 INSTALL_REQUIRES = [

@@ -1,0 +1,175 @@
+wkt_representation =
+    point_text_representation |
+    curve_text_representation |
+    surface_text_representation |
+    collection_text_representation;
+
+point_text_representation = "POINT" [ z_m ] point_text;
+
+curve_text_representation =
+    linestring_text_representation |
+    circularstring_text_representation |
+    compoundcurve_text_representation;
+
+linestring_text_representation =
+    "LINESTRING" [ z_m ] linestring_text_body;
+
+circularstring_text_representation =
+    "CIRCULARSTRING" [ z_m ] circularstring_text;
+
+compoundcurve_text_representation =
+    "COMPOUNDCURVE" [ z_m ] compoundcurve_text;
+
+surface_text_representation =
+    curvepolygon_text_representation;
+
+curvepolygon_text_representation =
+    "CURVEPOLYGON" [ z_m ] curvepolygon_text_body |
+    polygon_text_representation |
+    triangle_text_representation;
+
+polygon_text_representation =
+    "POLYGON" [ z_m ] polygon_text_body;
+
+triangle_text_representation =
+    "TRIANGLE" [ z_m ] triangle_text_body;
+
+collection_text_representation =
+    multipoint_text_representation |
+    multicurve_text_representation |
+    multisurface_text_representation |
+    geometrycollection_text_representation;
+
+multipoint_text_representation =
+    "MULTIPOINT" [ z_m ] multipoint_text;
+
+multicurve_text_representation =
+    "MULTICURVE" [ z_m ] multicurve_text |
+    multilinestring_text_representation;
+
+multilinestring_text_representation =
+    "MULTILINESTRING" [ z_m ] multilinestring_text;
+
+multisurface_text_representation =
+    "MULTISURFACE" [ z_m ] multisurface_text |
+    multipolygon_text_representation |
+    polyhedralsurface_text_representation |
+    tin_text_representation;
+
+multipolygon_text_representation =
+    "MULTIPOLYGON" [ z_m ] multipolygon_text;
+
+polyhedralsurface_text_representation =
+    "POLYHEDRALSURFACE" [ z_m ] polyhedralsurface_text;
+
+tin_text_representation =
+    "TIN" [ z_m ] tin_text;
+
+geometrycollection_text_representation =
+    "GEOMETRYCOLLECTION" [ z_m ] geometrycollection_text;
+
+linestring_text_body =
+    linestring_text;
+
+curvepolygon_text_body =
+    curvepolygon_text;
+
+polygon_text_body =
+    polygon_text;
+
+triangle_text_body =
+    triangle_text;
+
+point_text =
+    empty_set |
+    left_paren point right_paren ;
+
+point =x y [ z ] [ m ] ;
+
+x =number;
+y =number;
+z =number;
+m =number;
+
+linestring_text =
+    empty_set |
+    left_paren point { comma point } right_paren;
+
+circularstring_text =
+    empty_set |
+    left_paren point { comma point } right_paren;
+
+compoundcurve_text =
+    empty_set |
+    left_paren single_curve_text { comma single_curve_text } right_paren;
+
+single_curve_text =
+    linestring_text_body |
+    circularstring_text_representation;
+
+curve_text =
+    linestring_text_body |
+    circularstring_text_representation |
+    compoundcurve_text_representation;
+
+ring_text =
+    linestring_text_body |
+    circularstring_text_representation |
+    compoundcurve_text_representation;
+
+surface_text =
+    "CURVEPOLYGON" curvepolygon_text_body |
+    polygon_text_body;
+
+curvepolygon_text =
+    empty_set |
+    left_paren ring_text { comma ring_text } right_paren;
+
+polygon_text =
+    empty_set |
+    left_paren linestring_text { comma linestring_text } right_paren;
+
+triangle_text =
+    empty_set |
+    left_paren linestring_text right_paren;
+
+multipoint_text =
+    empty_set |
+    left_paren point_text { comma point_text  } right_paren;
+
+multicurve_text =
+    empty_set |
+    left_paren curve_text { comma curve_text } right_paren;
+
+multilinestring_text =
+    empty_set |
+    left_paren linestring_text_body { comma linestring_text_body } right_paren;
+
+multisurface_text =
+    empty_set |
+    left_paren surface_text { comma surface_text } right_paren;
+
+multipolygon_text =
+    empty_set |
+    left_paren polygon_text_body { comma polygon_text_body } right_paren;
+
+polyhedralsurface_text =
+    empty_set |
+    left_paren polygon_text_body { comma polygon_text_body } right_paren;
+
+tin_text =
+    empty_set |
+    left_paren triangle_text_body { comma triangle_text_body } right_paren;
+
+geometrycollection_text =
+    empty_set |
+    left_paren wkt_representation { comma wkt_representation } right_paren;
+
+empty_set ="EMPTY";
+
+z_m = "ZM" | "Z" | "M";
+left_paren = "(";
+right_paren = ")";
+
+comma = ",";
+number = ?/[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?/? ;

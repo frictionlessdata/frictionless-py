@@ -15,6 +15,12 @@ def test_resource_read_bytes():
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_resource_read_bytes_bug_1341():
+    assert len(Resource("data/issue-1341.csv").read_bytes()) == 16792
+    assert len(Resource("data/issue-1066.csv").read_bytes()) == 3289808
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_read_text():
     resource = Resource(path="data/text.txt")
     text = resource.read_text()

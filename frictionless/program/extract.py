@@ -59,7 +59,8 @@ def program_extract(
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
-    keep_delimiter: bool = common.keep_limiter,
+    descriptor: str = common.descriptor,
+    keep_delimiter: bool = common.keep_delimiter,
 ):
     """
     Extract a data source.
@@ -76,13 +77,13 @@ def program_extract(
 
     # Support stdin
     is_stdin = False
-    if not source and not path:
+    if not source and not path and not descriptor:
         if not sys.stdin.isatty():
             is_stdin = True
             source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
-    if not source and not path:
+    if not source and not path and not descriptor:
         message = 'Providing "source" or "path" is required'
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
@@ -93,9 +94,9 @@ def program_extract(
 
     # Prepare dialect
     def prepare_dialect():
-        descriptor = helpers.parse_json_string(dialect)
-        if descriptor:
-            return Dialect.from_descriptor(descriptor)
+        dialect_descriptor = helpers.parse_json_string(dialect)
+        if dialect_descriptor:
+            return Dialect.from_descriptor(dialect_descriptor)
         controls = []
         if sheet:
             controls.append(formats.ExcelControl(sheet=sheet))
@@ -158,6 +159,7 @@ def program_extract(
             basepath=basepath,
             detector=prepare_detector(),
             # Action
+            descriptor=descriptor,
             resource_name=resource_name,
             limit_rows=limit_rows,
             process=prepare_process(),
