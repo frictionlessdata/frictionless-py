@@ -100,33 +100,48 @@ def index(
     # Sqlite
     elif url.drivername.startswith("sqlite"):
         engine = sa.create_engine(database_url)
-        mapper = platform.frictionless_formats.sql.SqlMapper(engine)
-        sql = platform.sqlalchemy_schema
-
-        # Write metadata
-        table = mapper.write_schema(self.schema, table_name=table_name)
-        engine.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
-        engine.execute(str(sql.CreateTable(table, bind=engine)))  # type: ignore
-
-        # Write data
         with self:
-            buffer = []
-            buffer_size = 1000
+            mapper = platform.frictionless_formats.sql.SqlMapper(engine)
+            sql = platform.sqlalchemy_schema
 
-            def callback(row):
-                cells = mapper.write_row(row)
-                buffer.append(cells)
-                if len(buffer) > buffer_size:
-                    # sqlalchemy conn.execute(table.insert(), buffer)
-                    # syntax applies executemany DB API invocation.
+            # Write metadata
+            table = mapper.write_schema(self.schema, table_name=table_name)
+            engine.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
+            engine.execute(str(sql.CreateTable(table, bind=engine)))  # type: ignore
+
+            # Write data (fast)
+            # TODO: raise if header is not in the first row
+            if fast:
+                # --csv and --skip options for .import are from sqlite3@3.32
+                # https://github.com/simonw/sqlite-utils/issues/297#issuecomment-880256058
+                sql_command = f".import '|cat -' {table_name}"
+                command = ["sqlite3", "-csv", url.database, sql_command]
+                process = subprocess.Popen(command, stdin=subprocess.PIPE)
+                for line_number, line in enumerate(self.byte_stream, start=1):
+                    if line_number > 1:
+                        process.stdin.write(line)  # type: ignore
+                process.stdin.close()  # type: ignore
+                process.wait()
+
+            # Write data (general)
+            else:
+                buffer = []
+                buffer_size = 1000
+
+                def callback(row):
+                    cells = mapper.write_row(row)
+                    buffer.append(cells)
+                    if len(buffer) > buffer_size:
+                        # sqlalchemy conn.execute(table.insert(), buffer)
+                        # syntax applies executemany DB API invocation.
+                        engine.execute(table.insert().values(buffer))
+                        buffer.clear()
+
+                # Validate/iterate
+                self.validate(callback=callback)
+
+                if len(buffer):
                     engine.execute(table.insert().values(buffer))
-                    buffer.clear()
-
-            # Validate/iterate
-            self.validate(callback=callback)
-
-            if len(buffer):
-                engine.execute(table.insert().values(buffer))
 
     # Not supported
     else:
