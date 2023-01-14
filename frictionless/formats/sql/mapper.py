@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 from datetime import datetime, date, timezone
-from typing import TYPE_CHECKING, Dict, Type, List, Any, Optional
+from typing import TYPE_CHECKING, Dict, Type, List, Any
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Mapper
@@ -10,14 +10,13 @@ if TYPE_CHECKING:
     from sqlalchemy.schema import Table
     from sqlalchemy.engine import Engine
     from sqlalchemy.types import TypeEngine
-    from sqlalchemy import MetaData
     from ...table import Row
 
 
 class SqlMapper(Mapper):
     """Metadata mapper Frictionless from/to SQL"""
 
-    # TODO: accept only url not engine?
+    # TODO: accept only url/dialect_name not engine (but we need access to dialect quote)?
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -106,17 +105,13 @@ class SqlMapper(Mapper):
 
     # Write
 
-    def write_schema(
-        self, schema: Schema, *, table_name: str, metadata: Optional[MetaData] = None
-    ) -> Table:
+    def write_schema(self, schema: Schema, *, table_name: str) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
 
         # Prepare
         columns = []
         constraints = []
         sa = platform.sqlalchemy
-        # TODO: can metadata be just None?
-        metadata = metadata or sa.MetaData(self.engine)
 
         # Fields
         Check = sa.CheckConstraint
@@ -178,7 +173,7 @@ class SqlMapper(Mapper):
             constraints.append(constraint)
 
         # Table
-        table = sa.Table(table_name, metadata, *(columns + constraints))
+        table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
         return table
 
     def write_field(self, field: Field) -> Type[TypeEngine]:
