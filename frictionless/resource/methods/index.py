@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 BLOCK_SIZE = 8096
 BUFFER_SIZE = 1000
-INDEX_NAME = "index"
+INDEX_NAME = "_index"
 
 
 def index(
@@ -159,7 +159,11 @@ class Indexer:
         if existing_table is not None:
             existing_table.drop(self.connection)
             self.metadata.remove(existing_table)
-        table = self.mapper.write_schema(self.resource.schema, table_name=table_name)
+        table = self.mapper.write_schema(
+            self.resource.schema,
+            table_name=table_name,
+            with_row_number=index is not None,
+        )
         table.to_metadata(self.metadata)
         table.create(self.connection)
         return table
@@ -178,6 +182,8 @@ class GeneralIndexer(Indexer):
         # Write row
         def callback(row):
             cells = self.mapper.write_row(row)
+            if index is not None:
+                cells.insert(0, row.row_number)
             buffer.append(cells)
             if len(buffer) > BUFFER_SIZE:
                 self.connection.execute(table.insert().values(buffer))
