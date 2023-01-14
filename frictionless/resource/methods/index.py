@@ -2,7 +2,7 @@ from __future__ import annotations
 import attrs
 import subprocess
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional, Type, Callable
 from ...exception import FrictionlessException
 from ...schema import Schema, Field
 from ...platform import platform
@@ -21,6 +21,7 @@ def index(
     table_name: str,
     fast: bool = False,
     qsv: Optional[str] = None,
+    callback: Optional[Callable[[str], None]] = None,
 ):
     """Index resource into a database"""
 
@@ -44,6 +45,7 @@ def index(
         database_url=database_url,
         table_name=table_name,
         qsv=qsv,
+        callback=callback,
     )
     indexer.index()
 
@@ -60,6 +62,7 @@ class Indexer:
     database_url: str
     table_name: str
     qsv: Optional[str] = None
+    callback: Optional[Callable[[str], None]] = None
 
     # Props
 
@@ -75,7 +78,13 @@ class Indexer:
     def table(self):
         return self.mapper.write_schema(self.resource.schema, table_name=self.table_name)
 
-    # Methods
+    # Progress
+
+    def report_progress(self, message: str):
+        if self.callback:
+            self.callback(message)
+
+    # Index
 
     def index(self):
         self.infer_metadata()
@@ -137,6 +146,7 @@ class PostgresIndexer(Indexer):
                     def callback(row):
                         cells = self.mapper.write_row(row)
                         copy.write_row(cells)
+                        self.report_progress(f"{self.resource.stats.rows} rows")
 
                     # Validate/iterate
                     self.resource.validate(callback=callback)
@@ -156,6 +166,7 @@ class FastPostgresIndexer(Indexer):
                         if not chunk:
                             break
                         copy.write(chunk)
+                        self.report_progress(f"{self.resource.stats.bytes} bytes")
 
 
 class SqliteIndexer(Indexer):
@@ -173,6 +184,7 @@ class SqliteIndexer(Indexer):
             if len(buffer) > buffer_size:
                 self.engine.execute(self.table.insert().values(buffer))
                 buffer.clear()
+            self.report_progress(f"{self.resource.stats.rows} rows")
 
         # Validate/iterate
         self.resource.validate(callback=callback)
@@ -194,5 +206,6 @@ class FastSqliteIndexer(Indexer):
         for line_number, line in enumerate(self.resource.byte_stream, start=1):
             if line_number > 1:
                 process.stdin.write(line)  # type: ignore
+            self.report_progress(f"{self.resource.stats.bytes} bytes")
         process.stdin.close()  # type: ignore
         process.wait()
