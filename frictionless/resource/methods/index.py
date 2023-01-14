@@ -141,7 +141,14 @@ class Indexer:
             sa = platform.sqlalchemy
             index = self.metadata.tables.get(INDEX_NAME)
             if index is None:
-                index = sa.Table(INDEX_NAME, self.metadata, sa.Column("path", sa.Text))
+                index = sa.Table(
+                    INDEX_NAME,
+                    self.metadata,
+                    sa.Column("name", sa.Text, primary_key=True),
+                    sa.Column("path", sa.Text, unique=True),
+                    sa.Column("resource", sa.Text),
+                    sa.Column("report", sa.Text),
+                )
                 index.create(self.connection)
             return index
 
@@ -178,9 +185,21 @@ class GeneralIndexer(Indexer):
             self.report_progress(f"{self.resource.stats.rows} rows")
 
         # Validate/iterate
-        self.resource.validate(callback=callback)
+        report = self.resource.validate(callback=callback)
         if len(buffer):
             self.connection.execute(table.insert().values(buffer))
+
+        # Register resource
+        if index is not None:
+            self.connection.execute(index.delete(index.c.name == table.name))
+            self.connection.execute(
+                index.insert().values(
+                    name=table.name,
+                    path=self.resource.path,
+                    resource=self.resource.to_json(),
+                    report=report.to_json(),
+                )
+            )
 
 
 class FastSqliteIndexer(Indexer):
