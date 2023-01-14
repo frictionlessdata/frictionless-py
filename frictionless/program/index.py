@@ -15,6 +15,7 @@ def program_index(
     table: str = common.table,
     fast: bool = common.fast,
     qsv: str = common.qsv,
+    metadata: bool = common.metadata,
     # Command
     debug: bool = common.debug,
     trusted: bool = common.trusted,
@@ -51,6 +52,7 @@ def program_index(
                 fast=fast,
                 qsv=qsv,
                 callback=callback,
+                with_metadata=metadata,
             )
         typer.secho(
             f"{progress.tasks[status].description} in {timer.time} seconds",

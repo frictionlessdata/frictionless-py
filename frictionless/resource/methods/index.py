@@ -12,16 +12,18 @@ if TYPE_CHECKING:
 
 
 BLOCK_SIZE = 8096
+INDEX_NAME = "index"
 
 
 def index(
     self: Resource,
     database_url: str,
     *,
-    table_name: str,
+    table_name: Optional[str] = None,
     fast: bool = False,
     qsv: Optional[str] = None,
     callback: Optional[Callable[[str], None]] = None,
+    with_metadata: bool = False,
 ):
     """Index resource into a database"""
 
@@ -46,8 +48,9 @@ def index(
         table_name=table_name,
         qsv=qsv,
         callback=callback,
+        with_metadata=with_metadata,
     )
-    indexer.index()
+    indexer.index_resource()
 
 
 # Internal
@@ -60,9 +63,10 @@ class Indexer:
 
     resource: Resource
     database_url: str
-    table_name: str
+    table_name: Optional[str] = None
     qsv: Optional[str] = None
     callback: Optional[Callable[[str], None]] = None
+    with_metadata: Optional[bool] = False
 
     # Props
 
@@ -71,12 +75,38 @@ class Indexer:
         return platform.sqlalchemy.create_engine(self.database_url)
 
     @cached_property
+    def metadata(self):
+        metadata = platform.sqlalchemy.MetaData(self.engine)
+        metadata.reflect()
+        return metadata
+
+    @cached_property
     def mapper(self):
         return platform.frictionless_formats.sql.SqlMapper(self.engine)
 
     @cached_property
+    def index(self):
+        sa = platform.sqlalchemy
+        index = self.metadata.tables.get(INDEX_NAME)
+        if index is None:
+            index = sa.Table(INDEX_NAME, self.metadata, sa.Column("path", sa.Text))
+            index.create()
+        return index
+
+    @cached_property
     def table(self):
-        return self.mapper.write_schema(self.resource.schema, table_name=self.table_name)
+        table_name = self.table_name or self.resource.name
+        assert table_name
+        existing_table = self.metadata.tables.get(table_name)
+        if existing_table is not None:
+            existing_table.drop()
+        table = self.mapper.write_schema(
+            self.resource.schema,
+            table_name=table_name,
+            metadata=self.metadata,
+        )
+        table.create()
+        return table
 
     # Progress
 
@@ -86,11 +116,13 @@ class Indexer:
 
     # Index
 
-    def index(self):
+    def index_resource(self):
         self.prepare_resource()
+        # TODO: draft
+        if self.with_metadata:
+            self.index
         with self.resource:
-            self.ensure_table()
-            self.populate_table()
+            self.transfer_resource()
 
     def prepare_resource(self):
         if self.qsv:
@@ -123,12 +155,7 @@ class Indexer:
                         schema.add_field(Field.from_descriptor(descriptor))
                 self.resource.schema = schema
 
-    def ensure_table(self):
-        sql = platform.sqlalchemy_schema
-        self.engine.execute(str(sql.DropTable(self.table, bind=self.engine, if_exists=True)))  # type: ignore
-        self.engine.execute(str(sql.CreateTable(self.table, bind=self.engine)))  # type: ignore
-
-    def populate_table(self):
+    def transfer_resource(self):
         raise NotImplementedError()
 
 
@@ -136,10 +163,10 @@ class PostgresIndexer(Indexer):
 
     # Methods
 
-    def populate_table(self):
+    def transfer_resource(self):
         with platform.psycopg.connect(self.database_url) as connection:
             with connection.cursor() as cursor:
-                query = 'COPY "%s" FROM STDIN' % self.table_name
+                query = 'COPY "%s" FROM STDIN' % self.table.name
                 with cursor.copy(query) as copy:  # type: ignore
 
                     # Write row
@@ -156,10 +183,10 @@ class FastPostgresIndexer(Indexer):
 
     # Methods
 
-    def populate_table(self):
+    def transfer_resource(self):
         with platform.psycopg.connect(self.database_url) as connection:
             with connection.cursor() as cursor:
-                query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table_name
+                query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table.name
                 with cursor.copy(query) as copy:  # type: ignore
                     while True:
                         chunk = self.resource.read_bytes(size=BLOCK_SIZE)
@@ -173,7 +200,7 @@ class SqliteIndexer(Indexer):
 
     # Methods
 
-    def populate_table(self):
+    def transfer_resource(self):
         buffer = []
         buffer_size = 1000
 
@@ -196,11 +223,11 @@ class FastSqliteIndexer(Indexer):
 
     # Methods
 
-    def populate_table(self):
+    def transfer_resource(self):
         # --csv and --skip options for .import are available from sqlite3@3.32
         # https://github.com/simonw/sqlite-utils/issues/297#issuecomment-880256058
         url = platform.sqlalchemy.engine.make_url(self.database_url)
-        sql_command = f".import '|cat -' {self.table_name}"
+        sql_command = f".import '|cat -' {self.table.name}"
         command = ["sqlite3", "-csv", url.database, sql_command]
         process = subprocess.Popen(command, stdin=subprocess.PIPE)
         for line_number, line in enumerate(self.resource.byte_stream, start=1):

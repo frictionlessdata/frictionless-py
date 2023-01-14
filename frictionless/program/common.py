@@ -351,3 +351,8 @@ qsv = Option(
     default=None,
     help="QSV binary path",
 )
+
+metadata = Option(
+    default=False,
+    help="Add metadata while indexing",
+)
