@@ -87,13 +87,12 @@ class Indexer:
     # Index
 
     def index(self):
-        self.infer_metadata()
+        self.prepare_resource()
         with self.resource:
-            self.write_metadata()
-            self.write_data()
+            self.ensure_table()
+            self.populate_table()
 
-    def infer_metadata(self):
-        # TODO: move to formats.qsv.QsvMapper?
+    def prepare_resource(self):
         if self.qsv:
             PIPE = subprocess.PIPE
             command = [self.qsv, "stats", "--infer-dates", "--dates-whitelist", "all"]
@@ -109,6 +108,7 @@ class Indexer:
                 process.wait()
                 schema = Schema()
                 with platform.frictionless.Resource(result, format="csv") as info:
+                    # TODO: move to formats.qsv.QsvMapper?
                     for row in info.row_stream:
                         type = "string"
                         if row["type"] == "Integer":
@@ -123,12 +123,12 @@ class Indexer:
                         schema.add_field(Field.from_descriptor(descriptor))
                 self.resource.schema = schema
 
-    def write_metadata(self):
+    def ensure_table(self):
         sql = platform.sqlalchemy_schema
         self.engine.execute(str(sql.DropTable(self.table, bind=self.engine, if_exists=True)))  # type: ignore
         self.engine.execute(str(sql.CreateTable(self.table, bind=self.engine)))  # type: ignore
 
-    def write_data(self):
+    def populate_table(self):
         raise NotImplementedError()
 
 
@@ -136,7 +136,7 @@ class PostgresIndexer(Indexer):
 
     # Methods
 
-    def write_data(self):
+    def populate_table(self):
         with platform.psycopg.connect(self.database_url) as connection:
             with connection.cursor() as cursor:
                 query = 'COPY "%s" FROM STDIN' % self.table_name
@@ -156,7 +156,7 @@ class FastPostgresIndexer(Indexer):
 
     # Methods
 
-    def write_data(self):
+    def populate_table(self):
         with platform.psycopg.connect(self.database_url) as connection:
             with connection.cursor() as cursor:
                 query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table_name
@@ -173,7 +173,7 @@ class SqliteIndexer(Indexer):
 
     # Methods
 
-    def write_data(self):
+    def populate_table(self):
         buffer = []
         buffer_size = 1000
 
@@ -196,7 +196,7 @@ class FastSqliteIndexer(Indexer):
 
     # Methods
 
-    def write_data(self):
+    def populate_table(self):
         # --csv and --skip options for .import are available from sqlite3@3.32
         # https://github.com/simonw/sqlite-utils/issues/297#issuecomment-880256058
         url = platform.sqlalchemy.engine.make_url(self.database_url)
