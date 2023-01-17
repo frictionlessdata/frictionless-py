@@ -25,6 +25,7 @@ def index(
     fast: bool = False,
     qsv: Optional[str] = None,
     callback: Optional[Callable[[str], None]] = None,
+    fallback: bool = False,
     with_metadata: bool = False,
 ):
     """Index resource into a database"""
@@ -49,6 +50,7 @@ def index(
         table_name=table_name,
         qsv=qsv,
         callback=callback,
+        fallback=fallback,
         with_metadata=with_metadata,
     )
     indexer.index()
@@ -67,7 +69,8 @@ class Indexer:
     table_name: Optional[str] = None
     qsv: Optional[str] = None
     callback: Optional[Callable[[str], None]] = None
-    with_metadata: Optional[bool] = False
+    fallback: bool = False
+    with_metadata: bool = False
 
     # Props
 
@@ -104,7 +107,12 @@ class Indexer:
             with self.connection.begin():
                 index = self.prepare_index()
                 table = self.prepare_table(index=index)
-                self.index_resource(table, index=index)
+                try:
+                    self.index_resource(table, index=index)
+                except platform.sqlalchemy_exc.SQLAlchemyError:
+                    if self.fallback:
+                        self.fast = False
+                        self.index_resource(table, index=index)
 
     def prepare_resource(self):
         if self.qsv:

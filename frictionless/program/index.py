@@ -15,6 +15,7 @@ def program_index(
     table: str = common.table,
     fast: bool = common.fast,
     qsv: str = common.qsv,
+    fallback: bool = common.fallback,
     metadata: bool = common.metadata,
     # Command
     debug: bool = common.debug,
@@ -52,6 +53,7 @@ def program_index(
                 fast=fast,
                 qsv=qsv,
                 callback=callback,
+                fallback=fallback,
                 with_metadata=metadata,
             )
         typer.secho(

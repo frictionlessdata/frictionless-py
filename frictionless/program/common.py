@@ -356,3 +356,8 @@ metadata = Option(
     default=False,
     help="Add metadata while indexing",
 )
+
+fallback = Option(
+    default=False,
+    help="If fast indexing errored fallback to the normal mode",
+)
