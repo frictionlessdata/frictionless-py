@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Dialect, FrictionlessException
+from frictionless import Resource, Dialect, FrictionlessException
 
 
 # General
@@ -21,3 +21,15 @@ def test_dialect_bad_property():
     assert error.note == "descriptor is not valid"
     assert reasons[0].type == "dialect-error"
     assert reasons[0].note == "'bad' is not of type 'array' at property 'headerRows'"
+
+
+# Blank Rows
+
+
+def test_dialect_skip_blank_rows():
+    dialect = Dialect(skip_blank_rows=True)
+    with Resource("data/blank-rows.csv", dialect=dialect) as resource:
+        assert resource.read_rows() == [
+            {"id": 1101, "name": "John", "age": 30},
+            {"id": 1102, "name": "Julie", "age": 26},
+        ]
