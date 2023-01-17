@@ -187,7 +187,7 @@ class GithubAdapter(Adapter):
                 repository.create_file(
                     path=resource_path,
                     message="Create package.json",
-                    content=str(resource.read_bytes()),
+                    content=resource.read_bytes(),  # type: ignore
                     branch=branch,
                     committer=author,
                     author=author,
