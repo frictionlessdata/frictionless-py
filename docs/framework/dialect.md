@@ -78,6 +78,42 @@ with Resource('capital-3.csv', dialect=dialect, schema=schema) as resource:
   print(f'Valid: {resource.header.valid}')  # without "header_case" it will have 2 errors
 ```
 
+## Comment Char
+
+Specifies char used to comment the rows:
+
+```python script tabs=Python
+from frictionless import Resource, Dialect
+
+dialect = Dialect(comment_char="#")
+rows = Resource(b'name\n#row1\nrow2', format="csv").extract()
+print(rows)
+```
+
+## Comment Rows
+
+A list of rows to ignore:
+
+```python script tabs=Python
+from frictionless import Resource, Dialect
+
+dialect = Dialect(comment_rows=[2])
+rows = Resource(b'name\nrow1\nrow2', format="csv").extract()
+print(rows)
+```
+
+## Skip Blank Rows
+
+Ignores rows if they are completely blank.
+
+```python script tabs=Python
+from frictionless import Resource, Dialect
+
+dialect = Dialect(skip_blank_rows=True)
+rows = Resource(b'name\n\nrow2', format="csv").extract()
+print(rows)
+```
+
 ## Reference
 
 ```yaml reference
