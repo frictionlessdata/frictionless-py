@@ -86,8 +86,8 @@ Specifies char used to comment the rows:
 from frictionless import Resource, Dialect
 
 dialect = Dialect(comment_char="#")
-rows = Resource(b'name\n#row1\nrow2', format="csv").extract()
-print(rows)
+with Resource(b'name\n#row1\nrow2', format="csv", dialect=dialect) as resource:
+    print(resource.read_rows())
 ```
 
 ## Comment Rows
@@ -98,8 +98,8 @@ A list of rows to ignore:
 from frictionless import Resource, Dialect
 
 dialect = Dialect(comment_rows=[2])
-rows = Resource(b'name\nrow1\nrow2', format="csv").extract()
-print(rows)
+with Resource(b'name\nrow1\nrow2', format="csv", dialect=dialect) as resource:
+    print(resource.read_rows())
 ```
 
 ## Skip Blank Rows
@@ -110,8 +110,8 @@ Ignores rows if they are completely blank.
 from frictionless import Resource, Dialect
 
 dialect = Dialect(skip_blank_rows=True)
-rows = Resource(b'name\n\nrow2', format="csv").extract()
-print(rows)
+with Resource(b'name\n\nrow2', format="csv", dialect=dialect) as resource:
+    print(resource.read_rows())
 ```
 
 ## Reference
