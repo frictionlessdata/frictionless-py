@@ -145,8 +145,8 @@ class Indexer:
                 index = sa.Table(
                     INDEX_NAME,
                     self.metadata,
-                    sa.Column("name", sa.Text, primary_key=True),
-                    sa.Column("path", sa.Text, unique=True),
+                    sa.Column("path", sa.Text, primary_key=True),
+                    sa.Column("table_name", sa.Text, unique=True),
                     sa.Column("updated", sa.DateTime),
                     sa.Column("resource", sa.Text),
                     sa.Column("report", sa.Text),
@@ -155,19 +155,45 @@ class Indexer:
             return index
 
     def prepare_table(self, *, index: Optional[Table] = None):
-        table_name = self.table_name or self.resource.name
-        assert table_name, "Table name must be guaranteed here"
+        table_name = self.table_name
+
+        # Sync table name with index (retrieve or ensure dedup)
+        if index is not None:
+            assert not table_name, '"table_name" is not supported with metadata'
+            assert self.resource.path, '"resource.path" is required with metadata'
+            found = False
+            table_names = []
+            template = f"{table_name}%s"
+            table_name = self.resource.name
+            query = index.select().with_only_columns([index.c.path, index.c.table_name])
+            records = self.connection.execute(query)
+            for record in records:
+                table_names.append(record.table_name)
+                if record.path == self.resource.path:
+                    table_name = record.table_name
+                    found = True
+            if not found:
+                suffix = 1
+                while table_name in table_names:
+                    table_name = template % suffix
+                    suffix += 1
+
+        # Remove existing table
+        assert table_name, '"table_name" is requried'
         existing_table = self.metadata.tables.get(table_name)
         if existing_table is not None:
             existing_table.drop(self.connection)
             self.metadata.remove(existing_table)
+
+        # Create new table
         table = self.mapper.write_schema(
             self.resource.schema,
-            table_name=table_name,
+            table_name=table_name,  # type: ignore
             with_row_number=index is not None,
         )
         table.to_metadata(self.metadata)
         table.create(self.connection)
+
         return table
 
     def index_resource(self, table: Table, *, index: Optional[Table] = None):
@@ -199,11 +225,11 @@ class GeneralIndexer(Indexer):
 
         # Register resource
         if index is not None:
-            self.connection.execute(index.delete(index.c.name == table.name))
+            self.connection.execute(index.delete(index.c.table_name == table.name))
             self.connection.execute(
                 index.insert().values(
-                    name=table.name,
                     path=self.resource.path,
+                    table_name=table.name,
                     updated=datetime.now(),
                     resource=self.resource.to_json(),
                     report=report.to_json(),
