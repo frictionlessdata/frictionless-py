@@ -362,7 +362,7 @@ class Package(Metadata):
         adapter = system.create_adapter(target, control=control)
         if not adapter:
             raise FrictionlessException(f"Not supported target: {target} or control")
-        response = adapter.write_package(self.to_copy())
+        response = adapter.write_package(self.to_copy(basepath=self.basepath))
         if not response:
             raise FrictionlessException("Not supported action")
         return response
@@ -387,10 +387,10 @@ class Package(Metadata):
 
     # Convert
 
-    def to_copy(self):
+    def to_copy(self, **options):
         """Create a copy of the package"""
         return super().to_copy(
-            resources=[resource.to_copy() for resource in self.resources]
+            resources=[resource.to_copy() for resource in self.resources], **options
         )
 
     def to_er_diagram(self, path: Optional[str] = None) -> str:

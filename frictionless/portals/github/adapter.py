@@ -147,6 +147,13 @@ class GithubAdapter(Adapter):
             raise FrictionlessException(note)
 
         # Write package file
+        descriptor = package.to_descriptor()
+        for key, resource in enumerate(package.resources):
+            descriptor["resources"][key].update(
+                {"dialect": resource.dialect.to_descriptor()}
+            )
+        package = package.from_descriptor(descriptor, basepath=package.basepath)
+
         content = package.to_json()
         package_path = self.control.filename or "datapackage.json"
         if self.control.basepath:
