@@ -26,9 +26,17 @@ def test_dialect_bad_property():
 # Blank Rows
 
 
-def test_dialect_skip_blank_rows():
+@pytest.mark.parametrize(
+    "path",
+    [
+        "data/blank-rows.csv",
+        "data/blank-rows-multiple.csv",
+        "data/blank-rows-no-fields.csv",
+    ],
+)
+def test_dialect_skip_blank_rows(path):
     dialect = Dialect(skip_blank_rows=True)
-    with Resource("data/blank-rows.csv", dialect=dialect) as resource:
+    with Resource(path, dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"id": 1101, "name": "John", "age": 30},
             {"id": 1102, "name": "Julie", "age": 26},
