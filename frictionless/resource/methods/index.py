@@ -1,6 +1,7 @@
 from __future__ import annotations
 import attrs
 import subprocess
+from datetime import datetime
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional, Callable
 from ...schema import Schema, Field
@@ -146,6 +147,7 @@ class Indexer:
                     self.metadata,
                     sa.Column("name", sa.Text, primary_key=True),
                     sa.Column("path", sa.Text, unique=True),
+                    sa.Column("updated", sa.DateTime),
                     sa.Column("resource", sa.Text),
                     sa.Column("report", sa.Text),
                 )
@@ -202,6 +204,7 @@ class GeneralIndexer(Indexer):
                 index.insert().values(
                     name=table.name,
                     path=self.resource.path,
+                    updated=datetime.now(),
                     resource=self.resource.to_json(),
                     report=report.to_json(),
                 )
