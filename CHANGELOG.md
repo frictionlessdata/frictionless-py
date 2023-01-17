@@ -2,9 +2,13 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.4
+
+- Support `dialect.skip_blank_rows` (#1387)
+
 ## v5.3
 
-- Support steps.resource_update for resource transformations (#1381)
+- Support `steps.resource_update` for resource transformations (#1381)
 
 ## v5.2
 

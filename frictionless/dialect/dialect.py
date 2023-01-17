@@ -67,9 +67,14 @@ class Dialect(Metadata):
     A list of rows to ignore. For example: [1, 2]
     """
 
+    skip_blank_rows: bool = False
+    """
+    Ignores rows if they are completely blank
+    """
+
     controls: List[Control] = attrs.field(factory=list)
     """
-    A list of controls which defines different aspects of reading data. 
+    A list of controls which defines different aspects of reading data.
     """
 
     # Describe
@@ -169,6 +174,7 @@ class Dialect(Metadata):
     def read_enumerated_content_stream(self, cell_stream):
         first_content_row = self.create_first_content_row()
         comment_filter = self.create_comment_filter()
+        blank_filter = self.create_blank_filter()
 
         # Emit content stream
         for row_number, cells in enumerate(cell_stream, start=1):
@@ -176,6 +182,9 @@ class Dialect(Metadata):
                 continue
             if comment_filter:
                 if not comment_filter(row_number, cells):
+                    continue
+            if blank_filter:
+                if not blank_filter(cells):
                     continue
             yield (row_number, cells)
 
@@ -203,6 +212,19 @@ class Dialect(Metadata):
 
         return comment_filter
 
+    def create_blank_filter(self):
+        if not self.skip_blank_rows:
+            return None
+
+        # Create filter
+        def blank_filter(cells):
+            for cell in cells:
+                if cell not in [None, ""]:
+                    return True
+            return False
+
+        return blank_filter
+
     # Metadata
 
     metadata_type = "dialect"
@@ -219,6 +241,7 @@ class Dialect(Metadata):
             "headerCase": {"type": "boolean"},
             "commentChar": {"type": "string"},
             "commentRows": {"type": "array"},
+            "skipBlankRows": {"type": "boolean"},
         },
     }
 
