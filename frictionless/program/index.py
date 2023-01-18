@@ -65,7 +65,7 @@ def program_index(
             bold=True,
         )
     except Exception as exception:
-        if debug:
-            raise
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        if not debug:
+            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
+        raise
