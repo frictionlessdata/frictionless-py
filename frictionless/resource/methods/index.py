@@ -26,16 +26,16 @@ def index(
         assert not table_name, "Table name is not supported with metadata"
         database = Database(database_url)
         database.create_record(self, on_progress=on_progress)
+        return
 
-    # Indexer mode
-    else:
-        Indexer = SqlIndexer.select_Indexer(database_url, fast=fast)
-        indexer = Indexer(
-            resource=self,
-            database_url=database_url,
-            table_name=table_name,
-            qsv=qsv,
-            on_progress=on_progress,
-            use_fallback=use_fallback,
-        )
-        indexer.index()
+    # Normal mode
+    Indexer = SqlIndexer.select_Indexer(database_url, fast=fast)
+    indexer = Indexer(
+        resource=self,
+        database_url=database_url,
+        table_name=table_name,
+        qsv=qsv,
+        on_progress=on_progress,
+        use_fallback=use_fallback,
+    )
+    indexer.index()
