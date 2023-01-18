@@ -161,7 +161,6 @@ class Project:
                 # TODO: deduplicate
                 name=report.task.name,
                 # TODO: support package/etc types?
-                type=report.task.type,
                 updated=os.path.getmtime(resource.normpath),
                 resource=resource.to_descriptor(),
                 report=report.to_descriptor(),

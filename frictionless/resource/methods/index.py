@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Callable
-from ...project import Database
-from ... import formats
+from ...platform import platform
 
 if TYPE_CHECKING:
     from ..resource import Resource
@@ -19,6 +18,8 @@ def index(
     with_metadata: bool = False,
 ):
     """Index resource into a database"""
+    Database = platform.frictionless.Database
+    SqlIndexer = platform.frictionless_formats.sql.SqlIndexer
 
     # Metadata mode
     if with_metadata:
@@ -28,7 +29,7 @@ def index(
 
     # Indexer mode
     else:
-        Indexer = formats.sql.SqlIndexer.select_Indexer(database_url, fast=fast)
+        Indexer = SqlIndexer.select_Indexer(database_url, fast=fast)
         indexer = Indexer(
             resource=self,
             database_url=database_url,
