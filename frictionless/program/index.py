@@ -36,6 +36,10 @@ def program_index(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
+    # Prepare database url
+    if "://" not in database:
+        database = f"sqlite:///{database}"
+
     # Index resource
     try:
         timer = helpers.Timer()
@@ -52,16 +56,16 @@ def program_index(
                 table_name=table,
                 fast=fast,
                 qsv=qsv,
-                with_metadata=metadata,
-                use_fallback=fallback,
                 on_progress=on_progress,
+                use_fallback=fallback,
+                with_metadata=metadata,
             )
         typer.secho(
             f"{progress.tasks[status].description} in {timer.time} seconds",
             bold=True,
         )
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
-        raise
+        if debug:
+            raise
+        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
