@@ -65,15 +65,14 @@ class SqlIndexer:
 
     def index(self):
         self.prepare_resource()
-        with self.resource:
-            with self.connection.begin():
-                table = self.prepare_table()
-                try:
+        with self.resource, self.connection.begin():
+            table = self.prepare_table()
+            try:
+                self.index_resource(table)
+            except platform.sqlalchemy_exc.SQLAlchemyError:
+                if self.use_fallback:
+                    self.fast = False
                     self.index_resource(table)
-                except platform.sqlalchemy_exc.SQLAlchemyError:
-                    if self.use_fallback:
-                        self.fast = False
-                        self.index_resource(table)
 
     def prepare_resource(self):
         if self.qsv:
