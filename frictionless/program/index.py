@@ -46,15 +46,15 @@ def program_index(
             transient=True,
         ) as progress:
             status = progress.add_task(description="Indexing...", total=None)
-            callback = lambda msg: progress.update(status, description=f"Indexed {msg}")
+            on_progress = lambda m: progress.update(status, description=f"Indexed {m}")
             resource.index(
                 database_url=database,
                 table_name=table,
                 fast=fast,
                 qsv=qsv,
-                callback=callback,
-                fallback=fallback,
                 with_metadata=metadata,
+                use_fallback=fallback,
+                on_progress=on_progress,
             )
         typer.secho(
             f"{progress.tasks[status].description} in {timer.time} seconds",

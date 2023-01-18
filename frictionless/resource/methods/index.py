@@ -1,10 +1,11 @@
 from __future__ import annotations
 import attrs
 import subprocess
-from datetime import datetime
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional, Callable
+from ...exception import FrictionlessException
 from ...schema import Schema, Field
+from ...project import Database
 from ...platform import platform
 
 if TYPE_CHECKING:
@@ -14,7 +15,6 @@ if TYPE_CHECKING:
 
 BLOCK_SIZE = 8096
 BUFFER_SIZE = 1000
-INDEX_NAME = "_index"
 
 
 def index(
@@ -24,9 +24,9 @@ def index(
     table_name: Optional[str] = None,
     fast: bool = False,
     qsv: Optional[str] = None,
-    callback: Optional[Callable[[str], None]] = None,
-    fallback: bool = False,
     with_metadata: bool = False,
+    use_fallback: bool = False,
+    on_progress: Optional[Callable[[str], None]] = None,
 ):
     """Index resource into a database"""
 
@@ -35,13 +35,22 @@ def index(
         database_url = f"sqlite:///{database_url}"
     url = platform.sqlalchemy.engine.make_url(database_url)
 
+    # Metadata mode
+    if with_metadata:
+        assert not table_name, "Table name is not supported with metadata"
+        database = Database(database_url)
+        database.create_record(self, on_progress=on_progress)
+        return
+
     # Select indexer
-    Indexer = GeneralIndexer
-    if fast:
-        if url.drivername.startswith("sqlite"):
-            Indexer = FastSqliteIndexer
-        elif url.drivername.startswith("postgresql"):
-            Indexer = FastPostgresIndexer
+    if not fast:
+        Indexer = GeneralIndexer
+    elif url.drivername.startswith("sqlite"):
+        Indexer = FastSqliteIndexer
+    elif url.drivername.startswith("postgresql"):
+        Indexer = FastPostgresIndexer
+    else:
+        raise FrictionlessException("Fast mode is only supported for Postgres/Sqlite")
 
     # Run indexer
     indexer = Indexer(
@@ -49,9 +58,8 @@ def index(
         database_url=database_url,
         table_name=table_name,
         qsv=qsv,
-        callback=callback,
-        fallback=fallback,
-        with_metadata=with_metadata,
+        use_fallback=use_fallback,
+        on_progress=on_progress,
     )
     indexer.index()
 
@@ -61,18 +69,12 @@ def index(
 
 @attrs.define(kw_only=True)
 class Indexer:
-
-    # State
-
     resource: Resource
     database_url: str
     table_name: Optional[str] = None
     qsv: Optional[str] = None
-    callback: Optional[Callable[[str], None]] = None
-    fallback: bool = False
-    with_metadata: bool = False
-
-    # Props
+    use_fallback: bool = False
+    on_progress: Optional[Callable[[str], None]] = None
 
     @cached_property
     def mapper(self):
@@ -96,8 +98,8 @@ class Indexer:
     # Progress
 
     def report_progress(self, message: str):
-        if self.callback:
-            self.callback(message)
+        if self.on_progress:
+            self.on_progress(message)
 
     # Index
 
@@ -105,14 +107,13 @@ class Indexer:
         self.prepare_resource()
         with self.resource:
             with self.connection.begin():
-                index = self.prepare_index()
-                table = self.prepare_table(index=index)
+                table = self.prepare_table()
                 try:
-                    self.index_resource(table, index=index)
+                    self.index_resource(table)
                 except platform.sqlalchemy_exc.SQLAlchemyError:
-                    if self.fallback:
+                    if self.use_fallback:
                         self.fast = False
-                        self.index_resource(table, index=index)
+                        self.index_resource(table)
 
     def prepare_resource(self):
         if self.qsv:
@@ -145,50 +146,10 @@ class Indexer:
                         schema.add_field(Field.from_descriptor(descriptor))
                 self.resource.schema = schema
 
-    def prepare_index(self):
-        if self.with_metadata:
-            sa = platform.sqlalchemy
-            index = self.metadata.tables.get(INDEX_NAME)
-            if index is None:
-                index = sa.Table(
-                    INDEX_NAME,
-                    self.metadata,
-                    sa.Column("path", sa.Text, primary_key=True),
-                    sa.Column("table_name", sa.Text, unique=True),
-                    sa.Column("updated", sa.DateTime),
-                    sa.Column("resource", sa.Text),
-                    sa.Column("report", sa.Text),
-                )
-                index.create(self.connection)
-            return index
-
-    def prepare_table(self, *, index: Optional[Table] = None):
-        table_name = self.table_name
-
-        # Sync table name with index (retrieve or ensure dedup)
-        if index is not None:
-            assert not table_name, '"table_name" is not supported with metadata'
-            assert self.resource.path, '"resource.path" is required with metadata'
-            found = False
-            table_names = []
-            template = f"{table_name}%s"
-            table_name = self.resource.name
-            query = index.select().with_only_columns([index.c.path, index.c.table_name])
-            records = self.connection.execute(query)
-            for record in records:
-                table_names.append(record.table_name)
-                if record.path == self.resource.path:
-                    table_name = record.table_name
-                    found = True
-            if not found:
-                suffix = 1
-                while table_name in table_names:
-                    table_name = template % suffix
-                    suffix += 1
+    def prepare_table(self):
 
         # Remove existing table
-        assert table_name, '"table_name" is requried'
-        existing_table = self.metadata.tables.get(table_name)
+        existing_table = self.metadata.tables.get(self.table_name)
         if existing_table is not None:
             existing_table.drop(self.connection)
             self.metadata.remove(existing_table)
@@ -196,7 +157,7 @@ class Indexer:
         # Create new table
         table = self.mapper.write_schema(
             self.resource.schema,
-            table_name=table_name,  # type: ignore
+            table_name=self.table_name,  # type: ignore
             with_row_number=index is not None,
         )
         table.to_metadata(self.metadata)
@@ -204,7 +165,7 @@ class Indexer:
 
         return table
 
-    def index_resource(self, table: Table, *, index: Optional[Table] = None):
+    def index_resource(self, table: Table):
         raise NotImplementedError()
 
 
@@ -212,11 +173,9 @@ class GeneralIndexer(Indexer):
 
     # Index
 
-    def index_resource(self, table: Table, *, index: Optional[Table] = None):
+    def index_resource(self, table: Table):
         buffer = []
-
-        # Write row
-        def callback(row):
+        for row in self.resource.row_stream:
             cells = self.mapper.write_row(row)
             if index is not None:
                 cells.insert(0, row.row_number)
@@ -225,32 +184,15 @@ class GeneralIndexer(Indexer):
                 self.connection.execute(table.insert().values(buffer))
                 buffer.clear()
             self.report_progress(f"{self.resource.stats.rows} rows")
-
-        # Validate/iterate
-        report = self.resource.validate(callback=callback)
         if len(buffer):
             self.connection.execute(table.insert().values(buffer))
-
-        # Register resource
-        if index is not None:
-            self.connection.execute(index.delete(index.c.table_name == table.name))
-            self.connection.execute(
-                index.insert().values(
-                    path=self.resource.path,
-                    table_name=table.name,
-                    updated=datetime.now(),
-                    resource=self.resource.to_json(),
-                    report=report.to_json(),
-                )
-            )
 
 
 class FastSqliteIndexer(Indexer):
 
     # Index
 
-    def index_resource(self, table: Table, *, index: Optional[Table] = None):
-        assert not index, "Metadata indexing is not supported in fast mode"
+    def index_resource(self, table: Table):
         # --csv and --skip options for .import are available from sqlite3@3.32
         # https://github.com/simonw/sqlite-utils/issues/297#issuecomment-880256058
         url = platform.sqlalchemy.engine.make_url(self.database_url)
@@ -269,8 +211,7 @@ class FastPostgresIndexer(Indexer):
 
     # Index
 
-    def index_resource(self, table: Table, *, index: Optional[Table] = None):
-        assert not index, "Metadata indexing is not supported in fast mode"
+    def index_resource(self, table: Table):
         with platform.psycopg.connect(self.database_url) as connection:
             with connection.cursor() as cursor:
                 query = 'COPY "%s" FROM STDIN CSV HEADER' % table.name

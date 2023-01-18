@@ -6,7 +6,6 @@ import attrs
 @attrs.define(kw_only=True)
 class Record:
     name: str
-    type: str
     path: str
     updated: float
     resource: dict
