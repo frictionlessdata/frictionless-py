@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ..project import Project
 from ..router import router
 
 
@@ -16,9 +15,8 @@ class ProjectConnectProps(BaseModel):
 
 @router.post("/project/connect")
 def server_project_connect(request: Request, props: ProjectConnectProps):
-    config = request.app.config
     try:
-        project = Project(config, session=props.session)
+        project = request.app.get_project(session=props.session)
     except Exception:
-        project = Project(config)
+        project = request.app.get_project()
     return dict(session=project.session)

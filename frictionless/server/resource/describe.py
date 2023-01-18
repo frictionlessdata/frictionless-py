@@ -5,7 +5,6 @@ from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
 from ...detector import Detector
 from ...resource import Resource
-from ..project import Project
 from ..router import router
 
 
@@ -17,8 +16,7 @@ class ResourceDescribeProps(BaseModel):
 
 @router.post("/resource/describe")
 def server_resource_describe(request: Request, props: ResourceDescribeProps):
-    config = request.app.config
-    project = Project(config, session=props.session)
+    project = request.app.get_project(props.session)
     try:
         detector = Detector.from_descriptor(props.detector) if props.detector else None
         resource = Resource.from_descriptor(

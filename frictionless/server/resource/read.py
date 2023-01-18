@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..project import Project
 from ..router import router
 
 
@@ -16,8 +15,7 @@ class ProjectReadProps(BaseModel):
 
 @router.post("/resource/read-bytes")
 def server_resource_read_bytes(request: Request, props: ProjectReadProps):
-    config = request.app.config
-    project = Project(config, session=props.session)
+    project = request.app.get_project(props.session)
     try:
         resource = Resource.from_descriptor(props.resource, basepath=project.basepath)
     except FrictionlessException as exception:
