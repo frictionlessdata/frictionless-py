@@ -102,6 +102,11 @@ def ensure_open(thing):
             thing.close()
 
 
+def read_file(path, mode="r"):
+    with open(path, mode) as file:
+        return file.read()
+
+
 def copy_merge(source, patch={}, **kwargs):
     source = (source or {}).copy()
     source.update(patch)

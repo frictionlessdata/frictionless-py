@@ -872,6 +872,7 @@ class Resource(Metadata):
 
     # Read
 
+    # TODO: open as a file?
     def read_bytes(self, *, size: Optional[int] = None) -> bytes:
         """Read bytes into memory
 
