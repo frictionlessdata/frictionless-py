@@ -561,7 +561,7 @@ def test_validate_resource_errors_with_fields_993():
     ]
 
 
-def test_program_validate_custom_check_1361():
+def test_program_validate_custom_check_with_schema_sync_1361():
     class CustomCheck(Check):
         code = "custom_check1"
 
@@ -578,7 +578,8 @@ def test_program_validate_custom_check_1361():
                     row, note="custom_check1_error", field_name="AA"
                 )
 
-    resource = Resource("data/table.csv")
+    detector = Detector(schema_sync=True)
+    resource = Resource("data/table.csv", detector=detector)
     report = resource.validate(checks=[CustomCheck()])
     assert report.flatten(["code", "note"]) == [
         [

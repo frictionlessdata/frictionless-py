@@ -1201,7 +1201,7 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     ]
 
 
-def test_program_validate_custom_check_1361():
+def test_program_validate_custom_check_with_schema_sync_1361():
     class CustomCheck(Check):
         code = "custom_check1"
 
@@ -1218,7 +1218,8 @@ def test_program_validate_custom_check_1361():
                     row, note="custom_check1_error", field_name="AA"
                 )
 
-    report = validate("data/table.csv", checks=[CustomCheck()])
+    detector = Detector(schema_sync=True)
+    report = validate("data/table.csv", checks=[CustomCheck()], detector=detector)
     assert report.flatten(["code", "note"]) == [
         [
             "check-error",
