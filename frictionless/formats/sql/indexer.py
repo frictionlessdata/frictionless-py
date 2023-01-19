@@ -146,12 +146,11 @@ class FastSqliteIndexer(SqlIndexer):
     # Index
 
     def index_resource(self, table: Table):
-        # --csv and --skip options for .import are available from sqlite3@3.32
-        # https://github.com/simonw/sqlite-utils/issues/297#issuecomment-880256058
+        PIPE = subprocess.PIPE
         url = platform.sqlalchemy.engine.make_url(self.database_url)
-        sql_command = f".import '|cat -' {table.name}"
+        sql_command = f".import '|cat -' \"{table.name}\""
         command = ["sqlite3", "-csv", url.database, sql_command]
-        process = subprocess.Popen(command, stdin=subprocess.PIPE)
+        process = subprocess.Popen(command, stdin=PIPE, stdout=PIPE)
         for line_number, line in enumerate(self.resource.byte_stream, start=1):
             if line_number > 1:
                 process.stdin.write(line)  # type: ignore

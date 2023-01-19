@@ -47,6 +47,8 @@ def program_index(
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
+            redirect_stdout=not debug,
+            redirect_stderr=not debug,
             transient=True,
         ) as progress:
             status = progress.add_task(description="Indexing...", total=None)
