@@ -18,24 +18,23 @@ def index(
     with_metadata: bool = False,
 ):
     """Index resource into a database"""
-    Database = platform.frictionless.Database
-    SqlIndexer = platform.frictionless_formats.sql.SqlIndexer
 
     # Metadata mode
     if with_metadata:
-        assert not table_name, "Table name is not supported with metadata"
-        database = Database(database_url)
+        assert not table_name, "Table name is prohibited in metadata mode"
+        database = platform.frictionless.Database(database_url)
         database.create_record(self, on_progress=on_progress)
-        return
 
     # Normal mode
-    Indexer = SqlIndexer.select_Indexer(database_url, fast=fast)
-    indexer = Indexer(
-        resource=self,
-        database_url=database_url,
-        table_name=table_name,
-        qsv=qsv,
-        on_progress=on_progress,
-        use_fallback=use_fallback,
-    )
-    indexer.index()
+    else:
+        assert table_name, "Table name is required in normal mode"
+        indexer = platform.frictionless_formats.sql.SqlIndexer(
+            resource=self,
+            database_url=database_url,
+            table_name=table_name,
+            qsv=qsv,
+            fast=fast,
+            on_progress=on_progress,
+            use_fallback=use_fallback,
+        )
+        indexer.index()

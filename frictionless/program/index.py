@@ -58,9 +58,9 @@ def program_index(
                 table_name=table,
                 fast=fast,
                 qsv=qsv,
-                on_progress=on_progress,
                 use_fallback=fallback,
                 with_metadata=metadata,
+                on_progress=on_progress,
             )
         typer.secho(
             f"{progress.tasks[status].description} in {timer.time} seconds",

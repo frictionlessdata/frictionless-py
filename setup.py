@@ -36,6 +36,7 @@ TESTS_REQUIRE = [
     "livemark",
     "pytest-cov",
     "pytest-vcr",
+    "pytest-mock",
     "pytest-only",
     "oauth2client",
     "requests-mock",
