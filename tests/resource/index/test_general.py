@@ -2,8 +2,12 @@ import pytest
 from pytest_lazyfixture import lazy_fixture
 from frictionless import Resource, Database, platform, formats
 
-database_urls = [lazy_fixture("sqlite_url"), lazy_fixture("postgresql_url")]
 control = formats.sql.SqlControl(table="table")
+database_urls = [lazy_fixture("sqlite_url"), lazy_fixture("postgresql_url")]
+pytestmark = pytest.mark.skipif(
+    platform.type == "darwin" or platform.type == "windows",
+    reason="Not supported tests in MacOS and Windows",
+)
 
 
 # General
@@ -23,7 +27,6 @@ def test_resource_index_sqlite(database_url):
 
 
 @pytest.mark.parametrize("database_url", database_urls)
-@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_resource_index_sqlite_fast(database_url):
     resource = Resource("data/table.csv")
     resource.index(database_url, table_name=control.table, fast=True)
@@ -37,7 +40,6 @@ def test_resource_index_sqlite_fast(database_url):
 
 
 @pytest.mark.parametrize("database_url", database_urls)
-@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     resource = Resource("data/table.csv")
     resource.infer()
