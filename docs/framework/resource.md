@@ -153,8 +153,8 @@ Indexing resource in Frictionless terms means loading a data table into a databa
 This mode is supported for any database that is supported by `sqlalchemy`. Under the hood, Frictionless will infer Table Schema and populate the data table as it normally reads data. It means that type errors will be replaced by `null` values and in-general it guarantees to finish successfully for any data even very invalid.
 
 ```bash script tabs=CLI
-frictionless index table.csv --database sqlite:///tmp/project.db --table table
-frictionless extract sqlite:///tmp/project.db --table table --json
+frictionless index table.csv --database sqlite:///index/project.db --table table
+frictionless extract sqlite:///index/project.db --table table --json
 ```
 
 ```python script tabs=Python
@@ -162,8 +162,8 @@ import sqlite3
 from frictionless import Resource, formats
 
 resource = Resource('table.csv')
-resource.index('sqlite:///tmp/project.db', table_name='table')
-print(Resource('sqlite:///tmp/project.db', control=formats.sql.SqlControl(table='table')).extract())
+resource.index('sqlite:///index/project.db', table_name='table')
+print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='table')).extract())
 ```
 
 ### Metadata Mode
@@ -171,9 +171,9 @@ print(Resource('sqlite:///tmp/project.db', control=formats.sql.SqlControl(table=
 In metadata mode, the indexing process will be the same but it also stores the metadata in the database. This mode is highly-experimental and, currently, in-general not intended for using outside of Frictionless Software. Let's explore on the example:
 
 ```bash script tabs=CLI
-frictionless index table.csv --database sqlite:///tmp/project.db --metadata
-frictionless extract sqlite:///tmp/project.db --table table --json
-frictionless extract sqlite:///tmp/project.db --table _resources --json
+frictionless index table.csv --database sqlite:///index/project.db --metadata
+frictionless extract sqlite:///index/project.db --table table --json
+frictionless extract sqlite:///index/project.db --table _resources --json
 ```
 
 ```python script tabs=Python
@@ -181,9 +181,9 @@ import sqlite3
 from frictionless import Resource, formats
 
 resource = Resource('table.csv')
-resource.index('sqlite:///tmp/project.db', with_metadata=True)
-print(Resource('sqlite:///tmp/project.db', control=formats.sql.SqlControl(table='table')).extract())
-print(Resource('sqlite:///tmp/project.db', control=formats.sql.SqlControl(table='_resources')).extract())
+resource.index('sqlite:///index/project.db', with_metadata=True)
+print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='table')).extract())
+print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='_resources')).extract())
 ```
 
 ### Fast Mode
@@ -195,8 +195,8 @@ For the SQLite in fast mode, it requires `sqlite3@3.34+` command to be available
 Fast mode is supported for SQLite and Postgresql databases. It will infer Table Schema using a data sample and index data using `COPY` in Potgresql and `.import` in SQLite. For big data files this mode will be 10-30x faster than normal indexing but the speed comes with the price -- if there is invalid data the indexing will fail.
 
 ```bash script tabs=CLI
-frictionless index table.csv --database sqlite:///tmp/project.db --table table --fast
-frictionless extract sqlite:///tmp/project.db --table table --json
+frictionless index table.csv --database sqlite:///index/project.db --table table --fast
+frictionless extract sqlite:///index/project.db --table table --json
 ```
 
 ```python script tabs=Python
@@ -204,8 +204,8 @@ import sqlite3
 from frictionless import Resource, formats
 
 resource = Resource('table.csv')
-resource.index('sqlite:///tmp/project.db', table_name='table', fast=True)
-print(Resource('sqlite:///tmp/project.db', control=formats.sql.SqlControl(table='table')).extract())
+resource.index('sqlite:///index/project.db', table_name='table', fast=True)
+print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='table')).extract())
 ```
 
 #### Solution 1: Fallback
@@ -213,7 +213,7 @@ print(Resource('sqlite:///tmp/project.db', control=formats.sql.SqlControl(table=
 To ensure that the data will be successfully indexed it's possible to use `fallback` option. If the fast indexing fails Frictionless will start over in normal mode and finish the process successfully.
 
 ```bash tabs=CLI
-frictionless index table.csv --database sqlite:///tmp/project.db --table table --fast --fallback
+frictionless index table.csv --database sqlite:///index/project.db --table table --fast --fallback
 ```
 
 ```python tabs=Python
@@ -221,7 +221,7 @@ import sqlite3
 from frictionless import Resource, formats
 
 resource = Resource('table.csv')
-resource.index('sqlite:///tmp/project.db', table_name='table', fast=True, fallback=True)
+resource.index('sqlite:///index/project.db', table_name='table', fast=True, fallback=True)
 ```
 
 #### Solution 2: QSV
@@ -229,7 +229,7 @@ resource.index('sqlite:///tmp/project.db', table_name='table', fast=True, fallba
 Another option is to provide a path to [QSV](https://github.com/jqnatividad/qsv) binary. In this case, initial schema inferring will be done based on the whole data file and will guarantee that the table is valid type-wise:
 
 ```bash tabs=CLI
-frictionless index table.csv --database sqlite:///tmp/project.db --table table --fast --qsv qsv_path
+frictionless index table.csv --database sqlite:///index/project.db --table table --fast --qsv qsv_path
 ```
 
 ```python tabs=Python
@@ -237,7 +237,7 @@ import sqlite3
 from frictionless import Resource, formats
 
 resource = Resource('table.csv')
-resource.index('sqlite:///tmp/project.db', table_name='table', fast=True, qsv_path='qsv_path')
+resource.index('sqlite:///index/project.db', table_name='table', fast=True, qsv_path='qsv_path')
 ```
 
 ## Scheme
