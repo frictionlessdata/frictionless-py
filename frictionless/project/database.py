@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 from typing import TYPE_CHECKING
 from datetime import datetime
 from functools import cached_property
@@ -58,15 +59,17 @@ class Database:
     # Records
 
     def list_records(self):
-        return self.connection.execute(
-            self.index.select().with_only_columns(
-                [
-                    self.index.c.path,
-                    self.index.c.table_name,
-                    self.index.c.updated,
-                ]
-            )
-        ).mappings()
+        return list(
+            self.connection.execute(
+                self.index.select().with_only_columns(
+                    [
+                        self.index.c.path,
+                        self.index.c.table_name,
+                        self.index.c.updated,
+                    ]
+                )
+            ).mappings()
+        )
 
     def create_record(self, resource: Resource, *, on_progress=None):
         with resource, self.connection.begin():
@@ -107,7 +110,7 @@ class Database:
             table.create(self.connection)
 
             # Write row
-            def callback(row):
+            def on_row(row):
                 cells = self.mapper.write_row(row)
                 cells.insert(0, row.row_number)
                 buffer.append(cells)
@@ -118,7 +121,7 @@ class Database:
                     on_progress(f"{resource.stats.rows} rows")
 
             # Validate/iterate
-            report = resource.validate(callback=callback)
+            report = resource.validate(on_row=on_row)
             if len(buffer):
                 self.connection.execute(table.insert().values(buffer))
 
@@ -137,9 +140,13 @@ class Database:
             ).mappings()
 
     def read_record(self, path: str):
-        return self.connection.execute(
-            self.index.select(self.index.c.path == path)
-        ).scalar()
+        query = self.index.select(self.index.c.path == path)
+        record = self.connection.execute(query).mappings().first()
+        if record:
+            record = dict(record)
+            record["resource"] = json.loads(record["resource"])
+            record["report"] = json.loads(record["report"])
+            return record
 
     # TODO: remove table
     def delete_record(self, path: str):

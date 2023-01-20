@@ -18,7 +18,7 @@ def validate(
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
-    callback: Optional[ICallbackFunction] = None,
+    on_row: Optional[ICallbackFunction] = None,
 ):
     """Validate resource
 
@@ -95,15 +95,15 @@ def validate(
                 except StopIteration:
                     break
 
-                # Callback row
-                if callback:
-                    callback(row)
-
                 # Validate row
                 for check in checks:
                     for error in check.validate_row(row):
                         if checklist.match(error):
                             errors.append(error)
+
+                # Callback row
+                if on_row:
+                    on_row(row)
 
                 # Limit rows
                 if limit_rows:

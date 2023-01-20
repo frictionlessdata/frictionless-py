@@ -42,6 +42,7 @@ TESTS_REQUIRE = [
     "requests-mock",
     "python-dotenv",
     "pytest-timeout",
+    "pytest-lazy-fixture",
 ]
 EXTRAS_REQUIRE = {
     "api": ["fastapi>=0.78", "uvicorn>=0.17", "pydantic>=1.9", "python-multipart>=0.0"],
