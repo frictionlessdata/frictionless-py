@@ -83,5 +83,5 @@ def test_resource_index_sqlite_with_metadata(database_url):
     assert record is not None
     assert record["path"] == "data/table.csv"
     assert record["table_name"] == "table"
-    assert record["resource"]["path"] == "data/table.csv"
-    assert record["report"]["valid"] == True
+    assert record["resource"]["path"] == "data/table.csv"  # type: ignore
+    assert record["report"]["valid"] == True  # type: ignore
