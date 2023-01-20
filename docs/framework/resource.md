@@ -138,7 +138,7 @@ with Resource('country-3.csv') as resource:
       print(row)
 ```
 
-## Indexing Resource
+## Indexing Data
 
 ```markdown remark type=warning
 This functionality has been published in `frictionless@5.5` as a feature preview and request for comments. The implementation is raw and doesn't cover many edge cases.
