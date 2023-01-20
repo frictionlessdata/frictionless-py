@@ -57,7 +57,7 @@ def program_index(
                 database_url=database,
                 table_name=table,
                 fast=fast,
-                qsv=qsv,
+                qsv_path=qsv,
                 use_fallback=fallback,
                 with_metadata=metadata,
                 on_progress=on_progress,

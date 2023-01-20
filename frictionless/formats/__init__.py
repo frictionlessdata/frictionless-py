@@ -10,6 +10,7 @@ from .markdown import *
 from .ods import *
 from .pandas import *
 from .parquet import *
+from .qsv import *
 from .spss import *
 from .sql import *
 from .yaml import *

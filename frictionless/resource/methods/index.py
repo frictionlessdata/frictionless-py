@@ -12,7 +12,7 @@ def index(
     *,
     table_name: Optional[str] = None,
     fast: bool = False,
-    qsv: Optional[str] = None,
+    qsv_path: Optional[str] = None,
     on_progress: Optional[Callable[[str], None]] = None,
     use_fallback: bool = False,
     with_metadata: bool = False,
@@ -32,8 +32,8 @@ def index(
             resource=self,
             database_url=database_url,
             table_name=table_name,
-            qsv=qsv,
             fast=fast,
+            qsv_path=qsv_path,
             on_progress=on_progress,
             use_fallback=use_fallback,
         )
