@@ -69,16 +69,16 @@ def test_resource_index_sqlite_on_progress(database_url, mocker):
 def test_resource_index_sqlite_with_metadata(database_url):
     resource = Resource("data/table.csv")
     resource.index(database_url, with_metadata=True)
+    database = Database(database_url)
     # Table
-    # TODO: rebase on database.query_table?
-    assert Resource(database_url, control=control).extract() == [
-        {"_number": 2, "_valid": True, "id": 1, "name": "english"},
-        {"_number": 3, "_valid": True, "id": 2, "name": "中国人"},
+    data = database.query('SELECT * from "table"')
+    assert data == [
+        {"_row_number": 2, "_row_valid": True, "id": 1, "name": "english"},
+        {"_row_number": 3, "_row_valid": True, "id": 2, "name": "中国人"},
     ]
     # Index
-    database = Database(database_url)
-    records = database.list_records()
-    record = database.read_record(resource.normpath)
+    records = database.list_resources()
+    record = database.read_resource(resource.normpath)
     assert len(records) == 1
     assert record is not None
     assert record["path"] == "data/table.csv"

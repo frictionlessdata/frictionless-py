@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-TABLE_NAME_INDEX = "_index"
+TABLE_NAME_RESOURCES = "_resources"
 BUFFER_SIZE = 1000
 
 
@@ -42,10 +42,10 @@ class Database:
     @cached_property
     def index(self) -> Table:
         sa = platform.sqlalchemy
-        index = self.metadata.tables.get(TABLE_NAME_INDEX)
+        index = self.metadata.tables.get(TABLE_NAME_RESOURCES)
         if index is None:
             index = sa.Table(
-                TABLE_NAME_INDEX,
+                TABLE_NAME_RESOURCES,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
                 sa.Column("table_name", sa.Text, unique=True),
@@ -56,9 +56,16 @@ class Database:
             index.create(self.connection)
         return index
 
-    # Records
+    # Query
 
-    def list_records(self):
+    def query(self, query: str):
+        sa = platform.sqlalchemy
+        result = self.connection.execute(sa.text(query)).mappings()
+        return list(result)
+
+    # Resources
+
+    def list_resources(self):
         return list(
             self.connection.execute(
                 self.index.select().with_only_columns(
@@ -71,7 +78,7 @@ class Database:
             ).mappings()
         )
 
-    def create_record(self, resource: Resource, *, on_progress=None):
+    def create_resource(self, resource: Resource, *, on_progress=None):
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -82,7 +89,7 @@ class Database:
             table_names = []
             table_name = resource.name
             template = f"{table_name}%s"
-            records = self.list_records()
+            records = self.list_resources()
             for record in records:
                 table_names.append(record.table_name)
                 if record.path == resource.path:
@@ -139,7 +146,7 @@ class Database:
                 )
             ).mappings()
 
-    def read_record(self, path: str):
+    def read_resource(self, path: str):
         query = self.index.select(self.index.c.path == path)
         record = self.connection.execute(query).mappings().first()
         if record:
@@ -149,6 +156,6 @@ class Database:
             return record
 
     # TODO: remove table
-    def delete_record(self, path: str):
+    def delete_resource(self, path: str):
         with self.connection.begin():
             self.connection.execute(self.index.delete(self.index.c.path == path))
