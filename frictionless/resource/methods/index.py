@@ -1,34 +1,40 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Callable
 from ...platform import platform
 
 if TYPE_CHECKING:
     from ..resource import Resource
-    from ...report import Report
 
 
-def index(self: Resource, database_url: str, *, table_name: str) -> Report:
+def index(
+    self: Resource,
+    database_url: str,
+    *,
+    table_name: Optional[str] = None,
+    fast: bool = False,
+    qsv_path: Optional[str] = None,
+    on_progress: Optional[Callable[[str], None]] = None,
+    use_fallback: bool = False,
+    with_metadata: bool = False,
+):
     """Index resource into a database"""
-    with self, platform.psycopg.connect(database_url) as connection:
-        engine = platform.sqlalchemy.create_engine(database_url)
-        mapper = platform.frictionless_formats.sql.SqlMapper(engine)
-        sql = platform.sqlalchemy_schema
 
-        # Write metadata
-        table = mapper.write_schema(self.schema, table_name=table_name)
-        with connection.cursor() as cursor:
-            cursor.execute(str(sql.DropTable(table, bind=engine, if_exists=True)))  # type: ignore
-            cursor.execute(str(sql.CreateTable(table, bind=engine)))  # type: ignore
+    # Metadata mode
+    if with_metadata:
+        assert not table_name, "Table name is prohibited in metadata mode"
+        database = platform.frictionless.Database(database_url)
+        database.create_resource(self, on_progress=on_progress)
 
-        # Write data
-        with connection.cursor() as cursor:
-            with cursor.copy('COPY "%s" FROM STDIN' % table_name) as copy:  # type: ignore
-
-                # Write row
-                def callback(row):
-                    cells = mapper.write_row(row)
-                    copy.write_row(cells)
-
-                # Return report
-                report = self.validate(callback=callback)
-                return report
+    # Normal mode
+    else:
+        assert table_name, "Table name is required in normal mode"
+        indexer = platform.frictionless_formats.sql.SqlIndexer(
+            resource=self,
+            database_url=database_url,
+            table_name=table_name,
+            fast=fast,
+            qsv_path=qsv_path,
+            on_progress=on_progress,
+            use_fallback=use_fallback,
+        )
+        indexer.index()

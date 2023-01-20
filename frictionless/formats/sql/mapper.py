@@ -13,9 +13,14 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
+COLUMN_NAME_NUMBER = "_row_number"
+COLUMN_NAME_VALID = "_row_valid"
+
+
 class SqlMapper(Mapper):
     """Metadata mapper Frictionless from/to SQL"""
 
+    # TODO: accept only url/dialect_name not engine (but we need access to dialect quote)?
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -104,7 +109,9 @@ class SqlMapper(Mapper):
 
     # Write
 
-    def write_schema(self, schema: Schema, *, table_name: str) -> Table:
+    def write_schema(
+        self, schema: Schema, *, table_name: str, with_metadata: bool = False
+    ) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
 
         # Prepare
@@ -115,6 +122,9 @@ class SqlMapper(Mapper):
         # Fields
         Check = sa.CheckConstraint
         quote = self.engine.dialect.identifier_preparer.quote  # type: ignore
+        if with_metadata:
+            columns.append(sa.Column(COLUMN_NAME_NUMBER, sa.Integer, primary_key=True))
+            columns.append(sa.Column(COLUMN_NAME_VALID, sa.Boolean))
         for field in schema.fields:
             checks = []
             nullable = not field.required
@@ -158,8 +168,10 @@ class SqlMapper(Mapper):
 
         # Primary key
         if schema.primary_key:
-            constraint = sa.PrimaryKeyConstraint(*schema.primary_key)
-            constraints.append(constraint)
+            Class = sa.UniqueConstraint if with_metadata else sa.PrimaryKeyConstraint
+            if not with_metadata:
+                constraint = Class(*schema.primary_key)
+                constraints.append(constraint)
 
         # Foreign keys
         for fk in schema.foreign_keys:
@@ -172,7 +184,7 @@ class SqlMapper(Mapper):
             constraints.append(constraint)
 
         # Table
-        table = sa.Table(table_name, sa.MetaData(self.engine), *(columns + constraints))
+        table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
         return table
 
     def write_field(self, field: Field) -> Type[TypeEngine]:

@@ -36,11 +36,13 @@ TESTS_REQUIRE = [
     "livemark",
     "pytest-cov",
     "pytest-vcr",
+    "pytest-mock",
     "pytest-only",
     "oauth2client",
     "requests-mock",
-    "python-dotenv",
+    "pytest-dotenv",
     "pytest-timeout",
+    "pytest-lazy-fixture",
 ]
 EXTRAS_REQUIRE = {
     "api": ["fastapi>=0.78", "uvicorn>=0.17", "pydantic>=1.9", "python-multipart>=0.0"],

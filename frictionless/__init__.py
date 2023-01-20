@@ -10,6 +10,7 @@ from .metadata import Metadata
 from .package import Package
 from .platform import Platform, platform
 from .pipeline import Pipeline, Step
+from .project import Project, Database
 from .report import Report, ReportTask
 from .resource import Resource
 from .schema import Schema, Field

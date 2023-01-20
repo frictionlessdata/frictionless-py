@@ -165,6 +165,7 @@ class Resource(Metadata):
             options["path" if isinstance(source, str) else "data"] = source
             return Resource(**options)
 
+    # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
         if self.closed:
@@ -872,6 +873,7 @@ class Resource(Metadata):
 
     # Read
 
+    # TODO: open as a file?
     def read_bytes(self, *, size: Optional[int] = None) -> bytes:
         """Read bytes into memory
 

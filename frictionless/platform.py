@@ -352,6 +352,13 @@ class Platform:
 
     @cached_property
     @extras(name="sql")
+    def sqlalchemy_exc(self):
+        import sqlalchemy.exc
+
+        return sqlalchemy.exc
+
+    @cached_property
+    @extras(name="sql")
     def sqlalchemy_schema(self):
         import sqlalchemy.schema
 

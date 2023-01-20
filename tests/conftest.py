@@ -3,9 +3,6 @@ import pytest
 import sqlalchemy as sa
 from frictionless import platform
 from pytest_cov.embed import cleanup_on_sigterm
-from dotenv import load_dotenv
-
-load_dotenv(".env")
 
 
 # TODO: stop using the Bugs section in the tests and split them among themed categories?

@@ -336,3 +336,28 @@ keep_delimiter = Option(
     default=False,
     help="Keep input delimiter",
 )
+
+database = Option(
+    default=None,
+    help="Database url",
+)
+
+fast = Option(
+    default=None,
+    help="Fast database indexing",
+)
+
+qsv = Option(
+    default=None,
+    help="QSV binary path",
+)
+
+metadata = Option(
+    default=False,
+    help="Add metadata while indexing",
+)
+
+fallback = Option(
+    default=False,
+    help="If fast indexing errored fallback to the normal mode",
+)

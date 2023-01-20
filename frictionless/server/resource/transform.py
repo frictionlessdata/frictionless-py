@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException
 from ...exception import FrictionlessException
 from ...resource import Resource
-from ..project import Project
 from ..router import router
 from ... import formats
 
@@ -20,8 +19,7 @@ class ResourceTransformProps(BaseModel):
 
 @router.post("/resource/transform")
 def server_resource_transform(request: Request, props: ResourceTransformProps):
-    config = request.app.config
-    project = Project(config, session=props.session)
+    project = request.app.get_project(props.session)
     try:
         source = Resource.from_descriptor(props.resource, basepath=project.basepath)
     except FrictionlessException as exception:
