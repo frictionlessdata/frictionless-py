@@ -104,7 +104,7 @@ class Database:
             table = self.mapper.write_schema(
                 resource.schema,
                 table_name=table_name,  # type: ignore
-                with_row_number=True,
+                with_metadata=True,
             )
             table.to_metadata(self.metadata)
             table.create(self.connection)
@@ -112,7 +112,7 @@ class Database:
             # Write row
             def on_row(row):
                 cells = self.mapper.write_row(row)
-                cells.insert(0, row.row_number)
+                cells = [row.row_number, row.valid] + cells
                 buffer.append(cells)
                 if len(buffer) > BUFFER_SIZE:
                     self.connection.execute(table.insert().values(buffer))

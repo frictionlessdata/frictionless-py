@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 
 ROW_NUMBER_NAME = "_row_number"
+ROW_VALID_NAME = "_row_valid"
 
 
 class SqlMapper(Mapper):
@@ -109,7 +110,7 @@ class SqlMapper(Mapper):
     # Write
 
     def write_schema(
-        self, schema: Schema, *, table_name: str, with_row_number: bool = False
+        self, schema: Schema, *, table_name: str, with_metadata: bool = False
     ) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
 
@@ -121,8 +122,9 @@ class SqlMapper(Mapper):
         # Fields
         Check = sa.CheckConstraint
         quote = self.engine.dialect.identifier_preparer.quote  # type: ignore
-        if with_row_number:
+        if with_metadata:
             columns.append(sa.Column(ROW_NUMBER_NAME, sa.Integer, primary_key=True))
+            columns.append(sa.Column(ROW_VALID_NAME, sa.Boolean))
         for field in schema.fields:
             checks = []
             nullable = not field.required
@@ -166,8 +168,8 @@ class SqlMapper(Mapper):
 
         # Primary key
         if schema.primary_key:
-            Class = sa.UniqueConstraint if with_row_number else sa.PrimaryKeyConstraint
-            if not with_row_number:
+            Class = sa.UniqueConstraint if with_metadata else sa.PrimaryKeyConstraint
+            if not with_metadata:
                 constraint = Class(*schema.primary_key)
                 constraints.append(constraint)
 

@@ -71,8 +71,8 @@ def test_resource_index_sqlite_with_metadata(database_url):
     resource.index(database_url, with_metadata=True)
     # Table
     assert Resource(database_url, control=control).extract() == [
-        {"_row_number": 2, "id": 1, "name": "english"},
-        {"_row_number": 3, "id": 2, "name": "中国人"},
+        {"_row_number": 2, "_row_valid": True, "id": 1, "name": "english"},
+        {"_row_number": 3, "_row_valid": True, "id": 2, "name": "中国人"},
     ]
     # Index
     database = Database(database_url)
