@@ -94,3 +94,4 @@ coverage/
 .server/
 site/
 tmp/
+data/tmp/
