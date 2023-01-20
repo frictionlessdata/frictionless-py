@@ -40,7 +40,7 @@ TESTS_REQUIRE = [
     "pytest-only",
     "oauth2client",
     "requests-mock",
-    "python-dotenv",
+    "pytest-dotenv",
     "pytest-timeout",
     "pytest-lazy-fixture",
 ]
