@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.5
+
+- Implemented `program/resource.index` preview (#1395)
+
 ## v5.4
 
 - Support `dialect.skip_blank_rows` (#1387)
