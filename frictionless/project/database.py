@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-INDEX_NAME = "_index"
+TABLE_NAME_INDEX = "_index"
 BUFFER_SIZE = 1000
 
 
@@ -42,10 +42,10 @@ class Database:
     @cached_property
     def index(self) -> Table:
         sa = platform.sqlalchemy
-        index = self.metadata.tables.get(INDEX_NAME)
+        index = self.metadata.tables.get(TABLE_NAME_INDEX)
         if index is None:
             index = sa.Table(
-                INDEX_NAME,
+                TABLE_NAME_INDEX,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
                 sa.Column("table_name", sa.Text, unique=True),

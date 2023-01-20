@@ -70,9 +70,10 @@ def test_resource_index_sqlite_with_metadata(database_url):
     resource = Resource("data/table.csv")
     resource.index(database_url, with_metadata=True)
     # Table
+    # TODO: rebase on database.query_table?
     assert Resource(database_url, control=control).extract() == [
-        {"_row_number": 2, "_row_valid": True, "id": 1, "name": "english"},
-        {"_row_number": 3, "_row_valid": True, "id": 2, "name": "中国人"},
+        {"_number": 2, "_valid": True, "id": 1, "name": "english"},
+        {"_number": 3, "_valid": True, "id": 2, "name": "中国人"},
     ]
     # Index
     database = Database(database_url)
