@@ -178,7 +178,7 @@ class Project:
                     if os.path.isdir(self.public / path):
                         continue
                     record = self.create_resource(path)
-                    resource = Resource.from_descriptor(record.resource)
+                    resource = Resource.from_descriptor(record.resource)  # type: ignore
                     package.add_resource(resource)
                 except FrictionlessException as exception:
                     if "already exists" in exception.error.note:

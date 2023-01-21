@@ -3,8 +3,9 @@ from ..standards import IResource, IReport
 
 
 class IRecord(TypedDict):
-    name: str
     path: str
+    # TODO: use tableName
+    table_name: str
     updated: str
     resource: IResource
     report: IReport
