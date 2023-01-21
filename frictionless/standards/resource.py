@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TypedDict, List
+from typing import TypedDict, List, Literal, Union
 from typing_extensions import Required
 from .checklist import IChecklist
 from .pipeline import IPipeline
@@ -7,7 +7,7 @@ from .dialect import IDialect
 from .schema import ISchema
 
 
-class IResource(TypedDict, total=False):
+class IBaseResource(TypedDict, total=False):
     name: Required[str]
     title: str
     description: str
@@ -21,8 +21,16 @@ class IResource(TypedDict, total=False):
     extrapaths: List[str]
 
 
-class ITableResource(IResource, total=False):
+class IFileResource(IBaseResource, total=False):
+    type: Required[Literal["file"]]
+
+
+class ITableResource(IBaseResource, total=False):
+    type: Required[Literal["table"]]
     dialect: IDialect
     schema: Required[ISchema]
     checklist: IChecklist
     pipeline: IPipeline
+
+
+IResource = Union[IFileResource, ITableResource]

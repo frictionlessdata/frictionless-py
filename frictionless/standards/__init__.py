@@ -1,6 +1,7 @@
-from .checklist import IChecklist, ICheck
-from .dialect import IDialect, IControl
-from .pipeline import IPipeline, IStep
-from .resource import IResource, ITableResource
-from .schema import ISchema, IField
 from .standard import Standard
+from .checklist import *
+from .dialect import *
+from .package import *
+from .pipeline import *
+from .resource import *
+from .schema import *
