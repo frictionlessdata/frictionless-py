@@ -45,7 +45,7 @@ TESTS_REQUIRE = [
     "pytest-lazy-fixture",
 ]
 EXTRAS_REQUIRE = {
-    "api": ["fastapi>=0.78", "uvicorn>=0.17", "pydantic>=1.9", "python-multipart>=0.0"],
+    "api": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0"],
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
@@ -74,6 +74,7 @@ INSTALL_REQUIRES = [
     "isodate>=0.6",
     "rfc3986>=1.4",
     "chardet>=3.0",
+    "pydantic>=1.9",
     "requests>=2.10",
     "humanize>=4.2",
     "tabulate>=0.8.10",
