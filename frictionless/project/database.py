@@ -1,9 +1,10 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, cast
 from datetime import datetime
 from functools import cached_property
 from ..platform import platform
+from .record import IRecord
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -146,14 +147,18 @@ class Database:
                 )
             ).mappings()
 
-    def read_resource(self, path: str):
+    def read_resource(self, path: str) -> Optional[IRecord]:
         query = self.index.select(self.index.c.path == path)
         record = self.connection.execute(query).mappings().first()
         if record:
             record = dict(record)
             record["resource"] = json.loads(record["resource"])
             record["report"] = json.loads(record["report"])
-            return record
+            return cast(IRecord, record)
+
+    # TODO: implement
+    def update_resource(self, path: str):
+        pass
 
     # TODO: remove table
     def delete_resource(self, path: str):

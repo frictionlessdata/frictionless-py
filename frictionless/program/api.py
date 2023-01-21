@@ -17,7 +17,7 @@ def program_api(
     module = platform.frictionless_server
     config = module.Config.from_options(
         basepath=basepath,
-        root=root,
+        is_root=root,
         port=port,
         debug=debug,
     )

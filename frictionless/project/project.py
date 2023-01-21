@@ -3,20 +3,14 @@ import datetime
 import secrets
 import shutil
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional
 from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
-from .record import Record
+from .database import Database
 from .. import settings
 from .. import helpers
 from .. import portals
-
-
-# TODO: fix create/validate logic
-
-# TODO: move to db
-RECORDS: Dict[str, Record] = {}
 
 
 # TODO: handle method errors?
@@ -47,6 +41,7 @@ class Project:
         # Ensure project
         public = base / (session or "")
         private = public / ".frictionless"
+        database = private / "project.db"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
 
@@ -54,6 +49,7 @@ class Project:
         self.session = session
         self.public = public
         self.private = private
+        self.database = Database(f"sqlite:///{database}")
 
     @property
     def basepath(self):
@@ -152,24 +148,23 @@ class Project:
 
     # Records
 
-    def create_record(self, path: str):
-        if path not in RECORDS:
-            resource = Resource(path=path, basepath=self.basepath)
-            report = resource.validate()
-            RECORDS[path] = Record(
-                path=path,
-                # TODO: deduplicate
-                name=report.task.name,
-                # TODO: support package/etc types?
-                updated=os.path.getmtime(resource.normpath),
-                resource=resource.to_descriptor(),
-                report=report.to_descriptor(),
-            )
-        record = RECORDS[path]
+    def list_resources(self):
+        self.database.list_resources()
+
+    def create_resource(self, path: str):
+        path = str(self.public / path)
+        resource = Resource(path=path)
+        record = self.database.create_resource(resource)
         return record
 
-    def update_record(self, resource: Resource):
-        print(resource)
+    def read_resource(self, path: str):
+        return self.database.read_resource(path)
+
+    def update_resource(self, path: str):
+        self.database.update_resource(path)
+
+    def delete_resource(self, path: str):
+        self.database.delete_resource(path)
 
     # Packages
 
@@ -182,7 +177,7 @@ class Project:
                 try:
                     if os.path.isdir(self.public / path):
                         continue
-                    record = self.create_record(path)
+                    record = self.create_resource(path)
                     resource = Resource.from_descriptor(record.resource)
                     package.add_resource(resource)
                 except FrictionlessException as exception:

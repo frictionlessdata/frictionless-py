@@ -1,15 +1,10 @@
-import attrs
+from typing import TypedDict
+from ..standards import IResource, IReport
 
 
-# TODO: rebase on metadata class?
-# TODO: add partial
-@attrs.define(kw_only=True)
-class Record:
+class IRecord(TypedDict):
     name: str
     path: str
-    updated: float
-    resource: dict
-    report: dict
-
-    def to_descriptor(self):
-        return attrs.asdict(self)
+    updated: str
+    resource: IResource
+    report: IReport
