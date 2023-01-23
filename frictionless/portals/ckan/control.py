@@ -24,7 +24,7 @@ class CkanControl(Control):
 
     apikey: Optional[str] = None
     """
-    The access token to authenticate to the CKAN instance. It is required 
+    The access token to authenticate to the CKAN instance. It is required
     to write files to CKAN instance.
     """
 
@@ -77,12 +77,12 @@ class CkanControl(Control):
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},
             "group_id": {"type": "string"},
-            "organization_name": {"type": "string"},
+            "organizationName": {"type": "string"},
             "search": {"type": "object"},
-            "ignore_package_errors": {"type": "bool"},
-            "ignore_schema": {"type": "bool"},
-            "num_packages": {"type": "int"},
-            "results_offset": {"type": "int"},
-            "allow_update": {"type": "bool"},
+            "ignorePackageErrors": {"type": "boolean"},
+            "ignoreSchema": {"type": "boolean"},
+            "numPackages": {"type": "integer"},
+            "resultsOffset": {"type": "integer"},
+            "allowUpdate": {"type": "boolean"},
         },
     }
