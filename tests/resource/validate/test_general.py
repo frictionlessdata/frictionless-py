@@ -559,3 +559,31 @@ def test_validate_resource_errors_with_fields_993():
             'The data resource has an error: "fields" should be set as "resource.schema.fields" (not "resource.fields").',
         ]
     ]
+
+
+def test_program_validate_custom_check_with_schema_sync_1361():
+    class CustomCheck(Check):
+        code = "custom_check1"
+
+        def __init__(self, descriptor=None):
+            super().__init__(descriptor)
+
+        def validate_start(self):
+            if "AA" not in self.resource.schema.field_names:
+                yield errors.CheckError(note='custom_check1: Field "AA" not found')
+
+        def validate_row(self, row):
+            if row["BB"] + row["CC"] != row["AA"]:
+                yield errors.CellError.from_row(
+                    row, note="custom_check1_error", field_name="AA"
+                )
+
+    detector = Detector(schema_sync=True)
+    resource = Resource("data/table.csv", detector=detector)
+    report = resource.validate(checks=[CustomCheck()])
+    assert report.flatten(["code", "note"]) == [
+        [
+            "check-error",
+            'custom_check1: Field "AA" not found',
+        ],
+    ]

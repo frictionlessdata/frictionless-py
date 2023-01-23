@@ -271,12 +271,18 @@ def validate_resource(
         with resource:
 
             # Validate start
-            for index, check in enumerate(checks.copy()):
+            indices_of_checks_to_remove = []
+            for index, check in enumerate(checks):
                 check.connect(resource)
                 for error in check.validate_start():
                     if error.code == "check-error":
-                        del checks[index]
+                        indices_of_checks_to_remove.append(index)
                     errors.append(error)
+            checks = [
+                check
+                for i, check in enumerate(checks)
+                if i not in indices_of_checks_to_remove
+            ]
 
             # Validate rows
             if resource.tabular:
