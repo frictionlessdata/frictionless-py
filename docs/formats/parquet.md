@@ -14,7 +14,7 @@ pip install 'frictionless[parquet]' # for zsh shell
 
 ## Reading Data
 
-You can read a Pandas dataframe:
+You can read a Parquet file:
 
 ```python script tabs=Python
 from frictionless import Resource
@@ -25,7 +25,7 @@ print(resource.read_rows())
 
 ## Writing Data
 
-You can write a dataset to Pandas:
+You can write a dataset to Parquet:
 
 ```python script tabs=Python
 from frictionless import Resource
