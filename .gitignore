@@ -98,3 +98,4 @@ datapackage
 .server/
 coverage/
 tmp/
+data/index/
