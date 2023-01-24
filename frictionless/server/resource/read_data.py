@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: Optional[Any]
+    data: Any
 
 
-@router.post("/resource/read")
-def server_resource_read(request: Request, props: Props) -> Result:
+@router.post("/resource/read-data")
+def server_resourec_read_data(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.resource_read(props.path)
-    return Result(record=record)
+    data = project.resource_read_data(props.path)
+    return Result(data=data)

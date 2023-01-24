@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: Optional[Any]
+    path: str
 
 
-@router.post("/resource/read")
-def server_resource_read(request: Request, props: Props) -> Result:
+@router.post("/file/create-folder")
+def server_file_create_folder(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.resource_read(props.path)
-    return Result(record=record)
+    path = project.file_create_dir(props.path)
+    return Result(path=path)
