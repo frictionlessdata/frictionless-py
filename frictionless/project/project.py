@@ -55,9 +55,53 @@ class Project:
     def basepath(self):
         return str(self.public)
 
-    # Files
+    # File
 
-    def list_files(self, with_dirs=False, only_dirs=False):
+    # TODO: ensure that path is safe
+    def file_copy(self, source: str, target: Optional[str] = None):
+        target = target or source
+        source = str(self.public / source)
+        target = str(self.public / target)
+        if os.path.isdir(source):
+            shutil.copytree(source, target)
+            return
+        assert os.path.isfile(source)
+        # Set new filename if it already exists
+        if os.path.exists(target):
+            number = 1
+            parts = os.path.splitext(target)
+            template = f"{parts[0]} (copy%s){parts[1]}"
+            while os.path.exists(target):
+                target = template % number
+                number += 1
+        helpers.copy_file(source, target)
+
+    # TODO: use streaming?
+    # TODO: ensure that path is safe
+    def file_create(self, path: str, *, contents: bytes):
+        path = str(self.public / path)
+        assert not os.path.exists(path)
+        helpers.write_file(path, contents, mode="wb")
+        return path
+
+    # TODO: ensure that path is safe
+    def file_create_dir(self, path: str):
+        path = str(self.public / path)
+        assert not os.path.exists(path)
+        Path(path).mkdir(parents=True, exist_ok=True)
+        return path
+
+    # TODO: ensure that path is safe
+    def file_delete(self, path: str):
+        # TODO: ensure that path is safe
+        path = str(self.public / path)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+            return
+        assert os.path.isfile(path)
+        os.remove(path)
+
+    def file_list(self, with_dirs=False, only_dirs=False):
         paths = []
         temp_folders = set()
         for basepath, folders, files in os.walk(self.public):
@@ -79,105 +123,37 @@ class Project:
         paths = list(sorted(paths))
         return paths
 
-    # TODO: use streaming?
     # TODO: ensure that path is safe
-    def create_file(self, path: str, *, contents: bytes):
-        path = str(self.public / path)
-        assert not os.path.exists(path)
-        helpers.write_file(path, contents, mode="wb")
-        return path
+    def file_move(self, source: str, target: str):
+        source = str(self.public / source)
+        target = str(self.public / target)
+        assert not os.path.exists(target)
+        if os.path.isdir(source):
+            shutil.move(source, target)
+            return
+        assert os.path.isfile(source)
+        helpers.move_file(source, target)
 
     # TODO: use streaming?
     # TODO: ensure that path is safe
-    def read_file(self, path: str):
+    def file_read(self, path: str):
         path = str(self.public / path)
         assert os.path.isfile(path)
         contents = helpers.read_file(path, mode="rb")
         return contents
 
-    # TODO: ensure that path is safe
-    def move_file(self, source: str, target: str):
-        source = str(self.public / source)
-        target = str(self.public / target)
-        assert os.path.isfile(source)
-        assert not os.path.exists(target)
-        helpers.move_file(source, target)
+    # Package
 
-    # TODO: ensure that path is safe
-    def copy_file(self, source: str, target: Optional[str] = None):
-        target = target or source
-        source = str(self.public / source)
-        assert os.path.isfile(source)
-        target = str(self.public / target)
-        # Set new filename if it already exists
-        if os.path.exists(target):
-            number = 1
-            parts = os.path.splitext(target)
-            template = f"{parts[0]} (copy%s){parts[1]}"
-            while os.path.exists(target):
-                target = template % number
-                number += 1
-        helpers.copy_file(source, target)
-
-    # TODO: ensure that path is safe
-    def delete_file(self, path: str):
-        # TODO: ensure that path is safe
-        path = str(self.public / path)
-        assert os.path.isfile(path)
-        os.remove(path)
-
-    # TODO: ensure that path is safe
-    def create_dir(self, path: str):
-        path = str(self.public / path)
-        assert not os.path.exists(path)
-        Path(path).mkdir(parents=True, exist_ok=True)
-        return path
-
-    # TODO: ensure that path is safe
-    def move_dir(self, source: str, target: str):
-        source = str(self.public / source)
-        assert os.path.isdir(source)
-        assert not os.path.exists(target)
-        shutil.move(source, target)
-
-    # TODO: ensure that path is safe
-    def delete_dir(self, path: str):
-        path = str(self.public / path)
-        assert os.path.isdir(path)
-        shutil.rmtree(path)
-
-    # Records
-
-    def list_resources(self):
-        self.database.list_resources()
-
-    def create_resource(self, path: str):
-        path = str(self.public / path)
-        resource = Resource(path=path)
-        record = self.database.create_resource(resource)
-        return record
-
-    def read_resource(self, path: str):
-        return self.database.read_resource(path)
-
-    def update_resource(self, path: str):
-        self.database.update_resource(path)
-
-    def delete_resource(self, path: str):
-        self.database.delete_resource(path)
-
-    # Packages
-
-    def create_package(self):
+    def package_create(self):
         package_path = settings.PACKAGE_PATH
-        paths = self.list_files()
+        paths = self.file_list()
         if package_path not in paths:
             package = Package(basepath=self.basepath)
             for path in paths:
                 try:
                     if os.path.isdir(self.public / path):
                         continue
-                    record = self.create_resource(path)
+                    record = self.resource_create(path)
                     resource = Resource.from_descriptor(record.resource)  # type: ignore
                     package.add_resource(resource)
                 except FrictionlessException as exception:
@@ -190,7 +166,7 @@ class Project:
             package.to_json(str(self.public / package_path))
         return package_path
 
-    def publish_package(self, **params):
+    def package_publish(self, **params):
         response = {}
         controls = {
             "github": portals.GithubControl,
@@ -229,3 +205,32 @@ class Project:
             response["error"] = exception.error.message
 
         return response
+
+    # Resource
+
+    def resource_create(self, path: str):
+        path = str(self.public / path)
+        resource = Resource(path=path)
+        record = self.database.create_resource(resource)
+        return record
+
+    def resource_delete(self, path: str):
+        self.database.delete_resource(path)
+
+    def resource_describe(self, path: str):
+        pass
+
+    def resource_extract(self, path: str):
+        pass
+
+    def resource_list(self):
+        return self.database.list_resources()
+
+    def resource_read(self, path: str):
+        return self.database.read_resource(path)
+
+    def resource_transform(self, path: str):
+        pass
+
+    def resource_update(self, path: str):
+        self.database.update_resource(path)

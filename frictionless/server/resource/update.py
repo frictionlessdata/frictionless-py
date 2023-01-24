@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: Optional[Any]
+    pass
 
 
-@router.post("/project/read-resource")
-def server_project_create_record(request: Request, props: Props) -> Result:
+@router.post("/resource/update")
+def server_resource_update(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.read_resource(props.path)
-    return Result(record=record)
+    project.resource_update(props.path)
+    return Result()

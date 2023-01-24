@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional, List
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
@@ -7,15 +7,14 @@ from ..router import router
 
 class Props(BaseModel):
     session: Optional[str]
-    path: str
 
 
 class Result(BaseModel):
-    record: Optional[Any]
+    paths: List[str]
 
 
-@router.post("/resource/read")
-def server_resource_read(request: Request, props: Props) -> Result:
+@router.post("/file/list")
+def server_file_list(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.resource_read(props.path)
-    return Result(record=record)
+    paths = project.file_list()
+    return Result(paths=paths)
