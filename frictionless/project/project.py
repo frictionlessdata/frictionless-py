@@ -98,17 +98,17 @@ class Project:
         assert os.path.isfile(path)
         os.remove(path)
 
-    def file_list(self, with_dirs=False, only_dirs=False):
+    def file_list(self, with_folders=False, only_folders=False):
         paths = []
         temp_folders = set()
         for basepath, folders, files in os.walk(self.public):
-            if not only_dirs:
+            if not only_folders:
                 for file in files:
                     path = os.path.join(basepath, file)
                     path = os.path.relpath(path, start=self.public)
                     paths.append(path)
                     temp_folders.add(os.path.dirname(path))
-            if with_dirs or only_dirs:
+            if with_folders or only_folders:
                 for folder in folders:
                     if folder.startswith("."):
                         continue

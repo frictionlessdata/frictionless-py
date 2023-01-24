@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from frictionless import Project, helpers
 
@@ -41,7 +40,7 @@ def test_project_file_copy_dir(tmpdir):
     project.file_create(path1, contents=cont1)
     project.file_copy(dir1, dir2)
     assert project.file_list() == [path1, path2]
-    assert project.file_list(with_dirs=True) == [dir1, path1, dir2, path2]
+    assert project.file_list(with_folders=True) == [dir1, path1, dir2, path2]
     assert helpers.read_file(tmpdir / path1, "rb") == cont1
     assert helpers.read_file(tmpdir / path2, "rb") == cont1
 
@@ -63,7 +62,7 @@ def test_project_file_create_in_dir(tmpdir):
     project.file_create_dir(dir1)
     project.file_create(path, contents=cont1)
     assert project.file_list() == [path]
-    assert project.file_list(with_dirs=True) == [dir1, path]
+    assert project.file_list(with_folders=True) == [dir1, path]
     assert helpers.read_file(tmpdir / path, "rb") == cont1
 
 
@@ -74,7 +73,7 @@ def test_project_create_dir(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     path = project.file_create_dir(dir1)
     assert project.file_list() == []
-    assert project.file_list(with_dirs=True) == [dir1]
+    assert project.file_list(with_folders=True) == [dir1]
     assert path == tmpdir / dir1
 
 
@@ -97,9 +96,9 @@ def test_project_file_delete_dir(tmpdir):
     project.file_create_dir(dir1)
     project.file_create(path, contents=cont1)
     assert project.file_list() == [path]
-    assert project.file_list(with_dirs=True) == [dir1, path]
+    assert project.file_list(with_folders=True) == [dir1, path]
     project.file_delete(dir1)
-    assert project.file_list(with_dirs=True) == []
+    assert project.file_list(with_folders=True) == []
 
 
 # List
@@ -110,6 +109,15 @@ def test_project_file_list(tmpdir):
     project.file_create(name1, contents=cont1)
     project.file_create(name2, contents=cont2)
     assert project.file_list() == [name1, name2]
+
+
+def test_project_file_list_with_folders(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create(name1, contents=cont1)
+    project.file_create_dir(dir1)
+    assert project.file_list() == [name1]
+    assert project.file_list(with_folders=True) == [dir1, name1]
+    assert project.file_list(only_folders=True) == [dir1]
 
 
 # Move
@@ -141,7 +149,7 @@ def test_project_file_move_dir(tmpdir):
     project.file_create(path1, contents=cont1)
     project.file_move(dir1, dir2)
     assert project.file_list() == [path2]
-    assert project.file_list(with_dirs=True) == [dir2, path2]
+    assert project.file_list(with_folders=True) == [dir2, path2]
     assert helpers.read_file(tmpdir / path2, "rb") == cont1
 
 
