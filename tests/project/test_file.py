@@ -1,4 +1,4 @@
-import pytest
+import json
 from pathlib import Path
 from frictionless import Project, helpers
 
@@ -9,6 +9,7 @@ name1 = "name1.txt"
 name2 = "name2.txt"
 cont1 = b"cont1"
 cont2 = b"cont2"
+cont3 = b'{"key": "value"}'
 
 
 # Copy

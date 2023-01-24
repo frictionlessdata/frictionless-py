@@ -12,8 +12,10 @@ from .. import settings
 from .. import helpers
 from .. import portals
 
-
 # TODO: handle method errors?
+# TODO: ensure that path is safe for all the methods
+
+
 class Project:
     session: Optional[str]
     public: Path
@@ -57,7 +59,6 @@ class Project:
 
     # File
 
-    # TODO: ensure that path is safe
     def file_copy(self, source: str, target: Optional[str] = None):
         target = target or source
         source = str(self.public / source)
@@ -77,23 +78,19 @@ class Project:
         helpers.copy_file(source, target)
 
     # TODO: use streaming?
-    # TODO: ensure that path is safe
     def file_create(self, path: str, *, contents: bytes):
         path = str(self.public / path)
         assert not os.path.exists(path)
         helpers.write_file(path, contents, mode="wb")
         return path
 
-    # TODO: ensure that path is safe
     def file_create_dir(self, path: str):
         path = str(self.public / path)
         assert not os.path.exists(path)
         Path(path).mkdir(parents=True, exist_ok=True)
         return path
 
-    # TODO: ensure that path is safe
     def file_delete(self, path: str):
-        # TODO: ensure that path is safe
         path = str(self.public / path)
         if os.path.isdir(path):
             shutil.rmtree(path)
@@ -123,7 +120,6 @@ class Project:
         paths = list(sorted(paths))
         return paths
 
-    # TODO: ensure that path is safe
     def file_move(self, source: str, target: str):
         source = str(self.public / source)
         target = str(self.public / target)
@@ -135,12 +131,11 @@ class Project:
         helpers.move_file(source, target)
 
     # TODO: use streaming?
-    # TODO: ensure that path is safe
     def file_read(self, path: str):
         path = str(self.public / path)
         assert os.path.isfile(path)
-        contents = helpers.read_file(path, mode="rb")
-        return contents
+        bytes = helpers.read_file(path, "rb")
+        return bytes
 
     # Package
 
@@ -228,6 +223,32 @@ class Project:
 
     def resource_read(self, path: str):
         return self.database.read_resource(path)
+
+    # TODO: use streaming?
+    # TODO: rebase on using resource's metadata if available
+    def resource_read_bytes(self, path: str):
+        path = str(self.public / path)
+        assert os.path.isfile(path)
+        with Resource(path=path) as resource:
+            bytes = resource.read_bytes()
+            return bytes
+
+    # TODO: rebase on using resource's metadata if available
+    def resource_read_data(self, path: str):
+        path = str(self.public / path)
+        assert os.path.isfile(path)
+        with Resource(path=path) as resource:
+            data = resource.read_data()
+            return data
+
+    # TODO: use streaming?
+    # TODO: rebase on resource's metadata or accept encoding?
+    def resource_read_text(self, path: str):
+        path = str(self.public / path)
+        assert os.path.isfile(path)
+        with Resource(path=path) as resource:
+            text = resource.read_text()
+            return text
 
     def resource_transform(self, path: str):
         pass

@@ -5,4 +5,3 @@ from . import create_dir
 from . import delete
 from . import list
 from . import move
-from . import read
