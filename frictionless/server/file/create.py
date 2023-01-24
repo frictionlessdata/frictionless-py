@@ -14,6 +14,6 @@ async def server_file_create(
     request: Request, file: UploadFile = File(), session: Optional[str] = Form()
 ) -> Result:
     project: Project = request.app.get_project(session)
-    contents = await file.read()
-    path = project.file_create(file.filename, contents=contents)
+    bytes = await file.read()
+    path = project.file_create(file.filename, bytes=bytes)
     return Result(path=path)

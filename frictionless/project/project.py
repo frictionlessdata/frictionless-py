@@ -78,13 +78,13 @@ class Project:
         helpers.copy_file(source, target)
 
     # TODO: use streaming?
-    def file_create(self, path: str, *, contents: bytes):
+    def file_create(self, path: str, *, bytes: bytes):
         path = str(self.public / path)
         assert not os.path.exists(path)
-        helpers.write_file(path, contents, mode="wb")
+        helpers.write_file(path, bytes, mode="wb")
         return path
 
-    def file_create_dir(self, path: str):
+    def file_create_folder(self, path: str):
         path = str(self.public / path)
         assert not os.path.exists(path)
         Path(path).mkdir(parents=True, exist_ok=True)

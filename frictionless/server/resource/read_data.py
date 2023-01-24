@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    contents: Any
+    data: Any
 
 
 @router.post("/resource/read-data")
 def server_resourec_read_data(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    contents = project.resource_read_data(props.path)
-    return Result(contents=contents)
+    data = project.resource_read_data(props.path)
+    return Result(data=data)

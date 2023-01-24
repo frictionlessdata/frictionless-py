@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    contents: bytes
+    bytes: bytes
 
 
 @router.post("/resource/read-bytes")
 def server_resource_read_bytes(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    contents = project.resource_read_bytes(props.path)
-    return Result(contents=contents)
+    bytes = project.resource_read_bytes(props.path)
+    return Result(bytes=bytes)
