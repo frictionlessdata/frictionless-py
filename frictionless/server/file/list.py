@@ -7,8 +7,8 @@ from ..router import router
 
 class Props(BaseModel):
     session: Optional[str]
-    with_folders: bool
-    only_folders: bool
+    with_folders: bool = False
+    only_folders: bool = False
 
 
 class Result(BaseModel):
