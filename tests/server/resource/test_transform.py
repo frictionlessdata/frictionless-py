@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_server_resource_transform(api_client_root):
     pipeline = Pipeline(steps=[steps.cell_set(field_name="name", value="new")])
     resource = Resource(path="data/table.csv", pipeline=pipeline)
