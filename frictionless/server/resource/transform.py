@@ -35,4 +35,4 @@ def server_resource_transform(request: Request, props: Props) -> Result:
     rows = target.extract(process=lambda row: row.to_dict(types=SUPPORTED_TYPES))
     table = dict(header=target.header, rows=rows)
     # TODO: improve output resource (remove pipeline/etc)?
-    return dict(resource=target.to_descriptor(), table=table)
+    return Result(resource=target.to_descriptor(), table=table)
