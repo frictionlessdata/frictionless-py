@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assign to project
-        uses: leonsteinhaeuser/project-beta-automations@v1.2.1
+        uses: leonsteinhaeuser/project-beta-automations@v2.0.1
         with:
           gh_token: ${{ secrets.PROJECT_TOKEN }}
           resource_node_id: ${{ github.event_name == 'issues' && github.event.issue.node_id || github.event.pull_request.node_id }}
