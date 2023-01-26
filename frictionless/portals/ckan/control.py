@@ -19,7 +19,7 @@ class CkanControl(Control):
 
     dataset: Optional[str] = None
     """
-    Unique identifier of the dataset to read.
+    Unique identifier of the dataset to read or write.
     """
 
     apikey: Optional[str] = None
