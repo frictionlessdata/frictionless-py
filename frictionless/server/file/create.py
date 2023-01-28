@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request, UploadFile, File, Form
@@ -11,9 +12,15 @@ class Result(BaseModel):
 
 @router.post("/file/create")
 async def server_file_create(
-    request: Request, file: UploadFile = File(), session: Optional[str] = Form()
+    request: Request,
+    file: UploadFile = File(),
+    session: Optional[str] = Form(),
+    folder: Optional[str] = Form(),
 ) -> Result:
     project: Project = request.app.get_project(session)
+    path = file.filename
+    if folder:
+        path = str(Path(folder) / path)
     bytes = await file.read()
-    path = project.file_create(file.filename, bytes=bytes)
+    path = project.file_create(path, bytes=bytes)
     return Result(path=path)
