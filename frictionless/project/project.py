@@ -67,20 +67,13 @@ class Project:
             shutil.copytree(source, target)
             return
         assert os.path.isfile(source)
-        # Set new filename if it already exists
-        if os.path.exists(target):
-            number = 1
-            parts = os.path.splitext(target)
-            template = f"{parts[0]} (copy%s){parts[1]}"
-            while os.path.exists(target):
-                target = template % number
-                number += 1
+        target = deduplicate_path(target, suffix="copy")
         helpers.copy_file(source, target)
 
     # TODO: use streaming?
     def file_create(self, path: str, *, bytes: bytes):
         path = str(self.public / path)
-        assert not os.path.exists(path)
+        path = deduplicate_path(path)
         helpers.write_file(path, bytes, mode="wb")
         return path
 
@@ -255,3 +248,17 @@ class Project:
 
     def resource_update(self, path: str):
         self.database.update_resource(path)
+
+
+# Internal
+
+
+def deduplicate_path(path: str, *, suffix: str = ""):
+    if os.path.exists(path):
+        number = 1
+        parts = os.path.splitext(path)
+        template = f"{parts[0]} ({suffix}%s){parts[1]}"
+        while os.path.exists(path):
+            path = template % number
+            number += 1
+    return path
