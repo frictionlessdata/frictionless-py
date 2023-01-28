@@ -7,8 +7,8 @@ from ..router import router
 
 class Props(BaseModel):
     session: Optional[str]
-    with_folders: bool = False
-    only_folders: bool = False
+    withFolders: bool = False
+    onlyFolders: bool = False
 
 
 class Result(BaseModel):
@@ -19,7 +19,7 @@ class Result(BaseModel):
 def server_file_list(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
     paths = project.file_list(
-        with_folders=props.with_folders,
-        only_folders=props.only_folders,
+        with_folders=props.withFolders,
+        only_folders=props.onlyFolders,
     )
     return Result(paths=paths)
