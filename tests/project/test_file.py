@@ -117,6 +117,13 @@ def test_project_file_list_with_folders(tmpdir):
     project.file_create_folder(dir1)
     assert project.file_list() == [name1]
     assert project.file_list(with_folders=True) == [dir1, name1]
+
+
+def test_project_file_list_only_folders(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create(name1, bytes=bytes1)
+    project.file_create_folder(dir1)
+    assert project.file_list() == [name1]
     assert project.file_list(only_folders=True) == [dir1]
 
 
