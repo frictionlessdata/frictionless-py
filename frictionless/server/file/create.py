@@ -22,5 +22,5 @@ async def server_file_create(
     if folder:
         path = str(Path(folder) / path)
     bytes = await file.read()
-    path = project.file_create(path, bytes=bytes)
+    project.file_create(path, bytes=bytes)
     return Result(path=path)
