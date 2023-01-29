@@ -14,8 +14,8 @@ class Result(BaseModel):
 async def server_file_create(
     request: Request,
     file: UploadFile = File(),
-    session: Optional[str] = Form(),
-    folder: Optional[str] = Form(),
+    session: Optional[str] = Form(None),
+    folder: Optional[str] = Form(None),
 ) -> Result:
     project: Project = request.app.get_project(session)
     path = file.filename
