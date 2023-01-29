@@ -19,5 +19,5 @@ class Result(BaseModel):
 def server_file_copy(request: Request, props: Props) -> Result:
     # TODO: why do we need to provide type explicetly?
     project: Project = request.app.get_project(props.session)
-    project.file_copy(props.source, props.target)
-    return Result(path=props.target)
+    path = project.file_copy(props.source, props.target)
+    return Result(path=path)
