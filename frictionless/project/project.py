@@ -1,4 +1,5 @@
 import os
+import json
 import datetime
 import secrets
 import shutil
@@ -153,24 +154,11 @@ class Project:
     # Package
 
     def package_create(self):
-        package_path = settings.PACKAGE_PATH
-        paths = self.file_list_plain(exclude_folders=True)
-        if package_path not in paths:
-            package = Package(basepath=self.basepath)
-            for path in paths:
-                try:
-                    record = self.resource_create(path)
-                    resource = Resource.from_descriptor(record.resource)  # type: ignore
-                    package.add_resource(resource)
-                except FrictionlessException as exception:
-                    if "already exists" in exception.error.note:
-                        continue
-                    raise exception
-                except Exception as exception:
-                    raise exception
-
-            package.to_json(str(self.public / package_path))
-        return package_path
+        path = str(self.public / settings.PACKAGE_PATH)
+        if not os.path.exists(path):
+            helpers.write_file(path, json.dumps({"resource": []}))
+        path = str(Path(path).relative_to(self.public))
+        return path
 
     def package_publish(self, **params):
         response = {}
