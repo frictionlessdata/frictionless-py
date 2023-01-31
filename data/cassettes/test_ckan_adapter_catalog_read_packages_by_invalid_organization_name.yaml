@@ -1,0 +1,45 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://legado.dados.gov.br//api/3/action/package_search?q=organization%3Aagricultura-extrativismo-e-pescaa
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA02NwQrCMBBEf6XkLI3grSB+iEhYN9sm2DYhu9FD6b+b7UG8LDPD7JvNBJqzGToT
+        RDIP1s40gU+9b4f7Kb37Z7GQo71YQIlptfrgOKTPbYWFrhnwBRM5JigYzKkzXBGJuUGlVGpBIa6z
+        NL8ZTHVVddZeKioNYyrUeWI8dQsJeBBwS/JxjOSPXKkjIIlCt/2HVHt/KOoYd3+dff8C6Df+ttsA
+        AAA=
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '173'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Mon, 30 Jan 2023 15:01:46 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - ''
+      Vary:
+      - Accept-Encoding,User-Agent
+    status:
+      code: 200
+      message: OK
+version: 1

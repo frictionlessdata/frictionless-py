@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://legado.dados.gov.br//api/3/action/package_show?id=no-dataset
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAyWNwQrCMBBEfyXkLEmht4J40qNfIIQ1Wdtimw3ZpCKl/+62XgZ2dt7Mqgecku6U
+        HkpJ3Fk7YQ+BTBBh09NintlCGm1rwZeRot0BxwN9LhFmPCfwb+jxcPRJaa7eI7NUvmBiFAdzpiz3
+        qmd5SHafuz9q02BLCqOnWLLM7bRz5Zv+ASrqRjUGdT34bfsBigDfFKwAAAA=
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '158'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Mon, 30 Jan 2023 10:18:25 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - ''
+      Vary:
+      - Accept-Encoding,User-Agent
+    status:
+      code: 404
+      message: Not Found
+version: 1

@@ -1,0 +1,11 @@
+{
+   "name":"dataset-test-detailed-with-id",
+   "title":"Dataset Test Detailed with Id",
+   "id":"dataset-test-detailed-with-id",
+   "resources":[
+      {
+         "name":"data",
+         "path":"data.csv"
+      }
+   ]
+}

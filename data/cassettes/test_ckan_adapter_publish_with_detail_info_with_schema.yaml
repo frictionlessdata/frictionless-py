@@ -1,0 +1,226 @@
+interactions:
+- request:
+    body: '{"name": "dataset-test-package-with-schema", "title": "Dataset Test Package
+      With Schema", "resources": [], "notes": "This is a test package to test zenodo
+      write function", "license_id": "CC-BY-4.0", "license_title": "Creative Commons
+      Attribution 4.0", "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "author": "Test FD", "author_email": null, "tags": [{"name": "testdata"}, {"name":
+      "testzenodowrite"}, {"name": "frictionlessdata"}], "extras": [{"key": "created",
+      "value": "1985-04-12T23:20:50.52Z"}, {"key": "organization", "value": "frictionless-organization"}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '579'
+      Content-Type:
+      - application/json
+      Cookie:
+      - ckan=a3e3ad5b8550b8546bb422cc129b2e561b844d6273867a3081de48feb8a0b7c2d4770e7b
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/package_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_create",
+        "success": true, "result": {"author": "Test FD", "author_email": null, "creator_user_id":
+        "333d31c7-05fd-482a-90d2-50ccf9e1e3cc", "id": "2a02c167-589f-42da-866b-67fd29895d5b",
+        "isopen": false, "license_id": "CC-BY-4.0", "license_title": "CC-BY-4.0",
+        "maintainer": null, "maintainer_email": null, "metadata_created": "2023-01-31T07:21:43.160118",
+        "metadata_modified": "2023-01-31T07:21:43.160124", "name": "dataset-test-package-with-schema",
+        "notes": "This is a test package to test zenodo write function", "num_resources":
+        0, "num_tags": 3, "organization": null, "owner_org": null, "private": false,
+        "state": "active", "title": "Dataset Test Package With Schema", "type": "dataset",
+        "url": null, "version": null, "extras": [{"key": "created", "value": "1985-04-12T23:20:50.52Z"},
+        {"key": "organization", "value": "frictionless-organization"}], "tags": [{"display_name":
+        "frictionlessdata", "id": "156d5d34-8a08-4248-8b15-15eb9ef61d23", "name":
+        "frictionlessdata", "state": "active", "vocabulary_id": null}, {"display_name":
+        "testdata", "id": "7e57f7a2-3c67-44c0-a512-f4994634fca4", "name": "testdata",
+        "state": "active", "vocabulary_id": null}, {"display_name": "testzenodowrite",
+        "id": "6e0f20a2-44bc-4937-8230-b83221437999", "name": "testzenodowrite", "state":
+        "active", "vocabulary_id": null}], "resources": [], "groups": [], "relationships_as_subject":
+        [], "relationships_as_object": []}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '1469'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 07:21:43 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+      Set-cookie:
+      - ckan=4e2987a60cba692d6d7c33d1d0d16ea92b84d9cc4d5fd084d9cf432c80ff80a12bdb185d;
+        expires=Tue, 19-Jan-2038 08:59:07 GMT; Path=/; SameSite=Lax
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--74850db035e51eb4d5cca2eb1ab0718b\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\ndata\r\n--74850db035e51eb4d5cca2eb1ab0718b\r\nContent-Disposition:
+      form-data; name=\"schema\"\r\n\r\nfields\r\n--74850db035e51eb4d5cca2eb1ab0718b\r\nContent-Disposition:
+      form-data; name=\"package_id\"\r\n\r\n2a02c167-589f-42da-866b-67fd29895d5b\r\n--74850db035e51eb4d5cca2eb1ab0718b\r\nContent-Disposition:
+      form-data; name=\"upload\"; filename=\"data.csv\"\r\nContent-Type: application/octet-stream\r\n\r\nid,name,description,amount\nA3001,Taxes,Taxes
+      we collect,10000.5\nA5032,Parking Fees,Parking fees we collect,2000.5\n\r\n--74850db035e51eb4d5cca2eb1ab0718b--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '609'
+      Content-Type:
+      - multipart/form-data; boundary=74850db035e51eb4d5cca2eb1ab0718b
+      Cookie:
+      - ckan=4e2987a60cba692d6d7c33d1d0d16ea92b84d9cc4d5fd084d9cf432c80ff80a12bdb185d
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/resource_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=resource_create",
+        "success": true, "result": {"cache_last_updated": null, "cache_url": null,
+        "created": "2023-01-31T07:21:43.423120", "datastore_active": false, "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "CSV", "hash": "", "id": "9dce81a7-355f-433f-b39f-38dd7b7ccf7e",
+        "last_modified": "2023-01-31T07:21:43.402317", "metadata_modified": "2023-01-31T07:21:43.411532",
+        "mimetype": "text/csv", "mimetype_inner": null, "name": "data", "package_id":
+        "2a02c167-589f-42da-866b-67fd29895d5b", "position": 0, "resource_type": null,
+        "schema": "fields", "size": 114, "state": "active", "url": "http://localhost:5000/dataset/2a02c167-589f-42da-866b-67fd29895d5b/resource/9dce81a7-355f-433f-b39f-38dd7b7ccf7e/download/data.csv",
+        "url_type": "upload"}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '842'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 07:21:43 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--27bc0849f7953e5c8d1538b6dcd3de93\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\ndata2\r\n--27bc0849f7953e5c8d1538b6dcd3de93\r\nContent-Disposition:
+      form-data; name=\"schema\"\r\n\r\nfields\r\n--27bc0849f7953e5c8d1538b6dcd3de93\r\nContent-Disposition:
+      form-data; name=\"package_id\"\r\n\r\n2a02c167-589f-42da-866b-67fd29895d5b\r\n--27bc0849f7953e5c8d1538b6dcd3de93\r\nContent-Disposition:
+      form-data; name=\"upload\"; filename=\"data2.csv\"\r\nContent-Type: application/octet-stream\r\n\r\nparent,comment\nA3001,comment1\nA3001,comment2\nA5032,comment3\n\r\n--27bc0849f7953e5c8d1538b6dcd3de93--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '557'
+      Content-Type:
+      - multipart/form-data; boundary=27bc0849f7953e5c8d1538b6dcd3de93
+      Cookie:
+      - ckan=4e2987a60cba692d6d7c33d1d0d16ea92b84d9cc4d5fd084d9cf432c80ff80a12bdb185d
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/resource_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=resource_create",
+        "success": true, "result": {"cache_last_updated": null, "cache_url": null,
+        "created": "2023-01-31T07:21:43.588906", "datastore_active": false, "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "CSV", "hash": "", "id": "5a78e96b-ff92-47c9-8dfb-266bc76170a9",
+        "last_modified": "2023-01-31T07:21:43.577335", "metadata_modified": "2023-01-31T07:21:43.583900",
+        "mimetype": "text/csv", "mimetype_inner": null, "name": "data2", "package_id":
+        "2a02c167-589f-42da-866b-67fd29895d5b", "position": 1, "resource_type": null,
+        "schema": "fields", "size": 60, "state": "active", "url": "http://localhost:5000/dataset/2a02c167-589f-42da-866b-67fd29895d5b/resource/5a78e96b-ff92-47c9-8dfb-266bc76170a9/download/data2.csv",
+        "url_type": "upload"}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '843'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 07:21:43 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - ckan=4e2987a60cba692d6d7c33d1d0d16ea92b84d9cc4d5fd084d9cf432c80ff80a12bdb185d
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: http://localhost:5000//api/3/action/package_show?id=dataset-test-package-with-schema
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_show",
+        "success": true, "result": {"author": "Test FD", "author_email": null, "creator_user_id":
+        "333d31c7-05fd-482a-90d2-50ccf9e1e3cc", "id": "2a02c167-589f-42da-866b-67fd29895d5b",
+        "isopen": false, "license_id": "CC-BY-4.0", "license_title": "CC-BY-4.0",
+        "maintainer": null, "maintainer_email": null, "metadata_created": "2023-01-31T07:21:43.160118",
+        "metadata_modified": "2023-01-31T07:21:43.580256", "name": "dataset-test-package-with-schema",
+        "notes": "This is a test package to test zenodo write function", "num_resources":
+        2, "num_tags": 3, "organization": null, "owner_org": null, "private": false,
+        "state": "active", "title": "Dataset Test Package With Schema", "type": "dataset",
+        "url": null, "version": null, "extras": [{"key": "created", "value": "1985-04-12T23:20:50.52Z"},
+        {"key": "organization", "value": "frictionless-organization"}], "resources":
+        [{"cache_last_updated": null, "cache_url": null, "created": "2023-01-31T07:21:43.423120",
+        "datastore_active": false, "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "CSV", "hash": "", "id": "9dce81a7-355f-433f-b39f-38dd7b7ccf7e",
+        "last_modified": "2023-01-31T07:21:43.402317", "metadata_modified": "2023-01-31T07:21:43.583756",
+        "mimetype": "text/csv", "mimetype_inner": null, "name": "data", "package_id":
+        "2a02c167-589f-42da-866b-67fd29895d5b", "position": 0, "resource_type": null,
+        "schema": "fields", "size": 114, "state": "active", "url": "http://localhost:5000/dataset/2a02c167-589f-42da-866b-67fd29895d5b/resource/9dce81a7-355f-433f-b39f-38dd7b7ccf7e/download/data.csv",
+        "url_type": "upload"}, {"cache_last_updated": null, "cache_url": null, "created":
+        "2023-01-31T07:21:43.588906", "datastore_active": false, "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "CSV", "hash": "", "id": "5a78e96b-ff92-47c9-8dfb-266bc76170a9",
+        "last_modified": "2023-01-31T07:21:43.577335", "metadata_modified": "2023-01-31T07:21:43.583900",
+        "mimetype": "text/csv", "mimetype_inner": null, "name": "data2", "package_id":
+        "2a02c167-589f-42da-866b-67fd29895d5b", "position": 1, "resource_type": null,
+        "schema": "fields", "size": 60, "state": "active", "url": "http://localhost:5000/dataset/2a02c167-589f-42da-866b-67fd29895d5b/resource/5a78e96b-ff92-47c9-8dfb-266bc76170a9/download/data2.csv",
+        "url_type": "upload"}], "tags": [{"display_name": "frictionlessdata", "id":
+        "156d5d34-8a08-4248-8b15-15eb9ef61d23", "name": "frictionlessdata", "state":
+        "active", "vocabulary_id": null}, {"display_name": "testdata", "id": "7e57f7a2-3c67-44c0-a512-f4994634fca4",
+        "name": "testdata", "state": "active", "vocabulary_id": null}, {"display_name":
+        "testzenodowrite", "id": "6e0f20a2-44bc-4937-8230-b83221437999", "name": "testzenodowrite",
+        "state": "active", "vocabulary_id": null}], "groups": [], "relationships_as_subject":
+        [], "relationships_as_object": []}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '2942'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 07:21:43 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+    status:
+      code: 200
+      message: OK
+version: 1

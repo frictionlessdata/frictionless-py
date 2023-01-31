@@ -1,0 +1,71 @@
+{
+   "name":"dataset-test-package-with-schema",
+   "title":"Dataset Test Package With Schema",
+   "created":"1985-04-12T23:20:50.52Z",
+   "description":"This is a test package to test zenodo write function",
+   "contributors":[
+      {
+         "title":"Test FD",
+         "role":"author",
+         "organization":"OKFN"
+      }
+   ],
+   "keywords":[
+      "testdata",
+      "testzenodowrite",
+      "frictionlessdata"
+   ],
+   "organization":"frictionless-organization",
+   "licenses":[
+            {
+               "name":"CC-BY-4.0",
+               "title":"Creative Commons Attribution 4.0",
+               "path":"https://creativecommons.org/licenses/by/4.0/"
+            }
+   ],
+   "resources":[
+      {
+         "name":"data",
+         "path":"data.csv",        
+         "schema":{
+            "fields":[
+               {
+                  "name":"id",
+                  "type":"string",
+                  "constraints":{
+                     "required":true
+                  }
+               },
+               {
+                  "name":"name",
+                  "type":"string"
+               },
+               {
+                  "name":"description",
+                  "type":"string"
+               },
+               {
+                  "name":"amount",
+                  "type":"number"
+               }
+            ]
+         }
+      },
+      {
+         "name":"data2",
+         "path":"data2.csv",
+         "schema":{
+            "fields":[
+               {
+                  "type":"string",
+                  "name":"parent"
+               },
+               {
+                  "type":"string",
+                  "name":"comment"
+               }
+            ]
+         }
+      }
+   ]
+}

@@ -1,0 +1,141 @@
+interactions:
+- request:
+    body: '{"name": "dataset-test-detailed-with-id", "title": "Dataset Test Detailed
+      with Id", "resources": [], "id": "dataset-test-detailed-with-id"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '139'
+      Content-Type:
+      - application/json
+      Cookie:
+      - ckan=a3e3ad5b8550b8546bb422cc129b2e561b844d6273867a3081de48feb8a0b7c2d4770e7b
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/package_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_create",
+        "success": true, "result": {"author": null, "author_email": null, "creator_user_id":
+        "333d31c7-05fd-482a-90d2-50ccf9e1e3cc", "id": "dataset-test-detailed-with-id",
+        "isopen": false, "license_id": null, "license_title": null, "maintainer":
+        null, "maintainer_email": null, "metadata_created": "2023-01-31T08:22:51.448352",
+        "metadata_modified": "2023-01-31T08:22:51.448357", "name": "dataset-test-detailed-with-id",
+        "notes": null, "num_resources": 0, "num_tags": 0, "organization": null, "owner_org":
+        null, "private": false, "state": "active", "title": "Dataset Test Detailed
+        with Id", "type": "dataset", "url": null, "version": null, "resources": [],
+        "tags": [], "extras": [], "groups": [], "relationships_as_subject": [], "relationships_as_object":
+        []}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '828'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 08:22:51 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+      Set-cookie:
+      - ckan=09b53893f14d527462c8f8d861a945a4565977b5a1957da6b94f40e2a7a4fc0a6a459350;
+        expires=Tue, 19-Jan-2038 08:59:07 GMT; Path=/; SameSite=Lax
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--f6cf5a91b82b35ca88087ee1e4ef8ad1\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\ndata\r\n--f6cf5a91b82b35ca88087ee1e4ef8ad1\r\nContent-Disposition:
+      form-data; name=\"package_id\"\r\n\r\ndataset-test-detailed-with-id\r\n--f6cf5a91b82b35ca88087ee1e4ef8ad1\r\nContent-Disposition:
+      form-data; name=\"upload\"; filename=\"data.csv\"\r\nContent-Type: application/octet-stream\r\n\r\nid,name,description,amount\nA3001,Taxes,Taxes
+      we collect,10000.5\nA5032,Parking Fees,Parking fees we collect,2000.5\n\r\n--f6cf5a91b82b35ca88087ee1e4ef8ad1--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '509'
+      Content-Type:
+      - multipart/form-data; boundary=f6cf5a91b82b35ca88087ee1e4ef8ad1
+      Cookie:
+      - ckan=09b53893f14d527462c8f8d861a945a4565977b5a1957da6b94f40e2a7a4fc0a6a459350
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/resource_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=resource_create",
+        "success": true, "result": {"cache_last_updated": null, "cache_url": null,
+        "created": "2023-01-31T08:22:51.565517", "datastore_active": false, "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "CSV", "hash": "", "id": "dcea42b8-983a-4711-bd45-2da6a07a2422",
+        "last_modified": "2023-01-31T08:22:51.558926", "metadata_modified": "2023-01-31T08:22:51.564123",
+        "mimetype": "text/csv", "mimetype_inner": null, "name": "data", "package_id":
+        "dataset-test-detailed-with-id", "position": 0, "resource_type": null, "size":
+        114, "state": "active", "url": "http://localhost:5000/dataset/dataset-test-detailed-with-id/resource/dcea42b8-983a-4711-bd45-2da6a07a2422/download/data.csv",
+        "url_type": "upload"}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '808'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 08:22:51 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "dataset-test-detailed-with-id", "title": "Dataset Test Detailed
+      with Id", "resources": [], "id": "dataset-test-detailed-with-id"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '139'
+      Content-Type:
+      - application/json
+      Cookie:
+      - ckan=09b53893f14d527462c8f8d861a945a4565977b5a1957da6b94f40e2a7a4fc0a6a459350
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/package_update
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_update",
+        "error": {"__type": "Authorization Error", "message": "Access denied: User  not
+        authorized to edit package dataset-test-detailed-with-id"}, "success": false}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '234'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 31 Jan 2023 08:22:51 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+    status:
+      code: 403
+      message: FORBIDDEN
+version: 1
