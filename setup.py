@@ -59,7 +59,7 @@ EXTRAS_REQUIRE = {
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
     "parquet": ["fastparquet>=0.8"],
-    "postgresql": ["sqlalchemy>=1.3", "psycopg>=3.0", "psycopg2>=2.9"],
+    "postgresql": ["sqlalchemy<2", "psycopg>=3.0", "psycopg2>=2.9"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
     "wkt": ["grako>=3.99"],

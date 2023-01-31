@@ -142,11 +142,16 @@ class CkanAdapter(Adapter):
 
         # Assure that the package has a name
         if "name" not in package_data:
-            note = "Your package has no name. CKAN requires a name to publish a package"
-            raise FrictionlessException(note)
+            if not self.control.dataset:
+                note = (
+                    "Your package has no name. CKAN requires a name to publish a package"
+                )
+                raise FrictionlessException(note)
+            else:
+                package_data["name"] = self.control.dataset
 
         # if "id" exist and control is set to allow updates, try to update dataset
-        if "id" in package_data and self.control.allow_update:
+        if self.control.allow_update:
             endpoint = f"{baseurl}/api/action/package_update"
 
         try:
