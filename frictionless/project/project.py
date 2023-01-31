@@ -104,22 +104,23 @@ class Project:
 
     def file_list(self) -> List[IFileItem]:
         items: List[IFileItem] = []
-        temp_folders = set()
         for basepath, folders, files in os.walk(self.public):
+            basepath = os.path.relpath(basepath, start=self.public)
+            if basepath == ".":
+                basepath = ""
+            if is_hidden_path(basepath):
+                continue
             for file in files:
+                if file.startswith("."):
+                    continue
                 path = os.path.join(basepath, file)
-                path = os.path.relpath(path, start=self.public)
-                temp_folders.add(os.path.dirname(path))
                 items.append({"path": path, "isFolder": False})
             for folder in folders:
                 if folder.startswith("."):
                     continue
                 path = os.path.join(basepath, folder)
-                path = os.path.relpath(path, start=self.public)
-                if path in temp_folders:
-                    continue
                 items.append({"path": path, "isFolder": True})
-        items = list(sorted(items, key=lambda item: item["path"]))
+        items = list(sorted(items, key=lambda item: f'{item["path"]}'))
         return items
 
     def file_list_plain(self, *, exclude_folders: bool = False) -> List[str]:
@@ -270,7 +271,7 @@ class Project:
 # Internal
 
 
-def deduplicate_path(path: str, *, suffix: str = ""):
+def deduplicate_path(path: str, *, suffix: str = "") -> str:
     if os.path.exists(path):
         number = 1
         parts = os.path.splitext(path)
@@ -279,3 +280,10 @@ def deduplicate_path(path: str, *, suffix: str = ""):
             path = template % number
             number += 1
     return path
+
+
+def is_hidden_path(path: str) -> bool:
+    for part in os.path.split(path):
+        if part.startswith(".") and len(part) > 1:
+            return True
+    return False
