@@ -98,16 +98,6 @@ class Project:
         path = str(Path(path).relative_to(self.public))
         return path
 
-    def file_create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
-        assert not os.path.dirname(name)
-        basepath = str(self.public / (folder or ""))
-        path = str(self.public / (folder or "") / name)
-        assert os.path.isdir(basepath)
-        assert not os.path.exists(path)
-        Path(path).mkdir(parents=True, exist_ok=False)
-        path = str(Path(path).relative_to(self.public))
-        return path
-
     def file_delete(self, path: str) -> str:
         path = str(self.public / path)
         # File
@@ -193,6 +183,18 @@ class Project:
         else:
             raise FrictionlessException("file doesn't exist")
         path = str(Path(target).relative_to(self.public))
+        return path
+
+    # Folder
+
+    def folder_create(self, name: str, *, folder: Optional[str] = None) -> str:
+        assert not os.path.dirname(name)
+        basepath = str(self.public / (folder or ""))
+        path = str(self.public / (folder or "") / name)
+        assert os.path.isdir(basepath)
+        assert not os.path.exists(path)
+        Path(path).mkdir(parents=True, exist_ok=False)
+        path = str(Path(path).relative_to(self.public))
         return path
 
     # Package
