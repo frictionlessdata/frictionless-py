@@ -15,8 +15,8 @@ class Result(BaseModel):
     path: str
 
 
-@router.post("/file/move")
-def server_file_move(request: Request, props: Props) -> Result:
+@router.post("/folder/move")
+def server_folder_move(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
     path = project.folder_move(props.path, folder=props.folder)
     return Result(path=path)

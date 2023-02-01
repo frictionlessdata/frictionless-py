@@ -16,7 +16,7 @@ class Result(BaseModel):
 
 
 @router.post("/folder/copy")
-def server_file_copy(request: Request, props: Props) -> Result:
+def server_folder_copy(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
     path = project.folder_copy(props.path, folder=props.folder)
     return Result(path=path)
