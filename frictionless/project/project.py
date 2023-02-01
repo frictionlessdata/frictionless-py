@@ -19,7 +19,7 @@ from .. import portals
 
 class IFileItem(TypedDict):
     path: str
-    isFolder: bool
+    type: str
 
 
 class Project:
@@ -115,19 +115,20 @@ class Project:
                 if file.startswith("."):
                     continue
                 path = os.path.join(basepath, file)
-                items.append({"path": path, "isFolder": False})
+                type = "package" if file == "datapackage.json" else "file"
+                items.append({"path": path, "type": type})
             for folder in folders:
                 if folder.startswith("."):
                     continue
                 path = os.path.join(basepath, folder)
-                items.append({"path": path, "isFolder": True})
+                items.append({"path": path, "type": "folder"})
         items = list(sorted(items, key=lambda item: f'{item["path"]}'))
         return items
 
     def file_list_plain(self, *, exclude_folders: bool = False) -> List[str]:
         paths = []
         for item in self.file_list():
-            if exclude_folders and item["isFolder"]:
+            if exclude_folders and item["type"] == "folder":
                 continue
             paths.append(item["path"])
         return paths

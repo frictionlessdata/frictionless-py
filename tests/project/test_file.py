@@ -22,8 +22,8 @@ def test_project_file_copy(tmpdir):
     assert project.file_read(name1) == bytes1
     assert project.file_read(name2) == bytes1
     assert project.file_list() == [
-        {"path": name1, "isFolder": False},
-        {"path": name2, "isFolder": False},
+        {"path": name1, "type": "file"},
+        {"path": name2, "type": "file"},
     ]
 
 
@@ -36,8 +36,8 @@ def test_project_file_copy_target_exists(tmpdir):
     assert project.file_read(name1) == bytes1
     assert project.file_read(name1copy) == bytes1
     assert project.file_list() == [
-        {"path": name1copy, "isFolder": False},
-        {"path": name1, "isFolder": False},
+        {"path": name1copy, "type": "file"},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -52,10 +52,10 @@ def test_project_file_copy_dir(tmpdir):
     assert helpers.read_file(tmpdir / path1, "rb") == bytes1
     assert helpers.read_file(tmpdir / path2, "rb") == bytes1
     assert project.file_list() == [
-        {"path": dir1, "isFolder": True},
-        {"path": path1, "isFolder": False},
-        {"path": dir2, "isFolder": True},
-        {"path": path2, "isFolder": False},
+        {"path": dir1, "type": "folder"},
+        {"path": path1, "type": "file"},
+        {"path": dir2, "type": "folder"},
+        {"path": path2, "type": "file"},
     ]
 
 
@@ -68,7 +68,7 @@ def test_project_file_create(tmpdir):
     assert helpers.read_file(tmpdir / name1, "rb") == bytes1
     assert path == name1
     assert project.file_list() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -79,8 +79,8 @@ def test_project_file_create_in_folder(tmpdir):
     project.file_create(path, bytes=bytes1)
     assert helpers.read_file(tmpdir / path, "rb") == bytes1
     assert project.file_list() == [
-        {"path": dir1, "isFolder": True},
-        {"path": path, "isFolder": False},
+        {"path": dir1, "type": "folder"},
+        {"path": path, "type": "file"},
     ]
 
 
@@ -92,7 +92,7 @@ def test_project_create_folder(tmpdir):
     path = project.file_create_folder(dir1)
     assert path == dir1
     assert project.file_list() == [
-        {"path": dir1, "isFolder": True},
+        {"path": dir1, "type": "folder"},
     ]
 
 
@@ -105,7 +105,7 @@ def test_project_file_delete(tmpdir):
     project.file_create(name2, bytes=bytes2)
     project.file_delete(name2)
     assert project.file_list() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -126,8 +126,8 @@ def test_project_file_list(tmpdir):
     project.file_create(name1, bytes=bytes1)
     project.file_create(name2, bytes=bytes2)
     assert project.file_list() == [
-        {"path": name1, "isFolder": False},
-        {"path": name2, "isFolder": False},
+        {"path": name1, "type": "file"},
+        {"path": name2, "type": "file"},
     ]
 
 
@@ -136,8 +136,8 @@ def test_project_file_list_with_folders(tmpdir):
     project.file_create(name1, bytes=bytes1)
     project.file_create_folder(dir1)
     assert project.file_list() == [
-        {"path": dir1, "isFolder": True},
-        {"path": name1, "isFolder": False},
+        {"path": dir1, "type": "folder"},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -161,7 +161,7 @@ def test_project_file_move(tmpdir):
     project.file_move(name1, name2)
     assert project.file_read(name2) == bytes1
     assert project.file_list() == [
-        {"path": name2, "isFolder": False},
+        {"path": name2, "type": "file"},
     ]
 
 
@@ -173,8 +173,8 @@ def test_project_file_move_into_folder(tmpdir):
     project.file_move(name1, path)
     assert project.file_read(path) == bytes1
     assert project.file_list() == [
-        {"path": dir1, "isFolder": True},
-        {"path": path, "isFolder": False},
+        {"path": dir1, "type": "folder"},
+        {"path": path, "type": "file"},
     ]
 
 
@@ -187,8 +187,8 @@ def test_project_file_move_folder(tmpdir):
     project.file_move(dir1, dir2)
     assert helpers.read_file(tmpdir / path2, "rb") == bytes1
     assert project.file_list() == [
-        {"path": dir2, "isFolder": True},
-        {"path": path2, "isFolder": False},
+        {"path": dir2, "type": "folder"},
+        {"path": path2, "type": "file"},
     ]
 
 
@@ -200,5 +200,5 @@ def test_project_file_read(tmpdir):
     project.file_create(name1, bytes=bytes1)
     assert project.file_read(name1) == bytes1
     assert project.file_list() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
