@@ -31,7 +31,7 @@ def test_project_file_copy(tmpdir):
 def test_project_file_copy_to_folder(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    project.folder_create(folder1)
+    project.file_create_folder(folder1)
     path = project.file_copy(name1, folder=folder1)
     assert path == str(Path(folder1) / name1)
     assert project.file_read(name1) == bytes1
@@ -40,6 +40,26 @@ def test_project_file_copy_to_folder(tmpdir):
         {"path": folder1, "type": "folder"},
         {"path": path, "type": "file"},
         {"path": name1, "type": "file"},
+    ]
+
+
+def test_project_file_copy_from_folder_to_folder(tmpdir):
+    path1 = str(Path(folder1) / name1)
+    path2 = str(Path(folder2) / folder1 / name1)
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create_folder(folder1)
+    project.file_create_folder(folder2)
+    project.file_create(name1, bytes=bytes1, folder=folder1)
+    path = project.file_copy(folder1, folder=folder2)
+    assert path == str(Path(folder2) / folder1)
+    assert helpers.read_file(tmpdir / path1, "rb") == bytes1
+    assert helpers.read_file(tmpdir / path2, "rb") == bytes1
+    assert project.file_list() == [
+        {"path": folder1, "type": "folder"},
+        {"path": path1, "type": "file"},
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / folder1), "type": "folder"},
+        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
     ]
 
 
@@ -58,13 +78,25 @@ def test_project_file_create(tmpdir):
 
 def test_project_file_create_in_folder(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    project.folder_create(folder1)
+    project.file_create_folder(folder1)
     path = project.file_create(name1, bytes=bytes1, folder=folder1)
     assert path == str(Path(folder1) / name1)
     assert helpers.read_file(tmpdir / path, "rb") == bytes1
     assert project.file_list() == [
         {"path": folder1, "type": "folder"},
         {"path": path, "type": "file"},
+    ]
+
+
+# Create folder
+
+
+def test_project_file_create_folder(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    path = project.file_create_folder(folder1)
+    assert path == folder1
+    assert project.file_list() == [
+        {"path": folder1, "type": "folder"},
     ]
 
 
@@ -79,6 +111,14 @@ def test_project_file_delete(tmpdir):
     assert project.file_list() == [
         {"path": name1, "type": "file"},
     ]
+
+
+def test_project_file_delete_folder(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create_folder(folder1)
+    project.file_create(name1, bytes=bytes1, folder=folder1)
+    project.file_delete(folder1)
+    assert project.file_list() == []
 
 
 # List
@@ -97,17 +137,20 @@ def test_project_file_list(tmpdir):
 def test_project_file_list_with_folders(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    project.folder_create(folder1)
+    project.file_create_folder(folder1)
     assert project.file_list() == [
         {"path": folder1, "type": "folder"},
         {"path": name1, "type": "file"},
     ]
 
 
+# List plain
+
+
 def test_project_file_list_plain(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    project.folder_create(folder1)
+    project.file_create_folder(folder1)
     assert project.file_list_plain() == [folder1, name1]
     assert project.file_list_plain(exclude_folders=True) == [name1]
 
@@ -118,13 +161,29 @@ def test_project_file_list_plain(tmpdir):
 def test_project_file_move(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    project.folder_create(folder1)
+    project.file_create_folder(folder1)
     path = project.file_move(name1, folder=folder1)
     assert path == str(Path(folder1) / name1)
     assert project.file_read(path) == bytes1
     assert project.file_list() == [
         {"path": folder1, "type": "folder"},
         {"path": path, "type": "file"},
+    ]
+
+
+def test_project_file_move_folder(tmpdir):
+    path2 = str(Path(folder2) / folder1 / name1)
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create_folder(folder1)
+    project.file_create_folder(folder2)
+    project.file_create(name1, bytes=bytes1, folder=folder1)
+    path = project.file_move(folder1, folder=folder2)
+    assert path == str(Path(folder2) / folder1)
+    assert helpers.read_file(tmpdir / path2, "rb") == bytes1
+    assert project.file_list() == [
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / folder1), "type": "folder"},
+        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
     ]
 
 

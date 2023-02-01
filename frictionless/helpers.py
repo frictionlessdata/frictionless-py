@@ -181,11 +181,6 @@ def ensure_dir(path: str) -> None:
         os.makedirs(path)
 
 
-def move_file(source: str, target: str) -> str:
-    ensure_dir(target)
-    return shutil.move(source, target)
-
-
 def copy_file(source: str, target: str) -> str:
     if isinstance(source, (tuple, list)):
         source = os.path.join(*source)
@@ -198,6 +193,16 @@ def copy_file(source: str, target: str) -> str:
 def copy_folder(source: str, target: str) -> str:
     ensure_dir(target)
     return shutil.copytree(source, target)
+
+
+def move_file(source: str, target: str) -> str:
+    ensure_dir(target)
+    return shutil.move(source, target)
+
+
+def move_folder(source: str, target: str) -> str:
+    ensure_dir(target)
+    return shutil.move(source, target)
 
 
 def write_file(path: str, body: Any, *, mode: str = "wt"):
