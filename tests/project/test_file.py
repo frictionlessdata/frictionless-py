@@ -197,3 +197,27 @@ def test_project_file_read(tmpdir):
     assert project.file_list() == [
         {"path": name1, "type": "file"},
     ]
+
+
+# Rename
+
+
+def test_project_file_reaname(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create(name1, bytes=bytes1)
+    project.file_rename(name1, name=name2)
+    assert project.file_read(name2) == bytes1
+    assert project.file_list() == [
+        {"path": name2, "type": "file"},
+    ]
+
+
+def test_project_file_reaname_folder(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.file_create_folder(folder1)
+    project.file_create(name1, bytes=bytes1, folder=folder1)
+    project.file_rename(folder1, name=folder2)
+    assert project.file_list() == [
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / name1), "type": "file"},
+    ]

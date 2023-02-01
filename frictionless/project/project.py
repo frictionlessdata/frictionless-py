@@ -159,7 +159,6 @@ class Project:
         target = str(self.public / folder / name)
         target = deduplicate_path(target)
         assert os.path.isdir(basetarget)
-        assert not os.path.exists(target)
         # File
         if os.path.isfile(source):
             helpers.move_file(source, target)
@@ -178,6 +177,23 @@ class Project:
         assert os.path.isfile(path)
         bytes = helpers.read_file(path, "rb")
         return bytes
+
+    def file_rename(self, path: str, *, name: str) -> str:
+        folder = os.path.dirname(path)
+        source = str(self.public / path)
+        target = str(self.public / folder / name)
+        assert not os.path.exists(target)
+        # File
+        if os.path.isfile(source):
+            helpers.move_file(source, target)
+        # Folder
+        elif os.path.isdir(source):
+            helpers.move_folder(source, target)
+        # Missing
+        else:
+            raise FrictionlessException("file doesn't exist")
+        path = str(Path(target).relative_to(self.public))
+        return path
 
     # Package
 
