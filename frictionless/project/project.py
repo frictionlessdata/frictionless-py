@@ -4,7 +4,8 @@ import datetime
 import secrets
 import shutil
 from pathlib import Path
-from typing import Optional, TypedDict, List
+from typing import Optional, List
+from typing_extensions import TypedDict
 from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
