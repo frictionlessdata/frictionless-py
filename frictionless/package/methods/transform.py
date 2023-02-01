@@ -26,7 +26,6 @@ def transform(self: Package, pipeline: Pipeline):
 
     # Run transforms
     for step in pipeline.steps:
-
         # Transform
         try:
             step.transform_package(self)

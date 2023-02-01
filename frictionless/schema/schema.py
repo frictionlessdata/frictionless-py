@@ -27,7 +27,6 @@ class Schema(Metadata):
     """
 
     def __attrs_post_init__(self):
-
         # Connect fields
         for field in self.fields:
             field.schema = self

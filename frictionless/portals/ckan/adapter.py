@@ -228,7 +228,6 @@ def set_headers(adapter: CkanAdapter) -> dict:
 def make_ckan_request(
     endpoint, *, method="GET", headers=None, apikey=None, **options
 ) -> dict:
-
     response_json: dict = {}
     # Handle headers
     if headers is None:

@@ -33,7 +33,6 @@ def test_type_custom_detect(enable_custom_plugin):
 
 @pytest.fixture
 def enable_custom_plugin():
-
     # Field
     class CustomField(Field):
         type = "custom"

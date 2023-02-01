@@ -48,7 +48,6 @@ class GeojsonField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return json.dumps(cell)

@@ -19,7 +19,6 @@ def test_program_convert_yaml():
 
 
 def test_program_convert_markdown_with_path(tmpdir):
-
     # Write
     output_file_path = f"{tmpdir}/package.md"
     result = runner.invoke(
@@ -34,7 +33,6 @@ def test_program_convert_markdown_with_path(tmpdir):
 
 
 def test_program_convert_yaml_with_path(tmpdir):
-
     # Write
     output_file_path = f"{tmpdir}/package.yaml"
     result = runner.invoke(
@@ -50,7 +48,6 @@ def test_program_convert_yaml_with_path(tmpdir):
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_convert_er_diagram(tmpdir):
-
     # Write
     output_file_path = f"{tmpdir}/package.dot"
     result = runner.invoke(
@@ -69,7 +66,6 @@ def test_program_convert_er_diagram(tmpdir):
 
 
 def test_program_convert_er_diagram_error(tmpdir):
-
     # Write
     output_file_path = f"{tmpdir}/package.dot"
     result = runner.invoke(

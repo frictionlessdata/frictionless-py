@@ -18,7 +18,6 @@ class YearmonthField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
             if isinstance(cell, (tuple, list)):
@@ -44,7 +43,6 @@ class YearmonthField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return f"{cell.year}-{cell.month:02}"

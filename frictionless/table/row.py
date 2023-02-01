@@ -252,7 +252,6 @@ class Row(dict):
     # Process
 
     def __process(self, key=None):
-
         # NOTE:
         # This algorithm might be improved especially for some
         # scenarios like full processing after random access etc
@@ -280,7 +279,6 @@ class Row(dict):
 
         # Iterate cells
         for field_mapping, source in iterator:
-
             # Prepare context
             if field_mapping is None:
                 break

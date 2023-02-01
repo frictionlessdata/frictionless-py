@@ -106,7 +106,6 @@ class CkanStorage:
                 response = dict(result=dict(records=[]))
 
     def __read_convert_type(self, ckan_type=None):
-
         # Create mapping
         mapping = {
             "int": "integer",
@@ -215,7 +214,6 @@ class CkanStorage:
         )
 
     def __write_convert_type(self, type=None):
-
         # Create mapping
         mapping = {
             "number": "float",
@@ -248,7 +246,6 @@ class CkanStorage:
 
         # Delete resources
         for name in names:
-
             # Check existent
             if name not in existent_names:
                 if not ignore:
@@ -285,7 +282,6 @@ class CkanStorage:
 
 
 def make_ckan_request(url, method="GET", headers=None, apikey=None, **options):
-
     # Handle headers
     if headers is None:
         headers = {}
@@ -303,7 +299,6 @@ def make_ckan_request(url, method="GET", headers=None, apikey=None, **options):
 
 
 def get_ckan_error(response):
-
     # Get an error
     try:
         ckan_error = None

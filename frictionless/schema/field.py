@@ -143,7 +143,6 @@ class Field(Metadata):
         return cell_reader
 
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
             return cell
@@ -182,7 +181,6 @@ class Field(Metadata):
         return cell_writer
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return str(cell)

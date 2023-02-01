@@ -31,7 +31,6 @@ class BooleanField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create mapping
         mapping = {}
         for value in self.true_values:
@@ -51,7 +50,6 @@ class BooleanField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return self.true_values[0] if cell else self.false_values[0]

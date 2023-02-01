@@ -191,7 +191,6 @@ class InquiryTask(Metadata):
 
     @classmethod
     def metadata_transform(cls, descriptor):
-
         # Source (framework/v4)
         source = descriptor.pop("source", None)
         if source:
