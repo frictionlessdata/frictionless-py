@@ -8,15 +8,14 @@ from ..router import router
 class Props(BaseModel):
     session: Optional[str]
     path: str
-    folder: str
 
 
 class Result(BaseModel):
     path: str
 
 
-@router.post("/file/move")
-def server_file_move(request: Request, props: Props) -> Result:
+@router.post("/folder/delete")
+def server_folder_delete(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.file_move(props.path, folder=props.folder)
-    return Result(path=path)
+    project.folder_delete(props.path)
+    return Result(path=props.path)

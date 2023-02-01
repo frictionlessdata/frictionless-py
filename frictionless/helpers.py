@@ -174,29 +174,30 @@ def merge_jsonschema(base, head):
     return result
 
 
-def ensure_dir(path):
-    dirpath = os.path.dirname(path)
-    if dirpath and not os.path.exists(dirpath):
-        os.makedirs(dirpath)
+def ensure_dir(path: str) -> None:
+    if not os.path.isdir(path):
+        path = os.path.dirname(path)
+    if path and not os.path.exists(path):
+        os.makedirs(path)
 
 
-def move_file(source: str, target: str):
+def move_file(source: str, target: str) -> str:
     ensure_dir(target)
-    shutil.move(source, target)
+    return shutil.move(source, target)
 
 
-def copy_file(source: str, target: str):
+def copy_file(source: str, target: str) -> str:
     if isinstance(source, (tuple, list)):
         source = os.path.join(*source)
     if isinstance(target, (tuple, list)):
         target = os.path.join(*target)
     ensure_dir(target)
-    shutil.copy(source, target)
+    return shutil.copy(source, target)
 
 
-def copy_folder(source: str, target: str):
+def copy_folder(source: str, target: str) -> str:
     ensure_dir(target)
-    shutil.copytree(source, target)
+    return shutil.copytree(source, target)
 
 
 def write_file(path: str, body: Any, *, mode: str = "wt"):
