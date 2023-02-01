@@ -17,19 +17,16 @@ bytes3 = b'{"key": "value"}'
 def test_project_resource_read_bytes(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    assert project.file_list() == [name1]
     assert project.resource_read_bytes(name1) == bytes1
 
 
 def test_project_resource_read_data(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes3)
-    assert project.file_list() == [name1]
     assert project.resource_read_data(name1) == json.loads(bytes3)
 
 
 def test_project_resource_read_text(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    assert project.file_list() == [name1]
     assert project.resource_read_text(name1) == bytes1.decode("utf-8")

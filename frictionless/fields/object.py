@@ -18,7 +18,6 @@ class ObjectField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
             if not isinstance(cell, dict):
@@ -37,7 +36,6 @@ class ObjectField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return json.dumps(cell)

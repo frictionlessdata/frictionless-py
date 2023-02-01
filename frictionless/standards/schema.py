@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TypedDict, Dict, List, Union, Literal
-from typing_extensions import Required
+from typing import Dict, List, Union, Literal
+from typing_extensions import Required, TypedDict
 
 
 class ISchema(TypedDict, total=False):

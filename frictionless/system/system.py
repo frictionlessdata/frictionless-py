@@ -160,7 +160,6 @@ class System:
         standards: Optional[IStandards] = None,
         http_session: Optional[Any] = None,
     ):
-
         # Current
         current_trusted = self.trusted
         current_onerror = self.onerror

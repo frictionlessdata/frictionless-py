@@ -66,7 +66,6 @@ def validate(
 
     # Validate data
     with self:
-
         # Validate start
         for index, check in enumerate(checks):
             for error in check.validate_start():

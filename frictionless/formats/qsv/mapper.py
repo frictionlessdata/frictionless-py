@@ -5,7 +5,6 @@ from ...schema import Schema, Field
 
 
 class QsvMapper(Mapper):
-
     # Read
 
     def read_schema(self, stats: List[dict]) -> Schema:

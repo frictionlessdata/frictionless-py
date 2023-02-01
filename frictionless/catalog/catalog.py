@@ -31,7 +31,6 @@ class Catalog(Metadata):
         # Software
         basepath: Optional[str] = None,
     ):
-
         # Store state
         self.name = name
         self.title = title
@@ -52,7 +51,6 @@ class Catalog(Metadata):
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
         if source is not None or control is not None:
-
             # Adapter
             adapter = system.create_adapter(source, control=control)
             if adapter:

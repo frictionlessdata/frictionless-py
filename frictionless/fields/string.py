@@ -20,7 +20,6 @@ class StringField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Uri
         if self.format == "uri":
 
@@ -95,7 +94,6 @@ class StringField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return str(cell)

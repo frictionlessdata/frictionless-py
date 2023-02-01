@@ -16,7 +16,6 @@ class JsonschemaMapper(Mapper):
         properties = profile.get("properties", {})
         assert isinstance(properties, dict)
         for name, prop in properties.items():
-
             # Type
             type = prop.get("type", "any")
             assert isinstance(type, str)

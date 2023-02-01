@@ -11,7 +11,6 @@ from frictionless import Package, Resource, Dialect, platform
 
 @mock_s3
 def test_s3_loader(bucket_name):
-
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
     bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")  # type: ignore
@@ -58,7 +57,6 @@ def test_s3_loader_write(bucket_name):
 @pytest.mark.ci
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_s3_loader_big_file(bucket_name):
-
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
     bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")  # type: ignore
@@ -88,7 +86,6 @@ def test_s3_loader_big_file(bucket_name):
 
 @mock_s3
 def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
-
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
     bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")  # type: ignore
@@ -117,7 +114,6 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
 
 @mock_s3
 def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
-
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
     bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")  # type: ignore

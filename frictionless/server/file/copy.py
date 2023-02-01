@@ -7,8 +7,8 @@ from ..router import router
 
 class Props(BaseModel):
     session: Optional[str]
-    source: str
-    target: str
+    path: str
+    folder: Optional[str]
 
 
 class Result(BaseModel):
@@ -19,5 +19,5 @@ class Result(BaseModel):
 def server_file_copy(request: Request, props: Props) -> Result:
     # TODO: why do we need to provide type explicetly?
     project: Project = request.app.get_project(props.session)
-    project.file_copy(props.source, props.target)
-    return Result(path=props.target)
+    path = project.file_copy(props.path, folder=props.folder)
+    return Result(path=path)

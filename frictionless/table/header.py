@@ -118,7 +118,6 @@ class Header(list):
     # Process
 
     def __process(self):
-
         # Skip missing
         if self.missing:
             return
