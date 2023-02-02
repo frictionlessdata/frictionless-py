@@ -49,7 +49,7 @@ class Database:
                 TABLE_NAME_RESOURCES,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
-                sa.Column("table_name", sa.Text, unique=True),
+                sa.Column("tableName", sa.Text, unique=True),
                 sa.Column("updated", sa.DateTime),
                 sa.Column("resource", sa.Text),
                 sa.Column("report", sa.Text),
@@ -91,7 +91,7 @@ class Database:
             # Create new table
             table = self.mapper.write_schema(
                 resource.schema,
-                table_name=table_name,  # type: ignore
+                table_name=table_name,
                 with_metadata=True,
             )
             table.to_metadata(self.metadata)
@@ -118,7 +118,7 @@ class Database:
             self.connection.execute(
                 self.index.insert().values(
                     path=resource.path,
-                    table_name=table.name,
+                    tableName=table.name,
                     updated=datetime.now(),
                     resource=resource.to_json(),
                     report=report.to_json(),
@@ -137,14 +137,14 @@ class Database:
         return path
 
     def list_resources(self) -> List[IResourceListItem]:
-        columns = [self.index.c.path, self.index.c.table_name, self.index.c.updated]
+        columns = [self.index.c.path, self.index.c.tableName, self.index.c.updated]
         records = self.connection.execute(self.index.select().with_only_columns(columns))
         items: List[IResourceListItem] = []
         for record in records:
             item = IResourceListItem(
                 path=record["path"],
                 updated=record["updated"],
-                tableName=record["table_name"],
+                tableName=record["tableName"],
             )
             items.append(item)
         return items
@@ -152,7 +152,7 @@ class Database:
     def query_resources(self, query: str) -> IQueryResult:
         sa = platform.sqlalchemy
         records = self.connection.execute(sa.text(query))
-        return [record.__dict__ for record in records]
+        return [record._asdict() for record in records]
 
     def read_resource(self, path: str) -> Optional[IResourceItem]:
         query = self.index.select(self.index.c.path == path)
@@ -161,7 +161,7 @@ class Database:
             return IResourceItem(
                 path=record["path"],
                 updated=record["updated"],
-                tableName=record["table_name"],
+                tableName=record["tableName"],
                 resource=json.loads(record["resource"]),
                 report=json.loads(record["report"]),
             )
