@@ -267,6 +267,28 @@ class Project:
     def resource_read(self, path: str) -> Optional[IRecord]:
         return self.database.read_resource(path)
 
+    # TODO: rewrite
+    def resource_read_table(
+        self,
+        path: str,
+        *,
+        valid: Optional[bool] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> ITable:
+        record = self.database.read_resource(path)
+        assert record
+        query = f'select * from "%s"' % record["tableName"]
+        if valid is not None:
+            query = "%s where _rowValid = %s" % (query, valid)
+        if limit:
+            query = "%s limit %s" % (query, limit)
+            if offset:
+                query = "%s offset %s" % (query, offset)
+        table = self.database.query_resources(query)
+        table["tableSchema"] = record["resource"]["schema"]
+        return table
+
     def resource_update(self, path: str):
         self.database.update_resource(path)
 
