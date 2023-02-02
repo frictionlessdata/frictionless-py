@@ -1,7 +1,7 @@
-from typing import Optional, Any
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project
+from ...project import Project, IResourceItem
 from ..router import router
 
 
@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: Optional[Any]
+    item: Optional[IResourceItem]
 
 
 @router.post("/resource/read")
 def server_resource_read(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.resource_read(props.path)
-    return Result(record=record)
+    item = project.resource_read(props.path)
+    return Result(item=item)

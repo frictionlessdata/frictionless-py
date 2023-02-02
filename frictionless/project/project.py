@@ -4,23 +4,18 @@ import datetime
 import secrets
 import shutil
 from pathlib import Path
-from typing import Optional, List
-from typing_extensions import TypedDict
+from typing import Optional, List, Any
 from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
 from .database import Database
+from .interfaces import IFileItem, IQueryResult, IResourceItem, IResourceListItem
 from .. import settings
 from .. import helpers
 from .. import portals
 
 # TODO: handle method errors?
 # TODO: ensure that path is safe for all the methods
-
-
-class IFileItem(TypedDict):
-    path: str
-    type: str
 
 
 class Project:
@@ -162,6 +157,7 @@ class Project:
         path = str(Path(target).relative_to(self.public))
         return path
 
+    # TODO: use Resource?
     # TODO: use streaming?
     def file_read(self, path: str) -> bytes:
         path = str(self.public / path)
@@ -249,55 +245,23 @@ class Project:
 
     # Resource
 
-    def resource_create(self, path: str):
+    def resource_create(self, path: str) -> IResourceItem:
         path = str(self.public / path)
         resource = Resource(path=path)
         record = self.database.create_resource(resource)
         return record
 
-    def resource_delete(self, path: str):
-        self.database.delete_resource(path)
+    def resource_delete(self, path: str) -> str:
+        return self.database.delete_resource(path)
 
-    def resource_describe(self, path: str):
-        pass
-
-    def resource_extract(self, path: str):
-        pass
-
-    def resource_list(self):
+    def resource_list(self) -> List[IResourceListItem]:
         return self.database.list_resources()
 
-    def resource_read(self, path: str):
+    def resource_query(self, query: str) -> IQueryResult:
+        return self.database.query_resources(query)
+
+    def resource_read(self, path: str) -> Optional[IResourceItem]:
         return self.database.read_resource(path)
-
-    # TODO: use streaming?
-    # TODO: rebase on using resource's metadata if available
-    def resource_read_bytes(self, path: str):
-        path = str(self.public / path)
-        assert os.path.isfile(path)
-        with Resource(path=path) as resource:
-            bytes = resource.read_bytes()
-            return bytes
-
-    # TODO: rebase on using resource's metadata if available
-    def resource_read_data(self, path: str):
-        path = str(self.public / path)
-        assert os.path.isfile(path)
-        with Resource(path=path) as resource:
-            data = resource.read_data()
-            return data
-
-    # TODO: use streaming?
-    # TODO: rebase on resource's metadata or accept encoding?
-    def resource_read_text(self, path: str):
-        path = str(self.public / path)
-        assert os.path.isfile(path)
-        with Resource(path=path) as resource:
-            text = resource.read_text()
-            return text
-
-    def resource_transform(self, path: str):
-        pass
 
     def resource_update(self, path: str):
         self.database.update_resource(path)

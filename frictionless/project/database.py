@@ -1,10 +1,10 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Optional, List
 from datetime import datetime
 from functools import cached_property
 from ..platform import platform
-from .record import IRecord
+from .interfaces import IQueryResult, IResourceItem, IResourceListItem, IQueryResult
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -57,29 +57,9 @@ class Database:
             index.create(self.connection)
         return index
 
-    # Query
-
-    def query(self, query: str):
-        sa = platform.sqlalchemy
-        result = self.connection.execute(sa.text(query)).mappings()
-        return list(result)
-
     # Resources
 
-    def list_resources(self):
-        return list(
-            self.connection.execute(
-                self.index.select().with_only_columns(
-                    [
-                        self.index.c.path,
-                        self.index.c.table_name,
-                        self.index.c.updated,
-                    ]
-                )
-            ).mappings()
-        )
-
-    def create_resource(self, resource: Resource, *, on_progress=None):
+    def create_resource(self, resource: Resource, *, on_progress=None) -> IResourceItem:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -90,11 +70,11 @@ class Database:
             table_names = []
             table_name = resource.name
             template = f"{table_name}%s"
-            records = self.list_resources()
-            for record in records:
-                table_names.append(record.table_name)
-                if record.path == resource.path:
-                    table_name = record.table_name
+            items = self.list_resources()
+            for item in items:
+                table_names.append(item["tableName"])
+                if item["path"] == resource.path:
+                    table_name = item["tableName"]
                     found = True
             if not found:
                 suffix = 1
@@ -134,10 +114,8 @@ class Database:
                 self.connection.execute(table.insert().values(buffer))
 
             # Register resource
+            self.connection.execute(self.index.delete(self.index.c.path == resource.path))
             self.connection.execute(
-                self.index.delete(self.index.c.table_name == table.name)
-            )
-            return self.connection.execute(
                 self.index.insert().values(
                     path=resource.path,
                     table_name=table.name,
@@ -145,22 +123,49 @@ class Database:
                     resource=resource.to_json(),
                     report=report.to_json(),
                 )
-            ).mappings()
+            )
 
-    def read_resource(self, path: str) -> Optional[IRecord]:
+            # Return resource item
+            item = self.read_resource(resource.path)
+            assert item
+            return item
+
+    # TODO: remove table
+    def delete_resource(self, path: str) -> str:
+        with self.connection.begin():
+            self.connection.execute(self.index.delete(self.index.c.path == path))
+        return path
+
+    def list_resources(self) -> List[IResourceListItem]:
+        columns = [self.index.c.path, self.index.c.table_name, self.index.c.updated]
+        records = self.connection.execute(self.index.select().with_only_columns(columns))
+        items: List[IResourceListItem] = []
+        for record in records:
+            item = IResourceListItem(
+                path=record["path"],
+                updated=record["updated"],
+                tableName=record["table_name"],
+            )
+            items.append(item)
+        return items
+
+    def query_resources(self, query: str) -> IQueryResult:
+        sa = platform.sqlalchemy
+        records = self.connection.execute(sa.text(query))
+        return [record.__dict__ for record in records]
+
+    def read_resource(self, path: str) -> Optional[IResourceItem]:
         query = self.index.select(self.index.c.path == path)
-        record = self.connection.execute(query).mappings().first()
+        record = self.connection.execute(query).first()
         if record:
-            record = dict(record)
-            record["resource"] = json.loads(record["resource"])
-            record["report"] = json.loads(record["report"])
-            return cast(IRecord, record)
+            return IResourceItem(
+                path=record["path"],
+                updated=record["updated"],
+                tableName=record["table_name"],
+                resource=json.loads(record["resource"]),
+                report=json.loads(record["report"]),
+            )
 
     # TODO: implement
     def update_resource(self, path: str):
         pass
-
-    # TODO: remove table
-    def delete_resource(self, path: str):
-        with self.connection.begin():
-            self.connection.execute(self.index.delete(self.index.c.path == path))
