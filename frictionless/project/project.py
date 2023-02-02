@@ -247,8 +247,7 @@ class Project:
 
     def resource_create(self, path: str) -> IResourceItem:
         resource = Resource(path=path, basepath=str(self.public))
-        record = self.database.create_resource(resource)
-        return record
+        return self.database.create_resource(resource)
 
     def resource_delete(self, path: str) -> str:
         return self.database.delete_resource(path)
@@ -258,6 +257,12 @@ class Project:
 
     def resource_query(self, query: str) -> ITable:
         return self.database.query_resources(query)
+
+    def resource_provide(self, path: str) -> IResourceItem:
+        item = self.resource_read(path)
+        if not item:
+            item = self.resource_create(path)
+        return item
 
     def resource_read(self, path: str) -> Optional[IResourceItem]:
         return self.database.read_resource(path)
