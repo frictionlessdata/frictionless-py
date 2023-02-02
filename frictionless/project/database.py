@@ -143,7 +143,7 @@ class Database:
         for record in records:
             item = IResourceListItem(
                 path=record["path"],
-                updated=record["updated"],
+                updated=record["updated"].isoformat(),
                 tableName=record["tableName"],
             )
             items.append(item)
@@ -160,7 +160,7 @@ class Database:
         if record:
             return IResourceItem(
                 path=record["path"],
-                updated=record["updated"],
+                updated=record["updated"].isoformat(),
                 tableName=record["tableName"],
                 resource=json.loads(record["resource"]),
                 report=json.loads(record["report"]),

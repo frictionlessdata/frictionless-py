@@ -246,8 +246,7 @@ class Project:
     # Resource
 
     def resource_create(self, path: str) -> IResourceItem:
-        path = str(self.public / path)
-        resource = Resource(path=path)
+        resource = Resource(path=path, basepath=str(self.public))
         record = self.database.create_resource(resource)
         return record
 
