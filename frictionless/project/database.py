@@ -50,8 +50,9 @@ class Database:
                 TABLE_NAME_RESOURCES,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
+                sa.Column("type", sa.Text),
                 sa.Column("updated", sa.DateTime),
-                sa.Column("tableName", sa.Text, unique=True),
+                sa.Column("tableName", sa.Text, unique=True, nullable=True),
                 sa.Column("resource", sa.Text),
                 sa.Column("report", sa.Text),
             )
@@ -64,69 +65,75 @@ class Database:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
-            buffer = []
+            report = None
+            table = None
 
-            # Get table name
-            found = False
-            table_names = []
-            table_name = resource.name
-            template = f"{table_name}%s"
-            items = self.list_resources()
-            for item in items:
-                table_names.append(item["tableName"])
-                if item["path"] == resource.path:
-                    table_name = item["tableName"]
-                    found = True
-            if not found:
-                suffix = 1
-                while table_name in table_names:
-                    table_name = template % suffix
-                    suffix += 1
+            # Table
+            if resource.type == "table":
+                buffer = []
 
-            # Remove existing table
-            existing_table = self.metadata.tables.get(table_name)
-            if existing_table is not None:
-                existing_table.drop(self.connection)
-                self.metadata.remove(existing_table)
+                # Get table name
+                found = False
+                table_names = []
+                table_name = resource.name
+                template = f"{table_name}%s"
+                items = self.list_resources()
+                for item in items:
+                    table_names.append(item["tableName"])
+                    if item["path"] == resource.path:
+                        table_name = item["tableName"]
+                        found = True
+                if not found:
+                    suffix = 1
+                    while table_name in table_names:
+                        table_name = template % suffix
+                        suffix += 1
 
-            # Create new table
-            table = self.mapper.write_schema(
-                resource.schema,
-                table_name=table_name,
-                with_metadata=True,
-            )
-            table.to_metadata(self.metadata)
-            table.create(self.connection)
+                # Remove existing table
+                existing_table = self.metadata.tables.get(table_name)
+                if existing_table is not None:
+                    existing_table.drop(self.connection)
+                    self.metadata.remove(existing_table)
 
-            # Write row
-            def on_row(row):
-                cells = self.mapper.write_row(row)
-                cells = [row.row_number, row.valid] + cells
-                buffer.append(cells)
-                if len(buffer) > BUFFER_SIZE:
+                # Create new table
+                table = self.mapper.write_schema(
+                    resource.schema,
+                    table_name=table_name,  # type: ignore
+                    with_metadata=True,
+                )
+                table.to_metadata(self.metadata)
+                table.create(self.connection)
+
+                # Write row
+                def on_row(row):
+                    cells = self.mapper.write_row(row)
+                    cells = [row.row_number, row.valid] + cells
+                    buffer.append(cells)
+                    if len(buffer) > BUFFER_SIZE:
+                        self.connection.execute(table.insert().values(buffer))
+                        buffer.clear()
+                    if on_progress:
+                        on_progress(f"{resource.stats.rows} rows")
+
+                # Validate/iterate
+                report = resource.validate(on_row=on_row)
+                if len(buffer):
                     self.connection.execute(table.insert().values(buffer))
-                    buffer.clear()
-                if on_progress:
-                    on_progress(f"{resource.stats.rows} rows")
-
-            # Validate/iterate
-            report = resource.validate(on_row=on_row)
-            if len(buffer):
-                self.connection.execute(table.insert().values(buffer))
 
             # Register resource
             self.connection.execute(self.index.delete(self.index.c.path == resource.path))
             self.connection.execute(
                 self.index.insert().values(
                     path=resource.path,
-                    tableName=table.name,
+                    type=resource.type,
+                    tableName=table.name if table is not None else None,
                     updated=datetime.now(),
                     resource=resource.to_json(),
-                    report=report.to_json(),
+                    report=report.to_json() if report is not None else {},
                 )
             )
 
-            # Return resource item
+            # Return record
             record = self.read_resource(resource.path)
             assert record
             return record
@@ -138,12 +145,21 @@ class Database:
         return path
 
     def list_resources(self) -> List[IListedRecord]:
-        columns = [self.index.c.path, self.index.c.updated, self.index.c.tableName]
-        result = self.connection.execute(self.index.select().with_only_columns(columns))
+        result = self.connection.execute(
+            self.index.select().with_only_columns(
+                [
+                    self.index.c.path,
+                    self.index.c.type,
+                    self.index.c.updated,
+                    self.index.c.tableName,
+                ]
+            )
+        )
         records: List[IListedRecord] = []
         for row in result:
             record = IListedRecord(
                 path=row["path"],
+                type=row["type"],
                 updated=row["updated"].isoformat(),
                 tableName=row["tableName"],
             )
@@ -164,6 +180,7 @@ class Database:
         if row:
             return IRecord(
                 path=row["path"],
+                type=row["type"],
                 updated=row["updated"].isoformat(),
                 tableName=row["tableName"],
                 resource=json.loads(row["resource"]),

@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from typing_extensions import TypedDict
 
 
@@ -9,8 +9,9 @@ class IFileItem(TypedDict):
 
 class IListedRecord(TypedDict):
     path: str
+    type: str
     updated: str
-    tableName: str
+    tableName: Optional[str]
 
 
 class IRecord(IListedRecord):

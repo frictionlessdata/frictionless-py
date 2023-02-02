@@ -18,6 +18,7 @@ def test_project_resource_create(tmpdir):
     record = project.resource_create(name1)
     table = project.resource_query("SELECT * FROM name1")
     assert record["path"] == name1
+    assert record["type"] == "table"
     assert record["updated"]
     assert record["tableName"] == "name1"
     assert record["resource"]["path"] == name1
