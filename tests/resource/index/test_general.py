@@ -84,6 +84,7 @@ def test_resource_index_sqlite_with_metadata(database_url):
     assert len(items) == 1
     assert item is not None
     assert item["path"] == "data/table.csv"
+    assert item["updated"]
     assert item["tableName"] == "table"
     assert item["resource"]["path"] == "data/table.csv"  # type: ignore
     assert item["report"]["valid"] == True  # type: ignore

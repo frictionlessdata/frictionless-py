@@ -49,8 +49,8 @@ class Database:
                 TABLE_NAME_RESOURCES,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
-                sa.Column("tableName", sa.Text, unique=True),
                 sa.Column("updated", sa.DateTime),
+                sa.Column("tableName", sa.Text, unique=True),
                 sa.Column("resource", sa.Text),
                 sa.Column("report", sa.Text),
             )
@@ -137,7 +137,7 @@ class Database:
         return path
 
     def list_resources(self) -> List[IResourceListItem]:
-        columns = [self.index.c.path, self.index.c.tableName, self.index.c.updated]
+        columns = [self.index.c.path, self.index.c.updated, self.index.c.tableName]
         records = self.connection.execute(self.index.select().with_only_columns(columns))
         items: List[IResourceListItem] = []
         for record in records:
