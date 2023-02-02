@@ -3,8 +3,9 @@ import json
 from typing import TYPE_CHECKING, Optional, List
 from datetime import datetime
 from functools import cached_property
+from ..schema import Schema
 from ..platform import platform
-from .interfaces import IQueryResult, IResourceItem, IResourceListItem, IQueryResult
+from .interfaces import IQueryResult, IResourceItem, IResourceListItem, ITable
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -149,10 +150,13 @@ class Database:
             items.append(item)
         return items
 
-    def query_resources(self, query: str) -> IQueryResult:
+    def query_resources(self, query: str) -> ITable:
         sa = platform.sqlalchemy
         records = self.connection.execute(sa.text(query))
-        return [record._asdict() for record in records]
+        rows = [record._asdict() for record in records]
+        header = list(records.keys())
+        schema = Schema.describe(rows).to_descriptor()
+        return ITable(tableSchema=schema, header=header, rows=rows)
 
     def read_resource(self, path: str) -> Optional[IResourceItem]:
         query = self.index.select(self.index.c.path == path)

@@ -1,4 +1,4 @@
-from frictionless import Project, Resource
+from frictionless import Project, Schema
 
 
 dir1 = "dir1"
@@ -16,15 +16,17 @@ def test_project_resource_create(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
     item = project.resource_create(name1)
-    data = project.resource_query("SELECT * FROM name1")
-    resource = Resource.from_descriptor(item["resource"])
+    table = project.resource_query("SELECT * FROM name1")
     assert item["path"] == name1
     assert item["updated"]
     assert item["tableName"] == "name1"
-    assert resource.path == name1
-    assert resource.schema.field_names == ["id", "name"]
-    assert resource.schema.field_types == ["integer", "string"]
-    assert data == [
+    assert item["resource"]["path"] == name1
+    assert item["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
+    assert item["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
+    assert item["resource"]["schema"]["fields"][1] == dict(name="name", type="string")
+    assert table["tableSchema"]
+    assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
+    assert table["rows"] == [
         {"_rowNumber": 2, "_rowValid": True, "id": 1, "name": "english"},
         {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "spanish"},
     ]

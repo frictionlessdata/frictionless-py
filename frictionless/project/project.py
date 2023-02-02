@@ -4,12 +4,12 @@ import datetime
 import secrets
 import shutil
 from pathlib import Path
-from typing import Optional, List, Any
+from typing import Optional, List
 from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
 from .database import Database
-from .interfaces import IFileItem, IQueryResult, IResourceItem, IResourceListItem
+from .interfaces import IFileItem, ITable, IResourceItem, IResourceListItem
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -256,7 +256,7 @@ class Project:
     def resource_list(self) -> List[IResourceListItem]:
         return self.database.list_resources()
 
-    def resource_query(self, query: str) -> IQueryResult:
+    def resource_query(self, query: str) -> ITable:
         return self.database.query_resources(query)
 
     def resource_read(self, path: str) -> Optional[IResourceItem]:

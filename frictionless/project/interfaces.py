@@ -21,4 +21,13 @@ class IResourceItem(IResourceListItem):
     #  report: IReport
 
 
+class ITable(TypedDict):
+    # TODO: rename to schema after pydantic@2
+    tableSchema: Dict
+    header: List[str]
+    rows: List[Dict[str, Any]]
+    # TODO: use after pydantic@2
+    #  schema: ISchema
+
+
 IQueryResult = List[Dict[str, Any]]
