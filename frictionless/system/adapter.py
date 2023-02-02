@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class Adapter:
-
     # Read
 
     def read_catalog(self) -> Optional[Catalog]:

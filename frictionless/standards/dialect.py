@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TypedDict, List, Union, Literal
-from typing_extensions import Required
+from typing import List, Union, Literal
+from typing_extensions import Required, TypedDict
 
 
 class IDialect(TypedDict, total=False):

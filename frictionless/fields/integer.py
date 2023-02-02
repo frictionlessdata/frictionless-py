@@ -29,7 +29,6 @@ class IntegerField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create pattern
         pattern = None
         if not self.bare_number:
@@ -65,7 +64,6 @@ class IntegerField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return str(cell)

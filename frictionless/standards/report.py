@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TypedDict, List
-from typing_extensions import Required
+from typing import List
+from typing_extensions import Required, TypedDict
 
 
 class IReport(TypedDict, total=False):

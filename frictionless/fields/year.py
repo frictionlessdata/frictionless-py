@@ -17,7 +17,6 @@ class YearField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
             if not isinstance(cell, int):
@@ -38,7 +37,6 @@ class YearField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return str(cell)

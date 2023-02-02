@@ -87,7 +87,6 @@ class Resource(Metadata):
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
     ):
-
         # Store state
         self.name = name
         self.type = type
@@ -141,14 +140,12 @@ class Resource(Metadata):
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
         if control is not None:
-
             # Control
             options.setdefault("dialect", control.to_dialect())
             if source is None:
                 return Resource(**options)
 
         if source is not None:
-
             # Path
             if isinstance(source, Path):
                 source = str(source)
@@ -600,7 +597,6 @@ class Resource(Metadata):
         """Open the resource as "io.open" does"""
         self.close()
         try:
-
             # General
             self.__prepare_file()
 
@@ -688,7 +684,6 @@ class Resource(Metadata):
         self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
-
         # Create header
         self.__header = Header(
             self.__labels,
@@ -708,7 +703,6 @@ class Resource(Metadata):
     def __prepare_lookup(self):
         self.__lookup = Lookup()
         for fk in self.schema.foreign_keys:
-
             # Prepare source
             source_name = fk["reference"]["resource"]
             source_key = tuple(fk["reference"]["fields"])
@@ -742,7 +736,6 @@ class Resource(Metadata):
                     self.__lookup[source_name][source_key].add(cells)
 
     def __prepare_row_stream(self):
-
         # TODO: we need to rework this field_info / row code
         # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields

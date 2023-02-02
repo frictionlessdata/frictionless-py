@@ -17,7 +17,6 @@ class DurationField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
             if not isinstance(cell, (platform.isodate.Duration, datetime.timedelta)):
@@ -34,7 +33,6 @@ class DurationField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             return platform.isodate.duration_isoformat(cell)

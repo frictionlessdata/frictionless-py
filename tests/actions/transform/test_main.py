@@ -31,7 +31,6 @@ def test_transform():
 
 
 def test_transform_custom_step():
-
     # Create step
     class custom(Step):
         def transform_resource(self, resource: Resource):

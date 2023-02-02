@@ -27,7 +27,6 @@ class Error(Metadata):
     tags: ClassVar[List[str]] = []
 
     def __attrs_post_init__(self):
-
         # Define static state
         self.add_defined("title")
         self.add_defined("description")
@@ -90,7 +89,6 @@ class Error(Metadata):
 
     @classmethod
     def metadata_import(cls, descriptor, **options):
-
         # Class props
         descriptor.pop("title", None)
         descriptor.pop("description", None)

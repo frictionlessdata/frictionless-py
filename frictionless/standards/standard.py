@@ -1,7 +1,8 @@
 from __future__ import annotations
 import attrs
 import pydantic
-from typing import Type, TypedDict
+from typing import Type
+from typing_extensions import TypedDict
 
 
 @attrs.define(kw_only=True)

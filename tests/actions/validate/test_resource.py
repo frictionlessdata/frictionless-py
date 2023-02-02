@@ -740,7 +740,6 @@ def test_validate_structure_errors_with_limit_errors():
 
 
 def test_validate_custom_check():
-
     # Create check
     class custom(Check):
         def validate_row(self, row):
@@ -759,7 +758,6 @@ def test_validate_custom_check():
 
 
 def test_validate_custom_check_with_arguments():
-
     # Create check
     class custom(Check):
         def __init__(self, row_number=None):

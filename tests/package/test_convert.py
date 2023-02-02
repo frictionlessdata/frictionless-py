@@ -54,7 +54,6 @@ def test_package_to_copy():
 
 
 def test_package_to_json(tmpdir):
-
     # Write
     target = os.path.join(tmpdir, "package.json")
     package = Package("data/package.json")
@@ -66,7 +65,6 @@ def test_package_to_json(tmpdir):
 
 
 def test_package_to_yaml(tmpdir):
-
     # Write
     target = os.path.join(tmpdir, "package.yaml")
     package = Package("data/package.json")

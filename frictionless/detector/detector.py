@@ -272,7 +272,6 @@ class Detector(Metadata):
             and not dialect.has_defined("header")
             and not dialect.has_defined("header_rows")
         ):
-
             # This algorithm tries to find a header row
             # that is close to average sample width or use default one
             # We use it to eleminate initial rows that are comments/etc

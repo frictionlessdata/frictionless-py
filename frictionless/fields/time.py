@@ -21,7 +21,6 @@ class TimeField(Field):
 
     # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
             if not isinstance(cell, time):
@@ -48,7 +47,6 @@ class TimeField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create format
         format = self.format
         if format == settings.DEFAULT_FIELD_FORMAT:

@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
 
 class Mapper:
-
     # Read
 
     def read_schema(self, *args, **kwargs) -> Schema:

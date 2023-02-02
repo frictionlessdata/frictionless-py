@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TypedDict, List, Literal, Union
-from typing_extensions import Required
+from typing import List, Literal, Union
+from typing_extensions import Required, TypedDict
 from .checklist import IChecklist
 from .pipeline import IPipeline
 from .dialect import IDialect

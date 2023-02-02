@@ -182,7 +182,6 @@ def test_resource_open_source_error_data():
 
 def test_resource_reopen():
     with Resource("data/table.csv") as resource:
-
         # Open
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [

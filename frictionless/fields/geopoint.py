@@ -18,10 +18,8 @@ class GeopointField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create reader
         def value_reader(cell):
-
             # Parse
             if isinstance(cell, str):
                 try:
@@ -59,7 +57,6 @@ class GeopointField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             if self.format == "array":

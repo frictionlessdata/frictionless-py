@@ -11,9 +11,13 @@ class Result(BaseModel):
 
 @router.post("/file/create")
 async def server_file_create(
-    request: Request, file: UploadFile = File(), session: Optional[str] = Form()
+    request: Request,
+    file: UploadFile = File(),
+    folder: Optional[str] = Form(None),
+    session: Optional[str] = Form(None),
 ) -> Result:
     project: Project = request.app.get_project(session)
+    name = file.filename
     bytes = await file.read()
-    path = project.file_create(file.filename, bytes=bytes)
+    path = project.file_create(name, bytes=bytes, folder=folder)
     return Result(path=path)

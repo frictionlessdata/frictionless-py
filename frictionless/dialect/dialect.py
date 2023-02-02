@@ -163,7 +163,6 @@ class Dialect(Metadata):
         return labels
 
     def read_fragment(self, sample):
-
         # Collect fragment
         fragment = []
         for _, cells in self.read_enumerated_content_stream(sample):

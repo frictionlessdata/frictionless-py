@@ -67,7 +67,6 @@ class Package(Metadata):
         dialect: Optional[Dialect] = None,
         catalog: Optional[Catalog] = None,
     ):
-
         # Store state
         self.name = name
         self.title = title
@@ -107,7 +106,6 @@ class Package(Metadata):
         **options,
     ):
         if source is not None or control is not None:
-
             # Path
             if isinstance(source, Path):
                 source = str(source)

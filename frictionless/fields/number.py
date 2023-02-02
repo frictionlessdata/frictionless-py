@@ -45,7 +45,6 @@ class NumberField(Field):
     # Read
 
     def create_value_reader(self):
-
         # Create pattern
         pattern = None
         if not self.bare_number:
@@ -104,7 +103,6 @@ class NumberField(Field):
     # Write
 
     def create_value_writer(self):
-
         # Create writer
         def value_writer(cell):
             if self.has_defined("group_char"):

@@ -77,7 +77,6 @@ class Step(Metadata):
 
     @classmethod
     def from_descriptor(cls, descriptor):
-
         # Type (framework/v4)
         code = descriptor.pop("code", None)
         if code:
