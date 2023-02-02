@@ -7,13 +7,13 @@ class IFileItem(TypedDict):
     type: str
 
 
-class IResourceListItem(TypedDict):
+class IListedRecord(TypedDict):
     path: str
     updated: str
     tableName: str
 
 
-class IResourceItem(IResourceListItem):
+class IRecord(IListedRecord):
     resource: dict
     report: dict
     # TODO: use after pydantic@2

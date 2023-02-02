@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IQueryResult, IResourceItem, IResourceListItem, ITable
+from .interfaces import IRecord, IListedRecord, ITable
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -60,7 +60,7 @@ class Database:
 
     # Resources
 
-    def create_resource(self, resource: Resource, *, on_progress=None) -> IResourceItem:
+    def create_resource(self, resource: Resource, *, on_progress=None) -> IRecord:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -127,9 +127,9 @@ class Database:
             )
 
             # Return resource item
-            item = self.read_resource(resource.path)
-            assert item
-            return item
+            record = self.read_resource(resource.path)
+            assert record
+            return record
 
     # TODO: remove table
     def delete_resource(self, path: str) -> str:
@@ -137,37 +137,37 @@ class Database:
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_resources(self) -> List[IResourceListItem]:
+    def list_resources(self) -> List[IListedRecord]:
         columns = [self.index.c.path, self.index.c.updated, self.index.c.tableName]
-        records = self.connection.execute(self.index.select().with_only_columns(columns))
-        items: List[IResourceListItem] = []
-        for record in records:
-            item = IResourceListItem(
-                path=record["path"],
-                updated=record["updated"].isoformat(),
-                tableName=record["tableName"],
+        result = self.connection.execute(self.index.select().with_only_columns(columns))
+        records: List[IListedRecord] = []
+        for row in result:
+            record = IListedRecord(
+                path=row["path"],
+                updated=row["updated"].isoformat(),
+                tableName=row["tableName"],
             )
-            items.append(item)
-        return items
+            records.append(record)
+        return records
 
     def query_resources(self, query: str) -> ITable:
         sa = platform.sqlalchemy
-        records = self.connection.execute(sa.text(query))
-        rows = [record._asdict() for record in records]
-        header = list(records.keys())
+        result = self.connection.execute(sa.text(query))
+        rows = [row._asdict() for row in result]
+        header = list(result.keys())
         schema = Schema.describe(rows).to_descriptor()
         return ITable(tableSchema=schema, header=header, rows=rows)
 
-    def read_resource(self, path: str) -> Optional[IResourceItem]:
+    def read_resource(self, path: str) -> Optional[IRecord]:
         query = self.index.select(self.index.c.path == path)
-        record = self.connection.execute(query).first()
-        if record:
-            return IResourceItem(
-                path=record["path"],
-                updated=record["updated"].isoformat(),
-                tableName=record["tableName"],
-                resource=json.loads(record["resource"]),
-                report=json.loads(record["report"]),
+        row = self.connection.execute(query).first()
+        if row:
+            return IRecord(
+                path=row["path"],
+                updated=row["updated"].isoformat(),
+                tableName=row["tableName"],
+                resource=json.loads(row["resource"]),
+                report=json.loads(row["report"]),
             )
 
     # TODO: implement

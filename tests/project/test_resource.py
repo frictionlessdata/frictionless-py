@@ -15,15 +15,15 @@ bytes2 = b"bytes1"
 def test_project_resource_create(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    item = project.resource_create(name1)
+    record = project.resource_create(name1)
     table = project.resource_query("SELECT * FROM name1")
-    assert item["path"] == name1
-    assert item["updated"]
-    assert item["tableName"] == "name1"
-    assert item["resource"]["path"] == name1
-    assert item["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
-    assert item["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
-    assert item["resource"]["schema"]["fields"][1] == dict(name="name", type="string")
+    assert record["path"] == name1
+    assert record["updated"]
+    assert record["tableName"] == "name1"
+    assert record["resource"]["path"] == name1
+    assert record["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
+    assert record["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
+    assert record["resource"]["schema"]["fields"][1] == dict(name="name", type="string")
     assert table["tableSchema"]
     assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
     assert table["rows"] == [

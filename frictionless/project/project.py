@@ -9,7 +9,7 @@ from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
 from .database import Database
-from .interfaces import IFileItem, ITable, IResourceItem, IResourceListItem
+from .interfaces import IFileItem, ITable, IRecord, IListedRecord
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -245,26 +245,26 @@ class Project:
 
     # Resource
 
-    def resource_create(self, path: str) -> IResourceItem:
+    def resource_create(self, path: str) -> IRecord:
         resource = Resource(path=path, basepath=str(self.public))
         return self.database.create_resource(resource)
 
     def resource_delete(self, path: str) -> str:
         return self.database.delete_resource(path)
 
-    def resource_list(self) -> List[IResourceListItem]:
+    def resource_list(self) -> List[IListedRecord]:
         return self.database.list_resources()
 
     def resource_query(self, query: str) -> ITable:
         return self.database.query_resources(query)
 
-    def resource_provide(self, path: str) -> IResourceItem:
-        item = self.resource_read(path)
-        if not item:
-            item = self.resource_create(path)
-        return item
+    def resource_provide(self, path: str) -> IRecord:
+        record = self.resource_read(path)
+        if not record:
+            record = self.resource_create(path)
+        return record
 
-    def resource_read(self, path: str) -> Optional[IResourceItem]:
+    def resource_read(self, path: str) -> Optional[IRecord]:
         return self.database.read_resource(path)
 
     def resource_update(self, path: str):
