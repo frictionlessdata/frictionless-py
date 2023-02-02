@@ -129,7 +129,7 @@ class Database:
                     tableName=table.name if table is not None else None,
                     updated=datetime.now(),
                     resource=resource.to_json(),
-                    report=report.to_json() if report is not None else {},
+                    report=report.to_json() if report is not None else "{}",
                 )
             )
 
