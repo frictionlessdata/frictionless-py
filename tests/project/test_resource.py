@@ -1,4 +1,4 @@
-from frictionless import Project, Schema
+from frictionless import Project
 
 
 dir1 = "dir1"
