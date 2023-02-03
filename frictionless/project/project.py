@@ -278,7 +278,7 @@ class Project:
     ) -> ITable:
         record = self.database.read_resource(path)
         assert record
-        query = f'select * from "%s"' % record["tableName"]
+        query = 'select * from "%s"' % record["tableName"]
         if valid is not None:
             query = "%s where _rowValid = %s" % (query, valid)
         if limit:
