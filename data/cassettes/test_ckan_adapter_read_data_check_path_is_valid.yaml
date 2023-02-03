@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - ckan=4d5a1d907a756fe42ffaf0fc571465a6acf02e25b1af64c3ccad491b8e7fe08dc575554a
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: http://localhost:5000//api/3/action/package_show?id=dataset-example
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_show",
+        "success": true, "result": {"author": "", "author_email": "", "creator_user_id":
+        "333d31c7-05fd-482a-90d2-50ccf9e1e3cc", "id": "1b26c9fe-1869-4999-954f-0f276d4bea02",
+        "isopen": false, "license_id": "", "license_title": "", "maintainer": "",
+        "maintainer_email": "", "metadata_created": "2023-01-30T07:36:45.642782",
+        "metadata_modified": "2023-01-30T09:01:11.668314", "name": "dataset-example",
+        "notes": "Capitals", "num_resources": 4, "num_tags": 0, "organization": {"id":
+        "74718664-10b5-4cdf-b46b-3e11f8751f73", "name": "frictionless-organization",
+        "title": "Frictionless", "type": "organization", "description": "Frictionless",
+        "image_url": "", "created": "2023-01-27T13:02:07.206390", "is_organization":
+        true, "approval_status": "approved", "state": "active"}, "owner_org": "74718664-10b5-4cdf-b46b-3e11f8751f73",
+        "private": false, "state": "active", "title": "dataset-example", "type": "dataset",
+        "url": "", "version": "", "resources": [{"cache_last_updated": null, "cache_url":
+        null, "created": "2023-01-30T07:47:34.626668", "datastore_active": true, "datastore_contains_all_records_of_source_file":
+        false, "description": "countries", "format": "CSV", "hash": "", "id": "5de110e5-6ef9-4282-9866-9201a0014dea",
+        "last_modified": "2023-01-30T07:47:34.616597", "metadata_modified": "2023-01-30T07:58:01.690822",
+        "mimetype": null, "mimetype_inner": null, "name": "Countries CSV", "package_id":
+        "1b26c9fe-1869-4999-954f-0f276d4bea02", "position": 0, "resource_type": null,
+        "size": 143, "state": "active", "url": "http://localhost:5000/dataset/1b26c9fe-1869-4999-954f-0f276d4bea02/resource/5de110e5-6ef9-4282-9866-9201a0014dea/download/___",
+        "url_type": "upload"}, {"cache_last_updated": null, "cache_url": null, "ckan_url":
+        "http://localhost:5000", "created": "2023-01-30T07:48:08.008877", "datastore_active":
+        true, "datastore_contains_all_records_of_source_file": true, "description":
+        "Table XLS", "format": "XLS", "hash": "", "id": "ed8a53d8-f01f-4bb6-8070-c4acad70791d",
+        "ignore_hash": false, "last_modified": "2023-01-30T07:48:07.999221", "metadata_modified":
+        "2023-01-30T07:57:43.191975", "mimetype": null, "mimetype_inner": null, "name":
+        "Table XLS", "original_url": "http://localhost:5000/dataset/1b26c9fe-1869-4999-954f-0f276d4bea02/resource/ed8a53d8-f01f-4bb6-8070-c4acad70791d/download/___",
+        "package_id": "1b26c9fe-1869-4999-954f-0f276d4bea02", "position": 1, "resource_id":
+        "ed8a53d8-f01f-4bb6-8070-c4acad70791d", "resource_type": null, "set_url_type":
+        false, "size": 6144, "state": "active", "task_created": "2023-01-30 07:57:43.280140",
+        "url": "http://localhost:5000/dataset/1b26c9fe-1869-4999-954f-0f276d4bea02/resource/ed8a53d8-f01f-4bb6-8070-c4acad70791d/download/___",
+        "url_type": "upload"}, {"cache_last_updated": null, "cache_url": null, "ckan_url":
+        "http://localhost:5000", "created": "2023-01-30T07:52:37.443093", "datastore_active":
+        true, "datastore_contains_all_records_of_source_file": true, "description":
+        "Table ODS", "format": "ODS", "hash": "", "id": "a42c84cc-bd76-4906-902d-f641090bce63",
+        "ignore_hash": false, "last_modified": "2023-01-30T07:52:37.426442", "metadata_modified":
+        "2023-01-30T07:52:37.437594", "mimetype": "application/vnd.oasis.opendocument.spreadsheet",
+        "mimetype_inner": null, "name": "Table ODS", "original_url": "http://localhost:5000/dataset/1b26c9fe-1869-4999-954f-0f276d4bea02/resource/a42c84cc-bd76-4906-902d-f641090bce63/download/table.ods",
+        "package_id": "1b26c9fe-1869-4999-954f-0f276d4bea02", "position": 2, "resource_id":
+        "a42c84cc-bd76-4906-902d-f641090bce63", "resource_type": null, "set_url_type":
+        false, "size": 8339, "state": "active", "task_created": "2023-01-30 07:52:37.569943",
+        "url": "http://localhost:5000/dataset/1b26c9fe-1869-4999-954f-0f276d4bea02/resource/a42c84cc-bd76-4906-902d-f641090bce63/download/table.ods",
+        "url_type": "upload"}, {"cache_last_updated": null, "cache_url": null, "created":
+        "2023-01-30T09:01:11.674201", "datastore_active": false, "datastore_contains_all_records_of_source_file":
+        false, "description": "Countries JSON", "format": "JSON", "hash": "", "id":
+        "7e02c313-ccd9-493b-90ae-6d05692d0207", "last_modified": "2023-01-30T09:01:11.661695",
+        "metadata_modified": "2023-01-30T09:01:11.672147", "mimetype": "application/json",
+        "mimetype_inner": null, "name": "Countries JSON", "package_id": "1b26c9fe-1869-4999-954f-0f276d4bea02",
+        "position": 3, "resource_type": null, "size": 364, "state": "active", "url":
+        "http://localhost:5000/dataset/1b26c9fe-1869-4999-954f-0f276d4bea02/resource/7e02c313-ccd9-493b-90ae-6d05692d0207/download/countries.json",
+        "url_type": "upload"}], "tags": [], "extras": [], "groups": [], "relationships_as_subject":
+        [], "relationships_as_object": []}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '4744'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Mon, 30 Jan 2023 10:18:29 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.0
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,128 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://legado.dados.gov.br//api/3/action/package_search?q=organization%3Aagencia-espacial-brasileira-aeb
+  response:
+    body:
+      string: !!binary |
+        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
+        bggCwx8gPNv5O4G///5/kBqr4t9wAAA=
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '4925'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Mon, 30 Jan 2023 11:50:16 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - ''
+      Vary:
+      - Accept-Encoding,User-Agent
+    status:
+      code: 200
+      message: OK
+version: 1
