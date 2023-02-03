@@ -1,7 +1,7 @@
-from typing import Optional, Any
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project
+from ...project import Project, IRecord
 from ..router import router
 
 
@@ -11,7 +11,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: Optional[Any]
+    record: Optional[IRecord]
 
 
 @router.post("/resource/read")

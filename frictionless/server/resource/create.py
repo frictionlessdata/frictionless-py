@@ -1,7 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project
+from ...project import Project, IRecord
 from ..router import router
 
 
@@ -11,12 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: Dict
+    record: IRecord
 
 
 @router.post("/resource/create")
 def server_resource_create(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
     record = project.resource_create(props.path)
-    # TODO: fix types
-    return Result(record=record)  # type: ignore
+    return Result(record=record)

@@ -1,3 +1,3 @@
 from .database import Database
-from .project import Project, IFileItem
-from .record import IRecord
+from .interfaces import *
+from .project import Project

@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    pass
+    path: str
 
 
 @router.post("/resource/delete")
 def server_resource_delete(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    project.resource_delete(props.path)
-    return Result()
+    path = project.resource_delete(props.path)
+    return Result(path=path)

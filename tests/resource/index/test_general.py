@@ -73,10 +73,12 @@ def test_resource_index_sqlite_with_metadata(database_url):
     resource.index(database_url, with_metadata=True)
     database = Database(database_url)
     # Table
-    data = database.query('SELECT * from "table"')
-    assert data == [
-        {"_row_number": 2, "_row_valid": True, "id": 1, "name": "english"},
-        {"_row_number": 3, "_row_valid": True, "id": 2, "name": "中国人"},
+    table = database.query_resources('SELECT * from "table"')
+    assert table["tableSchema"]
+    assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
+    assert table["rows"] == [
+        {"_rowNumber": 2, "_rowValid": True, "id": 1, "name": "english"},
+        {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "中国人"},
     ]
     # Index
     records = database.list_resources()
@@ -84,6 +86,8 @@ def test_resource_index_sqlite_with_metadata(database_url):
     assert len(records) == 1
     assert record is not None
     assert record["path"] == "data/table.csv"
-    assert record["table_name"] == "table"
+    assert record["type"] == "table"
+    assert record["updated"]
+    assert record["tableName"] == "table"
     assert record["resource"]["path"] == "data/table.csv"  # type: ignore
     assert record["report"]["valid"] == True  # type: ignore
