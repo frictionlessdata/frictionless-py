@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
-COLUMN_NAME_NUMBER = "_row_number"
-COLUMN_NAME_VALID = "_row_valid"
+COLUMN_NAME_NUMBER = "_rowNumber"
+COLUMN_NAME_VALID = "_rowValid"
 
 
 class SqlMapper(Mapper):

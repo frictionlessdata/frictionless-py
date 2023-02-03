@@ -1,32 +1,33 @@
-import json
-from frictionless import Project
+from frictionless import Project, Schema
 
 
 dir1 = "dir1"
 dir2 = "dir2"
-name1 = "name1.txt"
+name1 = "name1.csv"
 name2 = "name2.txt"
-bytes1 = b"bytes1"
-bytes2 = b"bytes2"
-bytes3 = b'{"key": "value"}'
+bytes1 = b"id,name\n1,english\n2,spanish"
+bytes2 = b"bytes1"
 
 
 # Read
 
 
-def test_project_resource_read_bytes(tmpdir):
+def test_project_resource_create(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.file_create(name1, bytes=bytes1)
-    assert project.resource_read_bytes(name1) == bytes1
-
-
-def test_project_resource_read_data(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
-    project.file_create(name1, bytes=bytes3)
-    assert project.resource_read_data(name1) == json.loads(bytes3)
-
-
-def test_project_resource_read_text(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
-    project.file_create(name1, bytes=bytes1)
-    assert project.resource_read_text(name1) == bytes1.decode("utf-8")
+    record = project.resource_create(name1)
+    table = project.resource_query("SELECT * FROM name1")
+    assert record["path"] == name1
+    assert record["type"] == "table"
+    assert record["updated"]
+    assert record["tableName"] == "name1"
+    assert record["resource"]["path"] == name1
+    assert record["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
+    assert record["resource"]["schema"]["fields"][0] == dict(name="id", type="integer")
+    assert record["resource"]["schema"]["fields"][1] == dict(name="name", type="string")
+    assert table["tableSchema"]
+    assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
+    assert table["rows"] == [
+        {"_rowNumber": 2, "_rowValid": True, "id": 1, "name": "english"},
+        {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "spanish"},
+    ]

@@ -1,10 +1,11 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Optional, List
 from datetime import datetime
 from functools import cached_property
+from ..schema import Schema
 from ..platform import platform
-from .record import IRecord
+from .interfaces import IRecord, IListedRecord, ITable
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -49,118 +50,143 @@ class Database:
                 TABLE_NAME_RESOURCES,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
-                sa.Column("table_name", sa.Text, unique=True),
+                sa.Column("type", sa.Text),
                 sa.Column("updated", sa.DateTime),
+                sa.Column("tableName", sa.Text, unique=True, nullable=True),
                 sa.Column("resource", sa.Text),
                 sa.Column("report", sa.Text),
             )
             index.create(self.connection)
         return index
 
-    # Query
-
-    def query(self, query: str):
-        sa = platform.sqlalchemy
-        result = self.connection.execute(sa.text(query)).mappings()
-        return list(result)
-
     # Resources
 
-    def list_resources(self):
-        return list(
-            self.connection.execute(
-                self.index.select().with_only_columns(
-                    [
-                        self.index.c.path,
-                        self.index.c.table_name,
-                        self.index.c.updated,
-                    ]
-                )
-            ).mappings()
-        )
-
-    def create_resource(self, resource: Resource, *, on_progress=None):
+    def create_resource(self, resource: Resource, *, on_progress=None) -> IRecord:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
-            buffer = []
+            report = None
+            table = None
 
-            # Get table name
-            found = False
-            table_names = []
-            table_name = resource.name
-            template = f"{table_name}%s"
-            records = self.list_resources()
-            for record in records:
-                table_names.append(record.table_name)
-                if record.path == resource.path:
-                    table_name = record.table_name
-                    found = True
-            if not found:
-                suffix = 1
-                while table_name in table_names:
-                    table_name = template % suffix
-                    suffix += 1
+            # Table
+            if resource.type == "table":
+                buffer = []
 
-            # Remove existing table
-            existing_table = self.metadata.tables.get(table_name)
-            if existing_table is not None:
-                existing_table.drop(self.connection)
-                self.metadata.remove(existing_table)
+                # Get table name
+                found = False
+                table_names = []
+                table_name = resource.name
+                template = f"{table_name}%s"
+                items = self.list_resources()
+                for item in items:
+                    table_names.append(item["tableName"])
+                    if item["path"] == resource.path:
+                        table_name = item["tableName"]
+                        found = True
+                if not found:
+                    suffix = 1
+                    while table_name in table_names:
+                        table_name = template % suffix
+                        suffix += 1
 
-            # Create new table
-            table = self.mapper.write_schema(
-                resource.schema,
-                table_name=table_name,  # type: ignore
-                with_metadata=True,
-            )
-            table.to_metadata(self.metadata)
-            table.create(self.connection)
+                # Remove existing table
+                existing_table = self.metadata.tables.get(table_name)
+                if existing_table is not None:
+                    existing_table.drop(self.connection)
+                    self.metadata.remove(existing_table)
 
-            # Write row
-            def on_row(row):
-                cells = self.mapper.write_row(row)
-                cells = [row.row_number, row.valid] + cells
-                buffer.append(cells)
-                if len(buffer) > BUFFER_SIZE:
+                # Create new table
+                table = self.mapper.write_schema(
+                    resource.schema,
+                    table_name=table_name,  # type: ignore
+                    with_metadata=True,
+                )
+                table.to_metadata(self.metadata)
+                table.create(self.connection)
+
+                # Write row
+                def on_row(row):
+                    cells = self.mapper.write_row(row)
+                    cells = [row.row_number, row.valid] + cells
+                    buffer.append(cells)
+                    if len(buffer) > BUFFER_SIZE:
+                        self.connection.execute(table.insert().values(buffer))
+                        buffer.clear()
+                    if on_progress:
+                        on_progress(f"{resource.stats.rows} rows")
+
+                # Validate/iterate
+                report = resource.validate(on_row=on_row)
+                if len(buffer):
                     self.connection.execute(table.insert().values(buffer))
-                    buffer.clear()
-                if on_progress:
-                    on_progress(f"{resource.stats.rows} rows")
-
-            # Validate/iterate
-            report = resource.validate(on_row=on_row)
-            if len(buffer):
-                self.connection.execute(table.insert().values(buffer))
 
             # Register resource
+            self.connection.execute(self.index.delete(self.index.c.path == resource.path))
             self.connection.execute(
-                self.index.delete(self.index.c.table_name == table.name)
-            )
-            return self.connection.execute(
                 self.index.insert().values(
                     path=resource.path,
-                    table_name=table.name,
+                    type=resource.type,
+                    tableName=table.name if table is not None else None,
                     updated=datetime.now(),
                     resource=resource.to_json(),
-                    report=report.to_json(),
+                    report=report.to_json() if report is not None else "{}",
                 )
-            ).mappings()
+            )
+
+            # Return record
+            record = self.read_resource(resource.path)
+            assert record
+            return record
+
+    # TODO: remove table
+    def delete_resource(self, path: str) -> str:
+        with self.connection.begin():
+            self.connection.execute(self.index.delete(self.index.c.path == path))
+        return path
+
+    def list_resources(self) -> List[IListedRecord]:
+        result = self.connection.execute(
+            self.index.select().with_only_columns(
+                [
+                    self.index.c.path,
+                    self.index.c.type,
+                    self.index.c.updated,
+                    self.index.c.tableName,
+                ]
+            )
+        )
+        records: List[IListedRecord] = []
+        for row in result:
+            record = IListedRecord(
+                path=row["path"],
+                type=row["type"],
+                updated=row["updated"].isoformat(),
+                tableName=row["tableName"],
+            )
+            records.append(record)
+        return records
+
+    def query_resources(self, query: str) -> ITable:
+        sa = platform.sqlalchemy
+        result = self.connection.execute(sa.text(query))
+        rows = [row._asdict() for row in result]
+        header = list(result.keys())
+        schema = Schema.describe(rows).to_descriptor()
+        return ITable(tableSchema=schema, header=header, rows=rows)
 
     def read_resource(self, path: str) -> Optional[IRecord]:
         query = self.index.select(self.index.c.path == path)
-        record = self.connection.execute(query).mappings().first()
-        if record:
-            record = dict(record)
-            record["resource"] = json.loads(record["resource"])
-            record["report"] = json.loads(record["report"])
-            return cast(IRecord, record)
+        row = self.connection.execute(query).first()
+        if row:
+            return IRecord(
+                path=row["path"],
+                type=row["type"],
+                updated=row["updated"].isoformat(),
+                tableName=row["tableName"],
+                resource=json.loads(row["resource"]),
+                report=json.loads(row["report"]),
+            )
 
     # TODO: implement
     def update_resource(self, path: str):
         pass
-
-    # TODO: remove table
-    def delete_resource(self, path: str):
-        with self.connection.begin():
-            self.connection.execute(self.index.delete(self.index.c.path == path))
