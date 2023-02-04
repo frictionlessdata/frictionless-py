@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project, IRecord
+from ...project import Project, IFile
 from ..router import router
 
 
@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    record: IRecord
+    file: IFile
 
 
 @router.post("/resource/create")
 def server_resource_create(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.create_resource(props.path)
-    return Result(record=record)
+    file = project.create_resource(props.path)
+    return Result(file=file)

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Project
+from frictionless import Filesystem
 
 
 name1 = "name1.txt"
@@ -16,19 +16,19 @@ not_secure = ["/path", "../path", "../", "./"]
 
 
 def test_project_create_folder(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
-    path = project.create_folder(folder1)
+    fs = Filesystem(tmpdir)
+    path = fs.create_folder(folder1)
     assert path == folder1
-    assert project.list_files() == [
-        {"path": folder1, "type": "folder"},
+    assert fs.list_files() == [
+        {"path": folder1, "isFolder": True},
     ]
 
 
 @pytest.mark.parametrize("path", not_secure)
 def test_project_create_folder_security(tmpdir, path):
-    project = Project(basepath=tmpdir, is_root=True)
-    project.create_file(name1, bytes=bytes1)
+    fs = Filesystem(tmpdir)
+    fs.create_file(name1, bytes=bytes1)
     with pytest.raises(Exception):
-        project.create_folder(path)
+        fs.create_folder(path)
     with pytest.raises(Exception):
-        project.create_folder(folder1, folder=path)
+        fs.create_folder(folder1, folder=path)

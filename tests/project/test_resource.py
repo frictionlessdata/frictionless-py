@@ -12,7 +12,7 @@ bytes2 = b"bytes1"
 # Read
 
 
-def test_project_resource_create(tmpdir):
+def test_project_create_resource(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.create_file(name1, bytes=bytes1)
     record = project.create_resource(name1)

@@ -3,24 +3,19 @@ from typing import List, Dict, Any, Optional
 from typing_extensions import TypedDict
 
 
-class IFilesystemItem(TypedDict):
-    path: str
-    type: str
-
-
 class IFileItem(TypedDict):
     path: str
     type: str
 
 
-class IListedRecord(TypedDict):
+class IListedFile(TypedDict):
     path: str
     type: str
     updated: str
     tableName: Optional[str]
 
 
-class IRecord(IListedRecord):
+class IFile(IListedFile):
     resource: dict
     report: dict
     # TODO: use after pydantic@2

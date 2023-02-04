@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IRecord, IListedRecord, ITable
+from .interfaces import IFile, IListedFile, ITable
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -59,9 +59,9 @@ class Database:
             index.create(self.connection)
         return index
 
-    # Resources
+    # File
 
-    def create_resource(self, resource: Resource, *, on_progress=None) -> IRecord:
+    def index_file(self, resource: Resource, *, on_progress=None) -> IFile:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -77,7 +77,7 @@ class Database:
                 table_names = []
                 table_name = resource.name
                 template = f"{table_name}%s"
-                items = self.list_resources()
+                items = self.list_files()
                 for item in items:
                     table_names.append(item["tableName"])
                     if item["path"] == resource.path:
@@ -133,18 +133,18 @@ class Database:
                 )
             )
 
-            # Return record
-            record = self.read_resource(resource.path)
-            assert record
-            return record
+            # Return file
+            file = self.read_file(resource.path)
+            assert file
+            return file
 
     # TODO: remove table
-    def delete_resource(self, path: str) -> str:
+    def delete_file(self, path: str) -> str:
         with self.connection.begin():
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_resources(self) -> List[IListedRecord]:
+    def list_files(self) -> List[IListedFile]:
         result = self.connection.execute(
             self.index.select().with_only_columns(
                 [
@@ -155,18 +155,18 @@ class Database:
                 ]
             )
         )
-        records: List[IListedRecord] = []
+        files: List[IListedFile] = []
         for row in result:
-            record = IListedRecord(
+            file = IListedFile(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
                 tableName=row["tableName"],
             )
-            records.append(record)
-        return records
+            files.append(file)
+        return files
 
-    def query_resources(self, query: str) -> ITable:
+    def query_files(self, query: str) -> ITable:
         sa = platform.sqlalchemy
         result = self.connection.execute(sa.text(query))
         rows = [row._asdict() for row in result]
@@ -174,11 +174,11 @@ class Database:
         schema = Schema.describe(rows).to_descriptor()
         return ITable(tableSchema=schema, header=header, rows=rows)
 
-    def read_resource(self, path: str) -> Optional[IRecord]:
+    def read_file(self, path: str) -> Optional[IFile]:
         query = self.index.select(self.index.c.path == path)
         row = self.connection.execute(query).first()
         if row:
-            return IRecord(
+            return IFile(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
@@ -188,5 +188,5 @@ class Database:
             )
 
     # TODO: implement
-    def update_resource(self, path: str):
+    def update_file(self, path: str):
         pass

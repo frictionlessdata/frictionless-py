@@ -10,7 +10,7 @@ from ..resource import Resource
 from ..package import Package
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IFileItem, ITable, IRecord, IListedRecord
+from .interfaces import ITable, IFile, IListedFile, IFileItem
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -155,27 +155,27 @@ class Project:
 
     # Resource
 
-    def create_resource(self, path: str) -> IRecord:
+    def create_resource(self, path: str) -> IFile:
         resource = Resource(path=path, basepath=str(self.public))
-        return self.database.create_resource(resource)
+        return self.database.index_file(resource)
 
     def delete_resource(self, path: str) -> str:
-        return self.database.delete_resource(path)
+        return self.database.delete_file(path)
 
-    def list_resources(self) -> List[IListedRecord]:
-        return self.database.list_resources()
+    def list_resources(self) -> List[IListedFile]:
+        return self.database.list_files()
 
     def query_resources(self, query: str) -> ITable:
-        return self.database.query_resources(query)
+        return self.database.query_files(query)
 
-    def provide_resource(self, path: str) -> IRecord:
-        record = self.read_resource(path)
-        if not record:
-            record = self.create_resource(path)
-        return record
+    def provide_resource(self, path: str) -> IFile:
+        file = self.read_resource(path)
+        if not file:
+            file = self.create_resource(path)
+        return file
 
-    def read_resource(self, path: str) -> Optional[IRecord]:
-        return self.database.read_resource(path)
+    def read_resource(self, path: str) -> Optional[IFile]:
+        return self.database.read_file(path)
 
     # TODO: rewrite
     def read_resource_table(
@@ -186,18 +186,18 @@ class Project:
         limit: Optional[int] = None,
         offset: Optional[int] = None,
     ) -> ITable:
-        record = self.database.read_resource(path)
-        assert record
-        query = 'select * from "%s"' % record["tableName"]
+        file = self.database.read_file(path)
+        assert file
+        query = 'select * from "%s"' % file["tableName"]
         if valid is not None:
             query = "%s where _rowValid = %s" % (query, valid)
         if limit:
             query = "%s limit %s" % (query, limit)
             if offset:
                 query = "%s offset %s" % (query, offset)
-        table = self.database.query_resources(query)
-        table["tableSchema"] = record["resource"]["schema"]
+        table = self.database.query_files(query)
+        table["tableSchema"] = file["resource"]["schema"]
         return table
 
     def update_resource(self, path: str):
-        self.database.update_resource(path)
+        self.database.update_file(path)
