@@ -23,7 +23,7 @@ def index(
     if with_metadata:
         assert not table_name, "Table name is prohibited in metadata mode"
         database = platform.frictionless.Database(database_url)
-        database.create_resource(self, on_progress=on_progress)
+        database.index_file(self, on_progress=on_progress)
 
     # Normal mode
     else:

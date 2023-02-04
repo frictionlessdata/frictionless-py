@@ -75,7 +75,7 @@ def test_resource_index_sqlite_with_metadata(database_url):
     resource.index(database_url, with_metadata=True)
     database = Database(database_url)
     # Table
-    table = database.query_resources('SELECT * from "table"')
+    table = database.query_files('SELECT * from "table"')
     assert table["tableSchema"]
     assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
     assert table["rows"] == [
@@ -83,8 +83,8 @@ def test_resource_index_sqlite_with_metadata(database_url):
         {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "中国人"},
     ]
     # Index
-    records = database.list_resources()
-    record = database.read_resource(resource.normpath)
+    records = database.list_files()
+    record = database.read_file(resource.normpath)
     assert len(records) == 1
     assert record is not None
     assert record["path"] == "data/table.csv"
