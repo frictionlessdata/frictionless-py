@@ -76,12 +76,12 @@ class Filesystem:
                 if self.is_hidden_path(basepath):
                     continue
             for file in files:
-                if file.startswith("."):
+                if self.is_hidden_path(file):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, file))
                 items.append(IListFilesItem(path=path, isFolder=False))
             for folder in folders:
-                if folder.startswith("."):
+                if self.is_hidden_path(folder):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, folder))
                 items.append(IListFilesItem(path=path, isFolder=True))
