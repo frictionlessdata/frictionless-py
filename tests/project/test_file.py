@@ -132,14 +132,6 @@ def test_project_file_list_with_folders(tmpdir):
     ]
 
 
-def test_project_file_list_plain(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
-    project.file_create(name1, bytes=bytes1)
-    project.folder_create(folder1)
-    assert project.file_list_plain() == [folder1, name1]
-    assert project.file_list_plain(exclude_folders=True) == [name1]
-
-
 # Move
 
 
@@ -148,6 +140,7 @@ def test_project_file_move(tmpdir):
     project.file_create(name1, bytes=bytes1)
     project.folder_create(folder1)
     path = project.file_move(name1, folder=folder1)
+    print(path)
     assert path == str(Path(folder1) / name1)
     assert project.file_read(path) == bytes1
     assert project.file_list() == [

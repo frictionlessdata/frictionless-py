@@ -1,14 +1,15 @@
+from __future__ import annotations
 import os
 import json
 import datetime
 import secrets
-import shutil
 from pathlib import Path
 from typing import Optional, List
 from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
 from .database import Database
+from .filesystem import Filesystem
 from .interfaces import IFileItem, ITable, IRecord, IListedRecord
 from .. import settings
 from .. import helpers
@@ -22,6 +23,8 @@ class Project:
     session: Optional[str]
     public: Path
     private: Path
+    database: Database
+    filesystem: Filesystem
 
     def __init__(
         self,
@@ -54,6 +57,7 @@ class Project:
         self.public = public
         self.private = private
         self.database = Database(f"sqlite:///{database}")
+        self.filesystem = Filesystem(str(self.public))
 
     @property
     def basepath(self):
@@ -61,138 +65,45 @@ class Project:
 
     # File
 
+    # TODO: rename
     def file_copy(self, path: str, *, folder: Optional[str] = None) -> str:
-        name = os.path.basename(path)
-        folder = folder or os.path.dirname(path)
-        source = str(self.public / path)
-        basetarget = str(self.public / folder)
-        target = str(self.public / folder / name)
-        target = deduplicate_path(target, suffix="copy")
-        assert os.path.isdir(basetarget)
-        # File
-        if os.path.isfile(source):
-            helpers.copy_file(source, target)
-        # Folder
-        elif os.path.isdir(source):
-            helpers.copy_folder(source, target)
-        # Missing
-        else:
-            raise FrictionlessException("file doesn't exist")
-        path = str(Path(target).relative_to(self.public))
-        return path
+        return self.filesystem.copy_file(path, folder=folder)
 
     # TODO: use streaming?
     def file_create(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
-        assert not os.path.dirname(name)
-        basepath = str(self.public / (folder or ""))
-        path = str(self.public / (folder or "") / name)
-        path = deduplicate_path(path)
-        assert os.path.isdir(basepath)
-        helpers.write_file(path, bytes, mode="wb")
-        path = str(Path(path).relative_to(self.public))
-        return path
+        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
 
     def file_delete(self, path: str) -> str:
-        path = str(self.public / path)
-        # File
-        if os.path.isfile(path):
-            os.remove(path)
-        # Folder
-        elif os.path.isdir(path):
-            shutil.rmtree(path)
-        # Missing
-        else:
-            FrictionlessException("file doesn't exist")
-        path = str(Path(path).relative_to(self.public))
-        return path
+        return self.filesystem.delete_file(path)
 
     def file_list(self) -> List[IFileItem]:
-        items: List[IFileItem] = []
-        for basepath, folders, files in os.walk(self.public):
-            basepath = os.path.relpath(basepath, start=self.public)
-            if basepath == ".":
-                basepath = ""
-            if is_hidden_path(basepath):
-                continue
-            for file in files:
-                if file.startswith("."):
-                    continue
-                path = os.path.join(basepath, file)
-                type = "package" if file == "datapackage.json" else "file"
-                items.append({"path": path, "type": type})
-            for folder in folders:
-                if folder.startswith("."):
-                    continue
-                path = os.path.join(basepath, folder)
-                items.append({"path": path, "type": "folder"})
-        items = list(sorted(items, key=lambda item: f'{item["path"]}'))
-        return items
-
-    def file_list_plain(self, *, exclude_folders: bool = False) -> List[str]:
-        paths = []
-        for item in self.file_list():
-            if exclude_folders and item["type"] == "folder":
-                continue
-            paths.append(item["path"])
-        return paths
+        files: List[IFileItem] = []
+        items = self.filesystem.list_files()
+        for item in items:
+            path = item["path"]
+            type = "folder" if item["isFolder"] else "file"
+            if item["path"] == "datapackage.json":
+                type = "package"
+            files.append(IFileItem(path=path, type=type))
+        return files
 
     def file_move(self, path: str, *, folder: str) -> str:
-        name = os.path.basename(path)
-        source = str(self.public / path)
-        basetarget = str(self.public / folder)
-        target = str(self.public / folder / name)
-        target = deduplicate_path(target)
-        assert os.path.isdir(basetarget)
-        # File
-        if os.path.isfile(source):
-            helpers.move_file(source, target)
-        # Folder
-        elif os.path.isdir(source):
-            helpers.move_folder(source, target)
-        # Missing
-        else:
-            raise FrictionlessException("file doesn't exist")
-        path = str(Path(target).relative_to(self.public))
-        return path
+        return self.filesystem.move_file(path, folder=folder)
 
     # TODO: use Resource?
     # TODO: use streaming?
     def file_read(self, path: str) -> bytes:
-        path = str(self.public / path)
-        assert os.path.isfile(path)
-        bytes = helpers.read_file(path, "rb")
-        return bytes
+        return self.filesystem.read_file(path)
 
     def file_rename(self, path: str, *, name: str) -> str:
-        folder = os.path.dirname(path)
-        source = str(self.public / path)
-        target = str(self.public / folder / name)
-        assert not os.path.exists(target)
-        # File
-        if os.path.isfile(source):
-            helpers.move_file(source, target)
-        # Folder
-        elif os.path.isdir(source):
-            helpers.move_folder(source, target)
-        # Missing
-        else:
-            raise FrictionlessException("file doesn't exist")
-        path = str(Path(target).relative_to(self.public))
-        return path
+        return self.filesystem.rename_file(path, name=name)
 
     # Folder
 
     def folder_create(self, name: str, *, folder: Optional[str] = None) -> str:
-        assert not os.path.dirname(name)
-        basepath = str(self.public / (folder or ""))
-        path = str(self.public / (folder or "") / name)
-        assert os.path.isdir(basepath)
-        assert not os.path.exists(path)
-        Path(path).mkdir(parents=True, exist_ok=False)
-        path = str(Path(path).relative_to(self.public))
-        return path
+        return self.filesystem.create_folder(name, folder=folder)
 
     # Package
 

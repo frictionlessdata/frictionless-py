@@ -1,5 +1,11 @@
+from __future__ import annotations
 from typing import List, Dict, Any, Optional
 from typing_extensions import TypedDict
+
+
+class IFilesystemItem(TypedDict):
+    path: str
+    type: str
 
 
 class IFileItem(TypedDict):
