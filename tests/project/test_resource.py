@@ -14,9 +14,9 @@ bytes2 = b"bytes1"
 
 def test_project_resource_create(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    project.file_create(name1, bytes=bytes1)
-    record = project.resource_create(name1)
-    table = project.resource_query("SELECT * FROM name1")
+    project.create_file(name1, bytes=bytes1)
+    record = project.create_resource(name1)
+    table = project.query_resources("SELECT * FROM name1")
     assert record["path"] == name1
     assert record["type"] == "table"
     assert record["updated"]

@@ -65,20 +65,19 @@ class Project:
 
     # File
 
-    # TODO: rename
-    def file_copy(self, path: str, *, folder: Optional[str] = None) -> str:
+    def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.copy_file(path, folder=folder)
 
     # TODO: use streaming?
-    def file_create(
+    def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
         return self.filesystem.create_file(name, bytes=bytes, folder=folder)
 
-    def file_delete(self, path: str) -> str:
+    def delete_file(self, path: str) -> str:
         return self.filesystem.delete_file(path)
 
-    def file_list(self) -> List[IFileItem]:
+    def list_files(self) -> List[IFileItem]:
         files: List[IFileItem] = []
         items = self.filesystem.list_files()
         for item in items:
@@ -89,32 +88,32 @@ class Project:
             files.append(IFileItem(path=path, type=type))
         return files
 
-    def file_move(self, path: str, *, folder: str) -> str:
+    def move_file(self, path: str, *, folder: str) -> str:
         return self.filesystem.move_file(path, folder=folder)
 
     # TODO: use Resource?
     # TODO: use streaming?
-    def file_read(self, path: str) -> bytes:
+    def read_file(self, path: str) -> bytes:
         return self.filesystem.read_file(path)
 
-    def file_rename(self, path: str, *, name: str) -> str:
+    def rename_file(self, path: str, *, name: str) -> str:
         return self.filesystem.rename_file(path, name=name)
 
     # Folder
 
-    def folder_create(self, name: str, *, folder: Optional[str] = None) -> str:
+    def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.create_folder(name, folder=folder)
 
     # Package
 
-    def package_create(self):
+    def create_package(self):
         path = str(self.public / settings.PACKAGE_PATH)
         if not os.path.exists(path):
             helpers.write_file(path, json.dumps({"resource": []}))
         path = str(Path(path).relative_to(self.public))
         return path
 
-    def package_publish(self, **params):
+    def publish_package(self, **params):
         response = {}
         controls = {
             "github": portals.GithubControl,
@@ -156,30 +155,30 @@ class Project:
 
     # Resource
 
-    def resource_create(self, path: str) -> IRecord:
+    def create_resource(self, path: str) -> IRecord:
         resource = Resource(path=path, basepath=str(self.public))
         return self.database.create_resource(resource)
 
-    def resource_delete(self, path: str) -> str:
+    def delete_resource(self, path: str) -> str:
         return self.database.delete_resource(path)
 
-    def resource_list(self) -> List[IListedRecord]:
+    def list_resources(self) -> List[IListedRecord]:
         return self.database.list_resources()
 
-    def resource_query(self, query: str) -> ITable:
+    def query_resources(self, query: str) -> ITable:
         return self.database.query_resources(query)
 
-    def resource_provide(self, path: str) -> IRecord:
-        record = self.resource_read(path)
+    def provide_resource(self, path: str) -> IRecord:
+        record = self.read_resource(path)
         if not record:
-            record = self.resource_create(path)
+            record = self.create_resource(path)
         return record
 
-    def resource_read(self, path: str) -> Optional[IRecord]:
+    def read_resource(self, path: str) -> Optional[IRecord]:
         return self.database.read_resource(path)
 
     # TODO: rewrite
-    def resource_read_table(
+    def read_resource_table(
         self,
         path: str,
         *,
@@ -200,26 +199,5 @@ class Project:
         table["tableSchema"] = record["resource"]["schema"]
         return table
 
-    def resource_update(self, path: str):
+    def update_resource(self, path: str):
         self.database.update_resource(path)
-
-
-# Internal
-
-
-def deduplicate_path(path: str, *, suffix: str = "") -> str:
-    if os.path.exists(path):
-        number = 1
-        parts = os.path.splitext(path)
-        template = f"{parts[0]} ({suffix}%s){parts[1]}"
-        while os.path.exists(path):
-            path = template % number
-            number += 1
-    return path
-
-
-def is_hidden_path(path: str) -> bool:
-    for part in os.path.split(path):
-        if part.startswith(".") and len(part) > 1:
-            return True
-    return False

@@ -17,5 +17,5 @@ class Result(BaseModel):
 @router.post("/resource/query")
 def server_resource_query(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    table = project.resource_query(props.query)
+    table = project.query_resources(props.query)
     return Result(table=table)

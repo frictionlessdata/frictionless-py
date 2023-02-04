@@ -19,5 +19,5 @@ async def server_file_create(
     project: Project = request.app.get_project(session)
     name = file.filename
     bytes = await file.read()
-    path = project.file_create(name, bytes=bytes, folder=folder)
+    path = project.create_file(name, bytes=bytes, folder=folder)
     return Result(path=path)

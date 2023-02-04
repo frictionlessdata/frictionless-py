@@ -19,5 +19,5 @@ class Result(BaseModel):
 @router.post("/package/publish")
 def server_package_publish(request: Request, props: props) -> Result:
     project: Project = request.app.get_project(props.session)
-    json_data = json.dumps(project.package_publish(**props.params))
+    json_data = json.dumps(project.publish_package(**props.params))
     return Result(content=json_data)

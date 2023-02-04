@@ -18,5 +18,5 @@ class Result(BaseModel):
 @router.post("/folder/create")
 def server_folder_create(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.folder_create(props.name, folder=props.folder)
+    path = project.create_folder(props.name, folder=props.folder)
     return Result(path=path)

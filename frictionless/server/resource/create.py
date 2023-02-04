@@ -17,5 +17,5 @@ class Result(BaseModel):
 @router.post("/resource/create")
 def server_resource_create(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.resource_create(props.path)
+    record = project.create_resource(props.path)
     return Result(record=record)

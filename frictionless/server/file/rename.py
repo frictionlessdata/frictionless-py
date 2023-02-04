@@ -18,5 +18,5 @@ class Result(BaseModel):
 @router.post("/file/rename")
 def server_file_rename(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.file_rename(props.path, name=props.name)
+    path = project.rename_file(props.path, name=props.name)
     return Result(path=path)

@@ -15,8 +15,8 @@ folder2 = "folder2"
 
 def test_project_folder_create(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    path = project.folder_create(folder1)
+    path = project.create_folder(folder1)
     assert path == folder1
-    assert project.file_list() == [
+    assert project.list_files() == [
         {"path": folder1, "type": "folder"},
     ]

@@ -17,5 +17,5 @@ class Result(BaseModel):
 @router.post("/resource/update")
 def server_resource_update(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    project.resource_update(props.path)
+    project.update_resource(props.path)
     return Result()
