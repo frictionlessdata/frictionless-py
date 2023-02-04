@@ -10,7 +10,7 @@ from ..resource import Resource
 from ..package import Package
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import ITable, IFile, IListedFile, IFileItem
+from .interfaces import IQueryData, ITable, IFile, IListedFile
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -63,41 +63,72 @@ class Project:
     def basepath(self):
         return str(self.public)
 
+    # General
+
+    def index(self):
+        pass
+
+    def query(self, query: str) -> IQueryData:
+        return self.database.query(query)
+
+    def query_table(self, query: str) -> ITable:
+        return self.database.query_table(query)
+
     # File
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        return self.filesystem.copy_file(path, folder=folder)
+        target = self.filesystem.copy_file(path, folder=folder)
+        self.database.create_file(Resource(target, basepath=str(self.public)))
+        return target
 
-    # TODO: use streaming?
     def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
-    ) -> str:
-        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
+    ) -> IFile:
+        path = self.filesystem.create_file(name, bytes=bytes, folder=folder)
+        file = self.database.create_file(Resource(path=path, basepath=str(self.public)))
+        return file
 
     def delete_file(self, path: str) -> str:
-        return self.filesystem.delete_file(path)
+        self.filesystem.delete_file(path)
+        self.database.delete_file(path)
+        return path
 
-    def list_files(self) -> List[IFileItem]:
-        files: List[IFileItem] = []
-        items = self.filesystem.list_files()
-        for item in items:
-            path = item["path"]
-            type = "folder" if item["isFolder"] else "file"
-            if item["path"] == "datapackage.json":
-                type = "package"
-            files.append(IFileItem(path=path, type=type))
-        return files
+    def list_files(self) -> List[IListedFile]:
+        return self.database.list_files()
 
     def move_file(self, path: str, *, folder: str) -> str:
-        return self.filesystem.move_file(path, folder=folder)
+        source = path
+        target = self.filesystem.move_file(path, folder=folder)
+        self.database.move_file(source, target)
+        return target
 
-    # TODO: use Resource?
-    # TODO: use streaming?
-    def read_file(self, path: str) -> bytes:
-        return self.filesystem.read_file(path)
+    def read_file(self, path: str) -> Optional[IFile]:
+        return self.database.read_file(path)
+
+    def read_file_bytes(self, path: str) -> bytes:
+        return self.filesystem.read_file_bytes(path)
+
+    def read_file_table(
+        self,
+        path: str,
+        *,
+        valid: Optional[bool] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> ITable:
+        return self.database.read_file_table(
+            path, valid=valid, limit=limit, offset=offset
+        )
 
     def rename_file(self, path: str, *, name: str) -> str:
-        return self.filesystem.rename_file(path, name=name)
+        source = path
+        target = self.filesystem.rename_file(path, name=name)
+        self.database.move_file(source, target)
+        return target
+
+    # TODO: implement
+    def update_file(self, path: str):
+        pass
 
     # Folder
 
@@ -152,52 +183,3 @@ class Project:
             response["error"] = exception.error.message
 
         return response
-
-    # Resource
-
-    def create_resource(self, path: str) -> IFile:
-        resource = Resource(path=path, basepath=str(self.public))
-        return self.database.index_file(resource)
-
-    def delete_resource(self, path: str) -> str:
-        return self.database.delete_file(path)
-
-    def list_resources(self) -> List[IListedFile]:
-        return self.database.list_files()
-
-    def query_resources(self, query: str) -> ITable:
-        return self.database.query_files(query)
-
-    def provide_resource(self, path: str) -> IFile:
-        file = self.read_resource(path)
-        if not file:
-            file = self.create_resource(path)
-        return file
-
-    def read_resource(self, path: str) -> Optional[IFile]:
-        return self.database.read_file(path)
-
-    # TODO: rewrite
-    def read_resource_table(
-        self,
-        path: str,
-        *,
-        valid: Optional[bool] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> ITable:
-        file = self.database.read_file(path)
-        assert file
-        query = 'select * from "%s"' % file["tableName"]
-        if valid is not None:
-            query = "%s where _rowValid = %s" % (query, valid)
-        if limit:
-            query = "%s limit %s" % (query, limit)
-            if offset:
-                query = "%s offset %s" % (query, offset)
-        table = self.database.query_files(query)
-        table["tableSchema"] = file["resource"]["schema"]
-        return table
-
-    def update_resource(self, path: str):
-        self.database.update_file(path)

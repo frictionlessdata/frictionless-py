@@ -3,9 +3,19 @@ from typing import List, Dict, Any, Optional
 from typing_extensions import TypedDict
 
 
+IHeader = List[str]
+IRow = List[Dict[str, Any]]
+
+
+class IQueryData(TypedDict):
+    header: IHeader
+    rows: List[IRow]
+
+
+# TODO: rename?
 class IFileItem(TypedDict):
     path: str
-    type: str
+    isFolder: bool
 
 
 class IListedFile(TypedDict):
@@ -27,7 +37,7 @@ class ITable(TypedDict):
     # TODO: rename to schema after pydantic@2
     tableSchema: Dict
     header: List[str]
-    rows: List[Dict[str, Any]]
+    rows: List[IRow]
     # TODO: use after pydantic@2
     #  schema: ISchema
 

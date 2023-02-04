@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IFile, IListedFile, ITable
+from .interfaces import IFile, IListedFile, ITable, IQueryData
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -59,9 +59,23 @@ class Database:
             index.create(self.connection)
         return index
 
+    # General
+
+    def query(self, query: str) -> IQueryData:
+        sa = platform.sqlalchemy
+        result = self.connection.execute(sa.text(query))
+        rows = [row._asdict() for row in result]
+        header = list(result.keys())
+        return IQueryData(header=header, rows=rows)
+
+    def query_table(self, query: str) -> ITable:
+        result = self.query(query)
+        schema = Schema.describe(result["rows"]).to_descriptor()
+        return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
+
     # File
 
-    def index_file(self, resource: Resource, *, on_progress=None) -> IFile:
+    def create_file(self, resource: Resource, *, on_progress=None) -> IFile:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -138,9 +152,14 @@ class Database:
             assert file
             return file
 
-    # TODO: remove table
     def delete_file(self, path: str) -> str:
+        file = self.read_file(path)
+        assert file
         with self.connection.begin():
+            if file["tableName"]:
+                table = self.metadata.tables.get(file["tableName"])
+                if table:
+                    table.drop(self.connection)
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
@@ -166,13 +185,11 @@ class Database:
             files.append(file)
         return files
 
-    def query_files(self, query: str) -> ITable:
-        sa = platform.sqlalchemy
-        result = self.connection.execute(sa.text(query))
-        rows = [row._asdict() for row in result]
-        header = list(result.keys())
-        schema = Schema.describe(rows).to_descriptor()
-        return ITable(tableSchema=schema, header=header, rows=rows)
+    def move_file(self, source: str, target: str) -> str:
+        self.connection.execute(
+            self.index.update(self.index.c.path == source).values(path=target)
+        )
+        return target
 
     def read_file(self, path: str) -> Optional[IFile]:
         query = self.index.select(self.index.c.path == path)
@@ -186,6 +203,28 @@ class Database:
                 resource=json.loads(row["resource"]),
                 report=json.loads(row["report"]),
             )
+
+    # TODO: rewrite
+    def read_file_table(
+        self,
+        path: str,
+        *,
+        valid: Optional[bool] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> ITable:
+        file = self.read_file(path)
+        assert file
+        query = 'select * from "%s"' % file["tableName"]
+        if valid is not None:
+            query = "%s where _rowValid = %s" % (query, valid)
+        if limit:
+            query = "%s limit %s" % (query, limit)
+            if offset:
+                query = "%s offset %s" % (query, offset)
+        result = self.query(query)
+        schema = file["resource"]["schema"]
+        return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
 
     # TODO: implement
     def update_file(self, path: str):

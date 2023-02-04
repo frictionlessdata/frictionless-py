@@ -3,14 +3,9 @@ import os
 import shutil
 from pathlib import Path
 from typing import Optional, Union, List
-from typing_extensions import TypedDict
 from ..exception import FrictionlessException
+from .interfaces import IFileItem
 from .. import helpers
-
-
-class IListFilesItem(TypedDict):
-    path: str
-    isFolder: bool
 
 
 class Filesystem:
@@ -68,8 +63,8 @@ class Filesystem:
         path = self.get_secure_relpath(path)
         return path
 
-    def list_files(self) -> List[IListFilesItem]:
-        items: List[IListFilesItem] = []
+    def list_files(self) -> List[IFileItem]:
+        items: List[IFileItem] = []
         for root, folders, files in os.walk(self.basepath):
             if not self.is_basepath(root):
                 folder = self.get_secure_relpath(root)
@@ -79,12 +74,12 @@ class Filesystem:
                 if self.is_hidden_path(file):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, file))
-                items.append(IListFilesItem(path=path, isFolder=False))
+                items.append(IFileItem(path=path, isFolder=False))
             for folder in folders:
                 if self.is_hidden_path(folder):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, folder))
-                items.append(IListFilesItem(path=path, isFolder=True))
+                items.append(IFileItem(path=path, isFolder=True))
         items = list(sorted(items, key=lambda item: item["path"]))
         return items
 
@@ -106,9 +101,16 @@ class Filesystem:
         path = self.get_secure_relpath(target)
         return path
 
+    def read_file(self, path: str) -> Optional[IFileItem]:
+        path = self.get_secure_fullpath(path)
+        if self.is_existent(path):
+            path = self.get_secure_relpath(path)
+            file = IFileItem(path=path, isFolder=self.is_folder(path))
+            return file
+
     # TODO: use Resource?
     # TODO: use streaming?
-    def read_file(self, path: str) -> bytes:
+    def read_file_bytes(self, path: str) -> bytes:
         path = self.get_secure_fullpath(path)
         assert self.is_file(path)
         bytes = helpers.read_file(path, "rb")
@@ -179,6 +181,9 @@ class Filesystem:
 
     def is_basepath(self, path: str) -> bool:
         return self.basepath.samefile(path)
+
+    def is_existent(self, fullpath: str) -> bool:
+        return os.path.exists(fullpath)
 
     def is_filename(self, name: str) -> bool:
         return not os.path.dirname(name)

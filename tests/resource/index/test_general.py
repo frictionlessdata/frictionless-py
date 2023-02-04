@@ -75,7 +75,7 @@ def test_resource_index_sqlite_with_metadata(database_url):
     resource.index(database_url, with_metadata=True)
     database = Database(database_url)
     # Table
-    table = database.query_files('SELECT * from "table"')
+    table = database.query_table('SELECT * from "table"')
     assert table["tableSchema"]
     assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
     assert table["rows"] == [
