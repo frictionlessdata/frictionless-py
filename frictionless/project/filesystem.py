@@ -72,8 +72,8 @@ class Filesystem:
         items: List[IListFilesItem] = []
         for root, folders, files in os.walk(self.basepath):
             if not self.is_basepath(root):
-                basepath = self.get_secure_relpath(root)
-                if self.is_hidden_path(basepath):
+                folder = self.get_secure_relpath(root)
+                if self.is_hidden_path(folder):
                     continue
             for file in files:
                 if self.is_hidden_path(file):
