@@ -17,14 +17,16 @@ class Filesystem:
     basepath: Path
 
     def __init__(self, basepath: str):
-        self.basepath = Path(basepath)
+        # We need to get resolve here to get absolute path
+        self.basepath = Path(basepath).resolve()
 
     # File
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
         name = self.get_filename(path)
-        folder = self.get_secure_fullpath(folder or self.get_folder(path))
-        assert self.is_folder(folder)
+        if folder:
+            folder = self.get_secure_fullpath(folder)
+            assert self.is_folder(folder)
         source = self.get_secure_fullpath(path)
         target = self.get_secure_fullpath(folder, name, deduplicate="copy")
         # File
@@ -44,8 +46,9 @@ class Filesystem:
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
         assert self.is_filename(name)
-        folder = self.get_secure_fullpath(folder)
-        assert self.is_folder(folder)
+        if folder:
+            folder = self.get_secure_fullpath(folder)
+            assert self.is_folder(folder)
         path = self.get_secure_fullpath(folder, name, deduplicate=True)
         helpers.write_file(path, bytes, mode="wb")
         path = self.get_secure_relpath(path)
@@ -67,21 +70,20 @@ class Filesystem:
 
     def list_files(self) -> List[IListFilesItem]:
         items: List[IListFilesItem] = []
-        for basepath, folders, files in os.walk(self.basepath):
-            basepath = self.get_secure_relpath(basepath)
-            if basepath == ".":
-                basepath = ""
-            if self.is_hidden_path(basepath):
-                continue
+        for root, folders, files in os.walk(self.basepath):
+            if not self.is_basepath(root):
+                basepath = self.get_secure_relpath(root)
+                if self.is_hidden_path(basepath):
+                    continue
             for file in files:
                 if file.startswith("."):
                     continue
-                path = os.path.join(basepath, file)
+                path = self.get_secure_relpath(os.path.join(root, file))
                 items.append(IListFilesItem(path=path, isFolder=False))
             for folder in folders:
                 if folder.startswith("."):
                     continue
-                path = os.path.join(basepath, folder)
+                path = self.get_secure_relpath(os.path.join(root, folder))
                 items.append(IListFilesItem(path=path, isFolder=True))
         items = list(sorted(items, key=lambda item: item["path"]))
         return items
@@ -113,8 +115,10 @@ class Filesystem:
         return bytes
 
     def rename_file(self, path: str, *, name: str) -> str:
-        folder = self.get_secure_fullpath(self.get_folder(path))
-        assert self.is_folder(folder)
+        folder = self.get_folder(path)
+        if folder:
+            folder = self.get_secure_fullpath(folder)
+            assert self.is_folder(folder)
         source = self.get_secure_fullpath(path)
         target = self.get_secure_fullpath(folder, name, deduplicate="renamed")
         # File
@@ -133,8 +137,9 @@ class Filesystem:
 
     def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
         assert self.is_filename(name)
-        folder = self.get_secure_fullpath(folder)
-        assert self.is_folder(folder)
+        if folder:
+            folder = self.get_secure_fullpath(folder)
+            assert self.is_folder(folder)
         path = self.get_secure_fullpath(folder, name, deduplicate=True)
         helpers.create_folder(path)
         path = self.get_secure_relpath(path)
@@ -145,16 +150,20 @@ class Filesystem:
     def get_secure_fullpath(
         self, *paths: Optional[str], deduplicate: Union[bool, str] = False
     ) -> str:
-        fullpath = self.basepath.joinpath(*filter(None, paths))
-        assert fullpath.relative_to(self.basepath)
-        fullpath = str(fullpath)
+        # We need to use resolve here to get normalized path
+        fullpath = str(self.basepath.joinpath(*filter(None, paths)).resolve())
+        assert self.get_secure_relpath(fullpath)
         if deduplicate:
             suffix = deduplicate if isinstance(deduplicate, str) else ""
             fullpath = self.deduplicate_fullpath(fullpath, suffix=suffix)
         return fullpath
 
     def get_secure_relpath(self, fullpath: str) -> str:
-        return str(Path(fullpath).relative_to(self.basepath))
+        # We need to use resolve here to prevent path traversing
+        path = str(Path(fullpath).resolve().relative_to(self.basepath))
+        assert path != "."
+        assert path != ""
+        return path
 
     def get_filename(self, path: str) -> str:
         return os.path.basename(path)
@@ -167,6 +176,9 @@ class Filesystem:
             if part.startswith(".") and len(part) > 1:
                 return True
         return False
+
+    def is_basepath(self, path: str) -> bool:
+        return self.basepath.samefile(path)
 
     def is_filename(self, name: str) -> bool:
         return not os.path.dirname(name)

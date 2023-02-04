@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 from frictionless import Project, helpers
 
@@ -9,6 +10,7 @@ bytes2 = b"bytes2"
 bytes3 = b'{"key": "value"}'
 folder1 = "folder1"
 folder2 = "folder2"
+not_secure = ["/path", "../path", "../", "./"]
 
 
 # Copy
@@ -63,6 +65,16 @@ def test_project_copy_file_from_folder_to_folder(tmpdir):
     ]
 
 
+@pytest.mark.parametrize("path", not_secure)
+def test_project_copy_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.create_file(name1, bytes=bytes1)
+    with pytest.raises(Exception):
+        project.copy_file(path)
+    with pytest.raises(Exception):
+        project.copy_file(name1, folder=path)
+
+
 # Create
 
 
@@ -88,6 +100,15 @@ def test_project_create_file_in_folder(tmpdir):
     ]
 
 
+@pytest.mark.parametrize("path", not_secure)
+def test_project_create_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    with pytest.raises(Exception):
+        project.create_file(path, bytes=bytes1)
+    with pytest.raises(Exception):
+        project.create_file(name1, bytes=bytes1, folder=path)
+
+
 # Delete
 
 
@@ -107,6 +128,13 @@ def test_project_delete_file_folder(tmpdir):
     project.create_file(name1, bytes=bytes1, folder=folder1)
     project.delete_file(folder1)
     assert project.list_files() == []
+
+
+@pytest.mark.parametrize("path", not_secure)
+def test_project_delete_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    with pytest.raises(Exception):
+        project.delete_file(path)
 
 
 # List
@@ -165,6 +193,16 @@ def test_project_move_file_folder(tmpdir):
     ]
 
 
+@pytest.mark.parametrize("path", not_secure)
+def test_project_move_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.create_file(name1, bytes=bytes1)
+    with pytest.raises(Exception):
+        project.move_file(path, folder=folder1)
+    with pytest.raises(Exception):
+        project.move_file(name1, folder=path)
+
+
 # Read
 
 
@@ -175,6 +213,13 @@ def test_project_read_file(tmpdir):
     assert project.list_files() == [
         {"path": name1, "type": "file"},
     ]
+
+
+@pytest.mark.parametrize("path", not_secure)
+def test_project_read_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    with pytest.raises(Exception):
+        project.read_file(path)
 
 
 # Rename
@@ -199,3 +244,13 @@ def test_project_rename_file_folder(tmpdir):
         {"path": folder2, "type": "folder"},
         {"path": str(Path(folder2) / name1), "type": "file"},
     ]
+
+
+@pytest.mark.parametrize("path", not_secure)
+def test_project_rename_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.create_file(name1, bytes=bytes1)
+    with pytest.raises(Exception):
+        project.rename_file(path, name=name2)
+    with pytest.raises(Exception):
+        project.rename_file(name1, name=path)
