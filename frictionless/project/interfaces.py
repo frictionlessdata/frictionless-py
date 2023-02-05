@@ -7,19 +7,18 @@ IHeader = List[str]
 IRow = Dict[str, Any]
 
 
-class IFileItemRaw(TypedDict):
-    path: str
-    isFolder: bool
-
-
+# NOTE: later can be extended to have whatever the filemanager needs
 class IFileItem(TypedDict):
     path: str
     type: str
+
+
+class IFileRecord(IFileItem):
     updated: str
     tableName: Optional[str]
 
 
-class IFile(IFileItem):
+class IFile(IFileRecord):
     resource: dict
     report: dict
     # TODO: use after pydantic@2

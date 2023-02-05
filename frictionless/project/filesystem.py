@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Optional, Union, List
 from ..exception import FrictionlessException
-from .interfaces import IFileItemRaw
+from .interfaces import IFileItem
 from .. import helpers
 
 
@@ -63,8 +63,8 @@ class Filesystem:
         path = self.get_secure_relpath(path)
         return path
 
-    def list_files(self) -> List[IFileItemRaw]:
-        items: List[IFileItemRaw] = []
+    def list_files(self) -> List[IFileItem]:
+        items: List[IFileItem] = []
         for root, folders, files in os.walk(self.basepath):
             if not self.is_basepath(root):
                 folder = self.get_secure_relpath(root)
@@ -74,12 +74,12 @@ class Filesystem:
                 if self.is_hidden_path(file):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, file))
-                items.append(IFileItemRaw(path=path, isFolder=False))
+                items.append(IFileItem(path=path, type="file"))
             for folder in folders:
                 if self.is_hidden_path(folder):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, folder))
-                items.append(IFileItemRaw(path=path, isFolder=True))
+                items.append(IFileItem(path=path, type="folder"))
         items = list(sorted(items, key=lambda item: item["path"]))
         return items
 
@@ -101,12 +101,13 @@ class Filesystem:
         path = self.get_secure_relpath(target)
         return path
 
-    def read_file(self, path: str) -> Optional[IFileItemRaw]:
+    def read_file(self, path: str) -> Optional[IFileItem]:
         path = self.get_secure_fullpath(path)
         if self.is_existent(path):
             path = self.get_secure_relpath(path)
-            file = IFileItemRaw(path=path, isFolder=self.is_folder(path))
-            return file
+            type = "folder" if self.is_folder(path) else "file"
+            item = IFileItem(path=path, type=type)
+            return item
 
     # TODO: use Resource?
     # TODO: use streaming?

@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IFile, IFileItem, ITable, IQueryData
+from .interfaces import IFile, IFileRecord, ITable, IQueryData
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -170,7 +170,7 @@ class Database:
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_files(self) -> List[IFileItem]:
+    def list_files(self) -> List[IFileRecord]:
         result = self.connection.execute(
             self.index.select().with_only_columns(
                 [
@@ -181,16 +181,16 @@ class Database:
                 ]
             )
         )
-        files: List[IFileItem] = []
+        records: List[IFileRecord] = []
         for row in result:
-            file = IFileItem(
+            file = IFileRecord(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
                 tableName=row["tableName"],
             )
-            files.append(file)
-        return files
+            records.append(file)
+        return records
 
     def move_file(self, source: str, target: str) -> str:
         self.connection.execute(

@@ -20,7 +20,7 @@ def test_project_create_folder(tmpdir):
     path = fs.create_folder(folder1)
     assert path == folder1
     assert fs.list_files() == [
-        {"path": folder1, "isFolder": True},
+        {"path": folder1, "type": "folder"},
     ]
 
 

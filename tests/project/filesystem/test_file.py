@@ -25,8 +25,8 @@ def test_filesystem_copy_file(tmpdir):
     assert fs.read_file_bytes(name1) == bytes1
     assert fs.read_file_bytes(name1copy) == bytes1
     assert fs.list_files() == [
-        {"path": name1copy, "isFolder": False},
-        {"path": name1, "isFolder": False},
+        {"path": name1copy, "type": "file"},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -39,9 +39,9 @@ def test_filesystem_copy_file_to_folder(tmpdir):
     assert fs.read_file_bytes(name1) == bytes1
     assert fs.read_file_bytes(path) == bytes1
     assert fs.list_files() == [
-        {"path": folder1, "isFolder": True},
-        {"path": path, "isFolder": False},
-        {"path": name1, "isFolder": False},
+        {"path": folder1, "type": "folder"},
+        {"path": path, "type": "file"},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -57,11 +57,11 @@ def test_filesystem_copy_file_from_folder_to_folder(tmpdir):
     assert fs.read_file_bytes(path1) == bytes1
     assert fs.read_file_bytes(path2) == bytes1
     assert fs.list_files() == [
-        {"path": folder1, "isFolder": True},
-        {"path": path1, "isFolder": False},
-        {"path": folder2, "isFolder": True},
-        {"path": str(Path(folder2) / folder1), "isFolder": True},
-        {"path": str(Path(folder2) / folder1 / name1), "isFolder": False},
+        {"path": folder1, "type": "folder"},
+        {"path": path1, "type": "file"},
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / folder1), "type": "folder"},
+        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
     ]
 
 
@@ -84,7 +84,7 @@ def test_filesystem_create_file(tmpdir):
     assert helpers.read_file(tmpdir / name1, "rb") == bytes1
     assert path == name1
     assert fs.list_files() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -95,8 +95,8 @@ def test_filesystem_create_file_in_folder(tmpdir):
     assert path == str(Path(folder1) / name1)
     assert helpers.read_file(tmpdir / path, "rb") == bytes1
     assert fs.list_files() == [
-        {"path": folder1, "isFolder": True},
-        {"path": path, "isFolder": False},
+        {"path": folder1, "type": "folder"},
+        {"path": path, "type": "file"},
     ]
 
 
@@ -118,7 +118,7 @@ def test_filesystem_delete_file(tmpdir):
     fs.create_file(name2, bytes=bytes2)
     fs.delete_file(name2)
     assert fs.list_files() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -145,8 +145,8 @@ def test_filesystem_list_files(tmpdir):
     fs.create_file(name1, bytes=bytes1)
     fs.create_file(name2, bytes=bytes2)
     assert fs.list_files() == [
-        {"path": name1, "isFolder": False},
-        {"path": name2, "isFolder": False},
+        {"path": name1, "type": "file"},
+        {"path": name2, "type": "file"},
     ]
 
 
@@ -155,8 +155,8 @@ def test_filesystem_list_files_with_folders(tmpdir):
     fs.create_file(name1, bytes=bytes1)
     fs.create_folder(folder1)
     assert fs.list_files() == [
-        {"path": folder1, "isFolder": True},
-        {"path": name1, "isFolder": False},
+        {"path": folder1, "type": "folder"},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -172,8 +172,8 @@ def test_filesystem_move_file(tmpdir):
     assert path == str(Path(folder1) / name1)
     assert fs.read_file_bytes(path) == bytes1
     assert fs.list_files() == [
-        {"path": folder1, "isFolder": True},
-        {"path": path, "isFolder": False},
+        {"path": folder1, "type": "folder"},
+        {"path": path, "type": "file"},
     ]
 
 
@@ -187,9 +187,9 @@ def test_filesystem_move_file_folder(tmpdir):
     assert path == str(Path(folder2) / folder1)
     assert fs.read_file_bytes(path2) == bytes1
     assert fs.list_files() == [
-        {"path": folder2, "isFolder": True},
-        {"path": str(Path(folder2) / folder1), "isFolder": True},
-        {"path": str(Path(folder2) / folder1 / name1), "isFolder": False},
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / folder1), "type": "folder"},
+        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
     ]
 
 
@@ -209,9 +209,9 @@ def test_filesystem_move_file_security(tmpdir, path):
 def test_filesystem_read_file(tmpdir):
     fs = Filesystem(tmpdir)
     fs.create_file(name1, bytes=bytes1)
-    assert fs.read_file(name1) == {"path": name1, "isFolder": False}
+    assert fs.read_file(name1) == {"path": name1, "type": "file"}
     assert fs.list_files() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -230,7 +230,7 @@ def test_filesystem_read_file_bytes(tmpdir):
     fs.create_file(name1, bytes=bytes1)
     assert fs.read_file_bytes(name1) == bytes1
     assert fs.list_files() == [
-        {"path": name1, "isFolder": False},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -250,7 +250,7 @@ def test_filesystem_rename_file(tmpdir):
     fs.rename_file(name1, name=name2)
     assert fs.read_file_bytes(name2) == bytes1
     assert fs.list_files() == [
-        {"path": name2, "isFolder": False},
+        {"path": name2, "type": "file"},
     ]
 
 
@@ -260,8 +260,8 @@ def test_filesystem_rename_file_folder(tmpdir):
     fs.create_file(name1, bytes=bytes1, folder=folder1)
     fs.rename_file(folder1, name=folder2)
     assert fs.list_files() == [
-        {"path": folder2, "isFolder": True},
-        {"path": str(Path(folder2) / name1), "isFolder": False},
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / name1), "type": "file"},
     ]
 
 

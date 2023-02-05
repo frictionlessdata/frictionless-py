@@ -94,8 +94,13 @@ class Project:
         self.database.delete_file(path)
         return path
 
+    # TODO: set type based on file type from database
     def list_files(self) -> List[IFileItem]:
-        return self.database.list_files()
+        items = self.filesystem.list_files()
+        for item in items:
+            if item["path"] == "datapackage.json":
+                item["type"] = "package"
+        return items
 
     def move_file(self, path: str, *, folder: str) -> str:
         source = path
