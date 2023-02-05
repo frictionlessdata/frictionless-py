@@ -103,6 +103,7 @@ class Project:
         self.database.move_file(source, target)
         return target
 
+    # TODO: index if exists but not indexed?
     def read_file(self, path: str) -> Optional[IFile]:
         return self.database.read_file(path)
 
