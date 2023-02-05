@@ -6,4 +6,3 @@ from . import file
 from . import folder
 from . import package
 from . import project
-from . import resource

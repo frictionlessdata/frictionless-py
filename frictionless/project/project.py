@@ -20,6 +20,7 @@ from .. import portals
 
 
 class Project:
+    is_root: bool
     session: Optional[str]
     public: Path
     private: Path
@@ -29,39 +30,36 @@ class Project:
     def __init__(
         self,
         *,
-        session: Optional[str] = None,
         basepath: Optional[str] = None,
+        session: Optional[str] = None,
         is_root: bool = False,
+        connect: bool = False,
     ):
-        base = Path(basepath or "")
+        # Base folder
+        folder = Path(basepath or "")
+        assert folder.is_dir()
 
-        # Validate session
-        # TODO: raise not authorized access
-        if session:
-            assert not is_root
-            assert os.path.isdir(base / session)
-
-        # Create session
-        elif not is_root:
+        # Provide authz
+        assert session if not is_root else not session
+        if not (folder / (session or "")).is_dir():
+            if not connect:
+                raise FrictionlessException("not authorized access")
             session = secrets.token_urlsafe(16)
 
-        # Ensure project
-        public = base / (session or "")
+        # Ensure structure
+        public = folder / (session or "")
         private = public / ".frictionless"
         database = private / "project.db"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
 
         # Store attributes
+        self.is_root = is_root
         self.session = session
         self.public = public
         self.private = private
         self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
-
-    @property
-    def basepath(self):
-        return str(self.public)
 
     # General
 
