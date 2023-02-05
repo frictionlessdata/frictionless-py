@@ -107,6 +107,7 @@ class Project:
     def read_file(self, path: str) -> Optional[IFile]:
         return self.database.read_file(path)
 
+    # TODO: add read_file_text/data?
     def read_file_bytes(self, path: str) -> bytes:
         return self.filesystem.read_file_bytes(path)
 
