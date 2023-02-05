@@ -7,25 +7,19 @@ IHeader = List[str]
 IRow = List[Dict[str, Any]]
 
 
-class IQueryData(TypedDict):
-    header: IHeader
-    rows: List[IRow]
-
-
-# TODO: rename?
-class IFileItem(TypedDict):
+class IFileItemRaw(TypedDict):
     path: str
     isFolder: bool
 
 
-class IListedFile(TypedDict):
+class IFileItem(TypedDict):
     path: str
     type: str
     updated: str
     tableName: Optional[str]
 
 
-class IFile(IListedFile):
+class IFile(IFileItem):
     resource: dict
     report: dict
     # TODO: use after pydantic@2
@@ -42,4 +36,6 @@ class ITable(TypedDict):
     #  schema: ISchema
 
 
-IQueryResult = List[Dict[str, Any]]
+class IQueryData(TypedDict):
+    header: IHeader
+    rows: List[IRow]

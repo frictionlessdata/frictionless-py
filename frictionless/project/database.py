@@ -1,11 +1,11 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, cast
 from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IFile, IListedFile, ITable, IQueryData
+from .interfaces import IFile, IFileItem, ITable, IQueryData
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
@@ -74,6 +74,12 @@ class Database:
         return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
 
     # File
+
+    def count_files(self) -> int:
+        sa = platform.sqlalchemy
+        query = sa.select([sa.func.count()]).select_from(self.index)
+        count = cast(int, self.connection.execute(query).scalar())
+        return count
 
     def create_file(self, resource: Resource, *, on_progress=None) -> IFile:
         with resource, self.connection.begin():
@@ -163,7 +169,7 @@ class Database:
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_files(self) -> List[IListedFile]:
+    def list_files(self) -> List[IFileItem]:
         result = self.connection.execute(
             self.index.select().with_only_columns(
                 [
@@ -174,9 +180,9 @@ class Database:
                 ]
             )
         )
-        files: List[IListedFile] = []
+        files: List[IFileItem] = []
         for row in result:
-            file = IListedFile(
+            file = IFileItem(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),

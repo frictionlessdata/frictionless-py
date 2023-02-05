@@ -5,6 +5,11 @@ from ...project import Project, IFile
 from ..router import router
 
 
+# See the signature
+class Props(BaseModel):
+    pass
+
+
 class Result(BaseModel):
     file: IFile
 

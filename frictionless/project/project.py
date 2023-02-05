@@ -10,7 +10,7 @@ from ..resource import Resource
 from ..package import Package
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IListedFile
+from .interfaces import IQueryData, ITable, IFile, IFileItem
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -74,6 +74,9 @@ class Project:
 
     # File
 
+    def count_files(self):
+        return self.database.count_files()
+
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
         target = self.filesystem.copy_file(path, folder=folder)
         self.database.create_file(Resource(target, basepath=str(self.public)))
@@ -91,7 +94,7 @@ class Project:
         self.database.delete_file(path)
         return path
 
-    def list_files(self) -> List[IListedFile]:
+    def list_files(self) -> List[IFileItem]:
         return self.database.list_files()
 
     def move_file(self, path: str, *, folder: str) -> str:
