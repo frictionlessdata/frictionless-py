@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
+# TODO: rename to "_index" or "_files"
 TABLE_NAME_RESOURCES = "_resources"
 BUFFER_SIZE = 1000
 
@@ -228,9 +229,9 @@ class Database:
             query = "%s limit %s" % (query, limit)
             if offset:
                 query = "%s offset %s" % (query, offset)
-        result = self.query(query)
+        data = self.query(query)
         schema = file["resource"]["schema"]
-        return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
+        return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
 
     # TODO: implement
     def update_file(self, path: str):

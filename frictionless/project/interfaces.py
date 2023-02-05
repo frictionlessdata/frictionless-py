@@ -4,7 +4,7 @@ from typing_extensions import TypedDict
 
 
 IHeader = List[str]
-IRow = List[Dict[str, Any]]
+IRow = Dict[str, Any]
 
 
 class IFileItemRaw(TypedDict):

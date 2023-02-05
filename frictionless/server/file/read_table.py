@@ -17,6 +17,7 @@ class Result(BaseModel):
     table: ITable
 
 
+# TODO: move to table folder?
 @router.post("/file/read-table")
 def server_file_read_table(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
