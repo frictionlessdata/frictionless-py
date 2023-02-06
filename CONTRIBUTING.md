@@ -90,3 +90,22 @@ To release a new version:
 - add changes to `CHANGELOG.md` if it's not a patch release (major or micro)
 - run `make release` which create a release commit and tag and push it to Github
 - an actual release will happen on the Travis CI platform after running the tests
+
+## Running tests offline(HTTP requests) with VCR
+VCR library records the response from HTTP requests locally as cassette in its first run. All subsequent calls are run using recorded metadata 
+from previous HTTP request, so it speeds up the testing process. To record a unit test(as cassette), we mark it with a decorator:
+
+```python
+@pytest.mark.vcr
+def test_connect_with_server():
+	pass
+```
+	
+Cassettee will be recorded as "test_connect_with_server.yaml". A new call is made when params change. To skip sensitive data,
+we can use filters:
+
+```python
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {"filter_headers": ["authorization"]}
+```
