@@ -16,5 +16,5 @@ class Result(BaseModel):
 @router.post("/package/create")
 def server_package_create(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.package_create()
+    path = project.create_package()
     return Result(path=path)

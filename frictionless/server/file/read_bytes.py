@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    path: str
+    bytes: bytes
 
 
-@router.post("/resource/delete")
-def server_resource_delete(request: Request, props: Props) -> Result:
+@router.post("/file/read-bytes")
+def server_file_read_bytes(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.resource_delete(props.path)
-    return Result(path=path)
+    bytes = project.read_file_bytes(props.path)
+    return Result(bytes=bytes)

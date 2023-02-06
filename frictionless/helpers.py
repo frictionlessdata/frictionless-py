@@ -13,6 +13,7 @@ import datetime
 import textwrap
 import stringcase
 from copy import deepcopy
+from pathlib import Path
 from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
@@ -203,6 +204,11 @@ def move_file(source: str, target: str) -> str:
 def move_folder(source: str, target: str) -> str:
     ensure_dir(target)
     return shutil.move(source, target)
+
+
+def create_folder(path: str) -> str:
+    Path(path).mkdir(parents=True)
+    return path
 
 
 def write_file(path: str, body: Any, *, mode: str = "wt"):

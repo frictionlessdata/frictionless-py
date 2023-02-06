@@ -5,7 +5,6 @@ from fastapi import Request
 from ...project import Project
 from ..router import router
 
-# TODO: have one of connect/create?
 # TODO: protect against many projects creation
 
 
@@ -14,14 +13,10 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    session: str
+    session: Optional[str]
 
 
-@router.post("/project/connect")
+@router.post("/project/connect", response_model_exclude_none=True)
 def server_project_connect(request: Request, props: Props) -> Result:
-    try:
-        project: Project = request.app.get_project(session=props.session)
-    except Exception:
-        project: Project = request.app.get_project()
-    # TODO: review session being optional
-    return Result(session=project.session)  # type: ignore
+    project: Project = request.app.get_project(session=props.session, connect=True)
+    return Result(session=project.session)

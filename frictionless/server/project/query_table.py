@@ -1,21 +1,21 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project, IRecord
+from ...project import Project, ITable
 from ..router import router
 
 
 class Props(BaseModel):
     session: Optional[str]
-    path: str
+    query: str
 
 
 class Result(BaseModel):
-    record: IRecord
+    table: ITable
 
 
-@router.post("/resource/create")
-def server_resource_create(request: Request, props: Props) -> Result:
+@router.post("/project/query-table")
+def server_project_query_table(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    record = project.resource_create(props.path)
-    return Result(record=record)
+    table = project.query_table(props.query)
+    return Result(table=table)
