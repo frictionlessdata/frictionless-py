@@ -35,19 +35,22 @@ class Project:
         is_root: bool = False,
         connect: bool = False,
     ):
-        # Base folder
-        folder = Path(basepath or "")
-        assert folder.is_dir()
-
         # Provide authz
-        assert session if not is_root else not session
-        if not (folder / (session or "")).is_dir():
-            if not connect:
-                raise FrictionlessException("not authorized access")
-            session = secrets.token_urlsafe(16)
+        base = Path(basepath or "")
+        assert base.is_dir()
+        if is_root:
+            assert not session
+        if not is_root:
+            assert session or connect
+            if not session:
+                session = secrets.token_urlsafe(16)
+            if not (base / session).is_dir():
+                if not connect:
+                    raise FrictionlessException("not authorized access")
+                session = secrets.token_urlsafe(16)
 
         # Ensure structure
-        public = folder / (session or "")
+        public = base / (session or "")
         private = public / ".frictionless"
         database = private / "project.db"
         public.mkdir(parents=True, exist_ok=True)
@@ -75,7 +78,7 @@ class Project:
     # File
 
     def count_files(self):
-        return self.database.count_files()
+        return len(self.filesystem.list_files())
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
         target = self.filesystem.copy_file(path, folder=folder)

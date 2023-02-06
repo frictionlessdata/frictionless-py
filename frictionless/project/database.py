@@ -76,12 +76,6 @@ class Database:
 
     # File
 
-    def count_files(self) -> int:
-        sa = platform.sqlalchemy
-        query = sa.select([sa.func.count()]).select_from(self.index)
-        count = cast(int, self.connection.execute(query).scalar())
-        return count
-
     def create_file(self, resource: Resource, *, on_progress=None) -> IFile:
         with resource, self.connection.begin():
             assert resource.path
