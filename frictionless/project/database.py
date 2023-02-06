@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Optional, List, cast
+from typing import TYPE_CHECKING, Optional, List
 from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
