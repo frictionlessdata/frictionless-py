@@ -109,3 +109,38 @@ we can use filters:
 def vcr_config():
     return {"filter_headers": ["authorization"]}
 ```
+
+### Regenerating cassettes for CKAN
+- Setup CKAN local instance.
+- Create a sysadmin account and generate api token.
+- Set apikey token in .env file
+```
+CKAN_APIKEY=***************************
+``` 
+### Regenerating cassettes for Zenodo
+**Read**
+- To read, we need to use live site, the api library uses it by default.
+- Login to zenodo if you have an account and create an access token.
+- Set access token in .env file.
+``` 
+ZENODO_ACCESS_TOKEN=***************************
+``` 
+**Write**
+- To write we can use either live site or sandbox. We recommend to use sandbox (https://sandbox.zenodo.org/api/).
+- Login to zenodo(sandbox) if you have an account and create an access token.
+- Set access token in .env file.
+``` 
+ZENODO_SANDBOX_ACCESS_TOKEN=***************************
+``` 
+- Set base_url in the control params
+``` 
+base_url='base_url="https://sandbox.zenodo.org/api/'
+``` 
+### Regenerating cassettes for Github
+- Login to github if you have an account and create an access token(Developer settings > Personal access tokens > Tokens).
+- Set access token and other details in .env file. If email/name of the user is hidden we need to provide those details as well.
+``` 
+GITHUB_NAME=FD
+GITHUB_EMAIL=frictionlessdata@okfn.org
+GITHUB_ACCESS_TOKEN=***************************
+``` 
