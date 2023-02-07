@@ -127,7 +127,6 @@ class CkanAdapter(Adapter):
         baseurl = self.control.baseurl
         endpoint = f"{baseurl}/api/action/package_create"
         headers = set_headers(self)
-        package.resources = remote_resources
         package_descriptor = package.to_descriptor()
         package_data = self.mapper["fric_to_ckan"].package(package_descriptor)
 
@@ -145,8 +144,8 @@ class CkanAdapter(Adapter):
         if self.control.allow_update:
             endpoint = f"{baseurl}/api/action/package_update"
 
-        # We will create he resources individually below
-        del package_data["resources"]
+        if "resources" in package_data:
+            del package_data["resources"]
 
         try:
             # Make request
