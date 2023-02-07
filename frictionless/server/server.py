@@ -37,9 +37,10 @@ class Server(platform.fastapi.FastAPI):
 
     # Project
 
-    def get_project(self, session: Optional[str]):
+    def get_project(self, session: Optional[str], *, connect: bool = False):
         return Project(
-            session=session,
             basepath=self.config.basepath,
             is_root=self.config.is_root,
+            session=session,
+            connect=connect,
         )

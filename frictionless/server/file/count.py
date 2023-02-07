@@ -7,15 +7,14 @@ from ..router import router
 
 class Props(BaseModel):
     session: Optional[str]
-    path: str
 
 
 class Result(BaseModel):
-    pass
+    count: int
 
 
-@router.post("/resource/update")
-def server_resource_update(request: Request, props: Props) -> Result:
+@router.post("/file/count")
+def server_file_count(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    project.resource_update(props.path)
-    return Result()
+    count = project.count_files()
+    return Result(count=count)

@@ -5,13 +5,14 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IRecord, IListedRecord, ITable
+from .interfaces import IFile, IFileRecord, ITable, IQueryData
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
     from ..resource import Resource
 
 
+# TODO: rename to "_index" or "_files"
 TABLE_NAME_RESOURCES = "_resources"
 BUFFER_SIZE = 1000
 
@@ -59,9 +60,23 @@ class Database:
             index.create(self.connection)
         return index
 
-    # Resources
+    # General
 
-    def create_resource(self, resource: Resource, *, on_progress=None) -> IRecord:
+    def query(self, query: str) -> IQueryData:
+        sa = platform.sqlalchemy
+        result = self.connection.execute(sa.text(query))
+        rows = [row._asdict() for row in result]
+        header = list(result.keys())
+        return IQueryData(header=header, rows=rows)
+
+    def query_table(self, query: str) -> ITable:
+        result = self.query(query)
+        schema = Schema.describe(result["rows"]).to_descriptor()
+        return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
+
+    # File
+
+    def create_file(self, resource: Resource, *, on_progress=None) -> IFile:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -77,7 +92,7 @@ class Database:
                 table_names = []
                 table_name = resource.name
                 template = f"{table_name}%s"
-                items = self.list_resources()
+                items = self.list_files()
                 for item in items:
                     table_names.append(item["tableName"])
                     if item["path"] == resource.path:
@@ -133,18 +148,23 @@ class Database:
                 )
             )
 
-            # Return record
-            record = self.read_resource(resource.path)
-            assert record
-            return record
+            # Return file
+            file = self.read_file(resource.path)
+            assert file
+            return file
 
-    # TODO: remove table
-    def delete_resource(self, path: str) -> str:
+    def delete_file(self, path: str) -> str:
+        file = self.read_file(path)
+        assert file
         with self.connection.begin():
+            if file["tableName"]:
+                table = self.metadata.tables.get(file["tableName"])
+                if table:
+                    table.drop(self.connection)
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_resources(self) -> List[IListedRecord]:
+    def list_files(self) -> List[IFileRecord]:
         result = self.connection.execute(
             self.index.select().with_only_columns(
                 [
@@ -155,30 +175,28 @@ class Database:
                 ]
             )
         )
-        records: List[IListedRecord] = []
+        records: List[IFileRecord] = []
         for row in result:
-            record = IListedRecord(
+            file = IFileRecord(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
                 tableName=row["tableName"],
             )
-            records.append(record)
+            records.append(file)
         return records
 
-    def query_resources(self, query: str) -> ITable:
-        sa = platform.sqlalchemy
-        result = self.connection.execute(sa.text(query))
-        rows = [row._asdict() for row in result]
-        header = list(result.keys())
-        schema = Schema.describe(rows).to_descriptor()
-        return ITable(tableSchema=schema, header=header, rows=rows)
+    def move_file(self, source: str, target: str) -> str:
+        self.connection.execute(
+            self.index.update(self.index.c.path == source).values(path=target)
+        )
+        return target
 
-    def read_resource(self, path: str) -> Optional[IRecord]:
+    def read_file(self, path: str) -> Optional[IFile]:
         query = self.index.select(self.index.c.path == path)
         row = self.connection.execute(query).first()
         if row:
-            return IRecord(
+            return IFile(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
@@ -187,6 +205,28 @@ class Database:
                 report=json.loads(row["report"]),
             )
 
+    # TODO: rewrite
+    def read_file_table(
+        self,
+        path: str,
+        *,
+        valid: Optional[bool] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> ITable:
+        file = self.read_file(path)
+        assert file
+        query = 'select * from "%s"' % file["tableName"]
+        if valid is not None:
+            query = "%s where _rowValid = %s" % (query, valid)
+        if limit:
+            query = "%s limit %s" % (query, limit)
+            if offset:
+                query = "%s offset %s" % (query, offset)
+        data = self.query(query)
+        schema = file["resource"]["schema"]
+        return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
+
     # TODO: implement
-    def update_resource(self, path: str):
+    def update_file(self, path: str):
         pass

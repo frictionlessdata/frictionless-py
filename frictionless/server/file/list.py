@@ -16,5 +16,5 @@ class Result(BaseModel):
 @router.post("/file/list")
 def server_file_list(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    items = project.file_list()
+    items = project.list_files()
     return Result(items=items)
