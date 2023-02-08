@@ -127,16 +127,6 @@ class CkanAdapter(Adapter):
         baseurl = self.control.baseurl
         endpoint = f"{baseurl}/api/action/package_create"
         headers = set_headers(self)
-
-        remote_resources = []
-        not_remote_resources = []
-        for res in package.resources:
-            if res.remote:
-                remote_resources.append(res)
-            else:
-                not_remote_resources.append(res)
-
-        package.resources = remote_resources
         package_descriptor = package.to_descriptor()
         package_data = self.mapper["fric_to_ckan"].package(package_descriptor)
 
@@ -154,6 +144,9 @@ class CkanAdapter(Adapter):
         if self.control.allow_update:
             endpoint = f"{baseurl}/api/action/package_update"
 
+        if "resources" in package_data:
+            del package_data["resources"]
+
         try:
             # Make request
             response = system.http_session.request(
@@ -169,7 +162,8 @@ class CkanAdapter(Adapter):
                 dataset_id = response_dict["result"]["id"]
 
                 # upload resources
-                for resource in not_remote_resources:
+                # TODO: See if it's possible to upload only the resources that need to be uploaded
+                for resource in package.resources:
                     self.write_resource(dataset_id, resource)
 
                 return f"{self.control.baseurl}/dataset/{dataset_id}"
