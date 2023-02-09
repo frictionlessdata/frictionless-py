@@ -4,7 +4,7 @@ import json
 import datetime
 import secrets
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Any
 from ..exception import FrictionlessException
 from ..package import Package
 from ..resource import Resource
@@ -63,19 +63,18 @@ class Project:
         self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
 
-    # General
-
-    def index(self):
-        pass
-
-    def query(self, query: str) -> IQueryData:
-        return self.database.query(query)
-
     # Bytes
 
     # TODO: add read_file_text/data?
     def read_bytes(self, path: str) -> bytes:
         return self.filesystem.read_bytes(path)
+
+    # Data
+
+    def read_data(self, path: str) -> Any:
+        text = self.read_text(path)
+        data = json.loads(text)
+        return data
 
     # File
 
@@ -185,6 +184,14 @@ class Project:
 
         return response
 
+    # Project
+
+    def index_project(self):
+        pass
+
+    def query_project(self, query: str) -> IQueryData:
+        return self.database.query(query)
+
     # Table
 
     def query_table(self, query: str) -> ITable:
@@ -199,3 +206,11 @@ class Project:
         offset: Optional[int] = None,
     ) -> ITable:
         return self.database.read_table(path, valid=valid, limit=limit, offset=offset)
+
+    # Text
+
+    # TODO: use detected resource.encoding if indexed
+    def read_text(self, path: str) -> str:
+        bytes = self.filesystem.read_bytes(path)
+        text = bytes.decode("utf-8")
+        return text

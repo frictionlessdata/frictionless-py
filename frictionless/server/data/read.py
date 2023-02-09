@@ -1,21 +1,21 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project, IQueryData
+from ...project import Project
 from ..router import router
 
 
 class Props(BaseModel):
     session: Optional[str]
-    query: str
+    path: str
 
 
 class Result(BaseModel):
-    data: IQueryData
+    data: str
 
 
-@router.post("/project/query")
-def server_project_query(request: Request, props: Props) -> Result:
+@router.post("/data/read")
+def server_data_read(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    data = project.query_project(props.query)
+    data = project.read_data(props.path)
     return Result(data=data)
