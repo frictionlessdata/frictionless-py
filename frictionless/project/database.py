@@ -148,16 +148,16 @@ class Database:
             assert record
             return record
 
-    def delete_record(self, path: str) -> str:
+    def delete_record(self, path: str) -> Optional[IRecord]:
         record = self.read_record(path)
-        assert record
-        with self.connection.begin():
-            if record["tableName"]:
-                table = self.metadata.tables.get(record["tableName"])
-                if table:
-                    table.drop(self.connection)
-            self.connection.execute(self.index.delete(self.index.c.path == path))
-        return path
+        if record:
+            with self.connection.begin():
+                if record["tableName"]:
+                    table = self.metadata.tables.get(record["tableName"])
+                    if table:
+                        table.drop(self.connection)
+                self.connection.execute(self.index.delete(self.index.c.path == path))
+            return record
 
     def list_records(self) -> List[IRecordItem]:
         result = self.connection.execute(

@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request, UploadFile, File, Form
-from ...project import Project, IFile
+from ...project import Project
 from ..router import router
 
 
@@ -11,7 +11,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    file: IFile
+    path: str
 
 
 @router.post("/file/create")
@@ -24,5 +24,5 @@ async def server_file_create(
     project: Project = request.app.get_project(session)
     name = file.filename
     bytes = await file.read()
-    resfile = project.create_file(name, bytes=bytes, folder=folder)
-    return Result(file=resfile)
+    path = project.create_file(name, bytes=bytes, folder=folder)
+    return Result(path=path)

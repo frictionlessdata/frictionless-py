@@ -80,11 +80,11 @@ class Project:
 
     # File
 
-    def count_files(self):
-        return len(self.filesystem.list_files())
-
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.copy_file(path, folder=folder)
+
+    def count_files(self):
+        return len(self.filesystem.list_files())
 
     def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
@@ -105,11 +105,7 @@ class Project:
             return file
 
     def list_files(self) -> List[IFileItem]:
-        items = self.filesystem.list_files()
-        for item in items:
-            if item["path"] == "datapackage.json":
-                item["type"] = "package"
-        return items
+        return self.filesystem.list_files()
 
     def move_file(self, path: str, *, folder: str) -> str:
         source = path

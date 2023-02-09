@@ -12,23 +12,20 @@ folder2 = "folder2"
 not_secure = ["/path", "../path", "../", "./"]
 
 
-# Create
+# Read
 
 
-def test_project_create_folder(tmpdir):
+def test_project_read_file_bytes(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    path = project.create_folder(folder1)
-    assert path == folder1
+    project.create_file(name1, bytes=bytes1)
+    assert project.read_bytes(name1) == bytes1
     assert project.list_files() == [
-        {"path": folder1, "type": "folder"},
+        {"path": name1, "type": "file"},
     ]
 
 
 @pytest.mark.parametrize("path", not_secure)
-def test_project_create_folder_security(tmpdir, path):
+def test_project_read_file_bytes_security(tmpdir, path):
     project = Project(basepath=tmpdir, is_root=True)
-    project.create_file(name1, bytes=bytes1)
     with pytest.raises(Exception):
-        project.create_folder(path)
-    with pytest.raises(Exception):
-        project.create_folder(folder1, folder=path)
+        project.read_bytes(path)
