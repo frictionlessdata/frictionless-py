@@ -5,15 +5,14 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IFile, IFileRecord, ITable, IQueryData
+from .interfaces import IFileItem, IFileRecord, ITable, IQueryData
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
     from ..resource import Resource
 
 
-# TODO: rename to "_index" or "_files"
-TABLE_NAME_RESOURCES = "_resources"
+TABLE_NAME_RESOURCES = "_index"
 BUFFER_SIZE = 1000
 
 
@@ -76,7 +75,7 @@ class Database:
 
     # File
 
-    def create_file(self, resource: Resource, *, on_progress=None) -> IFile:
+    def create_file(self, resource: Resource, *, on_progress=None) -> IFileRecord:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -148,10 +147,10 @@ class Database:
                 )
             )
 
-            # Return file
-            file = self.read_file(resource.path)
-            assert file
-            return file
+            # Return record
+            record = self.read_file(resource.path)
+            assert record
+            return record
 
     def delete_file(self, path: str) -> str:
         file = self.read_file(path)
@@ -164,7 +163,7 @@ class Database:
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_files(self) -> List[IFileRecord]:
+    def list_files(self) -> List[IFileItem]:
         result = self.connection.execute(
             self.index.select().with_only_columns(
                 [
@@ -175,16 +174,16 @@ class Database:
                 ]
             )
         )
-        records: List[IFileRecord] = []
+        items: List[IFileItem] = []
         for row in result:
-            file = IFileRecord(
+            item = IFileItem(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
                 tableName=row["tableName"],
             )
-            records.append(file)
-        return records
+            items.append(item)
+        return items
 
     def move_file(self, source: str, target: str) -> str:
         self.connection.execute(
@@ -192,11 +191,11 @@ class Database:
         )
         return target
 
-    def read_file(self, path: str) -> Optional[IFile]:
+    def read_file(self, path: str) -> Optional[IFileRecord]:
         query = self.index.select(self.index.c.path == path)
         row = self.connection.execute(query).first()
         if row:
-            return IFile(
+            return IFileRecord(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),

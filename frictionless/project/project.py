@@ -10,7 +10,7 @@ from ..resource import Resource
 from ..package import Package
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem
+from .interfaces import IQueryData, ITable, IFile
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -81,24 +81,23 @@ class Project:
         return len(self.filesystem.list_files())
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        target = self.filesystem.copy_file(path, folder=folder)
-        self.database.create_file(Resource(target, basepath=str(self.public)))
-        return target
+        return self.filesystem.copy_file(path, folder=folder)
 
     def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
-    ) -> IFile:
-        path = self.filesystem.create_file(name, bytes=bytes, folder=folder)
-        file = self.database.create_file(Resource(path=path, basepath=str(self.public)))
-        return file
+    ) -> str:
+        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
 
     def delete_file(self, path: str) -> str:
         self.filesystem.delete_file(path)
         self.database.delete_file(path)
         return path
 
-    # TODO: set type based on file type from database
-    def list_files(self) -> List[IFileItem]:
+    # TODO: implement
+    def index_file(self, path: str):
+        pass
+
+    def list_files(self) -> List[IFile]:
         items = self.filesystem.list_files()
         for item in items:
             if item["path"] == "datapackage.json":
@@ -106,10 +105,7 @@ class Project:
         return items
 
     def move_file(self, path: str, *, folder: str) -> str:
-        source = path
-        target = self.filesystem.move_file(path, folder=folder)
-        self.database.move_file(source, target)
-        return target
+        return self.filesystem.move_file(path, folder=folder)
 
     # TODO: index if exists but not indexed?
     def read_file(self, path: str) -> Optional[IFile]:

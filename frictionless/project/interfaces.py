@@ -1,24 +1,26 @@
 from __future__ import annotations
 from typing import List, Dict, Any, Optional
-from typing_extensions import TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 IHeader = List[str]
 IRow = Dict[str, Any]
 
 
-# NOTE: later can be extended to have whatever the filemanager needs
+class IFile(TypedDict):
+    path: str
+    type: str
+    record: NotRequired[IFileRecord]
+
+
 class IFileItem(TypedDict):
     path: str
     type: str
-
-
-class IFileRecord(IFileItem):
     updated: str
     tableName: Optional[str]
 
 
-class IFile(IFileRecord):
+class IFileRecord(IFileItem):
     resource: dict
     report: dict
     # TODO: use after pydantic@2

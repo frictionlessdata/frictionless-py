@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Optional, Union, List
 from ..exception import FrictionlessException
-from .interfaces import IFileItem
+from .interfaces import IFile
 from .. import helpers
 
 
@@ -63,25 +63,25 @@ class Filesystem:
         path = self.get_secure_relpath(path)
         return path
 
-    def list_files(self) -> List[IFileItem]:
-        items: List[IFileItem] = []
-        for root, folders, files in os.walk(self.basepath):
+    def list_files(self) -> List[IFile]:
+        files: List[IFile] = []
+        for root, folders, names in os.walk(self.basepath):
             if not self.is_basepath(root):
                 folder = self.get_secure_relpath(root)
                 if self.is_hidden_path(folder):
                     continue
-            for file in files:
-                if self.is_hidden_path(file):
+            for name in names:
+                if self.is_hidden_path(name):
                     continue
-                path = self.get_secure_relpath(os.path.join(root, file))
-                items.append(IFileItem(path=path, type="file"))
+                path = self.get_secure_relpath(os.path.join(root, name))
+                files.append(IFile(path=path, type="file"))
             for folder in folders:
                 if self.is_hidden_path(folder):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, folder))
-                items.append(IFileItem(path=path, type="folder"))
-        items = list(sorted(items, key=lambda item: item["path"]))
-        return items
+                files.append(IFile(path=path, type="folder"))
+        files = list(sorted(files, key=lambda item: item["path"]))
+        return files
 
     def move_file(self, path: str, *, folder: str) -> str:
         name = self.get_filename(path)
@@ -101,13 +101,13 @@ class Filesystem:
         path = self.get_secure_relpath(target)
         return path
 
-    def read_file(self, path: str) -> Optional[IFileItem]:
+    def read_file(self, path: str) -> Optional[IFile]:
         path = self.get_secure_fullpath(path)
         if self.is_existent(path):
             path = self.get_secure_relpath(path)
             type = "folder" if self.is_folder(path) else "file"
-            item = IFileItem(path=path, type=type)
-            return item
+            file = IFile(path=path, type=type)
+            return file
 
     # TODO: use Resource?
     # TODO: use streaming?
