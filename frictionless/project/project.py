@@ -4,13 +4,13 @@ import json
 import datetime
 import secrets
 from pathlib import Path
-from typing import Optional, List, Any
+from typing import Optional, List, Dict
 from ..exception import FrictionlessException
 from ..package import Package
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IData
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -71,9 +71,10 @@ class Project:
 
     # Data
 
-    def read_data(self, path: str) -> Any:
+    def read_data(self, path: str) -> IData:
         text = self.read_text(path)
         data = json.loads(text)
+        assert isinstance(data, dict)
         return data
 
     # File

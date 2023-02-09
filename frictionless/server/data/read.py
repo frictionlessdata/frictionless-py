@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project
+from ...project import Project, IData
 from ..router import router
 
 
@@ -11,7 +11,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    data: str
+    data: IData
 
 
 @router.post("/data/read")
