@@ -10,6 +10,7 @@ class Props(BaseModel):
     path: str
 
 
+# TODO: fix it's not correct
 class Result(BaseModel):
     bytes: bytes
 

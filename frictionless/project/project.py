@@ -37,7 +37,6 @@ class Project:
     ):
         # Provide authz
         base = Path(basepath or "")
-        assert base.is_dir()
         if is_root:
             assert not session
         if not is_root:
