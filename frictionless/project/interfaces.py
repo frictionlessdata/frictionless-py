@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -7,20 +7,25 @@ IHeader = List[str]
 IRow = Dict[str, Any]
 
 
-class IFile(TypedDict):
-    path: str
-    type: str
-    record: NotRequired[IFileRecord]
-
-
 class IFileItem(TypedDict):
     path: str
     type: str
+
+
+class IFile(IFileItem):
+    path: str
+    type: str
+    record: NotRequired[IRecord]
+
+
+class IRecordItem(TypedDict):
+    path: str
+    type: str
     updated: str
-    tableName: Optional[str]
+    tableName: NotRequired[str]
 
 
-class IFileRecord(IFileItem):
+class IRecord(IRecordItem):
     resource: dict
     report: dict
     # TODO: use after pydantic@2

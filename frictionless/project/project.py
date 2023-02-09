@@ -6,11 +6,11 @@ import secrets
 from pathlib import Path
 from typing import Optional, List
 from ..exception import FrictionlessException
-from ..resource import Resource
 from ..package import Package
+from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile
+from .interfaces import IQueryData, ITable, IFile, IFileItem
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -72,8 +72,11 @@ class Project:
     def query(self, query: str) -> IQueryData:
         return self.database.query(query)
 
-    def query_table(self, query: str) -> ITable:
-        return self.database.query_table(query)
+    # Bytes
+
+    # TODO: add read_file_text/data?
+    def read_bytes(self, path: str) -> bytes:
+        return self.filesystem.read_bytes(path)
 
     # File
 
@@ -89,15 +92,19 @@ class Project:
         return self.filesystem.create_file(name, bytes=bytes, folder=folder)
 
     def delete_file(self, path: str) -> str:
+        self.database.delete_record(path)
         self.filesystem.delete_file(path)
-        self.database.delete_file(path)
         return path
 
-    # TODO: implement
-    def index_file(self, path: str):
-        pass
+    def index_file(self, path: str) -> Optional[IFile]:
+        file = self.read_file(path)
+        if file:
+            if not file.get("record"):
+                resource = Resource(path, basepath=str(self.public))
+                file["record"] = self.database.create_record(resource)
+            return file
 
-    def list_files(self) -> List[IFile]:
+    def list_files(self) -> List[IFileItem]:
         items = self.filesystem.list_files()
         for item in items:
             if item["path"] == "datapackage.json":
@@ -105,32 +112,24 @@ class Project:
         return items
 
     def move_file(self, path: str, *, folder: str) -> str:
-        return self.filesystem.move_file(path, folder=folder)
+        source = path
+        target = self.filesystem.move_file(path, folder=folder)
+        self.database.move_record(source, target)
+        return target
 
-    # TODO: index if exists but not indexed?
     def read_file(self, path: str) -> Optional[IFile]:
-        return self.database.read_file(path)
-
-    # TODO: add read_file_text/data?
-    def read_file_bytes(self, path: str) -> bytes:
-        return self.filesystem.read_file_bytes(path)
-
-    def read_file_table(
-        self,
-        path: str,
-        *,
-        valid: Optional[bool] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> ITable:
-        return self.database.read_file_table(
-            path, valid=valid, limit=limit, offset=offset
-        )
+        item = self.filesystem.read_file(path)
+        if item:
+            file = IFile(**item)
+            record = self.database.read_record(path)
+            if record:
+                file["record"] = record
+            return file
 
     def rename_file(self, path: str, *, name: str) -> str:
         source = path
         target = self.filesystem.rename_file(path, name=name)
-        self.database.move_file(source, target)
+        self.database.move_record(source, target)
         return target
 
     # TODO: implement
@@ -190,3 +189,18 @@ class Project:
             response["error"] = exception.error.message
 
         return response
+
+    # Table
+
+    def query_table(self, query: str) -> ITable:
+        return self.database.query_table(query)
+
+    def read_table(
+        self,
+        path: str,
+        *,
+        valid: Optional[bool] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> ITable:
+        return self.database.read_table(path, valid=valid, limit=limit, offset=offset)

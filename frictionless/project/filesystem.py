@@ -3,8 +3,9 @@ import os
 import shutil
 from pathlib import Path
 from typing import Optional, Union, List
+from ..resource import Resource
 from ..exception import FrictionlessException
-from .interfaces import IFile
+from .interfaces import IFileItem
 from .. import helpers
 
 
@@ -14,6 +15,16 @@ class Filesystem:
     def __init__(self, basepath: str):
         # We need to get resolve here to get absolute path
         self.basepath = Path(basepath).resolve()
+
+    # Bytes
+
+    # TODO: use Resource?
+    # TODO: use streaming?
+    def read_bytes(self, path: str) -> bytes:
+        path = self.get_secure_fullpath(path)
+        assert self.is_file(path)
+        bytes = helpers.read_file(path, "rb")
+        return bytes
 
     # File
 
@@ -63,25 +74,26 @@ class Filesystem:
         path = self.get_secure_relpath(path)
         return path
 
-    def list_files(self) -> List[IFile]:
-        files: List[IFile] = []
-        for root, folders, names in os.walk(self.basepath):
+    def list_files(self) -> List[IFileItem]:
+        items: List[IFileItem] = []
+        for root, folders, files in os.walk(self.basepath):
             if not self.is_basepath(root):
                 folder = self.get_secure_relpath(root)
                 if self.is_hidden_path(folder):
                     continue
-            for name in names:
-                if self.is_hidden_path(name):
+            for file in files:
+                if self.is_hidden_path(file):
                     continue
-                path = self.get_secure_relpath(os.path.join(root, name))
-                files.append(IFile(path=path, type="file"))
+                path = self.get_secure_relpath(os.path.join(root, file))
+                type = self.get_filetype(path)
+                items.append(IFileItem(path=path, type=type))
             for folder in folders:
                 if self.is_hidden_path(folder):
                     continue
                 path = self.get_secure_relpath(os.path.join(root, folder))
-                files.append(IFile(path=path, type="folder"))
-        files = list(sorted(files, key=lambda item: item["path"]))
-        return files
+                items.append(IFileItem(path=path, type="folder"))
+        items = list(sorted(items, key=lambda item: item["path"]))
+        return items
 
     def move_file(self, path: str, *, folder: str) -> str:
         name = self.get_filename(path)
@@ -101,21 +113,15 @@ class Filesystem:
         path = self.get_secure_relpath(target)
         return path
 
-    def read_file(self, path: str) -> Optional[IFile]:
+    def read_file(self, path: str) -> Optional[IFileItem]:
+        type = self.get_filetype(path)
         path = self.get_secure_fullpath(path)
         if self.is_existent(path):
+            if self.is_folder(path):
+                type = "folder"
             path = self.get_secure_relpath(path)
-            type = "folder" if self.is_folder(path) else "file"
-            file = IFile(path=path, type=type)
+            file = IFileItem(path=path, type=type)
             return file
-
-    # TODO: use Resource?
-    # TODO: use streaming?
-    def read_file_bytes(self, path: str) -> bytes:
-        path = self.get_secure_fullpath(path)
-        assert self.is_file(path)
-        bytes = helpers.read_file(path, "rb")
-        return bytes
 
     def rename_file(self, path: str, *, name: str) -> str:
         folder = self.get_folder(path)
@@ -167,6 +173,14 @@ class Filesystem:
         assert path != "."
         assert path != ""
         return path
+
+    def get_filetype(self, path: str) -> str:
+        if path == "datapackage.json":
+            return "package"
+        resource = Resource(path=path)
+        resource.infer(sample=False)
+        assert resource.type
+        return resource.type
 
     def get_filename(self, path: str) -> str:
         return os.path.basename(path)

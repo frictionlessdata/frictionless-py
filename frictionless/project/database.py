@@ -5,14 +5,15 @@ from datetime import datetime
 from functools import cached_property
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IFileItem, IFileRecord, ITable, IQueryData
+from .interfaces import IRecord, IRecordItem, ITable, IQueryData
 
 if TYPE_CHECKING:
     from sqlalchemy import Table
     from ..resource import Resource
 
 
-TABLE_NAME_RESOURCES = "_index"
+TABLE_NAME_PROJECT = "_project"
+TABLE_NAME_RECORDS = "_records"
 BUFFER_SIZE = 1000
 
 
@@ -44,10 +45,10 @@ class Database:
     @cached_property
     def index(self) -> Table:
         sa = platform.sqlalchemy
-        index = self.metadata.tables.get(TABLE_NAME_RESOURCES)
+        index = self.metadata.tables.get(TABLE_NAME_RECORDS)
         if index is None:
             index = sa.Table(
-                TABLE_NAME_RESOURCES,
+                TABLE_NAME_RECORDS,
                 self.metadata,
                 sa.Column("path", sa.Text, primary_key=True),
                 sa.Column("type", sa.Text),
@@ -68,14 +69,9 @@ class Database:
         header = list(result.keys())
         return IQueryData(header=header, rows=rows)
 
-    def query_table(self, query: str) -> ITable:
-        result = self.query(query)
-        schema = Schema.describe(result["rows"]).to_descriptor()
-        return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
+    # Record
 
-    # File
-
-    def create_file(self, resource: Resource, *, on_progress=None) -> IFileRecord:
+    def create_record(self, resource: Resource, *, on_progress=None) -> IRecord:
         with resource, self.connection.begin():
             assert resource.path
             assert resource.name
@@ -91,7 +87,7 @@ class Database:
                 table_names = []
                 table_name = resource.name
                 template = f"{table_name}%s"
-                items = self.list_files()
+                items = self.list_records()
                 for item in items:
                     table_names.append(item["tableName"])
                     if item["path"] == resource.path:
@@ -148,22 +144,22 @@ class Database:
             )
 
             # Return record
-            record = self.read_file(resource.path)
+            record = self.read_record(resource.path)
             assert record
             return record
 
-    def delete_file(self, path: str) -> str:
-        file = self.read_file(path)
-        assert file
+    def delete_record(self, path: str) -> str:
+        record = self.read_record(path)
+        assert record
         with self.connection.begin():
-            if file["tableName"]:
-                table = self.metadata.tables.get(file["tableName"])
+            if record["tableName"]:
+                table = self.metadata.tables.get(record["tableName"])
                 if table:
                     table.drop(self.connection)
             self.connection.execute(self.index.delete(self.index.c.path == path))
         return path
 
-    def list_files(self) -> List[IFileItem]:
+    def list_records(self) -> List[IRecordItem]:
         result = self.connection.execute(
             self.index.select().with_only_columns(
                 [
@@ -174,9 +170,9 @@ class Database:
                 ]
             )
         )
-        items: List[IFileItem] = []
+        items: List[IRecordItem] = []
         for row in result:
-            item = IFileItem(
+            item = IRecordItem(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
@@ -185,17 +181,17 @@ class Database:
             items.append(item)
         return items
 
-    def move_file(self, source: str, target: str) -> str:
+    def move_record(self, source: str, target: str) -> str:
         self.connection.execute(
             self.index.update(self.index.c.path == source).values(path=target)
         )
         return target
 
-    def read_file(self, path: str) -> Optional[IFileRecord]:
+    def read_record(self, path: str) -> Optional[IRecord]:
         query = self.index.select(self.index.c.path == path)
         row = self.connection.execute(query).first()
         if row:
-            return IFileRecord(
+            return IRecord(
                 path=row["path"],
                 type=row["type"],
                 updated=row["updated"].isoformat(),
@@ -204,8 +200,19 @@ class Database:
                 report=json.loads(row["report"]),
             )
 
+    # TODO: implement
+    def update_record(self, path: str):
+        pass
+
+    # Table
+
+    def query_table(self, query: str) -> ITable:
+        result = self.query(query)
+        schema = Schema.describe(result["rows"]).to_descriptor()
+        return ITable(tableSchema=schema, header=result["header"], rows=result["rows"])
+
     # TODO: rewrite
-    def read_file_table(
+    def read_table(
         self,
         path: str,
         *,
@@ -213,9 +220,10 @@ class Database:
         limit: Optional[int] = None,
         offset: Optional[int] = None,
     ) -> ITable:
-        file = self.read_file(path)
-        assert file
-        query = 'select * from "%s"' % file["tableName"]
+        record = self.read_record(path)
+        assert record
+        assert "tableName" in record
+        query = 'select * from "%s"' % record["tableName"]
         if valid is not None:
             query = "%s where _rowValid = %s" % (query, valid)
         if limit:
@@ -223,9 +231,5 @@ class Database:
             if offset:
                 query = "%s offset %s" % (query, offset)
         data = self.query(query)
-        schema = file["resource"]["schema"]
+        schema = record["resource"]["schema"]
         return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
-
-    # TODO: implement
-    def update_file(self, path: str):
-        pass
