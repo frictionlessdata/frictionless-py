@@ -154,7 +154,7 @@ class Database:
             with self.connection.begin():
                 if record["tableName"]:
                     table = self.metadata.tables.get(record["tableName"])
-                    if table:
+                    if table is not None:
                         table.drop(self.connection)
                 self.connection.execute(self.index.delete(self.index.c.path == path))
             return record
