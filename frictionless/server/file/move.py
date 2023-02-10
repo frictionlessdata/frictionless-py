@@ -8,7 +8,7 @@ from ..router import router
 class Props(BaseModel):
     session: Optional[str]
     path: str
-    folder: str
+    folder: Optional[str]
 
 
 class Result(BaseModel):

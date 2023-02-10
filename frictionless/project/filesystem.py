@@ -95,10 +95,11 @@ class Filesystem:
         items = list(sorted(items, key=lambda item: item["path"]))
         return items
 
-    def move_file(self, path: str, *, folder: str) -> str:
+    def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
         name = self.get_filename(path)
-        folder = self.get_secure_fullpath(folder)
-        assert self.is_folder(folder)
+        if folder:
+            folder = self.get_secure_fullpath(folder)
+            assert self.is_folder(folder)
         source = self.get_secure_fullpath(path)
         target = self.get_secure_fullpath(folder, name, deduplicate=True)
         # File

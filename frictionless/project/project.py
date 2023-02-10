@@ -106,7 +106,7 @@ class Project:
     def list_files(self) -> List[IFileItem]:
         return self.filesystem.list_files()
 
-    def move_file(self, path: str, *, folder: str) -> str:
+    def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
         source = path
         target = self.filesystem.move_file(path, folder=folder)
         self.database.move_record(source, target)
