@@ -33,20 +33,15 @@ class Project:
         basepath: Optional[str] = None,
         session: Optional[str] = None,
         is_root: bool = False,
-        connect: bool = False,
     ):
         # Provide authz
         base = Path(basepath or "")
         if is_root:
             assert not session
         if not is_root:
-            assert session or connect
             if not session:
                 session = secrets.token_urlsafe(16)
-            if not (base / session).is_dir():
-                if not connect:
-                    raise FrictionlessException("not authorized access")
-                session = secrets.token_urlsafe(16)
+            assert len(session) == 22
 
         # Ensure structure
         public = base / (session or "")
