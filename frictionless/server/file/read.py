@@ -15,8 +15,7 @@ class Result(BaseModel):
 
 
 @router.post("/file/read")
-def server_file_read(request: Request, props: Props):
+def server_file_read(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
     file = project.read_file(props.path)
-    # TODO: recover validation (problem with NotRequired)
-    return dict(file=file)
+    return Result(file=file)

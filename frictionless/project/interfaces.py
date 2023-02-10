@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict, Any
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Required, TypedDict
 
 
 IData = Dict[str, Any]
@@ -13,17 +13,15 @@ class IFileItem(TypedDict):
     type: str
 
 
-class IFile(IFileItem):
-    path: str
-    type: str
-    record: NotRequired[IRecord]
+class IFile(IFileItem, total=False):
+    record: IRecord
 
 
-class IRecordItem(TypedDict):
-    path: str
-    type: str
-    updated: str
-    tableName: NotRequired[str]
+class IRecordItem(TypedDict, total=False):
+    path: Required[str]
+    type: Required[str]
+    updated: Required[str]
+    tableName: str
 
 
 class IRecord(IRecordItem):
