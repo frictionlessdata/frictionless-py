@@ -205,7 +205,7 @@ pipeline = Pipeline(steps=[
 ])
 
 source = Resource('data/countries.csv')
-target = resource.transform(pipeline)
+target = source.transform(pipeline)
 pprint(target.read_rows())
 ```
 
