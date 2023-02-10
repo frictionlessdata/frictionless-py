@@ -83,13 +83,13 @@ def test_resource_index_sqlite_with_metadata(database_url):
         {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "中国人"},
     ]
     # Index
-    records = database.list_files()
-    record = database.read_file(resource.normpath)
+    records = database.list_records()
+    record = database.read_record(resource.normpath)
     assert len(records) == 1
     assert record is not None
     assert record["path"] == "data/table.csv"
     assert record["type"] == "table"
     assert record["updated"]
-    assert record["tableName"] == "table"
+    assert record.get("tableName") == "table"
     assert record["resource"]["path"] == "data/table.csv"  # type: ignore
     assert record["report"]["valid"] == True  # type: ignore
