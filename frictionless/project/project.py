@@ -6,11 +6,11 @@ import secrets
 from pathlib import Path
 from typing import Optional, List
 from ..exception import FrictionlessException
-from ..resource import Resource
 from ..package import Package
+from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IData
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -33,21 +33,15 @@ class Project:
         basepath: Optional[str] = None,
         session: Optional[str] = None,
         is_root: bool = False,
-        connect: bool = False,
     ):
         # Provide authz
         base = Path(basepath or "")
-        assert base.is_dir()
         if is_root:
             assert not session
         if not is_root:
-            assert session or connect
             if not session:
                 session = secrets.token_urlsafe(16)
-            if not (base / session).is_dir():
-                if not connect:
-                    raise FrictionlessException("not authorized access")
-                session = secrets.token_urlsafe(16)
+            assert len(session) == 22
 
         # Ensure structure
         public = base / (session or "")
@@ -64,77 +58,68 @@ class Project:
         self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
 
-    # General
+    # Bytes
 
-    def index(self):
-        pass
+    # TODO: add read_file_text/data?
+    def read_bytes(self, path: str) -> bytes:
+        return self.filesystem.read_bytes(path)
 
-    def query(self, query: str) -> IQueryData:
-        return self.database.query(query)
+    # Data
 
-    def query_table(self, query: str) -> ITable:
-        return self.database.query_table(query)
+    def read_data(self, path: str) -> IData:
+        text = self.read_text(path)
+        data = json.loads(text)
+        assert isinstance(data, dict)
+        return data
 
     # File
+
+    def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
+        return self.filesystem.copy_file(path, folder=folder)
 
     def count_files(self):
         return len(self.filesystem.list_files())
 
-    def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        target = self.filesystem.copy_file(path, folder=folder)
-        self.database.create_file(Resource(target, basepath=str(self.public)))
-        return target
-
     def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
-    ) -> IFile:
-        path = self.filesystem.create_file(name, bytes=bytes, folder=folder)
-        file = self.database.create_file(Resource(path=path, basepath=str(self.public)))
-        return file
+    ) -> str:
+        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
 
     def delete_file(self, path: str) -> str:
+        self.database.delete_record(path)
         self.filesystem.delete_file(path)
-        self.database.delete_file(path)
         return path
 
-    # TODO: set type based on file type from database
-    def list_files(self) -> List[IFileItem]:
-        items = self.filesystem.list_files()
-        for item in items:
-            if item["path"] == "datapackage.json":
-                item["type"] = "package"
-        return items
+    def index_file(self, path: str) -> Optional[IFile]:
+        file = self.read_file(path)
+        if file:
+            if not file.get("record"):
+                resource = Resource(path, basepath=str(self.public))
+                file["record"] = self.database.create_record(resource)
+            return file
 
-    def move_file(self, path: str, *, folder: str) -> str:
+    def list_files(self) -> List[IFileItem]:
+        return self.filesystem.list_files()
+
+    def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
         source = path
         target = self.filesystem.move_file(path, folder=folder)
-        self.database.move_file(source, target)
+        self.database.move_record(source, target)
         return target
 
-    # TODO: index if exists but not indexed?
     def read_file(self, path: str) -> Optional[IFile]:
-        return self.database.read_file(path)
-
-    # TODO: add read_file_text/data?
-    def read_file_bytes(self, path: str) -> bytes:
-        return self.filesystem.read_file_bytes(path)
-
-    def read_file_table(
-        self,
-        path: str,
-        *,
-        valid: Optional[bool] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> ITable:
-        return self.database.read_file_table(
-            path, valid=valid, limit=limit, offset=offset
-        )
+        item = self.filesystem.read_file(path)
+        if item:
+            file = IFile(**item)
+            record = self.database.read_record(path)
+            if record:
+                file["record"] = record
+            return file
 
     def rename_file(self, path: str, *, name: str) -> str:
         source = path
         target = self.filesystem.rename_file(path, name=name)
-        self.database.move_file(source, target)
+        self.database.move_record(source, target)
         return target
 
     # TODO: implement
@@ -194,3 +179,34 @@ class Project:
             response["error"] = exception.error.message
 
         return response
+
+    # Project
+
+    def index_project(self):
+        pass
+
+    def query_project(self, query: str) -> IQueryData:
+        return self.database.query(query)
+
+    # Table
+
+    def query_table(self, query: str) -> ITable:
+        return self.database.query_table(query)
+
+    def read_table(
+        self,
+        path: str,
+        *,
+        valid: Optional[bool] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> ITable:
+        return self.database.read_table(path, valid=valid, limit=limit, offset=offset)
+
+    # Text
+
+    # TODO: use detected resource.encoding if indexed
+    def read_text(self, path: str) -> str:
+        bytes = self.filesystem.read_bytes(path)
+        text = bytes.decode("utf-8")
+        return text

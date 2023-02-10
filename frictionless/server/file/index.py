@@ -1,21 +1,21 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project, ITable
+from ...project import Project, IFile
 from ..router import router
 
 
 class Props(BaseModel):
     session: Optional[str]
-    query: str
+    path: str
 
 
 class Result(BaseModel):
-    table: ITable
+    file: Optional[IFile]
 
 
-@router.post("/project/query-table")
-def server_project_query_table(request: Request, props: Props) -> Result:
+@router.post("/file/index")
+def server_file_index(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    table = project.query_table(props.query)
-    return Result(table=table)
+    file = project.index_file(props.path)
+    return Result(file=file)

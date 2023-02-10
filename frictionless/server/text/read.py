@@ -8,15 +8,14 @@ from ..router import router
 class Props(BaseModel):
     session: Optional[str]
     path: str
-    folder: Optional[str]
 
 
 class Result(BaseModel):
-    path: str
+    text: str
 
 
-@router.post("/file/move")
-def server_file_move(request: Request, props: Props) -> Result:
+@router.post("/text/read")
+def server_text_read(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.move_file(props.path, folder=props.folder)
-    return Result(path=path)
+    text = project.read_text(props.path)
+    return Result(text=text)

@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project, IQueryData
+from ...project import Project, ITable
 from ..router import router
 
 
@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    data: IQueryData
+    table: ITable
 
 
-@router.post("/project/query")
-def server_project_query(request: Request, props: Props) -> Result:
+@router.post("/table/query")
+def server_table_query(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    data = project.query_project(props.query)
-    return Result(data=data)
+    table = project.query_table(props.query)
+    return Result(table=table)

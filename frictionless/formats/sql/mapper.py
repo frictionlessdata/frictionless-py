@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
-COLUMN_NAME_NUMBER = "_rowNumber"
-COLUMN_NAME_VALID = "_rowValid"
+ROW_NUMBER_IDENTIFIER = "_rowNumber"
+ROW_VALID_IDENTIFIER = "_rowValid"
 
 
 class SqlMapper(Mapper):
@@ -123,8 +123,8 @@ class SqlMapper(Mapper):
         Check = sa.CheckConstraint
         quote = self.engine.dialect.identifier_preparer.quote  # type: ignore
         if with_metadata:
-            columns.append(sa.Column(COLUMN_NAME_NUMBER, sa.Integer, primary_key=True))
-            columns.append(sa.Column(COLUMN_NAME_VALID, sa.Boolean))
+            columns.append(sa.Column(ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True))
+            columns.append(sa.Column(ROW_VALID_IDENTIFIER, sa.Boolean))
         for field in schema.fields:
             checks = []
             nullable = not field.required

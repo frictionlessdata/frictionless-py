@@ -4,6 +4,7 @@ from frictionless import Project
 
 name1 = "name1.txt"
 name2 = "name2.txt"
+name3 = "name3.json"
 bytes1 = b"bytes1"
 bytes2 = b"bytes2"
 bytes3 = b'{"key": "value"}'
@@ -12,23 +13,20 @@ folder2 = "folder2"
 not_secure = ["/path", "../path", "../", "./"]
 
 
-# Create
+# Read
 
 
-def test_project_create_folder(tmpdir):
+def test_project_read_text(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    path = project.create_folder(folder1)
-    assert path == folder1
+    project.create_file(name3, bytes=bytes3)
+    assert project.read_text(name3) == '{"key": "value"}'
     assert project.list_files() == [
-        {"path": folder1, "type": "folder"},
+        {"path": name3, "type": "file"},
     ]
 
 
 @pytest.mark.parametrize("path", not_secure)
-def test_project_create_folder_security(tmpdir, path):
+def test_project_read_text_security(tmpdir, path):
     project = Project(basepath=tmpdir, is_root=True)
-    project.create_file(name1, bytes=bytes1)
     with pytest.raises(Exception):
-        project.create_folder(path)
-    with pytest.raises(Exception):
-        project.create_folder(folder1, folder=path)
+        project.read_text(path)

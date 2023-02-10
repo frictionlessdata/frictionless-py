@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import Request
+from fastapi import Request, Response
 from ...project import Project
 from ..router import router
 
@@ -11,11 +11,11 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    bytes: bytes
+    pass
 
 
-@router.post("/file/read-bytes")
-def server_file_read_bytes(request: Request, props: Props) -> Result:
+@router.post("/bytes/read")
+def server_bytes_read(request: Request, props: Props) -> Response:
     project: Project = request.app.get_project(props.session)
-    bytes = project.read_file_bytes(props.path)
-    return Result(bytes=bytes)
+    bytes = project.read_bytes(props.path)
+    return Response(bytes, media_type="application/octet-stream")
