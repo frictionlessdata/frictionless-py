@@ -4,7 +4,7 @@ import json
 import datetime
 import secrets
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List
 from ..exception import FrictionlessException
 from ..package import Package
 from ..resource import Resource

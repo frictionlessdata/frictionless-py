@@ -174,7 +174,7 @@ def test_project_index_file(tmpdir):
     assert file["path"] == name4
     assert file["type"] == "table"
     record = file.get("record")
-    table = project.query_table(f"SELECT * FROM name4")
+    table = project.query_table("SELECT * FROM name4")
     assert record
     assert record["updated"]
     assert record.get("tableName") == "name4"
