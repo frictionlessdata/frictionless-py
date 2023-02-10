@@ -12,16 +12,45 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-TABLE_NAME_PROJECT = "_project"
-TABLE_NAME_RECORDS = "_records"
+PROJECT_IDENTIFIER = "_project"
+RECORDS_IDENTIFIER = "_records"
 BUFFER_SIZE = 1000
 
 
 class Database:
     database_url: str
+    project: Table
+    records: Table
 
     def __init__(self, database_url: str):
+        sa = platform.sqlalchemy
         self.database_url = database_url
+
+        # Ensure project table
+        self.project = self.metadata.tables.get(PROJECT_IDENTIFIER)
+        if self.project is None:
+            self.project = sa.Table(
+                PROJECT_IDENTIFIER,
+                self.metadata,
+                sa.Column("config", sa.Text),
+            )
+            self.project.create(self.connection)
+
+        # Ensure records table
+        # TODO: move some columns to metadata/other-name json column to avoid migrations
+        self.records = self.metadata.tables.get(RECORDS_IDENTIFIER)
+        if self.records is None:
+            self.records = sa.Table(
+                RECORDS_IDENTIFIER,
+                self.metadata,
+                sa.Column("path", sa.Text, primary_key=True),
+                sa.Column("type", sa.Text),
+                sa.Column("updated", sa.DateTime),
+                sa.Column("tableName", sa.Text, unique=True, nullable=True),
+                sa.Column("resource", sa.Text),
+                sa.Column("report", sa.Text),
+            )
+            self.records.create(self.connection)
 
     @cached_property
     def engine(self):
@@ -41,24 +70,6 @@ class Database:
     def mapper(self):
         # TODO: pass database_url
         return platform.frictionless_formats.sql.SqlMapper(self.engine)
-
-    @cached_property
-    def index(self) -> Table:
-        sa = platform.sqlalchemy
-        index = self.metadata.tables.get(TABLE_NAME_RECORDS)
-        if index is None:
-            index = sa.Table(
-                TABLE_NAME_RECORDS,
-                self.metadata,
-                sa.Column("path", sa.Text, primary_key=True),
-                sa.Column("type", sa.Text),
-                sa.Column("updated", sa.DateTime),
-                sa.Column("tableName", sa.Text, unique=True, nullable=True),
-                sa.Column("resource", sa.Text),
-                sa.Column("report", sa.Text),
-            )
-            index.create(self.connection)
-        return index
 
     # General
 
@@ -131,9 +142,11 @@ class Database:
                     self.connection.execute(table.insert().values(buffer))
 
             # Register resource
-            self.connection.execute(self.index.delete(self.index.c.path == resource.path))
             self.connection.execute(
-                self.index.insert().values(
+                self.records.delete(self.records.c.path == resource.path)
+            )
+            self.connection.execute(
+                self.records.insert().values(
                     path=resource.path,
                     type=resource.type,
                     tableName=table.name if table is not None else None,
@@ -156,17 +169,17 @@ class Database:
                     table = self.metadata.tables.get(record["tableName"])
                     if table is not None:
                         table.drop(self.connection)
-                self.connection.execute(self.index.delete(self.index.c.path == path))
+                self.connection.execute(self.records.delete(self.records.c.path == path))
             return record
 
     def list_records(self) -> List[IRecordItem]:
         result = self.connection.execute(
-            self.index.select().with_only_columns(
+            self.records.select().with_only_columns(
                 [
-                    self.index.c.path,
-                    self.index.c.type,
-                    self.index.c.updated,
-                    self.index.c.tableName,
+                    self.records.c.path,
+                    self.records.c.type,
+                    self.records.c.updated,
+                    self.records.c.tableName,
                 ]
             )
         )
@@ -183,12 +196,12 @@ class Database:
 
     def move_record(self, source: str, target: str) -> str:
         self.connection.execute(
-            self.index.update(self.index.c.path == source).values(path=target)
+            self.records.update(self.records.c.path == source).values(path=target)
         )
         return target
 
     def read_record(self, path: str) -> Optional[IRecord]:
-        query = self.index.select(self.index.c.path == path)
+        query = self.records.select(self.records.c.path == path)
         row = self.connection.execute(query).first()
         if row:
             return IRecord(
