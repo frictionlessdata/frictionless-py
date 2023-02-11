@@ -173,7 +173,7 @@ In metadata mode, the indexing process will be the same but it also stores the m
 ```bash script tabs=CLI
 frictionless index table.csv --database sqlite:///index/project.db --metadata
 frictionless extract sqlite:///index/project.db --table table --json
-frictionless extract sqlite:///index/project.db --table _resources --json
+frictionless extract sqlite:///index/project.db --table _records --json
 ```
 
 ```python script tabs=Python
@@ -183,7 +183,7 @@ from frictionless import Resource, formats
 resource = Resource('table.csv')
 resource.index('sqlite:///index/project.db', with_metadata=True)
 print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='table')).extract())
-print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='_resources')).extract())
+print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='_records')).extract())
 ```
 
 ### Fast Mode
