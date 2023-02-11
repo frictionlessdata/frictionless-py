@@ -191,7 +191,7 @@ class Filesystem:
             return "pipeline"
         elif path.endswith(".sql"):
             return "view"
-        elif path.endswith(".vl.json"):
+        elif path.endswith(".vljson"):
             return "chart"
         resource = Resource(path=path)
         resource.infer(sample=False)
