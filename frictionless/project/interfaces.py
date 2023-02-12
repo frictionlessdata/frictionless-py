@@ -32,6 +32,13 @@ class IRecord(IRecordItem):
     #  report: IReport
 
 
+class IFieldItem(TypedDict):
+    name: str
+    type: str
+    tableName: str
+    tablePath: str
+
+
 class ITable(TypedDict):
     # TODO: rename to schema after pydantic@2
     tableSchema: Dict

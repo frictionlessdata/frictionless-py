@@ -10,7 +10,7 @@ from ..package import Package
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem, IData
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IData, IFieldItem
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -125,6 +125,11 @@ class Project:
     # TODO: implement
     def update_file(self, path: str):
         pass
+
+    # Field
+
+    def list_fields(self) -> List[IFieldItem]:
+        return self.database.list_fields()
 
     # Folder
 
