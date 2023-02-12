@@ -189,9 +189,9 @@ class Filesystem:
             return "checklist"
         elif path.endswith("pipeline.json"):
             return "pipeline"
-        elif path.endswith(".sql"):
+        elif path.endswith("view.json"):
             return "view"
-        elif path.endswith(".vljson"):
+        elif path.endswith("chart.json"):
             return "chart"
         resource = Resource(path=path)
         resource.infer(sample=False)
