@@ -88,7 +88,7 @@ class Database:
         # TODO: write properly
         result = self.connection.execute(
             sa.text(
-                "SELECT path, tableName, json_extract(resource, '$.schema') as schema FROM _records WHERE type = 'table'"
+                "SELECT path, tableName, json_extract(resource, '$.schema') as schema FROM _records WHERE type = 'table' ORDER BY tableName"
             )
         )
         for row in result:
