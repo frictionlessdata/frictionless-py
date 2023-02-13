@@ -204,7 +204,7 @@ pipeline = Pipeline(steps=[
     steps.table_write(path="countries-cleaned.csv"),
 ])
 
-source = Resource('data/countries.csv')
+source = Resource('countries.csv')
 target = source.transform(pipeline)
 pprint(target.read_rows())
 ```
