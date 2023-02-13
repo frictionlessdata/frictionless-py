@@ -175,9 +175,24 @@ class Filesystem:
         assert path != ""
         return path
 
+    # TODO: rework file type guessing
     def get_filetype(self, path: str) -> str:
-        if path == "datapackage.json":
+        if path.endswith("datapackage.json"):
             return "package"
+        elif path.endswith("resource.json"):
+            return "resource"
+        elif path.endswith("dialect.json"):
+            return "dialect"
+        elif path.endswith("schema.json"):
+            return "schema"
+        elif path.endswith("checklist.json"):
+            return "checklist"
+        elif path.endswith("pipeline.json"):
+            return "pipeline"
+        elif path.endswith("view.json"):
+            return "view"
+        elif path.endswith("chart.json"):
+            return "chart"
         resource = Resource(path=path)
         resource.infer(sample=False)
         assert resource.type

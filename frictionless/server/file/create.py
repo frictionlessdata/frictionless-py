@@ -22,7 +22,7 @@ async def server_file_create(
     session: Optional[str] = Form(None),
 ) -> Result:
     project: Project = request.app.get_project(session)
-    name = file.filename
+    name = file.filename or "name"
     bytes = await file.read()
     path = project.create_file(name, bytes=bytes, folder=folder)
     return Result(path=path)
