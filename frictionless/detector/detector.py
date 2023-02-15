@@ -190,7 +190,6 @@ class Detector(Metadata):
         scheme = ""
         format = ""
         compression = None
-        innerpath = None
         if path:
             scheme, format = helpers.parse_scheme_and_format(path)
             if format in settings.COMPRESSION_FORMATS:
