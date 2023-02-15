@@ -343,7 +343,7 @@ class Resource(Metadata):
     @property
     def remote(self) -> bool:
         """Whether resource is remote"""
-        return helpers.is_remote_path(self.basepath or self.path)
+        return helpers.is_remote_path(self.basepath or self.path or "")
 
     @property
     def multipart(self) -> bool:
