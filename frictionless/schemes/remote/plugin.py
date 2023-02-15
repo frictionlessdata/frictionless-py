@@ -2,6 +2,7 @@ from __future__ import annotations
 from ...system import Plugin
 from .control import RemoteControl
 from .loader import RemoteLoader
+from ... import helpers
 from . import settings
 
 
@@ -11,6 +12,8 @@ class RemotePlugin(Plugin):
     # Hooks
 
     def create_loader(self, resource):
+        if helpers.is_remote_path(resource.basepath or ""):
+            return RemoteLoader(resource)
         if resource.scheme in settings.DEFAULT_SCHEMES:
             return RemoteLoader(resource)
 

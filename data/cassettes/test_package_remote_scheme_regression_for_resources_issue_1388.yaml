@@ -1,0 +1,218 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/datapackage.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA62RUQuCMBDH3/0Uw2er16iPEhJrO/VgbrKdUYjfvU1TZxAh5MMc/9/dj/PsEsZS
+        C860VoBLT+ziA8a64fRI8xp8mgrTarLoS7IJ0bMZEPGbgiVuOFWrjr1w9wU7UcGoLDBuK4ytOQ2N
+        cTloYSTqMoCWit1xQTVI5PMQ8KDDqtNDBSIYp49hozsOQh0orJHABs05nVH/vvXr0flaWCAouext
+        fGJ/tEOU83QfK0RNUPoJItpnv4UasKxuxl6/m53/BX57W8Xh/VdjY5pWcUKjN3jne57ESTjzpH8B
+        OZa+dLsCAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '236'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 15 Feb 2023 10:46:59 GMT
+      ETag:
+      - W/"b18decb9765eb64f28f00c0c688e1a63e8bd9bb0f6831b58d169ae553f12d3d8"
+      Expires:
+      - Wed, 15 Feb 2023 10:51:59 GMT
+      Source-Age:
+      - '11'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 361a7b8574301d302c129b7319e3818784fc9dd4
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 26FE:C97B:4FDDE:6FA4A:63ECB1F1
+      X-Served-By:
+      - cache-lis1490034-LIS
+      X-Timer:
+      - S1676458020.911480,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/countries.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tMsc5LzUzPSMovis8EshNzU60L8gtKcxJLMvPzeLkMrT2LUnMS81KsnYoySxIz
+        86zNzHm5jKyNrd2KEvOSU63z9BN5uQC4H6SqRgAAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '88'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 15 Feb 2023 10:47:00 GMT
+      ETag:
+      - W/"20592dd6b8619643e51e4f7b4b0669e731e1c0487fc58c71f722104f075edf0d"
+      Expires:
+      - Wed, 15 Feb 2023 10:52:00 GMT
+      Source-Age:
+      - '11'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 10512ccc93feda5abe2191e83d884657a87d25e8
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 74A0:24D1:6511B6:6C8CFA:63ECB081
+      X-Served-By:
+      - cache-lis1490034-LIS
+      X-Timer:
+      - S1676458020.011711,VS0,VE0
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/countries.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tMsc5LzUzPSMovis8EshNzU60L8gtKcxJLMvPzeLkMrT2LUnMS81KsnYoySxIz
+        86zNzHm5jKyNrd2KEvOSU63z9BN5uQC4H6SqRgAAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '88'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 15 Feb 2023 10:47:00 GMT
+      ETag:
+      - W/"20592dd6b8619643e51e4f7b4b0669e731e1c0487fc58c71f722104f075edf0d"
+      Expires:
+      - Wed, 15 Feb 2023 10:52:00 GMT
+      Source-Age:
+      - '11'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - fb9dcc8a551cb99f6f228f682b29d8e9321c2175
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 74A0:24D1:6511B6:6C8CFA:63ECB081
+      X-Served-By:
+      - cache-lis1490044-LIS
+      X-Timer:
+      - S1676458020.298495,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
