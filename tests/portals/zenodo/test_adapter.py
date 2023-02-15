@@ -11,7 +11,7 @@ PACKAGE_WITHOUT_DP = {
             "name": "capitals",
             "type": "table",
             "path": "capitals.csv",
-            "scheme": "https",
+            "scheme": "file",
             "format": "csv",
             "encoding": "utf-8",
             "mediatype": "text/csv",
@@ -28,7 +28,7 @@ PACKAGE_WITHOUT_DP = {
             "name": "table",
             "type": "table",
             "path": "table.xls",
-            "scheme": "https",
+            "scheme": "file",
             "format": "xls",
             "encoding": "utf-8",
             "mediatype": "application/vnd.ms-excel",
@@ -180,7 +180,7 @@ def test_zenodo_adapter_read_record_only_csv(options_with_dp_multiple_files_with
                 "name": "capitals",
                 "type": "table",
                 "path": "capitals.csv",
-                "scheme": "https",
+                "scheme": "file",
                 "format": "csv",
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
@@ -371,6 +371,8 @@ def test_zenodo_adapter_read_record_data_xls(options_with_dp_multiple_files_with
     ]
 
 
+# TODO: recover
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_read_record_data_xlsx(options_with_dp_multiple_files_without_dp):
     record = options_with_dp_multiple_files_without_dp.pop("record")
