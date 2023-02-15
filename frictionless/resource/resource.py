@@ -141,7 +141,12 @@ class Resource(Metadata):
     ):
         if control is not None:
             # Control
-            options.setdefault("dialect", control.to_dialect())
+            dialect = options.pop("dialect", None)
+            if dialect is None:
+                dialect = control.to_dialect()
+            elif control not in dialect.controls:
+                dialect.add_control(control)
+            options["dialect"] = dialect
             if source is None:
                 return Resource(**options)
 

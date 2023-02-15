@@ -281,3 +281,14 @@ def test_resource_dialect_header_false_official():
         {"id": 2, "name": "中国人"},
         {"id": 3, "name": "german"},
     ]
+
+
+# Bugs
+
+
+def test_resource_dialect_and_control_together_issue_1393():
+    dialect = Dialect()
+    control = formats.CsvControl()
+    resource = Resource("data/table.csv", dialect=dialect, control=control)
+    assert resource.dialect is dialect
+    assert resource.dialect.controls[0] is control
