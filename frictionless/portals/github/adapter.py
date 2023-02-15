@@ -161,7 +161,7 @@ class GithubAdapter(Adapter):
         try:
             repository.create_file(
                 path=package_path,
-                message="Create package.json",
+                message='Create "package.json"',
                 content=content,
                 branch=repository.default_branch,
                 committer=author,
@@ -179,8 +179,10 @@ class GithubAdapter(Adapter):
                     resource_path = os.path.join(self.control.basepath, resource_path)
                 repository.create_file(
                     path=resource_path,
-                    message="Create package.json",
-                    content=str(resource.read_bytes()),
+                    message='Create "resource_path"',
+                    # It seeems to be it requries a string by a mistake
+                    # https://stackoverflow.com/questions/72668275/how-to-upload-an-image-file-to-github-using-pygithub
+                    content=resource.read_bytes(),  # type: ignore
                     branch=branch,
                     committer=author,
                     author=author,

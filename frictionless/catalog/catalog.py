@@ -175,6 +175,15 @@ class Catalog(Metadata):
                     self.packages[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
 
+    # Convert
+
+    def to_copy(self, **options):
+        """Create a copy of the catalog"""
+        return super().to_copy(
+            basepath=self.basepath,
+            **options,
+        )
+
     # Metadata
 
     metadata_type = "catalog"

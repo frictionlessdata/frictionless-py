@@ -385,10 +385,13 @@ class Package(Metadata):
 
     # Convert
 
-    def to_copy(self):
+    def to_copy(self, **options):
         """Create a copy of the package"""
         return super().to_copy(
-            resources=[resource.to_copy() for resource in self.resources]
+            resources=[resource.to_copy() for resource in self.resources],
+            basepath=self.basepath,
+            catalog=self.catalog,
+            **options,
         )
 
     def to_er_diagram(self, path: Optional[str] = None) -> str:
