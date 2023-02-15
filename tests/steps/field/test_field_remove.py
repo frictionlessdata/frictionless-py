@@ -23,3 +23,24 @@ def test_step_field_remove():
         {"name": "france", "population": 66},
         {"name": "spain", "population": 47},
     ]
+
+
+# Bugs
+
+
+def test_step_field_remove_missing_label():
+    source = Resource(b"field1,\n1,2", format="csv")
+    pipeline = Pipeline(
+        steps=[
+            steps.field_remove(names=["field2"]),
+        ],
+    )
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"name": "field1", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"field1": 1},
+    ]
