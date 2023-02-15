@@ -227,7 +227,7 @@ def create_byte_stream(bytes):
     return stream
 
 
-def is_remote_path(path):
+def is_remote_path(path: str) -> bool:
     path = path[0] if path and isinstance(path, list) else path
     scheme = urlparse(path).scheme
     if not scheme:

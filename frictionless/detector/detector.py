@@ -57,8 +57,8 @@ class Detector(Metadata):
 
     sample_size: int = settings.DEFAULT_SAMPLE_SIZE
     """
-    The amount of rows to be extracted as a sample for dialect/schema infering. 
-    It defaults to 100. The sample_size can be increased to improve the inference 
+    The amount of rows to be extracted as a sample for dialect/schema infering.
+    It defaults to 100. The sample_size can be increased to improve the inference
     accuracy.
     """
 
@@ -167,11 +167,19 @@ class Detector(Metadata):
         It works in-place updating a provided resource.
         """
 
+        # Input data
+        # Note that here we only use path/innerpath/extrapahts
+        # These attributes describe the resource itself compared to
+        # basepath-related attributes like normpath that adds runtime into equation
+        path = resource.path
+        innerpath = resource.innerpath
+        extrapaths = resource.extrapaths
+
         # Detect name
         name = "memory"
-        if resource.path:
+        if path:
             names = []
-            for part in [resource.path] + resource.extrapaths:
+            for part in [path] + extrapaths:
                 name = os.path.splitext(os.path.basename(part))[0]
                 names.append(name)
             name = os.path.commonprefix(names)
@@ -182,16 +190,14 @@ class Detector(Metadata):
         scheme = ""
         format = ""
         compression = None
-        innerpath = None
-        if resource.path:
-            normpath = resource.normpath
-            scheme, format = helpers.parse_scheme_and_format(normpath)
+        if path:
+            scheme, format = helpers.parse_scheme_and_format(path)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
-                normpath = normpath[: -len(format) - 1]
-                if resource.innerpath:
-                    normpath = os.path.join(normpath, resource.innerpath)
-                scheme, format = helpers.parse_scheme_and_format(normpath)
+                path = path[: -len(format) - 1]
+                if innerpath:
+                    path = os.path.join(path, innerpath)
+                scheme, format = helpers.parse_scheme_and_format(path)
                 if format:
                     name = os.path.splitext(name)[0]
 

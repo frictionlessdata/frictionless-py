@@ -65,3 +65,15 @@ def test_remote_loader_write(requests_mock):
     source = Resource("data/table.csv")
     target = source.write(path)
     assert target
+
+
+# Bugs
+
+
+@pytest.mark.vcr
+def test_remote_loader_if_remote_basepath_and_file_scheme_issue_1388():
+    resource = Resource(path="table.csv", scheme="file", basepath=BASEURL % "data")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]

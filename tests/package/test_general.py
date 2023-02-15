@@ -268,3 +268,12 @@ def test_package_validation_duplicate_resource_names_issue_942():
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note == 'resource "name" already exists'
+
+
+@pytest.mark.vcr
+def test_package_remote_scheme_regression_for_resources_issue_1388():
+    package = Package(
+        "https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/datapackage.json"
+    )
+    rows = package.get_resource("countries").read_rows()
+    assert len(rows) == 2
