@@ -291,4 +291,4 @@ def test_resource_dialect_and_control_together_issue_1393():
     control = formats.CsvControl()
     resource = Resource("data/table.csv", dialect=dialect, control=control)
     assert resource.dialect is dialect
-    assert resource.dialect.controls == [control]
+    assert resource.dialect.controls[0] is control
