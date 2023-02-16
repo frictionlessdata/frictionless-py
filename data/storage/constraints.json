@@ -15,7 +15,7 @@
       },
       "data": [
         [
-          "requried",
+          "required",
           "minLength",
           "maxLength",
           "pattern",
