@@ -43,7 +43,7 @@ class Database:
                     self.metadata,
                     sa.Column("config", sa.Text),
                 )
-                self.metadata.create_all(conn, tables=[self.project])
+                self.metadata.create_all(conn, tables=[project])
             self.project = project
 
             # Ensure records table
@@ -59,7 +59,7 @@ class Database:
                     sa.Column("resource", sa.Text),
                     sa.Column("report", sa.Text),
                 )
-                self.metadata.create_all(conn, tables=[self.records])
+                self.metadata.create_all(conn, tables=[records])
             self.records = records
 
     # General
