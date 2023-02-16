@@ -33,9 +33,9 @@ class SqlIndexer:
 
     def __attrs_post_init__(self):
         sa = platform.sqlalchemy
-        formats = platform.frictionless_formats
+        sql = platform.frictionless_formats.sql
         self.engine = sa.create_engine(self.database_url)
-        self.mapper = formats.sql.SqlMapper(self.engine.dialect.name)
+        self.mapper = sql.SqlMapper(self.engine.dialect.name)
         with self.engine.begin() as conn:
             self.metadata = sa.MetaData()
             self.metadata.reflect(conn, views=True)

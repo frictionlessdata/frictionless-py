@@ -16,8 +16,8 @@ def test_sql_mapper_read_schema():
 
 def test_sql_mapper_read_field():
     mapper = formats.sql.SqlMapper("sqlite")
-    field1 = mapper.read_field(sa.Integer(), name="id")
-    field2 = mapper.read_field(sa.Text(), name="name")
+    field1 = mapper.read_field(sa.Column("id", sa.Integer()))
+    field2 = mapper.read_field(sa.Column("name", sa.Text()))
     assert field1.type == "integer"
     assert field2.type == "string"
 

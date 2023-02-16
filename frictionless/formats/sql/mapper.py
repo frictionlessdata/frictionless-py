@@ -8,7 +8,7 @@ from ...system import Mapper
 
 if TYPE_CHECKING:
     from sqlalchemy import Dialect
-    from sqlalchemy.schema import Table
+    from sqlalchemy.schema import Table, Column
     from sqlalchemy.types import TypeEngine
     from ...table import Row
 
@@ -18,7 +18,12 @@ ROW_VALID_IDENTIFIER = "_rowValid"
 
 
 class SqlMapper(Mapper):
-    """Metadata mapper Frictionless from/to SQL"""
+    """Metadata mapper Frictionless from/to SQL
+
+    Partialy based on unmerged @ezwelty's work:
+    - https://github.com/frictionlessdata/framework/pull/862
+
+    """
 
     dialect: Dialect
 
@@ -34,11 +39,7 @@ class SqlMapper(Mapper):
 
         # Fields
         for column in table.columns:
-            field = self.read_field(column.type, name=str(column.name))
-            if not column.nullable:
-                field.required = True
-            if column.comment:
-                field.description = column.comment
+            field = self.read_field(column)
             schema.add_field(field)
 
         # Primary key
@@ -63,12 +64,10 @@ class SqlMapper(Mapper):
 
         return schema
 
-    def read_field(self, type: TypeEngine, *, name: str) -> Field:
+    def read_field(self, column: Column) -> Field:
         """Convert sqlalchemy type to frictionless field
         as e.g. sa.Text -> Field(type=string)
         """
-
-        # Prepare
         sa = platform.sqlalchemy
         sapg = platform.sqlalchemy_dialects_postgresql
         sams = platform.sqlalchemy_dialects_mysql
@@ -93,13 +92,25 @@ class SqlMapper(Mapper):
             sapg.UUID: "string",
         }
 
-        # Get type
-        field_type = "string"
+        # Create filed
+        name = str(column.name)
+        type = "string"
         for type_class, value in mapping.items():
-            if isinstance(type, type_class):
-                field_type = value
+            if isinstance(column.type, type_class):
+                type = value
+        field = Field.from_descriptor(dict(name=name, type=type))
+        if isinstance(column.type, (sa.CHAR, sa.VARCHAR)):
+            field.constraints["maxLength"] = column.type.length
+        if isinstance(column.type, sa.CHAR):
+            field.constraints["minLength"] = column.type.length
+        if isinstance(column.type, sa.Enum):
+            field.constraints["enum"] = column.type.enums
+        if not column.nullable:
+            field.required = True
+        if column.comment:
+            field.description = column.comment
 
-        return Field.from_descriptor(dict(name=name, type=field_type))
+        return field
 
     # Write
 
@@ -126,26 +137,48 @@ class SqlMapper(Mapper):
             assert field.name
             quoted_name = quote(field.name)
             column_type = self.write_field(field)
+
+            # Length contraints
+            if field.type == "string":
+                min_length = field.constraints.get("minLength", None)
+                max_length = field.constraints.get("maxLength", None)
+                if (
+                    min_length is not None
+                    and max_length is not None
+                    and min_length == max_length
+                ):
+                    column_type = sa.CHAR(max_length)
+                if max_length is not None:
+                    if column_type is sa.Text:
+                        column_type = sa.VARCHAR(length=max_length)
+                    if self.dialect.name == "sqlite":
+                        checks.append(
+                            Check("LENGTH(%s) <= %s" % (quoted_name, max_length))
+                        )
+                if min_length is not None:
+                    if (
+                        not isinstance(column_type, sa.CHAR)
+                        or self.dialect.name == "sqlite"
+                    ):
+                        checks.append(
+                            Check("LENGTH(%s) >= %s" % (quoted_name, min_length))
+                        )
+
+            # Unique contstraint
             unique = field.constraints.get("unique", False)
-            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            if self.dialect.name.startswith("mysql"):
-                unique = unique and field.type != "string"
+            if self.dialect.name == "mysql":
+                # MySQL requires keys to have an explicit maximum length
+                # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+                unique = unique and column_type is not sa.Text
+
+            # Others contstraints
             for const, value in field.constraints.items():
-                if const == "minLength":
-                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
-                elif const == "maxLength":
-                    # Some databases don't support TEXT as a Primary Key
-                    # https://github.com/frictionlessdata/frictionless-py/issues/777
-                    for prefix in ["mysql", "db2", "ibm"]:
-                        if self.dialect.name.startswith(prefix):
-                            column_type = sa.VARCHAR(length=value)
-                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
-                elif const == "minimum":
+                if const == "minimum":
                     checks.append(Check("%s >= %s" % (quoted_name, value)))
                 elif const == "maximum":
                     checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
-                    if self.dialect.name.startswith("postgresql"):
+                    if self.dialect.name == "postgresql":
                         checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
                     else:
                         check = Check("%s REGEXP '%s'" % (quoted_name, value))
@@ -155,6 +188,8 @@ class SqlMapper(Mapper):
                     if field.type == "string":
                         enum_name = "%s_%s_enum" % (table_name, field.name)
                         column_type = sa.Enum(*value, name=enum_name)
+
+            # Create column
             column_args = [field.name, column_type] + checks
             column_kwargs = {"nullable": nullable, "unique": unique}
             if field.description:
@@ -187,8 +222,6 @@ class SqlMapper(Mapper):
         """Convert frictionless field to sqlalchemy type
         as e.g. Field(type=string) -> sa.Text
         """
-
-        # Prepare
         sa = platform.sqlalchemy
         sapg = platform.sqlalchemy_dialects_postgresql
 
@@ -206,7 +239,7 @@ class SqlMapper(Mapper):
         }
 
         # Postgresql dialect
-        if self.dialect.name.startswith("postgresql"):
+        if self.dialect.name == "postgresql":
             mapping.update(
                 {
                     "array": sapg.JSONB,

@@ -113,13 +113,22 @@ def test_sql_adapter_constraints(sqlite_url):
     target = Package(sqlite_url)
 
     # Assert metadata
+    print(target.get_resource("constraints").schema.to_descriptor())
     assert target.get_resource("constraints").schema.to_descriptor() == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
-            {"name": "maxLength", "type": "string"},  # constraint removal
+            {
+                "name": "maxLength",
+                "type": "string",
+                "constraints": {"maxLength": 8},
+            },
             {"name": "pattern", "type": "string"},  # constraint removal
-            {"name": "enum", "type": "string"},  # constraint removal
+            {
+                "name": "enum",
+                "type": "string",
+                "constraints": {"maxLength": 7},
+            },
             {"name": "minimum", "type": "integer"},  # constraint removal
             {"name": "maximum", "type": "integer"},  # constraint removal
         ],
@@ -296,7 +305,7 @@ def sqlite_max_variable_number():
             result = conn.execute("pragma compile_options;").fetchall()
     finally:
         conn.close()
-    for item in result:
+    for item in result:  # type: ignore
         if item[0].startswith("MAX_VARIABLE_NUMBER="):
             return int(item[0].split("=")[-1])
     return 32766

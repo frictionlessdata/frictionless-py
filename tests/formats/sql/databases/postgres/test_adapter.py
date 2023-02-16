@@ -124,9 +124,17 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
-            {"name": "maxLength", "type": "string"},  # constraint removal
+            {
+                "name": "maxLength",
+                "type": "string",
+                "constraints": {"maxLength": 8},
+            },
             {"name": "pattern", "type": "string"},  # constraint removal
-            {"name": "enum", "type": "string"},  # constraint removal
+            {
+                "name": "enum",
+                "type": "string",
+                "constraints": {"enum": ["passing"]},
+            },
             {"name": "minimum", "type": "integer"},  # constraint removal
             {"name": "maximum", "type": "integer"},  # constraint removal
         ],
