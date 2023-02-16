@@ -145,30 +145,6 @@ class SqlMapper(Mapper):
 
     # Write
 
-    def write_row(self, row: Row) -> List[Any]:
-        """Convert frictionless row to list of sql cells"""
-        cells = []
-        sa = platform.sqlalchemy
-        for field in row.fields:
-            cell = row[field.name]
-            if cell is not None:
-                column_type = self.write_type(field.type)
-                if field.type != "string" and column_type is sa.Text:
-                    cell, _ = field.write_cell(cell)
-                elif field.type in ["object", "geojson"]:
-                    cell = json.dumps(cell)
-                elif field.type == "datetime":
-                    if cell.tzinfo is not None:
-                        dt = cell.astimezone(timezone.utc)
-                        cell = dt.replace(tzinfo=None)
-                elif field.type == "time":
-                    if cell.tzinfo is not None:
-                        dt = datetime.combine(date.min, cell)
-                        dt = dt.astimezone(timezone.utc)
-                        cell = dt.time()
-            cells.append(cell)
-        return cells
-
     def write_schema(
         self, schema: Schema, *, table_name: str, with_metadata: bool = False
     ) -> Table:
@@ -303,3 +279,27 @@ class SqlMapper(Mapper):
             )
 
         return mapping.get(field_type, sa.Text)
+
+    def write_row(self, row: Row) -> List[Any]:
+        """Convert frictionless row to list of sql cells"""
+        cells = []
+        sa = platform.sqlalchemy
+        for field in row.fields:
+            cell = row[field.name]
+            if cell is not None:
+                column_type = self.write_type(field.type)
+                if field.type != "string" and column_type is sa.Text:
+                    cell, _ = field.write_cell(cell)
+                elif field.type in ["object", "geojson"]:
+                    cell = json.dumps(cell)
+                elif field.type == "datetime":
+                    if cell.tzinfo is not None:
+                        dt = cell.astimezone(timezone.utc)
+                        cell = dt.replace(tzinfo=None)
+                elif field.type == "time":
+                    if cell.tzinfo is not None:
+                        dt = datetime.combine(date.min, cell)
+                        dt = dt.astimezone(timezone.utc)
+                        cell = dt.time()
+            cells.append(cell)
+        return cells
