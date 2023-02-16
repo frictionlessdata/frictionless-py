@@ -5,12 +5,13 @@ from ...platform import platform
 from ...resource import Resource
 from ...package import Package
 from ...system import Adapter
+from .interfaces import IOnProgress
 from .control import SqlControl
 from .mapper import SqlMapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import MetaData, Table
+    from sqlalchemy import MetaData
     from sqlalchemy.engine import Engine
     from ...schema import Schema
 
@@ -34,6 +35,13 @@ class SqlAdapter(Adapter):
                 conn.connection.create_function("REGEXP", 2, regexp)  # type: ignore
             self.metadata = sa.MetaData(schema=self.control.namespace)
             self.metadata.reflect(conn, views=True)
+
+    # Delete
+
+    def delete_resource(self, table_name: str) -> None:
+        with self.engine.begin() as conn:
+            table = self.metadata.tables[table_name]
+            self.metadata.drop_all(conn, tables=[table])
 
     # Read
 
@@ -87,26 +95,33 @@ class SqlAdapter(Adapter):
                     self.write_row_stream(resource.row_stream, table_name=table.name)
         return bool(tables)
 
-    def write_schema(self, schema: Schema, *, table_name: str) -> Table:
+    def write_schema(
+        self, schema: Schema, *, table_name: str, force: bool = False
+    ) -> None:
         with self.engine.begin() as conn:
+            if force:
+                existing_table = self.metadata.tables.get(table_name)
+                if existing_table is not None:
+                    self.metadata.drop_all(conn, tables=[existing_table])
             table = self.mapper.write_schema(schema, table_name=table_name)
             table = table.to_metadata(self.metadata)
             self.metadata.create_all(conn, tables=[table])
-            return table
 
-    def write_row_stream(self, row_stream, *, table_name: str) -> None:
+    def write_row_stream(
+        self, row_stream, *, table_name: str, on_progress: Optional[IOnProgress] = None
+    ) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            table = self.metadata.tables[table_name]
             buffer = []
-            for row in row_stream:
+            table = self.metadata.tables[table_name]
+            for count, row in enumerate(row_stream, start=1):
                 cells = self.mapper.write_row(row)
                 buffer.append(cells)
                 if len(buffer) > settings.BUFFER_SIZE:
-                    # sqlalchemy conn.execute(table.insert(), buffer)
-                    # syntax applies executemany DB API invocation.
                     conn.execute(sa.insert(table).values(buffer))
-                    buffer = []
+                    buffer.clear()
+                if on_progress:
+                    on_progress(f"{count} rows")
             if len(buffer):
                 conn.execute(sa.insert(table).values(buffer))
 

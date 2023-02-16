@@ -111,8 +111,6 @@ class Database:
 
             # Table
             if resource.type == "table":
-                buffer = []
-
                 # Get table name
                 found = False
                 table_names = []
@@ -156,6 +154,7 @@ class Database:
                         on_progress(f"{resource.stats.rows} rows")
 
                 # Validate/iterate
+                buffer = []
                 report = resource.validate(on_row=on_row)
                 if len(buffer):
                     conn.execute(table.insert().values(buffer))
