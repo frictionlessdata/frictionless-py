@@ -128,6 +128,8 @@ class SqlMapper(Mapper):
         for field in schema.fields:
             checks = []
             nullable = not field.required
+            # TODO: why it's not required?
+            assert field.name
             quoted_name = quote(field.name)
             column_type = self.write_field(field)
             unique = field.constraints.get("unique", False)

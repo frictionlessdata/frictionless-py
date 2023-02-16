@@ -37,7 +37,7 @@ class SqlAdapter(Adapter):
             host=control.host,
             port=control.port,
             database=control.database,
-            query=control.params,
+            query=control.params,  # type: ignore
         ).render_as_string(hide_password=False)
         if control and control.basepath:
             url = urlsplit(source)

@@ -36,19 +36,20 @@ class Database:
             self.metadata.reflect(conn, views=True)
 
             # Ensure project table
-            self.project = self.metadata.tables.get(PROJECT_IDENTIFIER)
-            if self.project is None:
-                self.project = sa.Table(
+            project = self.metadata.tables.get(PROJECT_IDENTIFIER)
+            if project is None:
+                project = sa.Table(
                     PROJECT_IDENTIFIER,
                     self.metadata,
                     sa.Column("config", sa.Text),
                 )
                 self.metadata.create_all(conn, tables=[self.project])
+            self.project = project
 
             # Ensure records table
-            self.records = self.metadata.tables.get(RECORDS_IDENTIFIER)
-            if self.records is None:
-                self.records = sa.Table(
+            records = self.metadata.tables.get(RECORDS_IDENTIFIER)
+            if records is None:
+                records = sa.Table(
                     RECORDS_IDENTIFIER,
                     self.metadata,
                     sa.Column("path", sa.Text, primary_key=True),
@@ -59,6 +60,7 @@ class Database:
                     sa.Column("report", sa.Text),
                 )
                 self.metadata.create_all(conn, tables=[self.records])
+            self.records = records
 
     # General
 
@@ -86,7 +88,7 @@ class Database:
                 .order_by(self.records.c.tableName)
             )
             for row in result:
-                schema = Schema.from_descriptor(json.loads(row["schema"]))
+                schema = Schema.from_descriptor(json.loads(row.schema))
                 for field in schema.fields:
                     items.append(
                         IFieldItem(
