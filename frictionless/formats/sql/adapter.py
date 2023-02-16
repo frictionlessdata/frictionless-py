@@ -26,7 +26,7 @@ class SqlAdapter(Adapter):
         sa = platform.sqlalchemy
         self.engine = engine
         self.control = control or SqlControl()
-        self.mapper = SqlMapper(self.engine)
+        self.mapper = SqlMapper(self.engine.dialect.name)
         with self.engine.begin() as conn:
             # It will fail silently if this function already exists
             if self.engine.dialect.name.startswith("sqlite"):

@@ -7,8 +7,8 @@ from ...schema import Schema, Field
 from ...system import Mapper
 
 if TYPE_CHECKING:
+    from sqlalchemy import Dialect
     from sqlalchemy.schema import Table
-    from sqlalchemy.engine import Engine
     from sqlalchemy.types import TypeEngine
     from ...table import Row
 
@@ -20,18 +20,15 @@ ROW_VALID_IDENTIFIER = "_rowValid"
 class SqlMapper(Mapper):
     """Metadata mapper Frictionless from/to SQL"""
 
-    engine: Engine
+    dialect: Dialect
 
-    # TODO: accept only url/dialect_name not engine (but we need access to dialect quote)?
-    def __init__(self, engine: Engine):
-        self.engine = engine
+    def __init__(self, dialect: str):
+        self.dialect = platform.sqlalchemy_dialects.registry.load(dialect)()
 
     # Read
 
     def read_schema(self, table: Table) -> Schema:
         """Convert sqlalchemy table to frictionless schema"""
-
-        # Prepare
         sa = platform.sqlalchemy
         schema = Schema()
 
@@ -64,7 +61,6 @@ class SqlMapper(Mapper):
                 ref = {"resource": resource, "fields": foreign_fields}
                 schema.foreign_keys.append({"fields": own_fields, "reference": ref})
 
-        # Return schema
         return schema
 
     def read_field(self, type: TypeEngine, *, name: str) -> Field:
@@ -119,7 +115,7 @@ class SqlMapper(Mapper):
 
         # Fields
         Check = sa.CheckConstraint
-        quote = self.engine.dialect.identifier_preparer.quote  # type: ignore
+        quote = self.dialect.identifier_preparer.quote  # type: ignore
         if with_metadata:
             columns.append(sa.Column(ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True))
             columns.append(sa.Column(ROW_VALID_IDENTIFIER, sa.Boolean))
@@ -132,7 +128,7 @@ class SqlMapper(Mapper):
             column_type = self.write_field(field)
             unique = field.constraints.get("unique", False)
             # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            if self.engine.dialect.name.startswith("mysql"):
+            if self.dialect.name.startswith("mysql"):
                 unique = unique and field.type != "string"
             for const, value in field.constraints.items():
                 if const == "minLength":
@@ -141,7 +137,7 @@ class SqlMapper(Mapper):
                     # Some databases don't support TEXT as a Primary Key
                     # https://github.com/frictionlessdata/frictionless-py/issues/777
                     for prefix in ["mysql", "db2", "ibm"]:
-                        if self.engine.dialect.name.startswith(prefix):
+                        if self.dialect.name.startswith(prefix):
                             column_type = sa.VARCHAR(length=value)
                     checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
                 elif const == "minimum":
@@ -149,7 +145,7 @@ class SqlMapper(Mapper):
                 elif const == "maximum":
                     checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
-                    if self.engine.dialect.name.startswith("postgresql"):
+                    if self.dialect.name.startswith("postgresql"):
                         checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
                     else:
                         check = Check("%s REGEXP '%s'" % (quoted_name, value))
@@ -210,7 +206,7 @@ class SqlMapper(Mapper):
         }
 
         # Postgresql dialect
-        if self.engine.dialect.name.startswith("postgresql"):
+        if self.dialect.name.startswith("postgresql"):
             mapping.update(
                 {
                     "array": sapg.JSONB,

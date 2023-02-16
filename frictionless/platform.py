@@ -366,6 +366,13 @@ class Platform:
 
     @cached_property
     @extras(name="sql")
+    def sqlalchemy_dialects(self):
+        import sqlalchemy.dialects
+
+        return sqlalchemy.dialects
+
+    @cached_property
+    @extras(name="sql")
     def sqlalchemy_dialects_postgresql(self):
         import sqlalchemy.dialects.postgresql
 
