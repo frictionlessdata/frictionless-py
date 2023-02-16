@@ -1,5 +1,4 @@
 from __future__ import annotations
-from platform import platform
 from typing import TYPE_CHECKING
 from ...platform import platform
 from ...exception import FrictionlessException
