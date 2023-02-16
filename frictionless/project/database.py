@@ -101,6 +101,7 @@ class Database:
 
     # Record
 
+    # TODO: reuse insert code from SqlAdapter?
     def create_record(self, resource: Resource, *, on_progress=None) -> IRecord:
         sa = platform.sqlalchemy
         with resource, self.engine.begin() as conn:

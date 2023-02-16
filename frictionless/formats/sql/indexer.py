@@ -2,24 +2,24 @@ from __future__ import annotations
 import attrs
 import subprocess
 from subprocess import PIPE
-from functools import cached_property
 from typing import TYPE_CHECKING, Optional, Callable
 from ...exception import FrictionlessException
 from ...platform import platform
 from ..qsv import QsvAdapter
 
 if TYPE_CHECKING:
+    from sqlalchemy import MetaData, Table
+    from sqlalchemy.engine import Engine
     from ...resource import Resource
-    from sqlalchemy import Table
+    from .mapper import SqlMapper
 
 
 BLOCK_SIZE = 8096
 BUFFER_SIZE = 1000
 
 
-# Currently, a base class is the only way to mix attrs and changed_property
 @attrs.define(kw_only=True)
-class SqlIndexerState:
+class SqlIndexer:
     resource: Resource
     database_url: str
     table_name: str
@@ -27,28 +27,17 @@ class SqlIndexerState:
     qsv_path: Optional[str] = None
     use_fallback: bool = False
     on_progress: Optional[Callable[[str], None]] = None
+    engine: Engine = attrs.field(init=False)
+    mapper: SqlMapper = attrs.field(init=False)
+    metadata: MetaData = attrs.field(init=False)
 
-
-class SqlIndexer(SqlIndexerState):
-    @cached_property
-    def mapper(self):
-        # TODO: pass database_url
-        return platform.frictionless_formats.sql.SqlMapper(self.engine)
-
-    @cached_property
-    def engine(self):
-        return platform.sqlalchemy.create_engine(self.database_url)
-
-    # TODO: use context manager to open/close connection
-    @cached_property
-    def connection(self):
-        return self.engine.connect()
-
-    @cached_property
-    def metadata(self):
-        metadata = platform.sqlalchemy.MetaData()
-        metadata.reflect(self.connection)
-        return metadata
+    def __attrs_post_init__(self):
+        sa = platform.sqlalchemy
+        self.engine = sa.create_engine(self.database_url)
+        self.mapper = platform.frictionless_formats.sql.SqlMapper(self.engine)
+        with self.engine.begin() as conn:
+            self.metadata = sa.MetaData()
+            self.metadata.reflect(conn, views=True)
 
     # Index
 
@@ -74,14 +63,16 @@ class SqlIndexer(SqlIndexerState):
             self.resource.schema = schema
 
     def prepare_table(self):
-        existing_table = self.metadata.tables.get(self.table_name)
-        if existing_table is not None:
-            existing_table.drop(self.connection)
-            self.metadata.remove(existing_table)
-        table = self.mapper.write_schema(self.resource.schema, table_name=self.table_name)
-        table.to_metadata(self.metadata)
-        table.create(self.connection)
-        return table
+        with self.engine.begin() as conn:
+            existing_table = self.metadata.tables.get(self.table_name)
+            if existing_table is not None:
+                self.metadata.drop_all(conn, tables=[existing_table])
+            table = self.mapper.write_schema(
+                self.resource.schema, table_name=self.table_name
+            )
+            table.to_metadata(self.metadata)
+            self.metadata.create_all(conn, tables=[table])
+            return table
 
     def populate_table(self, table: Table):
         if not self.fast:
@@ -89,17 +80,20 @@ class SqlIndexer(SqlIndexerState):
         else:
             self.populate_table_fast(table)
 
+    # TODO: reuse insert code from SqlAdapter?
     def populate_table_base(self, table: Table):
-        buffer = []
-        for row in self.resource.row_stream:
-            cells = self.mapper.write_row(row)
-            buffer.append(cells)
-            if len(buffer) > BUFFER_SIZE:
-                self.connection.execute(table.insert().values(buffer))
-                buffer.clear()
-            self.report_progress(f"{self.resource.stats.rows} rows")
-        if len(buffer):
-            self.connection.execute(table.insert().values(buffer))
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            buffer = []
+            for row in self.resource.row_stream:
+                cells = self.mapper.write_row(row)
+                buffer.append(cells)
+                if len(buffer) > BUFFER_SIZE:
+                    conn.execute(sa.insert(table).values(buffer))
+                    buffer.clear()
+                self.report_progress(f"{self.resource.stats.rows} rows")
+            if len(buffer):
+                conn.execute(sa.insert(table).values(buffer))
 
     def populate_table_fast(self, table: Table):
         url = platform.sqlalchemy.engine.make_url(self.database_url)
@@ -133,8 +127,8 @@ class SqlIndexer(SqlIndexerState):
                         self.report_progress(f"{self.resource.stats.bytes} bytes")
 
     def rollback_table(self, table: Table):
-        table.drop(self.connection)
-        self.metadata.remove(table)
+        with self.engine.begin() as conn:
+            self.metadata.drop_all(conn, tables=[table])
 
     # Progress
 
