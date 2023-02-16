@@ -178,11 +178,12 @@ def test_sql_adapter_mysql_constraints_not_valid_error(mysql_url, field_name, ce
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_adapter_mysql_views_support(mysql_url):
     engine = sa.create_engine(mysql_url)
-    engine.execute("DROP VIEW IF EXISTS view")
-    engine.execute("DROP TABLE IF EXISTS data")
-    engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
-    engine.execute("INSERT INTO data VALUES (1, 'english'), (2, '中国人')")
-    engine.execute("CREATE VIEW view AS SELECT * FROM data")
+    with engine.begin() as conn:
+        conn.execute(sa.text("DROP VIEW IF EXISTS view"))
+        conn.execute(sa.text("DROP TABLE IF EXISTS data"))
+        conn.execute(sa.text("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)"))
+        conn.execute(sa.text("INSERT INTO data VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(sa.text("CREATE VIEW view AS SELECT * FROM data"))
     with Resource(mysql_url, control=formats.sql.SqlControl(table="view")) as resource:
         assert resource.schema.to_descriptor() == {
             "fields": [

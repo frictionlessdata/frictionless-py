@@ -2,23 +2,30 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 from urllib.parse import urlsplit, urlunsplit
-from .control import SqlControl
 from ...system import Adapter
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
+from .control import SqlControl
 from .mapper import SqlMapper
 
 if TYPE_CHECKING:
+    from sqlalchemy import MetaData
+    from sqlalchemy.engine import Engine
     from ...schema import Schema
 
 
 class SqlAdapter(Adapter):
     """Read and write data from/to SQL database"""
 
+    database_url: str
+    engine: Engine
+    mapper: SqlMapper
+    metadata: MetaData
+
     def __init__(self, control: SqlControl):
-        self.control = control
         sa = platform.sqlalchemy
+        self.control = control
 
         # TODO: rework
         # Create engine
@@ -41,19 +48,14 @@ class SqlAdapter(Adapter):
             source = urlunsplit((url.scheme, basepath, url.path, url.query, url.fragment))
         self.engine = sa.create_engine(source) if isinstance(source, str) else source
 
-        # Set attributes
-        control = control or SqlControl()
-        self.connection = self.engine.connect()
+        # Create metadata
         self.mapper = SqlMapper(self.engine)
-
-        # Add regex support
-        # It will fail silently if this function already exists
-        if self.connection.engine.dialect.name.startswith("sqlite"):
-            self.connection.connection.create_function("REGEXP", 2, regexp)  # type: ignore
-
-        # Create metadata and reflect
-        self.metadata = sa.MetaData(bind=self.connection, schema=control.namespace)
-        self.metadata.reflect(views=True)
+        with self.engine.begin() as conn:
+            # It will fail silently if this function already exists
+            if self.engine.dialect.name.startswith("sqlite"):
+                conn.connection.create_function("REGEXP", 2, regexp)  # type: ignore
+            self.metadata = sa.MetaData(schema=control.namespace)
+            self.metadata.reflect(conn, views=True)
 
     # Read
 
@@ -74,17 +76,16 @@ class SqlAdapter(Adapter):
 
     def read_cell_stream(self, control):
         sa = platform.sqlalchemy
-        self.metadata.reflect()
         table = self.metadata.tables[control.table]
-        with self.connection.begin():
+        with self.engine.begin() as conn:
             # Streaming could be not working for some backends:
             # http://docs.sqlalchemy.org/en/latest/core/connections.html
-            select = table.select().execution_options(stream_results=True)
+            query = sa.select(table).execution_options(stream_results=True)
             if control.order_by:
-                select = select.order_by(sa.sql.text(control.order_by))
+                query = query.order_by(sa.text(control.order_by))
             if control.where:
-                select = select.where(sa.sql.text(control.where))
-            result = select.execute()
+                query = query.where(sa.text(control.where))
+            result = conn.execute(query)
             yield list(result.keys())
             for item in result:
                 cells = list(item)
@@ -93,40 +94,43 @@ class SqlAdapter(Adapter):
     # Write
 
     def write_package(self, package: Package) -> bool:
-        with self.connection.begin():
+        with self.engine.begin() as conn:
             tables = []
             for res in package.resources:
                 assert res.name
                 table = self.mapper.write_schema(res.schema, table_name=res.name)
                 table = table.to_metadata(self.metadata)
                 tables.append(table)
-            self.metadata.create_all(tables=tables)
-            for table in self.metadata.sorted_tables:
-                if package.has_resource(table.name):
-                    resource = package.get_resource(table.name)
-                    with resource:
-                        self.write_row_stream(resource.row_stream, table_name=table.name)
+            self.metadata.create_all(conn, tables=tables)
+        for table in self.metadata.sorted_tables:
+            if package.has_resource(table.name):
+                resource = package.get_resource(table.name)
+                with resource:
+                    self.write_row_stream(resource.row_stream, table_name=table.name)
         return bool(tables)
 
     def write_schema(self, schema: Schema, *, table_name: str):
-        table = self.mapper.write_schema(schema, table_name=table_name)
-        table = table.to_metadata(self.metadata)
-        self.metadata.create_all(tables=[table])
+        with self.engine.begin() as conn:
+            table = self.mapper.write_schema(schema, table_name=table_name)
+            table = table.to_metadata(self.metadata)
+            self.metadata.create_all(conn, tables=[table])
 
     def write_row_stream(self, row_stream, *, table_name: str):
-        table = self.metadata.tables[table_name]
-        buffer = []
-        buffer_size = 1000
-        for row in row_stream:
-            cells = self.mapper.write_row(row)
-            buffer.append(cells)
-            if len(buffer) > buffer_size:
-                # sqlalchemy conn.execute(table.insert(), buffer)
-                # syntax applies executemany DB API invocation.
-                self.connection.execute(table.insert().values(buffer))
-                buffer = []
-        if len(buffer):
-            self.connection.execute(table.insert().values(buffer))
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            table = self.metadata.tables[table_name]
+            buffer = []
+            buffer_size = 1000
+            for row in row_stream:
+                cells = self.mapper.write_row(row)
+                buffer.append(cells)
+                if len(buffer) > buffer_size:
+                    # sqlalchemy conn.execute(table.insert(), buffer)
+                    # syntax applies executemany DB API invocation.
+                    conn.execute(sa.insert(table).values(buffer))
+                    buffer = []
+            if len(buffer):
+                conn.execute(sa.insert(table).values(buffer))
 
     # Convert
 

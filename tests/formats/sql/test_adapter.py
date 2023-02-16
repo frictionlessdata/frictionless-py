@@ -167,9 +167,10 @@ def test_sql_adapter_constraints_not_valid_error(sqlite_url, field_name, cell):
 
 def test_sql_adapter_views_support(sqlite_url):
     engine = sa.create_engine(sqlite_url)
-    engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
-    engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
-    engine.execute("CREATE VIEW 'view' AS SELECT * FROM 'table'")
+    with engine.begin() as conn:
+        conn.execute(sa.text("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)"))
+        conn.execute(sa.text("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(sa.text("CREATE VIEW 'view' AS SELECT * FROM 'table'"))
     with Resource(sqlite_url, control=formats.sql.SqlControl(table="view")) as res:
         assert res.schema.to_descriptor() == {
             "fields": [

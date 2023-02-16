@@ -33,7 +33,7 @@ class Database:
         self.mapper = platform.frictionless_formats.sql.SqlMapper(self.engine)
         with self.engine.begin() as conn:
             self.metadata = sa.MetaData()
-            self.metadata.reflect(conn)
+            self.metadata.reflect(conn, views=True)
 
             # Ensure project table
             self.project = self.metadata.tables.get(PROJECT_IDENTIFIER)
@@ -264,8 +264,7 @@ class Database:
         record = self.read_record(path)
         assert record
         assert "tableName" in record
-        assert record["tableName"] in self.metadata.tables
-        table = self.metadata.tables.get(record["tableName"])
+        table = self.metadata.tables[record["tableName"]]
         query = sa.select(table)
         if valid is not None:
             query = query.where(table.c._rowValid == valid)
