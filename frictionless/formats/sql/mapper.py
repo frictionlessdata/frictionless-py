@@ -65,14 +65,12 @@ class SqlMapper(Mapper):
         return schema
 
     def read_field(self, column: Column) -> Field:
-        """Convert sqlalchemy type to frictionless field
-        as e.g. sa.Text -> Field(type=string)
-        """
+        """Convert sqlalchemy Column to frictionless Field"""
         sa = platform.sqlalchemy
         sapg = platform.sqlalchemy_dialects_postgresql
         sams = platform.sqlalchemy_dialects_mysql
 
-        # Create mapping
+        # Type mapping
         mapping = {
             sapg.ARRAY: "array",
             sams.BIT: "string",
@@ -112,89 +110,79 @@ class SqlMapper(Mapper):
 
         return field
 
+    def read_type(self, column_type: str) -> str:
+        """Convert sqlalchemy type to frictionless type"""
+        sa = platform.sqlalchemy
+        sapg = platform.sqlalchemy_dialects_postgresql
+        sams = platform.sqlalchemy_dialects_mysql
+
+        # General mapping
+        mapping = {
+            sapg.ARRAY: "array",
+            sams.BIT: "string",
+            sa.Boolean: "boolean",
+            sa.Date: "date",
+            sa.DateTime: "datetime",
+            sa.Float: "number",
+            sa.Integer: "integer",
+            sapg.JSONB: "object",
+            sapg.JSON: "object",
+            sa.Numeric: "number",
+            sa.Text: "string",
+            sa.Time: "time",
+            sams.VARBINARY: "string",
+            sams.VARCHAR: "string",
+            sa.VARCHAR: "string",
+            sapg.UUID: "string",
+        }
+
+        # Return type
+        field_type = "string"
+        for type_class, value in mapping.items():
+            if isinstance(column_type, type_class):
+                field_type = value
+        return field_type
+
     # Write
+
+    def write_row(self, row: Row) -> List[Any]:
+        """Convert frictionless row to list of sql cells"""
+        cells = []
+        sa = platform.sqlalchemy
+        for field in row.fields:
+            cell = row[field.name]
+            if cell is not None:
+                column_type = self.write_type(field.type)
+                if field.type != "string" and column_type is sa.Text:
+                    cell, _ = field.write_cell(cell)
+                elif field.type in ["object", "geojson"]:
+                    cell = json.dumps(cell)
+                elif field.type == "datetime":
+                    if cell.tzinfo is not None:
+                        dt = cell.astimezone(timezone.utc)
+                        cell = dt.replace(tzinfo=None)
+                elif field.type == "time":
+                    if cell.tzinfo is not None:
+                        dt = datetime.combine(date.min, cell)
+                        dt = dt.astimezone(timezone.utc)
+                        cell = dt.time()
+            cells.append(cell)
+        return cells
 
     def write_schema(
         self, schema: Schema, *, table_name: str, with_metadata: bool = False
     ) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
-
-        # Prepare
+        sa = platform.sqlalchemy
         columns = []
         constraints = []
-        sa = platform.sqlalchemy
 
         # Fields
-        Check = sa.CheckConstraint
-        quote = self.dialect.identifier_preparer.quote  # type: ignore
         if with_metadata:
             columns.append(sa.Column(ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True))
             columns.append(sa.Column(ROW_VALID_IDENTIFIER, sa.Boolean))
         for field in schema.fields:
-            checks = []
-            nullable = not field.required
-            # TODO: why it's not required?
-            assert field.name
-            quoted_name = quote(field.name)
-            column_type = self.write_field(field)
-
-            # Length contraints
-            if field.type == "string":
-                min_length = field.constraints.get("minLength", None)
-                max_length = field.constraints.get("maxLength", None)
-                if (
-                    min_length is not None
-                    and max_length is not None
-                    and min_length == max_length
-                ):
-                    column_type = sa.CHAR(max_length)
-                if max_length is not None:
-                    if column_type is sa.Text:
-                        column_type = sa.VARCHAR(length=max_length)
-                    if self.dialect.name == "sqlite":
-                        checks.append(
-                            Check("LENGTH(%s) <= %s" % (quoted_name, max_length))
-                        )
-                if min_length is not None:
-                    if (
-                        not isinstance(column_type, sa.CHAR)
-                        or self.dialect.name == "sqlite"
-                    ):
-                        checks.append(
-                            Check("LENGTH(%s) >= %s" % (quoted_name, min_length))
-                        )
-
-            # Unique contstraint
-            unique = field.constraints.get("unique", False)
-            if self.dialect.name == "mysql":
-                # MySQL requires keys to have an explicit maximum length
-                # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-                unique = unique and column_type is not sa.Text
-
-            # Others contstraints
-            for const, value in field.constraints.items():
-                if const == "minimum":
-                    checks.append(Check("%s >= %s" % (quoted_name, value)))
-                elif const == "maximum":
-                    checks.append(Check("%s <= %s" % (quoted_name, value)))
-                elif const == "pattern":
-                    if self.dialect.name == "postgresql":
-                        checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
-                    else:
-                        check = Check("%s REGEXP '%s'" % (quoted_name, value))
-                        checks.append(check)
-                elif const == "enum":
-                    # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
-                    if field.type == "string":
-                        enum_name = "%s_%s_enum" % (table_name, field.name)
-                        column_type = sa.Enum(*value, name=enum_name)
-
-            # Create column
-            column_args = [field.name, column_type] + checks
-            column_kwargs = {"nullable": nullable, "unique": unique}
-            if field.description:
-                column_kwargs["comment"] = field.description
-            column = sa.Column(*column_args, **column_kwargs)
+            column = self.write_field(field, table_name=table_name)
             columns.append(column)
 
         # Primary key
@@ -218,14 +206,79 @@ class SqlMapper(Mapper):
         table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
         return table
 
-    def write_field(self, field: Field) -> Type[TypeEngine]:
-        """Convert frictionless field to sqlalchemy type
-        as e.g. Field(type=string) -> sa.Text
-        """
+    def write_field(self, field: Field, *, table_name: str) -> Column:
+        """Convert frictionless Field to sqlalchemy Column"""
+        sa = platform.sqlalchemy
+        quote = self.dialect.identifier_preparer.quote  # type: ignore
+        Check = sa.CheckConstraint
+        checks = []
+
+        # General properties
+        # TODO: why it's not required?
+        assert field.name
+        quoted_name = quote(field.name)
+        column_type = self.write_type(field.type)
+        nullable = not field.required
+
+        # Length contraints
+        if field.type == "string":
+            min_length = field.constraints.get("minLength", None)
+            max_length = field.constraints.get("maxLength", None)
+            if (
+                min_length is not None
+                and max_length is not None
+                and min_length == max_length
+            ):
+                column_type = sa.CHAR(max_length)
+            if max_length is not None:
+                if column_type is sa.Text:
+                    column_type = sa.VARCHAR(length=max_length)
+                if self.dialect.name == "sqlite":
+                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, max_length)))
+            if min_length is not None:
+                if not isinstance(column_type, sa.CHAR) or self.dialect.name == "sqlite":
+                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, min_length)))
+
+        # Unique contstraint
+        unique = field.constraints.get("unique", False)
+        if self.dialect.name == "mysql":
+            # MySQL requires keys to have an explicit maximum length
+            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+            unique = unique and column_type is not sa.Text
+
+        # Others contstraints
+        for const, value in field.constraints.items():
+            if const == "minimum":
+                checks.append(Check("%s >= %s" % (quoted_name, value)))
+            elif const == "maximum":
+                checks.append(Check("%s <= %s" % (quoted_name, value)))
+            elif const == "pattern":
+                if self.dialect.name == "postgresql":
+                    checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
+                else:
+                    check = Check("%s REGEXP '%s'" % (quoted_name, value))
+                    checks.append(check)
+            elif const == "enum":
+                # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
+                if field.type == "string":
+                    enum_name = "%s_%s_enum" % (table_name, field.name)
+                    column_type = sa.Enum(*value, name=enum_name)
+
+        # Create column
+        column_args = [field.name, column_type] + checks
+        column_kwargs = {"nullable": nullable, "unique": unique}
+        if field.description:
+            column_kwargs["comment"] = field.description
+        column = sa.Column(*column_args, **column_kwargs)
+
+        return column
+
+    def write_type(self, field_type: str) -> Type[TypeEngine]:
+        """Convert frictionless type to sqlalchemy type"""
         sa = platform.sqlalchemy
         sapg = platform.sqlalchemy_dialects_postgresql
 
-        # Default dialect
+        # General mapping
         mapping: Dict[str, Type[TypeEngine]] = {
             "any": sa.Text,
             "boolean": sa.Boolean,
@@ -238,7 +291,7 @@ class SqlMapper(Mapper):
             "year": sa.Integer,
         }
 
-        # Postgresql dialect
+        # Postgres mapping
         if self.dialect.name == "postgresql":
             mapping.update(
                 {
@@ -249,30 +302,4 @@ class SqlMapper(Mapper):
                 }
             )
 
-        # Get type
-        type = mapping.get(field.type, sa.Text)
-        return type
-
-    def write_row(self, row: Row) -> List[Any]:
-        """Convert frictionless row to list of sql cells"""
-        cells = []
-        sa = platform.sqlalchemy
-        for field in row.fields:
-            cell = row[field.name]
-            if cell is not None:
-                type = self.write_field(field)
-                if field.type != "string" and type is sa.Text:
-                    cell, _ = field.write_cell(cell)
-                elif field.type in ["object", "geojson"]:
-                    cell = json.dumps(cell)
-                elif field.type == "datetime":
-                    if cell.tzinfo is not None:
-                        dt = cell.astimezone(timezone.utc)
-                        cell = dt.replace(tzinfo=None)
-                elif field.type == "time":
-                    if cell.tzinfo is not None:
-                        dt = datetime.combine(date.min, cell)
-                        dt = dt.astimezone(timezone.utc)
-                        cell = dt.time()
-            cells.append(cell)
-        return cells
+        return mapping.get(field_type, sa.Text)

@@ -38,7 +38,7 @@ def test_sql_mapper_write_field():
     mapper = formats.sql.SqlMapper("sqlite")
     schema = Schema.describe("data/table.csv")
     field1, field2 = schema.fields
-    sql_type1 = mapper.write_field(field1)
-    sql_type2 = mapper.write_field(field2)
-    assert sql_type1 is sa.Integer
-    assert sql_type2 is sa.Text
+    column1 = mapper.write_field(field1, table_name="table")
+    column2 = mapper.write_field(field2, table_name="table")
+    assert isinstance(column1.type, sa.Integer)
+    assert isinstance(column2.type, sa.Text)
