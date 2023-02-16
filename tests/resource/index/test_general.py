@@ -26,7 +26,7 @@ def test_resource_index_sqlite(database_url):
 # Fast
 
 
-@pytest.mark.skip(reason="issue-1408")
+@pytest.mark.ci(reason="requries sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast(database_url):
     resource = Resource("data/table.csv")
@@ -40,7 +40,7 @@ def test_resource_index_sqlite_fast(database_url):
 # Fallback
 
 
-@pytest.mark.skip(reason="issue-1408")
+@pytest.mark.ci(reason="requries sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     resource = Resource("data/table.csv")
