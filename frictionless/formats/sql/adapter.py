@@ -1,16 +1,16 @@
 from __future__ import annotations
 import re
-from typing import Optional, TYPE_CHECKING
-from ...system import Adapter
-from ...package import Package
+from typing import TYPE_CHECKING, Any, Optional, Generator, List
 from ...platform import platform
 from ...resource import Resource
+from ...package import Package
+from ...system import Adapter
 from .control import SqlControl
 from .mapper import SqlMapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import MetaData
+    from sqlalchemy import MetaData, Table
     from sqlalchemy.engine import Engine
     from ...schema import Schema
 
@@ -48,11 +48,11 @@ class SqlAdapter(Adapter):
             package.add_resource(resource)
         return package
 
-    def read_schema(self, table_name: str):
+    def read_schema(self, table_name: str) -> Schema:
         table = self.metadata.tables[table_name]
         return self.mapper.read_schema(table)
 
-    def read_cell_stream(self, control):
+    def read_cell_stream(self, control) -> Generator[List[Any], None, None]:
         sa = platform.sqlalchemy
         table = self.metadata.tables[control.table]
         with self.engine.begin() as conn:
@@ -87,13 +87,14 @@ class SqlAdapter(Adapter):
                     self.write_row_stream(resource.row_stream, table_name=table.name)
         return bool(tables)
 
-    def write_schema(self, schema: Schema, *, table_name: str):
+    def write_schema(self, schema: Schema, *, table_name: str) -> Table:
         with self.engine.begin() as conn:
             table = self.mapper.write_schema(schema, table_name=table_name)
             table = table.to_metadata(self.metadata)
             self.metadata.create_all(conn, tables=[table])
+            return table
 
-    def write_row_stream(self, row_stream, *, table_name: str):
+    def write_row_stream(self, row_stream, *, table_name: str) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             table = self.metadata.tables[table_name]
