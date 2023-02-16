@@ -5,16 +5,13 @@ from typing import TYPE_CHECKING, Dict, Type, List, Any
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Mapper
+from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import Dialect
     from sqlalchemy.schema import Table, Column
     from sqlalchemy.types import TypeEngine
     from ...table import Row
-
-
-ROW_NUMBER_IDENTIFIER = "_rowNumber"
-ROW_VALID_IDENTIFIER = "_rowValid"
 
 
 class SqlMapper(Mapper):
@@ -155,8 +152,10 @@ class SqlMapper(Mapper):
 
         # Fields
         if with_metadata:
-            columns.append(sa.Column(ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True))
-            columns.append(sa.Column(ROW_VALID_IDENTIFIER, sa.Boolean))
+            columns.append(
+                sa.Column(settings.ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True)
+            )
+            columns.append(sa.Column(settings.ROW_VALID_IDENTIFIER, sa.Boolean))
         for field in schema.fields:
             column = self.write_field(field, table_name=table_name)
             columns.append(column)

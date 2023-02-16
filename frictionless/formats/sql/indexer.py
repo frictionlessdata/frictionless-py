@@ -6,16 +6,13 @@ from typing import TYPE_CHECKING, Optional, Callable
 from ...exception import FrictionlessException
 from ...platform import platform
 from ..qsv import QsvAdapter
+from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData, Table
     from sqlalchemy.engine import Engine
     from ...resource import Resource
     from .mapper import SqlMapper
-
-
-BLOCK_SIZE = 8096
-BUFFER_SIZE = 1000
 
 
 @attrs.define(kw_only=True)
@@ -89,7 +86,7 @@ class SqlIndexer:
             for row in self.resource.row_stream:
                 cells = self.mapper.write_row(row)
                 buffer.append(cells)
-                if len(buffer) > BUFFER_SIZE:
+                if len(buffer) > settings.BUFFER_SIZE:
                     conn.execute(sa.insert(table).values(buffer))
                     buffer.clear()
                 self.report_progress(f"{self.resource.stats.rows} rows")
@@ -121,7 +118,7 @@ class SqlIndexer:
                 query = 'COPY "%s" FROM STDIN CSV HEADER' % table.name
                 with cursor.copy(query) as copy:  # type: ignore
                     while True:
-                        chunk = self.resource.read_bytes(size=BLOCK_SIZE)
+                        chunk = self.resource.read_bytes(size=settings.BLOCK_SIZE)
                         if not chunk:
                             break
                         copy.write(chunk)

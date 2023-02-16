@@ -5,17 +5,13 @@ from datetime import datetime
 from ..schema import Schema
 from ..platform import platform
 from .interfaces import IRecord, IRecordItem, ITable, IQueryData, IFieldItem
+from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import Table, MetaData
     from sqlalchemy.engine import Engine
     from ..formats.sql import SqlMapper
     from ..resource import Resource
-
-
-PROJECT_IDENTIFIER = "_project"
-RECORDS_IDENTIFIER = "_records"
-BUFFER_SIZE = 1000
 
 
 class Database:
@@ -37,10 +33,10 @@ class Database:
             self.metadata.reflect(conn, views=True)
 
             # Ensure project table
-            project = self.metadata.tables.get(PROJECT_IDENTIFIER)
+            project = self.metadata.tables.get(settings.PROJECT_IDENTIFIER)
             if project is None:
                 project = sa.Table(
-                    PROJECT_IDENTIFIER,
+                    settings.PROJECT_IDENTIFIER,
                     self.metadata,
                     sa.Column("config", sa.Text),
                 )
@@ -48,10 +44,10 @@ class Database:
             self.project = project
 
             # Ensure records table
-            records = self.metadata.tables.get(RECORDS_IDENTIFIER)
+            records = self.metadata.tables.get(settings.RECORDS_IDENTIFIER)
             if records is None:
                 records = sa.Table(
-                    RECORDS_IDENTIFIER,
+                    settings.RECORDS_IDENTIFIER,
                     self.metadata,
                     sa.Column("path", sa.Text, primary_key=True),
                     sa.Column("type", sa.Text),
@@ -153,7 +149,7 @@ class Database:
                     cells = self.mapper.write_row(row)
                     cells = [row.row_number, row.valid] + cells
                     buffer.append(cells)
-                    if len(buffer) > BUFFER_SIZE:
+                    if len(buffer) > settings.BUFFER_SIZE:
                         conn.execute(table.insert().values(buffer))
                         buffer.clear()
                     if on_progress:

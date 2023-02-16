@@ -8,10 +8,6 @@ from .adapter import SqlAdapter
 from . import settings
 
 
-# NOTE:
-# Can we improve `engline.dialect.name.startswith()` checks?
-
-
 class SqlPlugin(Plugin):
     """Plugin for SQL"""
 

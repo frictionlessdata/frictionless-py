@@ -7,6 +7,7 @@ from ...platform import platform
 from ...resource import Resource
 from .control import SqlControl
 from .mapper import SqlMapper
+from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData
@@ -97,11 +98,10 @@ class SqlAdapter(Adapter):
         with self.engine.begin() as conn:
             table = self.metadata.tables[table_name]
             buffer = []
-            buffer_size = 1000
             for row in row_stream:
                 cells = self.mapper.write_row(row)
                 buffer.append(cells)
-                if len(buffer) > buffer_size:
+                if len(buffer) > settings.BUFFER_SIZE:
                     # sqlalchemy conn.execute(table.insert(), buffer)
                     # syntax applies executemany DB API invocation.
                     conn.execute(sa.insert(table).values(buffer))
