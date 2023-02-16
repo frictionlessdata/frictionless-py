@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..catalog import Catalog
@@ -15,16 +15,16 @@ if TYPE_CHECKING:
 class Adapter:
     # Read
 
-    def read_catalog(self) -> Optional[Catalog]:
-        pass
+    def read_catalog(self) -> Catalog:
+        raise NotImplementedError()
 
-    def read_package(self) -> Optional[Package]:
-        pass
+    def read_package(self) -> Package:
+        raise NotImplementedError()
 
     # Write
 
-    def write_catalog(self, catalog: Catalog) -> Optional[Any]:
-        pass
+    def write_catalog(self, catalog: Catalog) -> Any:
+        raise NotImplementedError()
 
-    def write_package(self, package: Package) -> Optional[Any]:
-        pass
+    def write_package(self, package: Package) -> Any:
+        raise NotImplementedError()
