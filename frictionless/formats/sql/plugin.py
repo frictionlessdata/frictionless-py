@@ -1,5 +1,6 @@
 from __future__ import annotations
 from urllib.parse import urlparse
+from ...platform import platform
 from ...system import Plugin
 from .control import SqlControl
 from .parser import SqlParser
@@ -21,7 +22,8 @@ class SqlPlugin(Plugin):
             parsed = urlparse(source)
             for prefix in settings.SCHEME_PREFIXES:
                 if parsed.scheme.startswith(prefix):
-                    return SqlAdapter.from_source(source, control=control)  # type: ignore
+                    engine = platform.sqlalchemy.create_engine(source)
+                    return SqlAdapter(engine, control=control)  # type: ignore
 
     def create_parser(self, resource):
         if resource.format == "sql":

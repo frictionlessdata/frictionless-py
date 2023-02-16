@@ -1,5 +1,7 @@
 from __future__ import annotations
+from platform import platform
 from typing import TYPE_CHECKING
+from ...platform import platform
 from ...exception import FrictionlessException
 from ...system import Parser
 from .control import SqlControl
@@ -28,7 +30,8 @@ class SqlParser(Parser):
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for reading')
-        adapter = SqlAdapter.from_source(self.resource.normpath)
+        engine = platform.sqlalchemy.create_engine(self.resource.normpath)
+        adapter = SqlAdapter(engine, control=control)
         if not adapter:
             raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
         if not self.resource.has_schema:
@@ -41,7 +44,8 @@ class SqlParser(Parser):
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for writing')
-        adapter = SqlAdapter.from_source(self.resource.normpath)
+        engine = platform.sqlalchemy.create_engine(self.resource.normpath)
+        adapter = SqlAdapter(engine, control=control)
         if not adapter:
             raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
         with source:

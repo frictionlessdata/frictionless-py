@@ -1,7 +1,6 @@
 from __future__ import annotations
 import re
-from typing import TYPE_CHECKING
-from urllib.parse import urlsplit, urlunsplit
+from typing import Optional, TYPE_CHECKING
 from ...system import Adapter
 from ...package import Package
 from ...platform import platform
@@ -18,43 +17,21 @@ if TYPE_CHECKING:
 class SqlAdapter(Adapter):
     """Read and write data from/to SQL database"""
 
-    database_url: str
     engine: Engine
+    control: SqlControl
     mapper: SqlMapper
     metadata: MetaData
 
-    def __init__(self, control: SqlControl):
+    def __init__(self, engine: Engine, *, control: Optional[SqlControl] = None):
         sa = platform.sqlalchemy
-        self.control = control
-
-        # TODO: rework
-        # Create engine
-        assert control.driver
-        source = sa.engine.URL.create(
-            drivername=control.driver,
-            username=control.user,
-            password=control.password,
-            host=control.host,
-            port=control.port,
-            database=control.database,
-            query=control.params,  # type: ignore
-        ).render_as_string(hide_password=False)
-        if control and control.basepath:
-            url = urlsplit(source)
-            basepath = control.basepath
-            if isinstance(source, str) and source.startswith("sqlite"):
-                # Path for sqlite looks like this 'sqlite:///path' (unix/windows)
-                basepath = f"/{basepath}"
-            source = urlunsplit((url.scheme, basepath, url.path, url.query, url.fragment))
-        self.engine = sa.create_engine(source) if isinstance(source, str) else source
-
-        # Create metadata
+        self.engine = engine
+        self.control = control or SqlControl()
         self.mapper = SqlMapper(self.engine)
         with self.engine.begin() as conn:
             # It will fail silently if this function already exists
             if self.engine.dialect.name.startswith("sqlite"):
                 conn.connection.create_function("REGEXP", 2, regexp)  # type: ignore
-            self.metadata = sa.MetaData(schema=control.namespace)
+            self.metadata = sa.MetaData(schema=self.control.namespace)
             self.metadata.reflect(conn, views=True)
 
     # Read
@@ -131,21 +108,6 @@ class SqlAdapter(Adapter):
                     buffer = []
             if len(buffer):
                 conn.execute(sa.insert(table).values(buffer))
-
-    # Convert
-
-    @classmethod
-    def from_source(cls, source: str, *, control=None):
-        engine = platform.sqlalchemy.create_engine(source)
-        control = control.to_copy() if control else SqlControl()
-        control.set_not_defined("driver", engine.url.drivername)
-        control.set_not_defined("user", engine.url.username)
-        control.set_not_defined("password", engine.url.password)
-        control.set_not_defined("host", engine.url.host)
-        control.set_not_defined("port", engine.url.port)
-        control.set_not_defined("database", engine.url.database)
-        control.set_not_defined("params", engine.url.query)
-        return cls(control)
 
 
 # Internal

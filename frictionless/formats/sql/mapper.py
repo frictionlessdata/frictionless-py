@@ -20,13 +20,11 @@ ROW_VALID_IDENTIFIER = "_rowValid"
 class SqlMapper(Mapper):
     """Metadata mapper Frictionless from/to SQL"""
 
+    engine: Engine
+
     # TODO: accept only url/dialect_name not engine (but we need access to dialect quote)?
     def __init__(self, engine: Engine):
         self.engine = engine
-
-    # State
-
-    engine: Engine
 
     # Read
 
