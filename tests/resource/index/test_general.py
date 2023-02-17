@@ -62,5 +62,5 @@ def test_resource_index_sqlite_on_progress(database_url, mocker):
     resource = Resource("data/table.csv")
     resource.index(database_url, table_name=control.table, on_progress=on_progress)
     assert on_progress.call_count == 2
-    on_progress.assert_any_call("1 rows")
     on_progress.assert_any_call("2 rows")
+    on_progress.assert_any_call("3 rows")

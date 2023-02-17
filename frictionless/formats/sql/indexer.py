@@ -6,12 +6,13 @@ from typing import TYPE_CHECKING, Optional
 from ...exception import FrictionlessException
 from ...platform import platform
 from ..qsv import QsvAdapter
-from .interfaces import IOnProgress
+from .interfaces import IOnProgress, IOnRow
 from .adapter import SqlAdapter
 from . import settings
 
 if TYPE_CHECKING:
     from ...resource import Resource
+    from ...table import Row
 
 
 @attrs.define(kw_only=True)
@@ -22,6 +23,7 @@ class SqlIndexer:
     fast: bool = False
     qsv_path: Optional[str] = None
     use_fallback: bool = False
+    on_row: Optional[IOnRow] = None
     on_progress: Optional[IOnProgress] = None
     adapter: SqlAdapter = attrs.field(init=False)
 
@@ -64,9 +66,7 @@ class SqlIndexer:
 
     def populate_table_base(self):
         self.adapter.write_row_stream(
-            self.resource.row_stream,
-            table_name=self.table_name,
-            on_progress=self.report_progress,
+            self.resource.row_stream, table_name=self.table_name, on_row=self.report_row
         )
 
     def populate_table_fast(self):
@@ -104,6 +104,11 @@ class SqlIndexer:
         self.adapter.delete_resource(self.table_name)
 
     # Progress
+
+    def report_row(self, row: Row):
+        if self.on_row:
+            self.on_row(row)
+        self.report_progress(f"{row.row_number} rows")
 
     def report_progress(self, message: str):
         if self.on_progress:

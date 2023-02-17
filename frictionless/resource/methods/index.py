@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Callable
+from typing import TYPE_CHECKING, Optional
 from ...platform import platform
 
 if TYPE_CHECKING:
     from ..resource import Resource
+    from ...formats.sql import IOnRow, IOnProgress
 
 
 def index(
@@ -13,7 +14,8 @@ def index(
     table_name: Optional[str] = None,
     fast: bool = False,
     qsv_path: Optional[str] = None,
-    on_progress: Optional[Callable[[str], None]] = None,
+    on_row: Optional[IOnRow] = None,
+    on_progress: Optional[IOnProgress] = None,
     use_fallback: bool = False,
 ) -> None:
     """Index resource into a database"""
@@ -24,6 +26,7 @@ def index(
         table_name=table_name,
         fast=fast,
         qsv_path=qsv_path,
+        on_row=on_row,
         on_progress=on_progress,
         use_fallback=use_fallback,
     )

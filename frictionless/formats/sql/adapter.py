@@ -5,7 +5,7 @@ from ...platform import platform
 from ...resource import Resource
 from ...package import Package
 from ...system import Adapter
-from .interfaces import IOnProgress
+from .interfaces import IOnRow
 from .control import SqlControl
 from .mapper import SqlMapper
 from . import settings
@@ -109,19 +109,18 @@ class SqlAdapter(Adapter):
             self.metadata.create_all(conn, tables=[table])
 
     def write_row_stream(
-        self, row_stream, *, table_name: str, on_progress: Optional[IOnProgress] = None
+        self, row_stream, *, table_name: str, on_row: Optional[IOnRow] = None
     ) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             buffer: List[Dict] = []
             table = self.metadata.tables[table_name]
-            for count, row in enumerate(row_stream, start=1):
+            for row in row_stream:
                 buffer.append(self.mapper.write_row(row))
                 if len(buffer) > settings.BUFFER_SIZE:
                     conn.execute(sa.insert(table), buffer)
                     buffer.clear()
-                if on_progress:
-                    on_progress(f"{count} rows")
+                on_row(row) if on_row else None
             if len(buffer):
                 conn.execute(sa.insert(table), buffer)
 
