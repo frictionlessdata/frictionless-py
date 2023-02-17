@@ -16,7 +16,6 @@ from .. import helpers
 from .. import portals
 
 # TODO: handle method errors?
-# TODO: ensure that path is safe for all the methods
 
 
 class Project:

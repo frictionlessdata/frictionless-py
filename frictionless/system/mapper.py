@@ -5,10 +5,6 @@ if TYPE_CHECKING:
     from ..schema import Schema
 
 
-# NOTE:
-# Extend this interface while new mappers appear
-
-
 class Mapper:
     # Read
 

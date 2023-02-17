@@ -24,14 +24,9 @@ TESTS_REQUIRE = [
     "httpx",
     "black",
     "yattag",
-    # TODO: remove after the fix
-    # https://github.com/klen/pylama/issues/224
-    "pyflakes==2.4.0",
     "pylama",
     "pytest",
-    # TODO: remove after the fix
-    # https://github.com/microsoft/pyright/issues/4424
-    "pyright==1.1.286",
+    "pyright",
     "ipython",
     "livemark",
     "pytest-cov",
@@ -55,13 +50,13 @@ EXTRAS_REQUIRE = {
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
-    "mysql": ["sqlalchemy>=1.3", "pymysql>=1.0"],
+    "mysql": ["sqlalchemy>=1.4", "pymysql>=1.0"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
     "parquet": ["fastparquet>=0.8"],
-    "postgresql": ["sqlalchemy<2", "psycopg>=3.0", "psycopg2>=2.9"],
+    "postgresql": ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"],
     "spss": ["savReaderWriter>=3.0"],
-    "sql": ["sqlalchemy>=1.3"],
+    "sql": ["sqlalchemy>=1.4"],
     "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
 }

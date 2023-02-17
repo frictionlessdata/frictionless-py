@@ -144,7 +144,7 @@ with Resource('country-3.csv') as resource:
 This functionality has been published in `frictionless@5.5` as a feature preview and request for comments. The implementation is raw and doesn't cover many edge cases.
 ```
 
-Indexing resource in Frictionless terms means loading a data table into a database with or without metadata. Let's explore how this feature works in different modes.
+Indexing resource in Frictionless terms means loading a data table into a database. Let's explore how this feature works in different modes.
 
 > All the example are written for SQLite for simplicity
 
@@ -164,26 +164,6 @@ from frictionless import Resource, formats
 resource = Resource('table.csv')
 resource.index('sqlite:///index/project.db', table_name='table')
 print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='table')).extract())
-```
-
-### Metadata Mode
-
-In metadata mode, the indexing process will be the same but it also stores the metadata in the database. This mode is highly-experimental and, currently, in-general not intended for using outside of Frictionless Software. Let's explore on the example:
-
-```bash script tabs=CLI
-frictionless index table.csv --database sqlite:///index/project.db --metadata
-frictionless extract sqlite:///index/project.db --table table --json
-frictionless extract sqlite:///index/project.db --table _records --json
-```
-
-```python script tabs=Python
-import sqlite3
-from frictionless import Resource, formats
-
-resource = Resource('table.csv')
-resource.index('sqlite:///index/project.db', with_metadata=True)
-print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='table')).extract())
-print(Resource('sqlite:///index/project.db', control=formats.sql.SqlControl(table='_records')).extract())
 ```
 
 ### Fast Mode

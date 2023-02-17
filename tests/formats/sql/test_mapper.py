@@ -5,9 +5,8 @@ from frictionless import Schema, formats
 # Read
 
 
-def test_sql_mapper_read_schema(sqlite_url):
-    engine = sa.create_engine(sqlite_url)
-    mapper = formats.sql.SqlMapper(engine)
+def test_sql_mapper_read_schema():
+    mapper = formats.sql.SqlMapper("sqlite")
     schema = Schema.describe("data/table.csv")
     table = mapper.write_schema(schema, table_name="table")
     schema = mapper.read_schema(table)
@@ -15,11 +14,10 @@ def test_sql_mapper_read_schema(sqlite_url):
     assert schema.get_field("name").type == "string"
 
 
-def test_sql_mapper_read_field(sqlite_url):
-    engine = sa.create_engine(sqlite_url)
-    mapper = formats.sql.SqlMapper(engine)
-    field1 = mapper.read_field(sa.Integer(), name="id")
-    field2 = mapper.read_field(sa.Text(), name="name")
+def test_sql_mapper_read_field():
+    mapper = formats.sql.SqlMapper("sqlite")
+    field1 = mapper.read_field(sa.Column("id", sa.Integer()))
+    field2 = mapper.read_field(sa.Column("name", sa.Text()))
     assert field1.type == "integer"
     assert field2.type == "string"
 
@@ -27,9 +25,8 @@ def test_sql_mapper_read_field(sqlite_url):
 # Write
 
 
-def test_sql_mapper_write_schema(sqlite_url):
-    engine = sa.create_engine(sqlite_url)
-    mapper = formats.sql.SqlMapper(engine)
+def test_sql_mapper_write_schema():
+    mapper = formats.sql.SqlMapper("sqlite")
     schema = Schema.describe("data/table.csv")
     table = mapper.write_schema(schema, table_name="table")
     assert table.name == "table"
@@ -37,12 +34,11 @@ def test_sql_mapper_write_schema(sqlite_url):
     assert len(table.constraints) == 1
 
 
-def test_sql_mapper_write_field(sqlite_url):
-    engine = sa.create_engine(sqlite_url)
-    mapper = formats.sql.SqlMapper(engine)
+def test_sql_mapper_write_field():
+    mapper = formats.sql.SqlMapper("sqlite")
     schema = Schema.describe("data/table.csv")
     field1, field2 = schema.fields
-    sql_type1 = mapper.write_field(field1)
-    sql_type2 = mapper.write_field(field2)
-    assert sql_type1 is sa.Integer
-    assert sql_type2 is sa.Text
+    column1 = mapper.write_field(field1, table_name="table")
+    column2 = mapper.write_field(field2, table_name="table")
+    assert isinstance(column1.type, sa.Integer)
+    assert isinstance(column2.type, sa.Text)
