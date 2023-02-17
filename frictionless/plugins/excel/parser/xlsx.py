@@ -50,7 +50,6 @@ class XlsxParser(Parser):
         # For remote stream we need local copy (will be deleted on close by Python)
         # https://docs.python.org/3.5/library/tempfile.html#tempfile.TemporaryFile
         if loader.remote:
-
             # Cached
             if dialect.workbook_cache is not None and fullpath in dialect.workbook_cache:
                 resource = Resource(path=fullpath, stats=self.resource.stats)

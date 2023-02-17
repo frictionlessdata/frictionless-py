@@ -16,7 +16,6 @@ class File:
     """File representation"""
 
     def __init__(self, source, *, basepath="", innerpath=None):
-
         # Handle pathlib
         if isinstance(source, Path):
             source = str(source)

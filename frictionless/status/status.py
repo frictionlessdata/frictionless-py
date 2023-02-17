@@ -23,7 +23,6 @@ class Status(Metadata):
     validate = validate
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
-
         # Store provided
         self.setinitial("version", settings.VERSION)
         self.setinitial("time", time)
@@ -105,7 +104,6 @@ class Status(Metadata):
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
-
         # Tasks
         tasks = self.get("tasks")
         if isinstance(tasks, list):
@@ -138,7 +136,6 @@ class StatusTask(Metadata):
         target=None,
         type=None,
     ):
-
         # Store provided
         self.setinitial("time", not errors)
         self.setinitial("errors", errors)
@@ -204,7 +201,6 @@ class StatusTask(Metadata):
     metadata_profile = settings.STATUS_PROFILE["properties"]["tasks"]["items"]
 
     def metadata_process(self):
-
         # Target
         target = self.get("target")
         if not isinstance(target, Metadata):

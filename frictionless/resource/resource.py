@@ -177,7 +177,6 @@ class Resource(Metadata):
         trusted=False,
         package=None,
     ):
-
         # Handle source
         if source is not None:
             file = system.create_file(source, basepath=basepath)
@@ -779,7 +778,6 @@ class Resource(Metadata):
 
         # Open
         try:
-
             # Table
             if self.tabular:
                 self.__parser = system.create_parser(self)
@@ -886,7 +884,6 @@ class Resource(Metadata):
             return rows
 
     def __read_row_stream(self):
-
         # During row streaming we crate a field inf structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
@@ -1022,7 +1019,6 @@ class Resource(Metadata):
         return row_stream()
 
     def __read_header(self):
-
         # Create header
         header = Header(
             self.__labels,
@@ -1043,7 +1039,6 @@ class Resource(Metadata):
         return header
 
     def __read_list_stream(self):
-
         # Prepare iterator
         iterator = (
             (position, cells)
@@ -1239,7 +1234,6 @@ class Resource(Metadata):
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
 
     def metadata_process(self):
-
         # File
         self.__file = system.create_file(
             self.get("data", self.get("path", [])),

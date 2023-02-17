@@ -162,7 +162,6 @@ class Package(Metadata):
         hashing=None,
         dialect=None,
     ):
-
         # Handle source
         if source is not None:
             if descriptor is None:
@@ -710,7 +709,6 @@ class Package(Metadata):
     metadata_profile["properties"]["resources"] = {"type": "array"}
 
     def metadata_process(self):
-
         # Resources
         resources = self.get("resources")
         if isinstance(resources, list):

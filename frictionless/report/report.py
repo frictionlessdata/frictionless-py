@@ -36,7 +36,6 @@ class Report(Metadata):
     validate = validate
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
-
         # Store provided
         self.setinitial("version", settings.VERSION)
         self.setinitial("time", time)
@@ -235,7 +234,6 @@ class Report(Metadata):
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
-
         # Tasks
         tasks = self.get("tasks")
         if isinstance(tasks, list):
@@ -286,7 +284,6 @@ class ReportTask(Metadata):
         partial=None,
         errors=None,
     ):
-
         # Store provided
         self.setinitial("resource", resource)
         self.setinitial("time", time)

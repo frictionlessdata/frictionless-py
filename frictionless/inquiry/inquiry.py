@@ -39,7 +39,6 @@ class Inquiry(Metadata):
     # Run
 
     def run(self, *, parallel=False):
-
         # Create state
         reports = []
         timer = helpers.Timer()
@@ -77,7 +76,6 @@ class Inquiry(Metadata):
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
-
         # Tasks
         tasks = self.get("tasks")
         if isinstance(tasks, list):

@@ -29,7 +29,6 @@ def test_spss_parser_write_types(tmpdir):
     if not IS_MACOS:
         target = source.write(str(tmpdir.join("table.sav")))
         with target:
-
             # Assert schema
             assert target.schema == {
                 "fields": [
@@ -81,7 +80,6 @@ def test_spss_storage_constraints(tmpdir):
     if not IS_MACOS:
         target = source.write(str(tmpdir.join("table.sav")))
         with target:
-
             # Assert schema
             assert target.schema == {
                 "fields": [
@@ -116,7 +114,6 @@ def test_spss_parser_write_timezone(tmpdir):
     if not IS_MACOS:
         target = source.write(str(tmpdir.join("table.sav")))
         with target:
-
             # Assert schmea
             assert target.schema == {
                 "fields": [

@@ -23,7 +23,6 @@ class GeopointType(Type):
     # Read
 
     def read_cell(self, cell):
-
         # Parse
         if isinstance(cell, str):
             try:

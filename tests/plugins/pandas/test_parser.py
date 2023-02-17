@@ -114,7 +114,6 @@ def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")
     with target:
-
         # Assert schema
         assert target.schema == {
             "fields": [
@@ -164,7 +163,6 @@ def test_pandas_write_constraints():
     source = Package("data/storage/constraints.json").get_resource("constraints")
     target = source.write(format="pandas")
     with target:
-
         # Assert schema
         assert target.schema == {
             "fields": [
@@ -196,7 +194,6 @@ def test_pandas_parser_write_timezone():
     source = Resource("data/timezone.csv")
     target = source.write(format="pandas")
     with target:
-
         # Assert schema
         assert target.schema == {
             "fields": [
@@ -230,7 +227,6 @@ def test_pandas_parser_write_timezone():
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
     df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
     with Resource(df) as resource:
-
         # Assert meta
         assert resource.schema == {
             "fields": [

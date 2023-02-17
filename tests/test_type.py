@@ -30,7 +30,6 @@ def test_type_custom_detect(custom_plugin):
 
 @pytest.fixture
 def custom_plugin():
-
     # Type
     class CustomType(Type):
         def read_cell(self, cell):

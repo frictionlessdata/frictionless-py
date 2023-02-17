@@ -207,7 +207,6 @@ class SqlStorage(Storage):
 
         # Wrap into a transaction
         with self.__connection.begin():
-
             # Create tables
             sql_tables = []
             self.delete_package(delete_names)
@@ -303,7 +302,6 @@ class SqlStorage(Storage):
         return sql_table
 
     def __write_convert_data(self, resource):
-
         # Fallback fields
         fallback_fields = []
         mapping = self.__write_convert_type()
@@ -381,7 +379,6 @@ class SqlStorage(Storage):
         # Prepare tables
         sql_tables = []
         for name in names:
-
             # Check existent
             if name not in existent_names:
                 if not ignore:
@@ -395,7 +392,6 @@ class SqlStorage(Storage):
 
         # Wrap into a transaction
         with self.__connection.begin():
-
             # Drop tables, update metadata
             self.__metadata.drop_all(tables=sql_tables)
             self.__metadata.clear()

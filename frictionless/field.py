@@ -444,7 +444,6 @@ class Field(Metadata):
     # Metadata
 
     def metadata_process(self):
-
         # Type
         try:
             self.__type = system.create_type(self)

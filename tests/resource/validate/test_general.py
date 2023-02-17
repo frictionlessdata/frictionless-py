@@ -290,7 +290,6 @@ def test_validate_limit_memory_small():
 
 
 def test_validate_custom_check():
-
     # Create check
     class custom(Check):
         def validate_row(self, row):
@@ -311,7 +310,6 @@ def test_validate_custom_check():
 
 
 def test_validate_custom_check_with_arguments():
-
     # Create check
     class custom(Check):
         def __init__(self, descriptor=None, *, row_position=None):
@@ -336,7 +334,6 @@ def test_validate_custom_check_with_arguments():
 
 
 def test_validate_custom_check_function_based():
-
     # Create check
     def custom(row):
         yield errors.BlankRowError(

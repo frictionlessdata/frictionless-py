@@ -80,7 +80,6 @@ def transform_package(source=None, *, steps, deprecate=True, **options):
 
     # Run transforms
     for step in steps:
-
         # Transform
         try:
             step.transform_package(package)

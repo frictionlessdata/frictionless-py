@@ -250,7 +250,6 @@ class Schema(Metadata):
         properties = profile.get("properties", {})
         assert isinstance(properties, dict)
         for name, prop in properties.items():
-
             # Field
             assert isinstance(name, str)
             assert isinstance(prop, dict)
@@ -313,7 +312,6 @@ class Schema(Metadata):
     metadata_profile["properties"]["fields"] = {"type": "array"}
 
     def metadata_process(self):
-
         # Fields
         fields = self.get("fields")
         if isinstance(fields, list):

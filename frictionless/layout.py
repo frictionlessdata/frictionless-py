@@ -213,7 +213,6 @@ class Layout(Metadata):
     # Read
 
     def read_labels(self, sample):
-
         # Collect lists
         lists = []
         row_number = 0
@@ -260,7 +259,6 @@ class Layout(Metadata):
         return labels, field_positions
 
     def read_fragment(self, sample):
-
         # Collect fragment
         fragment = []
         row_number = 0

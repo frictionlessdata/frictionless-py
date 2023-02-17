@@ -60,7 +60,6 @@ class SpssParser(Parser):
         return schema
 
     def __read_convert_type(self, spss_type=None):
-
         # Mapping
         mapping = [
             ("string", re.compile(r"\bA\d+")),
@@ -119,7 +118,6 @@ class SpssParser(Parser):
     def __write_convert_schema(self, source):
         spss_schema = {"varNames": [], "varLabels": {}, "varTypes": {}, "formats": {}}
         with source:
-
             # Add fields
             sizes = {}
             mapping = self.__write_convert_type()
@@ -149,7 +147,6 @@ class SpssParser(Parser):
         return spss_schema
 
     def __write_convert_type(self, type=None):
-
         # Mapping
         mapping = {
             "integer": [0, "F10"],

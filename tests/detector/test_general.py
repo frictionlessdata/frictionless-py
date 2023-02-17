@@ -82,7 +82,6 @@ def test_schema_from_sparse_sample():
 
 @pytest.mark.parametrize("confidence", [0.6, 0.7, 0.8])
 def test_schema_from_synthetic_sparse_sample(confidence):
-
     # For each type (integer, number, string) there are example of
     # the type ("is") and examples of other type ("not")
     type_sample = {

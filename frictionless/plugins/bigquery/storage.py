@@ -139,7 +139,6 @@ class BigqueryStorage(Storage):
         yield from data
 
     def __read_convert_type(self, bq_type=None):
-
         # Mapping
         mapping = {
             "BOOLEAN": "boolean",
@@ -298,7 +297,6 @@ class BigqueryStorage(Storage):
             raise
 
     def __write_convert_data_finish_job(self, response):
-
         # Get job instance
         job = self.__service.jobs().get(
             projectId=response["jobReference"]["projectId"],
@@ -316,7 +314,6 @@ class BigqueryStorage(Storage):
             time.sleep(1)
 
     def __write_convert_type(self, type=None):
-
         # Mapping
         mapping = {
             "any": "STRING",
@@ -347,7 +344,6 @@ class BigqueryStorage(Storage):
 
         # Iterater over buckets
         for name in names:
-
             # Check existent
             if name not in existent_names:
                 if not ignore:

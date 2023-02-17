@@ -81,7 +81,6 @@ class Pipeline(Metadata):
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
-
         # Tasks
         tasks = self.get("tasks")
         if isinstance(tasks, list):
@@ -152,7 +151,6 @@ class PipelineTask(Metadata):
     metadata_profile = settings.PIPELINE_PROFILE["properties"]["tasks"]["items"]
 
     def metadata_process(self):
-
         # Source
         source = self.get("source")
         if not isinstance(source, Metadata):

@@ -408,7 +408,6 @@ class Detector:
         # Infer header
         widths = [len(cells) for cells in sample]
         if layout.get("header") is None and layout.get("headerRows") is None and widths:
-
             # This algorithm tries to find a header row
             # that is close to average sample width or use default one
             # We use it to eleminate initial rows that are comments/etc

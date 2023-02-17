@@ -32,7 +32,6 @@ def test_transform():
 
 
 def test_transform_custom_step_function_based():
-
     # Create step
     def custom(resource):
         current = resource.to_copy()

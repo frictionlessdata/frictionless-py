@@ -243,7 +243,7 @@ def validate_resource(
 
     # Prepare checks
     if not errors:
-        checks = checks.copy() or []
+        checks = checks.copy() if checks else []
         checks.insert(0, {"code": "baseline", "stats": stats})
         for index, check in enumerate(checks):
             if not isinstance(check, Check):

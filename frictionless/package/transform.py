@@ -41,7 +41,6 @@ def transform(package: "Package", *, steps):
 
     # Run transforms
     for step in steps:
-
         # Transform
         try:
             step.transform_package(package)
