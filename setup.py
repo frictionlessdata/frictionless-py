@@ -60,7 +60,7 @@ EXTRAS_REQUIRE = {
     "s3": ["boto3>=1.9"],
     "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
-    "sql": ["sqlalchemy>=1.3"],
+    "sql": ["sqlalchemy<2.0"],
     "dev": TESTS_REQUIRE,
 }
 INSTALL_REQUIRES = [
