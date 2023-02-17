@@ -1,6 +1,7 @@
 # Register modules
 from . import copy
 from . import count
+from . import upload
 from . import create
 from . import delete
 from . import index

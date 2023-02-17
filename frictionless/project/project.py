@@ -80,10 +80,13 @@ class Project:
     def count_files(self):
         return len(self.filesystem.list_files())
 
-    def create_file(
+    def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
+        return self.filesystem.create_file(path, folder=folder)
+
+    def upload_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
-        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
+        return self.filesystem.upload_file(name, bytes=bytes, folder=folder)
 
     def delete_file(self, path: str) -> str:
         self.database.delete_record(path)
