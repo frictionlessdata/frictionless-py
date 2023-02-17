@@ -66,7 +66,7 @@ def validate(
 
     # Prepare checks
     if not errors:
-        checks = checks or []
+        checks = checks.copy() or []
         checks.insert(0, {"code": "baseline", "stats": stats})
         for index, check in enumerate(checks):
             if not isinstance(check, Check):
@@ -92,7 +92,6 @@ def validate(
     # Validate data
     if not errors:
         with resource:
-
             # Validate start
             for index, check in enumerate(checks.copy()):
                 check.connect(resource)
@@ -104,7 +103,6 @@ def validate(
             # Validate rows
             if resource.tabular:
                 for row in resource.row_stream:
-
                     # Validate row
                     for check in checks:
                         for error in check.validate_row(row):

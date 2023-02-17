@@ -243,7 +243,7 @@ def validate_resource(
 
     # Prepare checks
     if not errors:
-        checks = checks or []
+        checks = checks.copy() or []
         checks.insert(0, {"code": "baseline", "stats": stats})
         for index, check in enumerate(checks):
             if not isinstance(check, Check):
@@ -269,7 +269,6 @@ def validate_resource(
     # Validate data
     if not errors:
         with resource:
-
             # Validate start
             indices_of_checks_to_remove = []
             for index, check in enumerate(checks):
@@ -287,7 +286,6 @@ def validate_resource(
             # Validate rows
             if resource.tabular:
                 for row in resource.row_stream:
-
                     # Validate row
                     for check in checks:
                         for error in check.validate_row(row):
