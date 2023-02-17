@@ -17,7 +17,7 @@ not_secure = ["/path", "../path", "../", "./"]
 
 def test_project_read_bytes(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    project.create_file(name1, bytes=bytes1)
+    project.upload_file(name1, bytes=bytes1)
     assert project.read_bytes(name1) == bytes1
     assert project.list_files() == [
         {"path": name1, "type": "file"},
