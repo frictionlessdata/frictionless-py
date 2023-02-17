@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 from datetime import datetime, date, timezone
-from typing import TYPE_CHECKING, Dict, Type, List, Any
+from typing import TYPE_CHECKING, Dict, Type
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Mapper
@@ -279,10 +279,13 @@ class SqlMapper(Mapper):
 
         return mapping.get(field_type, sa.Text)
 
-    def write_row(self, row: Row) -> List[Any]:
-        """Convert frictionless row to list of sql cells"""
-        cells = []
+    def write_row(self, row: Row, *, with_metadata: bool = False) -> Dict:
+        """Convert frictionless Row to a sqlalchemy Item for insertion"""
         sa = platform.sqlalchemy
+        item = {}
+        if with_metadata:
+            item["_rowNumber"] = row.row_number
+            item["_rowValid"] = row.valid
         for field in row.fields:
             cell = row[field.name]
             if cell is not None:
@@ -300,5 +303,5 @@ class SqlMapper(Mapper):
                         dt = datetime.combine(date.min, cell)
                         dt = dt.astimezone(timezone.utc)
                         cell = dt.time()
-            cells.append(cell)
-        return cells
+            item[field.name] = cell
+        return item

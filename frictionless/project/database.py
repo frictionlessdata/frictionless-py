@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, Dict
 from datetime import datetime
 from ..schema import Schema
 from ..platform import platform
@@ -144,20 +144,18 @@ class Database:
 
                 # Write row
                 def on_row(row):
-                    cells = self.mapper.write_row(row)
-                    cells = [row.row_number, row.valid] + cells
-                    buffer.append(cells)
+                    buffer.append(self.mapper.write_row(row, with_metadata=True))
                     if len(buffer) > settings.BUFFER_SIZE:
-                        conn.execute(table.insert().values(buffer))
+                        conn.execute(sa.insert(table), buffer)
                         buffer.clear()
                     if on_progress:
                         on_progress(f"{resource.stats.rows} rows")
 
                 # Validate/iterate
-                buffer = []
+                buffer: List[Dict] = []
                 report = resource.validate(on_row=on_row)
                 if len(buffer):
-                    conn.execute(table.insert().values(buffer))
+                    conn.execute(sa.insert(table), buffer)
 
             # Register resource
             conn.execute(

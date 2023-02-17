@@ -1,6 +1,6 @@
 from __future__ import annotations
 import re
-from typing import TYPE_CHECKING, Any, Optional, Generator, List
+from typing import TYPE_CHECKING, Any, Optional, Generator, List, Dict
 from ...platform import platform
 from ...resource import Resource
 from ...package import Package
@@ -112,18 +112,17 @@ class SqlAdapter(Adapter):
     ) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            buffer = []
+            buffer: List[Dict] = []
             table = self.metadata.tables[table_name]
             for count, row in enumerate(row_stream, start=1):
-                cells = self.mapper.write_row(row)
-                buffer.append(cells)
+                buffer.append(self.mapper.write_row(row))
                 if len(buffer) > settings.BUFFER_SIZE:
-                    conn.execute(sa.insert(table).values(buffer))
+                    conn.execute(sa.insert(table), buffer)
                     buffer.clear()
                 if on_progress:
                     on_progress(f"{count} rows")
             if len(buffer):
-                conn.execute(sa.insert(table).values(buffer))
+                conn.execute(sa.insert(table), buffer)
 
 
 # Internal
