@@ -103,6 +103,7 @@ class SqlAdapter(Adapter):
                 existing_table = self.metadata.tables.get(table_name)
                 if existing_table is not None:
                     self.metadata.drop_all(conn, tables=[existing_table])
+                    self.metadata.remove(existing_table)
             table = self.mapper.write_schema(schema, table_name=table_name)
             table = table.to_metadata(self.metadata)
             self.metadata.create_all(conn, tables=[table])

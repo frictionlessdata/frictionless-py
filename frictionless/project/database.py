@@ -186,6 +186,7 @@ class Database:
                     table = self.metadata.tables.get(record["tableName"])
                     if table is not None:
                         self.metadata.drop_all(conn, tables=[table])
+                        self.metadata.remove(table)
                 conn.execute(sa.delete(self.records).where(self.records.c.path == path))
             return record
 
