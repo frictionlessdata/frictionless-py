@@ -437,10 +437,14 @@ def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
         assert rows[1].cells == []
 
 
-@pytest.mark.skip
+# The encoding is now detected as "mac-roman"
+# We consider it's valid behaviour as data can be sucesefully read
+# https://github.com/frictionlessdata/framework/issues/1347
 def test_resource_wrong_encoding_detection_issue_265():
     with Resource("data/accent.csv") as resource:
-        assert resource.encoding == "iso8859-1"
+        #  assert resource.encoding == "iso8859-1"
+        assert resource.encoding == "mac-roman"
+        assert len(resource.read_rows()) == 2
 
 
 def test_resource_not_existent_local_file_with_no_format_issue_287():
