@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 import warnings
+from datetime import datetime, date, timezone
 from ...platform import platform
 from ...system import Parser
 from ...schema import Schema, Field
@@ -98,6 +99,15 @@ class SpssParser(Parser):
                     for field in source.schema.fields:  # type: ignore
                         cell = row[field.name]
                         if field.type in ["datetime", "date", "time"]:
+                            if field.type == "datetime":
+                                if cell.tzinfo is not None:
+                                    dt = cell.astimezone(timezone.utc)
+                                    cell = dt.replace(tzinfo=None)
+                            if field.type == "time":
+                                if cell.tzinfo is not None:
+                                    dt = datetime.combine(date.min, cell)
+                                    dt = dt.astimezone(timezone.utc)
+                                    cell = dt.time()
                             format = settings.FORMAT_WRITE[field.type]
                             cell = cell.strftime(format).encode()
                             cell = writer.spssDateTime(cell, format)
