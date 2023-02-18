@@ -76,7 +76,13 @@ class OdsParser(Parser):
         file.close()
         book = platform.ezodf.newdoc(doctype="ods", filename=file.name)
         title = f"Sheet {control.sheet}"
-        book.sheets += platform.ezodf.Sheet(title)
+        # Get size
+        with source:
+            row_size = 1
+            col_size = len(source.schema.fields)
+            for _ in source.row_stream:
+                row_size += 1
+        book.sheets += platform.ezodf.Sheet(title, size=(row_size, col_size))
         sheet = book.sheets[title]
         with source:
             for field_index, name in enumerate(source.schema.field_names):

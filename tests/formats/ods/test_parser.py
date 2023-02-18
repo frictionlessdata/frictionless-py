@@ -95,7 +95,6 @@ def test_ods_parser_with_ints_floats_dates():
 # Write
 
 
-@pytest.mark.skip(reason="issue-1211")
 def test_ods_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.ods")))
