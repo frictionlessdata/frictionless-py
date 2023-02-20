@@ -1,13 +1,15 @@
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import Request, Form
+from fastapi import Request
 from ...project import Project
 from ..router import router
 
 
 # See the signature
 class Props(BaseModel):
-    pass
+    path: str
+    session: Optional[str]
+    folder: Optional[str]
 
 
 class Result(BaseModel):
@@ -15,12 +17,7 @@ class Result(BaseModel):
 
 
 @router.post("/file/create")
-async def server_file_create(
-    request: Request,
-    path: str,
-    folder: Optional[str] = Form(None),
-    session: Optional[str] = Form(None),
-) -> Result:
-    project: Project = request.app.get_project(session)
-    path = project.create_file(path, folder=folder)
+async def server_file_create(request: Request, props: Props) -> Result:
+    project: Project = request.app.get_project(props.session)
+    path = project.create_file(props.path, folder=props.folder)
     return Result(path=path)

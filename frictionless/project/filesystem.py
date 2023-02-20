@@ -48,7 +48,7 @@ class Filesystem:
         return path
 
     # TODO: use streaming?
-    def upload_file(
+    def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
         assert self.is_filename(name)
@@ -57,17 +57,6 @@ class Filesystem:
             assert self.is_folder(folder)
         path = self.get_secure_fullpath(folder, name, deduplicate=True)
         helpers.write_file(path, bytes, mode="wb")
-        path = self.get_secure_relpath(path)
-        return path
-
-    def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        if folder:
-            folder = self.get_secure_fullpath(folder)
-            assert self.is_folder(folder)
-        resource = Resource(path)
-        name = str(path.split("/")[-1])
-        path = self.get_secure_fullpath(folder, name, deduplicate=True)
-        resource.write(path)
         path = self.get_secure_relpath(path)
         return path
 

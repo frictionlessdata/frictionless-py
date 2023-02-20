@@ -81,12 +81,16 @@ class Project:
         return len(self.filesystem.list_files())
 
     def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        return self.filesystem.create_file(path, folder=folder)
+        resource = Resource(path)
+        name = str(path.split("/")[-1])
+        return self.filesystem.create_file(
+            name, bytes=resource.read_bytes(), folder=folder
+        )
 
     def upload_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
-        return self.filesystem.upload_file(name, bytes=bytes, folder=folder)
+        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
 
     def delete_file(self, path: str) -> str:
         self.database.delete_record(path)

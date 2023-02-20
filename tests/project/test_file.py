@@ -7,14 +7,16 @@ name1 = "name1.txt"
 name2 = "name2.txt"
 name3 = "name3.json"
 name4 = "name4.csv"
+name5 = "table.csv"
 bytes1 = b"bytes1"
 bytes2 = b"bytes2"
 bytes3 = b'{"key": "value"}'
 bytes4 = b"id,name\n1,english\n2,spanish"
+bytes5 = b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
 folder1 = "folder1"
 folder2 = "folder2"
 not_secure = ["/path", "../path", "../", "./"]
-
+link = "https://raw.githubusercontent.com/fdtester/test-repo-with-duplicate-resource-name/main/table.csv"
 
 # Copy
 
@@ -79,6 +81,40 @@ def test_project_copy_file_security(tmpdir, path):
 
 
 # Create
+
+
+def test_project_create_file(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    path = project.create_file(link)
+    assert helpers.read_file(tmpdir / name5, "rb") == bytes5
+    assert path == name5
+    assert project.list_files() == [
+        {"path": name5, "type": "table"},
+    ]
+
+
+def test_project_create_file_in_folder(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.create_folder(folder1)
+    path = project.create_file(link, folder=folder1)
+    assert path == str(Path(folder1) / name5)
+    assert helpers.read_file(tmpdir / path, "rb") == bytes5
+    assert project.list_files() == [
+        {"path": folder1, "type": "folder"},
+        {"path": path, "type": "table"},
+    ]
+
+
+@pytest.mark.parametrize("path", not_secure)
+def test_project_create_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    with pytest.raises(Exception):
+        project.create_file(path)
+    with pytest.raises(Exception):
+        project.create_file(name1, folder=path)
+
+
+# Upload
 
 
 def test_project_upload_file(tmpdir):
