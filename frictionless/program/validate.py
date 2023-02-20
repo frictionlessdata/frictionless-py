@@ -113,13 +113,15 @@ def program_validate(
             controls.append(formats.SqlControl(table=table))
         elif keys or keyed:
             controls.append(formats.JsonControl.from_options(keys=keys, keyed=keyed))
-        return Dialect.from_options(
+        dialect_obj = Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
             comment_char=comment_char,
             comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
             controls=controls,
         )
+        if dialect_obj.to_descriptor():
+            return dialect_obj
 
     # Prepare checklist
     def prepare_checklist():
@@ -129,11 +131,13 @@ def program_validate(
         check_objects = []
         for check_descriptor in helpers.parse_descriptors_string(checks) or []:
             check_objects.append(Check.from_descriptor(check_descriptor))
-        return Checklist.from_options(
+        checklist_obj = Checklist.from_options(
             checks=check_objects,
             pick_errors=helpers.parse_csv_string(pick_errors),
             skip_errors=helpers.parse_csv_string(skip_errors),
         )
+        if checklist_obj.checks or checklist_obj.pick_errors or checklist_obj.skip_errors:
+            return checklist_obj
 
     # Prepare detector
     def prepare_detector():

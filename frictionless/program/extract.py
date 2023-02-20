@@ -109,13 +109,15 @@ def program_extract(
                     keyed=keyed,
                 )
             )
-        return Dialect.from_options(
+        dialect_obj = Dialect.from_options(
             header_rows=helpers.parse_csv_string(header_rows, convert=int),
             header_join=header_join,
             comment_char=comment_char,
             comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
             controls=controls,
         )
+        if dialect_obj.to_descriptor():
+            return dialect_obj
 
     # Prepare detector
     def prepare_detector():
@@ -197,7 +199,7 @@ def program_extract(
     if csv:
         options = {}
         if dialect and keep_delimiter:
-            options = prepare_dialect().to_dict().get("csv")
+            options = (prepare_dialect() or Dialect()).to_dict().get("csv")
         for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
             for index, row in enumerate(rows):
                 if index == 0:

@@ -1,5 +1,4 @@
 import pytest
-import sqlite3
 import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource, formats
@@ -113,13 +112,22 @@ def test_sql_adapter_constraints(sqlite_url):
     target = Package(sqlite_url)
 
     # Assert metadata
+    print(target.get_resource("constraints").schema.to_descriptor())
     assert target.get_resource("constraints").schema.to_descriptor() == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
-            {"name": "maxLength", "type": "string"},  # constraint removal
+            {
+                "name": "maxLength",
+                "type": "string",
+                "constraints": {"maxLength": 8},
+            },
             {"name": "pattern", "type": "string"},  # constraint removal
-            {"name": "enum", "type": "string"},  # constraint removal
+            {
+                "name": "enum",
+                "type": "string",
+                "constraints": {"maxLength": 7},
+            },
             {"name": "minimum", "type": "integer"},  # constraint removal
             {"name": "maximum", "type": "integer"},  # constraint removal
         ],
@@ -167,9 +175,10 @@ def test_sql_adapter_constraints_not_valid_error(sqlite_url, field_name, cell):
 
 def test_sql_adapter_views_support(sqlite_url):
     engine = sa.create_engine(sqlite_url)
-    engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
-    engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
-    engine.execute("CREATE VIEW 'view' AS SELECT * FROM 'table'")
+    with engine.begin() as conn:
+        conn.execute(sa.text("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)"))
+        conn.execute(sa.text("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(sa.text("CREATE VIEW 'view' AS SELECT * FROM 'table'"))
     with Resource(sqlite_url, control=formats.sql.SqlControl(table="view")) as res:
         assert res.schema.to_descriptor() == {
             "fields": [
@@ -244,8 +253,7 @@ def test_sql_adapter_dialect_basepath_issue_964(sqlite_url):
         ]
 
 
-# TODO: recover
-@pytest.mark.skip
+@pytest.mark.ci
 def test_sql_adapter_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_number):
     # SQLite applies limits for the max. number of characters in prepared
     # parameterized SQL statements, see https://www.sqlite.org/limits.html.
@@ -274,28 +282,3 @@ def test_sql_adapter_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_n
         resource.write(
             sqlite_url, control=formats.SqlControl(table="test_max_param_table")
         )
-
-
-# Fixtures
-
-
-@pytest.fixture
-def sqlite_max_variable_number():
-    # Return SQLite max. variable number limit, set as compile option, or
-    # default.
-    #
-    # Default value for stock SQLite >= 3.32.0
-    # (https://www.sqlite.org/limits.html#max_variable_number): 32766
-    #
-    # Note that distributions *do* customize this e.g. Ubuntu 20.04:
-    # MAX_VARIABLE_NUMBER=250000
-    conn = sqlite3.connect(":memory:")
-    try:
-        with conn:
-            result = conn.execute("pragma compile_options;").fetchall()
-    finally:
-        conn.close()
-    for item in result:
-        if item[0].startswith("MAX_VARIABLE_NUMBER="):
-            return int(item[0].split("=")[-1])
-    return 32766

@@ -15,13 +15,11 @@ class GithubControl(Control):
 
     type = "github"
 
-    # State
-
     apikey: Optional[str] = os.environ.get("GITHUB_ACCESS_TOKEN", None)
-    """The access token to authenticate to the github API. It is required 
-    to write files to github repo. 
-    For reading, it is optional however using apikey increases the api 
-    access limit from 60 to 5000 requests per hour. To write, access 
+    """The access token to authenticate to the github API. It is required
+    to write files to github repo.
+    For reading, it is optional however using apikey increases the api
+    access limit from 60 to 5000 requests per hour. To write, access
     token has to have write repository access.
     """
 
@@ -29,16 +27,16 @@ class GithubControl(Control):
     """Base path is the base folder, the package and resource files will be written to."""
 
     email: Optional[str] = os.environ.get("GITHUB_EMAIL", None)
-    """Email is used while publishing the data to the github repo. It should be set explicitly, 
+    """Email is used while publishing the data to the github repo. It should be set explicitly,
     if the primary email for the github account is not set to public."""
 
     formats: Optional[List[str]] = DEFAULT_FORMATS
-    """Formats instructs plugin to only read specified types of files. By default it is set to 
+    """Formats instructs plugin to only read specified types of files. By default it is set to
     'csv,xls,xlsx'.
     """
 
     name: Optional[str] = os.environ.get("GITHUB_NAME", None)
-    """Name of the github  which is used while publishing the data. It should be provided explicitly, 
+    """Name of the github  which is used while publishing the data. It should be provided explicitly,
     if the name of the user is not set in the github account.
     """
 
@@ -57,11 +55,11 @@ class GithubControl(Control):
     """Name of the repo to read or write."""
 
     search: Optional[str] = None
-    """Search query containing one or more search keywords and qualifiers to filter the repositories. 
+    """Search query containing one or more search keywords and qualifiers to filter the repositories.
     For example, 'windows+label:bug+language:python'."""
 
     sort: Optional[str] = None
-    """Sorts the result of the query by number of stars, forks, help-wanted-issues or updated. 
+    """Sorts the result of the query by number of stars, forks, help-wanted-issues or updated.
     By default the results are sorted by best match in desc order."""
 
     user: Optional[str] = None

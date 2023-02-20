@@ -14,43 +14,6 @@ class SqlControl(Control):
 
     type = "sql"
 
-    # State
-
-    driver: Optional[str] = None
-    """
-    Database driver
-    """
-
-    user: Optional[str] = None
-    """
-    Database user
-    """
-
-    password: Optional[str] = None
-    """
-    Database password
-    """
-
-    host: Optional[str] = None
-    """
-    Database host
-    """
-
-    port: Optional[int] = None
-    """
-    Database port
-    """
-
-    database: Optional[str] = None
-    """
-    Database name
-    """
-
-    params: Optional[dict] = None
-    """
-    Database query string parameters
-    """
-
     table: Optional[str] = None
     """
     Table name from which to read the data.

@@ -1,6 +1,6 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
-from frictionless import Resource, Database, platform, formats
+from frictionless import Resource, platform, formats
 
 control = formats.sql.SqlControl(table="table")
 database_urls = [lazy_fixture("sqlite_url"), lazy_fixture("postgresql_url")]
@@ -26,7 +26,7 @@ def test_resource_index_sqlite(database_url):
 # Fast
 
 
-@pytest.mark.skip(reason="issue-1408")
+@pytest.mark.ci(reason="requries sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast(database_url):
     resource = Resource("data/table.csv")
@@ -40,7 +40,7 @@ def test_resource_index_sqlite_fast(database_url):
 # Fallback
 
 
-@pytest.mark.skip(reason="issue-1408")
+@pytest.mark.ci(reason="requries sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     resource = Resource("data/table.csv")
@@ -62,34 +62,5 @@ def test_resource_index_sqlite_on_progress(database_url, mocker):
     resource = Resource("data/table.csv")
     resource.index(database_url, table_name=control.table, on_progress=on_progress)
     assert on_progress.call_count == 2
-    on_progress.assert_any_call("1 rows")
     on_progress.assert_any_call("2 rows")
-
-
-# With Metadata
-
-
-@pytest.mark.parametrize("database_url", database_urls)
-def test_resource_index_sqlite_with_metadata(database_url):
-    resource = Resource("data/table.csv")
-    resource.index(database_url, with_metadata=True)
-    database = Database(database_url)
-    # Table
-    table = database.query_table('SELECT * from "table"')
-    assert table["tableSchema"]
-    assert table["header"] == ["_rowNumber", "_rowValid", "id", "name"]
-    assert table["rows"] == [
-        {"_rowNumber": 2, "_rowValid": True, "id": 1, "name": "english"},
-        {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "中国人"},
-    ]
-    # Index
-    records = database.list_records()
-    record = database.read_record(resource.normpath)
-    assert len(records) == 1
-    assert record is not None
-    assert record["path"] == "data/table.csv"
-    assert record["type"] == "table"
-    assert record["updated"]
-    assert record.get("tableName") == "table"
-    assert record["resource"]["path"] == "data/table.csv"  # type: ignore
-    assert record["report"]["valid"] == True  # type: ignore
+    on_progress.assert_any_call("3 rows")

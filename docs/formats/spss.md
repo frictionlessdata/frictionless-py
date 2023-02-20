@@ -5,10 +5,6 @@ script:
 
 # Spss Format
 
-```markdown remark
-Timezone support for this format is currently being development in [#1212](https://github.com/frictionlessdata/frictionless-py/issues/1212)
-```
-
 Frictionless supports reading and writing SPSS files.
 
 ```bash tabs=CLI

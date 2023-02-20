@@ -1,5 +1,4 @@
 import pytest
-from dateutil.tz import tzoffset, tzutc
 from datetime import datetime, date, time
 from frictionless import Package, Resource, platform
 
@@ -104,35 +103,26 @@ def test_spss_storage_constraints(tmpdir):
         ]
 
 
-@pytest.mark.skip(reason="issue-1212")
 def test_spss_parser_write_timezone(tmpdir):
     source = Resource("data/timezone.csv")
     target = source.write(str(tmpdir.join("table.sav")))
     with target:
-        # Assert schema
-        assert target.schema.to_descriptor() == {
-            "fields": [
-                {"name": "datetime", "type": "datetime"},
-                {"name": "time", "type": "time"},
-            ],
-        }
-
-        # Assert rows
+        assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
             {
                 "datetime": datetime(2020, 1, 1, 15),
                 "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-                "time": time(15, 0, tzinfo=tzutc()),
+                "datetime": datetime(2020, 1, 1, 15),
+                "time": time(15),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, 10800)),
+                "datetime": datetime(2020, 1, 1, 12),
+                "time": time(12),
             },
             {
-                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)),
-                "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
+                "datetime": datetime(2020, 1, 1, 18),
+                "time": time(18),
             },
         ]

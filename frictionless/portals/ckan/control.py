@@ -10,8 +10,6 @@ class CkanControl(Control):
 
     type = "ckan"
 
-    # State
-
     baseurl: Optional[str] = None
     """
     Endpoint url for CKAN instance. e.g. https://dados.gov.br

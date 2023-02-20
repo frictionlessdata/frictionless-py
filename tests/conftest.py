@@ -20,15 +20,20 @@ cleanup_on_sigterm()
 @pytest.fixture
 def database_url(sqlite_url):
     engine = sa.create_engine(sqlite_url)
-    conn = engine.connect()
-    conn.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
-    conn.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
-    conn.execute(
-        "CREATE TABLE 'fruits' (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
-    )
-    conn.execute("INSERT INTO 'fruits' VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)")
+    with engine.begin() as conn:
+        conn.execute(sa.text("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)"))
+        conn.execute(sa.text("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(
+            sa.text(
+                "CREATE TABLE 'fruits' (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
+            )
+        )
+        conn.execute(
+            sa.text(
+                "INSERT INTO 'fruits' VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)"
+            )
+        )
     yield sqlite_url
-    conn.close()
 
 
 @pytest.fixture
@@ -45,11 +50,11 @@ def postgresql_url():
         pytest.skip('Environment varialbe "POSTGRESQL_URL" is not available')
     yield url
     engine = sa.create_engine(url)
-    with engine.connect() as conn:
-        metadata = sa.MetaData(bind=conn)
-        metadata.reflect()
+    with engine.begin() as conn:
+        metadata = sa.MetaData()
+        metadata.reflect(conn)
         for table in reversed(metadata.sorted_tables):
-            conn.execute(f'DROP TABLE "{table.name}" CASCADE')
+            conn.execute(sa.text(f'DROP TABLE "{table.name}" CASCADE'))
 
 
 # TODO: create fixture to keep connection to speed up tests?
@@ -60,12 +65,12 @@ def mysql_url():
         pytest.skip('Environment varialbe "MYSQL_URL" is not available')
     yield url
     engine = sa.create_engine(url)
-    with engine.connect() as conn:
-        metadata = sa.MetaData(bind=conn)
-        metadata.reflect()
-        conn.execute("DROP VIEW IF EXISTS `view`")
+    with engine.begin() as conn:
+        metadata = sa.MetaData()
+        metadata.reflect(conn)
+        conn.execute(sa.text("DROP VIEW IF EXISTS `view`"))
         for table in reversed(metadata.sorted_tables):
-            conn.execute(f"DROP TABLE `{table.name}` CASCADE")
+            conn.execute(sa.text(f"DROP TABLE `{table.name}` CASCADE"))
 
 
 @pytest.fixture

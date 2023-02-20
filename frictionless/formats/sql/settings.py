@@ -2,7 +2,12 @@ from __future__ import annotations
 
 # General
 
-DEFAULT_PREFIX = ""
+BLOCK_SIZE = 8096
+BUFFER_SIZE = 1000
+ROW_NUMBER_IDENTIFIER = "_rowNumber"
+ROW_VALID_IDENTIFIER = "_rowValid"
+
+# Prefixes
 
 # https://docs.sqlalchemy.org/en/13/core/engines.html
 # https://docs.sqlalchemy.org/en/13/dialects/index.html
