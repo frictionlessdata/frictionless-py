@@ -13,11 +13,16 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    path: str
+    path: Optional[str]
+    status: Optional[str]
+    message: Optional[str]
 
 
 @router.post("/file/create")
 async def server_file_create(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    path = project.create_file(props.path, folder=props.folder)
-    return Result(path=path)
+    try:
+        path = project.create_file(props.path, folder=props.folder)
+    except:
+        return Result(path=None, status="error", message="Error uploading file.")
+    return Result(path=path, status="success", message="Successfully uploaded!.")
