@@ -47,26 +47,6 @@ def test_report_to_summary_validate_multiline_errors():
     assert output.count(expected.strip())
 
 
-# Bugs
-
-
-def test_report_to_json_with_bytes_serialization_issue_836():
-    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
-    resource = Resource(source)
-    report = resource.validate()
-    print(report.to_descriptor())
-    descriptor = report.to_json()
-    assert descriptor
-
-
-def test_report_to_yaml_with_bytes_serialization_issue_836():
-    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
-    resource = Resource(source)
-    report = resource.validate()
-    descriptor = report.to_yaml()
-    assert "binary" not in descriptor
-
-
 # Yaml
 
 
@@ -87,3 +67,23 @@ def test_report_to_json():
     output_file_path = "data/report.json"
     with open(output_file_path) as file:
         assert json.loads(report.to_json()) == json.loads(file.read())
+
+
+# Bugs
+
+
+def test_report_to_json_with_bytes_serialization_issue_836():
+    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
+    resource = Resource(source)
+    resource.infer()
+    report = resource.validate()
+    descriptor = report.to_json()
+    assert descriptor
+
+
+def test_report_to_yaml_with_bytes_serialization_issue_836():
+    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
+    resource = Resource(source)
+    report = resource.validate()
+    descriptor = report.to_yaml()
+    assert "binary" not in descriptor

@@ -167,12 +167,13 @@ class Detector(Metadata):
             if allow_loading:
                 if source.endswith(("json", "yaml")):
                     try:
-                        resource = platform.frictionless.Resource(path=source)
-                        buffer = resource.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
-                        loader = json.loads
+                        # We pass "type" here to prevent circular dependency
+                        res = platform.frictionless.Resource(path=source, type="file")
+                        buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
+                        parser = json.loads
                         if source.endswith("yaml"):
-                            loader = platform.yaml.safe_load
-                        source = loader(buffer)
+                            parser = platform.yaml.safe_load
+                        source = parser(buffer)
                     except Exception:
                         pass
 
@@ -193,6 +194,7 @@ class Detector(Metadata):
         # These attributes describe the resource itself compared to
         # basepath-related attributes like normpath that adds runtime into equation
         path = resource.path
+        type = resource.type
         innerpath = resource.innerpath
         extrapaths = resource.extrapaths
 
@@ -206,6 +208,13 @@ class Detector(Metadata):
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
             name = name or "name"
+
+        # TODO: it's probably better to move to Json/Yaml plugins (as for "table" type)
+        # Detect type
+        if not type:
+            if resource.path:
+                type = self.detect_metadata_type(resource.normpath, allow_loading=True)
+            type = type or "file"
 
         # Detect details
         scheme = ""
@@ -224,7 +233,7 @@ class Detector(Metadata):
 
         # Apply detected
         resource.set_not_defined("name", name)
-        resource.set_not_defined("type", settings.DEFAULT_TYPE)
+        resource.set_not_defined("type", type)
         resource.set_not_defined("scheme", scheme)
         resource.set_not_defined("format", format)
         resource.set_not_defined("mediatype", f"application/{resource.format}")

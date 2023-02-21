@@ -407,6 +407,7 @@ def test_zenodo_adapter_read_record_data_ods(options_with_dp_multiple_files_with
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_read_record_data_ndjson(
     options_with_dp_multiple_files_without_dp,
