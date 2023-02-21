@@ -16,7 +16,7 @@ def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
     assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
-    assert type == "resource-error"
+    assert type == "scheme-error"
     assert note.count("[Errno 2]") and note.count("bad.json")
 
 

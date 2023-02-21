@@ -93,7 +93,7 @@ DEFAULT_FIELD_CANDIDATES = [
 ENTITY_TRAITS = {
     "catalog": ["packages"],
     "package": ["resources"],
-    "resource": ["path"],
+    "resource": ["path", "data"],  # TODO: remove "data" for v6
     "dialect": ["controls"],
     "schema": ["fields"],
     "checklist": ["checks"],

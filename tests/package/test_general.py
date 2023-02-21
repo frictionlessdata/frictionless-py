@@ -80,7 +80,7 @@ def test_package_from_pathlib():
 
 def test_package_from_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("data/bad.json")
+        Package.from_descriptor("data/bad.json")
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("bad.json")
@@ -96,7 +96,7 @@ def test_package_from_path_error_non_json():
 
 def test_package_from_path_error_bad_json():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("data/invalid.json")
+        Package.from_descriptor("data/invalid.json")
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("invalid.json")
@@ -104,7 +104,7 @@ def test_package_from_path_error_bad_json():
 
 def test_package_from_path_error_bad_json_not_dict():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("data/table.json")
+        Package.from_descriptor("data/table.json")
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("table.json")
@@ -123,7 +123,7 @@ def test_package_from_path_remote():
 @pytest.mark.vcr
 def test_package_from_path_remote_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(BASEURL % "data/bad.json")
+        Package.from_descriptor(BASEURL % "data/bad.json")
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("bad.json")
@@ -132,7 +132,7 @@ def test_package_from_path_remote_error_not_found():
 @pytest.mark.vcr
 def test_package_from_path_remote_error_bad_json():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(BASEURL % "data/invalid.json")
+        Package.from_descriptor(BASEURL % "data/invalid.json")
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("invalid.json")
@@ -141,7 +141,7 @@ def test_package_from_path_remote_error_bad_json():
 @pytest.mark.vcr
 def test_package_from_path_remote_error_bad_json_not_dict():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(BASEURL % "data/table-lists.json")
+        Package.from_descriptor(BASEURL % "data/table-lists.json")
     error = excinfo.value.error
     assert error.type == "package-error"
     assert error.note.count("table-lists.json")
