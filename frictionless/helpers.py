@@ -14,7 +14,6 @@ import textwrap
 import stringcase
 from copy import deepcopy
 from pathlib import Path
-from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 from typing import Union, Any, Optional

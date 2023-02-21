@@ -4,7 +4,6 @@ from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
-from ..detector import Detector
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
