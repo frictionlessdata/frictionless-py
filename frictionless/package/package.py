@@ -133,11 +133,6 @@ class Package(Metadata):
                     options["resources"].append(Resource(path=path))
                 return Package.from_options(**options)
 
-            # Path
-            if Detector.detect_metadata_type(source, allow_loading=True) != "package":
-                options["resources"] = [Resource(source)]
-                return Package(**options)
-
             # Descriptor
             return Package.from_descriptor(source, **options)  # type: ignore
 
