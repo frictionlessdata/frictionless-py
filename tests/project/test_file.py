@@ -16,7 +16,18 @@ bytes5 = b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
 folder1 = "folder1"
 folder2 = "folder2"
 not_secure = ["/path", "../path", "../", "./"]
-link = "https://raw.githubusercontent.com/fdtester/test-repo-with-duplicate-resource-name/main/table.csv"
+files = [
+    "table.csv",
+    "table.json",
+    "table.jsonl",
+    "table.keyed.json",
+    "table.keyed.yaml",
+    "table.ndjson",
+    "table.tsv",
+    "table.xls",
+    "table.xlsx",
+]
+link = "https://raw.githubusercontent.com/fdtester/multiple-file-types/main"
 
 # Copy
 
@@ -85,7 +96,8 @@ def test_project_copy_file_security(tmpdir, path):
 
 def test_project_create_file(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
-    path = project.create_file(link)
+    url = f"{link}/table.csv"
+    path = project.create_file(url)
     assert helpers.read_file(tmpdir / name5, "rb") == bytes5
     assert path == name5
     assert project.list_files() == [
@@ -96,7 +108,8 @@ def test_project_create_file(tmpdir):
 def test_project_create_file_in_folder(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.create_folder(folder1)
-    path = project.create_file(link, folder=folder1)
+    url = f"{link}/table.csv"
+    path = project.create_file(url, folder=folder1)
     assert path == str(Path(folder1) / name5)
     assert helpers.read_file(tmpdir / path, "rb") == bytes5
     assert project.list_files() == [
@@ -112,6 +125,29 @@ def test_project_create_file_security(tmpdir, path):
         project.create_file(path)
     with pytest.raises(Exception):
         project.create_file(name1, folder=path)
+
+
+@pytest.mark.parametrize("name", files)
+@pytest.mark.skipif(reason="Fails with some file types - json, yaml")
+def test_project_create_multiple_file_types(tmpdir, name):
+    project = Project(basepath=tmpdir, is_root=True)
+    url = f"{link}/{name}"
+    path = project.create_file(url)
+    assert path == name
+    assert project.list_files() == [
+        {"path": name, "type": "table"},
+    ]
+
+
+def test_project_create_file_type_ods(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    url = "https://github.com/fdtester/multiple-file-types/blob/main/table.ods?raw=true"
+    name = "table.ods?raw=true"
+    path = project.create_file(url)
+    assert path == name
+    assert project.list_files() == [
+        {"path": name, "type": "table"},
+    ]
 
 
 # Upload
