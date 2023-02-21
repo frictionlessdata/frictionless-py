@@ -79,7 +79,9 @@ class Database:
                 sa.select(
                     self.records.c.path,
                     self.records.c.tableName,
-                    sa.text("json_extract(resource, '$.schema')").label("schema"),
+                    sa.literal_column("json_extract(resource, '$.schema')").label(
+                        "schema"
+                    ),
                 )
                 .where(self.records.c.type == "table")
                 .order_by(self.records.c.tableName)

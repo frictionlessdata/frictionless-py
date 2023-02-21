@@ -104,7 +104,7 @@ class Project:
         file = self.read_file(path)
         if file:
             if not file.get("record"):
-                resource = Resource(path, basepath=str(self.public))
+                resource = Resource(path=path, basepath=str(self.public))
                 file["record"] = self.database.create_record(resource)
             return file
 
