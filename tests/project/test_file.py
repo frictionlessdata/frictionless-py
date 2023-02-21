@@ -142,7 +142,7 @@ def test_project_create_multiple_file_types(tmpdir, name):
 def test_project_create_file_type_ods(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     url = "https://github.com/fdtester/multiple-file-types/blob/main/table.ods?raw=true"
-    name = "table.ods?raw=true"
+    name = "table.ods"
     path = project.create_file(url)
     assert path == name
     assert project.list_files() == [
