@@ -153,16 +153,6 @@ def test_program_convert_inquiry_yaml():
         assert result.stdout.count(file.read().strip())
 
 
-def test_program_convert_detector_yaml():
-    result = runner.invoke(program, "convert data/detector.json --yaml")
-    assert result.exit_code == 0
-
-    # Read
-    expected_file_path = "data/detector.yaml"
-    with open(expected_file_path) as file:
-        assert result.stdout.count(file.read().strip())
-
-
 def test_program_convert_pipeline_yaml():
     result = runner.invoke(program, "convert data/pipeline.json --yaml")
     assert result.exit_code == 0
@@ -230,16 +220,6 @@ def test_program_convert_inquiry_json():
             {"path": "data/capital-valid.csv"},
             {"path": "data/capital-invalid.csv"},
         ]
-    }
-
-
-def test_program_convert_detector_json():
-    result = runner.invoke(program, "convert data/detector.yaml --json")
-    assert result.exit_code == 0
-    assert json.loads(result.stdout) == {
-        "fieldConfidence": 1,
-        "fieldFloatNumbers": True,
-        "fieldMissingValues": ["", "67"],
     }
 
 
@@ -319,16 +299,6 @@ def test_program_convert_inquiry_markdown():
 
     # Read
     expected_file_path = "data/fixtures/convert/inquiry.md"
-    with open(expected_file_path) as file:
-        assert result.stdout.count(file.read().strip())
-
-
-def test_program_convert_detector_markdown():
-    result = runner.invoke(program, "convert data/detector.json --markdown")
-    assert result.exit_code == 0
-
-    # Read
-    expected_file_path = "data/fixtures/convert/detector.md"
     with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 

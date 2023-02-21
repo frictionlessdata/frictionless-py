@@ -91,13 +91,15 @@ DEFAULT_FIELD_CANDIDATES = [
 # Entities
 
 ENTITY_TRAITS = {
+    "catalog": ["packages"],
     "package": ["resources"],
-    "resource": ["path", "data"],
+    "resource": ["path"],
     "dialect": ["controls"],
     "schema": ["fields"],
     "checklist": ["checks"],
     "pipeline": ["steps"],
-    "report": ["erorrs"],
+    "report": ["errors"],
     "inquiry": ["tasks"],
-    "detector": ["bufferSize", "sampleSize"],
+    "chart": ["spec"],
+    "view": ["query"],
 }
