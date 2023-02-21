@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class Inquiry(Metadata):
     """Inquiry representation."""
 
