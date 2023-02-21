@@ -4,6 +4,7 @@ from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
+from ..detector import Detector
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
@@ -106,11 +107,9 @@ class Package(Metadata):
         **options,
     ):
         if source is not None or control is not None:
-            # Path
+            # Normalize
             if isinstance(source, Path):
                 source = str(source)
-
-            # Mapping
             elif isinstance(source, Mapping):
                 source = {key: value for key, value in source.items()}
 
@@ -136,13 +135,13 @@ class Package(Metadata):
                 if package:
                     return package
 
-            # Descriptor
-            if helpers.is_descriptor_source(source):
-                return Package.from_descriptor(source, **options)  # type: ignore
+            # Path
+            if Detector.detect_metadata_type(source, allow_loading=True) != "package":
+                options["resources"] = [Resource(source)]
+                return Package(**options)
 
-            # Path/data
-            options["resources"] = [Resource(source)]
-            return Package(**options)
+            # Descriptor
+            return Package.from_descriptor(source, **options)  # type: ignore
 
     # State
 

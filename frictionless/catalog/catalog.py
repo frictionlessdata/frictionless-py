@@ -1,11 +1,12 @@
 from __future__ import annotations
+from pathlib import Path
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..package import Package
 from ..system import system
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -51,6 +52,12 @@ class Catalog(Metadata):
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
         if source is not None or control is not None:
+            # Normalize
+            if isinstance(source, Path):
+                source = str(source)
+            elif isinstance(source, Mapping):
+                source = {key: value for key, value in source.items()}
+
             # Adapter
             adapter = system.create_adapter(source, control=control)
             if adapter:
@@ -59,8 +66,7 @@ class Catalog(Metadata):
                     return catalog
 
             # Descriptor
-            if helpers.is_descriptor_source(source):
-                return Catalog.from_descriptor(source, **options)  # type: ignore
+            return Catalog.from_descriptor(source, **options)  # type: ignore
 
     # State
 

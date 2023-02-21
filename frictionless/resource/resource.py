@@ -151,21 +151,19 @@ class Resource(Metadata):
                 return Resource(**options)
 
         if source is not None:
-            # Path
+            # Normalize
             if isinstance(source, Path):
                 source = str(source)
-
-            # Mapping
             elif isinstance(source, Mapping):
                 source = {key: value for key, value in source.items()}
 
-            # Descriptor
-            if helpers.is_descriptor_source(source):
-                return Resource.from_descriptor(source, **options)
-
             # Path/data
-            options["path" if isinstance(source, str) else "data"] = source
-            return Resource(**options)
+            if Detector.detect_metadata_type(source, allow_loading=True) != "resource":
+                options["path" if isinstance(source, str) else "data"] = source
+                return Resource(**options)
+
+            # Descriptor
+            return Resource.from_descriptor(source, **options)
 
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?

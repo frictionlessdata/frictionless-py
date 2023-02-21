@@ -51,7 +51,7 @@ def validate(
     if not type:
         type = getattr(source, "metadata_type", None)
     if not type:
-        type = Detector.detect_descriptor(source, allow_loading=True)
+        type = Detector.detect_metadata_type(source, allow_loading=True)
     if not type:
         type = "resource"
         if helpers.is_expandable_source(source):

@@ -307,15 +307,6 @@ def is_zip_descriptor(descriptor):
         return format == "zip"
 
 
-def is_descriptor_source(source):
-    if isinstance(source, Mapping):
-        return True
-    if isinstance(source, str):
-        if source.endswith((".json", ".yaml")):
-            return True
-    return False
-
-
 def is_type(object, name):
     return type(object).__name__ == name
 

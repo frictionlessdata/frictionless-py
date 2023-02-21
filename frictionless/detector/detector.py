@@ -149,7 +149,9 @@ class Detector(Metadata):
     # Detect
 
     @staticmethod
-    def detect_descriptor(source: Any, *, allow_loading: bool = False) -> Optional[str]:
+    def detect_metadata_type(
+        source: Any, *, allow_loading: bool = False
+    ) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
 
         # Path
@@ -168,7 +170,7 @@ class Detector(Metadata):
                             loader = json.loads
                             if source.endswith("yaml"):
                                 loader = platform.yaml.safe_load
-                                source = loader(resource.buffer)
+                            source = loader(resource.buffer)
                     except Exception:
                         pass
 
