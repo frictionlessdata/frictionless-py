@@ -27,7 +27,7 @@ def test_project_create_folder(tmpdir):
 @pytest.mark.parametrize("path", not_secure)
 def test_project_create_folder_security(tmpdir, path):
     project = Project(basepath=tmpdir, is_root=True)
-    project.create_file(name1, bytes=bytes1)
+    project.upload_file(name1, bytes=bytes1)
     with pytest.raises(Exception):
         project.create_folder(path)
     with pytest.raises(Exception):

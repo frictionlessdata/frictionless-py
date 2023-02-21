@@ -79,7 +79,18 @@ class Project:
     def count_files(self):
         return len(self.filesystem.list_files())
 
-    def create_file(
+    def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
+        resource = Resource(path)
+        name = str(path.split("/")[-1])
+        if "?" in name:
+            name = str(name.split("?")[0])
+        if "." not in name:
+            name = f"{name}.csv"
+        return self.filesystem.create_file(
+            name, bytes=resource.read_bytes(), folder=folder
+        )
+
+    def upload_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
     ) -> str:
         return self.filesystem.create_file(name, bytes=bytes, folder=folder)
