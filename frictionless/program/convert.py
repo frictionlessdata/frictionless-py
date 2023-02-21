@@ -43,7 +43,7 @@ def program_convert(
 
     # Initialize metadata
     metadata = None
-    metadata_type = Detector.detect_descriptor(source)
+    metadata_type = Detector.detect_descriptor(source, allow_loading=True)
     try:
         if metadata_type == "package":
             metadata = Package.from_descriptor(source)

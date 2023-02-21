@@ -51,7 +51,7 @@ def extract(
     if not type:
         type = getattr(source, "metadata_type", None)
     if not type:
-        type = Detector.detect_descriptor(source)
+        type = Detector.detect_descriptor(source, allow_loading=True)
     if not type:
         type = "resource"
         if helpers.is_expandable_source(source):

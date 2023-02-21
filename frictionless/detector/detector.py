@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import json
 import attrs
 import codecs
 from pathlib import Path
@@ -147,18 +148,34 @@ class Detector(Metadata):
 
     # Detect
 
-    # TODO: support loading descriptor for detection?
     @staticmethod
-    def detect_descriptor(source: Any) -> Optional[str]:
+    def detect_descriptor(source: Any, *, allow_loading: bool = False) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
+
+        # Path
         if isinstance(source, Path):
             source = str(source)
-        for name, trait in settings.ENTITY_TRAITS.items():
-            if isinstance(source, dict):
-                if set(trait).intersection(source.keys()):
-                    return name
-            elif isinstance(source, str):
+
+        # String
+        if isinstance(source, str):
+            for name in settings.ENTITY_TRAITS.keys():
                 if source.endswith((f"{name}.json", f"{name}.yaml")):
+                    return name
+            if allow_loading:
+                if source.endswith(("json", "yaml")):
+                    try:
+                        with platform.frictionless.Resource(path=source) as resource:
+                            loader = json.loads
+                            if source.endswith("yaml"):
+                                loader = platform.yaml.safe_load
+                                source = loader(resource.buffer)
+                    except Exception:
+                        pass
+
+        # Mapping
+        if isinstance(source, dict):
+            for name, trait in settings.ENTITY_TRAITS.items():
+                if set(trait).intersection(source.keys()):
                     return name
 
     def detect_resource(self, resource: Resource) -> None:
