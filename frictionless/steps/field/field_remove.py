@@ -15,8 +15,6 @@ class field_remove(Step):
 
     type = "field-remove"
 
-    # State
-
     names: List[str]
     """
     List of fields to remove.

@@ -31,8 +31,6 @@ class Schema(Metadata):
         for field in self.fields:
             field.schema = self
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -70,8 +68,6 @@ class Schema(Metadata):
     """
     Specifies the foreign keys for the schema.
     """
-
-    # Props
 
     @property
     def field_names(self) -> List[str]:

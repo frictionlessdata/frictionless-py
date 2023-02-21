@@ -19,6 +19,36 @@ if TYPE_CHECKING:
 class Catalog(Metadata):
     """Catalog representation"""
 
+    name: Optional[str]
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
+
+    title: Optional[str]
+    """
+    A Catalog title according to the specs. It should be a
+    human-oriented title of the resource.
+    """
+
+    description: Optional[str]
+    """
+    A Catalog description according to the specs. It should be a
+    human-oriented description of the resource.
+    """
+
+    packages: List[Package]
+    """
+    A list of packages. Each package in the list is a Data Package.
+    """
+
+    basepath: Optional[str]
+    """
+    A basepath of the catalog. The normpath of the resource is joined
+    `basepath` and `/path`
+    """
+
     def __init__(
         self,
         source: Optional[Any] = None,
@@ -70,40 +100,6 @@ class Catalog(Metadata):
         if source is not None:
             # Descriptor
             return Catalog.from_descriptor(source, **options)  # type: ignore
-
-    # State
-
-    name: Optional[str]
-    """
-    A short url-usable (and preferably human-readable) name.
-    This MUST be lower-case and contain only alphanumeric characters
-    along with “.”, “_” or “-” characters.
-    """
-
-    title: Optional[str]
-    """
-    A Catalog title according to the specs. It should be a
-    human-oriented title of the resource.
-    """
-
-    description: Optional[str]
-    """
-    A Catalog description according to the specs. It should be a
-    human-oriented description of the resource.
-    """
-
-    packages: List[Package]
-    """
-    A list of packages. Each package in the list is a Data Package.
-    """
-
-    basepath: Optional[str]
-    """
-    A basepath of the catalog. The normpath of the resource is joined
-    `basepath` and `/path`
-    """
-
-    # Props
 
     @property
     def package_names(self) -> List[str]:

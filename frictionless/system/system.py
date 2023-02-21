@@ -51,12 +51,6 @@ class System:
         "select_Step",
     ]
 
-    def __init__(self):
-        self.__dynamic_plugins = OrderedDict()
-        self.__http_session = None
-
-    # State
-
     trusted: bool = settings.DEFAULT_TRUSTED
     """
     A flag that indicates if resource, path or package is trusted.
@@ -73,7 +67,9 @@ class System:
     The default value is v2.
     """
 
-    # Props
+    def __init__(self):
+        self.__dynamic_plugins = OrderedDict()
+        self.__http_session = None
 
     @property
     def http_session(self):

@@ -34,10 +34,8 @@ class Check(Metadata):
 
     Errors: ClassVar[List[Type[Error]]] = []
     """
-    List of errors that are being used in the Check.    
+    List of errors that are being used in the Check.
     """
-
-    # State
 
     title: Optional[str] = None
     """
@@ -48,8 +46,6 @@ class Check(Metadata):
     """
     A detailed description for the Check.
     """
-
-    # Props
 
     @property
     def resource(self) -> Resource:

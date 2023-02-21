@@ -15,23 +15,21 @@ class row_slice(Step):
 
     type = "row-slice"
 
-    # State
-
     start: Optional[int] = None
     """
-    Starting point from where to read the rows. If None, 
+    Starting point from where to read the rows. If None,
     defaults to the beginning.
     """
 
     stop: Optional[int] = None
     """
-    Stopping point for reading row. If None, defaults to 
+    Stopping point for reading row. If None, defaults to
     the end.
     """
 
     step: Optional[int] = None
     """
-    It is the step size to read next row. If None, it defaults 
+    It is the step size to read next row. If None, it defaults
     to 1.
     """
 

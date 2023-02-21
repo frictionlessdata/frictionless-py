@@ -11,8 +11,6 @@ class AwsControl(Control):
 
     type = "aws"
 
-    # State
-
     s3_endpoint_url: str = (
         os.environ.get("S3_ENDPOINT_URL") or settings.DEFAULT_S3_ENDPOINT_URL
     )

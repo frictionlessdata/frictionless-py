@@ -16,8 +16,6 @@ class resource_remove(Step):
 
     type = "resource-remove"
 
-    # State
-
     name: str
     """
     Name of the resource to remove.

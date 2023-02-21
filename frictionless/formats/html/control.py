@@ -15,8 +15,6 @@ class HtmlControl(Control):
 
     type = "html"
 
-    # State
-
     selector: str = settings.DEFAULT_SELECTOR
     """
     Any valid css selector. Default selector is 'table'.

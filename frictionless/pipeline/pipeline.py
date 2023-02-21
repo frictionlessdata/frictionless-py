@@ -14,8 +14,6 @@ from .. import errors
 class Pipeline(Metadata):
     """Pipeline representation"""
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -35,10 +33,8 @@ class Pipeline(Metadata):
 
     steps: List[Step] = attrs.field(factory=list)
     """
-    List of transformation steps to apply. 
+    List of transformation steps to apply.
     """
-
-    # Props
 
     @property
     def step_types(self) -> List[str]:

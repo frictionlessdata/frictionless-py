@@ -22,8 +22,6 @@ class field_merge(Step):
 
     type = "field-merge"
 
-    # State
-
     name: str
     """
     Name of the new field that will be created after merge.

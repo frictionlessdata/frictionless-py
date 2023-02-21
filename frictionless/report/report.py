@@ -21,8 +21,6 @@ class Report(Metadata):
 
     """
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -64,8 +62,6 @@ class Report(Metadata):
     """
     List of task that were applied during data validation.
     """
-
-    # Props
 
     @property
     def error(self):

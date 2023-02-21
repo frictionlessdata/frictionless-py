@@ -43,6 +43,95 @@ class Package(Metadata):
     transform = methods.transform
     validate = methods.validate
 
+    name: Optional[str]
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
+
+    title: Optional[str]
+    """
+    A Package title according to the specs
+    It should a human-oriented title of the resource.
+    """
+
+    description: Optional[str]
+    """
+    A Package description according to the specs
+    It should a human-oriented description of the resource.
+    """
+
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
+
+    profiles: List[Union[IProfile, str]]
+    """
+    A strings identifying the profiles of this descriptor.
+    For example, `fiscal-data-package`.
+    """
+
+    licenses: List[dict]
+    """
+    The license(s) under which the package is provided.
+    """
+
+    sources: List[dict]
+    """
+    The raw sources for this data package.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
+
+    contributors: List[dict]
+    """
+    The people or organizations who contributed to this package.
+    It MUST be an array. Each entry is a Contributor and MUST be an object.
+    A Contributor MUST have a title property and MAY contain
+    path, email, role and organization properties.
+    """
+
+    keywords: List[str]
+    """
+    An Array of string keywords to assist users searching.
+    For example, ['data', 'fiscal']
+    """
+
+    image: Optional[str]
+    """
+    An image to use for this data package.
+    For example, when showing the package in a listing.
+    """
+
+    version: Optional[str]
+    """
+    A version string identifying the version of the package.
+    It should conform to the Semantic Versioning requirements and
+    should follow the Data Package Version pattern.
+    """
+
+    created: Optional[str]
+    """
+    The datetime on which this was created.
+    The datetime must conform to the string formats for RFC3339 datetime,
+    """
+
+    resources: List[Resource]
+    """
+    A list of resource descriptors.
+    It can be dicts or Resource instances
+    """
+
+    catalog: Optional[Catalog]
+    """
+    It returns reference to catalog of which the package is part of. If package
+    is not part of any catalog, then it is set to None.
+    """
+
     def __init__(
         self,
         source: Optional[Any] = None,
@@ -135,99 +224,6 @@ class Package(Metadata):
 
             # Descriptor
             return Package.from_descriptor(source, **options)  # type: ignore
-
-    # State
-
-    name: Optional[str]
-    """
-    A short url-usable (and preferably human-readable) name.
-    This MUST be lower-case and contain only alphanumeric characters
-    along with “.”, “_” or “-” characters.
-    """
-
-    title: Optional[str]
-    """
-    A Package title according to the specs
-    It should a human-oriented title of the resource.
-    """
-
-    description: Optional[str]
-    """
-    A Package description according to the specs
-    It should a human-oriented description of the resource.
-    """
-
-    homepage: Optional[str]
-    """
-    A URL for the home on the web that is related to this package.
-    For example, github repository or ckan dataset address.
-    """
-
-    profiles: List[Union[IProfile, str]]
-    """
-    A strings identifying the profiles of this descriptor.
-    For example, `fiscal-data-package`.
-    """
-
-    licenses: List[dict]
-    """
-    The license(s) under which the package is provided.
-    """
-
-    sources: List[dict]
-    """
-    The raw sources for this data package.
-    It MUST be an array of Source objects.
-    Each Source object MUST have a title and
-    MAY have path and/or email properties.
-    """
-
-    contributors: List[dict]
-    """
-    The people or organizations who contributed to this package.
-    It MUST be an array. Each entry is a Contributor and MUST be an object.
-    A Contributor MUST have a title property and MAY contain
-    path, email, role and organization properties.
-    """
-
-    keywords: List[str]
-    """
-    An Array of string keywords to assist users searching.
-    For example, ['data', 'fiscal']
-    """
-
-    image: Optional[str]
-    """
-    An image to use for this data package.
-    For example, when showing the package in a listing.
-    """
-
-    version: Optional[str]
-    """
-    A version string identifying the version of the package.
-    It should conform to the Semantic Versioning requirements and
-    should follow the Data Package Version pattern.
-    """
-
-    created: Optional[str]
-    """
-    The datetime on which this was created.
-    The datetime must conform to the string formats for RFC3339 datetime,
-    """
-
-    resources: List[Resource]
-    """
-    A list of resource descriptors.
-    It can be dicts or Resource instances
-    """
-
-    catalog: Optional[Catalog]
-    """
-    It returns reference to catalog of which the package is part of. If package
-    is not part of any catalog, then it is set to None.
-    """
-
-    # Props
 
     @property
     def resource_names(self) -> List[str]:

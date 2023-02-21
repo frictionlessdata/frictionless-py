@@ -13,8 +13,6 @@ class Stats(Metadata):
 
     """
 
-    # State
-
     md5: Optional[str] = None
     """
     Hashed value of data with md5 hashing algorithm.
@@ -47,7 +45,7 @@ class Stats(Metadata):
 
     warnings: Optional[int] = None
     """
-    Number of warnings from the validation task. Warnings are information to 
+    Number of warnings from the validation task. Warnings are information to
     users about non severe problems such as "limits reached".
     """
 

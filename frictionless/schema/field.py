@@ -32,8 +32,6 @@ class Field(Metadata):
     List of supported constraints for a field.
     """
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -59,7 +57,7 @@ class Field(Metadata):
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
-    List of string values to be set as missing values in the field. If any of string in missing values 
+    List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
     """
 
@@ -69,7 +67,7 @@ class Field(Metadata):
     """
 
     rdf_type: Optional[str] = None
-    """ 
+    """
     RDF type. Indicates whether the field is of RDF type.
     """
 
@@ -82,8 +80,6 @@ class Field(Metadata):
     """
     Schema class of which the field is part of.
     """
-
-    # Props
 
     @property
     def required(self):

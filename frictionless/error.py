@@ -26,6 +26,17 @@ class Error(Metadata):
     template: ClassVar[str] = "{note}"
     tags: ClassVar[List[str]] = []
 
+    message: str = attrs.field(init=False)
+    """
+    A human readable informative comprehensive description of the error. It can be set to any custom text.
+    If not set, default description is more comprehensive with error type, message and reasons included.
+    """
+
+    note: str
+    """
+    A short human readable description of the error. It can be set to any custom text.
+    """
+
     def __attrs_post_init__(self):
         # Define static state
         self.add_defined("title")
@@ -36,19 +47,6 @@ class Error(Metadata):
         # Render message
         descriptor = self.metadata_export(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
-
-    # State
-
-    message: str = attrs.field(init=False)
-    """
-    A human readable informative comprehensive description of the error. It can be set to any custom text. 
-    If not set, default description is more comprehensive with error type, message and reasons included.
-    """
-
-    note: str
-    """
-    A short human readable description of the error. It can be set to any custom text.
-    """
 
     # List
 

@@ -10,8 +10,6 @@ class ZipControl(Control):
 
     type = "ckan"
 
-    # State
-
     innerpath: Optional[str] = None
     """Where to find a data package. Defaults to 'datapackage.json/yaml'
     """

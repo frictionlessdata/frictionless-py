@@ -22,8 +22,6 @@ class Checklist(Metadata):
 
     """
 
-    # State
-
     name: Optional[str] = None
     """
     A short name(preferably human-readable) for the Checklist.
@@ -43,8 +41,8 @@ class Checklist(Metadata):
 
     checks: List[Check] = attrs.field(factory=list)
     """
-    List of checks to be applied during validation such as "deviated-cell", 
-    "required-value" etc. 
+    List of checks to be applied during validation such as "deviated-cell",
+    "required-value" etc.
     """
 
     pick_errors: List[str] = attrs.field(factory=list)
@@ -55,11 +53,9 @@ class Checklist(Metadata):
 
     skip_errors: List[str] = attrs.field(factory=list)
     """
-    Specify the errors names to be skipped while validation such as "sha256-count", 
+    Specify the errors names to be skipped while validation such as "sha256-count",
     "byte-count". Other errors will be included.
     """
-
-    # Props
 
     @property
     def check_types(self) -> List[str]:

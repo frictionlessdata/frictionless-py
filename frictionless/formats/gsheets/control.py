@@ -14,8 +14,6 @@ class GsheetsControl(Control):
 
     type = "gsheets"
 
-    # State
-
     credentials: Optional[str] = None
     """
     API key to access google sheets.

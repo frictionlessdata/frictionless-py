@@ -17,8 +17,6 @@ class table_merge(Step):
 
     type = "table-merge"
 
-    # State
-
     resource: Union[Resource, str]
     """
     Resource to merge with.
@@ -36,7 +34,7 @@ class table_merge(Step):
 
     ignore_fields: bool = False
     """
-    If ignore_fields is set to True, it will merge two resource 
+    If ignore_fields is set to True, it will merge two resource
     without matching headers.
     """
 

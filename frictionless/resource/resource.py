@@ -54,6 +54,120 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
+    name: Optional[str]
+    """
+    Resource name according to the specs.
+    It should be a slugified name of the resource.
+    """
+
+    type: Optional[str]
+    """
+    Type of the data e.g. "table"
+    """
+
+    title: Optional[str]
+    """
+    Resource title according to the specs
+    It should a human-oriented title of the resource.
+    """
+
+    description: Optional[str]
+    """
+    Resource description according to the specs
+    It should a human-oriented description of the resource.
+    """
+
+    homepage: Optional[str]
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
+
+    profiles: List[Union[IProfile, str]]
+    """
+    Strings identifying the profile of this descriptor.
+    For example, `tabular-data-resource`.
+    """
+
+    licenses: List[dict]
+    """
+    The license(s) under which the resource is provided.
+    If omitted it's considered the same as the package's licenses.
+    """
+
+    sources: List[dict]
+    """
+    The raw sources for this data resource.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
+
+    path: Optional[str]
+    """
+    Path to data source
+    """
+
+    data: Optional[Any]
+    """
+    Inline data source
+    """
+
+    scheme: Optional[str]
+    """
+    Scheme for loading the file (file, http, ...).
+    If not set, it'll be inferred from `source`.
+    """
+
+    format: Optional[str]
+    """
+    File source's format (csv, xls, ...).
+    If not set, it'll be inferred from `source`.
+    """
+
+    encoding: Optional[str]
+    """
+    Source encoding.
+    If not set, it'll be inferred from `source`.
+    """
+
+    mediatype: Optional[str]
+    """
+    Mediatype/mimetype of the resource e.g. “text/csv”,
+    or “application/vnd.ms-excel”.  Mediatypes are maintained by the
+    Internet Assigned Numbers Authority (IANA) in a media type registry.
+    """
+
+    compression: Optional[str]
+    """
+    Source file compression (zip, ...).
+    If not set, it'll be inferred from `source`.
+    """
+
+    extrapaths: List[str]
+    """
+    List of paths to concatenate to the main path.
+    It's used for multipart resources.
+    """
+
+    innerpath: Optional[str]
+    """
+    Path within the compressed file.
+    It defaults to the first file in the archive (if the source is an archive).
+    """
+
+    detector: Detector
+    """
+    File/table detector.
+    For more information, please check the Detector documentation.
+    """
+
+    package: Optional[Package]
+    """
+    Parental to this resource package.
+    For more information, please check the Package documentation.
+    """
+
     def __init__(
         self,
         source: Optional[Any] = None,
@@ -175,124 +289,6 @@ class Resource(Metadata):
 
     def __exit__(self, type, value, traceback):
         self.close()
-
-    # State
-
-    name: Optional[str]
-    """
-    Resource name according to the specs.
-    It should be a slugified name of the resource.
-    """
-
-    type: Optional[str]
-    """
-    Type of the data e.g. "table"
-    """
-
-    title: Optional[str]
-    """
-    Resource title according to the specs
-    It should a human-oriented title of the resource.
-    """
-
-    description: Optional[str]
-    """
-    Resource description according to the specs
-    It should a human-oriented description of the resource.
-    """
-
-    homepage: Optional[str]
-    """
-    A URL for the home on the web that is related to this package.
-    For example, github repository or ckan dataset address.
-    """
-
-    profiles: List[Union[IProfile, str]]
-    """
-    Strings identifying the profile of this descriptor.
-    For example, `tabular-data-resource`.
-    """
-
-    licenses: List[dict]
-    """
-    The license(s) under which the resource is provided.
-    If omitted it's considered the same as the package's licenses.
-    """
-
-    sources: List[dict]
-    """
-    The raw sources for this data resource.
-    It MUST be an array of Source objects.
-    Each Source object MUST have a title and
-    MAY have path and/or email properties.
-    """
-
-    path: Optional[str]
-    """
-    Path to data source
-    """
-
-    data: Optional[Any]
-    """
-    Inline data source
-    """
-
-    scheme: Optional[str]
-    """
-    Scheme for loading the file (file, http, ...).
-    If not set, it'll be inferred from `source`.
-    """
-
-    format: Optional[str]
-    """
-    File source's format (csv, xls, ...).
-    If not set, it'll be inferred from `source`.
-    """
-
-    encoding: Optional[str]
-    """
-    Source encoding.
-    If not set, it'll be inferred from `source`.
-    """
-
-    mediatype: Optional[str]
-    """
-    Mediatype/mimetype of the resource e.g. “text/csv”,
-    or “application/vnd.ms-excel”.  Mediatypes are maintained by the
-    Internet Assigned Numbers Authority (IANA) in a media type registry.
-    """
-
-    compression: Optional[str]
-    """
-    Source file compression (zip, ...).
-    If not set, it'll be inferred from `source`.
-    """
-
-    extrapaths: List[str]
-    """
-    List of paths to concatenate to the main path.
-    It's used for multipart resources.
-    """
-
-    innerpath: Optional[str]
-    """
-    Path within the compressed file.
-    It defaults to the first file in the archive (if the source is an archive).
-    """
-
-    detector: Detector
-    """
-    File/table detector.
-    For more information, please check the Detector documentation.
-    """
-
-    package: Optional[Package]
-    """
-    Parental to this resource package.
-    For more information, please check the Package documentation.
-    """
-
-    # Props
 
     @property
     def normpath(self) -> str:

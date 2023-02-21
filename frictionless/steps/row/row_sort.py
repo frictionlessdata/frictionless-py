@@ -15,8 +15,6 @@ class row_sort(Step):
 
     type = "row-sort"
 
-    # State
-
     field_names: List[str]
     """
     List of field names by which the rows will be

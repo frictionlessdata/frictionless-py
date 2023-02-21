@@ -15,8 +15,6 @@ class table_recast(Step):
 
     type = "table-recast"
 
-    # State
-
     field_name: str
     """
     Recast table by the field 'field_name'.

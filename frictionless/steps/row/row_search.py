@@ -16,11 +16,9 @@ class row_search(Step):
 
     type = "row-search"
 
-    # State
-
     regex: str
     """
-    Regex pattern to search for rows. If field_name is set it 
+    Regex pattern to search for rows. If field_name is set it
     will only be applied to the specified field. For example, regex=r"^e.*".
     """
 
@@ -31,7 +29,7 @@ class row_search(Step):
 
     negate: bool = False
     """
-    Whether to revert the result. If True, all the rows that does 
+    Whether to revert the result. If True, all the rows that does
     not match the pattern will be returned.
     """
 

@@ -15,8 +15,6 @@ class resource_add(Step):
 
     type = "resource-add"
 
-    # State
-
     name: str
     """
     Name of the resource to add.

@@ -20,18 +20,16 @@ class deviated_cell(Check):
     type = "deviated-cell"
     Errors = [errors.DeviatedCellError]
 
-    # State
-
     interval: int = DEFAULT_INTERVAL
     """
-    Interval specifies number of standard deviation away from the center. 
+    Interval specifies number of standard deviation away from the center.
     The median is used to find the center of the data. The default value
     is 3.
     """
 
     ignore_fields: List[str] = attrs.field(factory=list)
     """
-    List of data columns to be skipped by check. To all the data columns 
+    List of data columns to be skipped by check. To all the data columns
     listed here, check will not be applied. The default value is [].
     """
 

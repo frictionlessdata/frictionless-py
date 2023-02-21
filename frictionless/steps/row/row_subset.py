@@ -15,8 +15,6 @@ class row_subset(Step):
 
     type = "row-subset"
 
-    # State
-
     subset: str
     """
     It can take different values such as "conflicts","distinct","duplicates"
@@ -25,7 +23,7 @@ class row_subset(Step):
 
     field_name: Optional[str] = None
     """
-    Name of field to which the subset functions will be applied. 
+    Name of field to which the subset functions will be applied.
     """
 
     # Transform

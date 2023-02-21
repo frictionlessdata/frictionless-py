@@ -80,8 +80,6 @@ class Metadata(metaclass=Metaclass):
     def __repr__(self) -> str:
         return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
-    # Props
-
     @property
     def description_html(self) -> str:
         """Description in HTML"""

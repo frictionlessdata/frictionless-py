@@ -17,8 +17,6 @@ class resource_transform(Step):
 
     type = "resource-transform"
 
-    # State
-
     name: str
     """
     Name of the resource to transform.
@@ -26,7 +24,7 @@ class resource_transform(Step):
 
     steps: List[Step]
     """
-    List of transformation steps to apply to the given 
+    List of transformation steps to apply to the given
     resource.
     """
 

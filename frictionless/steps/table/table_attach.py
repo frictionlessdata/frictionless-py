@@ -17,8 +17,6 @@ class table_attach(Step):
 
     type = "table-attach"
 
-    # State
-
     resource: Union[Resource, str]
     """
     Data Resource to attach to the existing table.

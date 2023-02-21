@@ -15,8 +15,6 @@ from .. import errors
 class Dialect(Metadata):
     """Dialect representation"""
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.

@@ -37,8 +37,6 @@ class Step(Metadata):
     along with “_” or “-” characters. For example: "cell-fill".
     """
 
-    # State
-
     title: Optional[str] = None
     """
     A human-oriented title for the Step.

@@ -17,8 +17,6 @@ class table_intersect(Step):
 
     type = "table-intersect"
 
-    # State
-
     resource: Union[Resource, str]
     """
     Resource with which to apply intersection.

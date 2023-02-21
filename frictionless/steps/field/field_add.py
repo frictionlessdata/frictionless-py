@@ -20,8 +20,6 @@ class field_add(Step):
 
     type = "field-add"
 
-    # State
-
     name: str
     """
     A human-oriented name for the field.
@@ -34,7 +32,7 @@ class field_add(Step):
 
     formula: Optional[Any] = None
     """
-    Evaluatable expressions to set the value for the field. The expressions are 
+    Evaluatable expressions to set the value for the field. The expressions are
     processed using simpleeval library.
     """
 
@@ -45,7 +43,7 @@ class field_add(Step):
 
     position: Optional[int] = None
     """
-    Position index where to add the field. For example, to 
+    Position index where to add the field. For example, to
     add the field in second position, we need to set it as 'position=2'.
     """
 

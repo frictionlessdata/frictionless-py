@@ -15,8 +15,6 @@ class OdsControl(Control):
 
     type = "ods"
 
-    # State
-
     sheet: Union[str, int] = settings.DEFAULT_SHEET
     """
     Name or index of the sheet to read/write.

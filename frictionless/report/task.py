@@ -15,8 +15,6 @@ from .. import settings
 class ReportTask(Metadata):
     """Report task representation."""
 
-    # State
-
     valid: bool
     """
     Flag to specify if the data is valid or not.
@@ -58,8 +56,6 @@ class ReportTask(Metadata):
     """
     List of errors raised while validating the data.
     """
-
-    # Props
 
     @property
     def error(self):

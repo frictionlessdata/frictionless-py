@@ -16,12 +16,10 @@ class row_filter(Step):
 
     type = "row-filter"
 
-    # State
-
     formula: Optional[Any] = None
     """
-    Evaluatable expressions to filter the rows. Rows that matches the formula 
-    are returned and others are ignored. The expressions are processed using 
+    Evaluatable expressions to filter the rows. Rows that matches the formula
+    are returned and others are ignored. The expressions are processed using
     simpleeval library.
     """
 

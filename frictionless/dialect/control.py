@@ -25,8 +25,6 @@ class Control(Metadata):
     For example: "csv", "zenodo" etc
     """
 
-    # State
-
     title: Optional[str] = None
     """
     A human-oriented title for the control.

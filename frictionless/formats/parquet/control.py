@@ -15,8 +15,6 @@ class ParquetControl(Control):
 
     type = "parquet"
 
-    # State
-
     columns: Optional[List[str]] = None
     """
     A list of columns to load. By selecting columns, we can only access

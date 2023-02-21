@@ -16,8 +16,6 @@ class table_write(Step):
 
     type = "table-write"
 
-    # State
-
     # TODO: rebase on resource?
     path: str
     """
