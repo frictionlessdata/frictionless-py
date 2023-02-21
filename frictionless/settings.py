@@ -91,15 +91,52 @@ DEFAULT_FIELD_CANDIDATES = [
 # Entities
 
 ENTITY_TRAITS = {
-    "catalog": ["packages"],
-    "package": ["resources"],
-    "resource": ["path", "data"],  # TODO: remove "data" for v6
-    "dialect": ["controls"],
-    "schema": ["fields"],
-    "checklist": ["checks"],
-    "pipeline": ["steps"],
-    "report": ["errors"],
-    "inquiry": ["tasks"],
-    "chart": ["spec"],
-    "view": ["query"],
+    "catalog": {
+        "names": ["catalog.json", "catalog.yaml"],
+        "props": ["packages"],
+    },
+    "package": {
+        "names": ["package.json", "package.yaml"],
+        "props": ["resources"],
+    },
+    "resource": {
+        "names": ["resource.json", "resource.yaml"],
+        "props": ["path", "data"],  # TODO: remove "data" for v6
+    },
+    "dialect": {
+        "names": ["dialect.json", "dialect.yaml"],
+        "props": ["header", "headerRows", "csv", "json", "excel"],
+    },
+    "schema": {
+        "names": ["schema.json", "schema.yaml"],
+        "props": ["fields"],
+    },
+    "checklist": {
+        "names": ["checklist.json", "checklist.yaml"],
+        "props": ["checks"],
+    },
+    "pipeline": {
+        "names": ["pipeline.json", "pipeline.yaml"],
+        "props": ["steps"],
+    },
+    "report": {
+        "names": ["report.json", "report.yaml"],
+        "props": ["errors"],
+    },
+    "inquiry": {
+        "names": ["inquiry.json", "inquiry.yaml"],
+        "props": ["tasks"],
+    },
+    "detector": {
+        "names": ["detector.json", "detector.yaml"],
+        "props": ["bufferSize", "sampleSize"],
+    },
+    "chart": {
+        "names": ["chart.json", "chart.yaml"],
+        "props": ["chart"],
+    },
+    "view": {
+        "names": ["view.json", "view.yaml"],
+        "props": ["view"],
+    },
 }

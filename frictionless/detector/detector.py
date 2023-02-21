@@ -163,9 +163,9 @@ class Detector(Metadata):
 
         # String
         if isinstance(source, str):
-            for name in settings.ENTITY_TRAITS.keys():
-                if source.endswith((f"{name}.json", f"{name}.yaml")):
-                    return name
+            for type, item in settings.ENTITY_TRAITS.items():
+                if source.endswith(tuple(item["names"])):
+                    return type
             if allow_loading:
                 if source.endswith(("json", "yaml")):
                     try:
@@ -180,9 +180,9 @@ class Detector(Metadata):
 
         # Mapping
         if isinstance(source, dict):
-            for name, trait in settings.ENTITY_TRAITS.items():
-                if set(trait).intersection(source.keys()):
-                    return name
+            for type, item in settings.ENTITY_TRAITS.items():
+                if set(item["props"]).intersection(source.keys()):
+                    return type
 
     def detect_resource(self, resource: Resource) -> None:
         """Detect resource's metadata
