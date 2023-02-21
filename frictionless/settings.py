@@ -139,4 +139,8 @@ ENTITY_TRAITS = {
         "names": ["view.json", "view.yaml"],
         "props": ["view"],
     },
+    "link": {
+        "names": ["link.json", "link.yaml"],
+        "props": ["link"],
+    },
 }
