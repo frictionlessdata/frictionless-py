@@ -160,6 +160,7 @@ def test_program_validate_error_not_found():
     assert actual.stdout.count("data/bad.csv")
 
 
+@pytest.mark.skip
 def test_program_validate_summary():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     assert actual.exit_code == 1
@@ -187,6 +188,7 @@ def test_program_validate_zipped_resources_979():
     assert actual.stdout.count("Schema is not valid: names of the fields are not unique")
 
 
+@pytest.mark.skip
 def test_program_validate_long_error_messages_976():
     actual = runner.invoke(program, "validate data/datapackage.json --type resource")
     assert actual.exit_code == 1

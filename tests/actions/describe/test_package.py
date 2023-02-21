@@ -154,7 +154,7 @@ def test_describe_package_with_dialect_path_1126():
 
 def test_describe_package_with_incorrect_dialect_1126():
     dialect = Dialect.from_descriptor({"csv": {"delimiter": ","}})
-    package = describe("data/country-2.csv", type="package", dialect=dialect)
+    package = describe(["data/country-2.csv"], type="package", dialect=dialect)
     assert isinstance(package, Package)
     assert package.get_resource("country-2").schema.to_descriptor() == {
         "fields": [{"type": "string", "name": "# Author: the scientist"}]
