@@ -5,6 +5,7 @@ import attrs
 import codecs
 from pathlib import Path
 from copy import copy, deepcopy
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
@@ -154,9 +155,11 @@ class Detector(Metadata):
     ) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
 
-        # Path
+        # Normalize
         if isinstance(source, Path):
             source = str(source)
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
 
         # String
         if isinstance(source, str):
@@ -166,11 +169,12 @@ class Detector(Metadata):
             if allow_loading:
                 if source.endswith(("json", "yaml")):
                     try:
-                        with platform.frictionless.Resource(path=source) as resource:
-                            loader = json.loads
-                            if source.endswith("yaml"):
-                                loader = platform.yaml.safe_load
-                            source = loader(resource.buffer)
+                        resource = platform.frictionless.Resource(path=source)
+                        buffer = resource.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
+                        loader = json.loads
+                        if source.endswith("yaml"):
+                            loader = platform.yaml.safe_load
+                        source = loader(buffer)
                     except Exception:
                         pass
 

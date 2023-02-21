@@ -139,8 +139,14 @@ class Resource(Metadata):
     def __create__(
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
+        # Normalize
+        if isinstance(source, Path):
+            source = str(source)
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
+
+        # Control
         if control is not None:
-            # Control
             dialect = options.pop("dialect", None)
             if dialect is None:
                 dialect = control.to_dialect()
@@ -150,13 +156,8 @@ class Resource(Metadata):
             if source is None:
                 return Resource(**options)
 
+        # Source
         if source is not None:
-            # Normalize
-            if isinstance(source, Path):
-                source = str(source)
-            elif isinstance(source, Mapping):
-                source = {key: value for key, value in source.items()}
-
             # Path/data
             if Detector.detect_metadata_type(source, allow_loading=True) != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
@@ -903,6 +904,7 @@ class Resource(Metadata):
         with helpers.ensure_open(self):
             return self.text_stream.read(size)  # type: ignore
 
+    # TODO: support yaml?
     def read_data(self, *, size: Optional[int] = None) -> Any:
         """Read data into memory
 

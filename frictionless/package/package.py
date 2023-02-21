@@ -97,43 +97,41 @@ class Package(Metadata):
         assert source is None
         assert control is None
 
-    # TODO: support list of paths as resource paths?
     @classmethod
     def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        **options,
+        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
+        # Normalize
+        if isinstance(source, Path):
+            source = str(source)
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
+
+        # Source/Control
         if source is not None or control is not None:
-            # Normalize
-            if isinstance(source, Path):
-                source = str(source)
-            elif isinstance(source, Mapping):
-                source = {key: value for key, value in source.items()}
-
-            # Directory
-            elif helpers.is_directory_source(source):
-                for name in ["datapackage.json", "datapackage.yaml"]:
-                    path = os.path.join(source, name)  # type: ignore
-                    if os.path.isfile(path):
-                        return Package.from_descriptor(path)
-
-            # Expandable
-            elif helpers.is_expandable_source(source):
-                options["resources"] = []
-                basepath = options.get("basepath")
-                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
-                    options["resources"].append(Resource(path=path))
-                return Package.from_options(**options)
-
             # Adapter
             adapter = system.create_adapter(source, control=control)
             if adapter:
                 package = adapter.read_package()
                 if package:
                     return package
+
+        # Source
+        if source is not None:
+            # Directory
+            if helpers.is_directory_source(source):
+                for name in ["datapackage.json", "datapackage.yaml"]:
+                    path = os.path.join(source, name)  # type: ignore
+                    if os.path.isfile(path):
+                        return Package.from_descriptor(path)
+
+            # Expandable
+            if helpers.is_expandable_source(source):
+                options["resources"] = []
+                basepath = options.get("basepath")
+                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
+                    options["resources"].append(Resource(path=path))
+                return Package.from_options(**options)
 
             # Path
             if Detector.detect_metadata_type(source, allow_loading=True) != "package":

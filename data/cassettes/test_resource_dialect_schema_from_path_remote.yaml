@@ -36,13 +36,13 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Wed, 03 Aug 2022 06:26:50 GMT
+      - Tue, 21 Feb 2023 15:12:39 GMT
       ETag:
       - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
       Expires:
-      - Wed, 03 Aug 2022 06:31:50 GMT
+      - Tue, 21 Feb 2023 15:17:39 GMT
       Source-Age:
-      - '0'
+      - '18'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -50,21 +50,163 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 150a2f9af85be69f5138535a5297b206d587f83d
+      - 9d12eb09a5809e4edbd2d4f488f3720e10926cd0
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5E06:5A01:542E6C:59B1A3:62EA152A
+      - A926:23C5:62D8CB:68E99A:63F4DB31
       X-Served-By:
-      - cache-fra19146-FRA
+      - cache-lis1490037-LIS
       X-Timer:
-      - S1659508011.785458,VS0,VE179
+      - S1676992359.408235,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/resource-with-dereferencing.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5fBJIqTM1JzE0FSEJZeVnF+
+        HkwyJTMxJzW5BCQLZUKkuWq5AK695VhsAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '84'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 21 Feb 2023 15:12:39 GMT
+      ETag:
+      - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
+      Expires:
+      - Tue, 21 Feb 2023 15:17:39 GMT
+      Source-Age:
+      - '18'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 24f8a76e841a41bccb109accf764c331bd22886d
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - A926:23C5:62D8CB:68E99A:63F4DB31
+      X-Served-By:
+      - cache-lis1490048-LIS
+      X-Timer:
+      - S1676992360.804906,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/resource-with-dereferencing.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5fBJIqTM1JzE0FSEJZeVnF+
+        HkwyJTMxJzW5BCQLZUKkuWq5AK695VhsAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '84'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 21 Feb 2023 15:12:40 GMT
+      ETag:
+      - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
+      Expires:
+      - Tue, 21 Feb 2023 15:17:40 GMT
+      Source-Age:
+      - '19'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 3ef1a4a01bad6d9811e73407a86f5c2be30e315d
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - A926:23C5:62D8CB:68E99A:63F4DB31
+      X-Served-By:
+      - cache-lis1490021-LIS
+      X-Timer:
+      - S1676992360.123082,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -87,7 +229,7 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA6vmUlBQSknNyczNLEktUrJSULJW4qrlAgDqiElbFwAAAA==
+        H4sIAAAAAAAAA6vmUlBQSi4uU7JSqAYygZyU1JzM3MyS1CKgkJK1ElCwlquWCwBAsFnVKAAAAA==
     headers:
       Accept-Ranges:
       - bytes
@@ -100,19 +242,19 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '43'
+      - '55'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Wed, 03 Aug 2022 06:26:51 GMT
+      - Tue, 21 Feb 2023 15:12:40 GMT
       ETag:
-      - W/"a1f72ad9445d14d57df5ecbe099a39a948f645607c830a57306dc70843a75219"
+      - W/"61a54c669226d68c8a925a2582259fc7f476f186b1c039145312eef497a9d0d4"
       Expires:
-      - Wed, 03 Aug 2022 06:31:51 GMT
+      - Tue, 21 Feb 2023 15:17:40 GMT
       Source-Age:
-      - '0'
+      - '18'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -120,21 +262,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - ae424fcc7f68a3654bb2ad489f70bff8c8a68d29
+      - 10d456b30ffbdf7dc3fcbafc2dc1e8e4795a1d6d
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - A250:8115:54DC0F:5A6648:62EA152B
+      - 779C:11215:652149:6B43BA:63F4DF55
       X-Served-By:
-      - cache-fra19155-FRA
+      - cache-lis1490021-LIS
       X-Timer:
-      - S1659508011.143698,VS0,VE193
+      - S1676992360.183896,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -177,13 +319,13 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Wed, 03 Aug 2022 06:26:51 GMT
+      - Tue, 21 Feb 2023 15:12:40 GMT
       ETag:
       - W/"dc46a8e33aaac98524ccf0ac9691a1fa1f0557925dfa873723d9164df436f640"
       Expires:
-      - Wed, 03 Aug 2022 06:31:51 GMT
+      - Tue, 21 Feb 2023 15:17:40 GMT
       Source-Age:
-      - '0'
+      - '18'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -191,21 +333,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - f39f05d9588dd53efef49601d76c3a74908cda91
+      - 16cc7c4204d23a786f085fa8104ce3403f275929
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - AE1E:9C7B:527CF2:57FF9F:62EA152B
+      - DCE8:26ED:6A9387:70D061:63F4DF56
       X-Served-By:
-      - cache-fra19162-FRA
+      - cache-lis1490021-LIS
       X-Timer:
-      - S1659508012.530183,VS0,VE164
+      - S1676992360.244285,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

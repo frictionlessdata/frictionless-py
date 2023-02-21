@@ -51,13 +51,14 @@ class Catalog(Metadata):
     def __create__(
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
-        if source is not None or control is not None:
-            # Normalize
-            if isinstance(source, Path):
-                source = str(source)
-            elif isinstance(source, Mapping):
-                source = {key: value for key, value in source.items()}
+        # Normalize
+        if isinstance(source, Path):
+            source = str(source)
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
 
+        # Source/Control
+        if source is not None or control is not None:
             # Adapter
             adapter = system.create_adapter(source, control=control)
             if adapter:
@@ -65,6 +66,8 @@ class Catalog(Metadata):
                 if catalog:
                     return catalog
 
+        # Source
+        if source is not None:
             # Descriptor
             return Catalog.from_descriptor(source, **options)  # type: ignore
 
