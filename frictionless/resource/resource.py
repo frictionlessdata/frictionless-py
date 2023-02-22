@@ -24,9 +24,10 @@ from . import methods
 
 if TYPE_CHECKING:
     from ..package import Package
+    from ..table import IRowStream
     from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
-    from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream, IRowStream
+    from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
 
 
 class Resource(Metadata):
@@ -642,7 +643,25 @@ class Resource(Metadata):
         return self.__parser is None and self.__loader is None
 
     def __prepare_file(self):
-        self.detector.detect_resource(self)
+        # Detect details
+        details = self.detector.detect_path_details(
+            self.path, innerpath=self.innerpath, extrapaths=self.extrapaths
+        )
+        self.set_not_defined("name", details["name"])
+        self.set_not_defined("scheme", details["scheme"])
+        self.set_not_defined("format", details["format"])
+        self.set_not_defined("mediatype", details["mediatype"])
+        self.set_not_defined("compression", details["compression"])
+
+        # Detect type
+        if not self.type:
+            if self.path:
+                type = self.detector.detect_metadata_type(
+                    self.normpath, allow_loading=True
+                )
+                self.set_not_defined("type", type or "file")
+
+        # Detect extra
         system.detect_resource(self)
 
     def __prepare_loader(self):

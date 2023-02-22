@@ -8,6 +8,7 @@ from copy import copy, deepcopy
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
+from ..interfaces import IPathDetails
 from ..schema import Schema, Field
 from ..platform import platform
 from ..metadata import Metadata
@@ -18,8 +19,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IBuffer, IEncodingFunction, IPathDetails
-    from ..resource import Resource
+    from ..interfaces import IBuffer, IEncodingFunction
 
 
 @attrs.define(kw_only=True)
@@ -190,6 +190,10 @@ class Detector(Metadata):
         innerpath: Optional[str] = None,
         extrapaths: Optional[List[str]] = None,
     ) -> IPathDetails:
+        """Detects path details"""
+        # Note that here we only use path/innerpath/extrapahts
+        # These attributes describe the resource itself compared to
+        # basepath-related attributes like normpath that adds runtime into equation
         name = "memory"
         scheme = ""
         format = ""
@@ -223,63 +227,6 @@ class Detector(Metadata):
             mediatype=mediatype,
             compression=compression,
         )
-
-    def detect_resource(self, resource: Resource) -> None:
-        """Detect resource's metadata
-
-        It works in-place updating a provided resource.
-        """
-
-        # Input data
-        # Note that here we only use path/innerpath/extrapahts
-        # These attributes describe the resource itself compared to
-        # basepath-related attributes like normpath that adds runtime into equation
-        path = resource.path
-        type = resource.type
-        innerpath = resource.innerpath
-        extrapaths = resource.extrapaths
-
-        # Detect name
-        name = "memory"
-        if path:
-            names = []
-            for part in [path] + extrapaths:
-                name = os.path.splitext(os.path.basename(part))[0]
-                names.append(name)
-            name = os.path.commonprefix(names)
-            name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
-            name = name or "name"
-
-        # TODO: it's probably better to move to Json/Yaml plugins (as for "table" type)
-        # Detect type
-        if not type:
-            if resource.path:
-                type = self.detect_metadata_type(resource.normpath, allow_loading=True)
-            type = type or "file"
-
-        # Detect details
-        scheme = ""
-        format = ""
-        compression = None
-        if path:
-            scheme, format = helpers.parse_scheme_and_format(path)
-            if format in settings.COMPRESSION_FORMATS:
-                compression = format
-                path = path[: -len(format) - 1]
-                if innerpath:
-                    path = os.path.join(path, innerpath)
-                scheme, format = helpers.parse_scheme_and_format(path)
-                if format:
-                    name = os.path.splitext(name)[0]
-
-        # Apply detected
-        resource.set_not_defined("name", name)
-        resource.set_not_defined("type", type)
-        resource.set_not_defined("scheme", scheme)
-        resource.set_not_defined("format", format)
-        resource.set_not_defined("mediatype", f"application/{resource.format}")
-        resource.set_not_defined("compression", compression)
-        resource.set_not_defined("innerpath", innerpath)
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
