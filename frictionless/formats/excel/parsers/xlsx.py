@@ -67,6 +67,7 @@ class XlsxParser(Parser):
             return loader.open()
 
     def read_cell_stream_create(self):
+        assert self.resource.normpath
         control = ExcelControl.from_dialect(self.resource.dialect)
 
         # Get book

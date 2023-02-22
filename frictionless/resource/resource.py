@@ -319,18 +319,10 @@ class Resource(Metadata):
         self.close()
 
     @property
-    def normpath(self) -> str:
+    def normpath(self) -> Optional[str]:
         """Normalized path of the resource or raise if not set"""
-        if self.path is None:
-            raise FrictionlessException("path is not set")
-        return helpers.normalize_path(self.path, basepath=self.basepath)
-
-    @property
-    def normdata(self) -> Any:
-        """Normalized data or raise if not set"""
-        if self.data is None:
-            raise FrictionlessException("data is not set")
-        return self.data
+        if self.path:
+            return helpers.normalize_path(self.path, basepath=self.basepath)
 
     @property
     def paths(self) -> List[str]:

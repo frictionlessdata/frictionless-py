@@ -26,6 +26,7 @@ class SqlParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
+        assert self.resource.normpath
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for reading')
@@ -40,6 +41,7 @@ class SqlParser(Parser):
     # Write
 
     def write_row_stream(self, source: Resource):
+        assert self.resource.normpath
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:
             raise FrictionlessException('Please provide "dialect.sql.table" for writing')

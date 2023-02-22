@@ -28,10 +28,11 @@ class InlineParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
+        assert self.resource.data
         control = InlineControl.from_dialect(self.resource.dialect)
 
         # Iter
-        data = self.resource.normdata
+        data = self.resource.data
         if not hasattr(data, "__iter__"):
             data = data()
         data = iter(data)

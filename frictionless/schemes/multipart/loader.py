@@ -17,6 +17,7 @@ class MultipartLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
+        assert self.resource.normpath
         remote = self.resource.remote
         headless = self.resource.dialect.header is False
         headless = headless or self.resource.format != "csv"
@@ -29,6 +30,7 @@ class MultipartLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
+        assert self.resource.normpath
         control = MultipartControl.from_dialect(self.resource.dialect)
         number = 0
         while True:

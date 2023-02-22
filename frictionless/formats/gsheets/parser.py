@@ -18,6 +18,7 @@ class GsheetsParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
+        assert self.resource.normpath
         path = self.resource.normpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)
         path = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
@@ -34,6 +35,7 @@ class GsheetsParser(Parser):
     # Write
 
     def write_row_stream(self, source):
+        assert self.resource.normpath
         path = self.resource.normpath
         control = GsheetsControl.from_dialect(self.resource.dialect)
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)

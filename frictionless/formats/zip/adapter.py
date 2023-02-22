@@ -92,15 +92,16 @@ class ZipAdapter(Adapter):
                                 archive.write(normpath, path)
 
                     # Local Data
-                    elif resource.scheme == "file":
-                        path = resource.path
-                        normpath = resource.normpath
-                        if os.path.isfile(normpath):
-                            if not helpers.is_safe_path(normpath):
-                                note = f'Zipping usafe "{normpath}" is not supported'
-                                error = errors.PackageError(note=note)
-                                raise FrictionlessException(error)
-                            archive.write(normpath, path)
+                    elif resource.normpath:
+                        if resource.scheme == "file":
+                            path = resource.path
+                            normpath = resource.normpath
+                            if os.path.isfile(normpath):
+                                if not helpers.is_safe_path(normpath):
+                                    note = f'Zipping usafe "{normpath}" is not supported'
+                                    error = errors.PackageError(note=note)
+                                    raise FrictionlessException(error)
+                                archive.write(normpath, path)
 
                 # Metadata
                 archive.writestr(

@@ -291,6 +291,7 @@ def test_csv_parser_tsv_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.tsv")))
     source.write(target)
+    assert target.normpath
     with open(target.normpath, encoding="utf-8") as file:
         assert file.read() == "id\tname\n1\tenglish\n2\t中国人\n"
 
@@ -303,6 +304,7 @@ def test_csv_parser_write_newline_lf(tmpdir):
     source.write(target)
     with target:
         assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\n"}}
+    assert target.normpath
     with open(target.normpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\n1,english\n2,中国人\n"
 
@@ -315,6 +317,7 @@ def test_csv_parser_write_newline_crlf(tmpdir):
     source.write(target)
     with target:
         assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\r\n"}}
+    assert target.normpath
     with open(target.normpath, "rb") as file:
         assert file.read().decode("utf-8") == "id,name\r\n1,english\r\n2,中国人\r\n"
 

@@ -1,9 +1,13 @@
 from __future__ import annotations
 import datetime
 import decimal
+from typing import TYPE_CHECKING
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Parser
+
+if TYPE_CHECKING:
+    from pandas import DataFrame
 
 
 class PandasParser(Parser):
@@ -25,9 +29,10 @@ class PandasParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
+        assert isinstance(self.resource.data, DataFrame)
         np = platform.numpy
         pd = platform.pandas
-        dataframe = self.resource.normdata
+        dataframe = self.resource.data
 
         # Schema
         schema = self.__read_convert_schema()
@@ -52,7 +57,7 @@ class PandasParser(Parser):
             yield cells
 
     def __read_convert_schema(self):
-        dataframe = self.resource.normdata
+        dataframe = self.resource.data
         schema = Schema()
 
         # Primary key

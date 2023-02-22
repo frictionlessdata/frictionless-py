@@ -13,6 +13,7 @@ class RemoteLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
+        assert self.resource.normpath
         path = platform.requests_utils.requote_uri(self.resource.normpath)
         control = RemoteControl.from_dialect(self.resource.dialect)
         session = system.http_session
@@ -28,6 +29,7 @@ class RemoteLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
+        assert self.resource.normpath
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.normpath.replace(file, "")
         response = system.http_session.post(url, files={file: byte_stream})
