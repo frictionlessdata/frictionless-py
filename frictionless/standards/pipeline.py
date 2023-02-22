@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, Required
 
 
 class IPipeline(TypedDict, total=False):
@@ -11,6 +11,6 @@ class IPipeline(TypedDict, total=False):
 
 
 class IStep(TypedDict, total=False):
-    type: str
+    type: Required[str]
     title: str
     description: str

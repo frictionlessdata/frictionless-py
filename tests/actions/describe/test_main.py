@@ -57,18 +57,18 @@ def test_describe_resource():
 
 
 def test_describe_package():
-    resource = describe(["data/table.csv"])
-    assert isinstance(resource, Package)
+    package = describe(["data/table.csv"])
+    assert isinstance(package, Package)
 
 
 def test_describe_package_pattern():
-    resource = describe("data/chunk*.csv")
-    assert isinstance(resource, Package)
+    package = describe("data/chunk*.csv")
+    assert isinstance(package, Package)
 
 
 def test_describe_package_type_package():
-    resource = describe(["data/table.csv"], type="package")
-    assert isinstance(resource, Package)
+    package = describe(["data/table.csv"], type="package")
+    assert isinstance(package, Package)
 
 
 # Bugs
@@ -120,7 +120,6 @@ def test_describe_non_tabular_resource_issue_641():
         "scheme": "file",
         "format": "pdf",
         "encoding": "utf-8",
-        "mediatype": "application/pdf",
         "stats": {
             "md5": "3a503daaa773a3ea32b1fedd9fece844",
             "sha256": "8acf6c76fa7ad2e13531e8e41c93e944597db489aee53c8f1748e3aafaf165ef",

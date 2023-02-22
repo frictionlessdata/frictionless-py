@@ -21,14 +21,16 @@ class PandasPlugin(Plugin):
         if resource.format == "pandas":
             return PandasParser(resource)
 
-    def detect_details(self, details: PathDetails):
+    def detect_path_details(self, details: PathDetails):
         if details.data is not None:
             if helpers.is_type(details.data, "DataFrame"):
-                details.type = "table"
                 details.format = "pandas"
-                details.mediatype = "application/pandas"
-        elif details.format == "pandas":
-            details.data = platform.pandas.DataFrame()
+        if details.format == "pandas":
+            if details.data is None:
+                details.data = platform.pandas.DataFrame()
+            details.type = "table"
+            details.format = "pandas"
+            details.mediatype = "application/pandas"
 
     def select_Control(self, type):
         if type == "pandas":

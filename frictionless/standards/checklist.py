@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, Required
 
 
 class IChecklist(TypedDict, total=False):
@@ -13,6 +13,6 @@ class IChecklist(TypedDict, total=False):
 
 
 class ICheck(TypedDict, total=False):
-    type: str
+    type: Required[str]
     title: str
     description: str

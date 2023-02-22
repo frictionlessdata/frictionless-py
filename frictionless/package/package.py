@@ -49,6 +49,11 @@ class Package(Metadata):
     along with “.”, “_” or “-” characters.
     """
 
+    type: str = "dataset"
+    """
+    Type of the data e.g. "dataset"
+    """
+
     title: Optional[str]
     """
     A Package title according to the specs
@@ -198,11 +203,12 @@ class Package(Metadata):
         # Source/Control
         if source is not None or control is not None:
             # Adapter
-            adapter = system.create_adapter(source, control=control)
-            if adapter:
-                package = adapter.read_package()
-                if package:
-                    return package
+            if not helpers.is_expandable_source(source):
+                adapter = system.create_adapter(source, control=control)
+                if adapter:
+                    package = adapter.read_package()
+                    if package:
+                        return package
 
         # Source
         if source is not None:

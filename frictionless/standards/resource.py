@@ -25,7 +25,7 @@ class IFileResource(IBaseResource, total=False):
 class ITableResource(IBaseResource, total=False):
     type: Required[Literal["table"]]
     dialect: IDialect
-    schema: Required[ISchema]
+    schema: ISchema
 
 
 IResource = Union[IFileResource, ITableResource]

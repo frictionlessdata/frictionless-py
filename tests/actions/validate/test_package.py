@@ -59,7 +59,7 @@ def test_validate_package_with_non_tabular():
 def test_validate_package_invalid_descriptor_path():
     report = validate("bad/datapackage.json")
     error = report.errors[0]
-    assert error.type == "package-error"
+    assert error.type == "scheme-error"
     assert error.note.count("[Errno 2]")
     assert error.note.count("bad/datapackage.json")
 
@@ -79,10 +79,6 @@ def test_validate_package_invalid_package_standards_v2_strict():
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],
         ["resource-error", 'property "type" is required by standards "v2-strict"'],
-        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
-        ["resource-error", 'property "format" is required by standards "v2-strict"'],
-        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
-        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 

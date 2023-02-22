@@ -12,7 +12,6 @@ def test_catalog_infer():
     assert catalog.to_descriptor() == {
         "packages": [
             {
-                "name": "package1",
                 "resources": [
                     {
                         "name": "data",
