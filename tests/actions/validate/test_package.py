@@ -59,7 +59,7 @@ def test_validate_package_with_non_tabular():
 def test_validate_package_invalid_descriptor_path():
     report = validate("bad/datapackage.json")
     error = report.errors[0]
-    assert error.type == "scheme-error"
+    assert error.type == "package-error"
     assert error.note.count("[Errno 2]")
     assert error.note.count("bad/datapackage.json")
 

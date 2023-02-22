@@ -15,7 +15,6 @@ class ExcelPlugin(Plugin):
     def create_adapter(self, source, *, control=None):
         if isinstance(source, str):
             resource = Resource(path=source)
-            resource.infer()
             if resource.format == "xlsx":
                 control = control or ExcelControl()
                 return ExcelAdapter(control, resource=resource)  # type: ignore

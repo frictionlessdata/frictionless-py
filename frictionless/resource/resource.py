@@ -1189,11 +1189,7 @@ class Resource(Metadata):
 
         # Required (standards/v2-strict)
         if system.standards == "v2-strict":
-            type = descriptor.get("type")
-            names = ["name", "type"]
-            if type == "table":
-                names.append("schema")
-            for name in names:
+            for name in ["name", "type"]:
                 if name not in descriptor:
                     note = f'property "{name}" is required by standards "v2-strict"'
                     yield errors.ResourceError(note=note)
@@ -1207,7 +1203,7 @@ class Resource(Metadata):
         for name in ["contributors", "sources"]:
             for item in descriptor.get(name, []):
                 if item.get("email"):
-                    field = fields.StringField(format="email")
+                    field = fields.StringField(name="email", format="email")
                     _, note = field.read_cell(item.get("email"))
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'

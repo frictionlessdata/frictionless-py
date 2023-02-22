@@ -47,7 +47,11 @@ PACKAGE_WITH_DP = {
     "resources": [
         {
             "name": "data",
+            "type": "table",
             "path": "data.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "string", "constraints": {"required": True}},
@@ -60,7 +64,11 @@ PACKAGE_WITH_DP = {
         },
         {
             "name": "data2",
+            "type": "table",
             "path": "data2.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
                 "fields": [
                     {"name": "parent", "type": "string"},

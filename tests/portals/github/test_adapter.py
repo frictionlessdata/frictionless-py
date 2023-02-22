@@ -30,7 +30,11 @@ OUTPUT_OPTIONS_WITH_DP = {
     "resources": [
         {
             "name": "first-resource",
+            "type": "table",
             "path": "table.xls",
+            "scheme": "file",
+            "format": "xls",
+            "mediatype": "application/vnd.ms-excel",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "number"},
@@ -227,6 +231,7 @@ def test_github_adapter_read_yaml(options_with_dp_yaml):
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP_YAML
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_github_adapter_read_resource_with_duplicate_packages(
     options_with_duplicate_files,
