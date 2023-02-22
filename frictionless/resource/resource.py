@@ -7,12 +7,10 @@ from typing import TYPE_CHECKING, Optional, Union, List, Any
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
-from ..checklist import Checklist
 from ..records import PathDetails
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
-from ..pipeline import Pipeline
 from ..schema import Schema
 from ..system import system
 from ..stats import Stats
@@ -195,8 +193,6 @@ class Resource(Metadata):
         encoding: Optional[str] = None,
         dialect: Optional[Union[Dialect, str]] = None,
         schema: Optional[Union[Schema, str]] = None,
-        checklist: Optional[Union[Checklist, str]] = None,
-        pipeline: Optional[Union[Pipeline, str]] = None,
         stats: Optional[Stats] = None,
         # Software
         basepath: Optional[str] = None,
@@ -219,8 +215,6 @@ class Resource(Metadata):
         # Store dereference state
         self.dialect = dialect or Dialect()
         self.schema = schema
-        self.checklist = checklist
-        self.pipeline = pipeline
         self.stats = stats or Stats()
         self.detector = detector or Detector()
 
@@ -424,34 +418,6 @@ class Resource(Metadata):
         if isinstance(value, str):
             value = Schema.from_descriptor(value, basepath=self.basepath)
         self.__schema = value
-
-    @property
-    def checklist(self) -> Optional[Checklist]:
-        """
-        Checklist object.
-        For more information, please check the Checklist documentation.
-        """
-        return self.__checklist
-
-    @checklist.setter
-    def checklist(self, value: Optional[Union[Checklist, str]]):
-        if isinstance(value, str):
-            value = Checklist.from_descriptor(value, basepath=self.basepath)
-        self.__checklist = value
-
-    @property
-    def pipeline(self) -> Optional[Pipeline]:
-        """
-        Pipeline object.
-        For more information, please check the Pipeline documentation.
-        """
-        return self.__pipeline
-
-    @pipeline.setter
-    def pipeline(self, value: Optional[Union[Pipeline, str]]):
-        if isinstance(value, str):
-            value = Pipeline.from_descriptor(value, basepath=self.basepath)
-        self.__pipeline = value
 
     @property
     def stats(self) -> Stats:
@@ -1111,8 +1077,6 @@ class Resource(Metadata):
             "encoding": {"type": "string"},
             "dialect": {"type": ["object", "string"]},
             "schema": {"type": ["object", "string"]},
-            "checklist": {"type": ["object", "string"]},
-            "pipeline": {"type": ["object", "string"]},  # TODO: remove in v6
             "stats": {"type": "object"},
         },
     }
@@ -1123,10 +1087,6 @@ class Resource(Metadata):
             return Dialect
         elif property == "schema":
             return Schema
-        elif property == "checklist":
-            return Checklist
-        elif property == "pipeline":
-            return Pipeline
         elif property == "stats":
             return Stats
 
@@ -1211,7 +1171,7 @@ class Resource(Metadata):
         if not system.trusted:
             keys = ["path"]
             keys += ["extrapaths", "profiles"]
-            keys += ["dialect", "schema", "checklist", "pipeline"]
+            keys += ["dialect", "schema"]
             for key in keys:
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]

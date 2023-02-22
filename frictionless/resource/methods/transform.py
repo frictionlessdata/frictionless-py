@@ -24,7 +24,7 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
     self.infer()
 
     # Prepare pipeline
-    pipeline = pipeline or self.pipeline or Pipeline()
+    pipeline = pipeline or Pipeline()
 
     # Run transforms
     for step in pipeline.steps:

@@ -182,9 +182,6 @@ class Detector(Metadata):
 
     def detect_path_details(self, details: PathDetails) -> PathDetails:
         """Detects path details"""
-        # Note that here we only use path/innerpath/extrapahts
-        # These attributes describe the resource itself compared to
-        # basepath-related attributes like normpath that adds runtime into equation
         name = "memory"
         scheme = None
         format = None

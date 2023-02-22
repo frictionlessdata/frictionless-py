@@ -38,7 +38,7 @@ def validate(
     warnings: List[str] = []
 
     # Prepare checklist
-    checklist = checklist or self.checklist or Checklist()
+    checklist = checklist or Checklist()
     checks = checklist.connect(self)
 
     # Validate metadata
