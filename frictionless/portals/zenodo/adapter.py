@@ -197,7 +197,6 @@ def get_package(files: List, title: str, formats: List[str]) -> Package:
         if is_resource_file:
             base_path = f'https://zenodo.org/api/files/{file["bucket"]}'
             resource = Resource(path=file["key"], basepath=base_path)
-            resource.infer(sample=False)
             package.add_resource(resource)
     return package
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from ...records import PathDetails
 from ...system import Plugin
 from .control import YamlControl
 from .parser import YamlParser
@@ -13,9 +14,9 @@ class YamlPlugin(Plugin):
         if resource.format == "yaml":
             return YamlParser(resource)
 
-    def detect_resource(self, resource):
-        if resource.format == "yaml":
-            resource.mediatype = "text/yaml"
+    def detect_path_details(self, details: PathDetails):
+        if details.format == "yaml":
+            details.mediatype = "text/yaml"
 
     def select_Control(self, type):
         if type == "yaml":

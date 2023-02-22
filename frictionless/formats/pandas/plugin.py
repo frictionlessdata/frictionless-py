@@ -1,5 +1,6 @@
 from __future__ import annotations
 from ...system import Plugin
+from ...records import PathDetails
 from .control import PandasControl
 from .parser import PandasParser
 from ...platform import platform
@@ -20,15 +21,15 @@ class PandasPlugin(Plugin):
         if resource.format == "pandas":
             return PandasParser(resource)
 
-    def detect_resource(self, resource):
-        if resource.data is not None:
-            if helpers.is_type(resource.data, "DataFrame"):
-                resource.type = "table"
-                resource.scheme = ""
-                resource.format = "pandas"
-                resource.mediatype = "application/pandas"
-        elif resource.format == "pandas":
-            resource.data = platform.pandas.DataFrame()
+    def detect_details(self, details: PathDetails):
+        if details.data is not None:
+            if helpers.is_type(details.data, "DataFrame"):
+                details.type = "table"
+                details.scheme = ""
+                details.format = "pandas"
+                details.mediatype = "application/pandas"
+        elif details.format == "pandas":
+            details.data = platform.pandas.DataFrame()
 
     def select_Control(self, type):
         if type == "pandas":

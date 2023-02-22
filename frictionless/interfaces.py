@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypedDict, Optional
+from typing import TYPE_CHECKING
 from typing import Protocol, BinaryIO, TextIO, Iterable, List, Dict, Any, Union, Literal
 
 if TYPE_CHECKING:
@@ -24,17 +24,6 @@ ISample = List[List[Any]]
 IFragment = List[List[Any]]
 ILabels = List[str]
 IOnerror = Literal["ignore", "warn", "raise"]
-
-
-# Structures
-
-
-class IPathDetails(TypedDict):
-    name: str
-    scheme: str
-    format: str
-    mediatype: str
-    compression: Optional[str]
 
 
 # Functions

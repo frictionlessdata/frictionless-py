@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import List, Literal, Union
 from typing_extensions import Required, TypedDict
 from .checklist import IChecklist
-from .pipeline import IPipeline
 from .dialect import IDialect
 from .schema import ISchema
 
@@ -14,8 +13,7 @@ class IBaseResource(TypedDict, total=False):
     path: Required[str]
     scheme: Required[str]
     format: Required[str]
-    encoding: Required[str]
-    mediatype: Required[str]
+    encoding: str
     compression: str
     innerpath: List[str]
     extrapaths: List[str]
@@ -30,7 +28,6 @@ class ITableResource(IBaseResource, total=False):
     dialect: IDialect
     schema: Required[ISchema]
     checklist: IChecklist
-    pipeline: IPipeline
 
 
 IResource = Union[IFileResource, ITableResource]

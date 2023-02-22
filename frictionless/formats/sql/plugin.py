@@ -1,5 +1,6 @@
 from __future__ import annotations
 from urllib.parse import urlparse
+from ...records import PathDetails
 from ...platform import platform
 from ...system import Plugin
 from .control import SqlControl
@@ -25,14 +26,14 @@ class SqlPlugin(Plugin):
         if resource.format == "sql":
             return SqlParser(resource)
 
-    def detect_resource(self, resource):
-        if resource.scheme:
+    def detect_path_details(self, details: PathDetails):
+        if details.scheme:
             for prefix in settings.SCHEME_PREFIXES:
-                if resource.scheme.startswith(prefix):
-                    resource.type = "table"
-                    resource.scheme = ""
-                    resource.format = "sql"
-                    resource.mediatype = "application/sql"
+                if details.scheme.startswith(prefix):
+                    details.type = "table"
+                    details.scheme = ""
+                    details.format = "sql"
+                    details.mediatype = "application/sql"
 
     def select_Control(self, type):
         if type == "sql":

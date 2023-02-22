@@ -311,17 +311,16 @@ class Package(Metadata):
 
     # Infer
 
-    def infer(self, *, sample=True, stats=False):
+    def infer(self, *, stats=False):
         """Infer package's attributes
 
         Parameters:
-            sample? (bool): open files and infer from a sample (default: True)
             stats? (bool): stream files completely and infer stats
         """
 
         # General
         for resource in self.resources:
-            resource.infer(sample=sample, stats=stats)
+            resource.infer(stats=stats)
 
         # Deduplicate names
         if len(self.resource_names) != len(set(self.resource_names)):

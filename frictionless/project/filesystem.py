@@ -177,7 +177,6 @@ class Filesystem:
 
     def get_filetype(self, path: str) -> str:
         resource = Resource(path=path)
-        resource.infer(sample=False)
         assert resource.type
         return resource.type
 

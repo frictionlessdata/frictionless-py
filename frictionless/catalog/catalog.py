@@ -157,7 +157,7 @@ class Catalog(Metadata):
 
     # Infer
 
-    def infer(self, *, sample=True, stats=False):
+    def infer(self, *, stats=False):
         """Infer catalog's metadata
 
         Parameters:
@@ -167,7 +167,7 @@ class Catalog(Metadata):
 
         # General
         for number, package in enumerate(self.packages, start=1):
-            package.infer(sample=sample, stats=stats)
+            package.infer(stats=stats)
             package.name = package.name or f"package{number}"
 
         # TODO: move to helpers and re-use

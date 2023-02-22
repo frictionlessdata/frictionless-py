@@ -21,9 +21,6 @@ def transform(self: Package, pipeline: Pipeline):
         Package: the transform result
     """
 
-    # Prepare package
-    self.infer(sample=False)
-
     # Run transforms
     for step in pipeline.steps:
         # Transform

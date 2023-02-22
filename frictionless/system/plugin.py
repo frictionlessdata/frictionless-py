@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
+    from ..records import PathDetails
     from ..resource import Resource
     from ..checklist import Check
     from ..dialect import Control
@@ -60,20 +61,20 @@ class Plugin:
         """
         pass
 
-    def detect_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
-        """Detect field candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
-
-    def detect_resource(self, resource: Resource) -> None:
+    def detect_path_details(self, details: PathDetails) -> None:
         """Hook into resource detection
 
         Parameters:
             resource (Resource): resource
 
+        """
+        pass
+
+    def detect_field_candidates(self, candidates: List[dict]) -> None:
+        """Detect field candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
         pass
 

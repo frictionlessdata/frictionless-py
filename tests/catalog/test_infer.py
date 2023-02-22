@@ -9,7 +9,6 @@ from frictionless import Catalog, Package, platform
 def test_catalog_infer():
     package = Package("data/infer/*.csv")
     catalog = Catalog(packages=[package])
-    catalog.infer(sample=False)
     assert catalog.to_descriptor() == {
         "packages": [
             {

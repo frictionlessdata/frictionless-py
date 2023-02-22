@@ -19,9 +19,6 @@ def analyze(self: Package, *, detailed=False):
 
     """
 
-    # Prepare package
-    self.infer(sample=False)
-
     # Extract metrics
     analisis = {}
     for resource in self.resources:

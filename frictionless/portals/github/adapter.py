@@ -237,6 +237,5 @@ def get_package(
             return package
         if any(file.path.endswith(ext) for ext in formats):
             resource = Resource(path=file.path, basepath=base_path)
-            resource.infer(sample=False)
             package.add_resource(resource)
     return package

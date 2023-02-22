@@ -8,6 +8,7 @@ from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
 from ..checklist import Checklist
+from ..records import PathDetails
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
@@ -55,13 +56,13 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
-    name: Optional[str]
+    name: str
     """
     Resource name according to the specs.
     It should be a slugified name of the resource.
     """
 
-    type: Optional[str]
+    type: str
     """
     Type of the data e.g. "table"
     """
@@ -126,12 +127,6 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
-    encoding: Optional[str]
-    """
-    Source encoding.
-    If not set, it'll be inferred from `source`.
-    """
-
     mediatype: Optional[str]
     """
     Mediatype/mimetype of the resource e.g. “text/csv”,
@@ -155,6 +150,12 @@ class Resource(Metadata):
     """
     Path within the compressed file.
     It defaults to the first file in the archive (if the source is an archive).
+    """
+
+    encoding: Optional[str]
+    """
+    Source encoding.
+    If not set, it'll be inferred from `source`.
     """
 
     detector: Detector
@@ -187,11 +188,11 @@ class Resource(Metadata):
         data: Optional[Any] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
-        encoding: Optional[str] = None,
         mediatype: Optional[str] = None,
         compression: Optional[str] = None,
-        extrapaths: List[str] = [],
+        extrapaths: Optional[List[str]] = None,
         innerpath: Optional[str] = None,
+        encoding: Optional[str] = None,
         dialect: Optional[Union[Dialect, str]] = None,
         schema: Optional[Union[Schema, str]] = None,
         checklist: Optional[Union[Checklist, str]] = None,
@@ -203,8 +204,6 @@ class Resource(Metadata):
         package: Optional[Package] = None,
     ):
         # Store state
-        self.name = name
-        self.type = type
         self.title = title
         self.description = description
         self.homepage = homepage
@@ -213,13 +212,7 @@ class Resource(Metadata):
         self.sources = sources.copy()
         self.path = path
         self.data = data
-        self.scheme = scheme
-        self.format = format
         self.encoding = encoding
-        self.mediatype = mediatype
-        self.compression = compression
-        self.extrapaths = extrapaths.copy()
-        self.innerpath = innerpath
         self.basepath = basepath
         self.package = package
 
@@ -242,7 +235,43 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
+        # Detect details
+        details = PathDetails(
+            name=name,
+            type=type,
+            path=path,
+            data=data,
+            scheme=scheme,
+            format=format,
+            mediatype=mediatype,
+            compression=compression,
+            extrapaths=extrapaths,
+            innerpath=innerpath,
+        )
+        details = self.detector.detect_path_details(details)
+        details = system.detect_path_details(details)
+        self.name = details.name or "name"
+        self.type = details.type or "file"
+        self.data = details.data
+        self.scheme = details.scheme
+        self.format = details.format
+        self.mediatype = details.mediatype
+        self.compression = details.compression
+        self.extrapaths = details.extrapaths or []
+        self.innerpath = details.innerpath
+
+        # TODO: remove this defined/not-defined logic?
         # Define default state
+        self.add_defined("name")
+        self.add_defined("type")
+        if self.scheme:
+            self.add_defined("scheme")
+        if self.format:
+            self.add_defined("format")
+        if self.mediatype:
+            self.add_defined("mediatype")
+        if self.compression:
+            self.add_defined("compression")
         self.add_defined("dialect")
         self.add_defined("stats")
 
@@ -572,16 +601,12 @@ class Resource(Metadata):
 
     # Infer
 
-    def infer(self, *, sample: bool = True, stats: bool = False) -> None:
+    def infer(self, *, stats: bool = False) -> None:
         """Infer metadata
 
         Parameters:
-            sample? (bool): open file and infer from a sample (default: True)
             stats? (bool): stream file completely and infer stats
         """
-        if sample is False:
-            self.__prepare_file()
-            return
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
             raise FrictionlessException(errors.ResourceError(note=note))
@@ -598,9 +623,6 @@ class Resource(Metadata):
         """Open the resource as "io.open" does"""
         self.close()
         try:
-            # General
-            self.__prepare_file()
-
             # Table
             if self.type == "table" and not as_file:
                 self.__prepare_parser()
@@ -641,28 +663,6 @@ class Resource(Metadata):
             bool: if closed
         """
         return self.__parser is None and self.__loader is None
-
-    def __prepare_file(self):
-        # Detect details
-        details = self.detector.detect_path_details(
-            self.path, innerpath=self.innerpath, extrapaths=self.extrapaths
-        )
-        self.set_not_defined("name", details["name"])
-        self.set_not_defined("scheme", details["scheme"])
-        self.set_not_defined("format", details["format"])
-        self.set_not_defined("mediatype", details["mediatype"])
-        self.set_not_defined("compression", details["compression"])
-
-        # Detect type
-        if not self.type:
-            if self.path:
-                type = self.detector.detect_metadata_type(
-                    self.normpath, allow_loading=True
-                )
-                self.set_not_defined("type", type or "file")
-
-        # Detect extra
-        system.detect_resource(self)
 
     def __prepare_loader(self):
         self.__loader = system.create_loader(self)
@@ -979,7 +979,6 @@ class Resource(Metadata):
         resource = target
         if not isinstance(resource, Resource):
             resource = Resource(target, control=control, **options)
-        resource.infer(sample=False)
         parser = system.create_parser(resource)
         parser.write_row_stream(self)
         return resource
@@ -1101,15 +1100,15 @@ class Resource(Metadata):
             "data": {"type": ["object", "array"]},
             "scheme": {"type": "string"},
             "format": {"type": "string"},
-            "encoding": {"type": "string"},
             "mediatype": {"type": "string"},
             "compression": {"type": "string"},
             "extrapaths": {"type": "array"},
             "innerpath": {"type": "string"},
+            "encoding": {"type": "string"},
             "dialect": {"type": ["object", "string"]},
             "schema": {"type": ["object", "string"]},
             "checklist": {"type": ["object", "string"]},
-            "pipeline": {"type": ["object", "string"]},
+            "pipeline": {"type": ["object", "string"]},  # TODO: remove in v6
             "stats": {"type": "object"},
         },
     }

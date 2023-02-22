@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from ...records import PathDetails
 from ...system import Plugin
 from .control import CsvControl
 from .parser import CsvParser
@@ -17,10 +18,10 @@ class CsvPlugin(Plugin):
         if resource.format in ["csv", "tsv"]:
             return CsvParser(resource)
 
-    def detect_resource(self, resource: Resource):
-        if resource.format in ["csv", "tsv"]:
-            resource.type = "table"
-            resource.mediatype = f"text/{resource.format}"
+    def detect_path_details(self, details: PathDetails):
+        if details.format in ["csv", "tsv"]:
+            details.type = "table"
+            details.mediatype = f"text/{details.format}"
 
     def select_Control(self, type: str):
         if type == "csv":

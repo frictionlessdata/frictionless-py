@@ -50,7 +50,6 @@ class XlsxParser(Parser):
             if control.workbook_cache is not None and path in control.workbook_cache:
                 # TODO: rebase on using resource without system?
                 resource = Resource(path, scheme="file", format="xlsx")
-                resource.infer(sample=False)
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -64,7 +63,6 @@ class XlsxParser(Parser):
                 atexit.register(os.remove, target.name)
             # TODO: rebase on using resource without system?
             resource = Resource(target, scheme="stream", format="xlsx")
-            resource.infer(sample=False)
             loader = system.create_loader(resource)
             return loader.open()
 

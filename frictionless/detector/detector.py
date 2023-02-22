@@ -8,8 +8,8 @@ from copy import copy, deepcopy
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
-from ..interfaces import IPathDetails
 from ..schema import Schema, Field
+from ..records import PathDetails
 from ..platform import platform
 from ..metadata import Metadata
 from ..fields import AnyField
@@ -183,50 +183,42 @@ class Detector(Metadata):
                 if set(item["props"]).intersection(source.keys()):
                     return type
 
-    def detect_path_details(
-        self,
-        path: Optional[str],  # TODO: make required in v6
-        *,
-        innerpath: Optional[str] = None,
-        extrapaths: Optional[List[str]] = None,
-    ) -> IPathDetails:
+    def detect_path_details(self, details: PathDetails) -> PathDetails:
         """Detects path details"""
         # Note that here we only use path/innerpath/extrapahts
         # These attributes describe the resource itself compared to
         # basepath-related attributes like normpath that adds runtime into equation
         name = "memory"
-        scheme = ""
-        format = ""
-        mediatype = ""
+        scheme = None
+        format = None
         compression = None
 
         # Detect details
-        if path:
+        if details.path:
             names = []
-            for part in [path] + (extrapaths or []):
+            for part in [details.path] + (details.extrapaths or []):
                 name = os.path.splitext(os.path.basename(part))[0]
                 names.append(name)
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
             name = name or "name"
-            scheme, format = helpers.parse_scheme_and_format(path)
+            scheme, format = helpers.parse_scheme_and_format(details.path)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
-                path = path[: -len(format) - 1]
-                if innerpath:
-                    path = os.path.join(path, innerpath)
+                path = details.path[: -len(format) - 1]
+                if details.innerpath:
+                    path = os.path.join(path, details.innerpath)
                 scheme, format = helpers.parse_scheme_and_format(path)
                 if format:
                     name = os.path.splitext(name)[0]
-            mediatype = f"application/{format}"
 
-        return IPathDetails(
-            name=name,
-            scheme=scheme,
-            format=format,
-            mediatype=mediatype,
-            compression=compression,
-        )
+        # Save details
+        details.name = details.name or name
+        details.scheme = details.scheme or scheme
+        details.format = details.format or format
+        details.compression = details.compression or compression
+
+        return details
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer

@@ -57,9 +57,6 @@ class ZipAdapter(Adapter):
         compression = self.control.compression
         encoder_class = self.control.encoder_class
 
-        # Infer
-        package.infer(sample=False)
-
         # Save
         try:
             compression = compression or platform.zipfile.ZIP_DEFLATED

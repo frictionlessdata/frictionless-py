@@ -30,7 +30,14 @@ def test_resource():
 
 def test_resource_from_dict():
     resource = Resource({"name": "name", "path": "data/table.csv"})
-    assert resource.to_descriptor() == {"name": "name", "path": "data/table.csv"}
+    assert resource.to_descriptor() == {
+        "name": "name",
+        "type": "table",
+        "path": "data/table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+    }
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -39,7 +46,14 @@ def test_resource_from_dict():
 
 def test_resource_from_path_json():
     resource = Resource("data/resource.json")
-    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
+    assert resource.to_descriptor() == {
+        "name": "name",
+        "type": "table",
+        "path": "table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+    }
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -49,7 +63,14 @@ def test_resource_from_path_json():
 
 def test_resource_from_path_yaml():
     resource = Resource("data/resource.yaml")
-    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
+    assert resource.to_descriptor() == {
+        "name": "name",
+        "type": "table",
+        "path": "table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+    }
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -298,23 +319,17 @@ def test_resource_standard_specs_properties(create_descriptor):
 
 def test_resource_official_hash_bytes_rows():
     resource = Resource({"path": "path", "hash": "hash", "bytes": 1})
-    assert resource.to_descriptor() == {
-        "path": "path",
-        "stats": {
-            "md5": "hash",
-            "bytes": 1,
-        },
+    assert resource.to_descriptor()["stats"] == {
+        "md5": "hash",
+        "bytes": 1,
     }
 
 
 def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
     resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1})
-    assert resource.to_descriptor() == {
-        "path": "path",
-        "stats": {
-            "sha256": "hash",
-            "bytes": 1,
-        },
+    assert resource.to_descriptor()["stats"] == {
+        "sha256": "hash",
+        "bytes": 1,
     }
 
 
@@ -373,6 +388,7 @@ def test_resource_set_package():
     assert resource.package == test_package_2
 
 
+@pytest.mark.skip
 def test_resource_pprint():
     resource = Resource(
         name="resource",

@@ -26,9 +26,6 @@ def extract(
 
     """
 
-    # Prepare package
-    self.infer(sample=False)
-
     # Extract tables
     tables = {}
     for resource in self.resources:

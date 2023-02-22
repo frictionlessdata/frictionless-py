@@ -1,4 +1,5 @@
 from __future__ import annotations
+from ...records import PathDetails
 from ...system import Plugin
 from .control import JsonControl
 from .parsers import JsonParser, JsonlParser
@@ -15,11 +16,11 @@ class JsonPlugin(Plugin):
         elif resource.format in ["jsonl", "ndjson"]:
             return JsonlParser(resource)
 
-    def detect_resource(self, resource):
-        if resource.format in ["json", "jsonl", "ndjson"]:
-            resource.mediatype = f"text/{resource.format}"
-            if resource.format in ["jsonl", "ndjson"]:
-                resource.type = "table"
+    def detect_path_details(self, details: PathDetails):
+        if details.format in ["json", "jsonl", "ndjson"]:
+            details.mediatype = f"text/{details.format}"
+            if details.format in ["jsonl", "ndjson"]:
+                details.type = "table"
 
     def select_Control(self, type):
         if type == "json":

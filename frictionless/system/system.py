@@ -13,6 +13,7 @@ from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..records import PathDetails
     from ..interfaces import IStandards, IOnerror
     from ..resource import Resource
     from ..checklist import Check
@@ -42,8 +43,8 @@ class System:
         "create_adapter",
         "create_loader",
         "create_parser",
+        "detect_path_details",
         "detect_field_candidates",
-        "detect_resource",
         "select_Check",
         "select_Control",
         "select_Error",
@@ -237,6 +238,17 @@ class System:
         note = f'format "{name}" is not supported'
         raise FrictionlessException(errors.FormatError(note=note))
 
+    def detect_path_details(self, details: PathDetails) -> PathDetails:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        for func in self.methods["detect_path_details"].values():
+            func(details)
+        return details
+
     def detect_field_candidates(self) -> List[dict]:
         """Create candidates
 
@@ -247,16 +259,6 @@ class System:
         for func in self.methods["detect_field_candidates"].values():
             func(candidates)
         return candidates
-
-    def detect_resource(self, resource: Resource) -> None:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
-        """
-        for func in self.methods["detect_resource"].values():
-            func(resource)
 
     def select_Check(self, type: str) -> Type[Check]:
         for func in self.methods["select_Check"].values():
