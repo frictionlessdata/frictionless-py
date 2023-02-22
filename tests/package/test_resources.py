@@ -15,7 +15,11 @@ def test_package_resources():
         "resources": [
             {
                 "name": "name",
+                "type": "table",
                 "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+                "mediatype": "text/csv",
             },
         ],
     }
@@ -82,7 +86,17 @@ def test_package_update_resource():
     package = Package({"resources": [{"name": "name", "data": data}]})
     resource = package.get_resource("name")
     resource.name = "newname"
-    assert package.to_descriptor() == {"resources": [{"name": "newname", "data": data}]}
+    assert package.to_descriptor() == {
+        "resources": [
+            {
+                "name": "newname",
+                "type": "table",
+                "data": data,
+                "format": "inline",
+                "mediatype": "application/inline",
+            }
+        ]
+    }
 
 
 # Bugs

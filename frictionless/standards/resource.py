@@ -16,6 +16,7 @@ class IBaseResource(TypedDict, total=False):
     extrapaths: List[str]
     innerpath: str
     encoding: str
+    dialect: IDialect
 
 
 class IFileResource(IBaseResource, total=False):
@@ -24,8 +25,7 @@ class IFileResource(IBaseResource, total=False):
 
 class ITableResource(IBaseResource, total=False):
     type: Required[Literal["table"]]
-    dialect: IDialect
-    schema: ISchema
+    schema: Required[ISchema]
 
 
 IResource = Union[IFileResource, ITableResource]

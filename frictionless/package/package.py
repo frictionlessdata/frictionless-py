@@ -186,6 +186,15 @@ class Package(Metadata):
             if dialect:
                 resource.dialect = dialect
 
+        # Deduplicate resource
+        if len(self.resource_names) != len(set(self.resource_names)):
+            seen_names = []
+            for index, name in enumerate(self.resource_names):
+                count = seen_names.count(name) + 1
+                if count > 1:
+                    self.resources[index].name = "%s%s" % (name, count)
+                seen_names.append(name)
+
         # Handled by the create hook
         assert source is None
         assert control is None
@@ -259,11 +268,19 @@ class Package(Metadata):
 
     def add_resource(self, resource: Union[Resource, str]) -> Resource:
         """Add new resource to the package"""
+
+        # Dereference
         if isinstance(resource, str):
             resource = Resource.from_descriptor(resource, basepath=self.basepath)
-        if resource.name and self.has_resource(resource.name):
-            error = errors.PackageError(note=f'resource "{resource.name}" already exists')
-            raise FrictionlessException(error)
+
+        # Deduplicate
+        number = 1
+        template = f"{resource.name}%s"
+        while self.has_resource(resource.name):
+            resource.name = template % number
+            number += 1
+
+        # Append
         self.resources.append(resource)
         resource.package = self
         return resource
@@ -323,19 +340,8 @@ class Package(Metadata):
         Parameters:
             stats? (bool): stream files completely and infer stats
         """
-
-        # General
         for resource in self.resources:
             resource.infer(stats=stats)
-
-        # Deduplicate names
-        if len(self.resource_names) != len(set(self.resource_names)):
-            seen_names = []
-            for index, name in enumerate(self.resource_names):
-                count = seen_names.count(name) + 1
-                if count > 1:
-                    self.resources[index].name = "%s%s" % (name, count)
-                seen_names.append(name)
 
     # Publish
 
@@ -532,7 +538,7 @@ class Package(Metadata):
         for name in ["contributors", "sources"]:
             for item in descriptor.get(name, []):
                 if item.get("email"):
-                    field = fields.StringField(format="email")
+                    field = fields.StringField(name="email", format="email")
                     _, note = field.read_cell(item.get("email"))
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'

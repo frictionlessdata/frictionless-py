@@ -100,9 +100,15 @@ class Schema(Metadata):
 
     def add_field(self, field: Field, *, position: Optional[int] = None) -> None:
         """Add new field to the schema"""
-        if self.has_field(field.name):  # type: ignore
-            error = errors.SchemaError(note=f'field "{field.name}" already exists')
-            raise FrictionlessException(error)
+
+        # Deduplicate
+        number = 1
+        template = f"{field.name}%s"
+        while self.has_field(field.name):
+            field.name = template % number
+            number += 1
+
+        # Append
         field.schema = self
         if position is None:
             self.fields.append(field)

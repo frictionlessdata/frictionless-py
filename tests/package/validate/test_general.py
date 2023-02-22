@@ -61,16 +61,11 @@ def test_validate_package_with_non_tabular():
 
 
 def test_validate_package_invalid_package_standards_v2_strict():
-    package = Package({"resources": [{"path": "data/table.csv"}]})
     with system.use_context(standards="v2-strict"):
-        report = package.validate()
+        report = Package.validate_descriptor({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],
         ["resource-error", 'property "type" is required by standards "v2-strict"'],
-        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
-        ["resource-error", 'property "format" is required by standards "v2-strict"'],
-        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
-        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 

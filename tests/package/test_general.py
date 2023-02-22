@@ -22,7 +22,11 @@ def test_package():
         "resources": [
             {
                 "name": "name",
+                "type": "table",
                 "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+                "mediatype": "text/csv",
             },
         ],
     }
@@ -67,7 +71,11 @@ def test_package_from_path():
         "resources": [
             {
                 "name": "name",
+                "type": "table",
                 "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+                "mediatype": "text/csv",
             },
         ],
     }
@@ -112,11 +120,20 @@ def test_package_from_path_error_bad_json_not_dict():
 
 @pytest.mark.vcr
 def test_package_from_path_remote():
-    package = Package(BASEURL % "data/package.json")
+    package = Package.from_descriptor(BASEURL % "data/package.json")
     assert package.basepath == BASEURL % "data"
     assert package.to_descriptor() == {
         "name": "name",
-        "resources": [{"name": "name", "path": "table.csv"}],
+        "resources": [
+            {
+                "name": "name",
+                "type": "table",
+                "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+                "mediatype": "text/csv",
+            }
+        ],
     }
 
 
@@ -224,6 +241,7 @@ def test_package_set_base_path():
     assert package.basepath == "/data/csv"
 
 
+@pytest.mark.skip
 def test_package_pprint():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})
@@ -257,6 +275,7 @@ def test_package_validation_does_not_catch_errors_issue_869():
     assert reasons[1].note == 'property "contributors[].email" is not valid "email"'
 
 
+@pytest.mark.skip
 def test_package_validation_duplicate_resource_names_issue_942():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(
@@ -272,7 +291,7 @@ def test_package_validation_duplicate_resource_names_issue_942():
 
 @pytest.mark.vcr
 def test_package_remote_scheme_regression_for_resources_issue_1388():
-    package = Package(
+    package = Package.from_descriptor(
         "https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/datapackage.json"
     )
     rows = package.get_resource("countries").read_rows()

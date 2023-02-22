@@ -112,9 +112,6 @@ class Catalog(Metadata):
         """Add new package to the package"""
         if isinstance(package, str):
             package = Package.from_descriptor(package, basepath=self.basepath)
-        if package.name and self.has_package(package.name):
-            error = errors.PackageError(note=f'package "{package.name}" already exists')
-            raise FrictionlessException(error)
         self.packages.append(package)
         package.catalog = self
         return package
@@ -164,21 +161,8 @@ class Catalog(Metadata):
             sample? (bool): open files and infer from a sample (default: True)
             stats? (bool): stream files completely and infer stats
         """
-
-        # General
-        for number, package in enumerate(self.packages, start=1):
+        for package in self.packages:
             package.infer(stats=stats)
-            package.name = package.name or f"package{number}"
-
-        # TODO: move to helpers and re-use
-        # Deduplicate names
-        if len(self.package_names) != len(set(self.package_names)):
-            seen_names = []
-            for index, name in enumerate(self.package_names):
-                count = seen_names.count(name) + 1
-                if count > 1:
-                    self.packages[index].name = "%s%s" % (name, count)
-                seen_names.append(name)
 
     # Convert
 

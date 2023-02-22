@@ -105,4 +105,4 @@ def test_package_infer_duplicate_resource_names_issue_530():
     )
     package.infer()
     assert len(set(package.resource_names)) == 4
-    assert package.resource_names == ["chunk1", "chunk2", "chunk12", "chunk22"]
+    assert package.resource_names == ["chunk1", "chunk2", "chunk11", "chunk21"]

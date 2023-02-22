@@ -32,7 +32,7 @@ class Field(Metadata):
     List of supported constraints for a field.
     """
 
-    name: Optional[str] = None
+    name: str
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
