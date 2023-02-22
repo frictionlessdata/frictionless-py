@@ -18,7 +18,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IBuffer, IEncodingFunction
+    from ..interfaces import IBuffer, IEncodingFunction, IPathDetails
     from ..resource import Resource
 
 
@@ -182,6 +182,47 @@ class Detector(Metadata):
             for type, item in settings.ENTITY_TRAITS.items():
                 if set(item["props"]).intersection(source.keys()):
                     return type
+
+    def detect_path_details(
+        self,
+        path: Optional[str],  # TODO: make required in v6
+        *,
+        innerpath: Optional[str] = None,
+        extrapaths: Optional[List[str]] = None,
+    ) -> IPathDetails:
+        name = "memory"
+        scheme = ""
+        format = ""
+        mediatype = ""
+        compression = None
+
+        # Detect details
+        if path:
+            names = []
+            for part in [path] + (extrapaths or []):
+                name = os.path.splitext(os.path.basename(part))[0]
+                names.append(name)
+            name = os.path.commonprefix(names)
+            name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
+            name = name or "name"
+            scheme, format = helpers.parse_scheme_and_format(path)
+            if format in settings.COMPRESSION_FORMATS:
+                compression = format
+                path = path[: -len(format) - 1]
+                if innerpath:
+                    path = os.path.join(path, innerpath)
+                scheme, format = helpers.parse_scheme_and_format(path)
+                if format:
+                    name = os.path.splitext(name)[0]
+            mediatype = f"application/{format}"
+
+        return IPathDetails(
+            name=name,
+            scheme=scheme,
+            format=format,
+            mediatype=mediatype,
+            compression=compression,
+        )
 
     def detect_resource(self, resource: Resource) -> None:
         """Detect resource's metadata
