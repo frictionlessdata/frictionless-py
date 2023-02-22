@@ -235,7 +235,7 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
-        # Detect details
+        # Detect path details
         details = PathDetails(
             name=name,
             type=type,
@@ -259,6 +259,10 @@ class Resource(Metadata):
         self.compression = details.compression
         self.extrapaths = details.extrapaths or []
         self.innerpath = details.innerpath
+
+        # Detect metadata type
+        if self.path and not details.type:
+            self.type = self.detector.detect_metadata_type(self.normpath) or self.type
 
         # TODO: remove this defined/not-defined logic?
         # Define default state
@@ -303,7 +307,7 @@ class Resource(Metadata):
         # Source
         if source is not None:
             # Path/data
-            if Detector.detect_metadata_type(source, allow_loading=True) != "resource":
+            if Detector.detect_metadata_type(source) != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
                 return Resource(**options)
 

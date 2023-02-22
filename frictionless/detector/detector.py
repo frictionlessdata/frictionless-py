@@ -148,9 +148,7 @@ class Detector(Metadata):
     # Detect
 
     @staticmethod
-    def detect_metadata_type(
-        source: Any, *, allow_loading: bool = False
-    ) -> Optional[str]:
+    def detect_metadata_type(source: Any) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
 
         # Normalize
@@ -164,18 +162,17 @@ class Detector(Metadata):
             for type, item in settings.ENTITY_TRAITS.items():
                 if source.endswith(tuple(item["names"])):
                     return type
-            if allow_loading:
-                if source.endswith(("json", "yaml")):
-                    try:
-                        # We pass "type" here to prevent circular dependency
-                        res = platform.frictionless.Resource(path=source, type="file")
-                        buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
-                        parser = json.loads
-                        if source.endswith("yaml"):
-                            parser = platform.yaml.safe_load
-                        source = parser(buffer)
-                    except Exception:
-                        pass
+            if source.endswith(("json", "yaml")):
+                try:
+                    # We pass "type" here to prevent circular dependency
+                    res = platform.frictionless.Resource(path=source, type="file")
+                    buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
+                    parser = json.loads
+                    if source.endswith("yaml"):
+                        parser = platform.yaml.safe_load
+                    source = parser(buffer)
+                except Exception:
+                    pass
 
         # Mapping
         if isinstance(source, dict):
