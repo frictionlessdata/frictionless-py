@@ -25,7 +25,6 @@ class PandasPlugin(Plugin):
         if details.data is not None:
             if helpers.is_type(details.data, "DataFrame"):
                 details.type = "table"
-                details.scheme = ""
                 details.format = "pandas"
                 details.mediatype = "application/pandas"
         elif details.format == "pandas":

@@ -21,7 +21,6 @@ class InlinePlugin(Plugin):
                 types = (list, typing.Iterator, typing.Generator)
                 if callable(details.data) or isinstance(details.data, types):
                     details.type = "table"
-                    details.scheme = ""
                     details.format = "inline"
                     details.mediatype = "application/inline"
         elif details.format == "inline":

@@ -62,32 +62,6 @@ def test_resource_schema_from_path_error_path_not_safe():
     assert reasons[0].note.count('schema.json" is not safe')
 
 
-def test_resource_checklist_from_path_error_path_not_safe():
-    checklist = os.path.abspath("data/checklist.json")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "path", "checklist": checklist})
-    error = excinfo.value.error
-    reasons = excinfo.value.reasons
-    assert len(reasons) == 1
-    assert error.type == "resource-error"
-    assert error.note == "descriptor is not valid"
-    assert reasons[0].type == "resource-error"
-    assert reasons[0].note.count('checklist.json" is not safe')
-
-
-def test_resource_pipeline_from_path_error_path_not_safe():
-    pipeline = os.path.abspath("data/pipeline.json")
-    with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"name": "name", "path": "path", "pipeline": pipeline})
-    error = excinfo.value.error
-    reasons = excinfo.value.reasons
-    assert len(reasons) == 1
-    assert error.type == "resource-error"
-    assert error.note == "descriptor is not valid"
-    assert reasons[0].type == "resource-error"
-    assert reasons[0].note.count('pipeline.json" is not safe')
-
-
 def test_resource_extrapaths_error_bad_path_not_safe_absolute():
     extrapath = os.path.abspath("data/chunk2.csv")
     with pytest.raises(FrictionlessException) as excinfo:

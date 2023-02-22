@@ -1190,7 +1190,7 @@ class Resource(Metadata):
         # Required (standards/v2-strict)
         if system.standards == "v2-strict":
             type = descriptor.get("type")
-            names = ["name", "type", "scheme", "format", "encoding", "mediatype"]
+            names = ["name", "type"]
             if type == "table":
                 names.append("schema")
             for name in names:

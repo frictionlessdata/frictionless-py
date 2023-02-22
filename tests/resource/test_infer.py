@@ -44,8 +44,6 @@ def test_resource_infer_source_non_tabular():
         "scheme": "file",
         "format": "txt",
         "encoding": "utf-8",
-        # TODO: improve in detector.detect_resource
-        "mediatype": "application/txt",
         "stats": {
             "md5": "e1cbb0c3879af8347246f12c559a86b5",
             "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",

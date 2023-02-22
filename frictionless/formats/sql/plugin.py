@@ -31,7 +31,6 @@ class SqlPlugin(Plugin):
             for prefix in settings.SCHEME_PREFIXES:
                 if details.scheme.startswith(prefix):
                     details.type = "table"
-                    details.scheme = ""
                     details.format = "sql"
                     details.mediatype = "application/sql"
 

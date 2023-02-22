@@ -14,16 +14,11 @@ def test_resource_validate():
 
 
 def test_resource_validate_invalid_resource_standards_v2_strict():
-    resource = Resource({"path": "data/table.csv"})
     with system.use_context(standards="v2-strict"):
-        report = resource.validate()
+        report = Resource.validate_descriptor({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
         ["resource-error", 'property "name" is required by standards "v2-strict"'],
         ["resource-error", 'property "type" is required by standards "v2-strict"'],
-        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
-        ["resource-error", 'property "format" is required by standards "v2-strict"'],
-        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
-        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
     ]
 
 
