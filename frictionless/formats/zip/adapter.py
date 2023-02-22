@@ -22,14 +22,16 @@ from .control import ZipControl
 
 class ZipAdapter(Adapter):
     def __init__(self, source: str, *, control: Optional[ZipControl] = None):
-        self.control = control or ZipControl()
         self.source = source
+        self.control = control or ZipControl()
 
     # Read
 
     def read_package(self):
         innerpath = self.control.innerpath
-        with Resource(path=self.source, compression=None) as resource:
+        resource = Resource(path=self.source)
+        resource.compression = None
+        with resource.open(as_file=True) as resource:
             byte_stream = resource.byte_stream
             if resource.remote:
                 byte_stream = tempfile.TemporaryFile()
