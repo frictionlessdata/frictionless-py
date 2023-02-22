@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from typing_extensions import Required, TypedDict
 
 
@@ -11,6 +11,7 @@ IRow = Dict[str, Any]
 class IFileItem(TypedDict):
     path: str
     type: str
+    errorCount: Optional[int]
 
 
 class IFile(IFileItem, total=False):
@@ -22,6 +23,7 @@ class IRecordItem(TypedDict, total=False):
     type: Required[str]
     updated: Required[str]
     tableName: str
+    errorCount: Optional[int]
 
 
 class IRecord(IRecordItem):
