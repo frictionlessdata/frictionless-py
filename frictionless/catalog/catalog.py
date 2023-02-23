@@ -62,6 +62,10 @@ class Catalog(Metadata):
         # Software
         basepath: Optional[str] = None,
     ):
+        # Guaranteed by the create hook
+        assert source is None
+        assert control is None
+
         # Store state
         self.name = name
         self.title = title
@@ -72,10 +76,6 @@ class Catalog(Metadata):
         self.packages = []
         for package in packages:
             package = self.add_package(package)
-
-        # Handled by the create hook
-        assert source is None
-        assert control is None
 
     @classmethod
     def __create__(

@@ -55,7 +55,7 @@ class Resource(Metadata):
 
     type: ClassVar[str]
     """
-    Type of the field such as "boolean", "integer" etc.
+    Type of the resource
     """
 
     name: str
@@ -1083,9 +1083,10 @@ class Resource(Metadata):
             descriptor["extrapaths"] = path[1:]
 
         # Profile (standards/v1)
+        descriptor["type"] = "data"
         profile = descriptor.pop("profile", None)
         if profile == "data-resource":
-            descriptor["type"] = "file"
+            descriptor["type"] = "data"
         elif profile == "tabular-data-resource":
             descriptor["type"] = "table"
         elif profile:

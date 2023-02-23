@@ -14,6 +14,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from ..interfaces import IStandards, IOnerror
+    from ..package import Package
     from ..resource import Resource
     from ..checklist import Check
     from ..error import Error
@@ -49,6 +50,7 @@ class System:
         "select_Control",
         "select_Error",
         "select_Field",
+        "select_Package",
         "select_Resource",
         "select_Step",
     ]
@@ -314,6 +316,17 @@ class System:
                 return Class
         note = f'field type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
+
+    def select_Package(self, type: str) -> Type[Package]:
+        for func in self.methods["select_Package"].values():
+            Class = func(type)
+            if Class is not None:
+                return Class
+        for Class in vars(platform.frictionless_packages).values():
+            if getattr(Class, "type", None) == type:
+                return Class
+        note = f'package type "{type}" is not supported'
+        raise FrictionlessException(errors.PackageError(note=note))
 
     def select_Resource(self, type: str) -> Type[Resource]:
         for func in self.methods["select_Resource"].values():

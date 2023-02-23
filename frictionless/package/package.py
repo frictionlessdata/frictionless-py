@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from ..catalog import Catalog
 
 
-# TODO: think about package/resource/schema/etc extension mechanism (e.g. FiscalPackage)
 class Package(Metadata):
     """Package representation
 
@@ -42,16 +41,16 @@ class Package(Metadata):
     transform = methods.transform
     validate = methods.validate
 
+    type: ClassVar[str]
+    """
+    Type of the package
+    """
+
     name: Optional[str]
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “.”, “_” or “-” characters.
-    """
-
-    type: str = "dataset"
-    """
-    Type of the data e.g. "dataset"
     """
 
     title: Optional[str]
@@ -161,8 +160,12 @@ class Package(Metadata):
         dialect: Optional[Dialect] = None,
         catalog: Optional[Catalog] = None,
     ):
+        # Guaranteed by the create hook
+        assert source is None
+        assert control is None
+
         # Store state
-        self.name = name
+        self.name = name or "package"
         self.title = title
         self.description = description
         self.profiles = profiles.copy()
@@ -186,18 +189,9 @@ class Package(Metadata):
             if dialect:
                 resource.dialect = dialect
 
-        # Deduplicate resource
-        if len(self.resource_names) != len(set(self.resource_names)):
-            seen_names = []
-            for index, name in enumerate(self.resource_names):
-                count = seen_names.count(name) + 1
-                if count > 1:
-                    self.resources[index].name = "%s%s" % (name, count)
-                seen_names.append(name)
-
-        # Handled by the create hook
-        assert source is None
-        assert control is None
+        # TODO: remove this defined/not-defined logic?
+        # Define default state
+        self.add_defined("name")
 
     @classmethod
     def __create__(
@@ -226,7 +220,7 @@ class Package(Metadata):
                 for name in ["datapackage.json", "datapackage.yaml"]:
                     path = os.path.join(source, name)  # type: ignore
                     if os.path.isfile(path):
-                        return Package.from_descriptor(path)
+                        return cls.from_descriptor(path)
 
             # Expandable
             if helpers.is_expandable_source(source):
@@ -234,10 +228,15 @@ class Package(Metadata):
                 basepath = options.get("basepath")
                 for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
                     options["resources"].append(Resource(path=path))
-                return Package.from_options(**options)
+                return cls.from_options(**options)
 
             # Descriptor
-            return Package.from_descriptor(source, **options)  # type: ignore
+            return cls.from_descriptor(source, **options)  # type: ignore
+
+        # Routing
+        if cls is Package:
+            Class = system.select_Package("data")
+            return Class(**options)
 
     @property
     def resource_names(self) -> List[str]:
@@ -423,6 +422,7 @@ class Package(Metadata):
         "required": ["resources"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "homepage": {"type": "string"},
@@ -478,6 +478,8 @@ class Package(Metadata):
 
     @classmethod
     def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Package(type)
         if property == "resources":
             return Resource
 
@@ -486,6 +488,7 @@ class Package(Metadata):
         super().metadata_transform(descriptor)
 
         # Profile (standards/v1)
+        descriptor["type"] = "data"
         profile = descriptor.pop("profile", None)
         if profile:
             if profile not in ["data-package", "tabular-data-package"]:
@@ -509,6 +512,13 @@ class Package(Metadata):
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.PackageError(note=f'path "{item}" is not safe')
                         return
+
+        # Required (standards/v2-strict)
+        if system.standards == "v2-strict":
+            for name in ["name", "type"]:
+                if name not in descriptor:
+                    note = f'property "{name}" is required by standards "v2-strict"'
+                    yield errors.PackageError(note=note)
 
         # Resoruce Names
         resource_names = []

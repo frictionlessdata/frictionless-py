@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
+    from ..package import Package
     from ..resource import Resource
     from ..checklist import Check
     from ..dialect import Control
@@ -60,7 +61,7 @@ class Plugin:
         """
         pass
 
-    def detect_path_details(self, details: PathDetails) -> None:
+    def detect_resource(self, resource: Resource) -> None:
         """Hook into resource detection
 
         Parameters:
@@ -96,6 +97,9 @@ class Plugin:
         pass
 
     def select_Field(self, type: str) -> Optional[Type[Field]]:
+        pass
+
+    def select_Package(self, type: str) -> Optional[Type[Package]]:
         pass
 
     def select_Resource(self, type: str) -> Optional[Type[Resource]]:
