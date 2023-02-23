@@ -252,7 +252,7 @@ class System:
         for func in self.methods["detect_resource"].values():
             func(resource)
 
-    def detect_resource_type(self, resource: Resource) -> str:
+    def detect_resource_type(self, resource: Resource) -> Optional[str]:
         """Hook into resource detection
 
         Parameters:
@@ -263,7 +263,6 @@ class System:
             type = func(resource)
             if type:
                 return type
-        return "data"
 
     def detect_field_candidates(self) -> List[dict]:
         """Create candidates

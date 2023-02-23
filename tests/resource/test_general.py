@@ -100,7 +100,9 @@ def test_resource_from_path_remote():
 
 @pytest.mark.vcr
 def test_resource_from_url_standards_v0():
-    resource = Resource.from_descriptor({"url": BASEURL % "data/table.csv"})
+    resource = Resource.from_descriptor(
+        {"name": "name", "url": BASEURL % "data/table.csv"}
+    )
     assert resource.path == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -122,7 +124,7 @@ def test_resource_source_non_tabular():
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
-        assert resource.type == "data"
+        assert resource.type is None
         assert resource.basepath is None
         assert resource.memory is False
         assert resource.multipart is False
@@ -142,7 +144,7 @@ def test_resource_source_non_tabular_remote():
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
-        assert resource.type == "data"
+        assert resource.type is None
         assert resource.memory is False
         assert resource.multipart is False
         assert resource.basepath is None
@@ -168,7 +170,7 @@ def test_resource_source_non_tabular_error_bad_path():
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 def test_resource_source_path():
     path = "data/table.csv"
-    resource = Resource({"path": path})
+    resource = Resource({"name": "name", "path": path})
     resource.infer()
     assert resource.path == path
     assert resource.data is None
@@ -246,7 +248,7 @@ def test_resource_source_path_error_bad_path():
 
 def test_resource_source_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    with Resource({"data": data}) as resource:
+    with Resource({"name": "name", "data": data}) as resource:
         assert resource.path is None
         assert resource.data == data
         assert resource.memory is True
@@ -270,7 +272,7 @@ def test_resource_source_data():
 
 def test_resource_source_no_path_and_no_data():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource.from_descriptor({})
+        Resource.from_descriptor({"name": "name"})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "resource-error"
@@ -282,7 +284,7 @@ def test_resource_source_no_path_and_no_data():
 def test_resource_source_both_path_and_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"data": data, "path": "path"})
+        Resource({"name": "name", "data": data, "path": "path"})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "resource-error"
@@ -318,7 +320,7 @@ def test_resource_standard_specs_properties(create_descriptor):
 
 
 def test_resource_official_hash_bytes_rows():
-    resource = Resource({"path": "path", "hash": "hash", "bytes": 1})
+    resource = Resource({"name": "name", "path": "path", "hash": "hash", "bytes": 1})
     assert resource.to_descriptor()["stats"] == {
         "md5": "hash",
         "bytes": 1,
@@ -326,7 +328,9 @@ def test_resource_official_hash_bytes_rows():
 
 
 def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
-    resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1})
+    resource = Resource(
+        {"name": "name", "path": "path", "hash": "sha256:hash", "bytes": 1}
+    )
     assert resource.to_descriptor()["stats"] == {
         "sha256": "hash",
         "bytes": 1,

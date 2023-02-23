@@ -53,7 +53,7 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
-    type: ClassVar[str]
+    type: ClassVar[Union[str, None]]
     """
     Type of the resource
     """
@@ -167,6 +167,49 @@ class Resource(Metadata):
     For more information, please check the Package documentation.
     """
 
+    @classmethod
+    def __create__(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
+    ):
+        # Normalize
+        if isinstance(source, Path):
+            source = str(source)
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
+
+        # Control
+        if control is not None:
+            dialect = options.pop("dialect", None)
+            if dialect is None:
+                dialect = control.to_dialect()
+            elif control not in dialect.controls:
+                dialect.add_control(control)
+            options["dialect"] = dialect
+            if source is None:
+                return cls(**options)
+
+        # Source
+        if source is not None:
+            # Path/data
+            if Detector.detect_metadata_type(source) != "resource":
+                options["path" if isinstance(source, str) else "data"] = source
+                return cls(**options)
+
+            # Descriptor
+            return cls.from_descriptor(source, **options)
+
+        # Routing
+        if cls is Resource:
+            resource = platform.frictionless_resources.DefaultResource(**options)
+            type = system.detect_resource_type(resource)
+            if type:
+                resource = system.select_Resource(type)(**options)
+            return resource
+
     def __init__(
         self,
         source: Optional[Any] = None,
@@ -197,9 +240,9 @@ class Resource(Metadata):
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
     ):
-        # Guaranteed by the create hook
-        assert source is None
-        assert control is None
+        # Guaranteed by create hook
+        assert not source
+        assert not control
 
         # Store state
         self.name = name or ""
@@ -250,44 +293,6 @@ class Resource(Metadata):
         self.add_defined("mediatype")
         self.add_defined("dialect")
         self.add_defined("stats")
-
-    @classmethod
-    def __create__(
-        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
-    ):
-        # Normalize
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
-
-        # Control
-        if control is not None:
-            dialect = options.pop("dialect", None)
-            if dialect is None:
-                dialect = control.to_dialect()
-            elif control not in dialect.controls:
-                dialect.add_control(control)
-            options["dialect"] = dialect
-            if source is None:
-                return cls(**options)
-
-        # Source
-        if source is not None:
-            # Path/data
-            if Detector.detect_metadata_type(source) != "resource":
-                options["path" if isinstance(source, str) else "data"] = source
-                return cls(**options)
-
-            # Descriptor
-            return cls.from_descriptor(source, **options)
-
-        # Routing
-        if cls is Resource:
-            resource = RoutingResource(**options)
-            type = system.detect_resource_type(resource)
-            Class = system.select_Resource(type)
-            return Class(**options)
 
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
@@ -1010,6 +1015,7 @@ class Resource(Metadata):
     metadata_Error = errors.ResourceError
     metadata_profile = {
         "type": "object",
+        "required": ["name"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
@@ -1083,11 +1089,8 @@ class Resource(Metadata):
             descriptor["extrapaths"] = path[1:]
 
         # Profile (standards/v1)
-        descriptor["type"] = "data"
         profile = descriptor.pop("profile", None)
-        if profile == "data-resource":
-            descriptor["type"] = "data"
-        elif profile == "tabular-data-resource":
+        if profile == "tabular-data-resource":
             descriptor["type"] = "table"
         elif profile:
             descriptor.setdefault("profiles", [])
@@ -1162,13 +1165,6 @@ class Resource(Metadata):
         if path is None and data is None:
             note = 'one of the properties "path" or "data" is required'
             yield errors.ResourceError(note=note)
-
-        # Required (standards/v2-strict)
-        if system.standards == "v2-strict":
-            for name in ["name", "type"]:
-                if name not in descriptor:
-                    note = f'property "{name}" is required by standards "v2-strict"'
-                    yield errors.ResourceError(note=note)
 
         # Path/Data
         if path is not None and data is not None:
@@ -1258,7 +1254,3 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
-
-
-class RoutingResource(Resource):
-    pass

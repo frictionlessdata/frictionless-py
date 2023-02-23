@@ -25,7 +25,6 @@ class IBaseControl(TypedDict, total=False):
 
 
 class ICsvControl(IBaseControl, total=False):
-    type: Required[Literal["csv"]]
     delimiter: str
     lineTerminator: str
     quoteChar: str
@@ -36,14 +35,12 @@ class ICsvControl(IBaseControl, total=False):
 
 
 class IJsonControl(IBaseControl, total=False):
-    type: Required[Literal["json"]]
     keys: List[str]
     keyed: bool
     property: str
 
 
 class IExcelControl(IBaseControl, total=False):
-    type: Required[Literal["excel"]]
     sheet: Union[str, int]
     fillMergedCells: bool
     preserveFormatting: bool

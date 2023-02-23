@@ -164,8 +164,8 @@ class Detector(Metadata):
                     return type
             if source.endswith(("json", "yaml")):
                 try:
-                    # We pass "type" here to prevent circular dependency
-                    res = platform.frictionless_resources.DataResource(path=source)
+                    # We use a typed resource to prevent circular dependency
+                    res = platform.frictionless_resources.DefaultResource(path=source)
                     buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
                     parser = json.loads
                     if source.endswith("yaml"):

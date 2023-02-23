@@ -5,8 +5,8 @@ from .resource import IResource
 
 
 class IPackage(TypedDict, total=False):
-    name: Required[str]
-    type: Required[str]
+    name: str
+    type: str
     title: str
     description: str
     resources: Required[List[Union[IResource, str]]]

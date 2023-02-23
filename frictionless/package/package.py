@@ -41,7 +41,7 @@ class Package(Metadata):
     transform = methods.transform
     validate = methods.validate
 
-    type: ClassVar[str]
+    type: ClassVar[Union[str, None]]
     """
     Type of the package
     """
@@ -135,67 +135,13 @@ class Package(Metadata):
     is not part of any catalog, then it is set to None.
     """
 
-    def __init__(
-        self,
-        source: Optional[Any] = None,
-        control: Optional[Control] = None,
-        *,
-        # Standard
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        homepage: Optional[str] = None,
-        profiles: List[Union[IProfile, str]] = [],
-        licenses: List[dict] = [],
-        sources: List[dict] = [],
-        contributors: List[dict] = [],
-        keywords: List[str] = [],
-        image: Optional[str] = None,
-        version: Optional[str] = None,
-        created: Optional[str] = None,
-        resources: List[Union[Resource, str]] = [],
-        # Software
-        basepath: Optional[str] = None,
-        detector: Optional[Detector] = None,
-        dialect: Optional[Dialect] = None,
-        catalog: Optional[Catalog] = None,
-    ):
-        # Guaranteed by the create hook
-        assert source is None
-        assert control is None
-
-        # Store state
-        self.name = name or "package"
-        self.title = title
-        self.description = description
-        self.profiles = profiles.copy()
-        self.licenses = licenses.copy()
-        self.sources = sources.copy()
-        self.homepage = homepage
-        self.contributors = contributors.copy()
-        self.keywords = keywords.copy()
-        self.image = image
-        self.version = version
-        self.created = created
-        self.basepath = basepath
-        self.catalog = catalog
-
-        # Add resources
-        self.resources = []
-        for resource in resources:
-            resource = self.add_resource(resource)
-            if detector:
-                resource.detector = detector
-            if dialect:
-                resource.dialect = dialect
-
-        # TODO: remove this defined/not-defined logic?
-        # Define default state
-        self.add_defined("name")
-
     @classmethod
     def __create__(
-        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
+        cls,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
     ):
         # Normalize
         if isinstance(source, Path):
@@ -233,10 +179,59 @@ class Package(Metadata):
             # Descriptor
             return cls.from_descriptor(source, **options)  # type: ignore
 
-        # Routing
-        if cls is Package:
-            Class = system.select_Package("data")
-            return Class(**options)
+    def __init__(
+        self,
+        source: Optional[Any] = None,
+        control: Optional[Control] = None,
+        *,
+        # Standard
+        name: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        homepage: Optional[str] = None,
+        profiles: List[Union[IProfile, str]] = [],
+        licenses: List[dict] = [],
+        sources: List[dict] = [],
+        contributors: List[dict] = [],
+        keywords: List[str] = [],
+        image: Optional[str] = None,
+        version: Optional[str] = None,
+        created: Optional[str] = None,
+        resources: List[Union[Resource, str]] = [],
+        # Software
+        basepath: Optional[str] = None,
+        detector: Optional[Detector] = None,
+        dialect: Optional[Dialect] = None,
+        catalog: Optional[Catalog] = None,
+    ):
+        # Guaranteed by create hook
+        assert source is None
+        assert control is None
+
+        # Store state
+        self.name = name
+        self.title = title
+        self.description = description
+        self.profiles = profiles.copy()
+        self.licenses = licenses.copy()
+        self.sources = sources.copy()
+        self.homepage = homepage
+        self.contributors = contributors.copy()
+        self.keywords = keywords.copy()
+        self.image = image
+        self.version = version
+        self.created = created
+        self.basepath = basepath
+        self.catalog = catalog
+
+        # Add resources
+        self.resources = []
+        for resource in resources:
+            resource = self.add_resource(resource)
+            if detector:
+                resource.detector = detector
+            if dialect:
+                resource.dialect = dialect
 
     @property
     def resource_names(self) -> List[str]:
@@ -488,7 +483,6 @@ class Package(Metadata):
         super().metadata_transform(descriptor)
 
         # Profile (standards/v1)
-        descriptor["type"] = "data"
         profile = descriptor.pop("profile", None)
         if profile:
             if profile not in ["data-package", "tabular-data-package"]:
@@ -512,13 +506,6 @@ class Package(Metadata):
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.PackageError(note=f'path "{item}" is not safe')
                         return
-
-        # Required (standards/v2-strict)
-        if system.standards == "v2-strict":
-            for name in ["name", "type"]:
-                if name not in descriptor:
-                    note = f'property "{name}" is required by standards "v2-strict"'
-                    yield errors.PackageError(note=note)
 
         # Resoruce Names
         resource_names = []

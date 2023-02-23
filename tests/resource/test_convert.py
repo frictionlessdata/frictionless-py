@@ -51,6 +51,7 @@ def test_resource_from_descriptor_layout_framework_v4():
     with pytest.warns(UserWarning):
         resource = Resource.from_descriptor(
             {
+                "name": "table",
                 "path": "data/table.csv",
                 "layout": {"header": False},
             }

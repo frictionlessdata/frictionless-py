@@ -7,7 +7,7 @@ from .schema import ISchema
 
 class IResource(TypedDict, total=False):
     name: Required[str]
-    #  type: Required[str]
+    #  type: str
     title: str
     description: str
     path: str
@@ -19,10 +19,6 @@ class IResource(TypedDict, total=False):
     innerpath: str
     encoding: str
     dialect: IDialect
-
-
-class IDataResource(IResource, total=False):
-    type: Required[Literal["data"]]
 
 
 class IJsonResource(IResource, total=False):
