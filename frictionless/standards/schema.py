@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, List, Union, Literal
+from typing import Dict, List, Literal
 from typing_extensions import Required, TypedDict
 
 
@@ -13,96 +13,78 @@ class ISchema(TypedDict, total=False):
     foreign_keys: List[IForeignKey]
 
 
-class IBaseField(TypedDict, total=False):
+class IField(TypedDict, total=False):
     name: Required[str]
+    #  type: Required[str]
     title: str
     description: str
     format: str
     missingValues: List[str]
 
 
-class IAnyField(IBaseField, total=False):
+class IAnyField(IField, total=False):
     type: Required[Literal["any"]]
 
 
-class IArrayField(IBaseField, total=False):
+class IArrayField(IField, total=False):
     type: Required[Literal["array"]]
     arrayItem: Dict
 
 
-class IBooleanField(IBaseField, total=False):
+class IBooleanField(IField, total=False):
     type: Required[Literal["boolean"]]
     trueValues: List[str]
     falseValues: List[str]
 
 
-class IDateField(IBaseField, total=False):
+class IDateField(IField, total=False):
     type: Required[Literal["date"]]
 
 
-class IDatetimeField(IBaseField, total=False):
+class IDatetimeField(IField, total=False):
     type: Required[Literal["datetime"]]
 
 
-class IDurationField(IBaseField, total=False):
+class IDurationField(IField, total=False):
     type: Required[Literal["duration"]]
 
 
-class IGeojsonField(IBaseField, total=False):
+class IGeojsonField(IField, total=False):
     type: Required[Literal["geojson"]]
 
 
-class IGeopointField(IBaseField, total=False):
+class IGeopointField(IField, total=False):
     type: Required[Literal["geopoint"]]
 
 
-class IIntegerField(IBaseField, total=False):
+class IIntegerField(IField, total=False):
     type: Required[Literal["integer"]]
     bareNumber: bool
 
 
-class INumberField(IBaseField, total=False):
+class INumberField(IField, total=False):
     type: Required[Literal["number"]]
     bareNumber: bool
 
 
-class IObjectField(IBaseField, total=False):
+class IObjectField(IField, total=False):
     type: Required[Literal["object"]]
 
 
-class IStringField(IBaseField, total=False):
+class IStringField(IField, total=False):
     type: Required[Literal["string"]]
 
 
-class ITimeField(IBaseField, total=False):
+class ITimeField(IField, total=False):
     type: Required[Literal["time"]]
 
 
-class IYearField(IBaseField, total=False):
+class IYearField(IField, total=False):
     type: Required[Literal["year"]]
 
 
-class IYearmonthField(IBaseField, total=False):
+class IYearmonthField(IField, total=False):
     type: Required[Literal["yearmonth"]]
-
-
-IField = Union[
-    IAnyField,
-    IArrayField,
-    IBooleanField,
-    IDateField,
-    IDatetimeField,
-    IDurationField,
-    IGeojsonField,
-    IGeopointField,
-    IIntegerField,
-    INumberField,
-    IObjectField,
-    IStringField,
-    ITimeField,
-    IYearField,
-    IYearmonthField,
-]
 
 
 class IForeignKey(TypedDict, total=False):

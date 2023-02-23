@@ -49,10 +49,3 @@ class IExcelControl(IBaseControl, total=False):
     preserveFormatting: bool
     adjustFloatingPointError: bool
     stringified: bool
-
-
-IControl = Union[
-    ICsvControl,
-    IJsonControl,
-    IExcelControl,
-]
