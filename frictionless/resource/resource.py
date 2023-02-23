@@ -270,17 +270,17 @@ class Resource(Metadata):
                 dialect.add_control(control)
             options["dialect"] = dialect
             if source is None:
-                return Resource(**options)
+                return cls(**options)
 
         # Source
         if source is not None:
             # Path/data
             if Detector.detect_metadata_type(source) != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
-                return Resource(**options)
+                return cls(**options)
 
             # Descriptor
-            return Resource.from_descriptor(source, **options)
+            return cls.from_descriptor(source, **options)
 
         # Routing
         if cls is Resource:

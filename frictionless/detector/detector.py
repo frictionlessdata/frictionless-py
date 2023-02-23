@@ -159,7 +159,7 @@ class Detector(Metadata):
 
         # String
         if isinstance(source, str):
-            for type, item in settings.ENTITY_TRAITS.items():
+            for type, item in settings.METADATA_TRAITS.items():
                 if source.endswith(tuple(item["names"])):
                     return type
             if source.endswith(("json", "yaml")):
@@ -176,7 +176,7 @@ class Detector(Metadata):
 
         # Mapping
         if isinstance(source, dict):
-            for type, item in settings.ENTITY_TRAITS.items():
+            for type, item in settings.METADATA_TRAITS.items():
                 if set(item["props"]).intersection(source.keys()):
                     return type
 

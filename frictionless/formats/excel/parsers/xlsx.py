@@ -67,7 +67,6 @@ class XlsxParser(Parser):
             return loader.open()
 
     def read_cell_stream_create(self):
-        assert self.resource.normpath
         control = ExcelControl.from_dialect(self.resource.dialect)
 
         # Get book
@@ -92,9 +91,7 @@ class XlsxParser(Parser):
                 sheet = book.worksheets[control.sheet - 1]
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(
-                note=note % (self.resource.normpath, control.sheet)
-            )
+            error = errors.FormatError(note=note % (self.resource.place, control.sheet))
             raise FrictionlessException(error)
 
         # Fill merged cells
@@ -124,7 +121,7 @@ class XlsxParser(Parser):
         # Calculate stats
         # TODO: remove when the proper implementation is in-place:
         # https://github.com/frictionlessdata/frictionless-py/issues/438
-        if self.resource.scheme == "file":
+        if self.resource.normpath and self.resource.scheme == "file":
             stat = os.stat(self.resource.normpath)
             self.resource.stats.bytes = stat.st_size
             md5 = hashlib.new("md5")

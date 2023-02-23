@@ -1,4 +1,4 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Resource, Pipeline, steps, resources
 
 
 # General
@@ -18,7 +18,7 @@ def test_step_table_write(tmpdir):
     source.transform(pipeline)
 
     # Read
-    resource = Resource(path=path, type="table")
+    resource = resources.TableResource(path=path)
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

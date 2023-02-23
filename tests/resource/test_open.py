@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Dialect, Detector, FrictionlessException
+from frictionless import Resource, Dialect, Detector, FrictionlessException, resources
 
 
 # General
@@ -172,7 +172,7 @@ def test_resource_open_without_headers():
 
 
 def test_resource_open_source_error_data():
-    resource = Resource(b"[1,2]", type="table", format="json")
+    resource = resources.TableResource(b"[1,2]", format="json")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error

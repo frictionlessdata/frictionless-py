@@ -1,6 +1,6 @@
 import sys
 import pytest
-from frictionless import Resource, platform
+from frictionless import Resource, platform, resources
 
 
 # General
@@ -28,7 +28,7 @@ def test_resource_read_text():
 
 
 def test_resource_read_data():
-    resource = Resource(path="data/table.json", type="table")
+    resource = resources.TableResource(path="data/table.json")
     assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
@@ -37,7 +37,7 @@ def test_resource_read_data():
 
 
 def test_resource_read_cells():
-    resource = Resource(path="data/table.json", type="table")
+    resource = resources.TableResource(path="data/table.json")
     assert resource.read_cells() == [
         ["id", "name"],
         [1, "english"],
@@ -46,7 +46,7 @@ def test_resource_read_cells():
 
 
 def test_resource_read_rows():
-    resource = Resource(path="data/table.json", type="table")
+    resource = resources.TableResource(path="data/table.json")
     rows = resource.read_rows()
     assert rows == [
         {"id": 1, "name": "english"},

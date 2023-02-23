@@ -6,9 +6,6 @@ from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Parser
 
-if TYPE_CHECKING:
-    from pandas import DataFrame
-
 
 class PandasParser(Parser):
     """Pandas parser implementation."""
@@ -29,9 +26,9 @@ class PandasParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
-        assert isinstance(self.resource.data, DataFrame)
         np = platform.numpy
         pd = platform.pandas
+        assert isinstance(self.resource.data, pd.DataFrame)
         dataframe = self.resource.data
 
         # Schema

@@ -12,7 +12,7 @@ class MarkdownMapper(Mapper):
     """Markdown mapper"""
 
     def write_metadata(self, metadata: Metadata, *, table: bool = False):
-        filename = metadata.__class__.__name__.lower()
+        filename = metadata.metadata_type
         template = f"{filename}-table.md" if table is True else f"{filename}.md"
         descriptor = metadata.to_descriptor()
         text = render_markdown(f"{template}", {filename: descriptor}).strip()

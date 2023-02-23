@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
-    from ..records import PathDetails
     from ..resource import Resource
     from ..checklist import Check
     from ..dialect import Control

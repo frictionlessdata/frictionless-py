@@ -90,7 +90,7 @@ DEFAULT_FIELD_CANDIDATES = [
 
 # Entities
 
-ENTITY_TRAITS = {
+METADATA_TRAITS = {
     "catalog": {
         "names": ["catalog.json", "catalog.yaml"],
         "props": ["packages"],
@@ -127,10 +127,6 @@ ENTITY_TRAITS = {
         "names": ["inquiry.json", "inquiry.yaml"],
         "props": ["tasks"],
     },
-    "detector": {
-        "names": ["detector.json", "detector.yaml"],
-        "props": ["bufferSize", "sampleSize"],
-    },
     "chart": {
         "names": ["chart.json", "chart.yaml"],
         "props": ["chart"],
@@ -138,9 +134,5 @@ ENTITY_TRAITS = {
     "view": {
         "names": ["view.json", "view.yaml"],
         "props": ["view"],
-    },
-    "link": {
-        "names": ["link.json", "link.yaml"],
-        "props": ["link"],
     },
 }

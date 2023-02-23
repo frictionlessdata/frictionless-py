@@ -1,13 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 from ...system import Plugin
 from ...resource import Resource
 from .adapter import OdsAdapter
 from .control import OdsControl
 from .parser import OdsParser
-
-if TYPE_CHECKING:
-    from ...resource import Resource
 
 
 class OdsPlugin(Plugin):
