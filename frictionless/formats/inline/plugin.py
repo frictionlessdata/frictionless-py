@@ -1,9 +1,12 @@
 from __future__ import annotations
 import typing
-from ...records import PathDetails
+from typing import TYPE_CHECKING
 from ...system import Plugin
 from .control import InlineControl
 from .parser import InlineParser
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class InlinePlugin(Plugin):
@@ -15,16 +18,19 @@ class InlinePlugin(Plugin):
         if resource.format == "inline":
             return InlineParser(resource)
 
-    def detect_path_details(self, details: PathDetails):
-        if details.data is not None:
-            if not hasattr(details.data, "read"):
+    def detect_resource(self, resource: Resource):
+        if resource.data is not None:
+            if not hasattr(resource.data, "read"):
                 types = (list, typing.Iterator, typing.Generator)
-                if callable(details.data) or isinstance(details.data, types):
-                    details.type = "table"
-                    details.format = "inline"
-                    details.mediatype = "application/inline"
-        elif details.format == "inline":
-            details.data = []
+                if callable(resource.data) or isinstance(resource.data, types):
+                    resource.format = "inline"
+                    resource.mediatype = "application/inline"
+        elif resource.format == "inline":
+            resource.data = []
+
+    def detect_resource_type(self, resource: Resource):
+        if resource.format == "inline":
+            return "table"
 
     def select_Control(self, type):
         if type == "inline":

@@ -1,8 +1,11 @@
 from __future__ import annotations
-from ...records import PathDetails
+from typing import TYPE_CHECKING
 from ...system import Plugin
 from .control import MultipartControl
 from .loader import MultipartLoader
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class MultipartPlugin(Plugin):
@@ -14,9 +17,9 @@ class MultipartPlugin(Plugin):
         if resource.scheme == "multipart":
             return MultipartLoader(resource)
 
-    def detect_path_details(self, details: PathDetails):
-        if details.extrapaths:
-            details.scheme = "multipart"
+    def detect_resource(self, resource: Resource):
+        if resource.extrapaths:
+            resource.scheme = "multipart"
 
     def select_Control(self, type):
         if type == "multipart":

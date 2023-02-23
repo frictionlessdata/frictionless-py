@@ -70,6 +70,15 @@ class Plugin:
         """
         pass
 
+    def detect_resource_type(self, resource: Resource) -> Optional[str]:
+        """Hook into resource detection
+
+        Parameters:
+            resource (Resource): resource
+
+        """
+        pass
+
     def detect_field_candidates(self, candidates: List[dict]) -> None:
         """Detect field candidates
 
@@ -88,6 +97,9 @@ class Plugin:
         pass
 
     def select_Field(self, type: str) -> Optional[Type[Field]]:
+        pass
+
+    def select_Resource(self, type: str) -> Optional[Type[Resource]]:
         pass
 
     def select_Step(self, type: str) -> Optional[Type[Step]]:

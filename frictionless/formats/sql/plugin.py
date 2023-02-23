@@ -1,12 +1,15 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
-from ...records import PathDetails
 from ...platform import platform
 from ...system import Plugin
 from .control import SqlControl
 from .parser import SqlParser
 from .adapter import SqlAdapter
 from . import settings
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class SqlPlugin(Plugin):
@@ -26,13 +29,16 @@ class SqlPlugin(Plugin):
         if resource.format == "sql":
             return SqlParser(resource)
 
-    def detect_path_details(self, details: PathDetails):
-        if details.scheme:
+    def detect_resource(self, resource: Resource):
+        if resource.scheme:
             for prefix in settings.SCHEME_PREFIXES:
-                if details.scheme.startswith(prefix):
-                    details.type = "table"
-                    details.format = "sql"
-                    details.mediatype = "application/sql"
+                if resource.scheme.startswith(prefix):
+                    resource.format = "sql"
+                    resource.mediatype = "application/sql"
+
+    def detect_resource_type(self, resource: Resource):
+        if resource.format == " sql":
+            return "table"
 
     def select_Control(self, type):
         if type == "sql":

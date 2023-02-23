@@ -1,7 +1,6 @@
 from __future__ import annotations
 from ...system import Plugin
 from ...resource import Resource
-from ...records import PathDetails
 from .adapter import ExcelAdapter
 from .control import ExcelControl
 from .parsers import XlsxParser, XlsParser
@@ -25,10 +24,13 @@ class ExcelPlugin(Plugin):
         elif resource.format == "xls":
             return XlsParser(resource)
 
-    def detect_path_details(self, details: PathDetails):
-        if details.format in ["xlsx", "xls"]:
-            details.type = "table"
-            details.mediatype = "application/vnd.ms-excel"
+    def detect_resource(self, resource: Resource):
+        if resource.format in ["xlsx", "xls"]:
+            resource.mediatype = "application/vnd.ms-excel"
+
+    def detect_resource_type(self, resource: Resource):
+        if resource.format in ["xlsx", "xls"]:
+            return "table"
 
     def select_Control(self, type):
         if type == "excel":

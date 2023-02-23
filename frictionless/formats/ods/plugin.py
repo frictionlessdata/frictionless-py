@@ -1,10 +1,13 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from ...system import Plugin
 from ...resource import Resource
-from ...records import PathDetails
 from .adapter import OdsAdapter
 from .control import OdsControl
 from .parser import OdsParser
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class OdsPlugin(Plugin):
@@ -23,10 +26,13 @@ class OdsPlugin(Plugin):
         if resource.format == "ods":
             return OdsParser(resource)
 
-    def detect_path_details(self, details: PathDetails):
-        if details.format == "ods":
-            details.type = "table"
-            details.mediatype = "application/vnd.oasis.opendocument.spreadsheet"
+    def detect_resource(self, resource: Resource):
+        if resource.format == "ods":
+            resource.mediatype = "application/vnd.oasis.opendocument.spreadsheet"
+
+    def detect_resource_type(self, resource: Resource):
+        if resource.format == "ods":
+            return "table"
 
     def select_Control(self, type):
         if type == "ods":

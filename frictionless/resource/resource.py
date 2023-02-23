@@ -3,11 +3,10 @@ import json
 import warnings
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, Union, List, Any
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
-from ..records import PathDetails
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
@@ -54,15 +53,15 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
+    type: ClassVar[str]
+    """
+    Type of the field such as "boolean", "integer" etc.
+    """
+
     name: str
     """
     Resource name according to the specs.
     It should be a slugified name of the resource.
-    """
-
-    type: str
-    """
-    Type of the data e.g. "table"
     """
 
     title: Optional[str]
@@ -175,7 +174,6 @@ class Resource(Metadata):
         *,
         # Standard
         name: Optional[str] = None,
-        type: Optional[str] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
         homepage: Optional[str] = None,
@@ -199,7 +197,12 @@ class Resource(Metadata):
         detector: Optional[Detector] = None,
         package: Optional[Package] = None,
     ):
+        # Guaranteed by the create hook
+        assert source is None
+        assert control is None
+
         # Store state
+        self.name = name or ""
         self.title = title
         self.description = description
         self.homepage = homepage
@@ -208,6 +211,12 @@ class Resource(Metadata):
         self.sources = sources.copy()
         self.path = path
         self.data = data
+        self.scheme = scheme
+        self.format = format
+        self.mediatype = mediatype
+        self.compression = compression
+        self.extrapaths = extrapaths or []
+        self.innerpath = innerpath
         self.encoding = encoding
         self.basepath = basepath
         self.package = package
@@ -229,53 +238,18 @@ class Resource(Metadata):
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
 
-        # Detect path details
-        details = PathDetails(
-            name=name,
-            type=type,
-            path=path,
-            data=data,
-            scheme=scheme,
-            format=format,
-            mediatype=mediatype,
-            compression=compression,
-            extrapaths=extrapaths,
-            innerpath=innerpath,
-        )
-        details = self.detector.detect_path_details(details)
-        details = system.detect_path_details(details)
-        self.name = details.name or "name"
-        self.type = details.type or "file"
-        self.data = details.data
-        self.scheme = details.scheme
-        self.format = details.format
-        self.mediatype = details.mediatype
-        self.compression = details.compression
-        self.extrapaths = details.extrapaths or []
-        self.innerpath = details.innerpath
-
-        # Detect metadata type
-        if self.path and not details.type:
-            self.type = self.detector.detect_metadata_type(self.normpath) or self.type
+        # Detect resource
+        system.detect_resource(self)
 
         # TODO: remove this defined/not-defined logic?
         # Define default state
         self.add_defined("name")
-        self.add_defined("type")
-        if self.scheme:
-            self.add_defined("scheme")
-        if self.format:
-            self.add_defined("format")
-        if self.mediatype:
-            self.add_defined("mediatype")
-        if self.compression:
-            self.add_defined("compression")
+        self.add_defined("scheme")
+        self.add_defined("format")
+        self.add_defined("compression")
+        self.add_defined("mediatype")
         self.add_defined("dialect")
         self.add_defined("stats")
-
-        # Handled by the create hook
-        assert source is None
-        assert control is None
 
     @classmethod
     def __create__(
@@ -307,6 +281,13 @@ class Resource(Metadata):
 
             # Descriptor
             return Resource.from_descriptor(source, **options)
+
+        # Routing
+        if cls is Resource:
+            resource = RoutingResource(**options)
+            type = system.detect_resource_type(resource)
+            Class = system.select_Resource(type)
+            return Class(**options)
 
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
@@ -1075,6 +1056,8 @@ class Resource(Metadata):
 
     @classmethod
     def metadata_specify(cls, *, type=None, property=None):
+        if type is not None:
+            return system.select_Resource(type)
         if property == "dialect":
             return Dialect
         elif property == "schema":
@@ -1274,3 +1257,7 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
+
+
+class RoutingResource(Resource):
+    pass

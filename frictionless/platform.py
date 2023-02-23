@@ -87,6 +87,12 @@ class Platform:
         return frictionless.portals
 
     @cached_property
+    def frictionless_resources(self):
+        import frictionless.resources
+
+        return frictionless.resources
+
+    @cached_property
     def frictionless_schemes(self):
         import frictionless.schemes
 

@@ -9,7 +9,6 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
-from ..records import PathDetails
 from ..platform import platform
 from ..metadata import Metadata
 from ..fields import AnyField
@@ -19,6 +18,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..resource import Resource
     from ..interfaces import IBuffer, IEncodingFunction
 
 
@@ -165,7 +165,7 @@ class Detector(Metadata):
             if source.endswith(("json", "yaml")):
                 try:
                     # We pass "type" here to prevent circular dependency
-                    res = platform.frictionless.Resource(path=source, type="file")
+                    res = platform.frictionless_resources.FileResource(path=source)
                     buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
                     parser = json.loads
                     if source.endswith("yaml"):
@@ -180,7 +180,7 @@ class Detector(Metadata):
                 if set(item["props"]).intersection(source.keys()):
                     return type
 
-    def detect_path_details(self, details: PathDetails) -> PathDetails:
+    def detect_resource(self, resource: Resource) -> None:
         """Detects path details"""
         name = "memory"
         scheme = None
@@ -188,31 +188,29 @@ class Detector(Metadata):
         compression = None
 
         # Detect details
-        if details.path:
+        if resource.path:
             names = []
-            for part in [details.path] + (details.extrapaths or []):
+            for part in [resource.path] + (resource.extrapaths or []):
                 name = os.path.splitext(os.path.basename(part))[0]
                 names.append(name)
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
             name = name or "name"
-            scheme, format = helpers.parse_scheme_and_format(details.path)
+            scheme, format = helpers.parse_scheme_and_format(resource.path)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
-                path = details.path[: -len(format) - 1]
-                if details.innerpath:
-                    path = os.path.join(path, details.innerpath)
+                path = resource.path[: -len(format) - 1]
+                if resource.innerpath:
+                    path = os.path.join(path, resource.innerpath)
                 scheme, format = helpers.parse_scheme_and_format(path)
                 if format:
                     name = os.path.splitext(name)[0]
 
         # Save details
-        details.name = details.name or name
-        details.scheme = details.scheme or scheme
-        details.format = details.format or format
-        details.compression = details.compression or compression
-
-        return details
+        resource.name = resource.name or name
+        resource.scheme = resource.scheme or scheme
+        resource.format = resource.format or format
+        resource.compression = resource.compression or compression
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
