@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Any
+from typing import List, Any, Dict
 from typing_extensions import Required, TypedDict, Literal
 from .dialect import IDialect
 from .schema import ISchema
@@ -21,10 +21,15 @@ class IResource(TypedDict, total=False):
     dialect: IDialect
 
 
-class IFileResource(IResource, total=False):
-    type: Required[Literal["file"]]
+class IDataResource(IResource, total=False):
+    type: Required[Literal["data"]]
+
+
+class IJsonResource(IResource, total=False):
+    type: Required[Literal["json"]]
+    profile: Dict  # Json Schema
 
 
 class ITableResource(IResource, total=False):
     type: Required[Literal["table"]]
-    schema: ISchema
+    schema: ISchema  # Table Schema

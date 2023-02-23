@@ -119,6 +119,10 @@ METADATA_TRAITS = {
         "names": ["pipeline.json", "pipeline.yaml"],
         "props": ["steps"],
     },
+    "profile": {
+        "names": ["profile.json", "profile.yaml"],
+        "props": ["$schema"],
+    },
     "report": {
         "names": ["report.json", "report.yaml"],
         "props": ["errors"],

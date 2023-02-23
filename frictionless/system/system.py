@@ -261,7 +261,7 @@ class System:
             type = func(resource)
             if type:
                 return type
-        return "file"
+        return "data"
 
     def detect_field_candidates(self) -> List[dict]:
         """Create candidates
