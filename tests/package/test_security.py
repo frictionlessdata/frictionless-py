@@ -10,7 +10,7 @@ def test_package_resource_unsafe_schema():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
     with pytest.raises(FrictionlessException) as excinfo:
-        Package({"resources": [{"path": path, "schema": schema}]})
+        Package({"resources": [{"name": "name", "path": path, "schema": schema}]})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert len(reasons) == 1
@@ -24,7 +24,7 @@ def test_package_resource_unsafe_schema_trusted():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
     with system.use_context(trusted=True):
-        Package({"resources": [{"path": path, "schema": schema}]})
+        Package({"resources": [{"name": "name", "path": path, "schema": schema}]})
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")

@@ -10,7 +10,7 @@ from frictionless import system, fields, validate, platform
 
 
 def test_validate_package():
-    report = validate({"resources": [{"path": "data/table.csv"}]})
+    report = validate({"resources": [{"name": "name", "path": "data/table.csv"}]})
     assert report.valid
 
 
@@ -48,8 +48,8 @@ def test_validate_package_with_non_tabular():
     report = validate(
         {
             "resources": [
-                {"path": "data/table.csv"},
-                {"path": "data/file.txt"},
+                {"name": "table", "path": "data/table.csv"},
+                {"name": "file", "path": "data/file.txt"},
             ]
         },
     )
@@ -65,7 +65,9 @@ def test_validate_package_invalid_descriptor_path():
 
 
 def test_validate_package_invalid_package():
-    report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
+    report = validate(
+        {"resources": [{"name": "name", "path": "data/table.csv", "schema": "bad"}]}
+    )
     assert report.stats.errors == 1
     error = report.errors[0]
     assert error.type == "schema-error"
@@ -74,16 +76,14 @@ def test_validate_package_invalid_package():
 
 
 def test_validate_package_invalid_package_standards_v2_strict():
-    with system.use_context(standards="v2-strict"):
-        report = validate({"resources": [{"path": "data/table.csv"}]})
+    report = validate({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required by standards "v2-strict"'],
-        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", "'name' is a required property"],
     ]
 
 
 def test_validate_package_invalid_table():
-    report = validate({"resources": [{"path": "data/invalid.csv"}]})
+    report = validate({"resources": [{"name": "name", "path": "data/invalid.csv"}]})
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -128,7 +128,11 @@ def test_validate_package_dialect_header_false():
 
 def test_validate_package_with_schema_as_string():
     report = validate(
-        {"resources": [{"path": "data/table.csv", "schema": "data/schema.json"}]}
+        {
+            "resources": [
+                {"name": "name", "path": "data/table.csv", "schema": "data/schema.json"}
+            ]
+        }
     )
     assert report.valid
 

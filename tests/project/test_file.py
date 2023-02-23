@@ -41,8 +41,8 @@ def test_project_copy_file(tmpdir):
     assert project.read_bytes(name1) == bytes1
     assert project.read_bytes(name1copy) == bytes1
     assert project.list_files() == [
-        {"path": name1copy, "type": "data"},
-        {"path": name1, "type": "data"},
+        {"path": name1copy},
+        {"path": name1},
     ]
 
 
@@ -56,8 +56,8 @@ def test_project_copy_file_to_folder(tmpdir):
     assert project.read_bytes(path) == bytes1
     assert project.list_files() == [
         {"path": folder1, "type": "folder"},
-        {"path": path, "type": "data"},
-        {"path": name1, "type": "data"},
+        {"path": path},
+        {"path": name1},
     ]
 
 
@@ -74,10 +74,10 @@ def test_project_copy_file_from_folder_to_folder(tmpdir):
     assert project.read_bytes(path2) == bytes1
     assert project.list_files() == [
         {"path": folder1, "type": "folder"},
-        {"path": path1, "type": "data"},
+        {"path": path1},
         {"path": folder2, "type": "folder"},
         {"path": str(Path(folder2) / folder1), "type": "folder"},
-        {"path": str(Path(folder2) / folder1 / name1), "type": "data"},
+        {"path": str(Path(folder2) / folder1 / name1)},
     ]
 
 
@@ -159,7 +159,7 @@ def test_project_upload_file(tmpdir):
     assert helpers.read_file(tmpdir / name1, "rb") == bytes1
     assert path == name1
     assert project.list_files() == [
-        {"path": name1, "type": "data"},
+        {"path": name1},
     ]
 
 
@@ -171,7 +171,7 @@ def test_project_upload_file_in_folder(tmpdir):
     assert helpers.read_file(tmpdir / path, "rb") == bytes1
     assert project.list_files() == [
         {"path": folder1, "type": "folder"},
-        {"path": path, "type": "data"},
+        {"path": path},
     ]
 
 
@@ -193,7 +193,7 @@ def test_project_delete_file(tmpdir):
     project.upload_file(name2, bytes=bytes2)
     project.delete_file(name2)
     assert project.list_files() == [
-        {"path": name1, "type": "data"},
+        {"path": name1},
     ]
 
 
@@ -220,8 +220,8 @@ def test_project_list_files(tmpdir):
     project.upload_file(name1, bytes=bytes1)
     project.upload_file(name2, bytes=bytes2)
     assert project.list_files() == [
-        {"path": name1, "type": "data"},
-        {"path": name2, "type": "data"},
+        {"path": name1},
+        {"path": name2},
     ]
 
 
@@ -231,7 +231,7 @@ def test_project_list_files_with_folders(tmpdir):
     project.create_folder(folder1)
     assert project.list_files() == [
         {"path": folder1, "type": "folder"},
-        {"path": name1, "type": "data"},
+        {"path": name1},
     ]
 
 
@@ -244,7 +244,7 @@ def test_project_index_file(tmpdir):
     file = project.index_file(path)
     assert file
     assert file["path"] == name4
-    assert file["type"] == "table"
+    assert file.get("type") == "table"
     record = file.get("record")
     table = project.query_table("SELECT * FROM name4")
     assert record
@@ -275,7 +275,7 @@ def test_project_move_file(tmpdir):
     assert project.read_bytes(path) == bytes1
     assert project.list_files() == [
         {"path": folder1, "type": "folder"},
-        {"path": path, "type": "data"},
+        {"path": path},
     ]
 
 
@@ -291,7 +291,7 @@ def test_project_move_file_folder(tmpdir):
     assert project.list_files() == [
         {"path": folder2, "type": "folder"},
         {"path": str(Path(folder2) / folder1), "type": "folder"},
-        {"path": str(Path(folder2) / folder1 / name1), "type": "data"},
+        {"path": str(Path(folder2) / folder1 / name1)},
     ]
 
 
@@ -311,9 +311,9 @@ def test_project_move_file_security(tmpdir, path):
 def test_project_read_file(tmpdir):
     project = Project(basepath=tmpdir, is_root=True)
     project.upload_file(name1, bytes=bytes1)
-    assert project.read_file(name1) == {"path": name1, "type": "data"}
+    assert project.read_file(name1) == {"path": name1}
     assert project.list_files() == [
-        {"path": name1, "type": "data"},
+        {"path": name1},
     ]
 
 
@@ -333,7 +333,7 @@ def test_project_rename_file(tmpdir):
     project.rename_file(name1, name=name2)
     assert project.read_bytes(name2) == bytes1
     assert project.list_files() == [
-        {"path": name2, "type": "data"},
+        {"path": name2},
     ]
 
 
@@ -344,7 +344,7 @@ def test_project_rename_file_folder(tmpdir):
     project.rename_file(folder1, name=folder2)
     assert project.list_files() == [
         {"path": folder2, "type": "folder"},
-        {"path": str(Path(folder2) / name1), "type": "data"},
+        {"path": str(Path(folder2) / name1)},
     ]
 
 

@@ -101,8 +101,8 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
     # Validate
     descriptor = {
         "resources": [
-            {"path": "s3://%s/table1.csv" % bucket_name},
-            {"path": "s3://%s/table2.csv" % bucket_name},
+            {"name": "name1", "path": "s3://%s/table1.csv" % bucket_name},
+            {"name": "name2", "path": "s3://%s/table2.csv" % bucket_name},
         ]
     }
     package = Package(descriptor)

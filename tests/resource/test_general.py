@@ -506,10 +506,10 @@ def test_resource_skip_rows_non_string_cell_issue_320():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
-    resource = Resource({"path": "data/table.csvformat", "format": "csv"})
+    resource = Resource({"name": "name", "path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)
     assert resource.to_descriptor() == {
-        "name": "table",
+        "name": "name",
         "path": "data/table.csvformat",
         "type": "table",
         "format": "csv",
@@ -533,7 +533,7 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
 
 
 def test_resource_path_with_brackets_issue_1206():
-    resource = Resource.from_descriptor({"path": "data/[table].csv"})
+    resource = Resource.from_descriptor({"name": "name", "path": "data/[table].csv"})
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

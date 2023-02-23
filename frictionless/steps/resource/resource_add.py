@@ -29,11 +29,8 @@ class resource_add(Step):
 
     def transform_package(self, package):
         descriptor = self.descriptor.copy()
-        resource = Resource.from_descriptor(
-            descriptor,
-            name=self.name,
-            basepath=package.basepath,
-        )
+        descriptor["name"] = self.name
+        resource = Resource.from_descriptor(descriptor, basepath=package.basepath)
         resource.infer()
         package.add_resource(resource)
 

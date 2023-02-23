@@ -13,8 +13,6 @@ if TYPE_CHECKING:
     from ..dialect import Control
     from ..interfaces import IDescriptor
 
-# TODO: we need to support opening dir as a catalog using datacatalog.yaml
-
 
 class Catalog(Metadata):
     """Catalog representation"""
@@ -49,34 +47,6 @@ class Catalog(Metadata):
     `basepath` and `/path`
     """
 
-    def __init__(
-        self,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        # Standard
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        packages: List[Union[Package, str]] = [],
-        # Software
-        basepath: Optional[str] = None,
-    ):
-        # Guaranteed by the create hook
-        assert source is None
-        assert control is None
-
-        # Store state
-        self.name = name
-        self.title = title
-        self.description = description
-        self.basepath = basepath
-
-        # Add packages
-        self.packages = []
-        for package in packages:
-            package = self.add_package(package)
-
     @classmethod
     def __create__(
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
@@ -100,6 +70,34 @@ class Catalog(Metadata):
         if source is not None:
             # Descriptor
             return Catalog.from_descriptor(source, **options)  # type: ignore
+
+    def __init__(
+        self,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        # Standard
+        name: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        packages: List[Union[Package, str]] = [],
+        # Software
+        basepath: Optional[str] = None,
+    ):
+        # Guaranteed by create hook
+        assert source is None
+        assert control is None
+
+        # Store state
+        self.name = name
+        self.title = title
+        self.description = description
+        self.basepath = basepath
+
+        # Add packages
+        self.packages = []
+        for package in packages:
+            package = self.add_package(package)
 
     @property
     def package_names(self) -> List[str]:

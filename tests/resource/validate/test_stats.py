@@ -65,6 +65,7 @@ def test_resource_validate_stats_rows_invalid():
 def test_resource_validate_stats_not_supported_hash_algorithm():
     resource = Resource.from_descriptor(
         {
+            "name": "name",
             "path": "data/table.csv",
             "hash": "sha1:db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e",
         }

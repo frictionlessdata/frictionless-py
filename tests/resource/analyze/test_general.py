@@ -7,7 +7,7 @@ IS_UNIX = platform.type != "windows"
 
 
 def test_analyze_resource():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze()
     assert list(analysis.keys()) == [
         "variableTypes",
@@ -31,7 +31,7 @@ def test_analyze_resource():
 
 
 def test_analyze_resource_detailed():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert list(analysis.keys()) == [
         "variableTypes",
@@ -61,13 +61,13 @@ def test_analyze_resource_detailed():
 
 
 def test_analyze_resource_detailed_non_numeric_values_summary():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert list(analysis["fieldStats"]["gender"].keys()) == ["type", "values"]
 
 
 def test_analyze_resource_detailed_numeric_values_descriptive_summray():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert list(analysis["fieldStats"]["parent_age"].keys()) == [
         "type",
@@ -87,7 +87,7 @@ def test_analyze_resource_detailed_numeric_values_descriptive_summray():
 
 
 def test_analyze_resource_detailed_numeric_descriptive_statistics():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert analysis["fieldStats"]["parent_age"]["bounds"] == [39, 67]
     assert analysis["fieldStats"]["parent_age"]["max"] == 57
@@ -104,7 +104,7 @@ def test_analyze_resource_detailed_numeric_descriptive_statistics():
 
 
 def test_analyze_resource_detailed_numeric_descriptive_statistics_with_missingValues():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert analysis["fieldStats"]["average_grades"]["bounds"] == [81, 96]
     assert analysis["fieldStats"]["average_grades"]["max"] == 10000.0
@@ -121,14 +121,14 @@ def test_analyze_resource_detailed_numeric_descriptive_statistics_with_missingVa
 
 
 def test_analyze_resource_detailed_descriptive_statistics_with_outliers():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert analysis["fieldStats"]["average_grades"]["bounds"] == [81, 96]
     assert analysis["fieldStats"]["average_grades"]["outliers"] == [10000.0]
 
 
 def test_analyze_resource_detailed_descriptive_statistics_variables_correlation():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert list(analysis["correlations"].keys()) == [
         "parent_age",
@@ -155,7 +155,7 @@ def test_analyze_resource_detailed_descriptive_statistics_variables_correlation(
 
 
 def test_analyze_resource_detailed_non_numeric_summary():
-    resource = Resource({"path": "data/analysis-data.csv"})
+    resource = Resource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
     assert list(analysis["fieldStats"]["gender"].keys()) == ["type", "values"]
     assert analysis["fieldStats"]["gender"]["values"] == {"Male", "Female"}
@@ -213,7 +213,7 @@ def test_analyze_resource_detailed_with_empty_rows():
 
 
 def test_analyze_resource_with_invalid_data():
-    resource = Resource({"path": "data/invalid.csv"})
+    resource = Resource(path="data/invalid.csv")
     analysis = resource.analyze()
     assert round(analysis["averageRecordSizeInBytes"]) == 12 if IS_UNIX else 14
     assert analysis["fields"] == 4
@@ -225,7 +225,7 @@ def test_analyze_resource_with_invalid_data():
 
 
 def test_analyze_resource_detailed_with_invalid_data():
-    resource = Resource({"path": "data/invalid.csv"})
+    resource = Resource(path="data/invalid.csv")
     analysis = resource.analyze(detailed=True)
     assert round(analysis["averageRecordSizeInBytes"]) == 12 if IS_UNIX else 14
     assert analysis["fields"] == 4

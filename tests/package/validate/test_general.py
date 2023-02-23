@@ -8,7 +8,7 @@ from frictionless import Package, Checklist, FrictionlessException, system
 
 
 def test_validate_package():
-    package = Package({"resources": [{"path": "data/table.csv"}]})
+    package = Package({"resources": [{"name": "name", "path": "data/table.csv"}]})
     report = package.validate()
     assert report.valid
 
@@ -51,8 +51,8 @@ def test_validate_package_with_non_tabular():
     package = Package(
         {
             "resources": [
-                {"path": "data/table.csv"},
-                {"path": "data/file.txt"},
+                {"name": "table", "path": "data/table.csv"},
+                {"name": "file", "path": "data/file.txt"},
             ]
         },
     )
@@ -61,16 +61,14 @@ def test_validate_package_with_non_tabular():
 
 
 def test_validate_package_invalid_package_standards_v2_strict():
-    with system.use_context(standards="v2-strict"):
-        report = Package.validate_descriptor({"resources": [{"path": "data/table.csv"}]})
+    report = Package.validate_descriptor({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required by standards "v2-strict"'],
-        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", "'name' is a required property"],
     ]
 
 
 def test_validate_package_invalid_table():
-    package = Package({"resources": [{"path": "data/invalid.csv"}]})
+    package = Package({"resources": [{"name": "name", "path": "data/invalid.csv"}]})
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
@@ -119,7 +117,11 @@ def test_validate_package_dialect_header_false():
 
 def test_validate_package_with_schema_as_string():
     package = Package(
-        {"resources": [{"path": "data/table.csv", "schema": "data/schema.json"}]}
+        {
+            "resources": [
+                {"name": "name", "path": "data/table.csv", "schema": "data/schema.json"}
+            ]
+        }
     )
     report = package.validate()
     assert report.valid

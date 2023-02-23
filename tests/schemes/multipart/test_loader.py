@@ -35,6 +35,7 @@ def test_multipart_loader_with_compressed_parts():
 
 def test_multipart_loader_resource():
     descriptor = {
+        "name": "name",
         "path": "chunk1.csv",
         "extrapaths": ["chunk2.csv"],
         "schema": "resource-schema.json",
@@ -106,11 +107,15 @@ def test_multipart_loader_resource_error_bad_path():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Stats problem on Windows")
 def test_multipart_loader_resource_infer():
-    descriptor = {"path": "data/chunk1.csv", "extrapaths": ["data/chunk2.csv"]}
+    descriptor = {
+        "name": "name",
+        "path": "data/chunk1.csv",
+        "extrapaths": ["data/chunk2.csv"],
+    }
     resource = Resource(descriptor)
     resource.infer(stats=True)
     assert resource.to_descriptor() == {
-        "name": "chunk",
+        "name": "name",
         "path": "data/chunk1.csv",
         "type": "table",
         "scheme": "multipart",
@@ -135,7 +140,9 @@ def test_multipart_loader_resource_infer():
 
 
 def test_multipart_loader_resource_validate():
-    resource = Resource({"path": "data/chunk1.csv", "extrapaths": ["data/chunk2.csv"]})
+    resource = Resource(
+        {"name": "name", "path": "data/chunk1.csv", "extrapaths": ["data/chunk2.csv"]}
+    )
     report = resource.validate()
     assert report.valid
     assert report.task.stats.rows == 2

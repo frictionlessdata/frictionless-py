@@ -6,7 +6,7 @@ from frictionless import Resource, Schema, Checklist, Detector, FrictionlessExce
 
 
 def test_resource_validate_schema_invalid_json():
-    descriptor = dict(path="data/table.csv", schema="data/invalid.json")
+    descriptor = dict(name="name", path="data/table.csv", schema="data/invalid.json")
     report = Resource.validate_descriptor(descriptor)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "schema-error"],
@@ -14,7 +14,9 @@ def test_resource_validate_schema_invalid_json():
 
 
 def test_resource_validate_invalid_resource():
-    report = Resource.validate_descriptor({"path": "data/table.csv", "schema": "bad"})
+    report = Resource.validate_descriptor(
+        {"name": "name", "path": "data/table.csv", "schema": "bad"}
+    )
     assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
@@ -122,6 +124,7 @@ def test_resource_validate_schema_maximum_constraint():
 
 def test_resource_validate_schema_foreign_key_error_self_referencing():
     source = {
+        "name": "name",
         "path": "data/nested.csv",
         "schema": {
             "fields": [
@@ -141,6 +144,7 @@ def test_resource_validate_schema_foreign_key_error_self_referencing():
 
 def test_resource_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
+        "name": "name",
         "path": "data/nested-invalid.csv",
         "schema": {
             "fields": [

@@ -20,7 +20,7 @@ def test_project_read_bytes(tmpdir):
     project.upload_file(name1, bytes=bytes1)
     assert project.read_bytes(name1) == bytes1
     assert project.list_files() == [
-        {"path": name1, "type": "data"},
+        {"path": name1},
     ]
 
 

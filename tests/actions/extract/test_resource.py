@@ -91,7 +91,7 @@ def test_extract_resource_from_json_format_issue_827():
 
 
 def test_extract_resource_basepath_and_abspath_issue_856():
-    descriptor = {"path": os.path.abspath("data/table.csv")}
+    descriptor = {"name": "name", "path": os.path.abspath("data/table.csv")}
     with system.use_context(trusted=True):
         rows = extract(descriptor, basepath="data")
         assert rows == [

@@ -8,7 +8,7 @@ from frictionless import Resource, FrictionlessException, platform, system
 
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": os.path.abspath("data/table.csv")})
+        Resource({"name": "name", "path": os.path.abspath("data/table.csv")})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert len(reasons) == 1
@@ -22,9 +22,10 @@ def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(
             {
+                "name": "name",
                 "path": "data/../data/table.csv"
                 if not platform.type == "windows"
-                else "data\\..\\table.csv"
+                else "data\\..\\table.csv",
             }
         )
     error = excinfo.value.error
@@ -128,7 +129,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
 
     # trusted=false (default)
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": path})
+        Resource({"name": "name", "path": path})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert len(reasons) == 1
@@ -139,7 +140,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
 
     # trusted=true
     with system.use_context(trusted=True):
-        resource = Resource({"path": path})
+        resource = Resource({"name": "name", "path": path})
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

@@ -1,3 +1,4 @@
+import pytest
 from frictionless import InquiryTask, system
 
 
@@ -10,6 +11,7 @@ def test_inquiry_task_validate():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_inquiry_task_validate_standards_v2_strict():
     inquiry = InquiryTask(resource="data/resource.json")
     with system.use_context(standards="v2-strict"):

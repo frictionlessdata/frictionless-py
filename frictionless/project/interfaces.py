@@ -8,8 +8,8 @@ IHeader = List[str]
 IRow = Dict[str, Any]
 
 
-class IFileItem(TypedDict):
-    path: str
+class IFileItem(TypedDict, total=False):
+    path: Required[str]
     type: str
 
 
@@ -19,7 +19,7 @@ class IFile(IFileItem, total=False):
 
 class IRecordItem(TypedDict, total=False):
     path: Required[str]
-    type: Required[str]
+    type: str
     updated: Required[str]
     tableName: str
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 import humanize
-from typing import List
+from typing import List, Optional
 from tabulate import tabulate
 from ..stats import Stats
 from ..metadata import Metadata
@@ -27,7 +27,7 @@ class ReportTask(Metadata):
     along with “_” or “-” characters.
     """
 
-    type: str
+    type: Optional[str]
     """
     Sets the property tabular to True if the type is "table".
     """
@@ -128,7 +128,6 @@ class ReportTask(Metadata):
         "required": [
             "valid",
             "name",
-            "type",
             "place",
             "stats",
             "warnings",

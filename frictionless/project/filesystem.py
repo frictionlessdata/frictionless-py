@@ -86,7 +86,10 @@ class Filesystem:
                     continue
                 path = self.get_secure_relpath(os.path.join(root, file))
                 type = self.get_filetype(path)
-                items.append(IFileItem(path=path, type=type))
+                item = IFileItem(path=path)
+                if type:
+                    item["type"] = type
+                items.append(item)
             for folder in folders:
                 if self.is_hidden_path(folder):
                     continue
@@ -121,7 +124,9 @@ class Filesystem:
             if self.is_folder(path):
                 type = "folder"
             path = self.get_secure_relpath(path)
-            file = IFileItem(path=path, type=type)
+            file = IFileItem(path=path)
+            if type:
+                file["type"] = type
             return file
 
     def rename_file(self, path: str, *, name: str) -> str:
@@ -175,9 +180,8 @@ class Filesystem:
         assert path != ""
         return path
 
-    def get_filetype(self, path: str) -> str:
+    def get_filetype(self, path: str) -> Optional[str]:
         resource = Resource(path=path)
-        assert resource.type
         return resource.type
 
     def get_filename(self, path: str) -> str:

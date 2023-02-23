@@ -21,7 +21,9 @@ def test_resource_profiles_to_descriptor():
 def test_resource_profiles_from_descriptor():
     profile = {"type": "object", "required": ["requiredProperty"]}
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource.from_descriptor({"path": "data/table.csv", "profiles": [profile]})
+        Resource.from_descriptor(
+            {"name": "name", "path": "data/table.csv", "profiles": [profile]}
+        )
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "resource-error"

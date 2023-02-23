@@ -9,6 +9,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 DESCRIPTOR_FK = {
+    "name": "name",
     "path": "data/nested.csv",
     "schema": {
         "fields": [

@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Check, Checklist, errors, system
+from frictionless import Resource, Detector, Check, Checklist, errors
 from frictionless import FrictionlessException
 
 
@@ -8,22 +8,20 @@ from frictionless import FrictionlessException
 
 
 def test_resource_validate():
-    resource = Resource({"path": "data/table.csv"})
+    resource = Resource({"name": "name", "path": "data/table.csv"})
     report = resource.validate()
     assert report.valid
 
 
 def test_resource_validate_invalid_resource_standards_v2_strict():
-    with system.use_context(standards="v2-strict"):
-        report = Resource.validate_descriptor({"path": "data/table.csv"})
+    report = Resource.validate_descriptor({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required by standards "v2-strict"'],
-        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", "'name' is a required property"],
     ]
 
 
 def test_resource_validate_invalid_table():
-    resource = Resource({"path": "data/invalid.csv"})
+    resource = Resource({"name": "name", "path": "data/invalid.csv"})
     report = resource.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
@@ -38,7 +36,9 @@ def test_resource_validate_invalid_table():
 
 
 def test_resource_validate_resource_with_schema_as_string():
-    resource = Resource({"path": "data/table.csv", "schema": "data/schema.json"})
+    resource = Resource(
+        {"name": "name", "path": "data/table.csv", "schema": "data/schema.json"}
+    )
     report = resource.validate()
     assert report.valid
 

@@ -40,7 +40,6 @@ def test_resource_infer_source_non_tabular():
     assert resource.to_descriptor() == {
         "name": "text",
         "path": "data/text.txt",
-        "type": "data",
         "scheme": "file",
         "format": "txt",
         "encoding": "utf-8",

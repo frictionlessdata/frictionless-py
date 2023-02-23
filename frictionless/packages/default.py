@@ -1,5 +1,5 @@
 from ..package import Package
 
 
-class DefaultResource(Package):
+class DefaultPackage(Package):
     type = None

@@ -43,14 +43,15 @@ def test_step_table_intersect_from_dict():
             Step.from_descriptor(
                 {
                     "type": "table-intersect",
-                    "resource": dict(
-                        data=[
+                    "resource": {
+                        "name": "data",
+                        "data": [
                             ["id", "name", "population"],
                             [1, "germany", 83],
                             [2, "france", 50],
                             [3, "spain", 47],
-                        ]
-                    ),
+                        ],
+                    },
                 }
             ),
         ],

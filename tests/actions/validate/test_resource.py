@@ -8,7 +8,7 @@ from frictionless import validate, formats, errors, platform, system
 
 
 def test_validate():
-    report = validate({"path": "data/table.csv"})
+    report = validate({"name": "name", "path": "data/table.csv"})
     assert report.valid
 
 
@@ -21,7 +21,7 @@ def test_validate_invalid_source():
 
 
 def test_validate_invalid_resource():
-    report = validate({"path": "data/table.csv", "schema": "bad"})
+    report = validate({"name": "name", "path": "data/table.csv", "schema": "bad"})
     assert report.stats.errors == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
@@ -45,16 +45,14 @@ def test_validate_forbidden_value_task_error():
 
 
 def test_validate_invalid_resource_standards_v2_strict():
-    with system.use_context(standards="v2-strict"):
-        report = validate({"path": "data/table.csv"})
+    report = validate({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required by standards "v2-strict"'],
-        ["resource-error", 'property "type" is required by standards "v2-strict"'],
+        ["resource-error", "'name' is a required property"],
     ]
 
 
 def test_validate_invalid_table():
-    report = validate({"path": "data/invalid.csv"})
+    report = validate({"name": "name", "path": "data/invalid.csv"})
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -68,7 +66,9 @@ def test_validate_invalid_table():
 
 
 def test_validate_resource_with_schema_as_string():
-    report = validate({"path": "data/table.csv", "schema": "data/schema.json"})
+    report = validate(
+        {"name": "name", "path": "data/table.csv", "schema": "data/schema.json"}
+    )
     assert report.valid
 
 
@@ -396,6 +396,7 @@ def test_validate_schema_maximum_constraint():
 
 def test_validate_schema_foreign_key_error_self_referencing():
     source = {
+        "name": "name",
         "path": "data/nested.csv",
         "schema": {
             "fields": [
@@ -414,6 +415,7 @@ def test_validate_schema_foreign_key_error_self_referencing():
 
 def test_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
+        "name": "name",
         "path": "data/nested-invalid.csv",
         "schema": {
             "fields": [

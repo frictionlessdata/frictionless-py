@@ -21,7 +21,7 @@ def test_project_read_text(tmpdir):
     project.upload_file(name3, bytes=bytes3)
     assert project.read_text(name3) == '{"key": "value"}'
     assert project.list_files() == [
-        {"path": name3, "type": "data"},
+        {"path": name3},
     ]
 
 

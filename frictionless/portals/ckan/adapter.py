@@ -67,6 +67,7 @@ class CkanAdapter(Adapter):
         for dataset in results:
             try:
                 descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
+                descriptor.pop("type", None)
                 package = Package.from_descriptor(descriptor)
                 packages.append(package)
             except FrictionlessException as e:
@@ -96,6 +97,7 @@ class CkanAdapter(Adapter):
         endpoint = f"{self.control.baseurl}/api/3/action/package_show"
         response = make_ckan_request(endpoint, **args, params=params)
         descriptor = self.mapper["ckan_to_fric"].dataset(response["result"])
+        descriptor.pop("type", None)
 
         try:
             package = Package.from_descriptor(descriptor)
