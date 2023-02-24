@@ -1,9 +1,9 @@
 from __future__ import annotations
 import attrs
 from typing import List, ClassVar, Optional, Type
-from .metadata import Metadata
-from .platform import platform
-from . import helpers
+from ..metadata import Metadata
+from ..platform import platform
+from .. import helpers
 
 
 # NOTE:
