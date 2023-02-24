@@ -53,15 +53,15 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
-    type: ClassVar[str]
-    """
-    Type of the resource
-    """
-
     name: str
     """
     Resource name according to the specs.
     It should be a slugified name of the resource.
+    """
+
+    type: ClassVar[str]
+    """
+    Type of the resource
     """
 
     title: Optional[str]

@@ -41,16 +41,16 @@ class Package(Metadata):
     transform = methods.transform
     validate = methods.validate
 
-    type: ClassVar[Union[str, None]]
-    """
-    Type of the package
-    """
-
     name: Optional[str]
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “.”, “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the package
     """
 
     title: Optional[str]
@@ -178,11 +178,6 @@ class Package(Metadata):
 
             # Descriptor
             return cls.from_descriptor(source, **options)  # type: ignore
-
-        # Routing
-        if cls is Package:
-            package = platform.frictionless_packages.DefaultPackage(**options)
-            return package
 
     def __init__(
         self,

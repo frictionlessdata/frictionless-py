@@ -16,6 +16,7 @@ from .. import helpers
 from .. import errors
 
 
+# TODO: rebase back on using resource?
 @attrs.define(kw_only=True)
 class InquiryTask(Metadata):
     """Inquiry task representation."""
@@ -30,6 +31,16 @@ class InquiryTask(Metadata):
     type: Optional[str] = None
     """
     Type of the source to be validated such as "package", "resource" etc.
+    """
+
+    title: Optional[str] = None
+    """
+    A human-oriented title for the Inquiry.
+    """
+
+    description: Optional[str] = None
+    """
+    A brief description of the Inquiry.
     """
 
     path: Optional[str] = None
@@ -162,6 +173,8 @@ class InquiryTask(Metadata):
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "path": {"type": "string"},
             "scheme": {"type": "string"},
             "format": {"type": "string"},

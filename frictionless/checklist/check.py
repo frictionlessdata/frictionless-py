@@ -25,16 +25,18 @@ class Check(Metadata):
 
     """
 
+    name: Optional[str] = None
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
+
     type: ClassVar[str]
     """
     A short name(preferably human-readable) for the Check.
     This MUST be lower-case and contain only alphanumeric characters
     along with "-" or "_".
-    """
-
-    Errors: ClassVar[List[Type[Error]]] = []
-    """
-    List of errors that are being used in the Check.
     """
 
     title: Optional[str] = None
@@ -45,6 +47,11 @@ class Check(Metadata):
     description: Optional[str] = None
     """
     A detailed description for the Check.
+    """
+
+    Errors: ClassVar[List[Type[Error]]] = []
+    """
+    List of errors that are being used in the Check.
     """
 
     @property
@@ -117,6 +124,7 @@ class Check(Metadata):
         "type": "object",
         "required": ["type"],
         "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},

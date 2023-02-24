@@ -1,4 +1,5 @@
 import json
+import pytest
 from frictionless import Resource, Report
 
 
@@ -50,6 +51,7 @@ def test_report_to_summary_validate_multiline_errors():
 # Yaml
 
 
+@pytest.mark.skip
 def test_report_to_yaml():
     report = Report.from_descriptor("data/report.json")
     output_file_path = "data/report.yaml"

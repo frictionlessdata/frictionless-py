@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -26,16 +26,16 @@ class Schema(Metadata):
     ```
     """
 
-    def __attrs_post_init__(self):
-        # Connect fields
-        for field in self.fields:
-            field.schema = self
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the object
     """
 
     title: Optional[str] = None
@@ -68,6 +68,11 @@ class Schema(Metadata):
     """
     Specifies the foreign keys for the schema.
     """
+
+    def __attrs_post_init__(self):
+        # Connect fields
+        for field in self.fields:
+            field.schema = self
 
     @property
     def field_names(self) -> List[str]:
@@ -263,6 +268,7 @@ class Schema(Metadata):
         "required": ["fields"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..package import Package
@@ -22,6 +22,11 @@ class Catalog(Metadata):
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “.”, “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the object
     """
 
     title: Optional[str]
@@ -180,6 +185,7 @@ class Catalog(Metadata):
         "required": ["packages"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "packages": {

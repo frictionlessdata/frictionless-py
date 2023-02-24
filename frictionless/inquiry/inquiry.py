@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, ClassVar, Union
 from multiprocessing import Pool
 from ..platform import platform
 from ..metadata import Metadata
@@ -23,6 +23,11 @@ class Inquiry(Metadata):
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the object
     """
 
     title: Optional[str] = None
@@ -86,6 +91,7 @@ class Inquiry(Metadata):
         "required": ["tasks"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "tasks": {"type": "array", "items": {"type": "object"}},

@@ -5,7 +5,6 @@ import decimal
 from functools import partial
 from typing import TYPE_CHECKING, ClassVar, Optional, List
 from ..metadata import Metadata
-from ..platform import platform
 from ..system import system
 from .. import settings
 from .. import errors
@@ -18,26 +17,16 @@ if TYPE_CHECKING:
 class Field(Metadata):
     """Field representation"""
 
-    type: ClassVar[str]
-    """
-    Type of the field such as "boolean", "integer" etc.
-    """
-
-    builtin: ClassVar[bool] = False
-    """
-    Specifies if field is the builtin feature.
-    """
-
-    supported_constraints: ClassVar[List[str]] = []
-    """
-    List of supported constraints for a field.
-    """
-
     name: str
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[str]
+    """
+    Type of the field such as "boolean", "integer" etc.
     """
 
     title: Optional[str] = None
@@ -80,6 +69,16 @@ class Field(Metadata):
     schema: Optional[Schema] = None
     """
     Schema class of which the field is part of.
+    """
+
+    builtin: ClassVar[bool] = False
+    """
+    Specifies if field is the builtin feature.
+    """
+
+    supported_constraints: ClassVar[List[str]] = []
+    """
+    List of supported constraints for a field.
     """
 
     @property

@@ -15,11 +15,6 @@ from .. import settings
 class ReportTask(Metadata):
     """Report task representation."""
 
-    valid: bool
-    """
-    Flag to specify if the data is valid or not.
-    """
-
     name: str
     """
     A short url-usable (and preferably human-readable) name.
@@ -30,6 +25,21 @@ class ReportTask(Metadata):
     type: Optional[str]
     """
     Sets the property tabular to True if the type is "table".
+    """
+
+    title: Optional[str] = None
+    """
+    A human-oriented title for the Report.
+    """
+
+    description: Optional[str] = None
+    """
+    A brief description of the Detector.
+    """
+
+    valid: bool
+    """
+    Flag to specify if the data is valid or not.
     """
 
     place: str
@@ -134,9 +144,11 @@ class ReportTask(Metadata):
             "errors",
         ],
         "properties": {
-            "valid": {"type": "boolean"},
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "valid": {"type": "boolean"},
             "place": {"type": "string"},
             "labels": {"type": "array", "arrayItem": {"type": "string"}},
             "stats": {"type": "object"},
@@ -144,6 +156,10 @@ class ReportTask(Metadata):
             "errors": {"type": "array", "arrayItem": {"type": "object"}},
         },
     }
+
+    @classmethod
+    def metadata_select_class(cls, type):
+        return ReportTask
 
     @classmethod
     def metadata_select_property_class(cls, name):

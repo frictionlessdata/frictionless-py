@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, ClassVar, Union
 from ..stats import Stats
 from ..metadata import Metadata
 from ..errors import Error, ReportError
@@ -26,6 +26,11 @@ class Report(Metadata):
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the package
     """
 
     title: Optional[str] = None
@@ -251,6 +256,7 @@ class Report(Metadata):
         "required": ["valid", "stats", "warnings", "errors", "tasks"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "valid": {"type": "boolean"},

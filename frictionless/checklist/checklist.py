@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, ClassVar, Union
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checks import baseline
@@ -27,6 +27,11 @@ class Checklist(Metadata):
     A short name(preferably human-readable) for the Checklist.
     This MUST be lower-case and contain only alphanumeric characters
     along with "-" or "_".
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the object
     """
 
     title: Optional[str] = None

@@ -285,6 +285,10 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_select_class(cls, type: Optional[str]) -> Type[Metadata]:
+        if type:
+            note = f'unsupported type for "{cls.metadata_type}": {type}'
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+            raise FrictionlessException(Error(note=note))
         return cls
 
     @classmethod

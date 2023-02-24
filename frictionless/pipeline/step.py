@@ -30,6 +30,13 @@ class Step(Metadata):
 
     """
 
+    name: Optional[str] = None
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
+
     type: ClassVar[str]
     """
     A short url-usable (and preferably human-readable) name/type.
@@ -93,6 +100,7 @@ class Step(Metadata):
         "type": "object",
         "required": ["type"],
         "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},

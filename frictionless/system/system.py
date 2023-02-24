@@ -332,9 +332,6 @@ class System:
             Class = func(type)
             if Class is not None:
                 return Class
-        for Class in vars(platform.frictionless_packages).values():
-            if getattr(Class, "type", None) == type:
-                return Class
         note = f'package type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
 
