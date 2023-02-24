@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Checklist, FrictionlessException, system
+from frictionless import Package, Checklist, FrictionlessException
 
 
 # General

@@ -1,7 +1,6 @@
 from __future__ import annotations
 import datetime
 import decimal
-from typing import TYPE_CHECKING
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Parser

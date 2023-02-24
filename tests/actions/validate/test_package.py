@@ -3,7 +3,7 @@ import pytest
 import pathlib
 from copy import deepcopy
 from frictionless import Package, Resource, Schema, Detector
-from frictionless import system, fields, validate, platform
+from frictionless import fields, validate, platform
 
 
 # General

@@ -1,7 +1,7 @@
 import pytest
 import pathlib
 from frictionless import Schema, Detector, Dialect, Check, Stats
-from frictionless import validate, formats, errors, platform, system
+from frictionless import validate, formats, errors, platform
 
 
 # General
