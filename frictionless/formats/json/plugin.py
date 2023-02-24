@@ -26,7 +26,7 @@ class JsonPlugin(Plugin):
 
     def detect_resource_type(self, resource: Resource):
         if resource.format == "json":
-            return Detector.detect_metadata_type(resource.normpath)
+            return Detector.detect_metadata_type(resource.normpath) or "json"
         if resource.format in ["jsonl", "ndjson"]:
             return "table"
 
