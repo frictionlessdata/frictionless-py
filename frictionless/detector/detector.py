@@ -11,7 +11,6 @@ from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..fields import AnyField
 from ..platform import platform
-from ..metadata import Metadata
 from ..dialect import Dialect
 from .. import settings
 from .. import helpers
@@ -23,29 +22,12 @@ if TYPE_CHECKING:
 
 
 @attrs.define(kw_only=True)
-class Detector(Metadata):
+class Detector:
     """Detector representation.
 
     This main purpose of this class is to set the parameters to define
     how different aspects of metadata are detected.
 
-    """
-
-    name: Optional[str] = None
-    """
-    A short url-usable (and preferably human-readable) name.
-    This MUST be lower-case and contain only alphanumeric characters
-    along with “_” or “-” characters.
-    """
-
-    title: Optional[str] = None
-    """
-    A human-oriented title for the Detector.
-    """
-
-    description: Optional[str] = None
-    """
-    A brief description of the Detector.
     """
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
@@ -448,27 +430,3 @@ class Detector(Metadata):
             schema = Schema.from_descriptor(descriptor)
 
         return schema  # type: ignore
-
-    # Metadata
-
-    metadata_type = "detector"
-    metadata_Error = errors.DetectorError
-    metadata_profile = {
-        "properties": {
-            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "bufferSize": {"type": "integer"},
-            "sampleSize": {"type": "integer"},
-            "encodingConfidence": {"type": "number"},
-            "fieldType": {"type": "string"},
-            "fieldNames": {"type": "array"},
-            "fieldConfidence": {"type": "number"},
-            "fieldFloatNumbers": {"type": "boolean"},
-            "fieldMissingValues": {"type": "array"},
-            "fieldTrueValues": {"type": "array"},
-            "fieldFalseValues": {"type": "array"},
-            "schemaSync": {"type": "boolean"},
-            "schemaPatch": {"type": "object"},
-        }
-    }

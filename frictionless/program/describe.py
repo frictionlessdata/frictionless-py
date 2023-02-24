@@ -100,14 +100,14 @@ def program_describe(
 
     # Prepare detector
     def prepare_detector():
-        return Detector.from_options(
+        return Detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
             field_names=helpers.parse_csv_string(field_names),
             field_confidence=field_confidence,
             field_float_numbers=field_float_numbers,
-            field_missing_values=helpers.parse_csv_string(field_missing_values),
+            field_missing_values=helpers.parse_csv_string(field_missing_values),  # type: ignore
         )
 
     # Prepare options

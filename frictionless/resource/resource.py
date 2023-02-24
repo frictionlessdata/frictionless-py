@@ -305,12 +305,6 @@ class Resource(Metadata):
         self.close()
 
     @property
-    def normpath(self) -> Optional[str]:
-        """Normalized path of the resource or raise if not set"""
-        if self.path:
-            return helpers.normalize_path(self.path, basepath=self.basepath)
-
-    @property
     def paths(self) -> List[str]:
         """All paths of the resource"""
         paths = []
@@ -326,6 +320,12 @@ class Resource(Metadata):
         for path in self.paths:
             normpaths.append(helpers.normalize_path(path, basepath=self.basepath))
         return normpaths
+
+    @property
+    def normpath(self) -> Optional[str]:
+        """Normalized path of the resource or raise if not set"""
+        if self.path:
+            return helpers.normalize_path(self.path, basepath=self.basepath)
 
     # TODO: add asteriks for user/pass in url
     @property

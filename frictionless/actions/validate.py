@@ -117,10 +117,6 @@ def validate(
     if type == "checklist":
         return Checklist.validate_descriptor(source)
 
-    # Validate detector
-    if type == "detector":
-        return Detector.validate_descriptor(source)
-
     # Validate dialect
     if type == "dialect":
         return Dialect.validate_descriptor(source)
@@ -142,7 +138,7 @@ def validate(
         return Report.validate_descriptor(source)
 
     # Validate schema
-    if type == "schema":
+    if type == "schema/table":
         return Schema.validate_descriptor(source)
 
     # Not supported

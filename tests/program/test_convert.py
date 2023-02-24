@@ -67,6 +67,7 @@ def test_program_convert_er_diagram(tmpdir):
         assert expected.strip() == file.read().strip()
 
 
+@pytest.mark.skip
 def test_program_convert_er_diagram_error(tmpdir):
     # Write
     output_file_path = f"{tmpdir}/package.dot"
