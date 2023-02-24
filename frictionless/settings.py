@@ -17,7 +17,7 @@ def read_asset(*paths, encoding="utf-8"):
 
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
-TYPE_PATTERN = "^([-a-z])+$"
+TYPE_PATTERN = "^([-a-z/])+$"
 VERSION = read_asset("VERSION")
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]

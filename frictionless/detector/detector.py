@@ -14,7 +14,6 @@ from ..platform import platform
 from ..dialect import Dialect
 from .. import settings
 from .. import helpers
-from .. import errors
 
 if TYPE_CHECKING:
     from ..resource import Resource
@@ -148,7 +147,8 @@ class Detector:
                 try:
                     # We use a typed resource to prevent circular dependency
                     res = platform.frictionless_resources.FileResource(path=source)
-                    buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
+                    buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE * 5)
+                    # TODO: we can add smarter checks with regex and streaming json
                     parser = json.loads
                     if source.endswith("yaml"):
                         parser = platform.yaml.safe_load
