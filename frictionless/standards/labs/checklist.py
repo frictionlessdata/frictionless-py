@@ -5,6 +5,7 @@ from typing_extensions import TypedDict, Required
 
 class IChecklist(TypedDict, total=False):
     name: str
+    type: str
     title: str
     description: str
     checks: List[ICheck]
@@ -13,6 +14,7 @@ class IChecklist(TypedDict, total=False):
 
 
 class ICheck(TypedDict, total=False):
+    name: str
     type: Required[str]
     title: str
     description: str

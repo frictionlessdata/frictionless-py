@@ -5,6 +5,7 @@ from typing_extensions import Required, TypedDict
 
 class ISchema(TypedDict, total=False):
     name: str
+    type: str
     title: str
     description: str
     fields: Required[IField]
@@ -15,7 +16,7 @@ class ISchema(TypedDict, total=False):
 
 class IField(TypedDict, total=False):
     name: Required[str]
-    #  type: Required[str]
+    #  type: required
     title: str
     description: str
     format: str

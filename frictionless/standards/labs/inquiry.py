@@ -4,8 +4,15 @@ from typing_extensions import Required, TypedDict
 
 
 class IInquiry(TypedDict, total=False):
+    name: str
+    type: str
+    title: str
+    description: str
     tasks: Required[List[IInquiryTask]]
 
 
 class IInquiryTask(TypedDict, total=False):
-    pass
+    name: str
+    type: str
+    title: str
+    description: str

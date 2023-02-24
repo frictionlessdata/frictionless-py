@@ -7,7 +7,7 @@ from .schema import ISchema
 
 class IResource(TypedDict, total=False):
     name: Required[str]
-    #  type: Required[str]
+    #  type: required
     title: str
     description: str
     path: str

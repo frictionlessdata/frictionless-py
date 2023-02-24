@@ -5,6 +5,7 @@ from typing_extensions import Required, TypedDict
 
 class IReport(TypedDict, total=False):
     name: str
+    type: str
     title: str
     description: str
     valid: Required[bool]
@@ -14,9 +15,11 @@ class IReport(TypedDict, total=False):
 
 
 class IReportTask(TypedDict, total=False):
-    valid: Required[bool]
     name: str
     type: str
+    title: str
+    description: str
+    valid: Required[bool]
     place: str
     warning: List
     errors: List

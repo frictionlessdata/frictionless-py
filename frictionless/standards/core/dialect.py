@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import List, Union, Literal
-from typing_extensions import Required, TypedDict
+from typing import List, Union
+from typing_extensions import TypedDict
 
 
 class IDialect(TypedDict, total=False):
     name: str
+    type: str
     title: str
     description: str
     header: bool
@@ -19,12 +20,14 @@ class IDialect(TypedDict, total=False):
     excel: IExcelControl
 
 
-class IBaseControl(TypedDict, total=False):
+class IControl(TypedDict, total=False):
+    name: str
+    # type: implicit
     title: str
     description: str
 
 
-class ICsvControl(IBaseControl, total=False):
+class ICsvControl(IControl, total=False):
     delimiter: str
     lineTerminator: str
     quoteChar: str
@@ -34,13 +37,13 @@ class ICsvControl(IBaseControl, total=False):
     skipInitialSpace: bool
 
 
-class IJsonControl(IBaseControl, total=False):
+class IJsonControl(IControl, total=False):
     keys: List[str]
     keyed: bool
     property: str
 
 
-class IExcelControl(IBaseControl, total=False):
+class IExcelControl(IControl, total=False):
     sheet: Union[str, int]
     fillMergedCells: bool
     preserveFormatting: bool
