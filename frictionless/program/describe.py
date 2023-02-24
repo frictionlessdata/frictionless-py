@@ -156,12 +156,6 @@ def program_describe(
         raise typer.Exit()
 
     # Return default
-    name = " ".join(source)
-    prefix = "metadata"
-    name = "stdin" if is_stdin else " ".join(source)
-    typer.secho(f"# {'-'*len(prefix)}", bold=True)
-    typer.secho(f"# {prefix}: {name}", bold=True)
-    typer.secho(f"# {'-'*len(prefix)}", bold=True)
     typer.secho("")
     typer.secho(metadata.to_yaml().strip())
     typer.secho("")

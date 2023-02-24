@@ -101,7 +101,7 @@ METADATA_TRAITS = {
     },
     "resource": {
         "names": ["resource.json", "resource.yaml"],
-        "props": ["path", "data"],  # TODO: remove "data" for v6
+        "props": ["path", "data"],
     },
     "dialect": {
         "names": ["dialect.json", "dialect.yaml"],
