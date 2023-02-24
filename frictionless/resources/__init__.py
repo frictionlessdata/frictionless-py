@@ -9,6 +9,6 @@ from .package import PackageResource
 from .pipeline import PipelineResource
 from .report import ReportResource
 from .resource import ResourceResource
-from .schema import SchemaResource
+from .schema import *
 from .table import TableResource
 from .view import ViewResource

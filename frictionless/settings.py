@@ -107,13 +107,13 @@ METADATA_TRAITS = {
         "names": ["dialect.json", "dialect.yaml"],
         "props": ["header", "headerRows", "csv", "json", "excel"],
     },
-    "schema": {
-        "names": ["schema.json", "schema.yaml"],
-        "props": ["fields"],
-    },
     "schema/json": {
         "names": [],
         "props": ["$schema"],
+    },
+    "schema/table": {
+        "names": ["schema.json", "schema.yaml"],
+        "props": ["fields"],
     },
     "checklist": {
         "names": ["checklist.json", "checklist.yaml"],
