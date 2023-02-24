@@ -173,7 +173,7 @@ class CkanStorage:
 
         # Write resources
         for resource in package.resources:
-            if not resource.has_schema:
+            if not resource.schema:
                 resource.infer()
             endpoint = f"{self.__endpoint}/datastore_create"
             ckan_table = self.__write_convert_schema(resource)

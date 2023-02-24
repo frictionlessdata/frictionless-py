@@ -132,7 +132,7 @@ def test_describe_non_tabular_html_issue_715():
     resource = describe("data/text.html")
     assert resource.to_descriptor() == {
         "name": "text",
-        "type": "file",
+        "type": "text",
         "path": "data/text.html",
         "scheme": "file",
         "format": "html",

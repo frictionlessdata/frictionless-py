@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json
+import attrs
 import warnings
 from pathlib import Path
 from collections.abc import Mapping
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
 
 
+@attrs.define(kw_only=True)
 class Resource(Metadata):
     """Resource representation.
 
@@ -53,7 +55,10 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
-    name: str
+    source: Optional[Any] = attrs.field(default=None, kw_only=False)
+    control: Optional[Control] = None
+
+    name: str = ""
     """
     Resource name according to the specs.
     It should be a slugified name of the resource.
@@ -64,37 +69,37 @@ class Resource(Metadata):
     Type of the resource
     """
 
-    title: Optional[str]
+    title: Optional[str] = None
     """
     Resource title according to the specs
     It should a human-oriented title of the resource.
     """
 
-    description: Optional[str]
+    description: Optional[str] = None
     """
     Resource description according to the specs
     It should a human-oriented description of the resource.
     """
 
-    homepage: Optional[str]
+    homepage: Optional[str] = None
     """
     A URL for the home on the web that is related to this package.
     For example, github repository or ckan dataset address.
     """
 
-    profiles: List[Union[IProfile, str]]
+    profiles: List[Union[IProfile, str]] = attrs.field(factory=list)
     """
     Strings identifying the profile of this descriptor.
     For example, `tabular-data-resource`.
     """
 
-    licenses: List[dict]
+    licenses: List[dict] = attrs.field(factory=list)
     """
     The license(s) under which the resource is provided.
     If omitted it's considered the same as the package's licenses.
     """
 
-    sources: List[dict]
+    sources: List[dict] = attrs.field(factory=list)
     """
     The raw sources for this data resource.
     It MUST be an array of Source objects.
@@ -102,70 +107,77 @@ class Resource(Metadata):
     MAY have path and/or email properties.
     """
 
-    path: Optional[str]
+    path: Optional[str] = None
     """
     Path to data source
     """
 
-    data: Optional[Any]
+    data: Optional[Any] = None
     """
     Inline data source
     """
 
-    scheme: Optional[str]
+    scheme: Optional[str] = None
     """
     Scheme for loading the file (file, http, ...).
     If not set, it'll be inferred from `source`.
     """
 
-    format: Optional[str]
+    format: Optional[str] = None
     """
     File source's format (csv, xls, ...).
     If not set, it'll be inferred from `source`.
     """
 
-    mediatype: Optional[str]
+    mediatype: Optional[str] = None
     """
     Mediatype/mimetype of the resource e.g. “text/csv”,
     or “application/vnd.ms-excel”.  Mediatypes are maintained by the
     Internet Assigned Numbers Authority (IANA) in a media type registry.
     """
 
-    compression: Optional[str]
+    compression: Optional[str] = None
     """
     Source file compression (zip, ...).
     If not set, it'll be inferred from `source`.
     """
 
-    extrapaths: List[str]
+    extrapaths: List[str] = attrs.field(factory=list)
     """
     List of paths to concatenate to the main path.
     It's used for multipart resources.
     """
 
-    innerpath: Optional[str]
+    innerpath: Optional[str] = None
     """
     Path within the compressed file.
     It defaults to the first file in the archive (if the source is an archive).
     """
 
-    encoding: Optional[str]
+    encoding: Optional[str] = None
     """
     Source encoding.
     If not set, it'll be inferred from `source`.
     """
 
-    detector: Detector
+    dialect: Dialect = attrs.field(factory=Dialect)
+    stats: Stats = attrs.field(factory=Stats)
+
+    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
+
+    detector: Detector = attrs.field(factory=Detector)
     """
     File/table detector.
     For more information, please check the Detector documentation.
     """
 
-    package: Optional[Package]
+    package: Optional[Package] = None
     """
     Parental to this resource package.
     For more information, please check the Package documentation.
     """
+
+    schema: Optional[Schema] = None
 
     @classmethod
     def __create__(
@@ -210,66 +222,7 @@ class Resource(Metadata):
                 resource = system.select_resource_class(type)(**options)
             return resource
 
-    def __init__(
-        self,
-        source: Optional[Any] = None,
-        control: Optional[Control] = None,
-        *,
-        # Standard
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        homepage: Optional[str] = None,
-        profiles: List[Union[IProfile, str]] = [],
-        licenses: List[dict] = [],
-        sources: List[dict] = [],
-        path: Optional[str] = None,
-        data: Optional[Any] = None,
-        scheme: Optional[str] = None,
-        format: Optional[str] = None,
-        mediatype: Optional[str] = None,
-        compression: Optional[str] = None,
-        extrapaths: Optional[List[str]] = None,
-        innerpath: Optional[str] = None,
-        encoding: Optional[str] = None,
-        dialect: Optional[Union[Dialect, str]] = None,
-        schema: Optional[Union[Schema, str]] = None,
-        stats: Optional[Stats] = None,
-        # Software
-        basepath: Optional[str] = None,
-        detector: Optional[Detector] = None,
-        package: Optional[Package] = None,
-    ):
-        # Guaranteed by create hook
-        assert not source
-        assert not control
-
-        # Store state
-        self.name = name or ""
-        self.title = title
-        self.description = description
-        self.homepage = homepage
-        self.profiles = profiles.copy()
-        self.licenses = licenses.copy()
-        self.sources = sources.copy()
-        self.path = path
-        self.data = data
-        self.scheme = scheme
-        self.format = format
-        self.mediatype = mediatype
-        self.compression = compression
-        self.extrapaths = extrapaths or []
-        self.innerpath = innerpath
-        self.encoding = encoding
-        self.basepath = basepath
-        self.package = package
-
-        # Store dereference state
-        self.dialect = dialect or Dialect()
-        self.schema = schema
-        self.stats = stats or Stats()
-        self.detector = detector or Detector()
-
+    def __attrs_post_init__(self):
         # Store internal state
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
@@ -293,6 +246,16 @@ class Resource(Metadata):
         self.add_defined("mediatype")
         self.add_defined("dialect")
         self.add_defined("stats")
+
+    def __setattr__(self, name, value):
+        if name == "schema":
+            if isinstance(value, str):
+                value = Schema.from_descriptor(value, basepath=self.basepath)
+        elif name == "dialect":
+            assert value
+            if isinstance(value, str):
+                value = Dialect.from_descriptor(value, basepath=self.basepath)
+        return super().__setattr__(name, value)
 
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
@@ -362,71 +325,19 @@ class Resource(Metadata):
         return self.type == "table"
 
     @property
-    def dialect(self) -> Dialect:
-        """
-        File Dialect object.
-        For more information, please check the Dialect documentation.
-        """
-        return self.__dialect
-
-    @dialect.setter
-    def dialect(self, value: Optional[Union[Dialect, str]]):
-        if value is None:
-            value = Dialect()
-        elif isinstance(value, str):
-            value = Dialect.from_descriptor(value, basepath=self.basepath)
-        self.__dialect = value
-
-    @property
-    def has_schema(self) -> bool:
-        return self.__schema is not None
-
-    @property
-    def schema(self) -> Schema:
-        """
-        Table Schema object.
-        For more information, please check the Schema documentation.
-        """
-        if self.__schema is None:
-            raise FrictionlessException("schema is not set or inferred")
-        return self.__schema
-
-    @schema.setter
-    def schema(self, value: Optional[Union[Schema, str]]):
-        if isinstance(value, str):
-            value = Schema.from_descriptor(value, basepath=self.basepath)
-        self.__schema = value
-
-    @property
-    def stats(self) -> Stats:
-        """
-        Stats object.
-        An object with the following possible properties: md5, sha256, bytes, fields, rows.
-        """
-        return self.__stats
-
-    @stats.setter
-    def stats(self, value: Optional[Union[Stats, str]]):
-        if value is None:
-            value = Stats()
-        elif isinstance(value, str):
-            value = Stats.from_descriptor(value, basepath=self.basepath)
-        self.__stats = value
-
-    @property
     def basepath(self) -> Optional[str]:
         """
         A basepath of the resource
         The normpath of the resource is joined `basepath` and `/path`
         """
-        if self.__basepath:
-            return self.__basepath
+        if self._basepath:
+            return self._basepath
         if self.package:
             return self.package.basepath
 
     @basepath.setter
     def basepath(self, value: Optional[str]):
-        self.__basepath = value
+        self._basepath = value
 
     @property
     def buffer(self) -> IBuffer:
@@ -560,7 +471,7 @@ class Resource(Metadata):
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
-                self.stats = None
+                self.stats = Stats()
                 return
             stream = self.__row_stream or self.byte_stream
             helpers.pass_through(stream)
@@ -632,7 +543,7 @@ class Resource(Metadata):
 
     def __prepare_dialect(self):
         self.metadata_assigned.add("dialect")
-        self.__dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
+        self.dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
 
     def __prepare_labels(self):
         self.__labels = self.dialect.read_labels(self.sample)
@@ -642,15 +553,17 @@ class Resource(Metadata):
 
     def __prepare_schema(self):
         self.metadata_assigned.add("schema")
-        self.__schema = self.detector.detect_schema(
+        self.schema = self.detector.detect_schema(
             self.fragment,
             labels=self.labels,
-            schema=self.schema if self.has_schema else None,
+            schema=self.schema,
             field_candidates=system.detect_field_candidates(),
         )
         self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
+        assert self.schema
+
         # Create header
         self.__header = Header(
             self.__labels,
@@ -668,6 +581,8 @@ class Resource(Metadata):
                 raise FrictionlessException(error)
 
     def __prepare_lookup(self):
+        assert self.schema
+
         self.__lookup = Lookup()
         for fk in self.schema.foreign_keys:
             # Prepare source
@@ -685,7 +600,7 @@ class Resource(Metadata):
                 source_res = self.package.get_resource(source_name)
             else:
                 source_res = self.to_copy()
-            if source_res.has_schema:
+            if source_res.schema:
                 source_res.schema.foreign_keys = []
 
             # Prepare lookup
@@ -707,6 +622,7 @@ class Resource(Metadata):
         # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
+        assert self.schema
 
         # Create field info
         field_number = 0
@@ -747,6 +663,7 @@ class Resource(Metadata):
 
         # Create row stream
         def row_stream():
+            assert self.schema
             self.stats.rows = 0
             for row_number, cells in enumerated_content_stream:
                 self.stats.rows += 1
@@ -978,12 +895,13 @@ class Resource(Metadata):
 
     def to_inline(self, *, dialect=None):
         """Helper to export resource as an inline data"""
-        target = self.write(Resource(format="inline", dialect=dialect))
+        target = self.write(Resource(format="inline", dialect=dialect))  # type: ignore
         return target.data
 
     def to_pandas(self, *, dialect=None):
         """Helper to export resource as an Pandas dataframe"""
-        target = self.write(Resource(format="pandas", dialect=dialect))
+        dialect = dialect or Dialect()
+        target = self.write(Resource(format="pandas", dialect=dialect))  # type: ignore
         return target.data
 
     @staticmethod
@@ -999,6 +917,7 @@ class Resource(Metadata):
         class ResourceView(platform.petl.Table):
             def __iter__(self):
                 with resource:
+                    assert resource.schema
                     if normalize:
                         yield resource.schema.field_names
                         yield from (row.to_list() for row in resource.row_stream)

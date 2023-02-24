@@ -32,7 +32,7 @@ class PandasParser(Parser):
 
         # Schema
         schema = self.__read_convert_schema()
-        if not self.resource.has_schema:
+        if not self.resource.schema:
             self.resource.schema = schema
 
         # Lists
@@ -120,6 +120,7 @@ class PandasParser(Parser):
         index_rows = []
         fixed_types = {}
         with source:
+            assert source.schema
             for row in source.row_stream:
                 data_values = []
                 index_values = []
