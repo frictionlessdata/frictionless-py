@@ -100,6 +100,5 @@ class Step(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Step(type)
+    def metadata_select_class(cls, type):
+        return system.select_step_class(type)

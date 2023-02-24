@@ -32,6 +32,6 @@ class InlinePlugin(Plugin):
         if resource.format == "inline":
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "inline":
             return InlineControl

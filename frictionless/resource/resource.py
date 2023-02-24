@@ -53,7 +53,7 @@ class Resource(Metadata):
     validate = methods.validate
     transform = methods.transform
 
-    type: ClassVar[Union[str, None]]
+    type: ClassVar[str]
     """
     Type of the resource
     """
@@ -204,10 +204,10 @@ class Resource(Metadata):
 
         # Routing
         if cls is Resource:
-            resource = platform.frictionless_resources.DefaultResource(**options)
+            resource = platform.frictionless_resources.FileResource(**options)
             type = system.detect_resource_type(resource)
             if type:
-                resource = system.select_Resource(type)(**options)
+                resource = system.select_resource_class(type)(**options)
             return resource
 
     def __init__(
@@ -1015,7 +1015,7 @@ class Resource(Metadata):
     metadata_Error = errors.ResourceError
     metadata_profile = {
         "type": "object",
-        "required": ["name"],
+        "required": ["name"],  # TODO: add "type" in v6
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
@@ -1061,14 +1061,16 @@ class Resource(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Resource(type)
-        if property == "dialect":
+    def metadata_select_class(cls, type):
+        return system.select_resource_class(type)
+
+    @classmethod
+    def metadata_select_property_class(cls, name):
+        if name == "dialect":
             return Dialect
-        elif property == "schema":
+        elif name == "schema":
             return Schema
-        elif property == "stats":
+        elif name == "stats":
             return Stats
 
     @classmethod

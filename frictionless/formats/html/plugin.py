@@ -21,6 +21,6 @@ class HtmlPlugin(Plugin):
         if resource.format == "html":
             resource.mediatype = "text/html"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "html":
             return HtmlControl

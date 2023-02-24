@@ -24,6 +24,6 @@ class BufferPlugin(Plugin):
         elif resource.scheme == "buffer":
             resource.data = b""
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "buffer":
             return BufferControl

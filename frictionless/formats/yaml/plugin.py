@@ -21,6 +21,6 @@ class YamlPlugin(Plugin):
         if resource.format == "yaml":
             resource.mediatype = "text/yaml"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "yaml":
             return YamlControl

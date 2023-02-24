@@ -27,6 +27,6 @@ class JsonPlugin(Plugin):
         if resource.format in ["jsonl", "ndjson"]:
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "json":
             return JsonControl

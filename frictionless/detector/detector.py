@@ -9,9 +9,9 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
+from ..fields import AnyField
 from ..platform import platform
 from ..metadata import Metadata
-from ..fields import AnyField
 from ..dialect import Dialect
 from .. import settings
 from .. import helpers
@@ -165,7 +165,7 @@ class Detector(Metadata):
             if source.endswith(("json", "yaml")):
                 try:
                     # We use a typed resource to prevent circular dependency
-                    res = platform.frictionless_resources.DefaultResource(path=source)
+                    res = platform.frictionless_resources.FileResource(path=source)
                     buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE)
                     parser = json.loads
                     if source.endswith("yaml"):
@@ -305,6 +305,7 @@ class Detector(Metadata):
 
         return dialect
 
+    # TODO: detect fields without type
     def detect_schema(
         self,
         fragment: List[list],

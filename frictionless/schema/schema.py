@@ -295,8 +295,8 @@ class Schema(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "fields":
+    def metadata_select_property_class(cls, name):
+        if name == "fields":
             return Field
 
     # TODO: handle invalid structure

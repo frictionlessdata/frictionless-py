@@ -7,7 +7,7 @@ from .schema import ISchema
 
 class IResource(TypedDict, total=False):
     name: Required[str]
-    #  type: str
+    #  type: Required[str]
     title: str
     description: str
     path: str
@@ -21,9 +21,13 @@ class IResource(TypedDict, total=False):
     dialect: IDialect
 
 
+class IFileResource(IResource, total=False):
+    type: Required[Literal["file"]]
+
+
 class IJsonResource(IResource, total=False):
     type: Required[Literal["json"]]
-    profile: Dict  # Json Schema
+    schema: Dict  # Json Schema
 
 
 class ITableResource(IResource, total=False):

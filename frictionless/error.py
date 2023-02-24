@@ -81,9 +81,8 @@ class Error(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return platform.frictionless.system.select_Error(type)
+    def metadata_select_class(cls, type):
+        return platform.frictionless.system.select_error_class(type)
 
     @classmethod
     def metadata_import(cls, descriptor, **options):

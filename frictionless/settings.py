@@ -111,6 +111,10 @@ METADATA_TRAITS = {
         "names": ["schema.json", "schema.yaml"],
         "props": ["fields"],
     },
+    "schema/json": {
+        "names": [],
+        "props": ["$schema"],
+    },
     "checklist": {
         "names": ["checklist.json", "checklist.yaml"],
         "props": ["checks"],
@@ -118,10 +122,6 @@ METADATA_TRAITS = {
     "pipeline": {
         "names": ["pipeline.json", "pipeline.yaml"],
         "props": ["steps"],
-    },
-    "profile": {
-        "names": ["profile.json", "profile.yaml"],
-        "props": ["$schema"],
     },
     "report": {
         "names": ["report.json", "report.yaml"],

@@ -87,23 +87,23 @@ class Plugin:
         """
         pass
 
-    def select_Check(self, type: str) -> Optional[Type[Check]]:
+    def select_check_class(self, type: Optional[str]) -> Optional[Type[Check]]:
         pass
 
-    def select_Control(self, type: str) -> Optional[Type[Control]]:
+    def select_control_class(self, type: Optional[str]) -> Optional[Type[Control]]:
         pass
 
-    def select_Error(self, type: str) -> Optional[Type[Error]]:
+    def select_error_class(self, type: Optional[str]) -> Optional[Type[Error]]:
         pass
 
-    def select_Field(self, type: str) -> Optional[Type[Field]]:
+    def select_field_class(self, type: Optional[str]) -> Optional[Type[Field]]:
         pass
 
-    def select_Package(self, type: str) -> Optional[Type[Package]]:
+    def select_package_class(self, type: Optional[str]) -> Optional[Type[Package]]:
         pass
 
-    def select_Resource(self, type: str) -> Optional[Type[Resource]]:
+    def select_resource_class(self, type: Optional[str]) -> Optional[Type[Resource]]:
         pass
 
-    def select_Step(self, type: str) -> Optional[Type[Step]]:
+    def select_step_class(self, type: Optional[str]) -> Optional[Type[Step]]:
         pass

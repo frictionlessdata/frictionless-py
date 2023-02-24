@@ -41,6 +41,6 @@ class SqlPlugin(Plugin):
         if resource.format == "sql":
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "sql":
             return SqlControl

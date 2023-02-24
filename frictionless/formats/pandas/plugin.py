@@ -38,6 +38,6 @@ class PandasPlugin(Plugin):
         if resource.format == "pandas":
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "pandas":
             return PandasControl

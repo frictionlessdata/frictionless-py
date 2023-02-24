@@ -124,7 +124,7 @@ def test_resource_source_non_tabular():
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
-        assert resource.type is None
+        assert resource.type is "file"
         assert resource.basepath is None
         assert resource.memory is False
         assert resource.multipart is False
@@ -144,7 +144,7 @@ def test_resource_source_non_tabular_remote():
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
-        assert resource.type is None
+        assert resource.type is "file"
         assert resource.memory is False
         assert resource.multipart is False
         assert resource.basepath is None

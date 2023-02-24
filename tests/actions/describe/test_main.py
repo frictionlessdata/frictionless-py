@@ -115,6 +115,7 @@ def test_describe_non_tabular_resource_issue_641():
     resource = describe("data/document.pdf", stats=True)
     assert resource.to_descriptor() == {
         "name": "document",
+        "type": "file",
         "path": "data/document.pdf",
         "scheme": "file",
         "format": "pdf",
@@ -131,6 +132,7 @@ def test_describe_non_tabular_html_issue_715():
     resource = describe("data/text.html")
     assert resource.to_descriptor() == {
         "name": "text",
+        "type": "file",
         "path": "data/text.html",
         "scheme": "file",
         "format": "html",

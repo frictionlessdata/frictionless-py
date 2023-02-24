@@ -146,10 +146,10 @@ class ReportTask(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "stats":
+    def metadata_select_property_class(cls, name):
+        if name == "stats":
             return Stats
-        elif property == "errors":
+        elif name == "errors":
             return Error
 
     # TODO: validate valid/errors count

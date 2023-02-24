@@ -30,6 +30,6 @@ class GsheetsPlugin(Plugin):
         if resource.format == "gsheets":
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "gsheets":
             return GsheetsControl

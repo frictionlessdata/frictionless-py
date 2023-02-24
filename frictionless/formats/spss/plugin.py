@@ -21,6 +21,6 @@ class SpssPlugin(Plugin):
         if resource.format in ["sav", "zsav"]:
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "spss":
             return SpssControl

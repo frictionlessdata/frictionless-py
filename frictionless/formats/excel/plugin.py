@@ -32,6 +32,6 @@ class ExcelPlugin(Plugin):
         if resource.format in ["xlsx", "xls"]:
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "excel":
             return ExcelControl

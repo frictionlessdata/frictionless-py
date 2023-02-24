@@ -25,6 +25,6 @@ class ParquetPlugin(Plugin):
         if resource.format in ["parq", "parquet"]:
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "parquet":
             return ParquetControl

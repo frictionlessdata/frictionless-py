@@ -25,6 +25,6 @@ class StreamPlugin(Plugin):
         elif resource.scheme == "stream":
             resource.data = io.BufferedRandom(io.BytesIO())  # type: ignore
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "stream":
             return StreamControl

@@ -30,6 +30,6 @@ class OdsPlugin(Plugin):
         if resource.format == "ods":
             return "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "ods":
             return OdsControl

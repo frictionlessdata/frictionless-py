@@ -21,6 +21,6 @@ class MultipartPlugin(Plugin):
         if resource.extrapaths:
             resource.scheme = "multipart"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "multipart":
             return MultipartControl

@@ -12,8 +12,8 @@ def test_inquiry_task_validate():
 
 
 @pytest.mark.skip
-def test_inquiry_task_validate_standards_v2_strict():
+def test_inquiry_task_validate_standards_v2():
     inquiry = InquiryTask(resource="data/resource.json")
-    with system.use_context(standards="v2-strict"):
+    with system.use_context(standards="v2"):
         report = inquiry.validate()
     assert not report.valid

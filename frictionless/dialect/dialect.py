@@ -243,8 +243,8 @@ class Dialect(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "controls":
+    def metadata_select_property_class(cls, name):
+        if name == "controls":
             return Control
 
     @classmethod

@@ -15,11 +15,15 @@ class ISchema(TypedDict, total=False):
 
 class IField(TypedDict, total=False):
     name: Required[str]
-    #  type: str
+    #  type: Required[str]
     title: str
     description: str
     format: str
     missingValues: List[str]
+
+
+class IAnyField(IField, total=False):
+    type: Required[Literal["any"]]
 
 
 class IArrayField(IField, total=False):

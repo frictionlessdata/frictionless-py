@@ -179,6 +179,11 @@ class Package(Metadata):
             # Descriptor
             return cls.from_descriptor(source, **options)  # type: ignore
 
+        # Routing
+        if cls is Package:
+            package = platform.frictionless_packages.DefaultPackage(**options)
+            return package
+
     def __init__(
         self,
         source: Optional[Any] = None,
@@ -472,10 +477,12 @@ class Package(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Package(type)
-        if property == "resources":
+    def metadata_select_class(cls, type):
+        return system.select_package_class(type)
+
+    @classmethod
+    def metadata_select_property_class(cls, name):
+        if name == "resources":
             return Resource
 
     @classmethod

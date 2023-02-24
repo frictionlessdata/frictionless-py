@@ -69,6 +69,6 @@ class table_diff(Step):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "resource":
+    def metadata_select_property_class(cls, name):
+        if name == "resource":
             return Resource

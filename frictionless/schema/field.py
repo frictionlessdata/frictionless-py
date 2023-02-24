@@ -5,6 +5,7 @@ import decimal
 from functools import partial
 from typing import TYPE_CHECKING, ClassVar, Optional, List
 from ..metadata import Metadata
+from ..platform import platform
 from ..system import system
 from .. import settings
 from .. import errors
@@ -219,9 +220,8 @@ class Field(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Field(type)
+    def metadata_select_class(cls, type):
+        return system.select_field_class(type)
 
     @classmethod
     def metadata_transform(cls, descriptor):
@@ -249,7 +249,7 @@ class Field(Metadata):
         example = descriptor.get("example")
         if example:
             type = descriptor.get("type")
-            Class = system.select_Field(type)
+            Class = system.select_field_class(type)
             field = Class(name=descriptor["name"])
             _, notes = field.read_cell(example)
             if notes is not None:

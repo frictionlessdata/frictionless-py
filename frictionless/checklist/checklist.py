@@ -155,6 +155,6 @@ class Checklist(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "checks":
+    def metadata_select_property_class(cls, name):
+        if name == "checks":
             return Check

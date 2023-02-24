@@ -166,9 +166,10 @@ class Metadata(metaclass=Metaclass):
             if "basepath" in inspect.signature(cls.__init__).parameters:
                 options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
+        # TODO: remove in v6
         # Transform with a base class in case the type is not available
         cls.metadata_transform(descriptor)
-        Class = cls.metadata_specify(type=descriptor.get("type")) or cls
+        Class = cls.metadata_select_class(descriptor.get("type"))
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
         Class.metadata_transform(descriptor)
         errors = list(Class.metadata_validate(descriptor))
@@ -283,6 +284,14 @@ class Metadata(metaclass=Metaclass):
     metadata_descriptor_initial: Optional[IDescriptor] = None
 
     @classmethod
+    def metadata_select_class(cls, type: Optional[str]) -> Type[Metadata]:
+        return cls
+
+    @classmethod
+    def metadata_select_property_class(cls, name: str) -> Optional[Type[Metadata]]:
+        pass
+
+    @classmethod
     def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
         try:
             if isinstance(descriptor, Mapping):
@@ -310,22 +319,16 @@ class Metadata(metaclass=Metaclass):
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
-    def metadata_specify(
-        cls, *, type: Optional[str] = None, property: Optional[str] = None
-    ) -> Optional[Type[Metadata]]:
-        pass
-
-    @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
         for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.get(name)
-            Class = cls.metadata_specify(property=name)
+            Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
                     for item in value:
                         if isinstance(item, dict):
                             type = item.get("type")
-                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass = Class.metadata_select_class(type)
                             ItemClass.metadata_transform(item)
                 elif isinstance(value, dict):
                     Class.metadata_transform(value)
@@ -355,13 +358,13 @@ class Metadata(metaclass=Metaclass):
             yield Error(note=note)
         for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.get(name)
-            Class = cls.metadata_specify(property=name)
+            Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
                     for item in value:
                         if isinstance(item, dict):
                             type = item.get("type")
-                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass = Class.metadata_select_class(type)
                             yield from ItemClass.metadata_validate(item)
                 elif isinstance(value, dict):
                     yield from Class.metadata_validate(value)
@@ -379,13 +382,13 @@ class Metadata(metaclass=Metaclass):
                 continue
             if name == "type" and is_typed_class:
                 continue
-            Class = cls.metadata_specify(property=name)
+            Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
                     for ix, item in enumerate(value):
                         if isinstance(item, dict):
                             type = item.get("type")
-                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass = Class.metadata_select_class(type)
                             value[ix] = ItemClass.metadata_import(item, basepath=basepath)
                         elif isinstance(item, str):
                             value[ix] = Class.from_descriptor(item, basepath=basepath)
@@ -409,7 +412,7 @@ class Metadata(metaclass=Metaclass):
             if name != "type" and not self.has_defined(stringcase.snakecase(name)):
                 continue
             value = getattr(self, stringcase.snakecase(name), None)
-            Class = self.metadata_specify(property=name)
+            Class = self.metadata_select_property_class(name)
             if value is None or (isinstance(value, dict) and value == {}):
                 continue
             if Class:

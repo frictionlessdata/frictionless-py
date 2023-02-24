@@ -124,6 +124,5 @@ class Check(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Check(type)
+    def metadata_select_class(cls, type):
+        return system.select_check_class(type)

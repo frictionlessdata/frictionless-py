@@ -179,12 +179,12 @@ class InquiryTask(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "dialect":
+    def metadata_select_property_class(cls, name):
+        if name == "dialect":
             return Dialect
-        elif property == "schema":
+        elif name == "schema":
             return Schema
-        elif property == "checklist":
+        elif name == "checklist":
             return Checklist
 
     @classmethod

@@ -324,7 +324,7 @@ trusted = Option(
 
 standards = Option(
     default=None,
-    help="Possible options: v1, v2, v2-strict (default: v2)",
+    help="Possible options: v1, v2 (default: v2)",
 )
 
 descriptor = Option(
