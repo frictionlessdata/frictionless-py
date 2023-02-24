@@ -25,6 +25,10 @@ class IFileResource(IResource, total=False):
     type: Required[Literal["file"]]
 
 
+class ITextResource(IResource, total=False):
+    type: Required[Literal["text"]]
+
+
 class IJsonResource(IResource, total=False):
     type: Required[Literal["json"]]
     schema: Dict  # Json Schema
