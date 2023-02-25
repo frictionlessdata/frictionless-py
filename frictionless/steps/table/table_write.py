@@ -25,10 +25,10 @@ class table_write(Step):
     # Transform
 
     def transform_resource(self, resource):
-        dialect = None
+        target = resources.TableResource(path=self.path)
         if "dialect" in self.custom:
             dialect = Dialect.from_descriptor(self.custom["dialect"])
-        target = resources.TableResource(path=self.path, dialect=dialect)
+            target.dialect = dialect
         resource.write(target)
 
     # Metadata

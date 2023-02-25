@@ -1,6 +1,7 @@
 from __future__ import annotations
 import attrs
 from typing import List
+from ...schema import Schema
 from ...pipeline import Step
 
 
@@ -29,7 +30,7 @@ class table_recast(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        resource.schema = None
+        resource.schema = Schema()
         resource.data = table.recast(  # type: ignore
             key=self.field_name,
             variablefield=self.from_field_names[0],

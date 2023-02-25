@@ -15,6 +15,7 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite(database_url):
+    assert control.table
     resource = Resource("data/table.csv")
     resource.index(database_url, table_name=control.table)
     assert Resource(database_url, control=control).extract() == [
@@ -29,6 +30,7 @@ def test_resource_index_sqlite(database_url):
 @pytest.mark.ci(reason="requries sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast(database_url):
+    assert control.table
     resource = Resource("data/table.csv")
     resource.index(database_url, table_name=control.table, fast=True)
     assert Resource(database_url, control=control).extract() == [
@@ -43,6 +45,7 @@ def test_resource_index_sqlite_fast(database_url):
 @pytest.mark.ci(reason="requries sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
+    assert control.table
     resource = Resource("data/table.csv")
     resource.infer()
     resource.schema.set_field_type("name", "integer")
@@ -58,6 +61,7 @@ def test_resource_index_sqlite_fast_with_use_fallback(database_url):
 
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_on_progress(database_url, mocker):
+    assert control.table
     on_progress = mocker.stub(name="on_progress")
     resource = Resource("data/table.csv")
     resource.index(database_url, table_name=control.table, on_progress=on_progress)

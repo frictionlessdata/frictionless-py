@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+from ...schema import Schema
 from ...pipeline import Step
 
 
@@ -18,6 +19,6 @@ class table_transpose(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        resource.schema = None
+        resource.schema = Schema()
         resource.data = table.transpose()  # type: ignore
         resource.infer()
