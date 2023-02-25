@@ -293,14 +293,18 @@ class Package(Metadata):
         """Remove all the resources"""
         self.resources = []
 
-    def deduplicate_resources(self):
+    # Dedup
+
+    def dedup(self):
         if len(self.resource_names) != len(set(self.resource_names)):
             seen_names = []
-            for index, name in enumerate(self.resource_names):
+            for index, resource in enumerate(self.resources):
+                name = resource.name
                 count = seen_names.count(name) + 1
                 if count > 1:
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
+                resource.dedup()
 
     # Infer
 
@@ -312,7 +316,7 @@ class Package(Metadata):
             stats: stream files completely and infer stats
         """
         if dedup:
-            self.deduplicate_resources()
+            self.dedup()
         for resource in self.resources:
             resource.infer(dedup=dedup, stats=stats)
 

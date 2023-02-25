@@ -501,12 +501,15 @@ class Resource(Metadata):
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if dedup:
-                self.schema.deduplicate_fields()
+                self.dedup()
             if not stats:
                 self.stats = Stats()
                 return
             stream = self.__row_stream or self.byte_stream
             helpers.pass_through(stream)
+
+    def dedup(self):
+        self.schema.dedup()
 
     # Open/Close
 
