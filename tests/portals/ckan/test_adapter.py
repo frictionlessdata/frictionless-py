@@ -1,4 +1,3 @@
-# type: ignore
 from _pytest._code.code import ExceptionInfo
 import pytest
 
@@ -181,9 +180,9 @@ def test_ckan_adapter_catalog(options_br):
     url = options_br.pop("url")
     control = portals.CkanControl(baseurl=url)
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert len(catalog.packages) == 10
-    assert packages == [
+    names = [dataset.name for dataset in catalog.datasets]
+    assert len(names) == 10
+    assert names == [
         "corridas-do-taxigov",
         "comprasnet-contratos",
         "raio-x-da-administracao-publica-federal",
@@ -202,8 +201,8 @@ def test_ckan_adapter_catalog_check_package_resources(options_br):
     url = options_br.pop("url")
     control = portals.CkanControl(baseurl=url)
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 10
-    assert len(catalog.packages[0].resources) == 47
+    assert len(catalog.datasets) == 10
+    assert len(catalog.datasets[0].package.resources) == 47
 
 
 @pytest.mark.vcr
@@ -212,7 +211,7 @@ def test_ckan_adapter_catalog_read_package_resources(options_br):
     url = options_br.pop("url")
     control = portals.CkanControl(baseurl=url)
     catalog = Catalog(control=control)
-    rows = catalog.packages[1].resources[3].read_rows(size=2)
+    rows = catalog.datasets[1].package.resources[3].read_rows(size=2)
     data = [[field["id"], field["receita_despesa"]] for field in rows]
     assert data == [[149633, "Despesa"], [149661, "Despesa"]]
 
@@ -223,9 +222,9 @@ def test_ckan_adapter_catalog_limit_packages(options_br):
     url = options_br.pop("url")
     control = portals.CkanControl(baseurl=url, num_packages=2)
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert len(catalog.packages) == 2
-    assert packages == ["corridas-do-taxigov", "comprasnet-contratos"]
+    names = [dataset.name for dataset in catalog.datasets]
+    assert len(names) == 2
+    assert names == ["corridas-do-taxigov", "comprasnet-contratos"]
 
 
 @pytest.mark.skip
@@ -236,7 +235,7 @@ def test_ckan_adapter_catalog_check_ignore_packages(options_br):
         baseurl=url, ignore_package_errors=True, num_packages=800
     )
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 797
+    assert len(catalog.datasets) == 797
 
 
 @pytest.mark.vcr
@@ -246,9 +245,9 @@ def test_ckan_adapter_catalog_read_packages_by_organization(options_br):
         baseurl=url, organization_name="agencia-espacial-brasileira-aeb"
     )
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert len(catalog.packages) == 6
-    assert packages == [
+    names = [dataset.name for dataset in catalog.datasets]
+    assert len(names) == 6
+    assert names == [
         "catalogo-industria-espacial",
         "dados-abertos-de-contratos-administrativos",
         "dados-abertos-de-recursos-humanos-da-aeb",
@@ -265,9 +264,9 @@ def test_ckan_adapter_catalog_read_packages_by_groupid(options_br):
         baseurl=url, group_id="agricultura-extrativismo-e-pesca"
     )
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert len(catalog.packages) == 9
-    assert packages == [
+    names = [dataset.name for dataset in catalog.datasets]
+    assert len(names) == 9
+    assert names == [
         "seguro-da-agricultura-familiar-seaf",
         "apoio-a-unidade-de-ensino-em-aquicultura",
         "aquicultura-familiar",
@@ -299,7 +298,7 @@ def test_ckan_adapter_catalog_read_packages_by_invalid_organization_name(options
         baseurl=url, organization_name="agricultura-extrativismo-e-pescaa"
     )
     catalog = Catalog(control=control)
-    assert catalog.packages == []
+    assert catalog.datasets == []
 
 
 @pytest.mark.vcr
@@ -307,8 +306,8 @@ def test_ckan_adapter_catalog_search(options_br):
     url = options_br.pop("url")
     control = portals.CkanControl(baseurl=url, search={"q": "name:bolsa*"})
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert packages == [
+    names = [dataset.name for dataset in catalog.datasets]
+    assert names == [
         "bolsa-familia-saques",
         "bolsa-familia-pagamentos",
         "bolsa-familia-misocial",
@@ -329,8 +328,8 @@ def test_ckan_adapter_catalog_search_or_query(options_br):
         baseurl=url, search={"q": "title:Contratos || title:Federal"}
     )
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert packages == [
+    names = [dataset.name for dataset in catalog.datasets]
+    assert names == [
         "licitacoes-e-contratos-do-governo-federal",
         "dados-dos-contratos-vigentes-do-servico-de-limpeza-urbana-do-distrito-federal",
         "contratos-ifg",
@@ -351,8 +350,8 @@ def test_ckan_adapter_catalog_search_with_results_offset(options_br):
         baseurl=url, results_offset=3, search={"q": "title:Contratos || title:Federal"}
     )
     catalog = Catalog(control=control)
-    packages = [package.name for package in catalog.packages]
-    assert packages == [
+    names = [dataset.name for dataset in catalog.datasets]
+    assert names == [
         "contratos14",
         "contratos10",
         "contratos-unb",

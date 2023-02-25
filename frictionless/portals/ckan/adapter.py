@@ -1,10 +1,10 @@
 import os
 import json
-from typing import List, Union
+from typing import Union
 from ...exception import FrictionlessException
 from ...system import system, Adapter
 from ...platform import platform
-from ...catalog import Catalog
+from ...catalog import Catalog, Dataset
 from ...package import Package
 from ...resource import Resource
 from ... import helpers
@@ -23,12 +23,11 @@ class CkanAdapter(Adapter):
 
     # Read a set of CKAN datasets as a Catalog
     def read_catalog(self) -> Catalog:
-        packages: List[Union[Package, str]] = []
+        catalog = Catalog()
         params = {}
         endpoint: str = ""
         response: dict = {}
         descriptor: dict = {}
-        num_packages: Union[int, None] = None
         headers = set_headers(self)
 
         assert self.control.baseurl
@@ -60,7 +59,6 @@ class CkanAdapter(Adapter):
         response = make_ckan_request(endpoint, headers=headers, params=params)
         if not self.control.group_id:
             results = response["result"]["results"]
-            num_packages = response["result"]["count"]
         else:
             results = response["result"]
 
@@ -69,7 +67,8 @@ class CkanAdapter(Adapter):
                 descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
                 descriptor.pop("type", None)
                 package = Package.from_descriptor(descriptor)
-                packages.append(package)
+                dataset = Dataset(name=package.name, package=package)
+                catalog.add_dataset(dataset)
             except FrictionlessException as e:
                 if self.control.ignore_package_errors:
                     print(f'Error in CKAN dataset {descriptor["id"]}: {e}')
@@ -77,10 +76,7 @@ class CkanAdapter(Adapter):
                 else:
                     raise e
 
-        if num_packages:
-            print(f"Total number of packages: {num_packages}")
-
-        return Catalog(name="catalog", packages=packages)
+        return catalog
 
     # Read a package from a CKAN instance
     def read_package(self) -> Package:
