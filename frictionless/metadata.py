@@ -78,7 +78,7 @@ class Metadata(metaclass=Metaclass):
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
-        return pprint.pformat(self.to_descriptor(), sort_dicts=False)
+        return pprint.pformat(self.to_descriptor(debug=True), sort_dicts=False)
 
     @property
     def description_html(self) -> str:
@@ -182,13 +182,14 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self) -> IDescriptor:
+    def to_descriptor(self, *, debug: bool = False) -> IDescriptor:
         descriptor = self.metadata_export()
-        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        errors = list(self.metadata_validate(descriptor))
-        if errors:
-            error = Error(note="descriptor is not valid")
-            raise FrictionlessException(error, reasons=errors)
+        if not debug:
+            Error = self.metadata_Error or platform.frictionless_errors.MetadataError
+            errors = list(self.metadata_validate(descriptor))
+            if errors:
+                error = Error(note="descriptor is not valid")
+                raise FrictionlessException(error, reasons=errors)
         return descriptor
 
     def to_descriptor_source(self) -> Union[IDescriptor, str]:
