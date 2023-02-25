@@ -314,7 +314,7 @@ def test_resource_standard_specs_properties(create_descriptor):
     assert resource.name == "name"
     assert resource.title == "title"
     assert resource.description == "description"
-    assert resource.profiles == []
+    assert resource.profile is None
     assert resource.licenses == []
     assert resource.sources == []
 

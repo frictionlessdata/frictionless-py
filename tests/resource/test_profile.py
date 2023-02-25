@@ -7,7 +7,7 @@ from frictionless import Resource, FrictionlessException
 
 def test_resource_profiles_to_descriptor():
     profile = "data/resource.profile.json"
-    resource = Resource(path="data/table.csv", profiles=[profile])
+    resource = Resource(path="data/table.csv", profile=profile)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.to_descriptor()
     error = excinfo.value.error
@@ -19,10 +19,13 @@ def test_resource_profiles_to_descriptor():
 
 
 def test_resource_profiles_from_descriptor():
-    profile = {"type": "object", "required": ["requiredProperty"]}
     with pytest.raises(FrictionlessException) as excinfo:
         Resource.from_descriptor(
-            {"name": "name", "path": "data/table.csv", "profiles": [profile]}
+            {
+                "name": "name",
+                "path": "data/table.csv",
+                "profile": "data/profiles/required.json",
+            }
         )
     error = excinfo.value.error
     reasons = excinfo.value.reasons
@@ -34,6 +37,7 @@ def test_resource_profiles_from_descriptor():
 
 @pytest.mark.parametrize("profile", ["data-resource", "tabular-data-resource"])
 def test_resource_profile_type(profile):
-    resource = Resource(name="table", path="data/table.csv", profiles=[profile])
+    descriptor = {"name": "table", "path": "data/table.csv", "profile": profile}
+    resource = Resource.from_descriptor(descriptor)
     descriptor = resource.to_descriptor()
-    assert descriptor["profiles"] == [profile]
+    assert descriptor.get("profile") is None

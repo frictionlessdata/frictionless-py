@@ -196,7 +196,7 @@ def test_package_standard_specs_properties(create_descriptor):
         else Package(helpers.create_descriptor(**options))
     )
     assert package.name == "name"
-    assert package.profiles == []
+    assert package.profile is None
     assert package.licenses == []
     assert package.sources == []
     assert package.title == "title"

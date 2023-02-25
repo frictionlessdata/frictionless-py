@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from ..package import Package
     from ..table import IRowStream
     from ..system import Loader, Parser
-    from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
+    from ..interfaces import IDescriptor, IBuffer, ISample, IFragment
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
     from ..interfaces import IFilterFunction, IProcessFunction
     from ..formats.sql import IOnRow, IOnProgress
@@ -93,10 +93,10 @@ class Resource(Metadata):
     For example, github repository or ckan dataset address.
     """
 
-    profiles: List[Union[IProfile, str]] = attrs.field(factory=list)
+    profile: Optional[str] = None
     """
-    Strings identifying the profile of this descriptor.
-    For example, `tabular-data-resource`.
+    A fully-qualified URL that points directly to a JSON Schema
+    that can be used to validate the descriptor
     """
 
     licenses: List[dict] = attrs.field(factory=list)
@@ -1106,7 +1106,7 @@ class Resource(Metadata):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "homepage": {"type": "string"},
-            "profiles": {"type": "array"},
+            "profile": {"type": "string"},
             "licenses": {
                 "type": "array",
                 "items": {
@@ -1176,11 +1176,17 @@ class Resource(Metadata):
 
         # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
-        if profile == "tabular-data-resource":
-            descriptor["type"] = "table"
-        elif profile:
-            descriptor.setdefault("profiles", [])
-            descriptor["profiles"].append(profile)
+        if profile:
+            if profile == "tabular-data-resource":
+                descriptor["type"] = "table"
+            elif profile not in ["data-resource"]:
+                descriptor["profile"] = profile
+
+        # Profiles (framework/v5)
+        profiles = descriptor.pop("profiles", None)
+        if isinstance(profiles, list) and profiles:
+            if isinstance(profiles[0], str):
+                descriptor["profile"] = profiles[0]
 
         # Bytes (standards/v1)
         bytes = descriptor.pop("bytes", None)
@@ -1234,9 +1240,7 @@ class Resource(Metadata):
 
         # Security
         if not system.trusted:
-            keys = ["path"]
-            keys += ["extrapaths", "profiles"]
-            keys += ["dialect", "schema"]
+            keys = ["path", "extrapaths", "profile", "dialect", "schema"]
             for key in keys:
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]
@@ -1267,14 +1271,9 @@ class Resource(Metadata):
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.ResourceError(note=note)
 
-        # Profiles
-        profiles = descriptor.get("profiles", [])
-        for profile in profiles:
-            if profile in ["data-resource"]:
-                continue
-            if profile == "tabular-data-resource":
-                descriptor["type"] = "table"
-                break
+        # Profile
+        profile = descriptor.get("profile")
+        if profile and profile not in ["data-resource", "tabular-data-resource"]:
             yield from Metadata.metadata_validate(
                 descriptor,
                 profile=profile,

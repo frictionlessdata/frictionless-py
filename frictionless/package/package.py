@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..pipeline import Pipeline
     from ..interfaces import IFilterFunction, IProcessFunction
-    from ..interfaces import IDescriptor, IProfile
+    from ..interfaces import IDescriptor
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Catalog
@@ -80,10 +80,10 @@ class Package(Metadata):
     For example, github repository or ckan dataset address.
     """
 
-    profiles: List[Union[IProfile, str]] = attrs.field(factory=list)
+    profile: Optional[str] = None
     """
-    A strings identifying the profiles of this descriptor.
-    For example, `fiscal-data-package`.
+    A fully-qualified URL that points directly to a JSON Schema
+    that can be used to validate the descriptor
     """
 
     licenses: List[dict] = attrs.field(factory=list)
@@ -524,7 +524,7 @@ class Package(Metadata):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "homepage": {"type": "string"},
-            "profiles": {"type": "array"},
+            "profile": {"type": "string"},
             "licenses": {
                 "type": "array",
                 "items": {
@@ -569,7 +569,7 @@ class Package(Metadata):
             "created": {"type": "string"},
             "resources": {
                 "type": "array",
-                "items": {"type": ["object", "string"]},
+                "items": {"type": "object"},
             },
         },
     }
@@ -590,9 +590,18 @@ class Package(Metadata):
         # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
         if profile:
-            if profile not in ["data-package", "tabular-data-package"]:
-                descriptor.setdefault("profiles", [])
-                descriptor["profiles"].append(profile)
+            if profile == "fiscal-data-package":
+                descriptor[
+                    "profile"
+                ] = "https://specs.frictionlessdata.io/schemas/fiscal-data-package.json"
+            elif profile not in ["data-package", "tabular-data-package"]:
+                descriptor["profile"] = profile
+
+        # Profiles (framework/v5)
+        profiles = descriptor.pop("profiles", None)
+        if isinstance(profiles, list) and profiles:
+            if isinstance(profiles[0], str):
+                descriptor["profile"] = profiles[0]
 
     @classmethod
     def metadata_validate(cls, descriptor: IDescriptor):
@@ -603,7 +612,7 @@ class Package(Metadata):
 
         # Security
         if not system.trusted:
-            keys = ["resources", "profiles"]
+            keys = ["profile"]
             for key in keys:
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]
@@ -646,11 +655,13 @@ class Package(Metadata):
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
 
-        # Profiles
-        profiles = descriptor.get("profiles", [])
-        for profile in profiles:
-            if profile in ["data-package", "tabular-data-package"]:
-                continue
+        # Profile
+        profile = descriptor.get("profile")
+        if profile and profile not in ["data-package", "tabular-data-package"]:
+            if profile == "fiscal-data-package":
+                profile = (
+                    "https://specs.frictionlessdata.io/schemas/fiscal-data-package.json"
+                )
             yield from Metadata.metadata_validate(
                 descriptor,
                 profile=profile,
