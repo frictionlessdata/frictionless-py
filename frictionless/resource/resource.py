@@ -55,7 +55,14 @@ class Resource(Metadata):
     """
 
     source: Optional[Any] = attrs.field(default=None, kw_only=False)
+    """
+    # TODO: add docs
+    """
+
     control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
 
     name: str = ""
     """
@@ -159,10 +166,20 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
-    dialect: Dialect = attrs.field(factory=Dialect)
-    stats: Stats = attrs.field(factory=Stats)
+    _dialect: Union[Dialect, str] = attrs.field(factory=Dialect, alias="dialect")
+    """
+    # TODO: add docs
+    """
+
+    _schema: Union[Schema, str] = attrs.field(factory=Schema, alias="schema")
+    """
+    # TODO: add docs
+    """
 
     _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
+    """
+    # TODO: add docs
+    """
 
     detector: Detector = attrs.field(factory=Detector)
     """
@@ -176,7 +193,10 @@ class Resource(Metadata):
     For more information, please check the Package documentation.
     """
 
-    schema: Optional[Schema] = None
+    stats: Stats = attrs.field(factory=Stats)
+    """
+    # TODO: add docs
+    """
 
     @classmethod
     def __create__(
@@ -246,16 +266,6 @@ class Resource(Metadata):
         self.add_defined("dialect")
         self.add_defined("stats")
 
-    def __setattr__(self, name, value):
-        if name == "schema":
-            if isinstance(value, str):
-                value = Schema.from_descriptor(value, basepath=self.basepath)
-        elif name == "dialect":
-            assert value
-            if isinstance(value, str):
-                value = Dialect.from_descriptor(value, basepath=self.basepath)
-        return super().__setattr__(name, value)
-
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -322,6 +332,26 @@ class Resource(Metadata):
     def tabular(self) -> bool:
         """Whether resource is tabular"""
         return self.type == "table"
+
+    @property
+    def dialect(self) -> Dialect:
+        if isinstance(self._dialect, str):
+            self._dialect = Dialect.from_descriptor(self._dialect, basepath=self.basepath)
+        return self._dialect
+
+    @dialect.setter
+    def dialect(self, value: Union[Dialect, str]):
+        self._dialect = value
+
+    @property
+    def schema(self) -> Schema:
+        if isinstance(self._schema, str):
+            self._schema = Schema.from_descriptor(self._schema, basepath=self.basepath)
+        return self._schema
+
+    @schema.setter
+    def schema(self, value: Union[Schema, str]):
+        self._schema = value
 
     @property
     def basepath(self) -> Optional[str]:
@@ -561,8 +591,6 @@ class Resource(Metadata):
         self.stats.fields = len(self.schema.fields)
 
     def __prepare_header(self):
-        assert self.schema
-
         # Create header
         self.__header = Header(
             self.__labels,
@@ -580,8 +608,6 @@ class Resource(Metadata):
                 raise FrictionlessException(error)
 
     def __prepare_lookup(self):
-        assert self.schema
-
         self.__lookup = Lookup()
         for fk in self.schema.foreign_keys:
             # Prepare source
@@ -621,7 +647,6 @@ class Resource(Metadata):
         # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
-        assert self.schema
 
         # Create field info
         field_number = 0
@@ -662,7 +687,6 @@ class Resource(Metadata):
 
         # Create row stream
         def row_stream():
-            assert self.schema
             self.stats.rows = 0
             for row_number, cells in enumerated_content_stream:
                 self.stats.rows += 1
@@ -929,7 +953,7 @@ class Resource(Metadata):
         self,
         database_url: str,
         *,
-        table_name: Optional[str] = None,
+        table_name: str,
         fast: bool = False,
         qsv_path: Optional[str] = None,
         on_row: Optional[IOnRow] = None,
@@ -937,7 +961,6 @@ class Resource(Metadata):
         use_fallback: bool = False,
     ) -> None:
         """Index resource into a database"""
-        assert table_name, "Table name is required in normal mode"
         indexer = platform.frictionless_formats.sql.SqlIndexer(
             resource=self,
             database_url=database_url,
@@ -1060,7 +1083,6 @@ class Resource(Metadata):
         class ResourceView(platform.petl.Table):
             def __iter__(self):
                 with resource:
-                    assert resource.schema
                     if normalize:
                         yield resource.schema.field_names
                         yield from (row.to_list() for row in resource.row_stream)

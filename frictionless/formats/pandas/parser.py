@@ -120,7 +120,6 @@ class PandasParser(Parser):
         index_rows = []
         fixed_types = {}
         with source:
-            assert source.schema
             for row in source.row_stream:
                 data_values = []
                 index_values = []

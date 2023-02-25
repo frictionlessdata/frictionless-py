@@ -26,7 +26,6 @@ def analyze(self: Resource, *, detailed=False) -> Dict:
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
     with self:
-        assert self.schema
         for row in self.row_stream:
             null_columns = 0
             for field_name in row:

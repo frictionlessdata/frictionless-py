@@ -74,6 +74,9 @@ class Schema(Metadata):
         for field in self.fields:
             field.schema = self
 
+    def __bool__(self):
+        return bool(self.fields)
+
     @property
     def field_names(self) -> List[str]:
         """List of field names"""
@@ -98,7 +101,6 @@ class Schema(Metadata):
             Schema: table schema
         """
         resource = platform.frictionless.Resource.describe(source, **options)
-        assert resource.schema
         schema = resource.schema
         return schema
 

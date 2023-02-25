@@ -80,6 +80,12 @@ class Dialect(Metadata):
     A list of controls which defines different aspects of reading data.
     """
 
+    def __bool__(self):
+        try:
+            return bool(self.controls) or bool(self.to_descriptor())
+        except Exception:
+            return True
+
     # Describe
 
     @staticmethod
