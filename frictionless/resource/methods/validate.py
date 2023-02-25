@@ -20,16 +20,6 @@ def validate(
     limit_rows: Optional[int] = None,
     on_row: Optional[ICallbackFunction] = None,
 ):
-    """Validate resource
-
-    Parameters:
-        checklist? (checklist): a Checklist object
-
-    Returns:
-        Report: validation report
-
-    """
-
     # Create state
     partial = False
     timer = helpers.Timer()

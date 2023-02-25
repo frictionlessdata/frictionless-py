@@ -13,15 +13,6 @@ if TYPE_CHECKING:
 
 # TODO: save transform info into resource.stats?
 def transform(self: Resource, pipeline: Optional[Pipeline] = None):
-    """Transform resource
-
-    Parameters:
-        steps (Step[]): transform steps
-
-    Returns:
-        Resource: the transform result
-    """
-
     # Prepare resource
     self.infer()
 

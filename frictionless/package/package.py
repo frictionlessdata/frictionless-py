@@ -15,6 +15,9 @@ from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
+    from ..checklist import Checklist
+    from ..pipeline import Pipeline
+    from ..interfaces import IFilterFunction, IProcessFunction
     from ..interfaces import IDescriptor, IProfile
     from ..dialect import Dialect, Control
     from ..detector import Detector
@@ -34,12 +37,6 @@ class Package(Metadata):
         {'id': 2, 'name': '中国人'},
 
     """
-
-    analyze = methods.analyze
-    describe = methods.describe
-    extract = methods.extract
-    transform = methods.transform
-    validate = methods.validate
 
     name: Optional[str]
     """
@@ -374,6 +371,132 @@ class Package(Metadata):
             context.update(resource.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         return result
+
+    # Analyze
+
+    def analyze(self, *, detailed=False):
+        """Analyze the resources of the package
+
+        This feature is currently experimental, and its API may change
+        without warning.
+
+        Parameters:
+            detailed? (bool): detailed analysis
+
+        Returns:
+            dict: dict of resource analysis
+
+        """
+        analisis = {}
+        for resource in self.resources:
+            analisis[resource.name] = resource.analyze(detailed=detailed)
+        return analisis
+
+    # Describe
+
+    @classmethod
+    def describe(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        stats: bool = False,
+        **options,
+    ):
+        """Describe the given source as a package
+
+        Parameters:
+            source (any): data source
+            stats? (bool): if `True` infer resource's stats
+            **options (dict): Package constructor options
+
+        Returns:
+            Package: data package
+
+        """
+
+        # Support one fle path
+        if not helpers.is_expandable_source(source):
+            if isinstance(source, (str, Path)):
+                source = [source]
+
+        # Create package
+        package = cls.from_options(source, **options)
+        package.infer(stats=stats)
+        return package
+
+    # Extract
+
+    def extract(
+        self,
+        *,
+        limit_rows: Optional[int] = None,
+        process: Optional[IProcessFunction] = None,
+        filter: Optional[IFilterFunction] = None,
+        stream: bool = False,
+    ):
+        """Extract package rows
+
+        Parameters:
+            filter? (bool): a row filter function
+            process? (func): a row processor function
+            stream? (bool): return a row streams instead of loading into memory
+
+        Returns:
+            {path: Row[]}: a dictionary of arrays/streams of rows
+
+        """
+        tables = {}
+        for resource in self.resources:
+            tables[resource.name] = resource.extract(
+                limit_rows=limit_rows,
+                process=process,
+                filter=filter,
+                stream=stream,
+            )
+        return tables
+
+    # Transform
+
+    def transform(self: Package, pipeline: Pipeline):
+        """Transform package
+
+        Parameters:
+            source (any): data source
+            steps (Step[]): transform steps
+            **options (dict): Package constructor options
+
+        Returns:
+            Package: the transform result
+        """
+        return methods.transform(self, pipeline)
+
+    # Validate
+
+    def validate(
+        self: Package,
+        checklist: Optional[Checklist] = None,
+        *,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+        limit_rows: Optional[int] = None,
+        parallel: bool = False,
+    ):
+        """Validate package
+
+        Parameters:
+            checklist? (checklist): a Checklist object
+            parallel? (bool): run in parallel if possible
+
+        Returns:
+            Report: validation report
+
+        """
+        return methods.validate(
+            self,
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            parallel=parallel,
+        )
 
     # Convert
 
