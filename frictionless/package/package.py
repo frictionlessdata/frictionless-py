@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import attrs
 from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
@@ -24,6 +25,7 @@ if TYPE_CHECKING:
     from ..catalog import Catalog
 
 
+@attrs.define(kw_only=True)
 class Package(Metadata):
     """Package representation
 
@@ -38,7 +40,17 @@ class Package(Metadata):
 
     """
 
-    name: Optional[str]
+    source: Optional[Any] = attrs.field(default=None, kw_only=False)
+    """
+    # TODO: add docs
+    """
+
+    control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
+
+    name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
@@ -50,36 +62,36 @@ class Package(Metadata):
     Type of the package
     """
 
-    title: Optional[str]
+    title: Optional[str] = None
     """
     A Package title according to the specs
     It should a human-oriented title of the resource.
     """
 
-    description: Optional[str]
+    description: Optional[str] = None
     """
     A Package description according to the specs
     It should a human-oriented description of the resource.
     """
 
-    homepage: Optional[str]
+    homepage: Optional[str] = None
     """
     A URL for the home on the web that is related to this package.
     For example, github repository or ckan dataset address.
     """
 
-    profiles: List[Union[IProfile, str]]
+    profiles: List[Union[IProfile, str]] = attrs.field(factory=list)
     """
     A strings identifying the profiles of this descriptor.
     For example, `fiscal-data-package`.
     """
 
-    licenses: List[dict]
+    licenses: List[dict] = attrs.field(factory=list)
     """
     The license(s) under which the package is provided.
     """
 
-    sources: List[dict]
+    sources: List[dict] = attrs.field(factory=list)
     """
     The raw sources for this data package.
     It MUST be an array of Source objects.
@@ -87,7 +99,7 @@ class Package(Metadata):
     MAY have path and/or email properties.
     """
 
-    contributors: List[dict]
+    contributors: List[dict] = attrs.field(factory=list)
     """
     The people or organizations who contributed to this package.
     It MUST be an array. Each entry is a Contributor and MUST be an object.
@@ -95,41 +107,56 @@ class Package(Metadata):
     path, email, role and organization properties.
     """
 
-    keywords: List[str]
+    keywords: List[str] = attrs.field(factory=list)
     """
     An Array of string keywords to assist users searching.
     For example, ['data', 'fiscal']
     """
 
-    image: Optional[str]
+    image: Optional[str] = None
     """
     An image to use for this data package.
     For example, when showing the package in a listing.
     """
 
-    version: Optional[str]
+    version: Optional[str] = None
     """
     A version string identifying the version of the package.
     It should conform to the Semantic Versioning requirements and
     should follow the Data Package Version pattern.
     """
 
-    created: Optional[str]
+    created: Optional[str] = None
     """
     The datetime on which this was created.
     The datetime must conform to the string formats for RFC3339 datetime,
     """
 
-    resources: List[Resource]
+    resources: List[Resource] = attrs.field(factory=list)
     """
     A list of resource descriptors.
     It can be dicts or Resource instances
     """
 
-    catalog: Optional[Catalog]
+    catalog: Optional[Catalog] = None
     """
     It returns reference to catalog of which the package is part of. If package
     is not part of any catalog, then it is set to None.
+    """
+
+    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
+    """
+    # TODO: add docs
+    """
+
+    _dialect: Optional[Dialect] = attrs.field(default=None, alias="dialect")
+    """
+    # TODO: add docs
+    """
+
+    _detector: Optional[Detector] = attrs.field(default=None, alias="detector")
+    """
+    # TODO: add docs
     """
 
     @classmethod
@@ -176,59 +203,30 @@ class Package(Metadata):
             # Descriptor
             return cls.from_descriptor(source, **options)  # type: ignore
 
-    def __init__(
-        self,
-        source: Optional[Any] = None,
-        control: Optional[Control] = None,
-        *,
-        # Standard
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        homepage: Optional[str] = None,
-        profiles: List[Union[IProfile, str]] = [],
-        licenses: List[dict] = [],
-        sources: List[dict] = [],
-        contributors: List[dict] = [],
-        keywords: List[str] = [],
-        image: Optional[str] = None,
-        version: Optional[str] = None,
-        created: Optional[str] = None,
-        resources: List[Union[Resource, str]] = [],
-        # Software
-        basepath: Optional[str] = None,
-        detector: Optional[Detector] = None,
-        dialect: Optional[Dialect] = None,
-        catalog: Optional[Catalog] = None,
-    ):
-        # Guaranteed by create hook
-        assert source is None
-        assert control is None
+    def __attrs_post_init__(self):
+        for resource in self.resources:
+            resource.package = self
+            if self._dialect:
+                resource.dialect = self._dialect
+            if self._detector:
+                resource.detector = self._detector
 
-        # Store state
-        self.name = name
-        self.title = title
-        self.description = description
-        self.profiles = profiles.copy()
-        self.licenses = licenses.copy()
-        self.sources = sources.copy()
-        self.homepage = homepage
-        self.contributors = contributors.copy()
-        self.keywords = keywords.copy()
-        self.image = image
-        self.version = version
-        self.created = created
-        self.basepath = basepath
-        self.catalog = catalog
+    @property
+    def basepath(self) -> Optional[str]:
+        """
+        A basepath of the package
+        The normpath of the resource is joined `basepath` and `/path`
+        """
+        if self._basepath:
+            return self._basepath
+        if self.catalog:
+            return self.catalog.basepath
 
-        # Add resources
-        self.resources = []
-        for resource in resources:
-            resource = self.add_resource(resource)
-            if detector:
-                resource.detector = detector
-            if dialect:
-                resource.dialect = dialect
+    @basepath.setter
+    def basepath(self, value: Optional[str]):
+        self._basepath = value
+
+    # Resources
 
     @property
     def resource_names(self) -> List[str]:
@@ -240,38 +238,10 @@ class Package(Metadata):
         """Return names of resources"""
         return [resource.path for resource in self.resources if resource.path is not None]
 
-    @property
-    def basepath(self) -> Optional[str]:
-        """
-        A basepath of the package
-        The normpath of the resource is joined `basepath` and `/path`
-        """
-        if self.__basepath:
-            return self.__basepath
-        if self.catalog:
-            return self.catalog.basepath
-
-    @basepath.setter
-    def basepath(self, value: Optional[str]):
-        self.__basepath = value
-
-    # Resources
-
     def add_resource(self, resource: Union[Resource, str]) -> Resource:
         """Add new resource to the package"""
-
-        # Dereference
         if isinstance(resource, str):
             resource = Resource.from_descriptor(resource, basepath=self.basepath)
-
-        # Deduplicate
-        number = 1
-        template = f"{resource.name}%s"
-        while self.has_resource(resource.name):
-            resource.name = template % number
-            number += 1
-
-        # Append
         self.resources.append(resource)
         resource.package = self
         return resource
@@ -323,16 +293,28 @@ class Package(Metadata):
         """Remove all the resources"""
         self.resources = []
 
+    def deduplicate_resources(self):
+        if len(self.resource_names) != len(set(self.resource_names)):
+            seen_names = []
+            for index, name in enumerate(self.resource_names):
+                count = seen_names.count(name) + 1
+                if count > 1:
+                    self.resources[index].name = "%s%s" % (name, count)
+                seen_names.append(name)
+
     # Infer
 
-    def infer(self, *, stats=False):
-        """Infer package's attributes
+    def infer(self, *, dedup: bool = False, stats: bool = False) -> None:
+        """Infer metadata
 
         Parameters:
-            stats? (bool): stream files completely and infer stats
+            dedup: deduplicate resource and field names
+            stats: stream files completely and infer stats
         """
+        if dedup:
+            self.deduplicate_resources()
         for resource in self.resources:
-            resource.infer(stats=stats)
+            resource.infer(dedup=dedup, stats=stats)
 
     # Publish
 

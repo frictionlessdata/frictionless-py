@@ -489,16 +489,19 @@ class Resource(Metadata):
 
     # Infer
 
-    def infer(self, *, stats: bool = False) -> None:
+    def infer(self, *, dedup: bool = False, stats: bool = False) -> None:
         """Infer metadata
 
         Parameters:
-            stats? (bool): stream file completely and infer stats
+            dedup: deduplicate resource and field names
+            stats: stream file completely and infer stats
         """
         if not self.closed:
             note = "Resource.infer canot be used on a open resource"
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
+            if dedup:
+                self.schema.deduplicate_fields()
             if not stats:
                 self.stats = Stats()
                 return

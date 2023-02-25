@@ -70,12 +70,13 @@ class Schema(Metadata):
     """
 
     def __attrs_post_init__(self):
-        # Connect fields
         for field in self.fields:
             field.schema = self
 
     def __bool__(self):
         return bool(self.fields)
+
+    # Fields
 
     @property
     def field_names(self) -> List[str]:
@@ -87,36 +88,8 @@ class Schema(Metadata):
         """List of field types"""
         return [field.type for field in self.fields]
 
-    # Describe
-
-    @staticmethod
-    def describe(source: Optional[Any] = None, **options):
-        """Describe the given source as a schema
-
-        Parameters:
-            source (any): data source
-            **options (dict): describe resource options
-
-        Returns:
-            Schema: table schema
-        """
-        resource = platform.frictionless.Resource.describe(source, **options)
-        schema = resource.schema
-        return schema
-
-    # Fields
-
     def add_field(self, field: Field, *, position: Optional[int] = None) -> None:
         """Add new field to the schema"""
-
-        # Deduplicate
-        number = 1
-        template = f"{field.name}%s"
-        while self.has_field(field.name):
-            field.name = template % number
-            number += 1
-
-        # Append
         field.schema = self
         if position is None:
             self.fields.append(field)
@@ -173,6 +146,32 @@ class Schema(Metadata):
     def clear_fields(self) -> None:
         """Remove all the fields"""
         self.fields = []
+
+    def deduplicate_fields(self):
+        if len(self.field_names) != len(set(self.field_names)):
+            seen_names = []
+            for index, name in enumerate(self.field_names):
+                count = seen_names.count(name) + 1
+                if count > 1:
+                    self.fields[index].name = "%s%s" % (name, count)
+                seen_names.append(name)
+
+    # Describe
+
+    @staticmethod
+    def describe(source: Optional[Any] = None, **options):
+        """Describe the given source as a schema
+
+        Parameters:
+            source (any): data source
+            **options (dict): describe resource options
+
+        Returns:
+            Schema: table schema
+        """
+        resource = platform.frictionless.Resource.describe(source, **options)
+        schema = resource.schema
+        return schema
 
     # Read
 

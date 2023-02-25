@@ -1,4 +1,5 @@
 from __future__ import annotations
+import attrs
 from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
@@ -14,10 +15,11 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
 
+@attrs.define(kw_only=True)
 class Catalog(Metadata):
     """Catalog representation"""
 
-    name: Optional[str]
+    name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
@@ -29,24 +31,24 @@ class Catalog(Metadata):
     Type of the object
     """
 
-    title: Optional[str]
+    title: Optional[str] = None
     """
     A Catalog title according to the specs. It should be a
     human-oriented title of the resource.
     """
 
-    description: Optional[str]
+    description: Optional[str] = None
     """
     A Catalog description according to the specs. It should be a
     human-oriented description of the resource.
     """
 
-    packages: List[Package]
+    packages: List[Package] = attrs.field(factory=list)
     """
     A list of packages. Each package in the list is a Data Package.
     """
 
-    basepath: Optional[str]
+    basepath: Optional[str] = None
     """
     A basepath of the catalog. The normpath of the resource is joined
     `basepath` and `/path`
@@ -76,40 +78,16 @@ class Catalog(Metadata):
             # Descriptor
             return Catalog.from_descriptor(source, **options)  # type: ignore
 
-    def __init__(
-        self,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        # Standard
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        packages: List[Union[Package, str]] = [],
-        # Software
-        basepath: Optional[str] = None,
-    ):
-        # Guaranteed by create hook
-        assert source is None
-        assert control is None
+    def __attrs_post_init__(self):
+        for package in self.packages:
+            package.package = self
 
-        # Store state
-        self.name = name
-        self.title = title
-        self.description = description
-        self.basepath = basepath
-
-        # Add packages
-        self.packages = []
-        for package in packages:
-            package = self.add_package(package)
+    # Packages
 
     @property
     def package_names(self) -> List[str]:
         """Return names of packages"""
         return [package.name for package in self.packages if package.name is not None]
-
-    # Packages
 
     def add_package(self, package: Union[Package, str]) -> Package:
         """Add new package to the package"""
