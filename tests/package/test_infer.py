@@ -103,6 +103,6 @@ def test_package_infer_duplicate_resource_names_issue_530():
             Resource(path="data/tables/chunk2.csv"),
         ]
     )
-    package.infer(dedup=True)
+    package.deduplicate_resoures()
     assert len(set(package.resource_names)) == 4
     assert package.resource_names == ["chunk1", "chunk2", "chunk12", "chunk22"]

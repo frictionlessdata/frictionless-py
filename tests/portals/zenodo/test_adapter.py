@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 from decimal import Decimal
 from frictionless import portals, Catalog, Package, FrictionlessException

@@ -67,7 +67,7 @@ class CkanAdapter(Adapter):
                 descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
                 descriptor.pop("type", None)
                 package = Package.from_descriptor(descriptor)
-                dataset = Dataset(name=package.name, package=package)
+                dataset = Dataset(name=package.name, package=package)  # type: ignore
                 catalog.add_dataset(dataset)
             except FrictionlessException as e:
                 if self.control.ignore_package_errors:

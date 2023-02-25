@@ -83,7 +83,7 @@ class GithubAdapter(Adapter):
             client = platform.github.Github(
                 self.control.apikey, per_page=self.control.per_page
             )
-            user = client.get_user()
+            #  user = client.get_user()
             repositories = client.search_repositories(query["q"], **options)
             if self.control.page:
                 repositories = repositories.get_page(self.control.page)
