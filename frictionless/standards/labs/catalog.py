@@ -9,4 +9,9 @@ class ICatalog(TypedDict, total=False):
     type: str
     title: str
     description: str
-    packages: Required[List[Union[IPackage, str]]]
+    datasets: Required[List[IDataset]]
+
+
+class IDataset(TypedDict, total=False):
+    name: Required[str]
+    package: Required[Union[IPackage, str]]
