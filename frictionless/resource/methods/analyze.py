@@ -1,7 +1,7 @@
 from __future__ import annotations
 import statistics
 from math import nan
-from typing import TYPE_CHECKING, Union, List
+from typing import TYPE_CHECKING, Union, List, Dict
 from collections import Counter
 from decimal import Decimal
 from math import fsum, sqrt
@@ -11,20 +11,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-def analyze(self: Resource, *, detailed=False) -> dict:
-    """Analyze the resource
-
-    This feature is currently experimental, and its API may change
-    without warning.
-
-    Parameters:
-        detailed? (bool): detailed analysis
-
-    Returns:
-        dict: resource analysis
-
-    """
-
+def analyze(self: Resource, *, detailed=False) -> Dict:
     # Create state
     timer = helpers.Timer()
 
@@ -39,6 +26,7 @@ def analyze(self: Resource, *, detailed=False) -> dict:
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
     with self:
+        assert self.schema
         for row in self.row_stream:
             null_columns = 0
             for field_name in row:

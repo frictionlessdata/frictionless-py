@@ -2,9 +2,10 @@ from __future__ import annotations
 import json
 import attrs
 import warnings
+import builtins
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
@@ -22,11 +23,16 @@ from . import methods
 
 
 if TYPE_CHECKING:
+    from ..checklist import Checklist
+    from ..pipeline import Pipeline
     from ..package import Package
     from ..table import IRowStream
     from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment, IProfile
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
+    from ..interfaces import IFilterFunction, IProcessFunction
+    from ..formats.sql import IOnRow, IOnProgress
+    from ..interfaces import ICallbackFunction
 
 
 @attrs.define(kw_only=True)
@@ -47,13 +53,6 @@ class Resource(Metadata):
     ```
 
     """
-
-    analyze = methods.analyze
-    describe = methods.describe
-    extract = methods.extract
-    index = methods.index
-    validate = methods.validate
-    transform = methods.transform
 
     source: Optional[Any] = attrs.field(default=None, kw_only=False)
     control: Optional[Control] = None
@@ -847,6 +846,149 @@ class Resource(Metadata):
         parser = system.create_parser(resource)
         parser.write_row_stream(self)
         return resource
+
+    # Analyze
+
+    def analyze(self, *, detailed=False) -> Dict:
+        """Analyze the resource
+
+        This feature is currently experimental, and its API may change
+        without warning.
+
+        Parameters:
+            detailed? (bool): detailed analysis
+
+        Returns:
+            dict: resource analysis
+
+        """
+        return methods.analyze(self, detailed=detailed)
+
+    # Describe
+
+    @classmethod
+    def describe(
+        cls, source: Optional[Any] = None, *, stats: bool = False, **options
+    ) -> Resource:
+        """Describe the given source as a resource
+
+        Parameters:
+            source (any): data source
+            stats? (bool): if `True` infer resource's stats
+            **options (dict): Resource constructor options
+
+        Returns:
+            Resource: data resource
+
+        """
+        resource = cls.from_options(source, **options)
+        resource.infer(stats=stats)
+        return resource
+
+    # Extract
+
+    def extract(
+        self,
+        *,
+        limit_rows: Optional[int] = None,
+        process: Optional[IProcessFunction] = None,
+        filter: Optional[IFilterFunction] = None,
+        stream: bool = False,
+    ):
+        """Extract resource rows
+
+        Parameters:
+            process? (func): a row processor function
+            filter? (bool): a row filter function
+            stream? (bool): whether to stream data
+
+        Returns:
+            Row[]: an array/stream of rows
+
+        """
+
+        # Stream
+        def read_row_stream():
+            with self:
+                row_count = 0
+                for row in self.row_stream:  # type: ignore
+                    row_count += 1
+                    yield row
+                    if limit_rows and limit_rows <= row_count:
+                        break
+
+        # Return
+        data = read_row_stream()
+        data = builtins.filter(filter, data) if filter else data
+        data = (process(row) for row in data) if process else data
+        return data if stream else list(data)
+
+    # Index
+
+    def index(
+        self,
+        database_url: str,
+        *,
+        table_name: Optional[str] = None,
+        fast: bool = False,
+        qsv_path: Optional[str] = None,
+        on_row: Optional[IOnRow] = None,
+        on_progress: Optional[IOnProgress] = None,
+        use_fallback: bool = False,
+    ) -> None:
+        """Index resource into a database"""
+        assert table_name, "Table name is required in normal mode"
+        indexer = platform.frictionless_formats.sql.SqlIndexer(
+            resource=self,
+            database_url=database_url,
+            table_name=table_name,
+            fast=fast,
+            qsv_path=qsv_path,
+            on_row=on_row,
+            on_progress=on_progress,
+            use_fallback=use_fallback,
+        )
+        indexer.index()
+
+    # Validate
+
+    def validate(
+        self,
+        checklist: Optional[Checklist] = None,
+        *,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+        limit_rows: Optional[int] = None,
+        on_row: Optional[ICallbackFunction] = None,
+    ):
+        """Validate resource
+
+        Parameters:
+            checklist? (checklist): a Checklist object
+
+        Returns:
+            Report: validation report
+
+        """
+        return methods.validate(
+            self,
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            on_row=on_row,
+        )
+
+    # Transform
+
+    def transform(self, pipeline: Optional[Pipeline] = None):
+        """Transform resource
+
+        Parameters:
+            steps (Step[]): transform steps
+
+        Returns:
+            Resource: the transform result
+        """
+        return methods.transform(self, pipeline)
 
     # Convert
 
