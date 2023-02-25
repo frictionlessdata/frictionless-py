@@ -62,6 +62,7 @@ class CsvParser(Parser):
         ) as file:
             writer = csv.writer(file, **options)
             with source:
+                assert source.schema
                 writer.writerow(source.schema.field_names)
                 for row in source.row_stream:
                     writer.writerow(row.to_list(types=self.supported_types))  # type: ignore

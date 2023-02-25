@@ -98,6 +98,7 @@ class Schema(Metadata):
             Schema: table schema
         """
         resource = platform.frictionless.Resource.describe(source, **options)
+        assert resource.schema
         schema = resource.schema
         return schema
 

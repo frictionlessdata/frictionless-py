@@ -64,10 +64,10 @@ def program_describe(
         system.standards = standards  # type: ignore
 
     # Support stdin
-    is_stdin = False
+    #  is_stdin = False
     if not source and not path:
         if not sys.stdin.isatty():
-            is_stdin = True
+            #  is_stdin = True
             source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input

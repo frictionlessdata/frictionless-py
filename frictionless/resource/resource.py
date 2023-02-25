@@ -895,6 +895,7 @@ class Resource(Metadata):
 
     def to_inline(self, *, dialect=None):
         """Helper to export resource as an inline data"""
+        dialect = dialect or Dialect()
         target = self.write(Resource(format="inline", dialect=dialect))  # type: ignore
         return target.data
 

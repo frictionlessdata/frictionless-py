@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps, resources
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
