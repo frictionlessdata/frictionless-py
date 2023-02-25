@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
 from ...system import Adapter
 from ...exception import FrictionlessException
-from ...catalog import Catalog
+from ...catalog import Catalog, Dataset
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
@@ -47,9 +47,14 @@ class GithubAdapter(Adapter):
             all_packages = get_package(
                 resource_path, repository, base_path, self.control.formats, catalog=True
             )
-            if all_packages and isinstance(all_packages, List):
+            if all_packages and isinstance(all_packages, list):
                 packages = packages + all_packages  # type: ignore
-                return Catalog(name="catalog", packages=packages)
+                return Catalog(
+                    datasets=[
+                        Dataset(name=package.name, package=package)  # type: ignore
+                        for package in all_packages
+                    ]
+                )
             note = "Package/s not found"
             raise FrictionlessException(note)
 
@@ -96,7 +101,12 @@ class GithubAdapter(Adapter):
             raise FrictionlessException(note)
 
         if packages:
-            return Catalog(name=user.name, packages=packages)
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
 
         note = "Package/s not found"
         raise FrictionlessException(note)

@@ -1,4 +1,3 @@
-# type: ignore
 import os
 import pytest
 from frictionless import portals, Catalog, Package, FrictionlessException, platform
@@ -284,7 +283,7 @@ def test_github_adapter_read_resources_without_dp(options_without_dp):
 @pytest.mark.vcr
 def test_github_adapter_read_data_csv_files_in_different_folder_():
     package = Package("https://github.com/fdtester/test-repo-with-datapackage-yaml")
-    package.resources[0].read_rows() == [
+    assert package.resources[0].read_rows() == [
         {"id": 1, "cid": 1, "name": "London"},
         {"id": 2, "cid": 2, "name": "Paris"},
         {"id": 3, "cid": 3, "name": "Berlin"},
@@ -649,20 +648,20 @@ def test_github_adapter_catalog_from_empty_repo(options_empty):
 def test_github_adapter_catalog_from_single_repo(options_with_dp):
     repo_url = options_with_dp.pop("url")
     catalog = Catalog(repo_url)
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
 def test_github_adapter_catalog_from_single_repo_multiple_packages():
     catalog = Catalog("https://github.com/fdtester/test-repo-with-multiple-packages")
-    assert len(catalog.packages) == 2
-    assert catalog.packages[0].name == "package-fddata-1"
-    assert catalog.packages[1].name == "package-fddata-2"
-    assert catalog.packages[0].resources[0].read_rows() == [
+    assert len(catalog.datasets) == 2
+    assert catalog.datasets[0].name == "package-fddata-1"
+    assert catalog.datasets[1].name == "package-fddata-2"
+    assert catalog.datasets[0].package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert catalog.packages[1].resources[0].read_rows() == [
+    assert catalog.datasets[1].package.resources[0].read_rows() == [
         {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
         {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
         {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
@@ -673,9 +672,9 @@ def test_github_adapter_catalog_from_single_repo_multiple_packages():
 @pytest.mark.vcr
 def test_github_adapter_catalog_from_single_repo_multiple_packages_different_folder():
     catalog = Catalog("https://github.com/fdtester/test-repo-with-multiple-packages")
-    assert len(catalog.packages) == 2
-    assert catalog.packages[0].resources[0].path == "data/table.xls"
-    assert catalog.packages[1].resources[0].path == "countries.csv"
+    assert len(catalog.datasets) == 2
+    assert catalog.datasets[0].package.resources[0].path == "data/table.xls"
+    assert catalog.datasets[1].package.resources[0].path == "countries.csv"
 
 
 @pytest.mark.vcr
@@ -685,9 +684,9 @@ def test_github_adapter_catalog_single_user_multiple_repositories(options_user):
     catalog = Catalog(
         repo_url, control=portals.GithubControl(search="'TestAction: Read' in:readme")
     )
-    assert len(catalog.packages) == 3
-    assert catalog.packages[1].name == "test-tabulator"
-    assert catalog.packages[2].name == "test-repo-without-datapackage"
+    assert len(catalog.datasets) == 3
+    assert catalog.datasets[1].name == "test-tabulator"
+    assert catalog.datasets[2].name == "test-repo-without-datapackage"
 
 
 @pytest.mark.vcr
@@ -695,9 +694,9 @@ def test_github_adapter_catalog_with_search_param_only_containing_userqualifier(
     catalog = Catalog(
         control=portals.GithubControl(search="user:fdtester", per_page=1, page=1),
     )
-    assert catalog.packages[0].name == "test-tabulator"
-    assert len(catalog.packages[0].resources) == 3
-    assert catalog.packages[0].resources[0].name == "first-resource"
+    assert catalog.datasets[0].name == "test-tabulator"
+    assert len(catalog.datasets[0].package.resources) == 3
+    assert catalog.datasets[0].package.resources[0].name == "first-resource"
 
 
 @pytest.mark.vcr
@@ -707,7 +706,7 @@ def test_github_adapter_catalog_with_search_and_user_param():
             search="'TestAction: Read' in:readme", user="fdtester"
         ),
     )
-    assert catalog.packages[0].resources[0].name == "capitals"
+    assert catalog.datasets[0].package.resources[0].name == "capitals"
 
 
 @pytest.mark.ci
@@ -716,8 +715,8 @@ def test_github_adapter_catalog_with_search_text_and_without_user_or_userqualifi
     catalog = Catalog(
         control=portals.GithubControl(search="frictionlessdata", per_page=2, page=1),
     )
-    assert catalog.packages[0].name == "schemas"
-    assert catalog.packages[1].name == "fellows"
+    assert catalog.datasets[0].name == "schemas"
+    assert catalog.datasets[1].name == "fellows"
 
 
 @pytest.mark.vcr
@@ -725,9 +724,9 @@ def test_github_adapter_catalog_with_user_param_only():
     catalog = Catalog(
         control=portals.GithubControl(user="fdtester", per_page=1, page=1),
     )
-    assert catalog.packages[0].name == "test-tabulator"
-    assert len(catalog.packages[0].resources) == 3
-    assert catalog.packages[0].resources[0].name == "first-resource"
+    assert catalog.datasets[0].name == "test-tabulator"
+    assert len(catalog.datasets[0].package.resources) == 3
+    assert catalog.datasets[0].package.resources[0].name == "first-resource"
 
 
 @pytest.mark.vcr
@@ -756,7 +755,7 @@ def test_github_adapter_catalog_with_full_path_repo_only():
     catalog = Catalog(
         control=portals.GithubControl(repo="fdtester/test-repo-without-datapackage"),
     )
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
@@ -766,8 +765,8 @@ def test_github_adapter_catalog_custom_per_page():
             user="fdtester", search="'TestAction: Read' in:readme", per_page=1, page=1
         ),
     )
-    assert len(catalog.packages) == 1
-    assert catalog.packages[0].resources[0].name == "capitals"
+    assert len(catalog.datasets) == 1
+    assert catalog.datasets[0].package.resources[0].name == "capitals"
 
 
 @pytest.mark.vcr
@@ -775,7 +774,7 @@ def test_github_adapter_catalog_page():
     catalog = Catalog(
         control=portals.GithubControl(user="fdtester", per_page=1, page=1),
     )
-    assert catalog.packages[0].resources[0].name == "first-resource"
+    assert catalog.datasets[0].package.resources[0].name == "first-resource"
 
 
 @pytest.mark.vcr
@@ -795,7 +794,7 @@ def test_github_adapter_catalog_qualifiers():
             search="Frictionlessdata in:readme", user="fdtester"
         ),
     )
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
 
 
 @pytest.mark.vcr
@@ -805,7 +804,7 @@ def test_github_adapter_catalog_qualifiers_sort_qualifier():
             search="sort:updated 'TestAction: Read' in:readme", user="fdtester"
         ),
     )
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -815,7 +814,7 @@ def test_github_adapter_catalog_qualifiers_sort_param():
             search="'TestAction: Read' in:readme", sort="updated", user="fdtester"
         ),
     )
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -828,7 +827,7 @@ def test_github_adapter_catalog_sort_by_updated_in_desc_order():
             order="desc",
         ),
     )
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -841,7 +840,7 @@ def test_github_adapter_catalog_sort_by_updated_in_asc_order():
             order="asc",
         ),
     )
-    assert catalog.packages[3].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[3].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -853,7 +852,7 @@ def test_github_adapter_catalog_qualifiers_sort_by_updated_in_desc_order():
             order="desc",
         ),
     )
-    assert catalog.packages[0].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[0].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
@@ -863,7 +862,7 @@ def test_github_adapter_catalog_qualifiers_sort_by_updated_in_asc_order():
             search="sort:updated-asc 'TestAction: Read' in:readme", user="fdtester"
         ),
     )
-    assert catalog.packages[3].to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert catalog.datasets[3].package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
 
 
 @pytest.mark.vcr
