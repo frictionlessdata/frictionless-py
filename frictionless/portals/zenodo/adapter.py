@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional, Union
 from .control import ZenodoControl
 from ... import helpers
 from ...system import Adapter
-from ...catalog import Catalog
+from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
@@ -29,7 +29,12 @@ class ZenodoAdapter(Adapter):
         # Single record
         if self.control.record:
             packages.append(self.read_package())
-            return Catalog(name=self.control.name or "catalog", packages=packages)
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
 
         # DOI
         assert self.control.formats
@@ -40,7 +45,12 @@ class ZenodoAdapter(Adapter):
             package = get_package(dataset.data["files"], name, self.control.formats)
             if isinstance(package, Package) and package.resources:
                 packages.append(package)
-            return Catalog(name=name, packages=packages)
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
 
         # Search
         if self.control.search:
@@ -70,7 +80,12 @@ class ZenodoAdapter(Adapter):
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
         if packages:
-            return Catalog(name=self.control.name or "catalog", packages=packages)
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
         note = "Package/s not found"
         raise FrictionlessException(note)
 
