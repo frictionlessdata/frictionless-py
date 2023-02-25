@@ -14,4 +14,7 @@ class ICatalog(TypedDict, total=False):
 
 class IDataset(TypedDict, total=False):
     name: Required[str]
+    type: str
+    title: str
+    description: str
     package: Required[Union[IPackage, str]]

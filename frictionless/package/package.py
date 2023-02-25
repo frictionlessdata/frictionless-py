@@ -293,9 +293,7 @@ class Package(Metadata):
         """Remove all the resources"""
         self.resources = []
 
-    # Dedup
-
-    def dedup(self):
+    def deduplicate_resoures(self):
         if len(self.resource_names) != len(set(self.resource_names)):
             seen_names = []
             for index, resource in enumerate(self.resources):
@@ -304,21 +302,17 @@ class Package(Metadata):
                 if count > 1:
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
-                resource.dedup()
 
     # Infer
 
-    def infer(self, *, dedup: bool = False, stats: bool = False) -> None:
+    def infer(self, *, stats: bool = False) -> None:
         """Infer metadata
 
         Parameters:
-            dedup: deduplicate resource and field names
             stats: stream files completely and infer stats
         """
-        if dedup:
-            self.dedup()
         for resource in self.resources:
-            resource.infer(dedup=dedup, stats=stats)
+            resource.infer(stats=stats)
 
     # Publish
 

@@ -1,11 +1,14 @@
-from frictionless import Catalog, Package
+from frictionless import Catalog, Dataset
 
 
 # General
 
 
 def test_catalog():
-    package = Package("data/package.json")
-    catalog = Catalog(packages=[package])
-    assert catalog.package_names == ["name"]
-    assert catalog.to_descriptor() == {"packages": ["data/package.json"]}
+    dataset = Dataset(name="name", package="data/package.json")
+    catalog = Catalog(datasets=[dataset])
+    print(catalog)
+    assert catalog.dataset_names == ["name"]
+    assert catalog.to_descriptor() == {
+        "datasets": [{"name": "name", "package": "data/package.json"}]
+    }

@@ -5,8 +5,8 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..package import Package
 from ..system import system
+from .dataset import Dataset
 from .. import settings
 from .. import errors
 
@@ -18,6 +18,16 @@ if TYPE_CHECKING:
 @attrs.define(kw_only=True)
 class Catalog(Metadata):
     """Catalog representation"""
+
+    source: Optional[Any] = attrs.field(default=None, kw_only=False)
+    """
+    # TODO: add docs
+    """
+
+    control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
 
     name: Optional[str] = None
     """
@@ -43,9 +53,9 @@ class Catalog(Metadata):
     human-oriented description of the resource.
     """
 
-    packages: List[Package] = attrs.field(factory=list)
+    datasets: List[Dataset] = attrs.field(factory=list)
     """
-    A list of packages. Each package in the list is a Data Package.
+    A list of datasets. Each package in the list is a Data Dataset.
     """
 
     basepath: Optional[str] = None
@@ -79,59 +89,69 @@ class Catalog(Metadata):
             return Catalog.from_descriptor(source, **options)  # type: ignore
 
     def __attrs_post_init__(self):
-        for package in self.packages:
-            package.package = self
+        for dataset in self.datasets:
+            dataset.catalog = self
 
-    # Packages
+    # Datasets
 
     @property
-    def package_names(self) -> List[str]:
-        """Return names of packages"""
-        return [package.name for package in self.packages if package.name is not None]
+    def dataset_names(self) -> List[str]:
+        """Return names of datasets"""
+        return [dataset.name for dataset in self.datasets if dataset.name is not None]
 
-    def add_package(self, package: Union[Package, str]) -> Package:
-        """Add new package to the package"""
-        if isinstance(package, str):
-            package = Package.from_descriptor(package, basepath=self.basepath)
-        self.packages.append(package)
-        package.catalog = self
-        return package
+    def add_dataset(self, dataset: Union[Dataset, str]) -> Dataset:
+        """Add new dataset to the catalog"""
+        if isinstance(dataset, str):
+            dataset = Dataset.from_descriptor(dataset, basepath=self.basepath)
+        self.datasets.append(dataset)
+        dataset.catalog = self
+        return dataset
 
-    def has_package(self, name: str) -> bool:
-        """Check if a package is present"""
-        for package in self.packages:
-            if package.name == name:
+    def has_dataset(self, name: str) -> bool:
+        """Check if a dataset is present"""
+        for dataset in self.datasets:
+            if dataset.name == name:
                 return True
         return False
 
-    def get_package(self, name: str) -> Package:
-        """Get package by name"""
-        for package in self.packages:
-            if package.name == name:
-                return package
-        error = errors.CatalogError(note=f'package "{name}" does not exist')
+    def get_dataset(self, name: str) -> Dataset:
+        """Get dataset by name"""
+        for dataset in self.datasets:
+            if dataset.name == name:
+                return dataset
+        error = errors.CatalogError(note=f'dataset "{name}" does not exist')
         raise FrictionlessException(error)
 
-    def set_package(self, package: Package) -> Optional[Package]:
-        """Set package by name"""
-        assert package.name
-        if self.has_package(package.name):
-            prev_package = self.get_package(package.name)
-            index = self.packages.index(prev_package)
-            self.packages[index] = package
-            package.package = self
-            return prev_package
-        self.add_package(package)
+    def set_dataset(self, dataset: Dataset) -> Optional[Dataset]:
+        """Set dataset by name"""
+        assert dataset.name
+        if self.has_dataset(dataset.name):
+            prev_dataset = self.get_dataset(dataset.name)
+            index = self.datasets.index(prev_dataset)
+            self.datasets[index] = dataset
+            dataset.dataset = self
+            return prev_dataset
+        self.add_dataset(dataset)
 
-    def remove_package(self, name: str) -> Package:
-        """Remove package by name"""
-        package = self.get_package(name)
-        self.packages.remove(package)
-        return package
+    def remove_dataset(self, name: str) -> Dataset:
+        """Remove dataset by name"""
+        dataset = self.get_dataset(name)
+        self.datasets.remove(dataset)
+        return dataset
 
-    def clear_packages(self):
-        """Remove all the packages"""
-        self.packages = []
+    def clear_datasets(self):
+        """Remove all the datasets"""
+        self.datasets = []
+
+    def deduplicate_datasets(self):
+        if len(self.dataset_names) != len(set(self.dataset_names)):
+            seen_names = []
+            for index, dataset in enumerate(self.datasets):
+                name = dataset.name
+                count = seen_names.count(name) + 1
+                if count > 1:
+                    self.datasets[index].name = "%s%s" % (name, count)
+                seen_names.append(name)
 
     # Infer
 
@@ -139,11 +159,11 @@ class Catalog(Metadata):
         """Infer catalog's metadata
 
         Parameters:
-            sample? (bool): open files and infer from a sample (default: True)
+            dedup: deduplicate dataset, resource and field names
             stats? (bool): stream files completely and infer stats
         """
-        for package in self.packages:
-            package.infer(stats=stats)
+        for dataset in self.datasets:
+            dataset.package.infer(stats=stats)
 
     # Convert
 
@@ -160,23 +180,23 @@ class Catalog(Metadata):
     metadata_Error = errors.CatalogError
     metadata_profile = {
         "type": "object",
-        "required": ["packages"],
+        "required": ["datasets"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
-            "packages": {
+            "datasets": {
                 "type": "array",
-                "items": {"type": ["object", "string"]},
+                "items": {"type": "object"},
             },
         },
     }
 
     @classmethod
     def metadata_select_property_class(cls, name):
-        if name == "packages":
-            return Package
+        if name == "datasets":
+            return Dataset
 
     @classmethod
     def metadata_import(cls, descriptor: IDescriptor, **options):

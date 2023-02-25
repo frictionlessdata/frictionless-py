@@ -147,9 +147,7 @@ class Schema(Metadata):
         """Remove all the fields"""
         self.fields = []
 
-    # Dedup
-
-    def dedup(self):
+    def deduplicate_fields(self):
         if len(self.field_names) != len(set(self.field_names)):
             seen_names = []
             for index, name in enumerate(self.field_names):
