@@ -166,7 +166,7 @@ class Metadata(metaclass=Metaclass):
             if "basepath" in inspect.signature(cls.__init__).parameters:
                 options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
-        # TODO: remove in v6
+        # TODO: remove in v7
         # Transform with a base class in case the type is not available
         cls.metadata_transform(descriptor)
         Class = cls.metadata_select_class(descriptor.get("type"))

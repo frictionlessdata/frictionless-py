@@ -321,20 +321,18 @@ def test_resource_standard_specs_properties(create_descriptor):
 
 def test_resource_official_hash_bytes_rows():
     resource = Resource({"name": "name", "path": "path", "hash": "hash", "bytes": 1})
-    assert resource.to_descriptor()["stats"] == {
-        "md5": "hash",
-        "bytes": 1,
-    }
+    descriptor = resource.to_descriptor()
+    assert descriptor["hash"] == "hash"
+    assert descriptor["bytes"] == 1
 
 
 def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
     resource = Resource(
         {"name": "name", "path": "path", "hash": "sha256:hash", "bytes": 1}
     )
-    assert resource.to_descriptor()["stats"] == {
-        "sha256": "hash",
-        "bytes": 1,
-    }
+    descriptor = resource.to_descriptor()
+    assert descriptor["hash"] == "sha256:hash"
+    assert descriptor["bytes"] == 1
 
 
 def test_resource_description_html():
@@ -516,18 +514,15 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "scheme": "file",
         "encoding": "utf-8",
         "mediatype": "text/csv",
+        "hash": "sha256:350e813ea15d84c697a7b03446a8fa9d7fca9883167ad70986a173c29f8253fd",
+        "bytes": 58,
+        "fields": 2,
+        "rows": 3,
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},
                 {"name": "population", "type": "integer"},
             ]
-        },
-        "stats": {
-            "md5": "f71969080b27963b937ca28cdd5f63b9",
-            "sha256": "350e813ea15d84c697a7b03446a8fa9d7fca9883167ad70986a173c29f8253fd",
-            "bytes": 58,
-            "fields": 2,
-            "rows": 3,
         },
     }
 

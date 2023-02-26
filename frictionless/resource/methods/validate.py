@@ -39,10 +39,13 @@ def validate(
             self, time=timer.time, errors=exception.to_errors()
         )
 
+    # TODO: remove in v7
     # Ignore not-supported hashings
-    if self.custom.get("hash"):
-        warning = "hash is ignored; supported algorithms: md5/sha256"
-        warnings.append(warning)
+    if self.hash:
+        algorithm, _ = helpers.parse_resource_hash_v1(self.hash)
+        if algorithm not in ["md5", "sha256"]:
+            warning = "hash is ignored; supported algorithms: md5/sha256"
+            warnings.append(warning)
 
     # Prepare resource
     if self.closed:

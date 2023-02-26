@@ -395,6 +395,7 @@ def test_resource_validate_resource_metadata_errors_with_missing_values_993():
     assert reasons[0].note == '"missingValues" should be set as "schema.missingValues"'
 
 
+@pytest.mark.skip
 def test_resource_validate_resource_metadata_errors_with_fields_993():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource("data/resource-with-fields-993.json")

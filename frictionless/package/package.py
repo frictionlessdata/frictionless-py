@@ -305,6 +305,7 @@ class Package(Metadata):
 
     # Infer
 
+    # TODO: allow cherry-picking stats for adding to a descriptor
     def infer(self, *, stats: bool = False) -> None:
         """Infer metadata
 

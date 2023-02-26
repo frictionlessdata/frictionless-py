@@ -155,11 +155,11 @@ class Catalog(Metadata):
 
     # Infer
 
+    # TODO: allow cherry-picking stats for adding to a descriptor
     def infer(self, *, stats=False):
         """Infer catalog's metadata
 
         Parameters:
-            dedup: deduplicate dataset, resource and field names
             stats? (bool): stream files completely and infer stats
         """
         for dataset in self.datasets:

@@ -166,6 +166,26 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
+    hash: Optional[str] = None
+    """
+    # TODO: add docs
+    """
+
+    bytes: Optional[int] = None
+    """
+    # TODO: add docs
+    """
+
+    fields: Optional[int] = None
+    """
+    # TODO: add docs
+    """
+
+    rows: Optional[int] = None
+    """
+    # TODO: add docs
+    """
+
     _dialect: Union[Dialect, str] = attrs.field(factory=Dialect, alias="dialect")
     """
     # TODO: add docs
@@ -193,7 +213,7 @@ class Resource(Metadata):
     For more information, please check the Package documentation.
     """
 
-    stats: Stats = attrs.field(factory=Stats)
+    stats: Stats = attrs.field(init=False)
     """
     # TODO: add docs
     """
@@ -242,6 +262,8 @@ class Resource(Metadata):
             return resource
 
     def __attrs_post_init__(self):
+        self.stats = Stats()
+
         # Store internal state
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
@@ -489,6 +511,7 @@ class Resource(Metadata):
 
     # Infer
 
+    # TODO: allow cherry-picking stats for adding to a descriptor
     def infer(self, *, stats: bool = False) -> None:
         """Infer metadata
 
@@ -500,10 +523,14 @@ class Resource(Metadata):
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
-                self.stats = Stats()
                 return
             stream = self.__row_stream or self.byte_stream
             helpers.pass_through(stream)
+            self.hash = f"sha256:{self.stats.sha256}"
+            self.bytes = self.stats.bytes
+            if self.tabular:
+                self.fields = self.stats.fields
+                self.rows = self.stats.rows
 
     # Open/Close
 
@@ -1135,12 +1162,15 @@ class Resource(Metadata):
             "format": {"type": "string"},
             "mediatype": {"type": "string"},
             "compression": {"type": "string"},
-            "extrapaths": {"type": "array"},
+            "extrapaths": {"type": "array", "item": {"type": "string"}},
             "innerpath": {"type": "string"},
             "encoding": {"type": "string"},
+            "hash": {"type": "string"},
+            "bytes": {"type": "integer"},
+            "fields": {"type": "integer"},
+            "rows": {"type": "integer"},
             "dialect": {"type": ["object", "string"]},
             "schema": {"type": ["object", "string"]},
-            "stats": {"type": "object"},
         },
     }
 
@@ -1214,6 +1244,20 @@ class Resource(Metadata):
                 descriptor.setdefault("stats", {})
                 descriptor["stats"][algo] = hash
 
+        # Stats (framework/v5)
+        stats = descriptor.pop("stats", None)
+        if stats and isinstance(stats, dict):
+            md5 = stats.pop("md5", None)
+            sha256 = stats.pop("sha256", None)
+            if sha256:
+                descriptor["hash"] = f"sha256:{sha256}"
+            elif md5:
+                descriptor["hash"] = md5
+            for name in ["bytes", "fields", "rows"]:
+                value = stats.get(name)
+                if value:
+                    descriptor[name] = value
+
         # Compression (framework/v4)
         compression = descriptor.get("compression")
         if compression == "no":
@@ -1281,7 +1325,7 @@ class Resource(Metadata):
             )
 
         # Misleading
-        for name in ["missingValues", "fields"]:
+        for name in ["missingValues"]:
             if name in descriptor:
                 note = f'"{name}" should be set as "schema.{name}"'
                 yield errors.ResourceError(note=note)

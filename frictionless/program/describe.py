@@ -42,6 +42,7 @@ def program_describe(
     field_missing_values: str = common.field_missing_values,
     # Command
     basepath: str = common.basepath,
+    # TODO: allow cherry-picking stats for adding to a descriptor
     stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
