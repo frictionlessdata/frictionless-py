@@ -286,7 +286,7 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     ]
 
 
-def test_validate_less_actual_fields_with_required_constraint_issue_950():
+def test_resource_validate_less_actual_fields_with_required_constraint_issue_950():
     schema = Schema.describe("data/table.csv")
     schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))
     report = Resource("data/table.csv", schema=schema).validate()

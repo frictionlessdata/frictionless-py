@@ -58,6 +58,7 @@ def test_package_validate_with_non_tabular():
         },
     )
     report = package.validate()
+    assert report.valid
 
 
 @pytest.mark.skip

@@ -281,6 +281,20 @@ def test_resource_validate_custom_check_with_arguments():
     ]
 
 
+@pytest.mark.skip
+def test_resource_validate_custom_check_bad_name():
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
+            "checks": [{"type": "bad"}],
+        },
+    }
+    report = Resource(descriptor).validate()
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", 'check type "bad" is not supported'],
+    ]
+
+
 # Bugs
 
 
@@ -319,6 +333,23 @@ def test_resource_validate_wide_table_with_order_fields_issue_277():
         [49, 50, "constraint-error"],
         [68, 50, "constraint-error"],
         [69, 50, "constraint-error"],
+    ]
+
+
+@pytest.mark.skip
+def test_validate_invalid_table_schema_issue_304():
+    descriptor = {
+        "data": [["name", "age"], ["Alex", "33"]],
+        "schema": {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "age", "type": "bad"},
+            ]
+        },
+    }
+    report = Resource(descriptor).validate()
+    assert report.flatten(["type", "note"]) == [
+        ["field-error", 'field type "bad" is not supported'],
     ]
 
 
@@ -373,6 +404,18 @@ def test_resource_validate_resource_header_row_has_first_number_issue_870():
     resource = Resource("data/issue-870.xlsx")
     report = resource.validate(limit_rows=5)
     assert report.valid
+
+
+def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
+    detector = Detector(schema_sync=True)
+    report = Resource(
+        "data/duplicate-column.csv",
+        schema="data/duplicate-column-schema.json",
+        detector=detector,
+    ).validate()
+    assert report.flatten(["type", "note"]) == [
+        ["error", '"schema_sync" requires unique labels in the header'],
+    ]
 
 
 def test_resource_validate_resource_array_path_issue_991():

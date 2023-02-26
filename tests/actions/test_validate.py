@@ -24,6 +24,38 @@ def test_validate_invalid():
     ]
 
 
+def test_validate_invalid_source():
+    report = validate("bad.json", type="resource")
+    assert report.stats.errors == 1
+    [[type, note]] = report.flatten(["type", "note"])
+    assert type == "scheme-error"
+    assert note.count("[Errno 2]") and note.count("bad.json")
+
+
+def test_validate_invalid_resource():
+    report = validate({"name": "name", "path": "data/table.csv", "schema": "bad"})
+    assert report.stats.errors == 1
+    [[type, note]] = report.flatten(["type", "note"])
+    assert type == "schema-error"
+    assert note.count("[Errno 2]") and note.count("bad")
+
+
+@pytest.mark.skip
+def test_validate_forbidden_value_task_error():
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
+            "checks": [
+                {"type": "forbidden-value", "fieldName": "bad", "forbidden": [2]},
+            ]
+        },
+    }
+    report = validate(descriptor)
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", "'values' is a required property"],
+    ]
+
+
 def test_validate_package_descriptor_type_package():
     report = validate("data/package/datapackage.json")
     assert report.valid
