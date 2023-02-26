@@ -2,7 +2,7 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import Detector, Dialect, Stats, validate, platform
+from frictionless import Detector, Dialect, validate, platform
 from frictionless.program import program
 
 runner = CliRunner()
@@ -81,11 +81,11 @@ def test_program_validate_field_missing_values():
 def test_program_validate_chucksum_hash():
     actual = runner.invoke(
         program,
-        "validate data/table.csv --json --stats-md5 6c2c61dd9b0e9c6876139a449ed87933",
+        "validate data/table.csv --json --hash 6c2c61dd9b0e9c6876139a449ed87933",
     )
     expect = validate(
         "data/table.csv",
-        stats=Stats(md5="6c2c61dd9b0e9c6876139a449ed87933"),
+        hash="6c2c61dd9b0e9c6876139a449ed87933",
     )
     assert actual.exit_code == 0
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
@@ -93,15 +93,15 @@ def test_program_validate_chucksum_hash():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_validate_chucksum_bytes():
-    actual = runner.invoke(program, "validate data/table.csv --json --stats-bytes 30")
-    expect = validate("data/table.csv", stats=Stats(bytes=30))
+    actual = runner.invoke(program, "validate data/table.csv --json --bytes 30")
+    expect = validate("data/table.csv", bytes=30)
     assert actual.exit_code == 0
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 
 
 def test_program_validate_chucksum_rows():
-    actual = runner.invoke(program, "validate data/table.csv --json --stats-rows 2")
-    expect = validate("data/table.csv", stats=Stats(rows=2))
+    actual = runner.invoke(program, "validate data/table.csv --json --rows 2")
+    expect = validate("data/table.csv", rows=2)
     assert actual.exit_code == 0
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 

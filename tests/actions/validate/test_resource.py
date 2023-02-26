@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Schema, Detector, Dialect, Check, Stats
+from frictionless import Schema, Detector, Dialect, Check
 from frictionless import validate, formats, errors, platform
 
 
@@ -530,32 +530,32 @@ def test_validate_schema_primary_key_error_composite():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_hash():
-    sha256 = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", stats=Stats(sha256=sha256))
+    hash = "sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    report = validate("data/table.csv", hash=hash)
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_hash_invalid():
-    sha256 = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", stats=Stats(sha256="bad"))
+    hash = "6c2c61dd9b0e9c6876139a449ed87933"
+    report = validate("data/table.csv", hash="bad")
     assert report.flatten(["type", "note"]) == [
         [
-            "sha256-count",
-            'expected is "bad" and actual is "%s"' % sha256,
+            "hash-count",
+            'expected is "bad" and actual is "%s"' % hash,
         ],
     ]
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_bytes():
-    report = validate("data/table.csv", stats=Stats(bytes=30))
+    report = validate("data/table.csv", bytes=30)
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_bytes_invalid():
-    report = validate("data/table.csv", stats=Stats(bytes=40))
+    report = validate("data/table.csv", bytes=40)
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
     assert report.flatten(["type", "note"]) == [
@@ -565,13 +565,13 @@ def test_validate_stats_bytes_invalid():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_rows():
-    report = validate("data/table.csv", stats=Stats(rows=2))
+    report = validate("data/table.csv", rows=2)
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_validate_stats_rows_invalid():
-    report = validate("data/table.csv", stats=Stats(rows=3))
+    report = validate("data/table.csv", rows=3)
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
     assert report.flatten(["type", "note"]) == [

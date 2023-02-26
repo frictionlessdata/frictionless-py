@@ -3,7 +3,6 @@ import sys
 import typer
 from typing import List
 from tabulate import tabulate
-from ..stats import Stats
 from ..actions import validate
 from ..detector import Detector
 from ..checklist import Checklist, Check
@@ -45,11 +44,10 @@ def program_validate(
     pick_errors: str = common.pick_errors,
     skip_errors: str = common.skip_errors,
     # Stats
-    stats_md5: str = common.stats_md5,
-    stats_sha256: str = common.stats_sha256,
-    stats_bytes: int = common.stats_bytes,
-    stats_fields: int = common.stats_fields,
-    stats_rows: int = common.stats_rows,
+    hash: str = common.hash,
+    bytes: int = common.bytes,
+    fields: int = common.fields,
+    rows: int = common.rows,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -152,16 +150,6 @@ def program_validate(
             schema_sync=schema_sync,
         )
 
-    # Prepare stats
-    def prepare_stats():
-        return Stats.from_options(
-            md5=stats_md5,
-            sha256=stats_sha256,
-            bytes=stats_bytes,
-            fields=stats_fields,
-            rows=stats_rows,
-        )
-
     # Prepare options
     def prepare_options():
         return dict(
@@ -176,7 +164,10 @@ def program_validate(
             dialect=prepare_dialect(),
             schema=schema,
             checklist=prepare_checklist(),
-            stats=prepare_stats(),
+            hash=hash,
+            bytes=bytes,
+            fields=fields,
+            rows=rows,
             # Software
             basepath=basepath,
             detector=prepare_detector(),

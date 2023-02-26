@@ -165,27 +165,22 @@ stats = Option(
     help="Infer stats",
 )
 
-stats_md5 = Option(
+hash = Option(
     default=None,
-    help="Expected MD5 hash",
+    help="Expected hash",
 )
 
-stats_sha256 = Option(
-    default=None,
-    help="Expected SHA256 hash",
-)
-
-stats_bytes = Option(
+bytes = Option(
     default=None,
     help="Expected size in bytes",
 )
 
-stats_fields = Option(
+fields = Option(
     default=None,
     help="Expected amount of fields",
 )
 
-stats_rows = Option(
+rows = Option(
     default=None,
     help="Expected amount of rows",
 )

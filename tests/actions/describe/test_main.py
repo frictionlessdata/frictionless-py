@@ -116,12 +116,9 @@ def test_describe_non_tabular_resource_issue_641():
         "path": "data/document.pdf",
         "scheme": "file",
         "format": "pdf",
+        "hash": "sha256:8acf6c76fa7ad2e13531e8e41c93e944597db489aee53c8f1748e3aafaf165ef",
+        "bytes": 262443,
         "encoding": "utf-8",
-        "stats": {
-            "md5": "3a503daaa773a3ea32b1fedd9fece844",
-            "sha256": "8acf6c76fa7ad2e13531e8e41c93e944597db489aee53c8f1748e3aafaf165ef",
-            "bytes": 262443,
-        },
     }
 
 
