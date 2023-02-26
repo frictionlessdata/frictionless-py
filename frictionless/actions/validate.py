@@ -1,5 +1,4 @@
 from typing import Optional, List, Any, Union
-from ..stats import Stats
 from ..schema import Schema
 from ..report import Report
 from ..dialect import Dialect
@@ -20,7 +19,6 @@ def validate(
     type: Optional[str] = None,
     dialect: Optional[Union[Dialect, str]] = None,
     schema: Optional[Union[Schema, str]] = None,
-    stats: Optional[Stats] = None,
     # Checklist
     checklist: Optional[Union[Checklist, str]] = None,
     checks: List[Check] = [],
@@ -82,7 +80,6 @@ def validate(
                         source,
                         dialect=dialect,
                         schema=schema,
-                        stats=stats,
                         **options,
                     )
         except FrictionlessException as exception:

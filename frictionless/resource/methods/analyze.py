@@ -1,4 +1,5 @@
 from __future__ import annotations
+import attrs
 import statistics
 from math import nan
 from typing import TYPE_CHECKING, Union, List, Dict
@@ -118,7 +119,10 @@ def analyze(self: Resource, *, detailed=False) -> Dict:
     if self.stats.rows and self.stats.bytes:
         analysis_report["averageRecordSizeInBytes"] = self.stats.bytes / self.stats.rows  # type: ignore
     analysis_report["timeTaken"] = timer.time
-    return {**analysis_report, **self.stats.to_descriptor()}
+    return {
+        **analysis_report,
+        **attrs.asdict(self.stats, filter=lambda _, v: v is not None),
+    }
 
 
 # TODO:This is a temporary function to use with statistics library as

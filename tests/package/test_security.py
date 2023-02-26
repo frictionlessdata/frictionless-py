@@ -50,4 +50,4 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted()
     with system.use_context(trusted=True):
         package = Package(resources=[resource], profile=profile)
         report = package.validate()
-        assert report.stats.errors == 5
+        assert report.stats["errors"] == 5

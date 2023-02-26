@@ -367,7 +367,7 @@ def test_resource_validate_table_is_invalid_issue_312():
 def test_resource_validate_missing_local_file_raises_scheme_error_issue_315():
     resource = Resource("bad-path.csv")
     report = resource.validate()
-    assert report.stats.errors == 1
+    assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "scheme-error"
     assert note.count("[Errno 2]") and note.count("bad-path.csv")

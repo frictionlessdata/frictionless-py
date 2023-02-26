@@ -26,7 +26,7 @@ def test_validate_invalid():
 
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
-    assert report.stats.errors == 1
+    assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "scheme-error"
     assert note.count("[Errno 2]") and note.count("bad.json")
@@ -34,7 +34,7 @@ def test_validate_invalid_source():
 
 def test_validate_invalid_resource():
     report = validate({"name": "name", "path": "data/table.csv", "schema": "bad"})
-    assert report.stats.errors == 1
+    assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
     assert note.count("[Errno 2]") and note.count("bad")
@@ -102,4 +102,4 @@ def test_validate_package_single_resource_wrong_resource_name_issue_221():
 
 def test_validate_multiple_files_issue_850():
     report = validate("data/package/*.csv")
-    assert report.stats.tasks == 2
+    assert report.stats["tasks"] == 2

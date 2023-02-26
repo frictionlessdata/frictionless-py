@@ -3,9 +3,9 @@ import attrs
 import humanize
 from typing import List, Optional
 from tabulate import tabulate
-from ..stats import Stats
 from ..metadata import Metadata
 from ..exception import FrictionlessException
+from .interfaces import IReportTaskStats
 from ..errors import ReportTaskError
 from ..error import Error
 from .. import settings
@@ -52,7 +52,7 @@ class ReportTask(Metadata):
     List of labels of the task resource.
     """
 
-    stats: Stats
+    stats: IReportTaskStats
     """
     Additional statistics of the data as defined in Stats class.
     """
@@ -112,12 +112,12 @@ class ReportTask(Metadata):
             if error_title not in error_list:
                 error_list[error_title] = 0
             error_list[error_title] += 1
-        size = self.stats.bytes
+        size = self.stats.get("bytes")
         content = [
             ["File Place", self.place],
             ["File Size", humanize.naturalsize(size) if size else "(file not found)"],
-            ["Total Time", f"{self.stats.seconds} Seconds"],
-            ["Rows Checked", self.stats.rows],
+            ["Total Time", f"{self.stats.get('seconds')} Seconds"],
+            ["Rows Checked", self.stats.get("rows")],
         ]
         if error_list:
             content.append(["Total Errors", sum(error_list.values())])
@@ -163,9 +163,7 @@ class ReportTask(Metadata):
 
     @classmethod
     def metadata_select_property_class(cls, name):
-        if name == "stats":
-            return Stats
-        elif name == "errors":
+        if name == "errors":
             return Error
 
     # TODO: validate valid/errors count

@@ -18,7 +18,7 @@ def test_resource_validate_invalid_resource():
     report = Resource.validate_descriptor(
         {"name": "name", "path": "data/table.csv", "schema": "bad"}
     )
-    assert report.stats.errors == 1
+    assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
     assert note.count("[Errno 2]") and note.count("bad")

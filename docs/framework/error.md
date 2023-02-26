@@ -3,9 +3,7 @@ script:
   basepath: data
 ---
 
-# Other Classes
-
-## Error
+# Error Class
 
 The Error class is a metadata with no behavior. It's used to describe an error that happened during Framework work or during the validation.
 
@@ -22,21 +20,9 @@ class DuplicateRowError(errors.RowError):
     description = "The row is duplicated."
 ```
 
-## Stats
-
-The Stats represent various describe/validate stats:
-
-```python script title="Python"
-from frictionless import describe
-
-resource = describe('table.csv', stats=True)
-print(resource.stats)
-```
-
 ## Reference
 
 ```yaml reference
 references:
   - frictionless.Error
-  - frictionless.Stats
 ```

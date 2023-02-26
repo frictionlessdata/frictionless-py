@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Optional
 from ...pipeline import Pipeline
 from ...exception import FrictionlessException
 from ...dialect import Dialect
-from ...stats import Stats
 from ...helpers import get_name
 from ... import errors
 
@@ -43,7 +42,11 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
             self.extrapaths = []
             self.innerpath = None
             self.dialect = Dialect()
-            self.stats = Stats()
+            self.stats.md5 = None
+            self.stats.sha256 = None
+            self.stats.bytes = None
+            self.stats.fields = None
+            self.stats.rows = None
 
     return self
 

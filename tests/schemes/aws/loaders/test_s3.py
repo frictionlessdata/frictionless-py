@@ -72,13 +72,14 @@ def test_s3_loader_big_file(bucket_name):
     dialect = Dialect(header=False)
     with Resource("s3://%s/table1.csv" % bucket_name, dialect=dialect) as resource:
         assert resource.read_rows()
-        assert resource.stats.to_descriptor() == {
-            "md5": "78ea269458be04a0e02816c56fc684ef",
-            "sha256": "aced987247a03e01acde64aa6b40980350b785e3aedc417ff2e09bbeacbfbf2b",
-            "bytes": 1000000,
-            "fields": 10,
-            "rows": 10000,
-        }
+        assert resource.stats.md5 == "78ea269458be04a0e02816c56fc684ef"
+        assert (
+            resource.stats.sha256
+            == "aced987247a03e01acde64aa6b40980350b785e3aedc417ff2e09bbeacbfbf2b"
+        )
+        assert resource.stats.bytes == 1000000
+        assert resource.stats.fields == 10
+        assert resource.stats.rows == 10000
 
 
 # Bugs
@@ -109,7 +110,7 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
     print(package.to_descriptor())
     report = package.validate()
     assert report.valid
-    assert report.stats.tasks == 2
+    assert report.stats["tasks"] == 2
 
 
 @mock_s3

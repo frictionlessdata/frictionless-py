@@ -14,7 +14,7 @@ from ..detector import Detector
 from ..metadata import Metadata
 from ..schema import Schema
 from ..system import system
-from ..stats import Stats
+from .stats import Stats
 from .. import settings
 from .. import helpers
 from .. import errors

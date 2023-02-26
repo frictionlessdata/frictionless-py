@@ -131,11 +131,12 @@ def test_resource_source_non_tabular():
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
-            assert resource.stats.to_descriptor() == {
-                "md5": "e1cbb0c3879af8347246f12c559a86b5",
-                "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
-                "bytes": 5,
-            }
+            assert resource.stats.md5 == "e1cbb0c3879af8347246f12c559a86b5"
+            assert (
+                resource.stats.sha256
+                == "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733"
+            )
+            assert resource.stats.bytes == 5
 
 
 @pytest.mark.vcr
@@ -151,11 +152,12 @@ def test_resource_source_non_tabular_remote():
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
-            assert resource.stats.to_descriptor() == {
-                "md5": "e1cbb0c3879af8347246f12c559a86b5",
-                "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
-                "bytes": 5,
-            }
+            assert resource.stats.md5 == "e1cbb0c3879af8347246f12c559a86b5"
+            assert (
+                resource.stats.sha256
+                == "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733"
+            )
+            assert resource.stats.bytes == 5
 
 
 def test_resource_source_non_tabular_error_bad_path():
@@ -193,13 +195,14 @@ def test_resource_source_path():
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
     if not platform.type == "windows":
-        assert resource.stats.to_descriptor() == {
-            "md5": "6c2c61dd9b0e9c6876139a449ed87933",
-            "sha256": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        }
+        assert resource.stats.md5 == "6c2c61dd9b0e9c6876139a449ed87933"
+        assert (
+            resource.stats.sha256
+            == "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+        )
+        assert resource.stats.bytes == 30
+        assert resource.stats.fields == 2
+        assert resource.stats.rows == 2
 
 
 def test_resource_source_path_and_basepath():
@@ -264,10 +267,8 @@ def test_resource_source_data():
         assert resource.fragment == data[1:]
         assert resource.labels == ["id", "name"]
         assert resource.header == ["id", "name"]
-        assert resource.stats.to_descriptor() == {
-            "fields": 2,
-            "rows": 2,
-        }
+        assert resource.stats.fields == 2
+        assert resource.stats.rows == 2
 
 
 def test_resource_source_no_path_and_no_data():

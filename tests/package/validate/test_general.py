@@ -75,7 +75,7 @@ def test_package_validate_invalid_package():
     report = Package(
         {"resources": [{"name": "name", "path": "data/table.csv", "schema": "bad"}]}
     ).validate()
-    assert report.stats.errors == 1
+    assert report.stats["errors"] == 1
     error = report.errors[0]
     assert error.type == "schema-error"
     assert error.note.count("[Errno 2]")
@@ -285,7 +285,7 @@ def test_package_validate_uppercase_format_issue_494():
     package = Package("data/issue-494.package.json")
     report = package.validate()
     assert report.valid
-    assert report.stats.tasks == 1
+    assert report.stats["tasks"] == 1
 
 
 def test_validate_package_using_detector_schema_sync_issue_847():
@@ -308,7 +308,7 @@ def test_validate_package_using_detector_schema_sync_issue_847():
 def test_package_validate_with_diacritic_symbol_issue_905():
     package = Package("data/issue-905/datapackage.json")
     report = package.validate()
-    assert report.stats.tasks == 3
+    assert report.stats["tasks"] == 3
 
 
 def test_package_validate_with_resource_data_is_a_string_issue_977():

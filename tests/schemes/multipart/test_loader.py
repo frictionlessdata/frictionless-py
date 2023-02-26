@@ -142,7 +142,7 @@ def test_multipart_loader_resource_validate():
     )
     report = resource.validate()
     assert report.valid
-    assert report.task.stats.rows == 2
+    assert report.task.stats.get("rows") == 2
 
 
 # Write
