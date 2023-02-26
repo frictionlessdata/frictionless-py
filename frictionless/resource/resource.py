@@ -9,12 +9,12 @@ from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
+from .stats import ResourceStats
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
 from ..schema import Schema
 from ..system import system
-from .stats import Stats
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -213,7 +213,7 @@ class Resource(Metadata):
     For more information, please check the Package documentation.
     """
 
-    stats: Stats = attrs.field(init=False)
+    stats: ResourceStats = attrs.field(init=False)
     """
     # TODO: add docs
     """
@@ -262,7 +262,7 @@ class Resource(Metadata):
             return resource
 
     def __attrs_post_init__(self):
-        self.stats = Stats()
+        self.stats = ResourceStats()
 
         # Store internal state
         self.__loader: Optional[Loader] = None
@@ -1184,8 +1184,6 @@ class Resource(Metadata):
             return Dialect
         elif name == "schema":
             return Schema
-        elif name == "stats":
-            return Stats
 
     @classmethod
     def metadata_transform(cls, descriptor):

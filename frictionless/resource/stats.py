@@ -4,7 +4,7 @@ from typing import Optional
 
 
 @attrs.define(kw_only=True)
-class Stats:
+class ResourceStats:
     """Stats representation"""
 
     md5: Optional[str] = None
