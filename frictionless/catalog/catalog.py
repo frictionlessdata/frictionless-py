@@ -91,6 +91,7 @@ class Catalog(Metadata):
     def __attrs_post_init__(self):
         for dataset in self.datasets:
             dataset.catalog = self
+            dataset.package.dataset = dataset
 
     # Datasets
 

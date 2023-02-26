@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
     from ..dialect import Dialect, Control
     from ..detector import Detector
-    from ..catalog import Catalog
+    from ..catalog import Dataset
 
 
 @attrs.define(kw_only=True)
@@ -138,9 +138,9 @@ class Package(Metadata):
     It can be dicts or Resource instances
     """
 
-    catalog: Optional[Catalog] = None
+    dataset: Optional[Dataset] = None
     """
-    It returns reference to catalog of which the package is part of. If package
+    It returns reference to dataset of which catalog the package is part of. If package
     is not part of any catalog, then it is set to None.
     """
 
@@ -219,8 +219,8 @@ class Package(Metadata):
         """
         if self._basepath:
             return self._basepath
-        if self.catalog:
-            return self.catalog.basepath
+        if self.dataset:
+            return self.dataset.basepath
 
     @basepath.setter
     def basepath(self, value: Optional[str]):
@@ -486,7 +486,7 @@ class Package(Metadata):
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],
             basepath=self.basepath,
-            catalog=self.catalog,
+            dataset=self.dataset,
             **options,
         )
 

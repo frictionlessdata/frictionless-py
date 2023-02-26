@@ -8,6 +8,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from .catalog import Catalog
+    from ..interfaces import IDescriptor
 
 
 @attrs.define(kw_only=True)
@@ -53,10 +54,16 @@ class Dataset(Metadata):
     # TODO: add docs
     """
 
+    def __attrs_post_init__(self):
+        self._package_path: Optional[str] = None
+        self._package_initial: Optional[IDescriptor] = None
+
     @property
     def package(self) -> Package:
         if isinstance(self._package, str):
+            self._package_path = self._package
             self._package = Package.from_descriptor(self._package, basepath=self.basepath)
+            self._package_initial = self._package.to_descriptor()
         return self._package
 
     @package.setter
@@ -94,3 +101,13 @@ class Dataset(Metadata):
     def metadata_select_property_class(cls, name):
         if name == "package":
             return Package
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+
+        # Package
+        package = descriptor.get("package")
+        if self._package_path and self._package_initial == package:
+            descriptor["package"] = self._package_path
+
+        return descriptor
