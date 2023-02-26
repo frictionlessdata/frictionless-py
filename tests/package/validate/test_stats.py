@@ -19,14 +19,14 @@ DESCRIPTOR_SH = {
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_validate_package_stats():
+def test_package_validate_stats():
     source = deepcopy(DESCRIPTOR_SH)
     package = Package(source)
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_stats_invalid():
+def test_package_validate_stats_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["hash"] += "a"
     source["resources"][0]["bytes"] += 1
@@ -39,7 +39,7 @@ def test_validate_package_stats_invalid():
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_validate_package_stats_size():
+def test_package_validate_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0].pop("hash")
     package = Package(source)
@@ -47,7 +47,7 @@ def test_validate_package_stats_size():
     assert report.valid
 
 
-def test_validate_package_stats_size_invalid():
+def test_package_validate_stats_size_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["bytes"] += 1
     source["resources"][0].pop("hash")
@@ -59,7 +59,7 @@ def test_validate_package_stats_size_invalid():
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_validate_package_stats_hash():
+def test_package_validate_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0].pop("bytes")
     package = Package(source)
@@ -67,7 +67,7 @@ def test_validate_package_stats_hash():
     assert report.valid
 
 
-def test_check_file_package_stats_hash_invalid():
+def test_package_validate_check_file_package_stats_hash_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0].pop("bytes")
     source["resources"][0]["hash"] += "a"

@@ -1,4 +1,5 @@
 import pytest
+from frictionless import fields
 from frictionless import Resource, Schema, Checklist, Detector, FrictionlessException
 
 
@@ -282,4 +283,18 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
         ["error", '"schema_sync" requires unique labels in the header'],
+    ]
+
+
+def test_validate_less_actual_fields_with_required_constraint_issue_950():
+    schema = Schema.describe("data/table.csv")
+    schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))
+    report = Resource("data/table.csv", schema=schema).validate()
+    print(report.flatten(["rowNumber", "fieldNumber", "type"]))
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, 3, "missing-label"],
+        [2, 3, "constraint-error"],
+        [2, 3, "missing-cell"],
+        [3, 3, "constraint-error"],
+        [3, 3, "missing-cell"],
     ]

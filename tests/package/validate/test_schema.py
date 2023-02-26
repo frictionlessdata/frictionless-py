@@ -57,14 +57,14 @@ MULTI_FK_RESSOURCE = {
 }
 
 
-def test_validate_package_schema_foreign_key_error():
+def test_package_validate_schema_foreign_key_error():
     descriptor = deepcopy(DESCRIPTOR_FK)
     package = Package(descriptor)
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_schema_foreign_key_not_defined():
+def test_package_validate_schema_foreign_key_not_defined():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["schema"]["foreignKeys"]
     package = Package(descriptor)
@@ -72,7 +72,7 @@ def test_validate_package_schema_foreign_key_not_defined():
     assert report.valid
 
 
-def test_validate_package_schema_foreign_key_self_referenced_resource_violation():
+def test_package_validate_schema_foreign_key_self_referenced_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
     package = Package(descriptor)
@@ -82,7 +82,7 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     ]
 
 
-def test_validate_package_schema_foreign_key_internal_resource_violation():
+def test_package_validate_schema_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
     package = Package(descriptor)
@@ -92,7 +92,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     ]
 
 
-def test_validate_package_schema_foreign_key_internal_resource_violation_non_existent():
+def test_package_validate_schema_foreign_key_internal_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     package = Package(descriptor)
@@ -105,7 +105,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     ]
 
 
-def test_validate_package_schema_multiple_foreign_key():
+def test_package_validate_schema_multiple_foreign_key():
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"].append(MULTI_FK_RESSOURCE)
     package = Package(descriptor)
@@ -113,7 +113,7 @@ def test_validate_package_schema_multiple_foreign_key():
     assert report.valid
 
 
-def test_validate_package_schema_multiple_foreign_key_resource_violation_non_existent():
+def test_package_validate_schema_multiple_foreign_key_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
     # remove London
     del descriptor["resources"][0]["data"][1]
@@ -131,7 +131,7 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
     ]
 
 
-def test_validate_package_schema_multiple_foreign_key_violations():
+def test_package_validate_schema_multiple_foreign_key_violations():
     descriptor = deepcopy(DESCRIPTOR_FK)
     # Add some wrong fks
     descriptor["resources"][0]["data"][3][0] = 5
@@ -159,7 +159,7 @@ def test_validate_package_schema_multiple_foreign_key_violations():
 # Bugs
 
 
-def test_validate_package_using_detector_schema_sync_issue_847():
+def test_package_validate_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
             Resource(
