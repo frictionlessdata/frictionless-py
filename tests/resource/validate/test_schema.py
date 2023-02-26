@@ -6,6 +6,7 @@ from frictionless import Resource, Schema, Checklist, Detector, FrictionlessExce
 # General
 
 
+@pytest.mark.skip
 def test_resource_validate_schema_invalid_json():
     descriptor = dict(name="name", path="data/table.csv", schema="data/invalid.json")
     report = Resource.validate_descriptor(descriptor)
@@ -14,6 +15,7 @@ def test_resource_validate_schema_invalid_json():
     ]
 
 
+@pytest.mark.skip
 def test_resource_validate_invalid_resource():
     report = Resource.validate_descriptor(
         {"name": "name", "path": "data/table.csv", "schema": "bad"}

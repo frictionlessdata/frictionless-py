@@ -264,7 +264,15 @@ class Resource(Metadata):
     def __attrs_post_init__(self):
         self.stats = ResourceStats()
 
-        # Store internal state
+        # Dialect
+        self._dialect_path: Optional[str] = None
+        self._dialect_initial: Optional[IDescriptor] = None
+
+        # Schema
+        self._schema_path: Optional[str] = None
+        self._schema_initial: Optional[IDescriptor] = None
+
+        # State
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
         self.__buffer: Optional[IBuffer] = None
@@ -358,7 +366,9 @@ class Resource(Metadata):
     @property
     def dialect(self) -> Dialect:
         if isinstance(self._dialect, str):
+            self._dialect_path = self._dialect
             self._dialect = Dialect.from_descriptor(self._dialect, basepath=self.basepath)
+            self._dialect_initial = self._dialect.to_descriptor()
         return self._dialect
 
     @dialect.setter
@@ -368,7 +378,9 @@ class Resource(Metadata):
     @property
     def schema(self) -> Schema:
         if isinstance(self._schema, str):
+            self._schema_path = self._schema
             self._schema = Schema.from_descriptor(self._schema, basepath=self.basepath)
+            self._schema_initial = self._schema.to_descriptor()
         return self._schema
 
     @schema.setter
@@ -1341,10 +1353,19 @@ class Resource(Metadata):
 
         # Data
         data = descriptor.get("data")
-        if (data is not None) and (
-            not isinstance(data, (str, bool, int, float, list, dict))
-        ):
+        types = (str, bool, int, float, list, dict)
+        if data is not None and not isinstance(data, types):
             descriptor["data"] = []
+
+        # Dialect
+        dialect = descriptor.get("dialect")
+        if self._dialect_path and self._dialect_initial == dialect:
+            descriptor["dialect"] = self._dialect_path
+
+        # Schema
+        schema = descriptor.get("schema")
+        if self._schema_path and self._schema_initial == schema:
+            descriptor["schema"] = self._schema_path
 
         # Path (standards/v1)
         if system.standards == "v1":

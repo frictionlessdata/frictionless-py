@@ -158,9 +158,7 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options) -> Self:
-        descriptor_path = None
         if isinstance(descriptor, str):
-            descriptor_path = descriptor
             basepath = options.pop("basepath", None)
             descriptor = helpers.join_basepath(descriptor, basepath)
             if "basepath" in inspect.signature(cls.__init__).parameters:
@@ -177,9 +175,6 @@ class Metadata(metaclass=Metaclass):
             error = Error(note="descriptor is not valid")
             raise FrictionlessException(error, reasons=errors)
         metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
-        if descriptor_path:
-            metadata.metadata_descriptor_path = descriptor_path
-            metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
     def to_descriptor(self, *, debug: bool = False) -> IDescriptor:
@@ -190,14 +185,6 @@ class Metadata(metaclass=Metaclass):
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
-        return descriptor
-
-    def to_descriptor_source(self) -> Union[IDescriptor, str]:
-        """Export metadata as a descriptor or a descriptor path"""
-        descriptor = self.to_descriptor()
-        if self.metadata_descriptor_path:
-            if self.metadata_descriptor_initial == descriptor:
-                return self.metadata_descriptor_path
         return descriptor
 
     def to_copy(self, **options) -> Self:
@@ -281,8 +268,6 @@ class Metadata(metaclass=Metaclass):
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
-    metadata_descriptor_path: Optional[str] = None
-    metadata_descriptor_initial: Optional[IDescriptor] = None
 
     @classmethod
     def metadata_select_class(cls, type: Optional[str]) -> Type[Metadata]:
@@ -399,8 +384,6 @@ class Metadata(metaclass=Metaclass):
                             value[ix] = Class.from_descriptor(item, basepath=basepath)
                 elif isinstance(value, dict):
                     value = Class.metadata_import(value, basepath=basepath)
-                elif isinstance(value, str):
-                    value = Class.from_descriptor(value, basepath=basepath)
             merged_options.setdefault(stringcase.snakecase(name), value)
         merged_options.update(options)
         if with_basepath:
@@ -422,9 +405,9 @@ class Metadata(metaclass=Metaclass):
                 continue
             if Class:
                 if isinstance(value, list):
-                    value = [item.to_descriptor_source() for item in value]  # type: ignore
+                    value = [item.to_descriptor() for item in value]  # type: ignore
                 else:
-                    value = value.to_descriptor_source()  # type: ignore
+                    value = value.to_descriptor()  # type: ignore
                     if not value:
                         continue
             if isinstance(value, (list, dict)):
