@@ -45,7 +45,7 @@ class PandasParser(Parser):
                     value = pk[schema.primary_key.index(field.name)]
                 else:
                     value = item[field.name]
-                if field.type == "number" and np.isnan(value):  # type: ignore
+                if value is np.nan:
                     value = None
                 elif isinstance(value, pd.Timestamp):
                     value = value.to_pydatetime()  # type: ignore
