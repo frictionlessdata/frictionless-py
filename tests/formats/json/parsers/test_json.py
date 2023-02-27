@@ -1,6 +1,6 @@
 import json
 import pytest
-from frictionless import Resource, formats
+from frictionless import Resource, formats, resources
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -10,7 +10,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 def test_json_parser():
-    with Resource(path="data/table.json", type="table") as resource:
+    with resources.TableResource(path="data/table.json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -19,7 +19,7 @@ def test_json_parser():
 
 
 def test_json_parser_keyed():
-    with Resource(path="data/table.keyed.json", type="table") as resource:
+    with resources.TableResource(path="data/table.keyed.json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -30,8 +30,8 @@ def test_json_parser_keyed():
 
 def test_json_parser_keyed_with_keys_provided():
     control = formats.JsonControl(keys=["name", "id"])
-    with Resource(
-        path="data/table.keyed.json", type="table", control=control
+    with resources.TableResource(
+        path="data/table.keyed.json", control=control
     ) as resource:
         assert resource.dialect.to_descriptor() == {
             "json": {"keyed": True, "keys": ["name", "id"]}
@@ -45,7 +45,7 @@ def test_json_parser_keyed_with_keys_provided():
 
 def test_json_parser_from_buffer():
     source = '[["id", "name"], [1, "english"], [2, "中国人"]]'.encode("utf-8")
-    with Resource(source, type="table", format="json") as resource:
+    with resources.TableResource(source, format="json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -55,7 +55,7 @@ def test_json_parser_from_buffer():
 
 def test_json_parser_from_buffer_keyed():
     source = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'.encode("utf-8")
-    with Resource(source, type="table", format="json") as resource:
+    with resources.TableResource(source, format="json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -66,7 +66,7 @@ def test_json_parser_from_buffer_keyed():
 
 @pytest.mark.vcr
 def test_json_parser_from_remote():
-    with Resource(path=BASEURL % "data/table.json", type="table") as resource:
+    with resources.TableResource(path=BASEURL % "data/table.json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -76,7 +76,7 @@ def test_json_parser_from_remote():
 
 @pytest.mark.vcr
 def test_json_parser_from_remote_keyed():
-    with Resource(path=BASEURL % "data/table.keyed.json", type="table") as resource:
+    with resources.TableResource(path=BASEURL % "data/table.keyed.json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -90,7 +90,9 @@ def test_json_parser_from_remote_keyed():
 
 def test_json_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = source.write(Resource(path=str(tmpdir.join("table.json")), type="table"))
+    target = resources.TableResource(path=str(tmpdir.join("table.json")))
+    target = source.write(target)
+    assert target.normpath
     with open(target.normpath) as file:
         assert json.load(file) == [
             ["id", "name"],
@@ -102,9 +104,9 @@ def test_json_parser_write(tmpdir):
 def test_json_parser_write_decimal(tmpdir):
     control = formats.JsonControl(keyed=True)
     source = Resource([["id", "name"], [1.5, "english"], [2.5, "german"]])
-    target = source.write(
-        Resource(path=str(tmpdir.join("table.json")), type="table", control=control)
-    )
+    target = resources.TableResource(path=str(tmpdir.join("table.json")), control=control)
+    target = source.write(target)
+    assert target.normpath
     with open(target.normpath) as file:
         assert json.load(file) == [
             {"id": "1.5", "name": "english"},
@@ -115,9 +117,9 @@ def test_json_parser_write_decimal(tmpdir):
 def test_json_parser_write_keyed(tmpdir):
     control = formats.JsonControl(keyed=True)
     source = Resource("data/table.csv")
-    target = source.write(
-        Resource(path=str(tmpdir.join("table.json")), type="table", control=control)
-    )
+    target = resources.TableResource(path=str(tmpdir.join("table.json")), control=control)
+    target = source.write(target)
+    assert target.normpath
     with open(target.normpath) as file:
         assert json.load(file) == [
             {"id": 1, "name": "english"},

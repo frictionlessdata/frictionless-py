@@ -34,6 +34,6 @@ class GithubPlugin(Plugin):
         if not source and isinstance(control, GithubControl):
             return GithubAdapter(control=control)
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "github":
             return GithubControl

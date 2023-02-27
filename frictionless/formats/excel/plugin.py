@@ -14,7 +14,6 @@ class ExcelPlugin(Plugin):
     def create_adapter(self, source, *, control=None):
         if isinstance(source, str):
             resource = Resource(path=source)
-            resource.infer(sample=False)
             if resource.format == "xlsx":
                 control = control or ExcelControl()
                 return ExcelAdapter(control, resource=resource)  # type: ignore
@@ -25,11 +24,14 @@ class ExcelPlugin(Plugin):
         elif resource.format == "xls":
             return XlsParser(resource)
 
-    def detect_resource(self, resource):
+    def detect_resource(self, resource: Resource):
         if resource.format in ["xlsx", "xls"]:
-            resource.type = "table"
             resource.mediatype = "application/vnd.ms-excel"
 
-    def select_Control(self, type):
+    def detect_resource_type(self, resource: Resource):
+        if resource.format in ["xlsx", "xls"]:
+            return "table"
+
+    def select_control_class(self, type):
         if type == "excel":
             return ExcelControl

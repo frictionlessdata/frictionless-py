@@ -1,4 +1,4 @@
-from frictionless import ReportTask, Stats
+from frictionless import ReportTask
 
 
 # General
@@ -11,10 +11,12 @@ def test_report_task():
         type="table",
         place="place",
         labels=["label"],
-        stats=Stats(seconds=1),
+        stats={"warnings": 0, "errors": 0, "seconds": 1.0},
     )
     assert task.name == "name"
     assert task.type == "table"
     assert task.place == "place"
     assert task.labels == ["label"]
-    assert task.stats.seconds == 1
+    assert task.stats["warnings"] == 0
+    assert task.stats["errors"] == 0
+    assert task.stats["seconds"] == 1

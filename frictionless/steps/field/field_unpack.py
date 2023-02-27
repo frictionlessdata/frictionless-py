@@ -17,8 +17,6 @@ class field_unpack(Step):
 
     type = "field-unpack"
 
-    # State
-
     name: str
     """
     Name of the field to unpack.

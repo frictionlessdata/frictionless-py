@@ -9,6 +9,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 DESCRIPTOR_FK = {
+    "name": "name",
     "path": "data/nested.csv",
     "schema": {
         "fields": [
@@ -91,7 +92,7 @@ def test_resource_schema_from_path_error_bad_path():
                 "path": "data/table.csv",
                 "schema": "data/bad.json",
             }
-        )
+        ).schema
     error = excinfo.value.error
     assert error.type == "schema-error"
     assert error.note.count("bad.json")

@@ -15,8 +15,6 @@ class ExcelControl(Control):
 
     type = "excel"
 
-    # State
-
     sheet: Union[str, int] = settings.DEFAULT_SHEET
     """
     Name of the sheet from where to read or write data.
@@ -25,7 +23,7 @@ class ExcelControl(Control):
     workbook_cache: Optional[Any] = None
     """
     An empty dictionary which is used to handle workbook caching for remote workbooks.
-    It stores the path to the temporary file while reading remote workbooks. 
+    It stores the path to the temporary file while reading remote workbooks.
     """
 
     fill_merged_cells: bool = False
@@ -42,7 +40,7 @@ class ExcelControl(Control):
 
     adjust_floating_point_error: bool = False
     """
-    If True, it corrects the Excel behavior regarding floating point numbers. 
+    If True, it corrects the Excel behavior regarding floating point numbers.
     For example: 274.65999999999997 -> 274.66 (When True).
     """
 

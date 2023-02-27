@@ -11,11 +11,9 @@ class sequential_value(Check):
     type = "sequential-value"
     Errors = [errors.SequentialValueError]
 
-    # State
-
     field_name: str
     """
-    The name of the field to apply the check. Check will not be 
+    The name of the field to apply the check. Check will not be
     applied to other fields.
     """
 

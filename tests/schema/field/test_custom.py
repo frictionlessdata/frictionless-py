@@ -48,7 +48,7 @@ def enable_custom_plugin():
         def detect_field_candidates(self, candidates):
             candidates.insert(0, {"type": "custom"})
 
-        def select_Field(self, type):
+        def select_field_class(self, type):
             if type == "custom":
                 return CustomField
 

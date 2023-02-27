@@ -1,11 +1,11 @@
 from __future__ import annotations
 import attrs
 import humanize
-from typing import List
+from typing import List, Optional
 from tabulate import tabulate
-from ..stats import Stats
 from ..metadata import Metadata
 from ..exception import FrictionlessException
+from .interfaces import IReportTaskStats
 from ..errors import ReportTaskError
 from ..error import Error
 from .. import settings
@@ -15,13 +15,6 @@ from .. import settings
 class ReportTask(Metadata):
     """Report task representation."""
 
-    # State
-
-    valid: bool
-    """
-    Flag to specify if the data is valid or not.
-    """
-
     name: str
     """
     A short url-usable (and preferably human-readable) name.
@@ -29,9 +22,24 @@ class ReportTask(Metadata):
     along with “_” or “-” characters.
     """
 
-    type: str
+    type: Optional[str]
     """
     Sets the property tabular to True if the type is "table".
+    """
+
+    title: Optional[str] = None
+    """
+    A human-oriented title for the Report.
+    """
+
+    description: Optional[str] = None
+    """
+    A brief description of the Detector.
+    """
+
+    valid: bool
+    """
+    Flag to specify if the data is valid or not.
     """
 
     place: str
@@ -44,7 +52,7 @@ class ReportTask(Metadata):
     List of labels of the task resource.
     """
 
-    stats: Stats
+    stats: IReportTaskStats
     """
     Additional statistics of the data as defined in Stats class.
     """
@@ -58,8 +66,6 @@ class ReportTask(Metadata):
     """
     List of errors raised while validating the data.
     """
-
-    # Props
 
     @property
     def error(self):
@@ -106,12 +112,12 @@ class ReportTask(Metadata):
             if error_title not in error_list:
                 error_list[error_title] = 0
             error_list[error_title] += 1
-        size = self.stats.bytes
+        size = self.stats.get("bytes")
         content = [
             ["File Place", self.place],
             ["File Size", humanize.naturalsize(size) if size else "(file not found)"],
-            ["Total Time", f"{self.stats.seconds} Seconds"],
-            ["Rows Checked", self.stats.rows],
+            ["Total Time", f"{self.stats.get('seconds')} Seconds"],
+            ["Rows Checked", self.stats.get("rows")],
         ]
         if error_list:
             content.append(["Total Errors", sum(error_list.values())])
@@ -132,16 +138,17 @@ class ReportTask(Metadata):
         "required": [
             "valid",
             "name",
-            "type",
             "place",
             "stats",
             "warnings",
             "errors",
         ],
         "properties": {
-            "valid": {"type": "boolean"},
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "valid": {"type": "boolean"},
             "place": {"type": "string"},
             "labels": {"type": "array", "arrayItem": {"type": "string"}},
             "stats": {"type": "object"},
@@ -151,10 +158,12 @@ class ReportTask(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "stats":
-            return Stats
-        elif property == "errors":
+    def metadata_select_class(cls, type):
+        return ReportTask
+
+    @classmethod
+    def metadata_select_property_class(cls, name):
+        if name == "errors":
             return Error
 
     # TODO: validate valid/errors count

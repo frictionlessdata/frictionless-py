@@ -1,5 +1,4 @@
 from typing import Optional, List, Any, Union
-from ..stats import Stats
 from ..schema import Schema
 from ..report import Report
 from ..dialect import Dialect
@@ -20,7 +19,6 @@ def validate(
     type: Optional[str] = None,
     dialect: Optional[Union[Dialect, str]] = None,
     schema: Optional[Union[Schema, str]] = None,
-    stats: Optional[Stats] = None,
     # Checklist
     checklist: Optional[Union[Checklist, str]] = None,
     checks: List[Check] = [],
@@ -51,7 +49,7 @@ def validate(
     if not type:
         type = getattr(source, "metadata_type", None)
     if not type:
-        type = Detector.detect_descriptor(source)
+        type = Detector.detect_metadata_type(source)
     if not type:
         type = "resource"
         if helpers.is_expandable_source(source):
@@ -82,7 +80,6 @@ def validate(
                         source,
                         dialect=dialect,
                         schema=schema,
-                        stats=stats,
                         **options,
                     )
         except FrictionlessException as exception:
@@ -117,10 +114,6 @@ def validate(
     if type == "checklist":
         return Checklist.validate_descriptor(source)
 
-    # Validate detector
-    if type == "detector":
-        return Detector.validate_descriptor(source)
-
     # Validate dialect
     if type == "dialect":
         return Dialect.validate_descriptor(source)
@@ -142,7 +135,7 @@ def validate(
         return Report.validate_descriptor(source)
 
     # Validate schema
-    if type == "schema":
+    if type == "schema/table":
         return Schema.validate_descriptor(source)
 
     # Not supported

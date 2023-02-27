@@ -25,19 +25,19 @@ class Check(Metadata):
 
     """
 
+    name: Optional[str] = None
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
+
     type: ClassVar[str]
     """
     A short name(preferably human-readable) for the Check.
     This MUST be lower-case and contain only alphanumeric characters
     along with "-" or "_".
     """
-
-    Errors: ClassVar[List[Type[Error]]] = []
-    """
-    List of errors that are being used in the Check.    
-    """
-
-    # State
 
     title: Optional[str] = None
     """
@@ -49,7 +49,10 @@ class Check(Metadata):
     A detailed description for the Check.
     """
 
-    # Props
+    Errors: ClassVar[List[Type[Error]]] = []
+    """
+    List of errors that are being used in the Check.
+    """
 
     @property
     def resource(self) -> Resource:
@@ -121,6 +124,7 @@ class Check(Metadata):
         "type": "object",
         "required": ["type"],
         "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
@@ -128,6 +132,5 @@ class Check(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Check(type)
+    def metadata_select_class(cls, type):
+        return system.select_check_class(type)

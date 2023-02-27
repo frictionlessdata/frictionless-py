@@ -13,7 +13,7 @@ def test_field_to_copy():
 
 def test_field_set_schema():
     schema_prev = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})
-    field = Field(schema=schema_prev)
+    field = Field(name="name", schema=schema_prev)
     assert field.schema == schema_prev
     schema_next = Schema.from_descriptor({"fields": [{"name": "name", "type": "string"}]})
     field.schema = schema_next

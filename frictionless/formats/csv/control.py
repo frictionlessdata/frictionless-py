@@ -16,8 +16,6 @@ class CsvControl(Control):
 
     type = "csv"
 
-    # State
-
     delimiter: str = settings.DEFAULT_DELIMITER
     """
     Specify the delimiter used to separate text strings while

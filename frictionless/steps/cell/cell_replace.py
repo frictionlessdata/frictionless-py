@@ -10,75 +10,9 @@ class cell_replace(Step):
     """Replace cell
 
     Replace cell values in a given field or all fields using user defined pattern.
-
-    Parameters
-    ----------
-        type : step identifier.
-        pattern: pattern to search.
-        replace: string to replace with.
-        field_name : field name to apply the pattern.
-
-    Methods
-    -------
-        transform_resource(resource):
-            search cells with the given pattern in one or more fields and replace it with
-            the user defined value.
-
-    Examples
-    --------
-    >>> from frictionless import Resource, Pipeline, steps
-    >>> source = Resource(path="data/transform-string.csv")
-    >>> print(source.to_view())
-        +-----------+--------------+--------------+
-        | name      | country_code | city         |
-        +===========+==============+==============+
-        | 'germany' | 'DE'         | 'berlin'     |
-        +-----------+--------------+--------------+
-        | 'denmark' | 'DK'         | 'copenhagen' |
-        +-----------+--------------+--------------+
-        | 'spain'   | 'ES'         | 'Andalusia'  |
-        +-----------+--------------+--------------+
-    >>> # search all field cells for a given pattern and replace
-    >>> pipeline = Pipeline(
-        steps=[
-            steps.cell_replace(pattern='denmark', replace="Denmark"),
-        ],
-    )
-    >>> target = source.transform(pipeline)
-    >>> print(target.to_view())
-        +-----------+--------------+--------------+
-        | name      | country_code | city         |
-        +===========+==============+==============+
-        | 'germany' | 'DE'         | 'berlin'     |
-        +-----------+--------------+--------------+
-        | 'Denmark' | 'DK'         | 'copenhagen' |
-        +-----------+--------------+--------------+
-        | 'spain'   | 'ES'         | 'Andalusia'  |
-        +-----------+--------------+--------------+
-
-    >>> # search a specific field cells for a given pattern and replace
-    >>> pipeline = Pipeline(
-            steps=[
-                steps.cell_replace(field_name="country_code", pattern='DE', replace="de"),
-            ],
-        )
-    >>> target = source.transform(pipeline)
-    >>> print(target.to_view())
-        +-----------+--------------+--------------+
-        | name      | country_code | city         |
-        +===========+==============+==============+
-        | 'germany' | 'de'         | 'berlin'     |
-        +-----------+--------------+--------------+
-        | 'Denmark' | 'DK'         | 'copenhagen' |
-        +-----------+--------------+--------------+
-        | 'spain'   | 'ES'         | 'Andalusia'  |
-        +-----------+--------------+--------------+
-
     """
 
     type = "cell-replace"
-
-    # State
 
     pattern: str
     """Pattern to search for in single or all fields"""

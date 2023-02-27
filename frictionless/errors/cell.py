@@ -17,8 +17,6 @@ class CellError(RowError):
     template = "Cell Error"
     tags = ["#table", "#row", "#cell"]
 
-    # State
-
     cell: str
     """
     Cell where the error occurred.

@@ -32,6 +32,6 @@ class CkanPlugin(Plugin):
         if not source and isinstance(control, CkanControl):
             return CkanAdapter(control)
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "ckan":
             return CkanControl

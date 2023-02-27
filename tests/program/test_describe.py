@@ -16,9 +16,8 @@ runner = CliRunner()
 def test_program_describe():
     actual = runner.invoke(program, "describe data/table.csv --stats")
     assert actual.exit_code == 0
-    assert actual.stdout.count("metadata: data/table.csv")
     assert actual.stdout.count(
-        "sha256: a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+        "hash: sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
     )
 
 

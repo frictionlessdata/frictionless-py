@@ -17,8 +17,6 @@ class table_intersect(Step):
 
     type = "table-intersect"
 
-    # State
-
     resource: Union[Resource, str]
     """
     Resource with which to apply intersection.
@@ -61,6 +59,6 @@ class table_intersect(Step):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "resource":
+    def metadata_select_property_class(cls, name):
+        if name == "resource":
             return Resource

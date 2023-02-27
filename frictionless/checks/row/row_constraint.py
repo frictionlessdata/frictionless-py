@@ -12,12 +12,10 @@ class row_constraint(Check):
     type = "row-constraint"
     Errors = [errors.RowConstraintError]
 
-    # Properties
-
     formula: str
     """
     Python expression to apply to all rows. To evaluate the forumula
-    simpleeval library is used. 
+    simpleeval library is used.
     """
 
     # Validate

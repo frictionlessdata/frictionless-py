@@ -1,51 +1,32 @@
 from __future__ import annotations
 import os
+import json
 import attrs
 import codecs
 from pathlib import Path
 from copy import copy, deepcopy
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
-from ..platform import platform
-from ..metadata import Metadata
 from ..fields import AnyField
+from ..platform import platform
 from ..dialect import Dialect
 from .. import settings
 from .. import helpers
-from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IBuffer, IEncodingFunction
     from ..resource import Resource
+    from ..interfaces import IBuffer, IEncodingFunction
 
 
 @attrs.define(kw_only=True)
-class Detector(Metadata):
+class Detector:
     """Detector representation.
 
     This main purpose of this class is to set the parameters to define
     how different aspects of metadata are detected.
 
-    """
-
-    # State
-
-    name: Optional[str] = None
-    """
-    A short url-usable (and preferably human-readable) name.
-    This MUST be lower-case and contain only alphanumeric characters
-    along with “_” or “-” characters.
-    """
-
-    title: Optional[str] = None
-    """
-    A human-oriented title for the Detector.
-    """
-
-    description: Optional[str] = None
-    """
-    A brief description of the Detector.
     """
 
     buffer_size: int = settings.DEFAULT_BUFFER_SIZE
@@ -147,68 +128,71 @@ class Detector(Metadata):
 
     # Detect
 
-    # TODO: support loading descriptor for detection?
     @staticmethod
-    def detect_descriptor(source: Any) -> Optional[str]:
+    def detect_metadata_type(source: Any) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
+
+        # Normalize
         if isinstance(source, Path):
             source = str(source)
-        for name, trait in settings.ENTITY_TRAITS.items():
-            if isinstance(source, dict):
-                if set(trait).intersection(source.keys()):
-                    return name
-            elif isinstance(source, str):
-                if source.endswith((f"{name}.json", f"{name}.yaml")):
-                    return name
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
+
+        # String
+        if isinstance(source, str):
+            for type, item in settings.METADATA_TRAITS.items():
+                if source.endswith(tuple(item["names"])):
+                    return type
+            if source.endswith(("json", "yaml")):
+                try:
+                    # We use a typed resource to prevent circular dependency
+                    res = platform.frictionless_resources.FileResource(path=source)
+                    buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE * 5)
+                    # TODO: we can add smarter checks with regex and streaming json
+                    parser = json.loads
+                    if source.endswith("yaml"):
+                        parser = platform.yaml.safe_load
+                    source = parser(buffer)
+                except Exception:
+                    pass
+
+        # Mapping
+        if isinstance(source, dict):
+            for type, item in settings.METADATA_TRAITS.items():
+                if set(item["props"]).intersection(source.keys()):
+                    return type
 
     def detect_resource(self, resource: Resource) -> None:
-        """Detect resource's metadata
-
-        It works in-place updating a provided resource.
-        """
-
-        # Input data
-        # Note that here we only use path/innerpath/extrapahts
-        # These attributes describe the resource itself compared to
-        # basepath-related attributes like normpath that adds runtime into equation
-        path = resource.path
-        innerpath = resource.innerpath
-        extrapaths = resource.extrapaths
-
-        # Detect name
+        """Detects path details"""
         name = "memory"
-        if path:
+        scheme = None
+        format = None
+        compression = None
+
+        # Detect details
+        if resource.path:
             names = []
-            for part in [path] + extrapaths:
+            for part in [resource.path] + (resource.extrapaths or []):
                 name = os.path.splitext(os.path.basename(part))[0]
                 names.append(name)
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
             name = name or "name"
-
-        # Detect details
-        scheme = ""
-        format = ""
-        compression = None
-        if path:
-            scheme, format = helpers.parse_scheme_and_format(path)
+            scheme, format = helpers.parse_scheme_and_format(resource.path)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
-                path = path[: -len(format) - 1]
-                if innerpath:
-                    path = os.path.join(path, innerpath)
+                path = resource.path[: -len(format) - 1]
+                if resource.innerpath:
+                    path = os.path.join(path, resource.innerpath)
                 scheme, format = helpers.parse_scheme_and_format(path)
                 if format:
                     name = os.path.splitext(name)[0]
 
-        # Apply detected
-        resource.set_not_defined("name", name)
-        resource.set_not_defined("type", settings.DEFAULT_TYPE)
-        resource.set_not_defined("scheme", scheme)
-        resource.set_not_defined("format", format)
-        resource.set_not_defined("mediatype", f"application/{resource.format}")
-        resource.set_not_defined("compression", compression)
-        resource.set_not_defined("innerpath", innerpath)
+        # Save details
+        resource.name = resource.name or name
+        resource.scheme = resource.scheme or scheme
+        resource.format = resource.format or format
+        resource.compression = resource.compression or compression
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
@@ -303,6 +287,7 @@ class Detector(Metadata):
 
         return dialect
 
+    # TODO: detect fields without type
     def detect_schema(
         self,
         fragment: List[list],
@@ -445,27 +430,3 @@ class Detector(Metadata):
             schema = Schema.from_descriptor(descriptor)
 
         return schema  # type: ignore
-
-    # Metadata
-
-    metadata_type = "detector"
-    metadata_Error = errors.DetectorError
-    metadata_profile = {
-        "properties": {
-            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "bufferSize": {"type": "integer"},
-            "sampleSize": {"type": "integer"},
-            "encodingConfidence": {"type": "number"},
-            "fieldType": {"type": "string"},
-            "fieldNames": {"type": "array"},
-            "fieldConfidence": {"type": "number"},
-            "fieldFloatNumbers": {"type": "boolean"},
-            "fieldMissingValues": {"type": "array"},
-            "fieldTrueValues": {"type": "array"},
-            "fieldFalseValues": {"type": "array"},
-            "schemaSync": {"type": "boolean"},
-            "schemaPatch": {"type": "object"},
-        }
-    }

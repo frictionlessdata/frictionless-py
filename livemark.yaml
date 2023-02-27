@@ -63,8 +63,8 @@ pages:
           name: Report
         - path: docs/framework/table
           name: Table
-        - path: docs/framework/classes
-          name: Other
+        - path: docs/framework/error
+          name: Error
     - name: Advanced Topics
       items:
         - path: docs/advanced/program

@@ -17,8 +17,6 @@ class HeaderError(TableError):
     template = "Cell Error"
     tags = ["#table", "#header"]
 
-    # State
-
     labels: List[str]
     """
     List of labels that has errors.

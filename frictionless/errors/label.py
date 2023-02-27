@@ -17,8 +17,6 @@ class LabelError(HeaderError):
     template = "Label Error"
     tags = ["#table", "#header", "#label"]
 
-    # State
-
     label: str
     """
     Label of the field that has an error.

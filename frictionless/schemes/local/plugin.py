@@ -15,6 +15,6 @@ class LocalPlugin(Plugin):
             if not helpers.is_remote_path(resource.basepath or ""):
                 return LocalLoader(resource)
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "local":
             return LocalControl

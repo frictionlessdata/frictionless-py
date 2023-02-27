@@ -15,8 +15,6 @@ class table_debug(Step):
 
     type = "table-debug"
 
-    # State
-
     function: Any
     """
     Debug function to apply to the table row.

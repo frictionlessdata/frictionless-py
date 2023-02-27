@@ -78,9 +78,7 @@ class Metadata(metaclass=Metaclass):
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
-        return pprint.pformat(self.to_descriptor(), sort_dicts=False)
-
-    # Props
+        return pprint.pformat(self.to_descriptor(debug=True), sort_dicts=False)
 
     @property
     def description_html(self) -> str:
@@ -160,15 +158,16 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options) -> Self:
-        descriptor_path = None
         if isinstance(descriptor, str):
-            descriptor_path = descriptor
             basepath = options.pop("basepath", None)
             descriptor = helpers.join_basepath(descriptor, basepath)
             if "basepath" in inspect.signature(cls.__init__).parameters:
                 options["basepath"] = helpers.parse_basepath(descriptor)
         descriptor = cls.metadata_retrieve(descriptor)
-        Class = cls.metadata_specify(type=descriptor.get("type")) or cls
+        # TODO: remove in v7
+        # Transform with a base class in case the type is not available
+        cls.metadata_transform(descriptor)
+        Class = cls.metadata_select_class(descriptor.get("type"))
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
         Class.metadata_transform(descriptor)
         errors = list(Class.metadata_validate(descriptor))
@@ -176,26 +175,16 @@ class Metadata(metaclass=Metaclass):
             error = Error(note="descriptor is not valid")
             raise FrictionlessException(error, reasons=errors)
         metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
-        if descriptor_path:
-            metadata.metadata_descriptor_path = descriptor_path
-            metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self) -> IDescriptor:
+    def to_descriptor(self, *, debug: bool = False) -> IDescriptor:
         descriptor = self.metadata_export()
-        Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        errors = list(self.metadata_validate(descriptor))
-        if errors:
-            error = Error(note="descriptor is not valid")
-            raise FrictionlessException(error, reasons=errors)
-        return descriptor
-
-    def to_descriptor_source(self) -> Union[IDescriptor, str]:
-        """Export metadata as a descriptor or a descriptor path"""
-        descriptor = self.to_descriptor()
-        if self.metadata_descriptor_path:
-            if self.metadata_descriptor_initial == descriptor:
-                return self.metadata_descriptor_path
+        if not debug:
+            Error = self.metadata_Error or platform.frictionless_errors.MetadataError
+            errors = list(self.metadata_validate(descriptor))
+            if errors:
+                error = Error(note="descriptor is not valid")
+                raise FrictionlessException(error, reasons=errors)
         return descriptor
 
     def to_copy(self, **options) -> Self:
@@ -279,8 +268,18 @@ class Metadata(metaclass=Metaclass):
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
-    metadata_descriptor_path: Optional[str] = None
-    metadata_descriptor_initial: Optional[IDescriptor] = None
+
+    @classmethod
+    def metadata_select_class(cls, type: Optional[str]) -> Type[Metadata]:
+        if type:
+            note = f'unsupported type for "{cls.metadata_type}": {type}'
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+            raise FrictionlessException(Error(note=note))
+        return cls
+
+    @classmethod
+    def metadata_select_property_class(cls, name: str) -> Optional[Type[Metadata]]:
+        pass
 
     @classmethod
     def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
@@ -310,22 +309,16 @@ class Metadata(metaclass=Metaclass):
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
-    def metadata_specify(
-        cls, *, type: Optional[str] = None, property: Optional[str] = None
-    ) -> Optional[Type[Metadata]]:
-        pass
-
-    @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
         for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.get(name)
-            Class = cls.metadata_specify(property=name)
+            Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
                     for item in value:
                         if isinstance(item, dict):
                             type = item.get("type")
-                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass = Class.metadata_select_class(type)
                             ItemClass.metadata_transform(item)
                 elif isinstance(value, dict):
                     Class.metadata_transform(value)
@@ -355,13 +348,13 @@ class Metadata(metaclass=Metaclass):
             yield Error(note=note)
         for name in cls.metadata_profile.get("properties", {}):
             value = descriptor.get(name)
-            Class = cls.metadata_specify(property=name)
+            Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
                     for item in value:
                         if isinstance(item, dict):
                             type = item.get("type")
-                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass = Class.metadata_select_class(type)
                             yield from ItemClass.metadata_validate(item)
                 elif isinstance(value, dict):
                     yield from Class.metadata_validate(value)
@@ -379,20 +372,18 @@ class Metadata(metaclass=Metaclass):
                 continue
             if name == "type" and is_typed_class:
                 continue
-            Class = cls.metadata_specify(property=name)
+            Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
                     for ix, item in enumerate(value):
                         if isinstance(item, dict):
                             type = item.get("type")
-                            ItemClass = Class.metadata_specify(type=type) or Class
+                            ItemClass = Class.metadata_select_class(type)
                             value[ix] = ItemClass.metadata_import(item, basepath=basepath)
                         elif isinstance(item, str):
                             value[ix] = Class.from_descriptor(item, basepath=basepath)
                 elif isinstance(value, dict):
                     value = Class.metadata_import(value, basepath=basepath)
-                elif isinstance(value, str):
-                    value = Class.from_descriptor(value, basepath=basepath)
             merged_options.setdefault(stringcase.snakecase(name), value)
         merged_options.update(options)
         if with_basepath:
@@ -409,14 +400,14 @@ class Metadata(metaclass=Metaclass):
             if name != "type" and not self.has_defined(stringcase.snakecase(name)):
                 continue
             value = getattr(self, stringcase.snakecase(name), None)
-            Class = self.metadata_specify(property=name)
+            Class = self.metadata_select_property_class(name)
             if value is None or (isinstance(value, dict) and value == {}):
                 continue
             if Class:
                 if isinstance(value, list):
-                    value = [item.to_descriptor_source() for item in value]  # type: ignore
+                    value = [item.to_descriptor() for item in value]  # type: ignore
                 else:
-                    value = value.to_descriptor_source()  # type: ignore
+                    value = value.to_descriptor()  # type: ignore
                     if not value:
                         continue
             if isinstance(value, (list, dict)):

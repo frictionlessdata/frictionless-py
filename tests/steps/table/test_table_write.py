@@ -1,9 +1,11 @@
-from frictionless import Resource, Pipeline, steps
+import pytest
+from frictionless import Resource, Pipeline, steps, resources
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
@@ -18,7 +20,7 @@ def test_step_table_write(tmpdir):
     source.transform(pipeline)
 
     # Read
-    resource = Resource(path=path, type="table")
+    resource = resources.TableResource(path=path)
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

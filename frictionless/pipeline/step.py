@@ -30,14 +30,19 @@ class Step(Metadata):
 
     """
 
+    name: Optional[str] = None
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “_” or “-” characters.
+    """
+
     type: ClassVar[str]
     """
     A short url-usable (and preferably human-readable) name/type.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters. For example: "cell-fill".
     """
-
-    # State
 
     title: Optional[str] = None
     """
@@ -95,6 +100,7 @@ class Step(Metadata):
         "type": "object",
         "required": ["type"],
         "properties": {
+            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
@@ -102,6 +108,5 @@ class Step(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Step(type)
+    def metadata_select_class(cls, type):
+        return system.select_step_class(type)

@@ -1,6 +1,5 @@
 import pytest
 from frictionless import (
-    Detector,
     Dialect,
     Package,
     Pipeline,
@@ -96,16 +95,6 @@ def test_checklist_markdown():
     output_file_path = "data/fixtures/convert/checklist.md"
     with open(output_file_path) as file:
         assert checklist.to_markdown().strip() == file.read()
-
-
-# Detector
-
-
-def test_detector_to_markdown():
-    detector = Detector.from_descriptor("data/detector.json")
-    output_file_path = "data/fixtures/convert/detector.md"
-    with open(output_file_path) as file:
-        assert detector.to_markdown().strip() == file.read()
 
 
 # Dialect

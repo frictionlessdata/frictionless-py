@@ -1,7 +1,8 @@
 from __future__ import annotations
+import attrs
 import statistics
 from math import nan
-from typing import TYPE_CHECKING, Union, List
+from typing import TYPE_CHECKING, Union, List, Dict
 from collections import Counter
 from decimal import Decimal
 from math import fsum, sqrt
@@ -11,20 +12,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-def analyze(self: Resource, *, detailed=False) -> dict:
-    """Analyze the resource
-
-    This feature is currently experimental, and its API may change
-    without warning.
-
-    Parameters:
-        detailed? (bool): detailed analysis
-
-    Returns:
-        dict: resource analysis
-
-    """
-
+def analyze(self: Resource, *, detailed=False) -> Dict:
     # Create state
     timer = helpers.Timer()
 
@@ -131,7 +119,10 @@ def analyze(self: Resource, *, detailed=False) -> dict:
     if self.stats.rows and self.stats.bytes:
         analysis_report["averageRecordSizeInBytes"] = self.stats.bytes / self.stats.rows  # type: ignore
     analysis_report["timeTaken"] = timer.time
-    return {**analysis_report, **self.stats.to_descriptor()}
+    return {
+        **analysis_report,
+        **attrs.asdict(self.stats, filter=lambda _, v: v is not None),
+    }
 
 
 # TODO:This is a temporary function to use with statistics library as

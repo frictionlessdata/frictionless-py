@@ -17,8 +17,6 @@ class table_diff(Step):
 
     type = "table-diff"
 
-    # State
-
     resource: Union[Resource, str]
     """
     Resource with which to compare.
@@ -32,7 +30,7 @@ class table_diff(Step):
     use_hash: bool = False
     """
     Specifies whether to use hash or not. If yes, alternative implementation will
-    be used where the complement is executed by constructing an in-memory set for 
+    be used where the complement is executed by constructing an in-memory set for
     all rows found in the right hand table. For more information
     please see the link below:
     https://petl.readthedocs.io/en/stable/transform.html#petl.transform.setops.hashcomplement
@@ -71,6 +69,6 @@ class table_diff(Step):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "resource":
+    def metadata_select_property_class(cls, name):
+        if name == "resource":
             return Resource

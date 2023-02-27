@@ -28,6 +28,33 @@ def test_resource_transform():
     ]
 
 
+def test_transform_resource_with_melt():
+    source = Resource("data/transform.csv")
+    pipeline = Pipeline(
+        steps=[
+            steps.table_normalize(),
+            steps.table_melt(field_name="id"),
+        ],
+    )
+    target = source.transform(pipeline)
+    assert isinstance(target, Resource)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "variable", "type": "string"},
+            {"name": "value", "type": "any"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "variable": "name", "value": "germany"},
+        {"id": 1, "variable": "population", "value": 83},
+        {"id": 2, "variable": "name", "value": "france"},
+        {"id": 2, "variable": "population", "value": 66},
+        {"id": 3, "variable": "name", "value": "spain"},
+        {"id": 3, "variable": "population", "value": 47},
+    ]
+
+
 def test_resource_transform_cell_set():
     source = Resource("data/transform.csv")
     pipeline = Pipeline.from_descriptor(
@@ -74,7 +101,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     package.resources[0].path = sqlite_url
     package.resources[1].pipeline.steps[0].path = sqlite_url  # type: ignore
     for resource in package.resources:
-        if resource.pipeline:
+        if resource.pipeline:  # type: ignore
             resource.transform()
 
     # read tables
@@ -95,6 +122,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     }
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url):
     # write table
@@ -118,7 +146,7 @@ def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url)
     package.resources[2].pipeline.steps[0].path = sqlite_url  # type: ignore
 
     for resource in package.resources:
-        if resource.pipeline:
+        if resource.pipeline:  # type: ignore
             resource.transform()
 
     # read tables

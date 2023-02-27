@@ -18,6 +18,7 @@ class GsheetsParser(Parser):
     # Read
 
     def read_cell_stream_create(self):
+        assert self.resource.normpath
         path = self.resource.normpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)
         path = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
@@ -28,12 +29,15 @@ class GsheetsParser(Parser):
         path = path % (key, key)
         if gid:
             path = "%s&gid=%s" % (path, gid)
-        with Resource(path=path, stats=self.resource.stats) as resource:
+        with Resource(path=path) as resource:
+            # TODO: remove this cludge in v7
+            resource.stats = self.resource.stats
             yield from resource.cell_stream
 
     # Write
 
     def write_row_stream(self, source):
+        assert self.resource.normpath
         path = self.resource.normpath
         control = GsheetsControl.from_dialect(self.resource.dialect)
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)

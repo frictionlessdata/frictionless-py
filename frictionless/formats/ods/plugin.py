@@ -14,7 +14,6 @@ class OdsPlugin(Plugin):
     def create_adapter(self, source, *, control=None):
         if isinstance(source, str):
             resource = Resource(path=source)
-            resource.infer(sample=False)
             if resource.format == "ods":
                 control = control or OdsControl()
                 return OdsAdapter(control, resource=resource)  # type: ignore
@@ -23,11 +22,14 @@ class OdsPlugin(Plugin):
         if resource.format == "ods":
             return OdsParser(resource)
 
-    def detect_resource(self, resource):
+    def detect_resource(self, resource: Resource):
         if resource.format == "ods":
-            resource.type = "table"
             resource.mediatype = "application/vnd.oasis.opendocument.spreadsheet"
 
-    def select_Control(self, type):
+    def detect_resource_type(self, resource: Resource):
+        if resource.format == "ods":
+            return "table"
+
+    def select_control_class(self, type):
         if type == "ods":
             return OdsControl

@@ -244,7 +244,7 @@ def test_project_index_file(tmpdir):
     file = project.index_file(path)
     assert file
     assert file["path"] == name4
-    assert file["type"] == "table"
+    assert file.get("type") == "table"
     record = file.get("record")
     table = project.query_table("SELECT * FROM name4")
     assert record

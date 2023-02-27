@@ -19,8 +19,6 @@ class RowError(TableError):
     template = "Row Error"
     tags = ["#table", "#row"]
 
-    # State
-
     cells: List[str]
     """
     Values of all the cells in the row that has an error.

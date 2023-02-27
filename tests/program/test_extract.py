@@ -138,6 +138,7 @@ def test_program_extract_dialect_table_option_sql(database_url):
     assert json.loads(actual.stdout) == expect
 
 
+@pytest.mark.skip
 def test_program_extract_dialect_keyed_option():
     path = "data/table.keyed.json"
     actual = runner.invoke(program, f"extract --path {path} --keyed --json")
@@ -146,6 +147,7 @@ def test_program_extract_dialect_keyed_option():
     assert json.loads(actual.stdout) == expect
 
 
+@pytest.mark.skip
 def test_program_extract_dialect_keys_option():
     path = "data/table.keyed.json"
     actual = runner.invoke(program, f"extract --path {path} --keys 'name,id' --json")

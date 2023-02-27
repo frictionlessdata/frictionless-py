@@ -67,7 +67,6 @@
     }
   ],
   "title": "Just Another Test Dataset",
-  "type": "dataset",
   "url": "https://example.com/test-data.csv",
   "version": "0.75"
 }

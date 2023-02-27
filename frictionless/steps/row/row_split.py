@@ -14,8 +14,6 @@ class row_split(Step):
 
     type = "row-add"
 
-    # State
-
     pattern: str
     """
     Pattern to search for in one or more fields.

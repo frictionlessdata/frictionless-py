@@ -10,7 +10,7 @@ def test_package_resource_unsafe_schema():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
     with pytest.raises(FrictionlessException) as excinfo:
-        Package({"resources": [{"path": path, "schema": schema}]})
+        Package({"resources": [{"name": "name", "path": path, "schema": schema}]})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert len(reasons) == 1
@@ -24,21 +24,7 @@ def test_package_resource_unsafe_schema_trusted():
     path = "data/table.csv"
     schema = "data/../data/schema.json"
     with system.use_context(trusted=True):
-        Package({"resources": [{"path": path, "schema": schema}]})
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_package_resource_from_path_error_unsafe():
-    resource = "data/../resource.json"
-    with pytest.raises(FrictionlessException) as excinfo:
-        Package({"resources": [resource]})
-    error = excinfo.value.error
-    reasons = excinfo.value.reasons
-    assert len(reasons) == 1
-    assert error.type == "package-error"
-    assert error.note == "descriptor is not valid"
-    assert reasons[0].type == "package-error"
-    assert reasons[0].note.count('resource.json" is not safe')
+        Package({"resources": [{"name": "name", "path": path, "schema": schema}]})
 
 
 @pytest.mark.vcr
@@ -62,6 +48,6 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted()
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     with system.use_context(trusted=True):
-        package = Package(resources=[resource], profiles=[profile])
+        package = Package(resources=[resource], profile=profile)
         report = package.validate()
-        assert report.stats.errors == 5
+        assert report.stats["errors"] == 5

@@ -4,6 +4,7 @@ from ..detector import Detector
 from ..resource import Resource
 from ..package import Package
 from ..exception import FrictionlessException
+from .. import resources
 from .. import helpers
 
 if TYPE_CHECKING:
@@ -51,7 +52,7 @@ def extract(
     if not type:
         type = getattr(source, "metadata_type", None)
     if not type:
-        type = Detector.detect_descriptor(source)
+        type = Detector.detect_metadata_type(source)
     if not type:
         type = "resource"
         if helpers.is_expandable_source(source):
@@ -69,11 +70,10 @@ def extract(
         else:
             resource = source
             if descriptor:
-                resource = Resource.from_descriptor(descriptor, **options)
+                resource = resources.TableResource.from_descriptor(descriptor, **options)
             elif not isinstance(resource, Resource):
-                resource = Resource.from_options(
+                resource = resources.TableResource.from_options(
                     source,
-                    type="table",
                     dialect=dialect,
                     schema=schema,
                     **options,

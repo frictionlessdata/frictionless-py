@@ -17,8 +17,6 @@ class NumberField(Field):
         "enum",
     ]
 
-    # Properties
-
     bare_number: bool = settings.DEFAULT_BARE_NUMBER
     """
     It specifies that the value is a bare number. If true, the pattern to remove non digit

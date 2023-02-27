@@ -8,7 +8,6 @@ import tempfile
 from typing import TYPE_CHECKING, Optional, Any
 from ..exception import FrictionlessException
 from ..platform import platform
-from ..stats import Stats
 from .. import settings
 from .. import errors
 
@@ -51,8 +50,6 @@ class Loader:
 
     def __exit__(self, type, value, traceback):
         self.close()
-
-    # Props
 
     @property
     def resource(self) -> Resource:
@@ -173,7 +170,7 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
-        return ByteStreamWithStatsHandling(byte_stream, stats=self.resource.stats)
+        return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 
     def read_byte_stream_decompress(self, byte_stream: IByteStream) -> IByteStream:
         """Decompress byte stream
@@ -312,9 +309,9 @@ class Loader:
 
 
 class ByteStreamWithStatsHandling:
-    def __init__(self, byte_stream: IByteStream, *, stats: Stats):
+    def __init__(self, byte_stream: IByteStream, *, resource: Resource):
         self.__byte_stream = byte_stream
-        self.__stats = stats
+        self.__resource = resource
         self.__md5 = hashlib.new("md5")
         self.__sha256 = hashlib.new("sha256")
         self.__bytes = 0
@@ -344,8 +341,8 @@ class ByteStreamWithStatsHandling:
 
         # Store (hash on EOF)
         if size == -1 or not chunk:
-            self.__stats.md5 = self.__md5.hexdigest()
-            self.__stats.sha256 = self.__sha256.hexdigest()
-        self.__stats.bytes = self.__bytes
+            self.__resource.stats.md5 = self.__md5.hexdigest()
+            self.__resource.stats.sha256 = self.__sha256.hexdigest()
+        self.__resource.stats.bytes = self.__bytes
 
         return chunk

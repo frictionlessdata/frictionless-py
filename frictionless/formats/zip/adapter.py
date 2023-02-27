@@ -22,14 +22,16 @@ from .control import ZipControl
 
 class ZipAdapter(Adapter):
     def __init__(self, source: str, *, control: Optional[ZipControl] = None):
-        self.control = control or ZipControl()
         self.source = source
+        self.control = control or ZipControl()
 
     # Read
 
     def read_package(self):
         innerpath = self.control.innerpath
-        with Resource(path=self.source, compression=None) as resource:
+        resource = Resource(path=self.source)
+        resource.compression = None
+        with resource.open(as_file=True) as resource:
             byte_stream = resource.byte_stream
             if resource.remote:
                 byte_stream = tempfile.TemporaryFile()
@@ -56,9 +58,6 @@ class ZipAdapter(Adapter):
         path = self.source
         compression = self.control.compression
         encoder_class = self.control.encoder_class
-
-        # Infer
-        package.infer(sample=False)
 
         # Save
         try:
@@ -93,15 +92,16 @@ class ZipAdapter(Adapter):
                                 archive.write(normpath, path)
 
                     # Local Data
-                    elif resource.scheme == "file":
-                        path = resource.path
-                        normpath = resource.normpath
-                        if os.path.isfile(normpath):
-                            if not helpers.is_safe_path(normpath):
-                                note = f'Zipping usafe "{normpath}" is not supported'
-                                error = errors.PackageError(note=note)
-                                raise FrictionlessException(error)
-                            archive.write(normpath, path)
+                    elif resource.normpath:
+                        if resource.scheme == "file":
+                            path = resource.path
+                            normpath = resource.normpath
+                            if os.path.isfile(normpath):
+                                if not helpers.is_safe_path(normpath):
+                                    note = f'Zipping usafe "{normpath}" is not supported'
+                                    error = errors.PackageError(note=note)
+                                    raise FrictionlessException(error)
+                                archive.write(normpath, path)
 
                 # Metadata
                 archive.writestr(
