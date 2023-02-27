@@ -255,11 +255,16 @@ class Resource(Metadata):
 
         # Routing
         if cls is Resource:
-            resource = platform.frictionless_resources.FileResource(**options)
-            type = system.detect_resource_type(resource)
+            type = options.pop("type", None)
+            if type:
+                note = 'Argument "resource.type" is deprecated. Use "resources.TableResource"'
+                warnings.warn(note, UserWarning)
+            if not type:
+                resource = platform.frictionless_resources.FileResource(**options)
+                type = system.detect_resource_type(resource)
             if type:
                 resource = system.select_resource_class(type)(**options)
-            return resource
+                return resource
 
     def __attrs_post_init__(self):
         self.stats = ResourceStats()
