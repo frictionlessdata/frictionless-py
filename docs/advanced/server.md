@@ -1,7 +1,7 @@
 # Running API
 
 ```markdown remark type=danger
-This functionality is currently disabled as being in active development in [#1368](https://github.com/frictionlessdata/frictionless-py/issues/1368)
+This feature is currently experimental. The API might change without notice
 ```
 
 It's possible to start Frictionless API as a standalone server. This capability is highly experimental at the moment and **it's not tested to be secure**. Please don't use the server in production environment.

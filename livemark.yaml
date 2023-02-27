@@ -72,6 +72,16 @@ pages:
         - path: docs/advanced/design
         - path: docs/advanced/system
         - path: docs/advanced/extending
+    - name: Data Resources
+      items:
+        - path: docs/resources/file
+          name: File
+        - path: docs/resources/text
+          name: Text
+        - path: docs/resources/json
+          name: Json
+        - path: docs/resources/table
+          name: Table
     - name: Data Sources
       items:
         - path: docs/schemes/aws

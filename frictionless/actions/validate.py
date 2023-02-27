@@ -135,7 +135,8 @@ def validate(
         return Report.validate_descriptor(source)
 
     # Validate schema
-    if type == "schema/table":
+    # TODO: fix
+    if type in ["schema", "schema/table"]:
         return Schema.validate_descriptor(source)
 
     # Not supported

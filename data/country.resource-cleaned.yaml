@@ -3,8 +3,8 @@ type: table
 path: country-2.csv
 scheme: file
 format: csv
-encoding: utf-8
 mediatype: text/csv
+encoding: utf-8
 dialect:
   headerRows:
     - 2
