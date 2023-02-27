@@ -19,7 +19,8 @@ class HtmlPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format == "html":
-            resource.mediatype = "text/html"
+            resource.datatype = resource.datatype or "article"
+            resource.mediatype = resource.mediatype or "text/html"
 
     def detect_resource_type(self, resource: Resource):
         if resource.format == "html":

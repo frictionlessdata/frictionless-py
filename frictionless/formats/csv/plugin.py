@@ -19,7 +19,8 @@ class CsvPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format in ["csv", "tsv"]:
-            resource.mediatype = f"text/{resource.format}"
+            resource.datatype = resource.datatype or "table"
+            resource.mediatype = resource.mediatype or "text/{resource.format}"
 
     def detect_resource_type(self, resource: Resource):
         if resource.format in ["csv", "tsv"]:

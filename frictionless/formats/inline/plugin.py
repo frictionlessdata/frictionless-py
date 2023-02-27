@@ -23,8 +23,8 @@ class InlinePlugin(Plugin):
             if not hasattr(resource.data, "read"):
                 types = (list, typing.Iterator, typing.Generator)
                 if callable(resource.data) or isinstance(resource.data, types):
-                    resource.format = "inline"
-                    resource.mediatype = "application/inline"
+                    resource.format = resource.format or "inline"
+                    resource.datatype = resource.datatype or "table"
         elif resource.format == "inline":
             resource.data = []
 

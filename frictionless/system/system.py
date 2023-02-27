@@ -335,7 +335,9 @@ class System:
         note = f'package type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
 
-    def select_resource_class(self, type: Optional[str]) -> Type[Resource]:
+    def select_resource_class(
+        self, type: Optional[str] = None, datatype: Optional[str] = None
+    ) -> Type[Resource]:
         if not type:
             return platform.frictionless.Resource
         for func in self.methods["select_resource_class"].values():
@@ -345,6 +347,9 @@ class System:
         for Class in vars(platform.frictionless_resources).values():
             if getattr(Class, "type", None) == type:
                 return Class
+            if datatype:
+                if getattr(Class, "datatype", None) == datatype:
+                    return Class
         note = f'resource type "{type}" is not supported'
         raise FrictionlessException(errors.ResourceError(note=note))
 

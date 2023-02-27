@@ -26,7 +26,8 @@ class ExcelPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format in ["xlsx", "xls"]:
-            resource.mediatype = "application/vnd.ms-excel"
+            resource.datatype = resource.datatype or "table"
+            resource.mediatype = resource.mediatype or "application/vnd.ms-excel"
 
     def detect_resource_type(self, resource: Resource):
         if resource.format in ["xlsx", "xls"]:

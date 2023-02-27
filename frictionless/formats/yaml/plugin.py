@@ -20,7 +20,12 @@ class YamlPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format == "yaml":
-            resource.mediatype = "text/yaml"
+            resource.datatype = (
+                resource.datatype
+                or Detector.detect_metadata_type(resource.normpath)
+                or ""
+            )
+            resource.mediatype = resource.mediatype or "text/yaml"
 
     def detect_resource_type(self, resource: Resource):
         if resource.format == "yaml":

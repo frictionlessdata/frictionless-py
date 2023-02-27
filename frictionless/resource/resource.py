@@ -135,6 +135,11 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
+    datatype: str = ""
+    """
+    Frictionless Framework specific data type as "table" or "schema"
+    """
+
     mediatype: Optional[str] = None
     """
     Mediatype/mimetype of the resource e.g. “text/csv”,
