@@ -109,7 +109,17 @@ class Project:
             return file
 
     def list_files(self) -> List[IFileItem]:
-        return self.filesystem.list_files()
+        records = self.database.list_records()
+        items = self.filesystem.list_files()
+        for index, item in enumerate(items):
+            errorCount = None
+            record = next(
+                filter(lambda record: record["path"] == item["path"], records), None
+            )
+            if record:
+                errorCount = record.get("errorCount", None)
+            items[index] = IFileItem(**{**item, "errorCount": errorCount})
+        return items
 
     def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
         source = path
