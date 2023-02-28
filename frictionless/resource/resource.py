@@ -272,7 +272,7 @@ class Resource(Metadata):
                 note = 'Argument "resource.type" is deprecated. Use "resources.TableResource"'
                 warnings.warn(note, UserWarning)
             resource = platform.frictionless_resources.FileResource(**options)
-            Class = system.select_resource_class(datatype=resource.datatype or "file")
+            Class = system.select_resource_class(datatype=resource.datatype)
             resource = Class(**options)
             return resource
 

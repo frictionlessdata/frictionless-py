@@ -27,7 +27,7 @@ class JsonPlugin(Plugin):
                 resource.datatype = (
                     resource.datatype
                     or Detector.detect_metadata_type(resource.normpath)
-                    or ""
+                    or "json"
                 )
             if resource.format in ["jsonl", "ndjson"]:
                 resource.datatype = resource.datatype or "table"

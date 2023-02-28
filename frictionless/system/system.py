@@ -250,6 +250,7 @@ class System:
         resource.detector.detect_resource(resource)
         for func in self.methods["detect_resource"].values():
             func(resource)
+        resource.datatype = resource.datatype or "file"
 
     def detect_field_candidates(self) -> List[dict]:
         """Create candidates

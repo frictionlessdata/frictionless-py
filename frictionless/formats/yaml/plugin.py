@@ -23,7 +23,7 @@ class YamlPlugin(Plugin):
             resource.datatype = (
                 resource.datatype
                 or Detector.detect_metadata_type(resource.normpath)
-                or ""
+                or "json"
             )
             resource.mediatype = resource.mediatype or "text/yaml"
 

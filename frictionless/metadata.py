@@ -296,7 +296,7 @@ class Metadata(metaclass=Metaclass):
                     response = session.get(descriptor, stream=True)
                     response.raise_for_status()
                     response.raw.decode_content = True
-                    content = response.raw.read(size)
+                    content = response.raw.read(size).decode("utf-8")
                     response.close()
                 else:
                     with open(descriptor, encoding="utf-8") as file:
