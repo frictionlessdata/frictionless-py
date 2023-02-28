@@ -110,15 +110,12 @@ class Project:
 
     def list_files(self) -> List[IFileItem]:
         records = self.database.list_records()
+        mapping = {record["path"]: record for record in records}
         items = self.filesystem.list_files()
-        for index, item in enumerate(items):
-            record = next(
-                filter(lambda record: record["path"] == item["path"], records), None
-            )
-            if record:
-                items[index] = IFileItem(
-                    **{**item, "errorCount": record.get("errorCount", None)}
-                )
+        for item in items:
+            record = mapping.get(item["path"])
+            if record and "errorCount" in record:
+                item["errorCount"] = record["errorCount"]
         return items
 
     def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
