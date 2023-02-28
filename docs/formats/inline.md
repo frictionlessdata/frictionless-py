@@ -27,7 +27,7 @@ The same is actual for writing:
 from frictionless import Resource
 
 source = Resource('table.csv')
-target = source.write(format='inline')
+target = source.write(format='inline', datatype='table')
 print(target)
 print(target.to_view())
 ```
