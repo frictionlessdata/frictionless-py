@@ -28,10 +28,6 @@ class InlinePlugin(Plugin):
         elif resource.format == "inline":
             resource.data = []
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "inline":
-            return "table"
-
     def select_control_class(self, type):
         if type == "inline":
             return InlineControl

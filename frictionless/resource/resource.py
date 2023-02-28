@@ -250,13 +250,20 @@ class Resource(Metadata):
 
         # Source
         if source is not None:
-            # Path/data
-            if Detector.detect_metadata_type(source) != "resource":
-                options["path" if isinstance(source, str) else "data"] = source
-                return cls(**options)
-
             # Descriptor
-            return cls.from_descriptor(source, **options)
+            # TODO: deprecate in v6
+            normsource = source
+            package = options.get("package")
+            basepath = options.get("basepath", package.basepath if package else None)
+            if isinstance(normsource, str):
+                normsource = helpers.normalize_path(normsource, basepath=basepath)
+            metadata_type = Detector.detect_metadata_type(normsource)
+            if metadata_type == "resource":
+                return cls.from_descriptor(source, **options)
+
+            # Path/data
+            options["path" if isinstance(source, str) else "data"] = source
+            return cls(**options)
 
         # Routing
         if cls is Resource:
@@ -264,12 +271,10 @@ class Resource(Metadata):
             if type:
                 note = 'Argument "resource.type" is deprecated. Use "resources.TableResource"'
                 warnings.warn(note, UserWarning)
-            if not type:
-                resource = platform.frictionless_resources.FileResource(**options)
-                type = system.detect_resource_type(resource)
-            if type:
-                resource = system.select_resource_class(type)(**options)
-                return resource
+            resource = platform.frictionless_resources.FileResource(**options)
+            Class = system.select_resource_class(datatype=resource.datatype or "file")
+            resource = Class(**options)
+            return resource
 
     def __attrs_post_init__(self):
         self.stats = ResourceStats()

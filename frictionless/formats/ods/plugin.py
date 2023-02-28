@@ -29,10 +29,6 @@ class OdsPlugin(Plugin):
                 resource.mediatype or "application/vnd.oasis.opendocument.spreadsheet"
             )
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "ods":
-            return "table"
-
     def select_control_class(self, type):
         if type == "ods":
             return OdsControl

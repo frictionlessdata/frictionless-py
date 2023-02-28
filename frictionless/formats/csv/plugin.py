@@ -20,12 +20,8 @@ class CsvPlugin(Plugin):
     def detect_resource(self, resource: Resource):
         if resource.format in ["csv", "tsv"]:
             resource.datatype = resource.datatype or "table"
-            resource.mediatype = resource.mediatype or "text/{resource.format}"
+            resource.mediatype = resource.mediatype or f"text/{resource.format}"
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format in ["csv", "tsv"]:
-            return "table"
-
-    def select_control_class(self, type: Optional[str]):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "csv":
             return CsvControl

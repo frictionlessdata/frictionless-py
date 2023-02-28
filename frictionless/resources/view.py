@@ -1,5 +1,6 @@
-from ..resource import Resource
+from .json import JsonResource
 
 
-class ViewResource(Resource):
+class ViewResource(JsonResource):
     type = "view"
+    datatype = "view"

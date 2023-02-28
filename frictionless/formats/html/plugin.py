@@ -22,10 +22,6 @@ class HtmlPlugin(Plugin):
             resource.datatype = resource.datatype or "article"
             resource.mediatype = resource.mediatype or "text/html"
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "html":
-            return "text"
-
     def select_control_class(self, type):
         if type == "html":
             return HtmlControl

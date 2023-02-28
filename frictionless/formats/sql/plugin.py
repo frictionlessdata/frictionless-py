@@ -33,13 +33,9 @@ class SqlPlugin(Plugin):
         if resource.scheme:
             for prefix in settings.SCHEME_PREFIXES:
                 if resource.scheme.startswith(prefix):
-                    resource.format = resource.format or "sql"
-                    resource.datatype = resource.datatype or "table"
+                    resource.format = "sql"
+                    resource.datatype = "table"
                     return
-
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "sql":
-            return "table"
 
     def select_control_class(self, type):
         if type == "sql":

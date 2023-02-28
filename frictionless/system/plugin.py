@@ -70,15 +70,6 @@ class Plugin:
         """
         pass
 
-    def detect_resource_type(self, resource: Resource) -> Optional[str]:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
-        """
-        pass
-
     def detect_field_candidates(self, candidates: List[dict]) -> None:
         """Detect field candidates
 
@@ -87,23 +78,25 @@ class Plugin:
         """
         pass
 
-    def select_check_class(self, type: Optional[str]) -> Optional[Type[Check]]:
+    def select_check_class(self, type: Optional[str] = None) -> Optional[Type[Check]]:
         pass
 
-    def select_control_class(self, type: Optional[str]) -> Optional[Type[Control]]:
+    def select_control_class(self, type: Optional[str] = None) -> Optional[Type[Control]]:
         pass
 
-    def select_error_class(self, type: Optional[str]) -> Optional[Type[Error]]:
+    def select_error_class(self, type: Optional[str] = None) -> Optional[Type[Error]]:
         pass
 
-    def select_field_class(self, type: Optional[str]) -> Optional[Type[Field]]:
+    def select_field_class(self, type: Optional[str] = None) -> Optional[Type[Field]]:
         pass
 
-    def select_package_class(self, type: Optional[str]) -> Optional[Type[Package]]:
+    def select_package_class(self, type: Optional[str] = None) -> Optional[Type[Package]]:
         pass
 
-    def select_resource_class(self, type: Optional[str]) -> Optional[Type[Resource]]:
+    def select_resource_class(
+        self, type: Optional[str] = None, *, datatype: Optional[str] = None
+    ) -> Optional[Type[Resource]]:
         pass
 
-    def select_step_class(self, type: Optional[str]) -> Optional[Type[Step]]:
+    def select_step_class(self, type: Optional[str] = None) -> Optional[Type[Step]]:
         pass

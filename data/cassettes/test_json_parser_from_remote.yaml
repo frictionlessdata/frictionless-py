@@ -36,17 +36,17 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 09 Feb 2021 08:51:18 GMT
+      - Tue, 28 Feb 2023 10:05:35 GMT
       ETag:
       - W/"20db6aec4dc5e597f76a8dab6d177a8d283d48572e0e098094494d11e9816e37"
       Expires:
-      - Tue, 09 Feb 2021 08:56:18 GMT
+      - Tue, 28 Feb 2023 10:10:35 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
       - 1.1 varnish
       X-Cache:
@@ -56,15 +56,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 561a87911d7141c4cdd307eee43ddd7b3f1c9d9e
+      - c226e485807b908eb5592c552271113fc1e5a461
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 912C:E19A:4A36A:51A7B:60224D05
+      - 6C3C:3394:2106D09:2353CF0:63FDD1EE
       X-Served-By:
-      - cache-fra19131-FRA
+      - cache-lis1490051-LIS
       X-Timer:
-      - S1612860679.845399,VS0,VE151
+      - S1677578735.891181,VS0,VE229
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -107,17 +107,17 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 09 Feb 2021 08:51:19 GMT
+      - Tue, 28 Feb 2023 10:05:35 GMT
       ETag:
       - W/"20db6aec4dc5e597f76a8dab6d177a8d283d48572e0e098094494d11e9816e37"
       Expires:
-      - Tue, 09 Feb 2021 08:56:19 GMT
+      - Tue, 28 Feb 2023 10:10:35 GMT
       Source-Age:
-      - '1'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
       - 1.1 varnish
       X-Cache:
@@ -127,15 +127,86 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 013718721cb1af460fc8cb3642768d24e1f57da0
+      - 0d0d9909d2fea09e9e0703b6b97012b547b8d6a0
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 912C:E19A:4A36A:51A7B:60224D05
+      - 6C3C:3394:2106D09:2353CF0:63FDD1EE
       X-Served-By:
-      - cache-fra19178-FRA
+      - cache-lis1490024-LIS
       X-Timer:
-      - S1612860680.851238,VS0,VE0
+      - S1677578735.430739,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4vmUgCCaKXMFCUdBaW8xNxUpVgdiJghUCA1Lz0nszgDLmYEFHuyY+3T2Xuf7Nql
+        FMsVywUAhmQJLUEAAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '71'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 28 Feb 2023 10:05:35 GMT
+      ETag:
+      - W/"20db6aec4dc5e597f76a8dab6d177a8d283d48572e0e098094494d11e9816e37"
+      Expires:
+      - Tue, 28 Feb 2023 10:10:35 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 6e110328fb34f011c81d5df68378e5bd728fcae5
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 6C3C:3394:2106D09:2353CF0:63FDD1EE
+      X-Served-By:
+      - cache-lis1490034-LIS
+      X-Timer:
+      - S1677578736.712023,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

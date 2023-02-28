@@ -28,10 +28,6 @@ class GsheetsPlugin(Plugin):
                     resource.format = resource.format or "csv"
                     resource.mediatype = resource.mediatype or "text/csv"
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "gsheets":
-            return "table"
-
     def select_control_class(self, type):
         if type == "gsheets":
             return GsheetsControl

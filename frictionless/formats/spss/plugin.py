@@ -21,10 +21,6 @@ class SpssPlugin(Plugin):
         if resource.format in ["sav", "zsav"]:
             resource.datatype = resource.datatype or "table"
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format in ["sav", "zsav"]:
-            return "table"
-
     def select_control_class(self, type):
         if type == "spss":
             return SpssControl

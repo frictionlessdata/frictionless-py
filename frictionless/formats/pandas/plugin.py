@@ -34,10 +34,6 @@ class PandasPlugin(Plugin):
             resource.datatype = resource.datatype or "table"
             resource.mediatype = resource.mediatype or "application/pandas"
 
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "pandas":
-            return "table"
-
     def select_control_class(self, type):
         if type == "pandas":
             return PandasControl

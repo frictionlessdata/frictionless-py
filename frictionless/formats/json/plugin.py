@@ -22,7 +22,7 @@ class JsonPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format in ["json", "jsonl", "ndjson"]:
-            resource.mediatype = resource.mediatype or "text/{resource.format}"
+            resource.mediatype = resource.mediatype or f"text/{resource.format}"
             if resource.format == "json":
                 resource.datatype = (
                     resource.datatype
@@ -31,12 +31,6 @@ class JsonPlugin(Plugin):
                 )
             if resource.format in ["jsonl", "ndjson"]:
                 resource.datatype = resource.datatype or "table"
-
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "json":
-            return Detector.detect_metadata_type(resource.normpath) or "json"
-        if resource.format in ["jsonl", "ndjson"]:
-            return "table"
 
     def select_control_class(self, type):
         if type == "json":
