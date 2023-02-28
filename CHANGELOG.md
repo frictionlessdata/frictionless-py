@@ -5,12 +5,14 @@ Here described only the breaking and most significant changes. The full changelo
 ## v5.7
 
 - Various architectural and standards-compatibility improvements (minor breaking changes):
+    - Improved type detection mechanism (including remote descriptors)
     - Added `resources` module including `File/Text/Json/TableResource`
     - Deprecated `resource.type` argument -- use the classes above
     - Changed `catalog.packages[]` to `catalog.datasets[].package`
     - Made `resource.schema` optional (`resource.has_schema` is removed)
     - Made `resource.normpath` optional (`resource.normdata` is removed)
     - Standards-compatability improvements: profile, stats
+    - Renamed `system/plugin.select_Check/etc` to `system/plugin.select_check_class/etc`
 
 ## v5.6
 

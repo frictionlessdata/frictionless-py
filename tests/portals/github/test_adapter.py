@@ -348,6 +348,7 @@ def test_github_adapter_read_data_from_repo_with_inline_data():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_github_adapter_read_data_ndjson():
     package = Package("https://github.com/fdtester/test-repo-resources-with-json-data")

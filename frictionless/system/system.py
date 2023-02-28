@@ -30,7 +30,6 @@ if TYPE_CHECKING:
 # Shall we add plugin.identity/priority/etc as we do in Livemark?
 
 
-# TODO: finish typing
 class System:
     """System representation
 
@@ -44,7 +43,7 @@ class System:
         "create_loader",
         "create_parser",
         "detect_resource",
-        "detect_resource_type",
+        # TODO: replace by detect_schema?
         "detect_field_candidates",
         "select_check_class",
         "select_control_class",
@@ -251,19 +250,7 @@ class System:
         resource.detector.detect_resource(resource)
         for func in self.methods["detect_resource"].values():
             func(resource)
-
-    def detect_resource_type(self, resource: Resource) -> Optional[str]:
-        """Hook into resource detection
-
-        Parameters:
-            resource (Resource): resource
-
-        """
-        for func in self.methods["detect_resource_type"].values():
-            type = func(resource)
-            if type:
-                return type
-        return "file"
+        resource.datatype = resource.datatype or "file"
 
     def detect_field_candidates(self) -> List[dict]:
         """Create candidates
@@ -276,7 +263,7 @@ class System:
             func(candidates)
         return candidates
 
-    def select_check_class(self, type: Optional[str]) -> Type[Check]:
+    def select_check_class(self, type: Optional[str] = None) -> Type[Check]:
         if not type:
             return platform.frictionless.Check
         for func in self.methods["select_check_class"].values():
@@ -289,7 +276,7 @@ class System:
         note = f'check type "{type}" is not supported'
         raise FrictionlessException(errors.CheckError(note=note))
 
-    def select_control_class(self, type: Optional[str]) -> Type[Control]:
+    def select_control_class(self, type: Optional[str] = None) -> Type[Control]:
         if not type:
             return platform.frictionless.Control
         for func in self.methods["select_control_class"].values():
@@ -299,7 +286,7 @@ class System:
         note = f'control type "{type}" is not supported'
         raise FrictionlessException(errors.ControlError(note=note))
 
-    def select_error_class(self, type: Optional[str]) -> Type[Error]:
+    def select_error_class(self, type: Optional[str] = None) -> Type[Error]:
         if not type:
             return platform.frictionless.Error
         for func in self.methods["select_error_class"].values():
@@ -312,7 +299,7 @@ class System:
         note = f'error type "{type}" is not supported'
         raise FrictionlessException(errors.Error(note=note))
 
-    def select_field_class(self, type: Optional[str]) -> Type[Field]:
+    def select_field_class(self, type: Optional[str] = None) -> Type[Field]:
         if not type:
             return platform.frictionless.Field
         for func in self.methods["select_field_class"].values():
@@ -325,7 +312,7 @@ class System:
         note = f'field type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
 
-    def select_package_class(self, type: Optional[str]) -> Type[Package]:
+    def select_package_class(self, type: Optional[str] = None) -> Type[Package]:
         if not type:
             return platform.frictionless.Package
         for func in self.methods["select_package_class"].values():
@@ -335,20 +322,26 @@ class System:
         note = f'package type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
 
-    def select_resource_class(self, type: Optional[str]) -> Type[Resource]:
-        if not type:
+    def select_resource_class(
+        self, type: Optional[str] = None, *, datatype: Optional[str] = None
+    ) -> Type[Resource]:
+        if not type and not datatype:
             return platform.frictionless.Resource
         for func in self.methods["select_resource_class"].values():
-            Class = func(type)
+            Class = func(type, datatype=datatype)
             if Class is not None:
                 return Class
         for Class in vars(platform.frictionless_resources).values():
-            if getattr(Class, "type", None) == type:
-                return Class
-        note = f'resource type "{type}" is not supported'
+            if type:
+                if getattr(Class, "type", None) == type:
+                    return Class
+            if datatype:
+                if getattr(Class, "datatype", None) == datatype:
+                    return Class
+        note = f'resource type "{type or datatype}" is not supported'
         raise FrictionlessException(errors.ResourceError(note=note))
 
-    def select_step_class(self, type: Optional[str]) -> Type[Step]:
+    def select_step_class(self, type: Optional[str] = None) -> Type[Step]:
         if not type:
             return platform.frictionless.Step
         for func in self.methods["select_step_class"].values():

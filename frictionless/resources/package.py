@@ -1,5 +1,5 @@
-from ..resource import Resource
+from .json import JsonResource
 
 
-class PackageResource(Resource):
-    type = "package"
+class PackageResource(JsonResource):
+    datatype = "package"

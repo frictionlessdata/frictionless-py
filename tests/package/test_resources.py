@@ -93,7 +93,6 @@ def test_package_update_resource():
                 "type": "table",
                 "data": data,
                 "format": "inline",
-                "mediatype": "application/inline",
             }
         ]
     }

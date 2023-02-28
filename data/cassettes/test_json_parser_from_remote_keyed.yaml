@@ -16,8 +16,8 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA4vmUgCCajAJAkqZKUpWCoY6CIG8xNxUoJBSal56TmZxhhJYphaiAF2fERZ9T3as
-        fTp775Ndu6A6uWK5AHnGtDp1AAAA
+        H4sIAAAAAAAAA4vmUgCCajAJAkqZKUpWCoY6CIG8xNxUoJBSal56TmZxhhJYplYHqz4jLPqe7Fj7
+        dPbeJ7t2QXVyxXIBAHnGtDp1AAAA
     headers:
       Accept-Ranges:
       - bytes
@@ -36,17 +36,17 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 09 Feb 2021 08:51:20 GMT
+      - Tue, 28 Feb 2023 10:05:47 GMT
       ETag:
       - W/"6f3db326388b97300ef06688ba9a05ac48b9af407f4cea02dee6a3c83568b3cb"
       Expires:
-      - Tue, 09 Feb 2021 08:56:20 GMT
+      - Tue, 28 Feb 2023 10:10:47 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
       - 1.1 varnish
       X-Cache:
@@ -56,15 +56,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 1029338b296b80a88d3362fb1aeed69ba65db63b
+      - d90d4ae932cb7bfb7d5382611f78a07df30710dd
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - BED0:571D:4D13:8184:60224D08
+      - 4BA6:7A26:A63F6:BE24A:63FDD1FA
       X-Served-By:
-      - cache-fra19129-FRA
+      - cache-lis1490038-LIS
       X-Timer:
-      - S1612860681.846251,VS0,VE152
+      - S1677578747.858934,VS0,VE243
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -87,8 +87,8 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA4vmUgCCajAJAkqZKUpWCoY6CIG8xNxUoJBSal56TmZxhhJYphaiAF2fERZ9T3as
-        fTp775Ndu6A6uWK5AHnGtDp1AAAA
+        H4sIAAAAAAAAA4vmUgCCajAJAkqZKUpWCoY6CIG8xNxUoJBSal56TmZxhhJYplYHqz4jLPqe7Fj7
+        dPbeJ7t2QXVyxXIBAHnGtDp1AAAA
     headers:
       Accept-Ranges:
       - bytes
@@ -107,17 +107,17 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 09 Feb 2021 08:51:21 GMT
+      - Tue, 28 Feb 2023 10:05:47 GMT
       ETag:
       - W/"6f3db326388b97300ef06688ba9a05ac48b9af407f4cea02dee6a3c83568b3cb"
       Expires:
-      - Tue, 09 Feb 2021 08:56:21 GMT
+      - Tue, 28 Feb 2023 10:10:47 GMT
       Source-Age:
-      - '1'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
       - 1.1 varnish
       X-Cache:
@@ -127,15 +127,86 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - fa43fdd71e4b6c2742dcddbc525a449c69c035f4
+      - b09d325bec11770e6cb1932333f42753be317424
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - BED0:571D:4D13:8184:60224D08
+      - 4BA6:7A26:A63F6:BE24A:63FDD1FA
       X-Served-By:
-      - cache-fra19124-FRA
+      - cache-lis1490055-LIS
       X-Timer:
-      - S1612860682.860700,VS0,VE1
+      - S1677578747.422402,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.keyed.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4vmUgCCajAJAkqZKUpWCoY6CIG8xNxUoJBSal56TmZxhhJYplYHqz4jLPqe7Fj7
+        dPbeJ7t2QXVyxXIBAHnGtDp1AAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '78'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 28 Feb 2023 10:05:47 GMT
+      ETag:
+      - W/"6f3db326388b97300ef06688ba9a05ac48b9af407f4cea02dee6a3c83568b3cb"
+      Expires:
+      - Tue, 28 Feb 2023 10:10:47 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - a2647ab06d190335f79934baf6422e57939e4404
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 4BA6:7A26:A63F6:BE24A:63FDD1FA
+      X-Served-By:
+      - cache-lis1490044-LIS
+      X-Timer:
+      - S1677578748.709101,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

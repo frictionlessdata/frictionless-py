@@ -1,5 +1,5 @@
-from ..resource import Resource
+from .json import JsonResource
 
 
-class ChartResource(Resource):
-    type = "chart"
+class ChartResource(JsonResource):
+    datatype = "chart"

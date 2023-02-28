@@ -27,16 +27,12 @@ class PandasPlugin(Plugin):
     def detect_resource(self, resource: Resource):
         if resource.data is not None:
             if helpers.is_type(resource.data, "DataFrame"):
-                resource.format = "pandas"
+                resource.format = resource.format or "pandas"
         if resource.format == "pandas":
             if resource.data is None:
                 resource.data = platform.pandas.DataFrame()
-            resource.format = "pandas"
-            resource.mediatype = "application/pandas"
-
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "pandas":
-            return "table"
+            resource.datatype = resource.datatype or "table"
+            resource.mediatype = resource.mediatype or "application/pandas"
 
     def select_control_class(self, type):
         if type == "pandas":

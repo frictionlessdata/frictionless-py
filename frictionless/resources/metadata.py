@@ -1,41 +1,41 @@
-from ..resource import Resource
+from .json import JsonResource
 
 
-class MetadataResource(Resource):
+class MetadataResource(JsonResource):
     pass
 
 
-class CatalogResource(Resource):
-    type = "catalog"
+class CatalogResource(MetadataResource):
+    datatype = "catalog"
 
 
-class ResourceResource(Resource):
-    type = "resource"
+class ResourceResource(MetadataResource):
+    datatype = "resource"
 
 
-class DialectResource(Resource):
-    type = "dialect"
+class DialectResource(MetadataResource):
+    datatype = "dialect"
 
 
-class JsonSchemaResource(MetadataResource):
-    type = "schema/json"
+class JsonschemaResource(MetadataResource):
+    datatype = "jsonschema"
 
 
-class TableSchemaResource(MetadataResource):
-    type = "schema/table"
+class SchemaResource(MetadataResource):
+    datatype = "schema"
 
 
 class ChecklistResource(MetadataResource):
-    type = "checklist"
+    datatype = "checklist"
 
 
 class PipelineResource(MetadataResource):
-    type = "pipeline"
+    datatype = "pipeline"
 
 
 class InquiryResource(MetadataResource):
-    type = "inquiry"
+    datatype = "inquiry"
 
 
 class ReportResource(MetadataResource):
-    type = "report"
+    datatype = "report"
