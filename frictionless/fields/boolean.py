@@ -14,8 +14,6 @@ class BooleanField(Field):
         "enum",
     ]
 
-    # Properties
-
     true_values: List[str] = attrs.field(factory=settings.DEFAULT_TRUE_VALUES.copy)
     """
     It defines the values to be read as true values while reading data. The default

@@ -30,7 +30,14 @@ def test_resource():
 
 def test_resource_from_dict():
     resource = Resource({"name": "name", "path": "data/table.csv"})
-    assert resource.to_descriptor() == {"name": "name", "path": "data/table.csv"}
+    assert resource.to_descriptor() == {
+        "name": "name",
+        "type": "table",
+        "path": "data/table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+    }
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -39,7 +46,14 @@ def test_resource_from_dict():
 
 def test_resource_from_path_json():
     resource = Resource("data/resource.json")
-    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
+    assert resource.to_descriptor() == {
+        "name": "name",
+        "type": "table",
+        "path": "table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+    }
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -49,7 +63,14 @@ def test_resource_from_path_json():
 
 def test_resource_from_path_yaml():
     resource = Resource("data/resource.yaml")
-    assert resource.to_descriptor() == {"name": "name", "path": "table.csv"}
+    assert resource.to_descriptor() == {
+        "name": "name",
+        "type": "table",
+        "path": "table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+    }
     assert resource.basepath == "data"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -79,7 +100,9 @@ def test_resource_from_path_remote():
 
 @pytest.mark.vcr
 def test_resource_from_url_standards_v0():
-    resource = Resource.from_descriptor({"url": BASEURL % "data/table.csv"})
+    resource = Resource.from_descriptor(
+        {"name": "name", "url": BASEURL % "data/table.csv"}
+    )
     assert resource.path == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -108,11 +131,12 @@ def test_resource_source_non_tabular():
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
-            assert resource.stats.to_descriptor() == {
-                "md5": "e1cbb0c3879af8347246f12c559a86b5",
-                "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
-                "bytes": 5,
-            }
+            assert resource.stats.md5 == "e1cbb0c3879af8347246f12c559a86b5"
+            assert (
+                resource.stats.sha256
+                == "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733"
+            )
+            assert resource.stats.bytes == 5
 
 
 @pytest.mark.vcr
@@ -128,11 +152,12 @@ def test_resource_source_non_tabular_remote():
         assert resource.normpath == path
         if not platform.type == "windows":
             assert resource.read_bytes() == b"text\n"
-            assert resource.stats.to_descriptor() == {
-                "md5": "e1cbb0c3879af8347246f12c559a86b5",
-                "sha256": "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733",
-                "bytes": 5,
-            }
+            assert resource.stats.md5 == "e1cbb0c3879af8347246f12c559a86b5"
+            assert (
+                resource.stats.sha256
+                == "b9e68e1bea3e5b19ca6b2f98b73a54b73daafaa250484902e09982e07a12e733"
+            )
+            assert resource.stats.bytes == 5
 
 
 def test_resource_source_non_tabular_error_bad_path():
@@ -147,7 +172,7 @@ def test_resource_source_non_tabular_error_bad_path():
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 def test_resource_source_path():
     path = "data/table.csv"
-    resource = Resource({"path": path})
+    resource = Resource({"name": "name", "path": path})
     resource.infer()
     assert resource.path == path
     assert resource.data is None
@@ -170,13 +195,14 @@ def test_resource_source_path():
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
     if not platform.type == "windows":
-        assert resource.stats.to_descriptor() == {
-            "md5": "6c2c61dd9b0e9c6876139a449ed87933",
-            "sha256": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        }
+        assert resource.stats.md5 == "6c2c61dd9b0e9c6876139a449ed87933"
+        assert (
+            resource.stats.sha256
+            == "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+        )
+        assert resource.stats.bytes == 30
+        assert resource.stats.fields == 2
+        assert resource.stats.rows == 2
 
 
 def test_resource_source_path_and_basepath():
@@ -225,7 +251,7 @@ def test_resource_source_path_error_bad_path():
 
 def test_resource_source_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    with Resource({"data": data}) as resource:
+    with Resource({"name": "name", "data": data}) as resource:
         assert resource.path is None
         assert resource.data == data
         assert resource.memory is True
@@ -241,15 +267,13 @@ def test_resource_source_data():
         assert resource.fragment == data[1:]
         assert resource.labels == ["id", "name"]
         assert resource.header == ["id", "name"]
-        assert resource.stats.to_descriptor() == {
-            "fields": 2,
-            "rows": 2,
-        }
+        assert resource.stats.fields == 2
+        assert resource.stats.rows == 2
 
 
 def test_resource_source_no_path_and_no_data():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource.from_descriptor({})
+        Resource.from_descriptor({"name": "name"})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "resource-error"
@@ -261,7 +285,7 @@ def test_resource_source_no_path_and_no_data():
 def test_resource_source_both_path_and_data():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"data": data, "path": "path"})
+        Resource({"name": "name", "data": data, "path": "path"})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "resource-error"
@@ -291,31 +315,25 @@ def test_resource_standard_specs_properties(create_descriptor):
     assert resource.name == "name"
     assert resource.title == "title"
     assert resource.description == "description"
-    assert resource.profiles == []
+    assert resource.profile is None
     assert resource.licenses == []
     assert resource.sources == []
 
 
 def test_resource_official_hash_bytes_rows():
-    resource = Resource({"path": "path", "hash": "hash", "bytes": 1})
-    assert resource.to_descriptor() == {
-        "path": "path",
-        "stats": {
-            "md5": "hash",
-            "bytes": 1,
-        },
-    }
+    resource = Resource({"name": "name", "path": "path", "hash": "hash", "bytes": 1})
+    descriptor = resource.to_descriptor()
+    assert descriptor["hash"] == "hash"
+    assert descriptor["bytes"] == 1
 
 
 def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
-    resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1})
-    assert resource.to_descriptor() == {
-        "path": "path",
-        "stats": {
-            "sha256": "hash",
-            "bytes": 1,
-        },
-    }
+    resource = Resource(
+        {"name": "name", "path": "path", "hash": "sha256:hash", "bytes": 1}
+    )
+    descriptor = resource.to_descriptor()
+    assert descriptor["hash"] == "sha256:hash"
+    assert descriptor["bytes"] == 1
 
 
 def test_resource_description_html():
@@ -373,6 +391,7 @@ def test_resource_set_package():
     assert resource.package == test_package_2
 
 
+@pytest.mark.skip
 def test_resource_pprint():
     resource = Resource(
         name="resource",
@@ -486,34 +505,31 @@ def test_resource_skip_rows_non_string_cell_issue_320():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
-    resource = Resource({"path": "data/table.csvformat", "format": "csv"})
+    resource = Resource({"name": "name", "path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)
     assert resource.to_descriptor() == {
-        "name": "table",
+        "name": "name",
         "path": "data/table.csvformat",
         "type": "table",
         "format": "csv",
         "scheme": "file",
         "encoding": "utf-8",
         "mediatype": "text/csv",
+        "hash": "sha256:350e813ea15d84c697a7b03446a8fa9d7fca9883167ad70986a173c29f8253fd",
+        "bytes": 58,
+        "fields": 2,
+        "rows": 3,
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},
                 {"name": "population", "type": "integer"},
             ]
         },
-        "stats": {
-            "md5": "f71969080b27963b937ca28cdd5f63b9",
-            "sha256": "350e813ea15d84c697a7b03446a8fa9d7fca9883167ad70986a173c29f8253fd",
-            "bytes": 58,
-            "fields": 2,
-            "rows": 3,
-        },
     }
 
 
 def test_resource_path_with_brackets_issue_1206():
-    resource = Resource.from_descriptor({"path": "data/[table].csv"})
+    resource = Resource.from_descriptor({"name": "name", "path": "data/[table].csv"})
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

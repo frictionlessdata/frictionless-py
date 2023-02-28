@@ -10,8 +10,6 @@ class cell_set(Step):
 
     type = "cell-set"
 
-    # State
-
     value: Any
     """
     Value to be set in cell of the given field.

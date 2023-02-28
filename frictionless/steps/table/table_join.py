@@ -20,8 +20,6 @@ class table_join(Step):
 
     type = "table-join"
 
-    # State
-
     resource: Union[Resource, str]
     """
     Resource with which to apply join.
@@ -29,7 +27,7 @@ class table_join(Step):
 
     field_name: Optional[str] = None
     """
-    Field name with which the join will be performed comparing it's value between two tables. 
+    Field name with which the join will be performed comparing it's value between two tables.
     If not provided natural join is tried. For more information, please see the following document:
     https://petl.readthedocs.io/en/stable/_modules/petl/transform/joins.html
     """
@@ -41,7 +39,7 @@ class table_join(Step):
 
     mode: str = DEFAULT_MODE
     """
-    Specifies which mode to use. The available modes are: "inner", "left", "right", "outer", "cross" and 
+    Specifies which mode to use. The available modes are: "inner", "left", "right", "outer", "cross" and
     "negate". The default mode is "inner".
     """
 
@@ -99,6 +97,6 @@ class table_join(Step):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "resource":
+    def metadata_select_property_class(cls, name):
+        if name == "resource":
             return Resource

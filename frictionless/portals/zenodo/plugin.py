@@ -26,6 +26,6 @@ class ZenodoPlugin(Plugin):
         if not source and isinstance(control, ZenodoControl):
             return ZenodoAdapter(control=control)
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "zenodo":
             return ZenodoControl

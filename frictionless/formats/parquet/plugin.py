@@ -1,7 +1,11 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from ...system import Plugin
 from .control import ParquetControl
 from .parser import ParquetParser
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class ParquetPlugin(Plugin):
@@ -13,11 +17,14 @@ class ParquetPlugin(Plugin):
         if resource.format == "parq" or resource.format == "parquet":
             return ParquetParser(resource)
 
-    def detect_resource(self, resource):
-        if resource.format == "parq" or resource.format == "parquet":
-            resource.type = "table"
+    def detect_resource(self, resource: Resource):
+        if resource.format in ["parq", "parquet"]:
             resource.mediatype = "appliction/parquet"
 
-    def select_Control(self, type):
+    def detect_resource_type(self, resource: Resource):
+        if resource.format in ["parq", "parquet"]:
+            return "table"
+
+    def select_control_class(self, type):
         if type == "parquet":
             return ParquetControl

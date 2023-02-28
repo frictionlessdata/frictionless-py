@@ -12,14 +12,12 @@ if TYPE_CHECKING:
 # General
 
 
-IStandards = Literal["v1", "v2", "v2-strict"]
+IStandards = Literal["v1", "v2"]
 IDescriptor = Dict[str, Any]
-IProfile = Dict[str, Any]
 IByteStream = BinaryIO
 ITextStream = TextIO
 # TODO: fix streaming types (support next)
 ICellStream = Iterable[List[Any]]
-IRowStream = Iterable[Row]
 IBuffer = bytes
 ISample = List[List[Any]]
 IFragment = List[List[Any]]

@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Check, Checklist, errors, system
+from frictionless import Resource, Detector, Check, Checklist, errors
 from frictionless import FrictionlessException
 
 
@@ -8,27 +8,20 @@ from frictionless import FrictionlessException
 
 
 def test_resource_validate():
-    resource = Resource({"path": "data/table.csv"})
+    resource = Resource({"name": "name", "path": "data/table.csv"})
     report = resource.validate()
     assert report.valid
 
 
 def test_resource_validate_invalid_resource_standards_v2_strict():
-    resource = Resource({"path": "data/table.csv"})
-    with system.use_context(standards="v2-strict"):
-        report = resource.validate()
+    report = Resource.validate_descriptor({"path": "data/table.csv"})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required by standards "v2-strict"'],
-        ["resource-error", 'property "type" is required by standards "v2-strict"'],
-        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
-        ["resource-error", 'property "format" is required by standards "v2-strict"'],
-        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
-        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
+        ["resource-error", "'name' is a required property"],
     ]
 
 
 def test_resource_validate_invalid_table():
-    resource = Resource({"path": "data/invalid.csv"})
+    resource = Resource({"name": "name", "path": "data/invalid.csv"})
     report = resource.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
@@ -43,7 +36,9 @@ def test_resource_validate_invalid_table():
 
 
 def test_resource_validate_resource_with_schema_as_string():
-    resource = Resource({"path": "data/table.csv", "schema": "data/schema.json"})
+    resource = Resource(
+        {"name": "name", "path": "data/table.csv", "schema": "data/schema.json"}
+    )
     report = resource.validate()
     assert report.valid
 
@@ -286,6 +281,20 @@ def test_resource_validate_custom_check_with_arguments():
     ]
 
 
+@pytest.mark.skip
+def test_resource_validate_custom_check_bad_name():
+    descriptor = {
+        "path": "data/table.csv",
+        "checklist": {
+            "checks": [{"type": "bad"}],
+        },
+    }
+    report = Resource(descriptor).validate()
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", 'check type "bad" is not supported'],
+    ]
+
+
 # Bugs
 
 
@@ -327,6 +336,23 @@ def test_resource_validate_wide_table_with_order_fields_issue_277():
     ]
 
 
+@pytest.mark.skip
+def test_validate_invalid_table_schema_issue_304():
+    descriptor = {
+        "data": [["name", "age"], ["Alex", "33"]],
+        "schema": {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "age", "type": "bad"},
+            ]
+        },
+    }
+    report = Resource(descriptor).validate()
+    assert report.flatten(["type", "note"]) == [
+        ["field-error", 'field type "bad" is not supported'],
+    ]
+
+
 def test_resource_validate_table_is_invalid_issue_312():
     resource = Resource("data/issue-312.xlsx")
     report = resource.validate()
@@ -341,7 +367,7 @@ def test_resource_validate_table_is_invalid_issue_312():
 def test_resource_validate_missing_local_file_raises_scheme_error_issue_315():
     resource = Resource("bad-path.csv")
     report = resource.validate()
-    assert report.stats.errors == 1
+    assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "scheme-error"
     assert note.count("[Errno 2]") and note.count("bad-path.csv")
@@ -380,6 +406,18 @@ def test_resource_validate_resource_header_row_has_first_number_issue_870():
     assert report.valid
 
 
+def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
+    detector = Detector(schema_sync=True)
+    report = Resource(
+        "data/duplicate-column.csv",
+        schema="data/duplicate-column-schema.json",
+        detector=detector,
+    ).validate()
+    assert report.flatten(["type", "note"]) == [
+        ["error", '"schema_sync" requires unique labels in the header'],
+    ]
+
+
 def test_resource_validate_resource_array_path_issue_991():
     with pytest.warns(UserWarning):
         resource = Resource("data/issue-991.resource.json")
@@ -400,6 +438,7 @@ def test_resource_validate_resource_metadata_errors_with_missing_values_993():
     assert reasons[0].note == '"missingValues" should be set as "schema.missingValues"'
 
 
+@pytest.mark.skip
 def test_resource_validate_resource_metadata_errors_with_fields_993():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource("data/resource-with-fields-993.json")

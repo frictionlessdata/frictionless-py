@@ -17,7 +17,7 @@ def read_asset(*paths, encoding="utf-8"):
 
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
-TYPE_PATTERN = "^([-a-z])+$"
+TYPE_PATTERN = "^([-a-z/])+$"
 VERSION = read_asset("VERSION")
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]
@@ -90,14 +90,53 @@ DEFAULT_FIELD_CANDIDATES = [
 
 # Entities
 
-ENTITY_TRAITS = {
-    "package": ["resources"],
-    "resource": ["path", "data"],
-    "dialect": ["controls"],
-    "schema": ["fields"],
-    "checklist": ["checks"],
-    "pipeline": ["steps"],
-    "report": ["erorrs"],
-    "inquiry": ["tasks"],
-    "detector": ["bufferSize", "sampleSize"],
+METADATA_TRAITS = {
+    "catalog": {
+        "names": ["catalog.json", "catalog.yaml"],
+        "props": ["packages"],
+    },
+    "package": {
+        "names": ["package.json", "package.yaml"],
+        "props": ["resources"],
+    },
+    "resource": {
+        "names": ["resource.json", "resource.yaml"],
+        "props": ["path", "data"],
+    },
+    "dialect": {
+        "names": ["dialect.json", "dialect.yaml"],
+        "props": ["header", "headerRows", "csv", "json", "excel"],
+    },
+    "schema/json": {
+        "names": [],
+        "props": ["$schema"],
+    },
+    "schema/table": {
+        "names": ["schema.json", "schema.yaml"],
+        "props": ["fields"],
+    },
+    "checklist": {
+        "names": ["checklist.json", "checklist.yaml"],
+        "props": ["checks"],
+    },
+    "pipeline": {
+        "names": ["pipeline.json", "pipeline.yaml"],
+        "props": ["steps"],
+    },
+    "report": {
+        "names": ["report.json", "report.yaml"],
+        "props": ["errors"],
+    },
+    "inquiry": {
+        "names": ["inquiry.json", "inquiry.yaml"],
+        "props": ["tasks"],
+    },
+    "chart": {
+        "names": ["chart.json", "chart.yaml"],
+        "props": ["chart"],
+    },
+    "view": {
+        "names": ["view.json", "view.yaml"],
+        "props": ["view"],
+    },
 }

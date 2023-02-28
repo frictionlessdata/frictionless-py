@@ -17,28 +17,16 @@ if TYPE_CHECKING:
 class Field(Metadata):
     """Field representation"""
 
-    type: ClassVar[str]
-    """
-    Type of the field such as "boolean", "integer" etc.
-    """
-
-    builtin: ClassVar[bool] = False
-    """
-    Specifies if field is the builtin feature.
-    """
-
-    supported_constraints: ClassVar[List[str]] = []
-    """
-    List of supported constraints for a field.
-    """
-
-    # State
-
-    name: Optional[str] = None
+    name: str
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[str]
+    """
+    Type of the field such as "boolean", "integer" etc.
     """
 
     title: Optional[str] = None
@@ -59,7 +47,7 @@ class Field(Metadata):
 
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
-    List of string values to be set as missing values in the field. If any of string in missing values 
+    List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
     """
 
@@ -69,7 +57,7 @@ class Field(Metadata):
     """
 
     rdf_type: Optional[str] = None
-    """ 
+    """
     RDF type. Indicates whether the field is of RDF type.
     """
 
@@ -83,7 +71,15 @@ class Field(Metadata):
     Schema class of which the field is part of.
     """
 
-    # Props
+    builtin: ClassVar[bool] = False
+    """
+    Specifies if field is the builtin feature.
+    """
+
+    supported_constraints: ClassVar[List[str]] = []
+    """
+    List of supported constraints for a field.
+    """
 
     @property
     def required(self):
@@ -223,9 +219,8 @@ class Field(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if type is not None:
-            return system.select_Field(type)
+    def metadata_select_class(cls, type):
+        return system.select_field_class(type)
 
     @classmethod
     def metadata_transform(cls, descriptor):
@@ -253,7 +248,7 @@ class Field(Metadata):
         example = descriptor.get("example")
         if example:
             type = descriptor.get("type")
-            Class = system.select_Field(type)
+            Class = system.select_field_class(type)
             field = Class(name=descriptor["name"])
             _, notes = field.read_cell(example)
             if notes is not None:

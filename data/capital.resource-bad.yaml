@@ -3,8 +3,8 @@ type: table
 path: capital-invalid.csv
 scheme: file
 format: csv
-encoding: utf-8
 mediatype: text/csv
+encoding: utf-8
 schema:
   fields:
     - name: id
@@ -13,6 +13,3 @@ schema:
       type: string
     - name: name2
       type: string
-stats:
-  md5: ae23c74693ca2d3f0e38b9ba3570775b
-  bytes: 100

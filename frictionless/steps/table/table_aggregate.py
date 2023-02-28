@@ -15,8 +15,6 @@ class table_aggregate(Step):
 
     type = "table-aggregate"
 
-    # State
-
     aggregation: dict
     """
     A dictionary with aggregation function. The values

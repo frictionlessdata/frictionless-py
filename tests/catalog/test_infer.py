@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Catalog, Package, platform
+from frictionless import Catalog, Dataset, Package, platform
 
 
 # General
@@ -7,31 +7,32 @@ from frictionless import Catalog, Package, platform
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_catalog_infer():
-    package = Package("data/infer/*.csv")
-    catalog = Catalog(packages=[package])
-    catalog.infer(sample=False)
+    dataset = Dataset(name="name", package=Package("data/infer/*.csv"))
+    catalog = Catalog(datasets=[dataset])
     assert catalog.to_descriptor() == {
-        "packages": [
+        "datasets": [
             {
-                "name": "package1",
-                "resources": [
-                    {
-                        "name": "data",
-                        "type": "table",
-                        "path": "data/infer/data.csv",
-                        "scheme": "file",
-                        "format": "csv",
-                        "mediatype": "text/csv",
-                    },
-                    {
-                        "name": "data2",
-                        "type": "table",
-                        "path": "data/infer/data2.csv",
-                        "scheme": "file",
-                        "format": "csv",
-                        "mediatype": "text/csv",
-                    },
-                ],
+                "name": "name",
+                "package": {
+                    "resources": [
+                        {
+                            "name": "data",
+                            "type": "table",
+                            "path": "data/infer/data.csv",
+                            "scheme": "file",
+                            "format": "csv",
+                            "mediatype": "text/csv",
+                        },
+                        {
+                            "name": "data2",
+                            "type": "table",
+                            "path": "data/infer/data2.csv",
+                            "scheme": "file",
+                            "format": "csv",
+                            "mediatype": "text/csv",
+                        },
+                    ],
+                },
             }
         ]
     }

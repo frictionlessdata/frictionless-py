@@ -16,6 +16,13 @@ class CatalogError(MetadataError):
     template = "The data catalog has an error: {note}"
 
 
+class DatasetError(CatalogError):
+    type = "dataset-error"
+    title = "Dataset Error"
+    description = "A validation cannot be processed."
+    template = "The dataset has an error: {note}"
+
+
 class ChecklistError(MetadataError):
     type = "checklist-error"
     title = "Checklist Error"

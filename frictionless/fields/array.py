@@ -16,8 +16,6 @@ class ArrayField(Field):
         "enum",
     ]
 
-    # Properties
-
     array_item: Optional[dict] = attrs.field(factory=dict)
     """
     A dictionary that specifies the type and other constraints for the

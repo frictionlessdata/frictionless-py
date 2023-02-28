@@ -20,9 +20,9 @@ You can read this format using `Package/Resource`, for example:
 
 ```python script tabs=Python
 from pprint import pprint
-from frictionless import Resource
+from frictionless import resources
 
-resource = Resource(path='table.json', type='table')
+resource = resources.TableResource(path='table.json')
 pprint(resource.read_rows())
 ```
 
@@ -31,10 +31,11 @@ pprint(resource.read_rows())
 The same is actual for writing:
 
 ```python script tabs=Python
-from frictionless import Resource
+from frictionless import Resource, resources
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-target = source.write(path='table-output.json', type='table')
+target = resources.TableResource(path='table-output.json')
+source.write(target)
 print(target)
 print(target.to_view())
 ```
@@ -45,10 +46,10 @@ There is a dialect to configure how Frictionless read and write files in this fo
 
 ```python script tabs=Python
 from pprint import pprint
-from frictionless import Resource, formats
+from frictionless import Resource, resources, formats
 
 control=formats.JsonControl(keyed=True)
-resource = Resource(path='table.keyed.json', type='table', control=control)
+resource = resources.TableResource(path='table.keyed.json', control=control)
 pprint(resource.read_rows())
 ```
 

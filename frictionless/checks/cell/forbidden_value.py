@@ -12,17 +12,15 @@ class forbidden_value(Check):
     type = "forbidden-value"
     Errors = [errors.ForbiddenValueError]
 
-    # State
-
     field_name: str
     """
-    The name of the field to apply the check. Check will not be applied to 
+    The name of the field to apply the check. Check will not be applied to
     other fields.
     """
 
     values: List[Any]
     """
-    Specify the forbidden values to check for, in the field specified by 
+    Specify the forbidden values to check for, in the field specified by
     "field_name".
     """
 

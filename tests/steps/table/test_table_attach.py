@@ -34,7 +34,7 @@ def test_step_table_attach_from_descriptor():
             Step.from_descriptor(
                 {
                     "type": "table-attach",
-                    "resource": dict(data=[["note"], ["large"], ["mid"]]),
+                    "resource": {"name": "data", "data": [["note"], ["large"], ["mid"]]},
                 }
             ),
         ],

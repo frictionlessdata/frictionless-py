@@ -19,8 +19,6 @@ class field_pack(Step):
 
     type = "field-pack"
 
-    # State
-
     name: str
     """
     Name of the new field.
@@ -33,13 +31,13 @@ class field_pack(Step):
 
     as_object: bool = False
     """
-    The packed value of the field will be stored as object if set to 
+    The packed value of the field will be stored as object if set to
     True.
     """
 
     preserve: bool = False
     """
-    Specifies if the field should be preserved or not. If True, fields 
+    Specifies if the field should be preserved or not. If True, fields
     part of packing process will be preserved.
     """
 

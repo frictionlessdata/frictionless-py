@@ -14,8 +14,6 @@ class field_filter(Step):
 
     type = "field-filter"
 
-    # State
-
     names: List[str]
     """
     Names of the field to be read. Other fields will be ignored.

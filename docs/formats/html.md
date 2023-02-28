@@ -18,9 +18,9 @@ You can this file format using `Package/Resource`, for example:
 
 ```python script tabs=Python
 from pprint import pprint
-from frictionless import Resource
+from frictionless import resources
 
-resource = Resource(path='table1.html', type='table')
+resource = resources.TableResource(path='table1.html')
 pprint(resource.read_rows())
 ```
 
@@ -29,10 +29,11 @@ pprint(resource.read_rows())
 The same is actual for writing:
 
 ```python script tabs=Python
-from frictionless import Resource
+from frictionless import Resource, resources
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-target = source.write('table-output.html', type='table')
+target = resources.TableResource(path='table-output.html')
+source.write(target)
 print(target)
 print(target.to_view())
 ```
@@ -42,10 +43,10 @@ print(target.to_view())
 There is a dialect to configure HTML, for example:
 
 ```python script tabs=Python
-from frictionless import Resource, formats
+from frictionless import Resource, resources, formats
 
 control=formats.HtmlControl(selector='#id')
-resource = Resource(path='table1.html', type='table', control=control)
+resource = resources.TableResource(path='table1.html', control=control)
 print(resource.read_rows())
 ```
 

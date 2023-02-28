@@ -50,7 +50,7 @@ def test_field_standard_specs_properties(create_descriptor):
         rdf_type="rdf",
     )
     field = (
-        Field(**options)
+        Field(**options)  # type: ignore
         if not create_descriptor
         else Field.from_descriptor(helpers.create_descriptor(**options))
     )
@@ -65,31 +65,33 @@ def test_field_standard_specs_properties(create_descriptor):
 
 
 def test_field_description_html():
-    field = Field(description="**test**")
+    field = Field(name="name", description="**test**")
     assert field.description == "**test**"
     assert field.description_html == "<p><strong>test</strong></p>"
 
 
 def test_field_description_html_multiline():
-    field = Field(description="**test**\n\nline")
+    field = Field(name="name", description="**test**\n\nline")
     assert field.description == "**test**\n\nline"
     assert field.description_html == "<p><strong>test</strong></p><p>line</p>"
 
 
 def test_field_description_html_not_set():
-    field = Field()
+    field = Field(
+        name="name",
+    )
     assert field.description is None
     assert field.description_html == ""
 
 
 def test_field_description_text():
-    field = Field(description="**test**\n\nline")
+    field = Field(name="name", description="**test**\n\nline")
     assert field.description == "**test**\n\nline"
     assert field.description_text == "test line"
 
 
 def test_field_description_text_plain():
-    field = Field(description="It's just a plain text. Another sentence")
+    field = Field(name="name", description="It's just a plain text. Another sentence")
     assert field.description == "It's just a plain text. Another sentence"
     assert field.description_text == "It's just a plain text. Another sentence"
 

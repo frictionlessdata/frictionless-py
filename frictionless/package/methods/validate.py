@@ -21,23 +21,11 @@ def validate(
     limit_rows: Optional[int] = None,
     parallel: bool = False,
 ):
-    """Validate package
-
-    Parameters:
-        checklist? (checklist): a Checklist object
-        parallel? (bool): run in parallel if possible
-
-    Returns:
-        Report: validation report
-
-    """
-
     # Create state
     timer = helpers.Timer()
     reports: List[Report] = []
     with_fks = any(
-        resource.has_schema and resource.schema.foreign_keys
-        for resource in self.resources
+        resource.schema and resource.schema.foreign_keys for resource in self.resources
     )
 
     # Prepare checklist

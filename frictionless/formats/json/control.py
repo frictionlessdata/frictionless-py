@@ -14,8 +14,6 @@ class JsonControl(Control):
 
     type = "json"
 
-    # State
-
     keys: Optional[List[str]] = None
     """
     Specifies the keys/columns to read from the resource.
@@ -30,7 +28,7 @@ class JsonControl(Control):
     property: Optional[str] = None
     """
     This property specifies the path to the attribute in a json file, it it has
-    nested fields. 
+    nested fields.
     """
 
     # Metadata

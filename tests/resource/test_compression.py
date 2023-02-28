@@ -137,7 +137,7 @@ def test_resource_compression_error_invalid_gz():
 
 
 def test_resource_compression_legacy_no_value_framework_v4_issue_616():
-    descriptor = {"path": "data/table.csv", "compression": "no"}
+    descriptor = {"name": "table", "path": "data/table.csv", "compression": "no"}
     with pytest.warns(UserWarning):
         with Resource.from_descriptor(descriptor) as resource:
             assert resource.innerpath is None

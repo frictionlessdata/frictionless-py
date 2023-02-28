@@ -10,6 +10,7 @@ class LocalLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
+        assert self.resource.normpath
         scheme = "file://"
         path = self.resource.normpath
         if path.startswith(scheme):
@@ -20,4 +21,5 @@ class LocalLoader(Loader):
     # Write
 
     def write_byte_stream(self, path):
+        assert self.resource.normpath
         helpers.move_file(path, self.resource.normpath)

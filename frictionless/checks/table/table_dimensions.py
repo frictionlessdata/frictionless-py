@@ -12,47 +12,45 @@ class table_dimensions(Check):
     type = "table-dimensions"
     Errors = [errors.TableDimensionsError]
 
-    # State
-
     num_rows: Optional[int] = None
     """
     Specify the number of rows to compare with actual rows in
-    the table. If the actual number of rows are less than num_rows it will 
+    the table. If the actual number of rows are less than num_rows it will
     notify user as errors.
     """
 
     min_rows: Optional[int] = None
     """
-    Specify the minimum number of rows that should be in the table. 
-    If the actual number of rows are less than min_rows it will notify user 
+    Specify the minimum number of rows that should be in the table.
+    If the actual number of rows are less than min_rows it will notify user
     as errors.
     """
 
     max_rows: Optional[int] = None
     """
-    Specify the maximum number of rows allowed. 
-    If the actual number of rows are more than max_rows it will notify user 
+    Specify the maximum number of rows allowed.
+    If the actual number of rows are more than max_rows it will notify user
     as errors.
     """
 
     num_fields: Optional[int] = None
     """
     Specify the number of fields to compare with actual fields in
-    the table. If the actual number of fields are less than num_fields it will 
+    the table. If the actual number of fields are less than num_fields it will
     notify user as errors.
     """
 
     min_fields: Optional[int] = None
     """
-    Specify the minimum number of fields that should be in the table. 
-    If the actual number of fields are less than min_fields it will notify user 
+    Specify the minimum number of fields that should be in the table.
+    If the actual number of fields are less than min_fields it will notify user
     as errors.
     """
 
     max_fields: Optional[int] = None
     """
-    Specify the maximum number of expected fields. 
-    If the actual number of fields are more than max_fields it will notify user 
+    Specify the maximum number of expected fields.
+    If the actual number of fields are more than max_fields it will notify user
     as errors.
     """
 

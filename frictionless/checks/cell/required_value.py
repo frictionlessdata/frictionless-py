@@ -17,17 +17,15 @@ class required_value(Check):
     type = "required-value"
     Errors = [errors.RequiredValueError]
 
-    # State
-
     field_name: str
     """
-    The name of the field to apply the check. Check will not be applied 
+    The name of the field to apply the check. Check will not be applied
     to other fields.
     """
 
     values: List[Any]
     """
-    List of required values that needs to be present in the field specified by "field_name". 
+    List of required values that needs to be present in the field specified by "field_name".
     The value should be present at least one or more times in the field.
     """
 

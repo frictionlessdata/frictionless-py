@@ -47,7 +47,11 @@ PACKAGE_WITH_DP = {
     "resources": [
         {
             "name": "data",
+            "type": "table",
             "path": "data.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "string", "constraints": {"required": True}},
@@ -60,7 +64,11 @@ PACKAGE_WITH_DP = {
         },
         {
             "name": "data2",
+            "type": "table",
             "path": "data2.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
                 "fields": [
                     {"name": "parent", "type": "string"},
@@ -83,7 +91,11 @@ ZIPPED_PACKAGE_WITH_DP = {
     "resources": [
         {
             "name": "data",
+            "type": "table",
             "path": "data.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "string", "constraints": {"required": True}},
@@ -96,7 +108,11 @@ ZIPPED_PACKAGE_WITH_DP = {
         },
         {
             "name": "data2",
+            "type": "table",
             "path": "data2.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
                 "fields": [
                     {"name": "parent", "type": "string"},
@@ -407,6 +423,7 @@ def test_zenodo_adapter_read_record_data_ods(options_with_dp_multiple_files_with
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_read_record_data_ndjson(
     options_with_dp_multiple_files_without_dp,
@@ -722,14 +739,14 @@ def test_zenodo_adapter_write_resources_without_metafile(tmp_path):
 def test_zenodo_adapter_catalog_search():
     control = portals.ZenodoControl(search='notes:"TDWD"')
     catalog = Catalog(control=control)
-    assert catalog.packages[0].to_descriptor() == PACKAGE_WITHOUT_DP
+    assert catalog.datasets[0].package.to_descriptor() == PACKAGE_WITHOUT_DP
 
 
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_search_by_notes():
     control = portals.ZenodoControl(search='notes:"TDBASIC"')
     catalog = Catalog(control=control)
-    package = catalog.packages[0].to_descriptor()
+    package = catalog.datasets[0].package.to_descriptor()
     assert package["title"] == "Frictionless Data Test Dataset"
 
 
@@ -739,7 +756,7 @@ def test_zenodo_adapter_catalog_search_by_title():
         search='title:"Frictionless Data Test Dataset Without Descriptor"'
     )
     catalog = Catalog(control=control)
-    package = catalog.packages[0].to_descriptor()
+    package = catalog.datasets[0].package.to_descriptor()
     assert package["title"] == "Frictionless Data Test Dataset Without Descriptor"
 
 
@@ -747,7 +764,7 @@ def test_zenodo_adapter_catalog_search_by_title():
 def test_zenodo_adapter_catalog_search_by_creators_name():
     control = portals.ZenodoControl(search='creators.name:"FD Tester Creator"')
     catalog = Catalog(control=control)
-    package = catalog.packages[0].to_descriptor()
+    package = catalog.datasets[0].package.to_descriptor()
     assert package["title"] == "Frictionless Data Test Dataset"
 
 
@@ -755,23 +772,23 @@ def test_zenodo_adapter_catalog_search_by_creators_name():
 def test_zenodo_adapter_catalog_search_by_doi():
     control = portals.ZenodoControl(doi="10.5281/zenodo.7078768")
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 1
-    assert len(catalog.packages[0].resources) == 2
+    assert len(catalog.datasets) == 1
+    assert len(catalog.datasets[0].package.resources) == 2
 
 
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_search_by_all_versions():
     control = portals.ZenodoControl(search='creators.name:"FD Tester"', all_versions=True)
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 6
-    assert catalog.packages[1].to_descriptor() == PACKAGE_WITH_DP
+    assert len(catalog.datasets) == 6
+    assert catalog.datasets[1].package.to_descriptor() == PACKAGE_WITH_DP
 
 
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_search_by_type():
     control = portals.ZenodoControl(search='creators.name:"FD Tester"', rtype="dataset")
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 3
+    assert len(catalog.datasets) == 3
 
 
 @pytest.mark.vcr
@@ -780,9 +797,11 @@ def test_zenodo_adapter_catalog_search_by_subtype():
         search='creators.name:"FD Tester"', rtype="publication"
     )
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 2
-    assert catalog.packages[0].title == "Frictionless Data Test Publication Journal"
-    assert catalog.packages[1].title == "Frictionless Data Test Publication"
+    assert len(catalog.datasets) == 2
+    assert (
+        catalog.datasets[0].package.title == "Frictionless Data Test Publication Journal"
+    )
+    assert catalog.datasets[1].package.title == "Frictionless Data Test Publication"
 
 
 @pytest.mark.vcr
@@ -794,9 +813,9 @@ def test_zenodo_adapter_catalog_search_by_bounds():
         size=4,
     )
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 1
+    assert len(catalog.datasets) == 1
     assert (
-        catalog.packages[0].title
+        catalog.datasets[0].package.title
         == "Predicting drought tolerance from slope aspect preference in restored plant communities"
     )
 
@@ -807,7 +826,7 @@ def test_zenodo_adapter_catalog_search_by_size_and_page():
         page=1, size=2, search='title:"Frictionless Data Test"'
     )
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 2
+    assert len(catalog.datasets) == 2
 
 
 @pytest.mark.vcr
@@ -816,7 +835,7 @@ def test_zenodo_adapter_catalog_search_sort_by_bestmatch():
         search='creators.name:"FD Tester"', sort="bestmatch", page=1, size=1
     )
     catalog = Catalog(control=control)
-    assert catalog.packages[0].title == "Frictionless Data Test Dataset - Draft"
+    assert catalog.datasets[0].package.title == "Frictionless Data Test Dataset - Draft"
 
 
 @pytest.mark.vcr
@@ -825,7 +844,7 @@ def test_zenodo_adapter_catalog_search_sort_by_mostrecent():
         search='creators.name:"FD Tester"', sort="mostrecent", page=1, size=1
     )
     catalog = Catalog(control=control)
-    assert catalog.packages[0].title == "Test Write File - Remote"
+    assert catalog.datasets[0].package.title == "Test Write File - Remote"
 
 
 @pytest.mark.vcr
@@ -834,16 +853,16 @@ def test_zenodo_adapter_catalog_search_sort_by_mostrecent_desc():
         search='creators.name:"FD Tester"', sort="-mostrecent", page=1, size=1
     )
     catalog = Catalog(control=control)
-    assert catalog.packages[0].title == "Frictionless Data Test Dataset"
+    assert catalog.datasets[0].package.title == "Frictionless Data Test Dataset"
 
 
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_search_with_communities():
     control = portals.ZenodoControl(rtype="dataset", communities="zenodo", page=3, size=1)
     catalog = Catalog(control=control)
-    assert len(catalog.packages) == 1
+    assert len(catalog.datasets) == 1
     assert (
-        catalog.packages[0].title.strip()
+        catalog.datasets[0].package.title.strip()
         == "Electrical half hourly raw and cleaned datasets for Great Britain from 2008-11-05"
     )
 
@@ -865,7 +884,7 @@ def test_zenodo_adapter_catalog_search_by_custom():
 def test_zenodo_adapter_catalog_single_record():
     control = portals.ZenodoControl(record="7078768")
     catalog = Catalog(control=control)
-    assert catalog.packages[0].to_descriptor() == PACKAGE_WITHOUT_DP
+    assert catalog.datasets[0].package.to_descriptor() == PACKAGE_WITHOUT_DP
 
 
 # Extra

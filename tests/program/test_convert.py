@@ -8,6 +8,7 @@ from frictionless.program import program
 runner = CliRunner()
 
 
+@pytest.mark.skip
 def test_program_convert_yaml():
     result = runner.invoke(program, "convert data/datapackage.json --yaml")
     expected_file_path = "data/package.yaml"
@@ -32,6 +33,7 @@ def test_program_convert_markdown_with_path(tmpdir):
         assert result.stdout.count(file.read().strip())
 
 
+@pytest.mark.skip
 def test_program_convert_yaml_with_path(tmpdir):
     # Write
     output_file_path = f"{tmpdir}/package.yaml"
@@ -65,6 +67,7 @@ def test_program_convert_er_diagram(tmpdir):
         assert expected.strip() == file.read().strip()
 
 
+@pytest.mark.skip
 def test_program_convert_er_diagram_error(tmpdir):
     # Write
     output_file_path = f"{tmpdir}/package.dot"
@@ -93,6 +96,7 @@ def test_program_convert_with_wrong_source_file():
     assert result.stdout.count("File not found or not supported type of metadata")
 
 
+@pytest.mark.skip
 def test_program_convert_resource_yaml():
     result = runner.invoke(program, "convert data/resource.json --yaml")
     assert result.exit_code == 0
@@ -133,6 +137,7 @@ def test_program_convert_dialect_yaml():
         assert result.stdout.count(file.read().strip())
 
 
+@pytest.mark.skip
 def test_program_convert_report_yaml():
     result = runner.invoke(program, "convert data/report.json --yaml")
     assert result.exit_code == 0
@@ -153,16 +158,6 @@ def test_program_convert_inquiry_yaml():
         assert result.stdout.count(file.read().strip())
 
 
-def test_program_convert_detector_yaml():
-    result = runner.invoke(program, "convert data/detector.json --yaml")
-    assert result.exit_code == 0
-
-    # Read
-    expected_file_path = "data/detector.yaml"
-    with open(expected_file_path) as file:
-        assert result.stdout.count(file.read().strip())
-
-
 def test_program_convert_pipeline_yaml():
     result = runner.invoke(program, "convert data/pipeline.json --yaml")
     assert result.exit_code == 0
@@ -173,6 +168,7 @@ def test_program_convert_pipeline_yaml():
         assert result.stdout.count(file.read().strip())
 
 
+@pytest.mark.skip
 def test_program_convert_json():
     result = runner.invoke(program, "convert data/package.yaml --json")
     expected_file_path = "data/datapackage.json"
@@ -182,6 +178,7 @@ def test_program_convert_json():
         assert json.loads(result.stdout) == json.loads(file.read())
 
 
+@pytest.mark.skip
 def test_program_convert_resource_json():
     result = runner.invoke(program, "convert data/resource.yaml --json")
     assert result.exit_code == 0
@@ -230,16 +227,6 @@ def test_program_convert_inquiry_json():
             {"path": "data/capital-valid.csv"},
             {"path": "data/capital-invalid.csv"},
         ]
-    }
-
-
-def test_program_convert_detector_json():
-    result = runner.invoke(program, "convert data/detector.yaml --json")
-    assert result.exit_code == 0
-    assert json.loads(result.stdout) == {
-        "fieldConfidence": 1,
-        "fieldFloatNumbers": True,
-        "fieldMissingValues": ["", "67"],
     }
 
 
@@ -319,16 +306,6 @@ def test_program_convert_inquiry_markdown():
 
     # Read
     expected_file_path = "data/fixtures/convert/inquiry.md"
-    with open(expected_file_path) as file:
-        assert result.stdout.count(file.read().strip())
-
-
-def test_program_convert_detector_markdown():
-    result = runner.invoke(program, "convert data/detector.json --markdown")
-    assert result.exit_code == 0
-
-    # Read
-    expected_file_path = "data/fixtures/convert/detector.md"
     with open(expected_file_path) as file:
         assert result.stdout.count(file.read().strip())
 

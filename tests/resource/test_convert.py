@@ -51,12 +51,18 @@ def test_resource_from_descriptor_layout_framework_v4():
     with pytest.warns(UserWarning):
         resource = Resource.from_descriptor(
             {
+                "name": "table",
                 "path": "data/table.csv",
                 "layout": {"header": False},
             }
         )
         assert resource.to_descriptor() == {
+            "name": "table",
+            "type": "table",
             "path": "data/table.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
             "dialect": {"header": False},
         }
 
@@ -71,7 +77,11 @@ def test_resource_to_json(tmpdir):
     with open(target, encoding="utf-8") as file:
         assert json.load(file) == {
             "name": "name",
+            "type": "table",
             "path": "table.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
         }
 
 
@@ -82,7 +92,11 @@ def test_resource_to_yaml(tmpdir):
     with open(target, encoding="utf-8") as file:
         assert yaml.safe_load(file) == {
             "name": "name",
+            "type": "table",
             "path": "table.csv",
+            "scheme": "file",
+            "format": "csv",
+            "mediatype": "text/csv",
         }
 
 
@@ -93,14 +107,26 @@ def test_to_json_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
     text = resource.to_json()
-    assert json.loads(text) == {"data": []}
+    assert json.loads(text) == {
+        "name": "memory",
+        "type": "table",
+        "data": [],
+        "format": "inline",
+        "mediatype": "application/inline",
+    }
 
 
 def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
     text = resource.to_yaml()
-    assert yaml.safe_load(text) == {"data": []}
+    assert yaml.safe_load(text) == {
+        "name": "memory",
+        "type": "table",
+        "data": [],
+        "format": "inline",
+        "mediatype": "application/inline",
+    }
 
 
 def test_to_yaml_allow_unicode_issue_844():

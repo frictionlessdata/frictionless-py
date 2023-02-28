@@ -133,6 +133,10 @@ Read an article about [Pipeline Class](../../docs/framework/pipeline.html) for m
 
 ### Resource
 
+```markdown remark type=warning
+Since `frictionless@5.7` this experimental feature (`resource.checklist/pipeline`) has been disabled to conform better with the standards.
+```
+
 There are no changes in the Resource related to the standards although currently by default instead of `profile` the `type` property will be used to mark a resource as a table. It can be changed using the `--standards v1` flag.
 
 It's now possible to set Checklist and Pipeline as a Resource property similar to Dialect and Schema:
@@ -200,6 +204,10 @@ resources:
 Read an article about [Package Class](../../docs/framework/package.html) for more information.
 
 ### Catalog
+
+```markdown remark type=warning
+Since `frictionless@5.7` this experimental feature is changes and now it requires `catalog.datasets[].package` structure.
+```
 
 Catalog is a new concept that is a collection of data packages that can be written inline or using dereference:
 

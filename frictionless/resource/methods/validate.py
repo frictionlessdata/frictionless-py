@@ -20,16 +20,6 @@ def validate(
     limit_rows: Optional[int] = None,
     on_row: Optional[ICallbackFunction] = None,
 ):
-    """Validate resource
-
-    Parameters:
-        checklist? (checklist): a Checklist object
-
-    Returns:
-        Report: validation report
-
-    """
-
     # Create state
     partial = False
     timer = helpers.Timer()
@@ -38,7 +28,7 @@ def validate(
     warnings: List[str] = []
 
     # Prepare checklist
-    checklist = checklist or self.checklist or Checklist()
+    checklist = checklist or Checklist()
     checks = checklist.connect(self)
 
     # Validate metadata
@@ -49,10 +39,13 @@ def validate(
             self, time=timer.time, errors=exception.to_errors()
         )
 
+    # TODO: remove in v7
     # Ignore not-supported hashings
-    if self.custom.get("hash"):
-        warning = "hash is ignored; supported algorithms: md5/sha256"
-        warnings.append(warning)
+    if self.hash:
+        algorithm, _ = helpers.parse_resource_hash_v1(self.hash)
+        if algorithm not in ["md5", "sha256"]:
+            warning = "hash is ignored; supported algorithms: md5/sha256"
+            warnings.append(warning)
 
     # Prepare resource
     if self.closed:

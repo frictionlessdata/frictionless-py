@@ -27,11 +27,12 @@ class PandasParser(Parser):
     def read_cell_stream_create(self):
         np = platform.numpy
         pd = platform.pandas
-        dataframe = self.resource.normdata
+        assert isinstance(self.resource.data, pd.DataFrame)
+        dataframe = self.resource.data
 
         # Schema
         schema = self.__read_convert_schema()
-        if not self.resource.has_schema:
+        if not self.resource.schema:
             self.resource.schema = schema
 
         # Lists
@@ -44,7 +45,7 @@ class PandasParser(Parser):
                     value = pk[schema.primary_key.index(field.name)]
                 else:
                     value = item[field.name]
-                if field.type == "number" and np.isnan(value):  # type: ignore
+                if value is np.nan:
                     value = None
                 elif isinstance(value, pd.Timestamp):
                     value = value.to_pydatetime()  # type: ignore
@@ -52,7 +53,7 @@ class PandasParser(Parser):
             yield cells
 
     def __read_convert_schema(self):
-        dataframe = self.resource.normdata
+        dataframe = self.resource.data
         schema = Schema()
 
         # Primary key

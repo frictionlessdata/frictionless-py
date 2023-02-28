@@ -9,7 +9,7 @@ def test_resource_validate_dialect_delimiter():
     resource = Resource("data/delimiter.csv", control=control)
     report = resource.validate()
     assert report.valid
-    assert report.task.stats.rows == 2
+    assert report.task.stats.get("rows") == 2
 
 
 def test_resource_validate_dialect_header_false():
@@ -17,7 +17,7 @@ def test_resource_validate_dialect_header_false():
     resource = Resource("data/without-headers.csv", dialect=dialect)
     report = resource.validate()
     assert report.valid
-    assert report.task.stats.rows == 3
+    assert report.task.stats.get("rows") == 3
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
@@ -27,7 +27,7 @@ def test_resource_validate_dialect_none_extra_cell():
     dialect = Dialect(header=False)
     resource = Resource("data/without-headers-extra.csv", dialect=dialect)
     report = resource.validate()
-    assert report.task.stats.rows == 3
+    assert report.task.stats.get("rows") == 3
     assert resource.dialect.header is False
     assert resource.labels == []
     assert resource.header == ["field1", "field2"]
@@ -65,5 +65,5 @@ def test_resource_validate_dialect_skip_rows():
     resource = Resource("data/matrix.csv", dialect=dialect)
     report = resource.validate()
     assert resource.header == ["f1", "f2", "f3", "f4"]
-    assert report.task.stats.rows == 2
+    assert report.task.stats.get("rows") == 2
     assert report.task.valid

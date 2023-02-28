@@ -22,8 +22,6 @@ class resource_update(Step):
 
     type = "resource-update"
 
-    # State
-
     name: Optional[str] = None
     """
     Name of the resource to update.

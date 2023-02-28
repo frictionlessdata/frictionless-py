@@ -4,8 +4,8 @@ resources:
     path: capital-invalid.csv
     scheme: file
     format: csv
-    encoding: utf-8
     mediatype: text/csv
+    encoding: utf-8
     schema:
       fields:
         - name: id
@@ -19,8 +19,8 @@ resources:
     path: capital-valid.csv
     scheme: file
     format: csv
-    encoding: utf-8
     mediatype: text/csv
+    encoding: utf-8
     schema:
       fields:
         - name: id

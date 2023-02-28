@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 import warnings
-from typing import Optional, List
+from typing import Optional, List, ClassVar, Union
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
@@ -14,13 +14,16 @@ from .. import errors
 class Pipeline(Metadata):
     """Pipeline representation"""
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the package
     """
 
     title: Optional[str] = None
@@ -35,10 +38,8 @@ class Pipeline(Metadata):
 
     steps: List[Step] = attrs.field(factory=list)
     """
-    List of transformation steps to apply. 
+    List of transformation steps to apply.
     """
-
-    # Props
 
     @property
     def step_types(self) -> List[str]:
@@ -91,8 +92,10 @@ class Pipeline(Metadata):
     metadata_Error = errors.PipelineError
     metadata_profile = {
         "type": "object",
+        "required": ["steps"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "steps": {"type": "array"},
@@ -100,8 +103,8 @@ class Pipeline(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "steps":
+    def metadata_select_property_class(cls, name):
+        if name == "steps":
             return Step
 
     @classmethod

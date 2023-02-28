@@ -13,6 +13,6 @@ class AwsPlugin(Plugin):
         if resource.scheme == "s3":
             return S3Loader(resource)
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "aws":
             return AwsControl

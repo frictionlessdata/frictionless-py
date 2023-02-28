@@ -2,6 +2,7 @@ from __future__ import annotations
 import attrs
 from ..checklist import Check
 from .. import errors
+from .. import helpers
 
 
 @attrs.define(kw_only=True)
@@ -15,8 +16,7 @@ class baseline(Check):
     type = "baseline"
     Errors = [
         # File
-        errors.Md5CountError,
-        errors.Sha256CountError,
+        errors.HashCountError,
         errors.ByteCountError,
         # Table
         errors.FieldCountError,
@@ -45,7 +45,6 @@ class baseline(Check):
 
     def connect(self, resource):
         super().connect(resource)
-        self.__stats = resource.stats.to_descriptor()
 
     # Validate
 
@@ -60,43 +59,36 @@ class baseline(Check):
         yield from row.errors  # type: ignore
 
     def validate_end(self):
-        md5 = self.__stats.get("md5")
-        sha256 = self.__stats.get("sha256")
-        bytes = self.__stats.get("bytes")
-        fields = self.__stats.get("fields")
-        rows = self.__stats.get("rows")
-
-        # Md5
-        if md5:
-            if md5 != self.resource.stats.md5:
+        # Hash
+        if self.resource.hash:
+            algorithm, expected = helpers.parse_resource_hash_v1(self.resource.hash)
+            actual = None
+            if algorithm == "md5":
+                actual = self.resource.stats.md5
+            elif algorithm == "sha256":
+                actual = self.resource.stats.sha256
+            if actual and actual != expected:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (md5, self.resource.stats.md5)
-                yield errors.Md5CountError(note=note)
-
-        # Sha256
-        if sha256:
-            if sha256 != self.resource.stats.sha256:
-                note = 'expected is "%s" and actual is "%s"'
-                note = note % (sha256, self.resource.stats.sha256)
-                yield errors.Sha256CountError(note=note)
+                note = note % (expected, actual)
+                yield errors.HashCountError(note=note)
 
         # Bytes
-        if bytes:
-            if bytes != self.resource.stats.bytes:
+        if self.resource.bytes:
+            if self.resource.bytes != self.resource.stats.bytes:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (bytes, self.resource.stats.bytes)
+                note = note % (self.resource.bytes, self.resource.stats.bytes)
                 yield errors.ByteCountError(note=note)
 
         # Fields
-        if fields:
-            if fields != self.resource.stats.fields:
+        if self.resource.fields:
+            if self.resource.fields != self.resource.stats.fields:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (fields, self.resource.stats.fields)
+                note = note % (self.resource.fields, self.resource.stats.fields)
                 yield errors.FieldCountError(note=note)
 
         # Rows
-        if rows:
-            if rows != self.resource.stats.rows:
+        if self.resource.rows:
+            if self.resource.rows != self.resource.stats.rows:
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (rows, self.resource.stats.rows)
+                note = note % (self.resource.rows, self.resource.stats.rows)
                 yield errors.RowCountError(note=note)

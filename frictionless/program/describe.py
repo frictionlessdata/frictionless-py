@@ -42,6 +42,7 @@ def program_describe(
     field_missing_values: str = common.field_missing_values,
     # Command
     basepath: str = common.basepath,
+    # TODO: allow cherry-picking stats for adding to a descriptor
     stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
@@ -64,10 +65,10 @@ def program_describe(
         system.standards = standards  # type: ignore
 
     # Support stdin
-    is_stdin = False
+    #  is_stdin = False
     if not source and not path:
         if not sys.stdin.isatty():
-            is_stdin = True
+            #  is_stdin = True
             source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
@@ -100,14 +101,14 @@ def program_describe(
 
     # Prepare detector
     def prepare_detector():
-        return Detector.from_options(
+        return Detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
             field_names=helpers.parse_csv_string(field_names),
             field_confidence=field_confidence,
             field_float_numbers=field_float_numbers,
-            field_missing_values=helpers.parse_csv_string(field_missing_values),
+            field_missing_values=helpers.parse_csv_string(field_missing_values),  # type: ignore
         )
 
     # Prepare options
@@ -156,12 +157,6 @@ def program_describe(
         raise typer.Exit()
 
     # Return default
-    name = " ".join(source)
-    prefix = "metadata"
-    name = "stdin" if is_stdin else " ".join(source)
-    typer.secho(f"# {'-'*len(prefix)}", bold=True)
-    typer.secho(f"# {prefix}: {name}", bold=True)
-    typer.secho(f"# {'-'*len(prefix)}", bold=True)
     typer.secho("")
     typer.secho(metadata.to_yaml().strip())
     typer.secho("")

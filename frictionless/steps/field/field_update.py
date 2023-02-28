@@ -20,8 +20,6 @@ class field_update(Step):
 
     type = "field-update"
 
-    # State
-
     name: str
     """
     Name of the field to update.
@@ -34,7 +32,7 @@ class field_update(Step):
 
     formula: Optional[Any] = None
     """
-    Evaluatable expressions to set the value for the field. The expressions 
+    Evaluatable expressions to set the value for the field. The expressions
     are processed using simpleeval library.
     """
 
