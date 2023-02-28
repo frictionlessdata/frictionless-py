@@ -1398,7 +1398,7 @@ class Resource(Metadata):
             profiles = descriptor.pop("profiles", None)
             descriptor["profile"] = "data-resource"
             if type == "table":
-                descriptor["profile"] = "tabular-data-profile"
+                descriptor["profile"] = "tabular-data-resource"
             elif profiles:
                 descriptor["profile"] = profiles[0]
 
