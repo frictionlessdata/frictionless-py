@@ -49,7 +49,7 @@ def program_convert(
             metadata = Package.from_descriptor(source)
         elif metadata_type == "resource":
             metadata = Resource.from_descriptor(source)
-        elif metadata_type == "schema/table":
+        elif metadata_type == "schema":
             metadata = Schema.from_descriptor(source)
         elif metadata_type == "checklist":
             metadata = Checklist.from_descriptor(source)

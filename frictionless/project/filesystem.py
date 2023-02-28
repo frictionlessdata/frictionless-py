@@ -182,7 +182,7 @@ class Filesystem:
 
     def get_filetype(self, path: str) -> Optional[str]:
         resource = Resource(path=path)
-        return resource.type
+        return resource.datatype
 
     def get_filename(self, path: str) -> str:
         return os.path.basename(path)

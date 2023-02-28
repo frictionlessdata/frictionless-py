@@ -282,7 +282,9 @@ class Metadata(metaclass=Metaclass):
         pass
 
     @classmethod
-    def metadata_retrieve(cls, descriptor: Union[IDescriptor, str]) -> IDescriptor:
+    def metadata_retrieve(
+        cls, descriptor: Union[IDescriptor, str], *, size: Optional[int] = None
+    ) -> IDescriptor:
         try:
             if isinstance(descriptor, Mapping):
                 return deepcopy(descriptor)
@@ -290,12 +292,15 @@ class Metadata(metaclass=Metaclass):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
-                    response = platform.frictionless.system.http_session.get(descriptor)
+                    session = platform.frictionless.system.http_session
+                    response = session.get(descriptor, stream=True)
                     response.raise_for_status()
-                    content = response.text
+                    response.raw.decode_content = True
+                    content = response.raw.read(size).decode("utf-8")
+                    response.close()
                 else:
                     with open(descriptor, encoding="utf-8") as file:
-                        content = file.read()
+                        content = file.read(size)
                 if descriptor.endswith(".yaml"):
                     metadata = platform.yaml.safe_load(io.StringIO(content))
                 else:

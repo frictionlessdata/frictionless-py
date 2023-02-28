@@ -20,15 +20,17 @@ class JsonPlugin(Plugin):
         elif resource.format in ["jsonl", "ndjson"]:
             return JsonlParser(resource)
 
-    def detect_path_resource(self, resource: Resource):
+    def detect_resource(self, resource: Resource):
         if resource.format in ["json", "jsonl", "ndjson"]:
-            resource.mediatype = f"text/{resource.format}"
-
-    def detect_resource_type(self, resource: Resource):
-        if resource.format == "json":
-            return Detector.detect_metadata_type(resource.normpath) or "json"
-        if resource.format in ["jsonl", "ndjson"]:
-            return "table"
+            resource.mediatype = resource.mediatype or f"text/{resource.format}"
+            if resource.format == "json":
+                resource.datatype = (
+                    resource.datatype
+                    or Detector.detect_metadata_type(resource.normpath)
+                    or "json"
+                )
+            if resource.format in ["jsonl", "ndjson"]:
+                resource.datatype = resource.datatype or "table"
 
     def select_control_class(self, type):
         if type == "json":

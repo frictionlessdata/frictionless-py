@@ -112,7 +112,6 @@ def test_to_json_with_resource_data_is_not_a_list_issue_693():
         "type": "table",
         "data": [],
         "format": "inline",
-        "mediatype": "application/inline",
     }
 
 
@@ -125,7 +124,6 @@ def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
         "type": "table",
         "data": [],
         "format": "inline",
-        "mediatype": "application/inline",
     }
 
 

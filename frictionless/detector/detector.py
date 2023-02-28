@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import json
 import attrs
 import codecs
 from pathlib import Path
@@ -12,6 +11,7 @@ from ..schema import Schema, Field
 from ..fields import AnyField
 from ..platform import platform
 from ..dialect import Dialect
+from ..metadata import Metadata
 from .. import settings
 from .. import helpers
 
@@ -128,6 +128,7 @@ class Detector:
 
     # Detect
 
+    # TODO: remove static method?
     @staticmethod
     def detect_metadata_type(source: Any) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
@@ -145,14 +146,8 @@ class Detector:
                     return type
             if source.endswith(("json", "yaml")):
                 try:
-                    # We use a typed resource to prevent circular dependency
-                    res = platform.frictionless_resources.FileResource(path=source)
-                    buffer = res.read_bytes(size=settings.DEFAULT_BUFFER_SIZE * 5)
-                    # TODO: we can add smarter checks with regex and streaming json
-                    parser = json.loads
-                    if source.endswith("yaml"):
-                        parser = platform.yaml.safe_load
-                    source = parser(buffer)
+                    size = settings.DEFAULT_BUFFER_SIZE * 10
+                    source = Metadata.metadata_retrieve(source, size=size)
                 except Exception:
                     pass
 

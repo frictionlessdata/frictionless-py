@@ -19,11 +19,8 @@ class ParquetPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format in ["parq", "parquet"]:
-            resource.mediatype = "appliction/parquet"
-
-    def detect_resource_type(self, resource: Resource):
-        if resource.format in ["parq", "parquet"]:
-            return "table"
+            resource.datatype = resource.datatype or "table"
+            resource.mediatype = resource.mediatype or "appliction/parquet"
 
     def select_control_class(self, type):
         if type == "parquet":
