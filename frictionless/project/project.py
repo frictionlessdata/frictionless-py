@@ -112,13 +112,13 @@ class Project:
         records = self.database.list_records()
         items = self.filesystem.list_files()
         for index, item in enumerate(items):
-            errorCount = None
             record = next(
                 filter(lambda record: record["path"] == item["path"], records), None
             )
             if record:
-                errorCount = record.get("errorCount", None)
-            items[index] = IFileItem(**{**item, "errorCount": errorCount})
+                items[index] = IFileItem(
+                    **{**item, "errorCount": record.get("errorCount", None)}
+                )
         return items
 
     def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
