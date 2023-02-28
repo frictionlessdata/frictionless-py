@@ -201,6 +201,7 @@ class Database:
                     self.records.c.type,
                     self.records.c.updated,
                     self.records.c.tableName,
+                    self.records.c.report,
                 )
             )
             items: List[IRecordItem] = []
@@ -211,6 +212,9 @@ class Database:
                     updated=row.updated.isoformat(),
                     tableName=row.tableName,
                 )
+                if row.report:
+                    report = json.loads(row.report)
+                    item["errorCount"] = report["stats"]["errors"]
                 items.append(item)
             return items
 

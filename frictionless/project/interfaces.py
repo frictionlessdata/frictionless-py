@@ -11,6 +11,7 @@ IRow = Dict[str, Any]
 class IFileItem(TypedDict, total=False):
     path: Required[str]
     type: str
+    errorCount: int
 
 
 class IFile(IFileItem, total=False):
@@ -22,6 +23,7 @@ class IRecordItem(TypedDict, total=False):
     type: str
     updated: Required[str]
     tableName: str
+    errorCount: int
 
 
 class IRecord(IRecordItem):

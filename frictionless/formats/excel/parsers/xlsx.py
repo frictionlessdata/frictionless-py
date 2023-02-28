@@ -99,15 +99,15 @@ class XlsxParser(Parser):
             # NOTE:
             # We can try using an algorithm similiar to what XlsParser has
             # to support mergin cells in the read-only mode (now we need the write mode)
-            for merged_cell_range in list(sheet.merged_cells.ranges):
+            for merged_cell_range in list(sheet.merged_cells.ranges):  # type: ignore
                 merged_cell_range = str(merged_cell_range)
                 sheet.unmerge_cells(merged_cell_range)
                 merged_rows = platform.openpyxl.utils.rows_from_range(merged_cell_range)  # type: ignore
                 coordinates = list(chain.from_iterable(merged_rows))
-                value = sheet[coordinates[0]].value
+                value = sheet[coordinates[0]].value  # type: ignore
                 for coordinate in coordinates:
                     cell = sheet[coordinate]
-                    cell.value = value
+                    cell.value = value  # type: ignore
 
         # Stream data
         for cells in sheet.iter_rows():
