@@ -5,8 +5,8 @@ import typer
 import tempfile
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from ..resource import Resource
+from ..package import Package
 from .program import program
-from .. import resources
 from .. import helpers
 from . import common
 
@@ -27,16 +27,17 @@ def program_explore(
     database_path = file.name
 
     # Populate database
-    if isinstance(resource, resources.PackageResource):
-        package = resource.read_package()
+    try:
+        package = Package(source)
         for resource in package.resources:
             index_resource(resource, database_path=database_path, debug=debug)
-    elif isinstance(resource, resources.TableResource):
+    except Exception:
+        resource = Resource(source)
+        if resource.type != "table":
+            note = f"Not suported data type: {resource.datatype}"
+            typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
         index_resource(resource, database_path=database_path, debug=debug)
-    else:
-        note = f"Not suported data type: {resource.datatype}"
-        typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
 
     # Sql
     if sql:
