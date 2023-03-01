@@ -6,5 +6,6 @@ class PackageResource(JsonResource):
     datatype = "package"
 
     def read_package(self) -> Package:
-        assert self.normpath
-        return Package.from_descriptor(self.normpath)
+        descriptor = self.data if self.data is not None else self.path
+        assert isinstance(descriptor, (str, dict))
+        return Package.from_descriptor(descriptor, basepath=self.basepath)

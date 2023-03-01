@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import json
 import attrs
 import warnings
@@ -237,6 +238,18 @@ class Resource(Metadata):
         if isinstance(source, Mapping):
             source = {key: value for key, value in source.items()}
 
+        # Source/Control
+        if source is not None or control is not None:
+            # Adapter
+            if not helpers.is_expandable_source(source):
+                adapter = system.create_adapter(source, control=control)
+                if adapter:
+                    package = adapter.read_package()
+                    if package:
+                        return platform.frictionless_resources.PackageResource(
+                            data=package.to_descriptor(), basepath=package.basepath
+                        )
+
         # Control
         if control is not None:
             dialect = options.pop("dialect", None)
@@ -250,8 +263,22 @@ class Resource(Metadata):
 
         # Source
         if source is not None:
+            # Directory
+            if helpers.is_directory_source(source):
+                for name in ["datapackage.json", "datapackage.yaml"]:
+                    path = os.path.join(source, name)  # type: ignore
+                    if os.path.isfile(path):
+                        return cls(path=path)
+
+            # Expandable
+            if helpers.is_expandable_source(source):
+                options["resources"] = []
+                basepath = options.get("basepath")
+                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
+                    options["resources"].append(Resource(path=path))
+                return cls.from_options(**options)
+
             # Descriptor
-            # TODO: deprecate in v6
             normsource = source
             package = options.get("package")
             basepath = options.get("basepath", package.basepath if package else None)

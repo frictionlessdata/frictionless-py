@@ -1,9 +1,10 @@
+from __future__ import annotations
 import os
 import datetime
 import json
 import tempfile
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Union
+from typing import TYPE_CHECKING, List, Dict, Any, Optional, Union
 from .control import ZenodoControl
 from ... import helpers
 from ...system import Adapter
@@ -12,6 +13,9 @@ from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
+
+if TYPE_CHECKING:
+    from pyzenodo3 import Record
 
 
 class ZenodoAdapter(Adapter):
@@ -42,7 +46,7 @@ class ZenodoAdapter(Adapter):
         if self.control.doi:
             dataset = client.find_record_by_doi(self.control.doi)
             name = self.control.name or dataset.data["metadata"]["title"]
-            package = get_package(dataset.data["files"], name, self.control.formats)
+            package = get_package(dataset, name, self.control.formats)
             if isinstance(package, Package) and package.resources:
                 packages.append(package)
             return Catalog(
@@ -73,7 +77,7 @@ class ZenodoAdapter(Adapter):
             records = client._get_records(options)
             for dataset in records:
                 name = self.control.name or dataset.data["metadata"]["title"]
-                package = get_package(dataset.data["files"], name, self.control.formats)
+                package = get_package(dataset, name, self.control.formats)
                 if isinstance(package, Package) and package.resources:
                     packages.append(package)
         except Exception as exception:
@@ -100,7 +104,7 @@ class ZenodoAdapter(Adapter):
             dataset = client.get_record(self.control.record)
             if dataset:
                 name = self.control.name or dataset.data["metadata"]["title"]
-                package = get_package(dataset.data["files"], name, self.control.formats)
+                package = get_package(dataset, name, self.control.formats)
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
@@ -191,10 +195,10 @@ class ZenodoAdapter(Adapter):
             raise FrictionlessException(note)
 
 
-def get_package(files: List, title: str, formats: List[str]) -> Package:
-    package = Package()
+def get_package(record: Record, title: str, formats: List[str]) -> Package:
+    package = Package(title=title)
     package.title = title
-    for file in files:
+    for file in record.data["files"]:
         path = file["links"]["self"]
         is_resource_file = any(path.endswith(ext) for ext in formats)
         if path.endswith(("datapackage.json", "datapackage.yaml")):
@@ -210,8 +214,8 @@ def get_package(files: List, title: str, formats: List[str]) -> Package:
                 if not "[Errno 2] No such file or directory" in str(exception):
                     raise exception
         if is_resource_file:
-            base_path = f'https://zenodo.org/api/files/{file["bucket"]}'
-            resource = Resource(path=file["key"], basepath=base_path)
+            package.basepath = f'https://zenodo.org/api/files/{file["bucket"]}'
+            resource = Resource(path=file["key"])
             package.add_resource(resource)
     return package
 

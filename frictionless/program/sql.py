@@ -5,7 +5,7 @@ import typer
 import tempfile
 from typing import List
 from rich.progress import Progress, SpinnerColumn, TextColumn
-from ..resources import TableResource
+from ..resources import TableResource, PackageResource
 from ..resource import Resource
 from ..package import Package
 from .program import program
@@ -21,19 +21,24 @@ def program_sql(
 ):
     """Explore a data resource or package"""
 
-    # Get resources
-    resources: List[TableResource] = []
+    # Get tabular resources
     try:
-        package = Package(source)
-        for resource in package.resources:
-            if isinstance(resource, TableResource):
-                resources.append(resource)
-    except Exception:
+        resources: List[TableResource] = []
         resource = Resource(source)
-        if isinstance(resource, TableResource):
+        if isinstance(resource, PackageResource):
+            package = resource.read_package()
+            for resource in package.resources:
+                if isinstance(resource, TableResource):
+                    resources.append(resource)
+        elif isinstance(resource, TableResource):
             resources.append(resource)
+    except Exception as exception:
+        if debug:
+            raise
+        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
 
-    # Ensure tabular
+    # Ensure tabular resources
     if not resources:
         note = f"Not found any tabular resources"
         typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
