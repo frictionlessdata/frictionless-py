@@ -35,6 +35,8 @@ class SqlIndexer:
     def index(self):
         self.prepare_resource()
         with self.resource:
+            # Index is resouce-based operation not supporting FKs
+            self.resource.schema.foreign_keys = []
             self.create_table()
             while True:
                 try:

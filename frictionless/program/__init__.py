@@ -4,6 +4,7 @@ from .program import program
 from . import api
 from . import convert
 from . import describe
+from . import explore
 from . import extract
 from . import index
 from . import summary
