@@ -353,6 +353,17 @@ class Package(Metadata):
             result.append([context.get(prop) for prop in spec])
         return result
 
+    # Dereference
+
+    def dereference(self):
+        """Dereference underlaying metadata
+
+        If some of underlaying metadata is provided as a string
+        it will replace it by the metadata object
+        """
+        for resource in self.resources:
+            resource.dereference()
+
     # Analyze
 
     def analyze(self, *, detailed=False):

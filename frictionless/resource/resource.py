@@ -559,6 +559,21 @@ class Resource(Metadata):
                 self.fields = self.stats.fields
                 self.rows = self.stats.rows
 
+    # Dereference
+
+    def dereference(self):
+        """Dereference underlaying metadata
+
+        If some of underlaying metadata is provided as a string
+        it will replace it by the metadata object
+        """
+        self.dialect  # access first
+        self._dialect_path = None
+        self._dialect_initial = None
+        self.schema  # access first
+        self._schema_path = None
+        self._schema_initial = None
+
     # Open/Close
 
     def open(self, *, as_file: bool = False):

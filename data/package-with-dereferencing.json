@@ -1,0 +1,11 @@
+{
+  "resources": [
+    {
+      "name": "name",
+      "type": "table",
+      "path": "table.csv",
+      "dialect": "dialect.json",
+      "schema": "schema.json"
+    }
+  ]
+}
