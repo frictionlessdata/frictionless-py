@@ -61,10 +61,10 @@ class SqlIndexer:
         )
 
     def populate_table(self):
-        if not self.fast:
-            self.populate_table_base()
-        else:
+        if self.fast and self.resource.format == "csv":
             self.populate_table_fast()
+            return
+        self.populate_table_base()
 
     def populate_table_base(self):
         self.adapter.write_row_stream(
