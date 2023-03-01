@@ -39,7 +39,7 @@ def validate(
             self, time=timer.time, errors=exception.to_errors()
         )
 
-    # TODO: remove in v7
+    # TODO: remove in next version
     # Ignore not-supported hashings
     if self.hash:
         algorithm, _ = helpers.parse_resource_hash_v1(self.hash)

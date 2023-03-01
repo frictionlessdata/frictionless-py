@@ -279,14 +279,6 @@ class Resource(Metadata):
     def __attrs_post_init__(self):
         self.stats = ResourceStats()
 
-        # Dialect
-        self._dialect_path: Optional[str] = None
-        self._dialect_initial: Optional[IDescriptor] = None
-
-        # Schema
-        self._schema_path: Optional[str] = None
-        self._schema_initial: Optional[IDescriptor] = None
-
         # State
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
@@ -381,9 +373,7 @@ class Resource(Metadata):
     @property
     def dialect(self) -> Dialect:
         if isinstance(self._dialect, str):
-            self._dialect_path = self._dialect
             self._dialect = Dialect.from_descriptor(self._dialect, basepath=self.basepath)
-            self._dialect_initial = self._dialect.to_descriptor()
         return self._dialect
 
     @dialect.setter
@@ -393,9 +383,7 @@ class Resource(Metadata):
     @property
     def schema(self) -> Schema:
         if isinstance(self._schema, str):
-            self._schema_path = self._schema
             self._schema = Schema.from_descriptor(self._schema, basepath=self.basepath)
-            self._schema_initial = self._schema.to_descriptor()
         return self._schema
 
     @schema.setter
@@ -567,12 +555,10 @@ class Resource(Metadata):
         If some of underlaying metadata is provided as a string
         it will replace it by the metadata object
         """
-        self.dialect  # access first
-        self._dialect_path = None
-        self._dialect_initial = None
-        self.schema  # access first
-        self._schema_path = None
-        self._schema_initial = None
+        self.dialect.metadata_descriptor_path = None
+        self.dialect.metadata_descriptor_initial = None
+        self.schema.metadata_descriptor_path = None
+        self.schema.metadata_descriptor_initial = None
 
     # Open/Close
 
@@ -1386,16 +1372,6 @@ class Resource(Metadata):
         types = (str, bool, int, float, list, dict)
         if data is not None and not isinstance(data, types):
             descriptor["data"] = []
-
-        # Dialect
-        dialect = descriptor.get("dialect")
-        if self._dialect_path and self._dialect_initial == dialect:
-            descriptor["dialect"] = self._dialect_path
-
-        # Schema
-        schema = descriptor.get("schema")
-        if self._schema_path and self._schema_initial == schema:
-            descriptor["schema"] = self._schema_path
 
         # Path (standards/v1)
         if system.standards == "v1":

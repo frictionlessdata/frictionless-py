@@ -30,7 +30,7 @@ class GsheetsParser(Parser):
         if gid:
             path = "%s&gid=%s" % (path, gid)
         with Resource(path=path) as resource:
-            # TODO: remove this cludge in v7
+            # TODO: remove this cludge
             resource.stats = self.resource.stats
             yield from resource.cell_stream
 
