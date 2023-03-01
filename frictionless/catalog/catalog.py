@@ -156,7 +156,6 @@ class Catalog(Metadata):
 
     # Infer
 
-    # TODO: allow cherry-picking stats for adding to a descriptor
     def infer(self, *, stats=False):
         """Infer catalog's metadata
 
@@ -164,7 +163,18 @@ class Catalog(Metadata):
             stats? (bool): stream files completely and infer stats
         """
         for dataset in self.datasets:
-            dataset.package.infer(stats=stats)
+            dataset.infer(stats=stats)
+
+    # Dereference
+
+    def dereference(self):
+        """Dereference underlaying metadata
+
+        If some of underlaying metadata is provided as a string
+        it will replace it by the metadata object
+        """
+        for dataset in self.datasets:
+            dataset.dereference()
 
     # Convert
 

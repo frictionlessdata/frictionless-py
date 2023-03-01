@@ -28,6 +28,14 @@ def test_resource_dereference():
     }
 
 
+def test_resource_dereference_forced():
+    resource = Resource("data/resource-with-dereferencing.json")
+    resource.dereference()
+    descriptor = resource.to_descriptor()
+    assert isinstance(descriptor["dialect"], dict)
+    assert isinstance(descriptor["schema"], dict)
+
+
 def test_resource_dialect_schema_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
     assert resource.to_descriptor() == {

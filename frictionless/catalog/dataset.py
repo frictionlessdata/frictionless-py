@@ -81,6 +81,28 @@ class Dataset(Metadata):
     def basepath(self, value: Optional[str]):
         self._basepath = value
 
+    # Infer
+
+    def infer(self, *, stats=False):
+        """Infer dataset's metadata
+
+        Parameters:
+            stats? (bool): stream files completely and infer stats
+        """
+        self.package.infer(stats=stats)
+
+    # Dereference
+
+    def dereference(self):
+        """Dereference underlaying metadata
+
+        If some of underlaying metadata is provided as a string
+        it will replace it by the metadata object
+        """
+        self.package.dereference()  # access first
+        self._package_path = None
+        self._package_initial = None
+
     # Metadata
 
     metadata_type = "dataset"
