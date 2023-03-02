@@ -1,4 +1,10 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from ..catalog import Catalog
 from .json import JsonResource
+
+if TYPE_CHECKING:
+    from ..resource import Resource
 
 
 class MetadataResource(JsonResource):
@@ -8,9 +14,17 @@ class MetadataResource(JsonResource):
 class CatalogResource(MetadataResource):
     datatype = "catalog"
 
+    def read_catalog(self) -> Catalog:
+        descriptor = self.data if self.data is not None else self.path
+        assert isinstance(descriptor, (str, dict))
+        return Catalog.from_descriptor(descriptor, basepath=self.basepath)
+
 
 class ResourceResource(MetadataResource):
     datatype = "resource"
+
+    def read_resource(self) -> Resource:
+        return self.to_copy()
 
 
 class DialectResource(MetadataResource):

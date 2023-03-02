@@ -11,7 +11,7 @@ class CkanPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_adapter(self, source, *, control=None):
+    def create_adapter(self, source, *, control=None, packagify: bool = False):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, CkanControl):
@@ -29,7 +29,7 @@ class CkanPlugin(Plugin):
 
                 if isinstance(control, CkanControl):
                     return CkanAdapter(control)
-        if not source and isinstance(control, CkanControl):
+        if source is None and isinstance(control, CkanControl):
             return CkanAdapter(control)
 
     def select_control_class(self, type):

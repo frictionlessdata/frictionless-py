@@ -14,6 +14,7 @@ import textwrap
 import stringcase
 from copy import deepcopy
 from pathlib import Path
+from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 from typing import Union, Any, Optional
@@ -88,6 +89,14 @@ def rows_to_data(rows):
 def is_class_accept_option(cls, name):
     sig = inspect.signature(cls.__init__)
     return name in sig.parameters
+
+
+def normalize_source(source: Any) -> Any:
+    if isinstance(source, Path):
+        source = str(source)
+    if isinstance(source, Mapping):
+        source = {key: value for key, value in source.items()}
+    return source
 
 
 @contextmanager

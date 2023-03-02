@@ -17,7 +17,11 @@ class GithubPlugin(Plugin):
 
     # TODO: improve
     def create_adapter(
-        self, source: str, *, control: Optional[portals.GithubControl] = None
+        self,
+        source: str,
+        *,
+        control: Optional[portals.GithubControl] = None,
+        packagify: bool = False,
     ):
         if isinstance(source, str):
             parsed = urlparse(source)
@@ -31,7 +35,7 @@ class GithubPlugin(Plugin):
                     if len(splited_url) == 2:
                         control.user, control.repo = splited_url
                     return GithubAdapter(control)
-        if not source and isinstance(control, GithubControl):
+        if source is None and isinstance(control, GithubControl):
             return GithubAdapter(control=control)
 
     def select_control_class(self, type):

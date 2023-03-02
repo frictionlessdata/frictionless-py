@@ -19,9 +19,8 @@ class ExcelAdapter(Adapter):
 
     # Read
 
-    # TODO: dedup names
     def read_package(self) -> Package:
-        package = Package(resources=[])
+        package = Package()
         with self.resource:
             book = platform.openpyxl.load_workbook(self.resource.byte_stream)
             for name in book.sheetnames:
@@ -31,6 +30,7 @@ class ExcelAdapter(Adapter):
                     control=ExcelControl(sheet=name),
                 )
                 package.add_resource(resource)
+        package.deduplicate_resoures()
         return package
 
     # Write

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ..package import Package
 from .json import JsonResource
 

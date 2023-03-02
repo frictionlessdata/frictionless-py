@@ -201,7 +201,7 @@ def get_package(record: Record, title: str, formats: List[str]) -> Package:
     for file in record.data["files"]:
         path = file["links"]["self"]
         is_resource_file = any(path.endswith(ext) for ext in formats)
-        if path.endswith(("datapackage.json", "datapackage.yaml")):
+        if path.endswith(("datapackage.json")):
             return Package.from_descriptor(path, title=title)
         if path.endswith("zip") and not is_resource_file:
             try:

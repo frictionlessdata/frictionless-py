@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING, Any, Dict, List, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Union, Optional
 from .control import GithubControl
 from ...system import Adapter
 from ...exception import FrictionlessException
@@ -111,7 +111,7 @@ class GithubAdapter(Adapter):
         note = "Package/s not found"
         raise FrictionlessException(note)
 
-    def read_package(self) -> Package:
+    def read_package(self, *, packagify: bool = False) -> Optional[Package]:
         if not (self.control.repo and self.control.user):
             note = "Repo and user is required"
             raise FrictionlessException(note)
@@ -228,10 +228,7 @@ def get_package(
         packages = []
         for file in paths:
             fullpath = f"{base_path}/{file.path}"
-            if any(
-                file.path.endswith(filename)
-                for filename in ["datapackage.json", "datapackage.yaml"]
-            ):
+            if any(file.path.endswith(filename) for filename in ["datapackage.json"]):
                 package = Package.from_descriptor(fullpath)
                 packages.append(package)
         return packages
@@ -242,7 +239,7 @@ def get_package(
     package = Package(name=repository.name)
     for file in paths:
         fullpath = f"{base_path}/{file.path}"
-        if file.path in ["datapackage.json", "datapackage.yaml"]:
+        if file.path in ["datapackage.json"]:
             package = Package.from_descriptor(fullpath)
             return package
         if any(file.path.endswith(ext) for ext in formats):

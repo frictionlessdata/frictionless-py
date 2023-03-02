@@ -45,7 +45,7 @@ class SqlAdapter(Adapter):
 
     # Read
 
-    def read_package(self) -> Package:
+    def read_package(self, *, packagify: bool = False) -> Optional[Package]:
         package = Package(resources=[])
         for table in self.metadata.sorted_tables:
             name = str(table.name)

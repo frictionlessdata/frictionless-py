@@ -1,11 +1,10 @@
 from __future__ import annotations
 import attrs
-from pathlib import Path
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..system import system
+from ..resource import Resource
+from ..platform import platform
 from .dataset import Dataset
 from .. import settings
 from .. import errors
@@ -68,24 +67,20 @@ class Catalog(Metadata):
     def __create__(
         cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
     ):
-        # Normalize
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
+        resources = platform.frictionless_resources
+        if source is not None and cls is not Catalog:
+            note = 'Providing "source" argument is only possible to "Catalog" class'
+            raise FrictionlessException(note)
 
-        # Source/Control
+        # Resource
         if source is not None or control is not None:
-            # Adapter
-            adapter = system.create_adapter(source, control=control)
-            if adapter:
-                catalog = adapter.read_catalog()
-                if catalog:
-                    return catalog
+            basepath = options.get("basepath")
+            resource = Resource(source, control=control, basepath=basepath)
+            if isinstance(resource, resources.CatalogResource):
+                return resource.read_catalog()
 
-        # Source
+        # Descriptor
         if source is not None:
-            # Descriptor
             return Catalog.from_descriptor(source, **options)  # type: ignore
 
     def __attrs_post_init__(self):

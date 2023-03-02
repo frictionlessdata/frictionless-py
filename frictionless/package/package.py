@@ -167,40 +167,20 @@ class Package(Metadata):
         control: Optional[Control] = None,
         **options,
     ):
-        # Normalize
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
+        resources = platform.frictionless_resources
+        if source is not None and cls is not Package:
+            note = 'Providing "source" argument is only possible to "Package" class'
+            raise FrictionlessException(note)
 
-        # Source/Control
+        # Resource
         if source is not None or control is not None:
-            # Adapter
-            if not helpers.is_expandable_source(source):
-                adapter = system.create_adapter(source, control=control)
-                if adapter:
-                    package = adapter.read_package()
-                    if package:
-                        return package
+            basepath = options.get("basepath")
+            res = Resource(source, control=control, packagify=True, basepath=basepath)
+            if isinstance(res, resources.PackageResource):
+                return res.read_package()
 
-        # Source
+        # Descriptor
         if source is not None:
-            # Directory
-            if helpers.is_directory_source(source):
-                for name in ["datapackage.json", "datapackage.yaml"]:
-                    path = os.path.join(source, name)  # type: ignore
-                    if os.path.isfile(path):
-                        return cls.from_descriptor(path)
-
-            # Expandable
-            if helpers.is_expandable_source(source):
-                options["resources"] = []
-                basepath = options.get("basepath")
-                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
-                    options["resources"].append(Resource(path=path))
-                return cls.from_options(**options)
-
-            # Descriptor
             return cls.from_descriptor(source, **options)  # type: ignore
 
     def __attrs_post_init__(self):

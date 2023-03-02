@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 import json
 import attrs
+import pprint
 import warnings
 import builtins
 from pathlib import Path
@@ -61,6 +62,11 @@ class Resource(Metadata):
     """
 
     control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
+
+    packagify: bool = False
     """
     # TODO: add docs
     """
@@ -230,83 +236,91 @@ class Resource(Metadata):
         source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
+        packagify: bool = False,
         **options,
     ):
-        # Normalize
+        resources = platform.frictionless_resources
+        if source is not None and cls is not Resource:
+            note = 'Providing "source" argument is only possible to "Resource" class'
+            raise FrictionlessException(note)
+        if options.get("type"):
+            note = 'Argument "resource.type" is deprecated. Use "resources.TableResource"'
+            warnings.warn(note, UserWarning)
+
+        # Source
         if isinstance(source, Path):
             source = str(source)
         if isinstance(source, Mapping):
             source = {key: value for key, value in source.items()}
+        normsource = source
+        basepath = options.get("basepath")
+        if isinstance(source, str):
+            normsource = helpers.join_basepath(source, basepath=basepath)
 
-        # Source/Control
+        # Directory
+        if normsource is not None and helpers.is_directory_source(normsource):
+            name = "datapackage.json"
+            path = os.path.join(normsource, name)  # type: ignore
+            if os.path.isfile(path):
+                return resources.PackageResource(path=path, basepath=basepath)
+
+        # Expandable
+        if source is not None and helpers.is_expandable_source(normsource):
+            package = platform.frictionless.Package()
+            for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
+                package.add_resource(Resource(path=path))
+            data = package.to_descriptor()
+            return resources.PackageResource(data=data, basepath=basepath)
+
+        # Adapter
         if source is not None or control is not None:
-            # Adapter
-            if not helpers.is_expandable_source(source):
-                adapter = system.create_adapter(source, control=control)
-                if adapter:
-                    package = adapter.read_package()
-                    if package:
-                        return platform.frictionless_resources.PackageResource(
-                            data=package.to_descriptor(), basepath=package.basepath
-                        )
+            adapter = system.create_adapter(source, control=control, packagify=packagify)
+            if adapter:
+                catalog = adapter.read_catalog()
+                if catalog:
+                    data = catalog.to_descriptor()
+                    return resources.CatalogResource(data=data, basepath=catalog.basepath)
+                package = adapter.read_package()
+                if package:
+                    data = package.to_descriptor()
+                    return resources.PackageResource(data=data, basepath=package.basepath)
 
-        # Control
-        if control is not None:
-            dialect = options.pop("dialect", None)
-            if dialect is None:
-                dialect = control.to_dialect()
-            elif control not in dialect.controls:
-                dialect.add_control(control)
-            options["dialect"] = dialect
-            if source is None:
-                return cls(**options)
-
-        # Source
+        # Descriptor
         if source is not None:
-            # Directory
-            if helpers.is_directory_source(source):
-                for name in ["datapackage.json", "datapackage.yaml"]:
-                    path = os.path.join(source, name)  # type: ignore
-                    if os.path.isfile(path):
-                        return cls(path=path)
-
-            # Expandable
-            if helpers.is_expandable_source(source):
-                options["resources"] = []
-                basepath = options.get("basepath")
-                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
-                    options["resources"].append(Resource(path=path))
-                return cls.from_options(**options)
-
-            # Descriptor
-            normsource = source
-            package = options.get("package")
-            basepath = options.get("basepath", package.basepath if package else None)
-            if isinstance(normsource, str):
-                normsource = helpers.normalize_path(normsource, basepath=basepath)
             metadata_type = Detector.detect_metadata_type(normsource)
             if metadata_type == "resource":
-                return cls.from_descriptor(source, **options)
+                return cls.from_descriptor(source, control=control, **options)
 
-            # Path/data
+        # Path/data
+        if source is not None:
             options["path" if isinstance(source, str) else "data"] = source
-            return cls(**options)
+            return cls(control=control, **options)
 
         # Routing
         if cls is Resource:
-            type = options.pop("type", None)
-            if type:
-                note = 'Argument "resource.type" is deprecated. Use "resources.TableResource"'
-                warnings.warn(note, UserWarning)
-            resource = platform.frictionless_resources.FileResource(**options)
+            resource = RoutingResource(control=control, **options)
             Class = system.select_resource_class(datatype=resource.datatype)
-            resource = Class(**options)
+            resource = Class(control=control, **options)
             return resource
 
     def __attrs_post_init__(self):
+        # Datatype
+        datatype = type(self).datatype
+        if isinstance(datatype, str):
+            self.datatype = datatype
+
+        # Control
+        if self.control is not None:
+            if self.dialect is None:
+                self.dialect = self.control.to_dialect()
+            elif self.control not in self.dialect.controls:
+                self.dialect.add_control(self.control)
+            self.control = None
+
+        # Stats
         self.stats = ResourceStats()
 
-        # State
+        # Internal
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
         self.__buffer: Optional[IBuffer] = None
@@ -329,6 +343,9 @@ class Resource(Metadata):
         self.add_defined("mediatype")
         self.add_defined("dialect")
         self.add_defined("stats")
+
+    def __repr__(self) -> str:
+        return pprint.pformat(self.to_descriptor(debug=True), sort_dicts=False)
 
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
@@ -1435,3 +1452,10 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
+
+
+# Internal
+
+
+class RoutingResource(Resource):
+    pass

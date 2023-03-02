@@ -40,6 +40,7 @@ class Plugin:
         source: Any,
         *,
         control: Optional[Control] = None,
+        packagify: bool = False,
     ) -> Optional[Adapter]:
         """Create adapter
 

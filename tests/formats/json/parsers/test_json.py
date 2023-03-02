@@ -44,8 +44,8 @@ def test_json_parser_keyed_with_keys_provided():
 
 
 def test_json_parser_from_buffer():
-    source = '[["id", "name"], [1, "english"], [2, "中国人"]]'.encode("utf-8")
-    with resources.TableResource(source, format="json") as resource:
+    data = '[["id", "name"], [1, "english"], [2, "中国人"]]'.encode("utf-8")
+    with resources.TableResource(data=data, format="json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -54,8 +54,8 @@ def test_json_parser_from_buffer():
 
 
 def test_json_parser_from_buffer_keyed():
-    source = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'.encode("utf-8")
-    with resources.TableResource(source, format="json") as resource:
+    data = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'.encode("utf-8")
+    with resources.TableResource(data=data, format="json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [

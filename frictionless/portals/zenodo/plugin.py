@@ -11,7 +11,7 @@ class ZenodoPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_adapter(self, source, *, control=None):
+    def create_adapter(self, source, *, control=None, packagify: bool = False):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, ZenodoControl):
@@ -22,8 +22,7 @@ class ZenodoPlugin(Plugin):
                     if parsed.path.startswith("/deposit/"):
                         control.deposition_id = int(parsed.path.replace("/deposit/", ""))
                     return ZenodoAdapter(control)
-
-        if not source and isinstance(control, ZenodoControl):
+        if source is None and isinstance(control, ZenodoControl):
             return ZenodoAdapter(control=control)
 
     def select_control_class(self, type):

@@ -43,13 +43,9 @@ class ZipAdapter(Adapter):
                 atexit.register(shutil.rmtree, tempdir)
                 if not innerpath:
                     innerpath = "datapackage.json"
-                    extensions = ("json", "yaml")
-                    default_names = (f"datapackage.{ext}" for ext in extensions)
-                    for name in default_names:
-                        if os.path.isfile(os.path.join(tempdir, name)):
-                            innerpath = name
-                            break
-                descriptor = os.path.join(tempdir, innerpath)
+                    if not os.path.isfile(os.path.join(tempdir, innerpath)):
+                        return None
+            descriptor = os.path.join(tempdir, innerpath)
         return Package.from_descriptor(descriptor)
 
     # Write

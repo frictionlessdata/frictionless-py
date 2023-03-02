@@ -7,7 +7,6 @@ from typing import List
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from ..resources import TableResource, PackageResource
 from ..resource import Resource
-from ..package import Package
 from .program import program
 from .. import helpers
 from . import common
@@ -40,7 +39,7 @@ def program_sql(
 
     # Ensure tabular resources
     if not resources:
-        note = f"Not found any tabular resources"
+        note = "Not found any tabular resources"
         typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
@@ -56,7 +55,7 @@ def program_sql(
 
     # Ensure tables
     if not tables:
-        note = f"Not indexed any tabular resources"
+        note = "Not indexed any tabular resources"
         typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 

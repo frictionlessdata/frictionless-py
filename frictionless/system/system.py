@@ -189,6 +189,7 @@ class System:
         source: Any,
         *,
         control: Optional[Control] = None,
+        packagify: bool = False,
     ) -> Optional[Adapter]:
         """Create adapter
 
@@ -200,7 +201,7 @@ class System:
         """
         adapter = None
         for func in self.methods["create_adapter"].values():
-            adapter = func(source, control=control)
+            adapter = func(source, control=control, packagify=packagify)
             if adapter is not None:
                 return adapter
 
