@@ -408,7 +408,7 @@ class Package(Metadata):
                 source = [source]
 
         # Create package
-        package = cls.from_options(source, **options)
+        package = cls(source, **options)
         package.infer(stats=stats)
         return package
 

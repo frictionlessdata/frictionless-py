@@ -23,7 +23,7 @@ class LocalAdapter:
 
         # Expandable
         if helpers.is_expandable_source(normsource):
-            package = Package()
+            package = Package(basepath=self.basepath)
             for path in helpers.expand_source(self.source, basepath=self.basepath):  # type: ignore
                 package.add_resource(Resource(path=path))
             return package

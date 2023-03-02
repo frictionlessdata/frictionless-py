@@ -1,11 +1,8 @@
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
-
-from sqlalchemy.engine import base
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..platform import platform
 from ..system import system
 from .dataset import Dataset
 from .. import settings
@@ -99,7 +96,7 @@ class Catalog(Metadata):
                 raise FrictionlessException(note)
             catalog = cls.from_source(source, control=control, basepath=basepath)
             if not catalog:
-                catalog = cls.from_descriptor(source, basepath=base, **options)  # type: ignore
+                catalog = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
             return catalog
 
     def __attrs_post_init__(self):
