@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from urllib.parse import urlparse
 from ...platform import platform
 from ...system import Plugin
@@ -17,7 +17,7 @@ class SqlPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, packagify: bool = False):
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if packagify:
             if isinstance(source, str):
                 parsed = urlparse(source)

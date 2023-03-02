@@ -1,12 +1,15 @@
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
+
+from sqlalchemy.engine import base
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..resource import Resource
 from ..platform import platform
+from ..system import system
 from .dataset import Dataset
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -64,24 +67,40 @@ class Catalog(Metadata):
     """
 
     @classmethod
-    def __create__(
-        cls, source: Optional[Any] = None, *, control: Optional[Control] = None, **options
-    ):
-        resources = platform.frictionless_resources
-        if source is not None and cls is not Catalog:
-            note = 'Providing "source" argument is only possible to "Catalog" class'
-            raise FrictionlessException(note)
+    def from_source(
+        cls,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+    ) -> Optional[Catalog]:
+        source = helpers.normalize_source(source)
 
-        # Resource
+        # Adapter
         if source is not None or control is not None:
-            basepath = options.get("basepath")
-            resource = Resource(source, control=control, basepath=basepath)
-            if isinstance(resource, resources.CatalogResource):
-                return resource.read_catalog()
+            adapter = system.create_adapter(source, control=control, basepath=basepath)
+            if adapter:
+                catalog = adapter.read_catalog()
+                return catalog
 
-        # Descriptor
-        if source is not None:
-            return Catalog.from_descriptor(source, **options)  # type: ignore
+    @classmethod
+    def __create__(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        **options,
+    ):
+        # Source/control
+        if source is not None or control is not None:
+            if cls is not Catalog:
+                note = 'Providing "source" argument is only possible to "Catalog" class'
+                raise FrictionlessException(note)
+            catalog = cls.from_source(source, control=control, basepath=basepath)
+            if not catalog:
+                catalog = cls.from_descriptor(source, basepath=base, **options)  # type: ignore
+            return catalog
 
     def __attrs_post_init__(self):
         for dataset in self.datasets:

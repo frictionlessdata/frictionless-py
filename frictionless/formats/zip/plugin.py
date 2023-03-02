@@ -10,9 +10,10 @@ class ZipPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, packagify: bool = False):
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if packagify:
             if isinstance(source, str):
+                source = helpers.join_basepath(source, basepath=basepath)
                 if helpers.is_zip_descriptor(source):
                     control = control if isinstance(control, ZipControl) else ZipControl()
                     adapter = ZipAdapter(source, control=control)

@@ -11,7 +11,7 @@ class ZenodoPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_adapter(self, source, *, control=None, packagify: bool = False):
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, ZenodoControl):

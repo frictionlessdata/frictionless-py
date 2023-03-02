@@ -2,6 +2,7 @@ from __future__ import annotations
 from ...system import Plugin
 from .control import LocalControl
 from .loader import LocalLoader
+from .adapter import LocalAdapter
 from ... import helpers
 
 
@@ -9,6 +10,12 @@ class LocalPlugin(Plugin):
     """Plugin for Local Data"""
 
     # Hooks
+
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+        if source is not None:
+            path = helpers.join_basepath(source, basepath=basepath)
+            if helpers.is_directory_source(path) or helpers.is_expandable_source(path):
+                return LocalAdapter(source, basepath=basepath)
 
     def create_loader(self, resource):
         if resource.scheme == "file":

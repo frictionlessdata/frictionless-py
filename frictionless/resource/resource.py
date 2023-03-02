@@ -231,70 +231,59 @@ class Resource(Metadata):
     """
 
     @classmethod
+    def from_source(
+        cls,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = False,
+        **options,
+    ) -> Optional[Resource]:
+        resources = platform.frictionless_resources
+        Package = platform.frictionless.Package
+        source = helpers.normalize_source(source)
+
+        # Package
+        if source is not None or control is not None:
+            package = Package.from_source(
+                source,
+                control=control,
+                basepath=basepath,
+                packagify=packagify,
+            )
+            if package:
+                data = package.to_descriptor()
+                return resources.PackageResource(
+                    data=data, basepath=package.basepath, **options
+                )
+
+        # Path/data
+        if source is not None:
+            path = helpers.join_basepath(source, basepath=basepath)
+            metadata_type = Detector.detect_metadata_type(path)
+            if metadata_type != "resource":
+                options["path" if isinstance(source, str) else "data"] = source
+                return cls(control=control, basepath=basepath, **options)
+
+    @classmethod
     def __create__(
         cls,
         source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
-        packagify: bool = False,
+        basepath: Optional[str] = None,
         **options,
     ):
-        resources = platform.frictionless_resources
-        if source is not None and cls is not Resource:
-            note = 'Providing "source" argument is only possible to "Resource" class'
-            raise FrictionlessException(note)
-        if options.get("type"):
-            note = 'Argument "resource.type" is deprecated. Use "resources.TableResource"'
-            warnings.warn(note, UserWarning)
-
-        # Source
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
-        normsource = source
-        basepath = options.get("basepath")
-        if isinstance(source, str):
-            normsource = helpers.join_basepath(source, basepath=basepath)
-
-        # Directory
-        if normsource is not None and helpers.is_directory_source(normsource):
-            name = "datapackage.json"
-            path = os.path.join(normsource, name)  # type: ignore
-            if os.path.isfile(path):
-                return resources.PackageResource(path=path, basepath=basepath)
-
-        # Expandable
-        if source is not None and helpers.is_expandable_source(normsource):
-            package = platform.frictionless.Package()
-            for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
-                package.add_resource(Resource(path=path))
-            data = package.to_descriptor()
-            return resources.PackageResource(data=data, basepath=basepath)
-
-        # Adapter
+        # Source/control
         if source is not None or control is not None:
-            adapter = system.create_adapter(source, control=control, packagify=packagify)
-            if adapter:
-                catalog = adapter.read_catalog()
-                if catalog:
-                    data = catalog.to_descriptor()
-                    return resources.CatalogResource(data=data, basepath=catalog.basepath)
-                package = adapter.read_package()
-                if package:
-                    data = package.to_descriptor()
-                    return resources.PackageResource(data=data, basepath=package.basepath)
-
-        # Descriptor
-        if source is not None:
-            metadata_type = Detector.detect_metadata_type(normsource)
-            if metadata_type == "resource":
-                return cls.from_descriptor(source, control=control, **options)
-
-        # Path/data
-        if source is not None:
-            options["path" if isinstance(source, str) else "data"] = source
-            return cls(control=control, **options)
+            if cls is not Resource:
+                note = 'Providing "source" argument is only possible to "Resource" class'
+                raise FrictionlessException(note)
+            res = cls.from_source(source, control=control, basepath=basepath, **options)
+            if not res:
+                res = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
+            return res
 
         # Routing
         if cls is Resource:

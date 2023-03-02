@@ -16,13 +16,7 @@ class GithubPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_adapter(
-        self,
-        source: str,
-        *,
-        control: Optional[portals.GithubControl] = None,
-        packagify: bool = False,
-    ):
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, GithubControl):

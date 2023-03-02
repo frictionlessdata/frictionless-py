@@ -11,10 +11,10 @@ class ExcelPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, packagify: bool = False):
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if packagify:
             if isinstance(source, str):
-                resource = Resource(path=source)
+                resource = Resource(path=source, basepath=basepath)
                 if resource.format == "xlsx":
                     control = control or ExcelControl()
                     return ExcelAdapter(control, resource=resource)  # type: ignore

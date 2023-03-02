@@ -4,6 +4,8 @@ import attrs
 from pathlib import Path
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
+
+from sqlalchemy.engine import base
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -46,6 +48,11 @@ class Package(Metadata):
     """
 
     control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
+
+    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
     """
     # TODO: add docs
     """
@@ -144,11 +151,6 @@ class Package(Metadata):
     is not part of any catalog, then it is set to None.
     """
 
-    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
-    """
-    # TODO: add docs
-    """
-
     _dialect: Optional[Dialect] = attrs.field(default=None, alias="dialect")
     """
     # TODO: add docs
@@ -160,28 +162,63 @@ class Package(Metadata):
     """
 
     @classmethod
+    def from_source(
+        cls,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = True,
+    ) -> Optional[Package]:
+        source = helpers.normalize_source(source)
+        normsource = source
+        if isinstance(source, str):
+            normsource = helpers.join_basepath(source, basepath=basepath)
+
+        # Directory
+        if normsource is not None and helpers.is_directory_source(normsource):
+            name = "datapackage.json"
+            path = os.path.join(normsource, name)  # type: ignore
+            if os.path.isfile(path):
+                return cls.from_descriptor(path, basepath=basepath)
+
+        # Expandable
+        if source is not None and helpers.is_expandable_source(normsource):
+            package = cls()
+            for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
+                package.add_resource(Resource(path=path))
+            return package
+
+        # Adapter
+        if source is not None or control is not None:
+            adapter = system.create_adapter(
+                source,
+                control=control,
+                basepath=basepath,
+                packagify=packagify,
+            )
+            if adapter:
+                package = adapter.read_package()
+                return package
+
+    @classmethod
     def __create__(
         cls,
         source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
+        basepath: Optional[str] = None,
         **options,
     ):
-        resources = platform.frictionless_resources
-        if source is not None and cls is not Package:
-            note = 'Providing "source" argument is only possible to "Package" class'
-            raise FrictionlessException(note)
-
-        # Resource
+        # Source/control
         if source is not None or control is not None:
-            basepath = options.get("basepath")
-            res = Resource(source, control=control, packagify=True, basepath=basepath)
-            if isinstance(res, resources.PackageResource):
-                return res.read_package()
-
-        # Descriptor
-        if source is not None:
-            return cls.from_descriptor(source, **options)  # type: ignore
+            if cls is not Package:
+                note = 'Providing "source" argument is only possible to "Package" class'
+                raise FrictionlessException(note)
+            package = cls.from_source(source, control=control, basepath=basepath)
+            if not package:
+                package = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
+            return package
 
     def __attrs_post_init__(self):
         for resource in self.resources:
