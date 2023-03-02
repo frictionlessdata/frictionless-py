@@ -10,8 +10,6 @@ class MultipartControl(Control):
 
     type = "multipart"
 
-    # State
-
     chunk_size: int = settings.DEFAULT_CHUNK_SIZE
     """
     Specifies chunk size for the multipart file.

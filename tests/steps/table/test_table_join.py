@@ -38,8 +38,11 @@ def test_step_table_join_from_dict():
             Step.from_descriptor(
                 {
                     "type": "table-join",
-                    "resource": dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                     "fieldName": "id",
+                    "resource": {
+                        "name": "data",
+                        "data": [["id", "note"], [1, "beer"], [2, "vine"]],
+                    },
                 }
             ),
         ],
@@ -264,7 +267,10 @@ def test_step_table_join_mode_left_from_descriptor_issue_996():
                     "type": "table-join",
                     "fieldName": "id",
                     "mode": "left",
-                    "resource": dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+                    "resource": {
+                        "name": "data",
+                        "data": [["id", "note"], [1, "beer"], [2, "vine"]],
+                    },
                 }
             ),
         ],

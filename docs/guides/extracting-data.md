@@ -256,7 +256,6 @@ We can create a package from data files (using their paths) and then read the pa
 from frictionless import Package
 
 package = Package('*-3.csv')
-package.infer(sample=False)
 pprint(package.get_resource('country-3').read_rows())
 pprint(package.get_resource('capital-3').read_rows())
 ```

@@ -1,26 +1,27 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Checklist, FrictionlessException, system
+from frictionless import FrictionlessException
+from frictionless import Package, Checklist, Resource, Schema, fields, Detector
 
 
 # General
 
 
-def test_validate_package():
-    package = Package({"resources": [{"path": "data/table.csv"}]})
+def test_package_validate():
+    package = Package({"resources": [{"name": "name", "path": "data/table.csv"}]})
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_from_dict():
+def test_package_validate_from_dict():
     with open("data/package/datapackage.json") as file:
         package = Package(json.load(file), basepath="data/package")
         report = package.validate()
         assert report.valid
 
 
-def test_validate_package_from_dict_invalid():
+def test_package_validate_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         package = Package(json.load(file), basepath="data/invalid")
         report = package.validate()
@@ -31,13 +32,13 @@ def test_validate_package_from_dict_invalid():
         ]
 
 
-def test_validate_package_from_path():
+def test_package_validate_from_path():
     package = Package("data/package/datapackage.json")
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_from_path_invalid():
+def test_package_validate_from_path_invalid():
     package = Package("data/invalid/datapackage.json")
     report = package.validate()
     assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
@@ -47,12 +48,12 @@ def test_validate_package_from_path_invalid():
     ]
 
 
-def test_validate_package_with_non_tabular():
+def test_package_validate_with_non_tabular():
     package = Package(
         {
             "resources": [
-                {"path": "data/table.csv"},
-                {"path": "data/file.txt"},
+                {"name": "table", "path": "data/table.csv"},
+                {"name": "file", "path": "data/file.txt"},
             ]
         },
     )
@@ -60,22 +61,37 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-def test_validate_package_invalid_package_standards_v2_strict():
-    package = Package({"resources": [{"path": "data/table.csv"}]})
-    with system.use_context(standards="v2-strict"):
-        report = package.validate()
+@pytest.mark.skip
+def test_package_validate_invalid_descriptor_path():
+    report = Package("bad/datapackage.json").validate()
+    error = report.errors[0]
+    assert error.type == "package-error"
+    assert error.note.count("[Errno 2]")
+    assert error.note.count("bad/datapackage.json")
+
+
+@pytest.mark.skip
+def test_package_validate_invalid_package():
+    report = Package(
+        {"resources": [{"name": "name", "path": "data/table.csv", "schema": "bad"}]}
+    ).validate()
+    assert report.stats["errors"] == 1
+    error = report.errors[0]
+    assert error.type == "schema-error"
+    assert error.note.count("[Errno 2]")
+    assert error.note.count("'bad'")
+    assert report.valid
+
+
+def test_package_validate_invalid_package_standards_v2_strict():
+    report = Package.validate_descriptor({"resources": [{"path": "data/table.csv"}]})
     assert report.flatten(["type", "note"]) == [
-        ["resource-error", 'property "name" is required by standards "v2-strict"'],
-        ["resource-error", 'property "type" is required by standards "v2-strict"'],
-        ["resource-error", 'property "scheme" is required by standards "v2-strict"'],
-        ["resource-error", 'property "format" is required by standards "v2-strict"'],
-        ["resource-error", 'property "encoding" is required by standards "v2-strict"'],
-        ["resource-error", 'property "mediatype" is required by standards "v2-strict"'],
+        ["resource-error", "'name' is a required property"],
     ]
 
 
-def test_validate_package_invalid_table():
-    package = Package({"resources": [{"path": "data/invalid.csv"}]})
+def test_package_validate_invalid_table():
+    package = Package({"resources": [{"name": "name", "path": "data/invalid.csv"}]})
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
@@ -89,19 +105,19 @@ def test_validate_package_invalid_table():
     ]
 
 
-def test_validate_package_pathlib_source():
+def test_package_validate_pathlib_source():
     package = Package(pathlib.Path("data/package/datapackage.json"))
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_infer():
+def test_package_validate_infer():
     package = Package("data/infer/datapackage.json")
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_dialect_header_false():
+def test_package_validate_dialect_header_false():
     descriptor = {
         "resources": [
             {
@@ -122,21 +138,40 @@ def test_validate_package_dialect_header_false():
     assert report.valid
 
 
-def test_validate_package_with_schema_as_string():
+def test_package_validate_with_schema_as_string():
     package = Package(
-        {"resources": [{"path": "data/table.csv", "schema": "data/schema.json"}]}
+        {
+            "resources": [
+                {"name": "name", "path": "data/table.csv", "schema": "data/schema.json"}
+            ]
+        }
     )
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_descriptor_type_package():
+@pytest.mark.skip
+def test_package_validate_multiple_package_errors():
+    report = Package.validate_descriptor("data/multiple-errors.package.json")
+    assert report.flatten(["type", "message"]) == [
+        [
+            "package-error",
+            "The data package has an error: names of the resources are not unique",
+        ],
+        [
+            "package-error",
+            'The data package has an error: property "created" is not valid "datetime"',
+        ],
+    ]
+
+
+def test_package_validate_descriptor_type_package():
     package = Package("data/package/datapackage.json")
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_descriptor_type_package_invalid():
+def test_package_validate_descriptor_type_package_invalid():
     package = Package("data/invalid/datapackage.json")
     report = package.validate()
     assert report.flatten() == [
@@ -149,13 +184,13 @@ def test_validate_package_descriptor_type_package_invalid():
 # Bugs
 
 
-def test_validate_package_mixed_issue_170():
+def test_package_validate_mixed_issue_170():
     package = Package("data/infer/datapackage.json")
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_composite_primary_key_unique_issue_215():
+def test_package_validate_composite_primary_key_unique_issue_215():
     source = {
         "resources": [
             {
@@ -176,7 +211,7 @@ def test_validate_package_composite_primary_key_unique_issue_215():
     assert report.valid
 
 
-def test_validate_package_composite_primary_key_not_unique_issue_215():
+def test_package_validate_composite_primary_key_not_unique_issue_215():
     descriptor = {
         "resources": [
             {
@@ -200,21 +235,21 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     ]
 
 
-def test_validate_package_geopoint_required_constraint_issue_231():
+def test_package_validate_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
     package = Package("data/geopoint/datapackage.json")
     report = package.validate()
     assert report.valid
 
 
-def test_validate_package_number_test_issue_232():
+def test_package_validate_number_test_issue_232():
     # We check here that it doesn't raise exceptions
     package = Package("data/number/datapackage.json")
     report = package.validate()
     assert not report.valid
 
 
-def test_validate_package_with_schema_issue_348():
+def test_package_validate_with_schema_issue_348():
     descriptor = {
         "resources": [
             {
@@ -246,20 +281,37 @@ def test_validate_package_with_schema_issue_348():
 
 @pytest.mark.ci
 @pytest.mark.vcr
-def test_validate_package_uppercase_format_issue_494():
+def test_package_validate_uppercase_format_issue_494():
     package = Package("data/issue-494.package.json")
     report = package.validate()
     assert report.valid
-    assert report.stats.tasks == 1
+    assert report.stats["tasks"] == 1
 
 
-def test_validate_package_with_diacritic_symbol_issue_905():
+def test_validate_package_using_detector_schema_sync_issue_847():
+    package = Package(
+        resources=[
+            Resource(
+                data=[["f1"], ["v1"], ["v2"], ["v3"]],
+                schema=Schema(
+                    fields=[fields.StringField(name="f1"), fields.StringField(name="f2")],
+                ),
+            ),
+        ]
+    )
+    for resource in package.resources:  # type: ignore
+        resource.detector = Detector(schema_sync=True)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_with_diacritic_symbol_issue_905():
     package = Package("data/issue-905/datapackage.json")
     report = package.validate()
-    assert report.stats.tasks == 3
+    assert report.stats["tasks"] == 3
 
 
-def test_validate_package_with_resource_data_is_a_string_issue_977():
+def test_package_validate_with_resource_data_is_a_string_issue_977():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/issue-977.json")
     error = excinfo.value.error
@@ -273,7 +325,7 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     )
 
 
-def test_validate_package_metadata_errors_with_missing_values_993():
+def test_package_validate_metadata_errors_with_missing_values_993():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/package-with-missingvalues-993.json")
     error = excinfo.value.error
@@ -287,7 +339,7 @@ def test_validate_package_metadata_errors_with_missing_values_993():
     )
 
 
-def test_validate_package_metadata_errors_with_fields_993():
+def test_package_validate_metadata_errors_with_fields_993():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/package-with-fields-993.json")
     error = excinfo.value.error

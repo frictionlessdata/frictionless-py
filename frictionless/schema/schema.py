@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class Schema(Metadata):
     """Schema representation
 
@@ -26,18 +26,16 @@ class Schema(Metadata):
     ```
     """
 
-    def __attrs_post_init__(self):
-        # Connect fields
-        for field in self.fields:
-            field.schema = self
-
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the object
     """
 
     title: Optional[str] = None
@@ -71,7 +69,14 @@ class Schema(Metadata):
     Specifies the foreign keys for the schema.
     """
 
-    # Props
+    def __attrs_post_init__(self):
+        for field in self.fields:
+            field.schema = self
+
+    def __bool__(self):
+        return bool(self.fields) or bool(self.to_descriptor(debug=True))
+
+    # Fields
 
     @property
     def field_names(self) -> List[str]:
@@ -83,30 +88,8 @@ class Schema(Metadata):
         """List of field types"""
         return [field.type for field in self.fields]
 
-    # Describe
-
-    @staticmethod
-    def describe(source: Optional[Any] = None, **options):
-        """Describe the given source as a schema
-
-        Parameters:
-            source (any): data source
-            **options (dict): describe resource options
-
-        Returns:
-            Schema: table schema
-        """
-        resource = platform.frictionless.Resource.describe(source, **options)
-        schema = resource.schema
-        return schema
-
-    # Fields
-
     def add_field(self, field: Field, *, position: Optional[int] = None) -> None:
         """Add new field to the schema"""
-        if self.has_field(field.name):  # type: ignore
-            error = errors.SchemaError(note=f'field "{field.name}" already exists')
-            raise FrictionlessException(error)
         field.schema = self
         if position is None:
             self.fields.append(field)
@@ -163,6 +146,32 @@ class Schema(Metadata):
     def clear_fields(self) -> None:
         """Remove all the fields"""
         self.fields = []
+
+    def deduplicate_fields(self):
+        if len(self.field_names) != len(set(self.field_names)):
+            seen_names = []
+            for index, name in enumerate(self.field_names):
+                count = seen_names.count(name) + 1
+                if count > 1:
+                    self.fields[index].name = "%s%s" % (name, count)
+                seen_names.append(name)
+
+    # Describe
+
+    @staticmethod
+    def describe(source: Optional[Any] = None, **options):
+        """Describe the given source as a schema
+
+        Parameters:
+            source (any): data source
+            **options (dict): describe resource options
+
+        Returns:
+            Schema: table schema
+        """
+        resource = platform.frictionless.Resource.describe(source, **options)
+        schema = resource.schema
+        return schema
 
     # Read
 
@@ -261,6 +270,7 @@ class Schema(Metadata):
         "required": ["fields"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
@@ -293,8 +303,8 @@ class Schema(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "fields":
+    def metadata_select_property_class(cls, name):
+        if name == "fields":
             return Field
 
     # TODO: handle invalid structure

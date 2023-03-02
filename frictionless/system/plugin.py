@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any, Type
 
 if TYPE_CHECKING:
+    from ..package import Package
     from ..resource import Resource
     from ..checklist import Check
     from ..dialect import Control
@@ -60,14 +61,6 @@ class Plugin:
         """
         pass
 
-    def detect_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
-        """Detect field candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
-
     def detect_resource(self, resource: Resource) -> None:
         """Hook into resource detection
 
@@ -77,17 +70,33 @@ class Plugin:
         """
         pass
 
-    def select_Check(self, type: str) -> Optional[Type[Check]]:
+    def detect_field_candidates(self, candidates: List[dict]) -> None:
+        """Detect field candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
+        """
         pass
 
-    def select_Control(self, type: str) -> Optional[Type[Control]]:
+    def select_check_class(self, type: Optional[str] = None) -> Optional[Type[Check]]:
         pass
 
-    def select_Error(self, type: str) -> Optional[Type[Error]]:
+    def select_control_class(self, type: Optional[str] = None) -> Optional[Type[Control]]:
         pass
 
-    def select_Field(self, type: str) -> Optional[Type[Field]]:
+    def select_error_class(self, type: Optional[str] = None) -> Optional[Type[Error]]:
         pass
 
-    def select_Step(self, type: str) -> Optional[Type[Step]]:
+    def select_field_class(self, type: Optional[str] = None) -> Optional[Type[Field]]:
+        pass
+
+    def select_package_class(self, type: Optional[str] = None) -> Optional[Type[Package]]:
+        pass
+
+    def select_resource_class(
+        self, type: Optional[str] = None, *, datatype: Optional[str] = None
+    ) -> Optional[Type[Resource]]:
+        pass
+
+    def select_step_class(self, type: Optional[str] = None) -> Optional[Type[Step]]:
         pass

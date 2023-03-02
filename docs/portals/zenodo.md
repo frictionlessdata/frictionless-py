@@ -366,7 +366,7 @@ print(package)
 
 In order to read first page of the search result and create a catalog, we use `page` and `size` params as follows:
 
-```python script tabs=Python
+```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Catalog
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 from ...pipeline import Pipeline
 from ...exception import FrictionlessException
+from ...dialect import Dialect
 from ...helpers import get_name
 from ... import errors
 
@@ -11,20 +12,11 @@ if TYPE_CHECKING:
 
 # TODO: save transform info into resource.stats?
 def transform(self: Resource, pipeline: Optional[Pipeline] = None):
-    """Transform resource
-
-    Parameters:
-        steps (Step[]): transform steps
-
-    Returns:
-        Resource: the transform result
-    """
-
     # Prepare resource
     self.infer()
 
     # Prepare pipeline
-    pipeline = pipeline or self.pipeline or Pipeline()
+    pipeline = pipeline or Pipeline()
 
     # Run transforms
     for step in pipeline.steps:
@@ -49,8 +41,12 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
             self.compression = None
             self.extrapaths = []
             self.innerpath = None
-            self.dialect = None
-            self.stats = None
+            self.dialect = Dialect()
+            self.stats.md5 = None
+            self.stats.sha256 = None
+            self.stats.bytes = None
+            self.stats.fields = None
+            self.stats.rows = None
 
     return self
 

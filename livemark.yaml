@@ -63,8 +63,8 @@ pages:
           name: Report
         - path: docs/framework/table
           name: Table
-        - path: docs/framework/classes
-          name: Other
+        - path: docs/framework/error
+          name: Error
     - name: Advanced Topics
       items:
         - path: docs/advanced/program
@@ -72,6 +72,16 @@ pages:
         - path: docs/advanced/design
         - path: docs/advanced/system
         - path: docs/advanced/extending
+    - name: Data Resources
+      items:
+        - path: docs/resources/file
+          name: File
+        - path: docs/resources/text
+          name: Text
+        - path: docs/resources/json
+          name: Json
+        - path: docs/resources/table
+          name: Table
     - name: Data Sources
       items:
         - path: docs/schemes/aws
@@ -150,7 +160,7 @@ pages:
           name: Row
         - path: docs/steps/cell
           name: Cell
-    - name: Data Types
+    - name: Data Fields
       items:
         - path: docs/fields/any
           name: Any

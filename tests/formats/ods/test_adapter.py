@@ -10,7 +10,11 @@ def test_excel_adapter_package():
         "resources": [
             {
                 "name": "list1",
+                "type": "table",
                 "path": "data/table.ods",
+                "scheme": "file",
+                "format": "ods",
+                "mediatype": "application/vnd.oasis.opendocument.spreadsheet",
                 "dialect": {"ods": {"sheet": "Лист1"}},
             },
         ]

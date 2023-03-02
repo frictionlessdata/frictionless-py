@@ -45,8 +45,6 @@ class Parser:
     def __exit__(self, type, value, traceback):
         self.close()
 
-    # Props
-
     @property
     def resource(self) -> Resource:
         """

@@ -1,7 +1,7 @@
 from frictionless import Schema
 
 
-# General
+# Bugs
 
 
 def test_describe_schema_issue_1232_1364():

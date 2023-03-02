@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, List, Any
+from typing import Optional, List, Any, ClassVar, Union
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -15,13 +15,16 @@ from .. import errors
 class Dialect(Metadata):
     """Dialect representation"""
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the object
     """
 
     title: Optional[str] = None
@@ -76,6 +79,9 @@ class Dialect(Metadata):
     """
     A list of controls which defines different aspects of reading data.
     """
+
+    def __bool__(self):
+        return bool(self.controls) or bool(self.to_descriptor(debug=True))
 
     # Describe
 
@@ -232,6 +238,7 @@ class Dialect(Metadata):
         "type": "object",
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "header": {"type": "boolean"},
@@ -245,8 +252,8 @@ class Dialect(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "controls":
+    def metadata_select_property_class(cls, name):
+        if name == "controls":
             return Control
 
     @classmethod

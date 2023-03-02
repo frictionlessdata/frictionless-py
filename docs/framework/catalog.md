@@ -5,6 +5,10 @@ script:
 
 # Catalog Class
 
+```markdown remark type=danger
+This feature is currently experimental. The API might change without notice
+```
+
 Catalog is a set of data packages.
 
 ## Creating Catalog
@@ -12,9 +16,9 @@ Catalog is a set of data packages.
 We can create a catalog providing a list of data packages:
 
 ```python tabs=Python
-from frictionless import Catalog, Package
+from frictionless import Catalog, Dataset, Package
 
-catalog = Catalog(packages=[Package('tables/*')])
+catalog = Catalog(datasets=[Dataset(name='name', package=Package('tables/*'))])
 ```
 
 ## Describing Catalog
@@ -28,19 +32,19 @@ catalog = Catalog('https://demo.ckan.org/dataset/')
 print(catalog)
 ```
 
-## Package Management
+## Dataset Management
 
-The core purpose of having a catalog is to provide an ability to have a set of packages. The Catalog class provides useful methods to manage packages:
+The core purpose of having a catalog is to provide an ability to have a set of datasets. The Catalog class provides useful methods to manage datasets:
 
 ```python tabs=Python
 from frictionless import Catalog
 
 catalog = Catalog('https://demo.ckan.org/dataset/')
-catalog.package_names
-catalog.has_package
-catalog.add_package
-catalog.get_package
-catalog.clear_packages
+catalog.dataset_names
+catalog.has_dataset
+catalog.add_dataset
+catalog.get_dataset
+catalog.clear_datasets
 ```
 
 ## Saving Descriptor
@@ -60,4 +64,5 @@ catalog.to_yaml('datacatalog.yaml') # Save as YAML
 ```yaml reference
 references:
   - frictionless.Catalog
+  - frictionless.Dataset
 ```

@@ -1,11 +1,11 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, List, Optional
-from ..stats import Stats
+from typing import TYPE_CHECKING, List, Optional, ClassVar, Union
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
+from .interfaces import IReportStats, IReportTaskStats
 from .task import ReportTask
 from .. import settings
 
@@ -21,13 +21,16 @@ class Report(Metadata):
 
     """
 
-    # State
-
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
     This MUST be lower-case and contain only alphanumeric characters
     along with “_” or “-” characters.
+    """
+
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the package
     """
 
     title: Optional[str] = None
@@ -45,7 +48,7 @@ class Report(Metadata):
     Flag to specify if the data is valid or not.
     """
 
-    stats: Stats
+    stats: IReportStats
     """
     Additional statistics of the data as defined in Stats class.
     """
@@ -65,12 +68,10 @@ class Report(Metadata):
     List of task that were applied during data validation.
     """
 
-    # Props
-
     @property
     def error(self):
         """Validation error (if there is only one)"""
-        if self.stats.errors != 1:
+        if self.stats["errors"] != 1:
             note = 'The "report.error" is available for single error reports'
             raise FrictionlessException(note)
         return self.tasks[0].error if self.tasks else self.errors[0]
@@ -78,7 +79,7 @@ class Report(Metadata):
     @property
     def task(self):
         """Validation task (if there is only one)"""
-        if self.stats.tasks != 1:
+        if self.stats["tasks"] != 1:
             note = 'The "report.task" is available for single task reports'
             raise FrictionlessException(note)
         return self.tasks[0]
@@ -120,8 +121,8 @@ class Report(Metadata):
         tasks = tasks.copy()
         errors = errors.copy()
         warnings = warnings.copy()
-        error_count = len(errors) + sum(task.stats.errors or 0 for task in tasks)
-        stats = Stats(
+        error_count = len(errors) + sum(task.stats["errors"] or 0 for task in tasks)
+        stats = IReportStats(
             tasks=len(tasks),
             errors=error_count,
             warnings=len(warnings),
@@ -147,11 +148,20 @@ class Report(Metadata):
         """Create a report from a validation task"""
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = resource.stats.to_copy()
-        task_stats.errors = len(errors)
-        task_stats.warnings = len(warnings)
-        task_stats.seconds = time
-        report_stats = Stats(
+        task_stats = IReportTaskStats(
+            errors=len(errors), warnings=len(warnings), seconds=time
+        )
+        if resource.stats.md5:
+            task_stats["md5"] = resource.stats.md5
+        if resource.stats.sha256:
+            task_stats["sha256"] = resource.stats.sha256
+        if resource.stats.bytes:
+            task_stats["bytes"] = resource.stats.bytes
+        if resource.stats.fields:
+            task_stats["fields"] = resource.stats.fields
+        if resource.stats.rows:
+            task_stats["rows"] = resource.stats.rows
+        report_stats = IReportStats(
             tasks=1,
             errors=len(errors),
             warnings=len(warnings),
@@ -255,6 +265,7 @@ class Report(Metadata):
         "required": ["valid", "stats", "warnings", "errors", "tasks"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "valid": {"type": "boolean"},
@@ -266,12 +277,10 @@ class Report(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "stats":
-            return Stats
-        elif property == "errors":
+    def metadata_select_property_class(cls, name):
+        if name == "errors":
             return Error
-        elif property == "tasks":
+        elif name == "tasks":
             return ReportTask
 
     # TODO: validate valid/errors count

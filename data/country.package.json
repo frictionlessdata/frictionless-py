@@ -6,8 +6,8 @@
       "path": "capital-3.csv",
       "scheme": "file",
       "format": "csv",
-      "encoding": "utf-8",
       "mediatype": "text/csv",
+      "encoding": "utf-8",
       "schema": {
         "fields": [
           {
@@ -27,8 +27,8 @@
       "path": "country-3.csv",
       "scheme": "file",
       "format": "csv",
-      "encoding": "utf-8",
       "mediatype": "text/csv",
+      "encoding": "utf-8",
       "schema": {
         "fields": [
           {

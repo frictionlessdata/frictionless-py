@@ -15,8 +15,6 @@ class cell_convert(Step):
 
     type = "cell-convert"
 
-    # State
-
     value: Optional[Any] = None
     """Value to set in the field's cells"""
 

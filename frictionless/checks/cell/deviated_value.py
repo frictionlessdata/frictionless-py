@@ -21,8 +21,6 @@ class deviated_value(Check):
     type = "deviated-value"
     Errors = [errors.DeviatedValueError]
 
-    # State
-
     field_name: str
     """
     Name of the field to which the check will be applied.
@@ -31,7 +29,7 @@ class deviated_value(Check):
 
     interval: int = DEFAULT_INTERVAL
     """
-    Interval specifies number of standard deviation away from the mean. 
+    Interval specifies number of standard deviation away from the mean.
     The default value is 3.
     """
 

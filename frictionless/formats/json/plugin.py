@@ -1,7 +1,12 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from ...system import Plugin
+from ...detector import Detector
 from .control import JsonControl
 from .parsers import JsonParser, JsonlParser
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class JsonPlugin(Plugin):
@@ -15,12 +20,18 @@ class JsonPlugin(Plugin):
         elif resource.format in ["jsonl", "ndjson"]:
             return JsonlParser(resource)
 
-    def detect_resource(self, resource):
+    def detect_resource(self, resource: Resource):
         if resource.format in ["json", "jsonl", "ndjson"]:
-            resource.mediatype = f"text/{resource.format}"
+            resource.mediatype = resource.mediatype or f"text/{resource.format}"
+            if resource.format == "json":
+                resource.datatype = (
+                    resource.datatype
+                    or Detector.detect_metadata_type(resource.normpath)
+                    or "json"
+                )
             if resource.format in ["jsonl", "ndjson"]:
-                resource.type = "table"
+                resource.datatype = resource.datatype or "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "json":
             return JsonControl

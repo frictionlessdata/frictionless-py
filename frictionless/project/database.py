@@ -201,6 +201,7 @@ class Database:
                     self.records.c.type,
                     self.records.c.updated,
                     self.records.c.tableName,
+                    self.records.c.report,
                 )
             )
             items: List[IRecordItem] = []
@@ -211,6 +212,11 @@ class Database:
                     updated=row.updated.isoformat(),
                     tableName=row.tableName,
                 )
+                # https://github.com/frictionlessdata/application/issues/146
+                if row.report:
+                    report = json.loads(row.report)
+                    if report:
+                        item["errorCount"] = report["stats"]["errors"]
                 items.append(item)
             return items
 

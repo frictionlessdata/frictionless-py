@@ -5,11 +5,7 @@ script:
 
 # Getting Started
 
-```markdown remark type=info
-This documentation covers Frictionless Framework (v5). If you're interested in Frictionless Framework (v4) docs please follow [this link](https://v4.framework.frictionlessdata.io/docs/guides/guides-overview).
-```
-
-Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](/index.html).
+Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality.
 
 ## Installation
 

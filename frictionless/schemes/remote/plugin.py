@@ -17,6 +17,6 @@ class RemotePlugin(Plugin):
         if resource.scheme in settings.DEFAULT_SCHEMES:
             return RemoteLoader(resource)
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "remote":
             return RemoteControl

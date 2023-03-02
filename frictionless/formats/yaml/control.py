@@ -10,8 +10,6 @@ class YamlControl(Control):
 
     type = "yaml"
 
-    # State
-
     keys: Optional[List[str]] = None
     """
     Specifies the keys/columns to read from the resource.

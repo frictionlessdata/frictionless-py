@@ -109,7 +109,14 @@ class Project:
             return file
 
     def list_files(self) -> List[IFileItem]:
-        return self.filesystem.list_files()
+        records = self.database.list_records()
+        mapping = {record["path"]: record for record in records}
+        items = self.filesystem.list_files()
+        for item in items:
+            record = mapping.get(item["path"])
+            if record and "errorCount" in record:
+                item["errorCount"] = record["errorCount"]
+        return items
 
     def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
         source = path

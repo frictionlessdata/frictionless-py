@@ -1,9 +1,13 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from ...system import Plugin
 from .control import PandasControl
 from .parser import PandasParser
 from ...platform import platform
 from ... import helpers
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 # NOTE:
@@ -20,16 +24,16 @@ class PandasPlugin(Plugin):
         if resource.format == "pandas":
             return PandasParser(resource)
 
-    def detect_resource(self, resource):
+    def detect_resource(self, resource: Resource):
         if resource.data is not None:
             if helpers.is_type(resource.data, "DataFrame"):
-                resource.type = "table"
-                resource.scheme = ""
-                resource.format = "pandas"
-                resource.mediatype = "application/pandas"
-        elif resource.format == "pandas":
-            resource.data = platform.pandas.DataFrame()
+                resource.format = resource.format or "pandas"
+        if resource.format == "pandas":
+            if resource.data is None:
+                resource.data = platform.pandas.DataFrame()
+            resource.datatype = resource.datatype or "table"
+            resource.mediatype = resource.mediatype or "application/pandas"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "pandas":
             return PandasControl

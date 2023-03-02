@@ -15,8 +15,6 @@ class table_pivot(Step):
 
     type = "table-pivot"
 
-    # State
-
     f1: str
     """
     Field that makes the rows in the output pivot table.
@@ -34,7 +32,7 @@ class table_pivot(Step):
 
     aggfun: Any
     """
-    Function to process and create data in the output pivot table. 
+    Function to process and create data in the output pivot table.
     The function can be "sum", "max", "min", "len" etc.
     """
 

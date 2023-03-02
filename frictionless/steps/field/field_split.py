@@ -16,8 +16,6 @@ class field_split(Step):
 
     type = "field-split"
 
-    # State
-
     name: str
     """
     Name of the field to split.
@@ -30,7 +28,7 @@ class field_split(Step):
 
     pattern: str
     """
-    Pattern to split the field value, for example: "a". 
+    Pattern to split the field value, for example: "a".
     """
 
     preserve: bool = False

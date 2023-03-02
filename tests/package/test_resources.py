@@ -15,7 +15,11 @@ def test_package_resources():
         "resources": [
             {
                 "name": "name",
+                "type": "table",
                 "path": "table.csv",
+                "scheme": "file",
+                "format": "csv",
+                "mediatype": "text/csv",
             },
         ],
     }
@@ -82,7 +86,16 @@ def test_package_update_resource():
     package = Package({"resources": [{"name": "name", "data": data}]})
     resource = package.get_resource("name")
     resource.name = "newname"
-    assert package.to_descriptor() == {"resources": [{"name": "newname", "data": data}]}
+    assert package.to_descriptor() == {
+        "resources": [
+            {
+                "name": "newname",
+                "type": "table",
+                "data": data,
+                "format": "inline",
+            }
+        ]
+    }
 
 
 # Bugs
@@ -90,7 +103,6 @@ def test_package_update_resource():
 
 def test_package_resources_respect_layout_set_after_creation_issue_503():
     package = Package(resources=[Resource(path="data/table.csv")])
-    package.infer(sample=False)
     resource = package.get_resource("table")
     resource.dialect = Dialect(comment_rows=[3])
     assert resource.read_rows() == [{"id": 1, "name": "english"}]

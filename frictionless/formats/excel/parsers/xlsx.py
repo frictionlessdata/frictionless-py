@@ -50,7 +50,6 @@ class XlsxParser(Parser):
             if control.workbook_cache is not None and path in control.workbook_cache:
                 # TODO: rebase on using resource without system?
                 resource = Resource(path, scheme="file", format="xlsx")
-                resource.infer(sample=False)
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -64,7 +63,6 @@ class XlsxParser(Parser):
                 atexit.register(os.remove, target.name)
             # TODO: rebase on using resource without system?
             resource = Resource(target, scheme="stream", format="xlsx")
-            resource.infer(sample=False)
             loader = system.create_loader(resource)
             return loader.open()
 
@@ -93,9 +91,7 @@ class XlsxParser(Parser):
                 sheet = book.worksheets[control.sheet - 1]
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(
-                note=note % (self.resource.normpath, control.sheet)
-            )
+            error = errors.FormatError(note=note % (self.resource.place, control.sheet))
             raise FrictionlessException(error)
 
         # Fill merged cells
@@ -103,15 +99,15 @@ class XlsxParser(Parser):
             # NOTE:
             # We can try using an algorithm similiar to what XlsParser has
             # to support mergin cells in the read-only mode (now we need the write mode)
-            for merged_cell_range in list(sheet.merged_cells.ranges):
+            for merged_cell_range in list(sheet.merged_cells.ranges):  # type: ignore
                 merged_cell_range = str(merged_cell_range)
                 sheet.unmerge_cells(merged_cell_range)
                 merged_rows = platform.openpyxl.utils.rows_from_range(merged_cell_range)  # type: ignore
                 coordinates = list(chain.from_iterable(merged_rows))
-                value = sheet[coordinates[0]].value
+                value = sheet[coordinates[0]].value  # type: ignore
                 for coordinate in coordinates:
                     cell = sheet[coordinate]
-                    cell.value = value
+                    cell.value = value  # type: ignore
 
         # Stream data
         for cells in sheet.iter_rows():
@@ -125,7 +121,7 @@ class XlsxParser(Parser):
         # Calculate stats
         # TODO: remove when the proper implementation is in-place:
         # https://github.com/frictionlessdata/frictionless-py/issues/438
-        if self.resource.scheme == "file":
+        if self.resource.normpath and self.resource.scheme == "file":
             stat = os.stat(self.resource.normpath)
             self.resource.stats.bytes = stat.st_size
             md5 = hashlib.new("md5")

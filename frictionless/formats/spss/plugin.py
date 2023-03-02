@@ -1,7 +1,11 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from ...system import Plugin
 from .control import SpssControl
 from .parser import SpssParser
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 class SpssPlugin(Plugin):
@@ -13,10 +17,10 @@ class SpssPlugin(Plugin):
         if resource.format in ["sav", "zsav"]:
             return SpssParser(resource)
 
-    def detect_resource(self, resource):
+    def detect_resource(self, resource: Resource):
         if resource.format in ["sav", "zsav"]:
-            resource.type = "table"
+            resource.datatype = resource.datatype or "table"
 
-    def select_Control(self, type):
+    def select_control_class(self, type):
         if type == "spss":
             return SpssControl

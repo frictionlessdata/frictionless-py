@@ -1,5 +1,9 @@
 # Extension
 
+```markdown remark type=danger
+This feature is currently experimental. The API might change without notice
+```
+
 Frictionless is built on top of a powerful plugins system which is used internally and allows to extend the framework.
 
 ## Creating Plugin

@@ -10,8 +10,6 @@ class RemoteControl(Control):
 
     type = "remote"
 
-    # State
-
     http_timeout: int = settings.DEFAULT_HTTP_TIMEOUT
     """
     Specifies the time to wait, if the remote server

@@ -86,7 +86,10 @@ class Filesystem:
                     continue
                 path = self.get_secure_relpath(os.path.join(root, file))
                 type = self.get_filetype(path)
-                items.append(IFileItem(path=path, type=type))
+                item = IFileItem(path=path)
+                if type:
+                    item["type"] = type
+                items.append(item)
             for folder in folders:
                 if self.is_hidden_path(folder):
                     continue
@@ -121,7 +124,9 @@ class Filesystem:
             if self.is_folder(path):
                 type = "folder"
             path = self.get_secure_relpath(path)
-            file = IFileItem(path=path, type=type)
+            file = IFileItem(path=path)
+            if type:
+                file["type"] = type
             return file
 
     def rename_file(self, path: str, *, name: str) -> str:
@@ -175,30 +180,9 @@ class Filesystem:
         assert path != ""
         return path
 
-    # TODO: rework file type guessing
-    def get_filetype(self, path: str) -> str:
-        if path.endswith("datapackage.json"):
-            return "package"
-        elif path.endswith("resource.json"):
-            return "resource"
-        elif path.endswith("dialect.json"):
-            return "dialect"
-        elif path.endswith("schema.json"):
-            return "schema"
-        elif path.endswith("checklist.json"):
-            return "checklist"
-        elif path.endswith("pipeline.json"):
-            return "pipeline"
-        elif path.endswith("view.json"):
-            return "view"
-        elif path.endswith(("chart.json", "chart.vljson")):
-            return "chart"
-        elif path.endswith("view.sql"):
-            return "sql"
+    def get_filetype(self, path: str) -> Optional[str]:
         resource = Resource(path=path)
-        resource.infer(sample=False)
-        assert resource.type
-        return resource.type
+        return resource.datatype
 
     def get_filename(self, path: str) -> str:
         return os.path.basename(path)

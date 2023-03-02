@@ -16,8 +16,6 @@ class table_melt(Step):
 
     type = "table-melt"
 
-    # State
-
     field_name: str
     """
     Field name which will be use to melt table. It will keep

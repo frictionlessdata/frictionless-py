@@ -15,8 +15,6 @@ class row_ungroup(Step):
 
     type = "row-ungroup"
 
-    # State
-
     selection: str
     """
     Specifies whether to return first or last row. The value
@@ -25,14 +23,14 @@ class row_ungroup(Step):
 
     group_name: str
     """
-    Field name which will be used to group the rows. And it returns the 
+    Field name which will be used to group the rows. And it returns the
     first or last row with each group based on the 'selection'.
     """
 
     value_name: Optional[str] = None
     """
-    If the selection is set to "min" or "max", the rows will be grouped by 
-    "group_name" field and min or max value will be then selected from the 
+    If the selection is set to "min" or "max", the rows will be grouped by
+    "group_name" field and min or max value will be then selected from the
     "value_name" field.
     """
 

@@ -14,8 +14,6 @@ class InlineControl(Control):
 
     type = "inline"
 
-    # State
-
     keys: Optional[List[str]] = None
     """
     Specify the keys/columns to read from the resource.

@@ -14,7 +14,6 @@ class ErdMapper(Mapper):
     # Write
 
     def write_package(self, package: Package) -> str:
-        package.infer()
         template_dir = os.path.join(
             os.path.dirname(__file__), "../../assets/templates/erd"
         )

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ...system import Plugin
 from .control import CsvControl
 from .parser import CsvParser
@@ -19,9 +19,9 @@ class CsvPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format in ["csv", "tsv"]:
-            resource.type = "table"
-            resource.mediatype = f"text/{resource.format}"
+            resource.datatype = resource.datatype or "table"
+            resource.mediatype = resource.mediatype or f"text/{resource.format}"
 
-    def select_Control(self, type: str):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "csv":
             return CsvControl

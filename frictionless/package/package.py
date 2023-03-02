@@ -1,8 +1,9 @@
 from __future__ import annotations
 import os
+import attrs
 from pathlib import Path
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, List, Any, Union
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -15,13 +16,16 @@ from .. import fields
 from . import methods
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IProfile
+    from ..checklist import Checklist
+    from ..pipeline import Pipeline
+    from ..interfaces import IFilterFunction, IProcessFunction
+    from ..interfaces import IDescriptor
     from ..dialect import Dialect, Control
     from ..detector import Detector
-    from ..catalog import Catalog
+    from ..catalog import Dataset
 
 
-# TODO: think about package/resource/schema/etc extension mechanism (e.g. FiscalPackage)
+@attrs.define(kw_only=True)
 class Package(Metadata):
     """Package representation
 
@@ -36,67 +40,125 @@ class Package(Metadata):
 
     """
 
-    analyze = methods.analyze
-    describe = methods.describe
-    extract = methods.extract
-    transform = methods.transform
-    validate = methods.validate
+    source: Optional[Any] = attrs.field(default=None, kw_only=False)
+    """
+    # TODO: add docs
+    """
 
-    def __init__(
-        self,
-        source: Optional[Any] = None,
-        control: Optional[Control] = None,
-        *,
-        # Standard
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        homepage: Optional[str] = None,
-        profiles: List[Union[IProfile, str]] = [],
-        licenses: List[dict] = [],
-        sources: List[dict] = [],
-        contributors: List[dict] = [],
-        keywords: List[str] = [],
-        image: Optional[str] = None,
-        version: Optional[str] = None,
-        created: Optional[str] = None,
-        resources: List[Union[Resource, str]] = [],
-        # Software
-        basepath: Optional[str] = None,
-        detector: Optional[Detector] = None,
-        dialect: Optional[Dialect] = None,
-        catalog: Optional[Catalog] = None,
-    ):
-        # Store state
-        self.name = name
-        self.title = title
-        self.description = description
-        self.profiles = profiles.copy()
-        self.licenses = licenses.copy()
-        self.sources = sources.copy()
-        self.homepage = homepage
-        self.contributors = contributors.copy()
-        self.keywords = keywords.copy()
-        self.image = image
-        self.version = version
-        self.created = created
-        self.basepath = basepath
-        self.catalog = catalog
+    control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
 
-        # Add resources
-        self.resources = []
-        for resource in resources:
-            resource = self.add_resource(resource)
-            if detector:
-                resource.detector = detector
-            if dialect:
-                resource.dialect = dialect
+    name: Optional[str] = None
+    """
+    A short url-usable (and preferably human-readable) name.
+    This MUST be lower-case and contain only alphanumeric characters
+    along with “.”, “_” or “-” characters.
+    """
 
-        # Handled by the create hook
-        assert source is None
-        assert control is None
+    type: ClassVar[Union[str, None]] = None
+    """
+    Type of the package
+    """
 
-    # TODO: support list of paths as resource paths?
+    title: Optional[str] = None
+    """
+    A Package title according to the specs
+    It should a human-oriented title of the resource.
+    """
+
+    description: Optional[str] = None
+    """
+    A Package description according to the specs
+    It should a human-oriented description of the resource.
+    """
+
+    homepage: Optional[str] = None
+    """
+    A URL for the home on the web that is related to this package.
+    For example, github repository or ckan dataset address.
+    """
+
+    profile: Optional[str] = None
+    """
+    A fully-qualified URL that points directly to a JSON Schema
+    that can be used to validate the descriptor
+    """
+
+    licenses: List[dict] = attrs.field(factory=list)
+    """
+    The license(s) under which the package is provided.
+    """
+
+    sources: List[dict] = attrs.field(factory=list)
+    """
+    The raw sources for this data package.
+    It MUST be an array of Source objects.
+    Each Source object MUST have a title and
+    MAY have path and/or email properties.
+    """
+
+    contributors: List[dict] = attrs.field(factory=list)
+    """
+    The people or organizations who contributed to this package.
+    It MUST be an array. Each entry is a Contributor and MUST be an object.
+    A Contributor MUST have a title property and MAY contain
+    path, email, role and organization properties.
+    """
+
+    keywords: List[str] = attrs.field(factory=list)
+    """
+    An Array of string keywords to assist users searching.
+    For example, ['data', 'fiscal']
+    """
+
+    image: Optional[str] = None
+    """
+    An image to use for this data package.
+    For example, when showing the package in a listing.
+    """
+
+    version: Optional[str] = None
+    """
+    A version string identifying the version of the package.
+    It should conform to the Semantic Versioning requirements and
+    should follow the Data Package Version pattern.
+    """
+
+    created: Optional[str] = None
+    """
+    The datetime on which this was created.
+    The datetime must conform to the string formats for RFC3339 datetime,
+    """
+
+    resources: List[Resource] = attrs.field(factory=list)
+    """
+    A list of resource descriptors.
+    It can be dicts or Resource instances
+    """
+
+    dataset: Optional[Dataset] = None
+    """
+    It returns reference to dataset of which catalog the package is part of. If package
+    is not part of any catalog, then it is set to None.
+    """
+
+    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
+    """
+    # TODO: add docs
+    """
+
+    _dialect: Optional[Dialect] = attrs.field(default=None, alias="dialect")
+    """
+    # TODO: add docs
+    """
+
+    _detector: Optional[Detector] = attrs.field(default=None, alias="detector")
+    """
+    # TODO: add docs
+    """
+
     @classmethod
     def __create__(
         cls,
@@ -105,137 +167,66 @@ class Package(Metadata):
         control: Optional[Control] = None,
         **options,
     ):
+        # Normalize
+        if isinstance(source, Path):
+            source = str(source)
+        if isinstance(source, Mapping):
+            source = {key: value for key, value in source.items()}
+
+        # Source/Control
         if source is not None or control is not None:
-            # Path
-            if isinstance(source, Path):
-                source = str(source)
+            # Adapter
+            if not helpers.is_expandable_source(source):
+                adapter = system.create_adapter(source, control=control)
+                if adapter:
+                    package = adapter.read_package()
+                    if package:
+                        return package
 
-            # Mapping
-            elif isinstance(source, Mapping):
-                source = {key: value for key, value in source.items()}
-
+        # Source
+        if source is not None:
             # Directory
-            elif helpers.is_directory_source(source):
+            if helpers.is_directory_source(source):
                 for name in ["datapackage.json", "datapackage.yaml"]:
                     path = os.path.join(source, name)  # type: ignore
                     if os.path.isfile(path):
-                        return Package.from_descriptor(path)
+                        return cls.from_descriptor(path)
 
             # Expandable
-            elif helpers.is_expandable_source(source):
+            if helpers.is_expandable_source(source):
                 options["resources"] = []
                 basepath = options.get("basepath")
                 for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
                     options["resources"].append(Resource(path=path))
-                return Package.from_options(**options)
-
-            # Adapter
-            adapter = system.create_adapter(source, control=control)
-            if adapter:
-                package = adapter.read_package()
-                if package:
-                    return package
+                return cls.from_options(**options)
 
             # Descriptor
-            if helpers.is_descriptor_source(source):
-                return Package.from_descriptor(source, **options)  # type: ignore
+            return cls.from_descriptor(source, **options)  # type: ignore
 
-            # Path/data
-            options["resources"] = [Resource(source)]
-            return Package(**options)
+    def __attrs_post_init__(self):
+        for resource in self.resources:
+            resource.package = self
+            if self._dialect:
+                resource.dialect = self._dialect
+            if self._detector:
+                resource.detector = self._detector
 
-    # State
+    @property
+    def basepath(self) -> Optional[str]:
+        """
+        A basepath of the package
+        The normpath of the resource is joined `basepath` and `/path`
+        """
+        if self._basepath:
+            return self._basepath
+        if self.dataset:
+            return self.dataset.basepath
 
-    name: Optional[str]
-    """
-    A short url-usable (and preferably human-readable) name.
-    This MUST be lower-case and contain only alphanumeric characters
-    along with “.”, “_” or “-” characters.
-    """
+    @basepath.setter
+    def basepath(self, value: Optional[str]):
+        self._basepath = value
 
-    title: Optional[str]
-    """
-    A Package title according to the specs
-    It should a human-oriented title of the resource.
-    """
-
-    description: Optional[str]
-    """
-    A Package description according to the specs
-    It should a human-oriented description of the resource.
-    """
-
-    homepage: Optional[str]
-    """
-    A URL for the home on the web that is related to this package.
-    For example, github repository or ckan dataset address.
-    """
-
-    profiles: List[Union[IProfile, str]]
-    """
-    A strings identifying the profiles of this descriptor.
-    For example, `fiscal-data-package`.
-    """
-
-    licenses: List[dict]
-    """
-    The license(s) under which the package is provided.
-    """
-
-    sources: List[dict]
-    """
-    The raw sources for this data package.
-    It MUST be an array of Source objects.
-    Each Source object MUST have a title and
-    MAY have path and/or email properties.
-    """
-
-    contributors: List[dict]
-    """
-    The people or organizations who contributed to this package.
-    It MUST be an array. Each entry is a Contributor and MUST be an object.
-    A Contributor MUST have a title property and MAY contain
-    path, email, role and organization properties.
-    """
-
-    keywords: List[str]
-    """
-    An Array of string keywords to assist users searching.
-    For example, ['data', 'fiscal']
-    """
-
-    image: Optional[str]
-    """
-    An image to use for this data package.
-    For example, when showing the package in a listing.
-    """
-
-    version: Optional[str]
-    """
-    A version string identifying the version of the package.
-    It should conform to the Semantic Versioning requirements and
-    should follow the Data Package Version pattern.
-    """
-
-    created: Optional[str]
-    """
-    The datetime on which this was created.
-    The datetime must conform to the string formats for RFC3339 datetime,
-    """
-
-    resources: List[Resource]
-    """
-    A list of resource descriptors.
-    It can be dicts or Resource instances
-    """
-
-    catalog: Optional[Catalog]
-    """
-    It returns reference to catalog of which the package is part of. If package
-    is not part of any catalog, then it is set to None.
-    """
-
-    # Props
+    # Resources
 
     @property
     def resource_names(self) -> List[str]:
@@ -247,30 +238,10 @@ class Package(Metadata):
         """Return names of resources"""
         return [resource.path for resource in self.resources if resource.path is not None]
 
-    @property
-    def basepath(self) -> Optional[str]:
-        """
-        A basepath of the package
-        The normpath of the resource is joined `basepath` and `/path`
-        """
-        if self.__basepath:
-            return self.__basepath
-        if self.catalog:
-            return self.catalog.basepath
-
-    @basepath.setter
-    def basepath(self, value: Optional[str]):
-        self.__basepath = value
-
-    # Resources
-
     def add_resource(self, resource: Union[Resource, str]) -> Resource:
         """Add new resource to the package"""
         if isinstance(resource, str):
             resource = Resource.from_descriptor(resource, basepath=self.basepath)
-        if resource.name and self.has_resource(resource.name):
-            error = errors.PackageError(note=f'resource "{resource.name}" already exists')
-            raise FrictionlessException(error)
         self.resources.append(resource)
         resource.package = self
         return resource
@@ -322,28 +293,27 @@ class Package(Metadata):
         """Remove all the resources"""
         self.resources = []
 
-    # Infer
-
-    def infer(self, *, sample=True, stats=False):
-        """Infer package's attributes
-
-        Parameters:
-            sample? (bool): open files and infer from a sample (default: True)
-            stats? (bool): stream files completely and infer stats
-        """
-
-        # General
-        for resource in self.resources:
-            resource.infer(sample=sample, stats=stats)
-
-        # Deduplicate names
+    def deduplicate_resoures(self):
         if len(self.resource_names) != len(set(self.resource_names)):
             seen_names = []
-            for index, name in enumerate(self.resource_names):
+            for index, resource in enumerate(self.resources):
+                name = resource.name
                 count = seen_names.count(name) + 1
                 if count > 1:
                     self.resources[index].name = "%s%s" % (name, count)
                 seen_names.append(name)
+
+    # Infer
+
+    # TODO: allow cherry-picking stats for adding to a descriptor
+    def infer(self, *, stats: bool = False) -> None:
+        """Infer metadata
+
+        Parameters:
+            stats: stream files completely and infer stats
+        """
+        for resource in self.resources:
+            resource.infer(stats=stats)
 
     # Publish
 
@@ -383,6 +353,143 @@ class Package(Metadata):
             result.append([context.get(prop) for prop in spec])
         return result
 
+    # Dereference
+
+    def dereference(self):
+        """Dereference underlaying metadata
+
+        If some of underlaying metadata is provided as a string
+        it will replace it by the metadata object
+        """
+        for resource in self.resources:
+            resource.dereference()
+
+    # Analyze
+
+    def analyze(self, *, detailed=False):
+        """Analyze the resources of the package
+
+        This feature is currently experimental, and its API may change
+        without warning.
+
+        Parameters:
+            detailed? (bool): detailed analysis
+
+        Returns:
+            dict: dict of resource analysis
+
+        """
+        analisis = {}
+        for resource in self.resources:
+            analisis[resource.name] = resource.analyze(detailed=detailed)
+        return analisis
+
+    # Describe
+
+    @classmethod
+    def describe(
+        cls,
+        source: Optional[Any] = None,
+        *,
+        stats: bool = False,
+        **options,
+    ):
+        """Describe the given source as a package
+
+        Parameters:
+            source (any): data source
+            stats? (bool): if `True` infer resource's stats
+            **options (dict): Package constructor options
+
+        Returns:
+            Package: data package
+
+        """
+
+        # Support one fle path
+        if not helpers.is_expandable_source(source):
+            if isinstance(source, (str, Path)):
+                source = [source]
+
+        # Create package
+        package = cls.from_options(source, **options)
+        package.infer(stats=stats)
+        return package
+
+    # Extract
+
+    def extract(
+        self,
+        *,
+        limit_rows: Optional[int] = None,
+        process: Optional[IProcessFunction] = None,
+        filter: Optional[IFilterFunction] = None,
+        stream: bool = False,
+    ):
+        """Extract package rows
+
+        Parameters:
+            filter? (bool): a row filter function
+            process? (func): a row processor function
+            stream? (bool): return a row streams instead of loading into memory
+
+        Returns:
+            {path: Row[]}: a dictionary of arrays/streams of rows
+
+        """
+        tables = {}
+        for resource in self.resources:
+            tables[resource.name] = resource.extract(
+                limit_rows=limit_rows,
+                process=process,
+                filter=filter,
+                stream=stream,
+            )
+        return tables
+
+    # Transform
+
+    def transform(self: Package, pipeline: Pipeline):
+        """Transform package
+
+        Parameters:
+            source (any): data source
+            steps (Step[]): transform steps
+            **options (dict): Package constructor options
+
+        Returns:
+            Package: the transform result
+        """
+        return methods.transform(self, pipeline)
+
+    # Validate
+
+    def validate(
+        self: Package,
+        checklist: Optional[Checklist] = None,
+        *,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+        limit_rows: Optional[int] = None,
+        parallel: bool = False,
+    ):
+        """Validate package
+
+        Parameters:
+            checklist? (checklist): a Checklist object
+            parallel? (bool): run in parallel if possible
+
+        Returns:
+            Report: validation report
+
+        """
+        return methods.validate(
+            self,
+            checklist,
+            limit_errors=limit_errors,
+            limit_rows=limit_rows,
+            parallel=parallel,
+        )
+
     # Convert
 
     def to_copy(self, **options):
@@ -390,7 +497,7 @@ class Package(Metadata):
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],
             basepath=self.basepath,
-            catalog=self.catalog,
+            dataset=self.dataset,
             **options,
         )
 
@@ -425,10 +532,11 @@ class Package(Metadata):
         "required": ["resources"],
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
             "homepage": {"type": "string"},
-            "profiles": {"type": "array"},
+            "profile": {"type": "string"},
             "licenses": {
                 "type": "array",
                 "items": {
@@ -473,14 +581,18 @@ class Package(Metadata):
             "created": {"type": "string"},
             "resources": {
                 "type": "array",
-                "items": {"type": ["object", "string"]},
+                "items": {"type": "object"},
             },
         },
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "resources":
+    def metadata_select_class(cls, type):
+        return system.select_package_class(type)
+
+    @classmethod
+    def metadata_select_property_class(cls, name):
+        if name == "resources":
             return Resource
 
     @classmethod
@@ -490,9 +602,18 @@ class Package(Metadata):
         # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
         if profile:
-            if profile not in ["data-package", "tabular-data-package"]:
-                descriptor.setdefault("profiles", [])
-                descriptor["profiles"].append(profile)
+            if profile == "fiscal-data-package":
+                descriptor[
+                    "profile"
+                ] = "https://specs.frictionlessdata.io/schemas/fiscal-data-package.json"
+            elif profile not in ["data-package", "tabular-data-package"]:
+                descriptor["profile"] = profile
+
+        # Profiles (framework/v5)
+        profiles = descriptor.pop("profiles", None)
+        if isinstance(profiles, list) and profiles:
+            if isinstance(profiles[0], str):
+                descriptor["profile"] = profiles[0]
 
     @classmethod
     def metadata_validate(cls, descriptor: IDescriptor):
@@ -503,7 +624,7 @@ class Package(Metadata):
 
         # Security
         if not system.trusted:
-            keys = ["resources", "profiles"]
+            keys = ["profile"]
             for key in keys:
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]
@@ -540,17 +661,19 @@ class Package(Metadata):
         for name in ["contributors", "sources"]:
             for item in descriptor.get(name, []):
                 if item.get("email"):
-                    field = fields.StringField(format="email")
+                    field = fields.StringField(name="email", format="email")
                     _, note = field.read_cell(item.get("email"))
                     if note:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
 
-        # Profiles
-        profiles = descriptor.get("profiles", [])
-        for profile in profiles:
-            if profile in ["data-package", "tabular-data-package"]:
-                continue
+        # Profile
+        profile = descriptor.get("profile")
+        if profile and profile not in ["data-package", "tabular-data-package"]:
+            if profile == "fiscal-data-package":
+                profile = (
+                    "https://specs.frictionlessdata.io/schemas/fiscal-data-package.json"
+                )
             yield from Metadata.metadata_validate(
                 descriptor,
                 profile=profile,

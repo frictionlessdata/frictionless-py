@@ -2,6 +2,22 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.8
+
+- Implemented Implemented `catalog/dataset/package/resource.deference` (#1451)
+
+## v5.7
+
+- Various architectural and standards-compatibility improvements (minor breaking changes):
+    - Improved type detection mechanism (including remote descriptors)
+    - Added `resources` module including `File/Text/Json/TableResource`
+    - Deprecated `resource.type` argument -- use the classes above
+    - Changed `catalog.packages[]` to `catalog.datasets[].package`
+    - Made `resource.schema` optional (`resource.has_schema` is removed)
+    - Made `resource.normpath` optional (`resource.normdata` is removed)
+    - Standards-compatability improvements: profile, stats
+    - Renamed `system/plugin.select_Check/etc` to `system/plugin.select_check_class/etc`
+
 ## v5.6
 
 - Added support for `sqlalchemy@2` (#1427)

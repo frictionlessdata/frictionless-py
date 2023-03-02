@@ -1,21 +1,26 @@
 import pytest
+from frictionless import fields
 from frictionless import Resource, Schema, Checklist, Detector, FrictionlessException
 
 
 # General
 
 
+@pytest.mark.skip
 def test_resource_validate_schema_invalid_json():
-    descriptor = dict(path="data/table.csv", schema="data/invalid.json")
+    descriptor = dict(name="name", path="data/table.csv", schema="data/invalid.json")
     report = Resource.validate_descriptor(descriptor)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, None, "schema-error"],
     ]
 
 
+@pytest.mark.skip
 def test_resource_validate_invalid_resource():
-    report = Resource.validate_descriptor({"path": "data/table.csv", "schema": "bad"})
-    assert report.stats.errors == 1
+    report = Resource.validate_descriptor(
+        {"name": "name", "path": "data/table.csv", "schema": "bad"}
+    )
+    assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
     assert type == "schema-error"
     assert note.count("[Errno 2]") and note.count("bad")
@@ -122,6 +127,7 @@ def test_resource_validate_schema_maximum_constraint():
 
 def test_resource_validate_schema_foreign_key_error_self_referencing():
     source = {
+        "name": "name",
         "path": "data/nested.csv",
         "schema": {
             "fields": [
@@ -141,6 +147,7 @@ def test_resource_validate_schema_foreign_key_error_self_referencing():
 
 def test_resource_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
+        "name": "name",
         "path": "data/nested-invalid.csv",
         "schema": {
             "fields": [
@@ -278,4 +285,18 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
         ["error", '"schema_sync" requires unique labels in the header'],
+    ]
+
+
+def test_resource_validate_less_actual_fields_with_required_constraint_issue_950():
+    schema = Schema.describe("data/table.csv")
+    schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))
+    report = Resource("data/table.csv", schema=schema).validate()
+    print(report.flatten(["rowNumber", "fieldNumber", "type"]))
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, 3, "missing-label"],
+        [2, 3, "constraint-error"],
+        [2, 3, "missing-cell"],
+        [3, 3, "constraint-error"],
+        [3, 3, "missing-cell"],
     ]

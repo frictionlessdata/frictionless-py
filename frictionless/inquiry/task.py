@@ -16,11 +16,10 @@ from .. import helpers
 from .. import errors
 
 
-@attrs.define
+# TODO: rebase back on using resource?
+@attrs.define(kw_only=True)
 class InquiryTask(Metadata):
     """Inquiry task representation."""
-
-    # State
 
     name: Optional[str] = None
     """
@@ -34,6 +33,16 @@ class InquiryTask(Metadata):
     Type of the source to be validated such as "package", "resource" etc.
     """
 
+    title: Optional[str] = None
+    """
+    A human-oriented title for the Inquiry.
+    """
+
+    description: Optional[str] = None
+    """
+    A brief description of the Inquiry.
+    """
+
     path: Optional[str] = None
     """
     Path to the data source.
@@ -41,13 +50,13 @@ class InquiryTask(Metadata):
 
     scheme: Optional[str] = None
     """
-    Scheme for loading the file (file, http, ...). If not set, it'll be 
+    Scheme for loading the file (file, http, ...). If not set, it'll be
     inferred from `source`.
     """
 
     format: Optional[str] = None
     """
-    File source's format (csv, xls, ...). If not set, it'll be 
+    File source's format (csv, xls, ...). If not set, it'll be
     inferred from `source`.
     """
 
@@ -58,8 +67,8 @@ class InquiryTask(Metadata):
 
     mediatype: Optional[str] = None
     """
-    Mediatype/mimetype of the resource e.g. “text/csv”, or “application/vnd.ms-excel”.  
-    Mediatypes are maintained by the Internet Assigned Numbers Authority (IANA) in a 
+    Mediatype/mimetype of the resource e.g. “text/csv”, or “application/vnd.ms-excel”.
+    Mediatypes are maintained by the Internet Assigned Numbers Authority (IANA) in a
     media type registry.
     """
 
@@ -75,13 +84,13 @@ class InquiryTask(Metadata):
 
     innerpath: Optional[str] = None
     """
-    Path within the compressed file. It defaults to the first file in the archive 
+    Path within the compressed file. It defaults to the first file in the archive
     (if the source is an archive).
     """
 
     dialect: Optional[Dialect] = None
     """
-    Specific set of formatting parameters applied while reading data source. 
+    Specific set of formatting parameters applied while reading data source.
     The parameters are set as a Dialect class. For more information, please
     check the Dialect Class documentation.
     """
@@ -93,8 +102,8 @@ class InquiryTask(Metadata):
 
     checklist: Optional[Checklist] = None
     """
-    Checklist class with a set of validation checks to be applied to the 
-    data source being read. For more information, please check the 
+    Checklist class with a set of validation checks to be applied to the
+    data source being read. For more information, please check the
     Validation Checks documentation.
     """
 
@@ -164,6 +173,8 @@ class InquiryTask(Metadata):
         "properties": {
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
             "path": {"type": "string"},
             "scheme": {"type": "string"},
             "format": {"type": "string"},
@@ -181,12 +192,12 @@ class InquiryTask(Metadata):
     }
 
     @classmethod
-    def metadata_specify(cls, *, type=None, property=None):
-        if property == "dialect":
+    def metadata_select_property_class(cls, name):
+        if name == "dialect":
             return Dialect
-        elif property == "schema":
+        elif name == "schema":
             return Schema
-        elif property == "checklist":
+        elif name == "checklist":
             return Checklist
 
     @classmethod

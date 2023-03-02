@@ -14,8 +14,6 @@ class field_move(Step):
 
     type = "field-move"
 
-    # State
-
     name: str
     """
     Field name to move.

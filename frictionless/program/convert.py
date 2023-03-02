@@ -43,7 +43,7 @@ def program_convert(
 
     # Initialize metadata
     metadata = None
-    metadata_type = Detector.detect_descriptor(source)
+    metadata_type = Detector.detect_metadata_type(source)
     try:
         if metadata_type == "package":
             metadata = Package.from_descriptor(source)
@@ -59,8 +59,6 @@ def program_convert(
             metadata = Report.from_descriptor(source)
         elif metadata_type == "inquiry":
             metadata = Inquiry.from_descriptor(source)
-        elif metadata_type == "detector":
-            metadata = Detector.from_descriptor(source)
         elif metadata_type == "pipeline":
             metadata = Pipeline.from_descriptor(source)
     except Exception as exception:
