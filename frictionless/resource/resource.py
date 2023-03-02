@@ -1,12 +1,9 @@
 from __future__ import annotations
-import os
 import json
 import attrs
 import pprint
 import warnings
 import builtins
-from pathlib import Path
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
@@ -260,7 +257,9 @@ class Resource(Metadata):
 
         # Path/data
         if source is not None:
-            path = helpers.join_basepath(source, basepath=basepath)
+            path = source
+            if isinstance(source, str):
+                path = helpers.join_basepath(source, basepath=basepath)
             metadata_type = Detector.detect_metadata_type(path)
             if metadata_type != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
@@ -275,39 +274,40 @@ class Resource(Metadata):
         basepath: Optional[str] = None,
         **options,
     ):
-        # Source/control
-        if source is not None or control is not None:
+        # Source
+        if source is not None:
             if cls is not Resource:
                 note = 'Providing "source" argument is only possible to "Resource" class'
                 raise FrictionlessException(note)
             res = cls.from_source(source, control=control, basepath=basepath, **options)
             if not res:
-                res = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
+                res = cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
             return res
+
+        # Control
+        if control is not None:
+            dialect = options.pop("dialect", None)
+            if dialect is None:
+                dialect = control.to_dialect()
+            elif control not in dialect.controls:
+                dialect.add_control(control)
+            options["dialect"] = dialect
+            return cls(basepath=basepath, **options)
 
         # Routing
         if cls is Resource:
-            resource = RoutingResource(control=control, **options)
+            resource = RoutingResource(basepath=basepath, **options)
             Class = system.select_resource_class(datatype=resource.datatype)
-            resource = Class(control=control, **options)
+            resource = Class(basepath=basepath, **options)
             return resource
 
     def __attrs_post_init__(self):
+        self.stats = ResourceStats()
+
         # Datatype
         datatype = type(self).datatype
         if isinstance(datatype, str):
             self.datatype = datatype
-
-        # Control
-        if self.control is not None:
-            if self.dialect is None:
-                self.dialect = self.control.to_dialect()
-            elif self.control not in self.dialect.controls:
-                self.dialect.add_control(self.control)
-            self.control = None
-
-        # Stats
-        self.stats = ResourceStats()
 
         # Internal
         self.__loader: Optional[Loader] = None

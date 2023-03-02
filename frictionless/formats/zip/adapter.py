@@ -41,10 +41,7 @@ class ZipAdapter(Adapter):
                 tempdir = tempfile.mkdtemp()
                 zip.extractall(tempdir)
                 atexit.register(shutil.rmtree, tempdir)
-                if not innerpath:
-                    innerpath = "datapackage.json"
-                    if not os.path.isfile(os.path.join(tempdir, innerpath)):
-                        return None
+                innerpath = innerpath or "datapackage.json"
             descriptor = os.path.join(tempdir, innerpath)
         return Package.from_descriptor(descriptor)
 

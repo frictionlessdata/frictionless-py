@@ -1,11 +1,7 @@
 from __future__ import annotations
-import os
 import attrs
 from pathlib import Path
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
-
-from sqlalchemy.engine import base
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -171,23 +167,6 @@ class Package(Metadata):
         packagify: bool = True,
     ) -> Optional[Package]:
         source = helpers.normalize_source(source)
-        normsource = source
-        if isinstance(source, str):
-            normsource = helpers.join_basepath(source, basepath=basepath)
-
-        # Directory
-        if normsource is not None and helpers.is_directory_source(normsource):
-            name = "datapackage.json"
-            path = os.path.join(normsource, name)  # type: ignore
-            if os.path.isfile(path):
-                return cls.from_descriptor(path, basepath=basepath)
-
-        # Expandable
-        if source is not None and helpers.is_expandable_source(normsource):
-            package = cls()
-            for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
-                package.add_resource(Resource(path=path))
-            return package
 
         # Adapter
         if source is not None or control is not None:
@@ -344,7 +323,7 @@ class Package(Metadata):
         Returns:
             Any: Response from the target
         """
-        adapter = system.create_adapter(target, control=control)
+        adapter = system.create_adapter(target, control=control, packagify=True)
         if not adapter:
             raise FrictionlessException(f"Not supported target: {target} or control")
         response = adapter.write_package(self.to_copy())

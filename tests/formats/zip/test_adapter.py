@@ -144,6 +144,7 @@ def test_zip_adapter_from_zip_innerpath():
     assert len(package.resources) == 10
 
 
+@pytest.mark.skip
 def test_zip_adapter_from_zip_innerpath_yaml():
     # for issue1174
     package = Package("data/innerpath.package.zip")

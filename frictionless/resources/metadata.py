@@ -24,7 +24,7 @@ class ResourceResource(MetadataResource):
     datatype = "resource"
 
     def read_resource(self) -> Resource:
-        return self.to_copy()
+        return self
 
 
 class DialectResource(MetadataResource):

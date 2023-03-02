@@ -13,7 +13,9 @@ class LocalPlugin(Plugin):
 
     def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if source is not None:
-            path = helpers.join_basepath(source, basepath=basepath)
+            path = source
+            if isinstance(source, str):
+                path = helpers.join_basepath(source, basepath=basepath)
             if helpers.is_directory_source(path) or helpers.is_expandable_source(path):
                 return LocalAdapter(source, basepath=basepath)
 
