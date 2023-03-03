@@ -1,5 +1,4 @@
 from __future__ import annotations
-import sys
 import typer
 import json as pyjson
 from rich.table import Table
@@ -213,7 +212,7 @@ def program_extract(
         # Empty
         if not items:
             view.add_column("Empty")
-            view.add_row(f"No rows found")
+            view.add_row("No rows found")
 
         # General
         else:

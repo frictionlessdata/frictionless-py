@@ -3,11 +3,6 @@ from ...system import Plugin
 from urllib.parse import urlparse
 from .control import GithubControl
 from .adapter import GithubAdapter
-from typing import TYPE_CHECKING, Optional
-
-
-if TYPE_CHECKING:
-    from ... import portals
 
 
 class GithubPlugin(Plugin):

@@ -1,5 +1,4 @@
 import os
-import types
 from pathlib import Path
 from frictionless import Resource, system, resources
 

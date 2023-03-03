@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Any
-from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:

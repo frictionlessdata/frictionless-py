@@ -1,4 +1,3 @@
-import types
 from frictionless import Package
 
 
