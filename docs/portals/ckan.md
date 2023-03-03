@@ -3,7 +3,7 @@
 With CKAN portal feature you can load and publish packages from a
 [CKAN](https://ckan.org), an open-source Data Management System.
 
-# Installation
+## Installation
 
 To install this plugin you need to do:
 
@@ -12,7 +12,7 @@ pip install frictionless[ckan] --pre
 pip install 'frictionless[ckan]' --pre # for zsh shell
 ```
 
-# Reading a Package
+## Reading a Package
 
 To import a Dataset from a CKAN instance as a Frictionless Package you can do
 as below:
@@ -68,7 +68,7 @@ package = Package('bolsa-familia-pagamentos', control=ckan_control)
 This will download the dataset and all its resources, saving the resources'
 original schemas on `original_schema`.
 
-# Publishing a package
+## Publishing a package
 
 To publish a Package to a CKAN instance you will need an API key from an CKAN's
 user that has permission to create datasets. This key can be passed to CKAN
@@ -83,7 +83,7 @@ package = Package(...) # Create your package
 package.publish(control=ckan_control)
 ```
 
-# Reading a Catalog
+## Reading a Catalog
 
 You can download a list of CKAN datasets using the Catalog.
 
@@ -91,7 +91,7 @@ You can download a list of CKAN datasets using the Catalog.
 
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br')
 c = Catalog(control=ckan_control)
 ```
@@ -106,7 +106,7 @@ datasets you can do as:
 
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', num_packages=1000)
 c = Catalog(control=ckan_control)
 ```
@@ -122,7 +122,7 @@ pass the parameter `ignore_package_errors=True`:
 
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', ignore_package_errors=True, num_packages=1000)
 c = Catalog(control=ckan_control)
 ```
@@ -144,12 +144,12 @@ You can see in the example above that 1000 packages were download from a total
 
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', ignore_package_erros=True, results_offset=1000)
 c = Catalog(control=ckan_control)
 ```
 
-This will download 1000 packages after the the first 1000 packages. 
+This will download 1000 packages after the the first 1000 packages.
 
 ## Fetching the datasets from an Organization or Group
 
@@ -162,7 +162,7 @@ as follows:
 ```python tabs=Python
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', organization_name='agencia-espacial-brasileira-aeb')
 c = Catalog(control=ckan_control)
 ```
@@ -173,7 +173,7 @@ the parameter `group_id` to the CKAN Control as:
 ```python tabs=Python
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', group_id='ciencia-informacao-e-comunicacao')
 c = Catalog(control=ckan_control)
 ```
@@ -187,12 +187,12 @@ You can pass the search parameters as the parameter `search` to CKAN Control.
 ```python tabs=Python
 import frictionless
 from frictionless import portals, Catalog
-    
+
 ckan_control = portals.CkanControl(baseurl='https://legado.dados.gov.br', search={'q': 'name:bolsa*'})
 c = Catalog(control=ckan_control)
 ```
 
-# Reference
+## Reference
 
 ```yaml reference
 references:
