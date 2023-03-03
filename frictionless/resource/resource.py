@@ -273,6 +273,8 @@ class Resource(Metadata):
         basepath: Optional[str] = None,
         **options,
     ):
+        source = helpers.normalize_source(source)
+
         # Source
         if source is not None:
             if cls is not Resource:

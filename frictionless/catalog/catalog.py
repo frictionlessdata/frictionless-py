@@ -89,6 +89,8 @@ class Catalog(Metadata):
         basepath: Optional[str] = None,
         **options,
     ):
+        source = helpers.normalize_source(source)
+
         # Source/control
         if source is not None or control is not None:
             if cls is not Catalog:

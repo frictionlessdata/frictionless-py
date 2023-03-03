@@ -42,11 +42,13 @@ def test_to_dict_with_json_null_values_issue_519():
     process = lambda row: row.to_dict(json=True)
     resource = Resource(source, format="csv")
     result = resource.extract(process=process)
-    assert result == [
-        {"value": "2020-01-01"},
-        {"value": None},
-        {"value": "2020-03-03"},
-    ]
+    assert result == {
+        "memory": [
+            {"value": "2020-01-01"},
+            {"value": None},
+            {"value": "2020-03-03"},
+        ]
+    }
 
 
 def test_to_list_with_json_null_values_issue_519():
@@ -54,11 +56,13 @@ def test_to_list_with_json_null_values_issue_519():
     process = lambda row: row.to_list(json=True)
     resource = Resource(source, format="csv")
     result = resource.extract(process=process)
-    assert result == [
-        ["2020-01-01"],
-        [None],
-        ["2020-03-03"],
-    ]
+    assert result == {
+        "memory": [
+            ["2020-01-01"],
+            [None],
+            ["2020-03-03"],
+        ]
+    }
 
 
 def test_decimal_to_json():
