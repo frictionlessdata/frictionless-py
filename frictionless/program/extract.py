@@ -17,6 +17,10 @@ if TYPE_CHECKING:
     from ..interfaces import IFilterFunction, IProcessFunction
 
 
+DEFAULT_MAX_FIELDS = 10
+DEFAULT_MAX_ROWS = 10
+
+
 @program.command(name="extract")
 def program_extract(
     # Resource
@@ -146,6 +150,11 @@ def program_extract(
     if csv:
         process = lambda row: row.to_dict(csv=True)
 
+    # Create limit
+    if limit_rows is None:
+        if not any([yaml, json, csv]):
+            limit_rows = DEFAULT_MAX_ROWS
+
     # Extract data
     try:
         data = resource.extract(
@@ -192,20 +201,25 @@ def program_extract(
                 typer.secho(helpers.stringify_csv_string(item.values(), **options))  # type: ignore
         raise typer.Exit()
 
+    # TODO: rework
     # Default mode
-    max_fields = 10
     for title, items in data.items():
         if items:
             view = Table(title=title)
             labels = list(items[0].keys())
-            for label in labels[:max_fields]:
+            for label in labels[:DEFAULT_MAX_FIELDS]:
                 view.add_column(label)
-            if len(labels) > max_fields:
+            if len(labels) > DEFAULT_MAX_FIELDS:
                 view.add_column("...")
             for item in items:
                 values = list(map(str, item.values()))
-                row = values[:max_fields]
-                if len(values) > max_fields:
+                row = values[:DEFAULT_MAX_FIELDS]
+                if len(values) > DEFAULT_MAX_FIELDS:
+                    row.append("...")
+                view.add_row(*row)
+            if limit_rows == DEFAULT_MAX_ROWS:
+                row = ["..."] * min(len(labels), DEFAULT_MAX_FIELDS)
+                if len(labels) > DEFAULT_MAX_FIELDS:
                     row.append("...")
                 view.add_row(*row)
             console.print(view)
