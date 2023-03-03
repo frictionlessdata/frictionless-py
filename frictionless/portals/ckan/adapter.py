@@ -66,6 +66,9 @@ class CkanAdapter(Adapter):
             try:
                 descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
                 descriptor.pop("type", None)
+                descriptor.pop("sources", None)
+                for res in descriptor.get("resources", []):
+                    res.pop("fields", None)
                 package = Package.from_descriptor(descriptor)
                 dataset = Dataset(name=package.name, package=package)  # type: ignore
                 catalog.add_dataset(dataset)
@@ -94,6 +97,9 @@ class CkanAdapter(Adapter):
         response = make_ckan_request(endpoint, **args, params=params)
         descriptor = self.mapper["ckan_to_fric"].dataset(response["result"])
         descriptor.pop("type", None)
+        descriptor.pop("sources", None)
+        for res in descriptor.get("resources", []):
+            res.pop("fields", None)
 
         try:
             package = Package.from_descriptor(descriptor)
