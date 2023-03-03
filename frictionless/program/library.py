@@ -1,3 +1,4 @@
+import sys
 from typing import Optional, Any
 from ..detector import Detector
 from ..platform import platform
@@ -8,8 +9,10 @@ from .. import helpers
 # Source
 
 
-# TODO: add stdin here
-def create_source(source: Any) -> Any:
+def create_source(source: Any, *, path: Optional[str] = None) -> Any:
+    if source is None and path is None:
+        if not sys.stdin.isatty():
+            return sys.stdin.buffer.read()
     if isinstance(source, list) and len(source) == 1:
         return source[0]
     return source

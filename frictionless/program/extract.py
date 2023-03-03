@@ -10,7 +10,7 @@ from ..platform import platform
 from ..system import system
 from .program import program
 from .. import helpers
-from . import factory
+from . import library
 from . import common
 
 if TYPE_CHECKING:
@@ -84,19 +84,15 @@ def program_extract(
     if standards:
         system.standards = standards  # type: ignore
 
-    # Support stdin
-    if not source and not path:
-        if not sys.stdin.isatty():
-            source = sys.stdin.buffer.read()  # type: ignore
-
-    # Validate input
-    if not source and not path:
+    # Create source
+    source = library.create_source(source, path=path)
+    if source is None and path is None:
         message = 'Providing "source" or "path" is required'
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
     # Create dialect
-    dialect_obj = factory.create_dialect(
+    dialect_obj = library.create_dialect(
         descriptor=dialect,
         header_rows=header_rows,
         header_join=header_join,
@@ -109,7 +105,7 @@ def program_extract(
     )
 
     # Create detector
-    detector_obj = factory.create_detector(
+    detector_obj = library.create_detector(
         buffer_size=buffer_size,
         sample_size=sample_size,
         field_type=field_type,
@@ -122,7 +118,7 @@ def program_extract(
 
     # Create resource
     resource = Resource(
-        source=factory.create_source(source),
+        source=library.create_source(source),
         name=name,
         path=path,
         scheme=scheme,
