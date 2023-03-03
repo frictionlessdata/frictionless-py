@@ -10,5 +10,5 @@ def program_explore(
     # Options
     debug: bool = common.debug,
 ):
-    """Query data"""
+    """Explore data"""
     pass
