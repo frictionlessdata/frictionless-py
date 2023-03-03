@@ -130,21 +130,19 @@ class Detector:
 
     # TODO: remove static method?
     @staticmethod
-    def detect_metadata_type(source: Any) -> Optional[str]:
+    def detect_metadata_type(
+        source: Any, *, format: Optional[str] = None
+    ) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
-
-        # Normalize
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
+        source = helpers.normalize_source(source)
 
         # String
         if isinstance(source, str):
             for type, item in settings.METADATA_TRAITS.items():
                 if source.endswith(tuple(item["names"])):
                     return type
-            if source.endswith(("json", "yaml")):
+            format = format or helpers.parse_scheme_and_format(source)[1]
+            if format in ["json", "yaml"]:
                 try:
                     size = settings.DEFAULT_BUFFER_SIZE * 10
                     source = Metadata.metadata_retrieve(source, size=size)

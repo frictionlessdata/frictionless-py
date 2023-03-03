@@ -259,8 +259,8 @@ class Resource(Metadata):
             path = source
             if isinstance(source, str):
                 path = helpers.join_basepath(source, basepath=basepath)
-            metadata_type = Detector.detect_metadata_type(path)
-            if metadata_type != "resource":
+            type = Detector.detect_metadata_type(path, format=options.get("format"))
+            if type != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
                 return cls(control=control, basepath=basepath, **options)
 
@@ -282,6 +282,7 @@ class Resource(Metadata):
                 raise FrictionlessException(note)
             res = cls.from_source(source, control=control, basepath=basepath, **options)
             if not res:
+                options.pop("format", None)
                 res = cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
             return res
 
