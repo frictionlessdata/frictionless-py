@@ -25,9 +25,7 @@ class TableResource(Resource):
     ) -> IExtractedRows:
         if not process:
             process = lambda row: row.to_dict()
-        if name and self.name != name:
-            raise FrictionlessException(f"There is no resource with name: {name}")
         data = self.read_rows(size=limit_rows)
         data = builtins.filter(filter, data) if filter else data
         data = (process(row) for row in data) if process else data
-        return {self.name: list(data)}
+        return {name or self.name: list(data)}

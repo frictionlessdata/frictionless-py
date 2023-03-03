@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+from ..resource import Resource
 from ..catalog import Catalog
 from .json import JsonResource
 
 if TYPE_CHECKING:
-    from ..resource import Resource
+    from ..interfaces import IFilterFunction, IProcessFunction, IExtractedRows
 
 
 class MetadataResource(JsonResource):
@@ -13,6 +14,8 @@ class MetadataResource(JsonResource):
 
 class CatalogResource(MetadataResource):
     datatype = "catalog"
+
+    # Read
 
     def read_catalog(self) -> Catalog:
         descriptor = self.data if self.data is not None else self.path
@@ -23,8 +26,27 @@ class CatalogResource(MetadataResource):
 class ResourceResource(MetadataResource):
     datatype = "resource"
 
+    # Extract
+
+    def extract(
+        self,
+        *,
+        name: Optional[str] = None,
+        filter: Optional[IFilterFunction] = None,
+        process: Optional[IProcessFunction] = None,
+        limit_rows: Optional[int] = None,
+    ) -> IExtractedRows:
+        resource = self.read_resource()
+        return resource.extract(
+            name=name, filter=filter, process=process, limit_rows=limit_rows
+        )
+
+    # Read
+
     def read_resource(self) -> Resource:
-        return self
+        descriptor = self.data if self.data is not None else self.path
+        assert isinstance(descriptor, (str, dict))
+        return Resource.from_descriptor(descriptor, basepath=self.basepath)
 
 
 class DialectResource(MetadataResource):

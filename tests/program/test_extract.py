@@ -253,7 +253,7 @@ def test_program_extract_invalid_rows_extract_dialect_sheet_option():
         program, "extract data/sheet2.xls --sheet Sheet2 --json --invalid"
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == []
+    assert json.loads(actual.stdout) == {"sheet2": []}
 
 
 def test_program_extract_single_resource():
@@ -261,10 +261,12 @@ def test_program_extract_single_resource():
         program, "extract data/datapackage.json --resource-name number-two --json"
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 1, "name": "中国人"},
-        {"id": 2, "name": "english"},
-    ]
+    assert json.loads(actual.stdout) == {
+        "number-two": [
+            {"id": 1, "name": "中国人"},
+            {"id": 2, "name": "english"},
+        ]
+    }
 
 
 def test_program_extract_single_invalid_resource():
@@ -272,24 +274,22 @@ def test_program_extract_single_invalid_resource():
         program, "extract data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count(
-        'The data package has an error: resource "number-twoo" does not exist'
-    )
+    assert actual.stdout.count('There is no resource with name "number-twoo"')
 
 
 def test_program_extract_single_valid_resource_invalid_package():
     actual = runner.invoke(
-        program, "extract data/datapackagees.json --resource-name number-two"
+        program, "extract data/bad/datapackage.json --resource-name number-two"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("No such file or directory: 'data/datapackagees.json'")
+    assert actual.stdout.count("No such file or directory: 'data/bad/datapackage.json'")
 
 
 def test_program_extract_single_resource_yaml():
     actual = runner.invoke(
         program, "extract data/datapackage.json --resource-name number-two --yaml"
     )
-    expect = extract("data/datapackage.json", resource_name="number-two")
+    expect = extract("data/datapackage.json", name="number-two")
     assert actual.exit_code == 0
     assert yaml.safe_load(actual.stdout) == expect
 
@@ -346,7 +346,7 @@ def test_extract_description_option_issue_1362():
     descriptor = "https://umweltanwendungen.schleswig-holstein.de/pegel/jsp/frictionless.jsp?mstnr=114069&thema=w"
     actual = runner.invoke(
         program,
-        f"extract --descriptor '{descriptor}' --json --limit-rows 1",
+        f"extract '{descriptor}' --type resource --json --limit-rows 1 --name name",
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout)[0]["Wasserstand"] == 690
+    assert json.loads(actual.stdout)["name"][0]["Wasserstand"] == 690

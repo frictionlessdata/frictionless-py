@@ -25,6 +25,7 @@ DEFAULT_MAX_ROWS = 10
 def program_extract(
     # Resource
     source: List[str] = common.source,
+    name: str = common.resource_name,
     type: str = common.type,
     path: str = common.path,
     scheme: str = common.scheme,
@@ -54,7 +55,6 @@ def program_extract(
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
     # Command
-    name: str = common.resource_name,
     valid: bool = common.valid_rows,
     invalid: bool = common.invalid_rows,
     limit_rows: int = common.limit_rows,
@@ -123,6 +123,7 @@ def program_extract(
     # Create resource
     resource = Resource(
         source=factory.create_source(source),
+        name=name,
         path=path,
         scheme=scheme,
         format=format,
@@ -140,14 +141,14 @@ def program_extract(
     filter: Optional[IFilterFunction] = None
     if valid:
         filter = lambda row: row.valid
-    if invalid:
+    elif invalid:
         filter = lambda row: not row.valid
 
     # Create processor
     process: Optional[IProcessFunction] = None
     if yaml or json:
         process = lambda row: row.to_dict(json=True)
-    if csv:
+    elif csv:
         process = lambda row: row.to_dict(csv=True)
 
     # Create limit
@@ -195,6 +196,7 @@ def program_extract(
             labels = list(items[0].keys())
             if dialect and keep_delimiter:
                 options = resource.dialect.get_control("csv").to_descriptor()
+                options.pop("type", None)
             for index, item in enumerate(items):
                 if index == 0:
                     typer.secho(helpers.stringify_csv_string(labels, **options))  # type: ignore

@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 class PackageResource(JsonResource):
     datatype = "package"
 
+    # Extract
+
     def extract(
         self,
         *,
@@ -22,6 +24,8 @@ class PackageResource(JsonResource):
         return package.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
+
+    # Read
 
     def read_package(self) -> Package:
         descriptor = self.data if self.data is not None else self.path

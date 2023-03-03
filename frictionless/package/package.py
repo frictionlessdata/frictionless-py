@@ -435,8 +435,10 @@ class Package(Metadata):
         """
         data: IExtractedRows = {}
         if name is not None and name not in self.resource_names:
-            raise FrictionlessException(f"There is no resource with name: {name}")
+            raise FrictionlessException(f'There is no resource with name "{name}"')
         for resource in self.resources:
+            if name is not None and name != resource.name:
+                continue
             item = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
             data.update(item)
         return data
