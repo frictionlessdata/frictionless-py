@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..pipeline import Pipeline
     from ..interfaces import IFilterFunction, IProcessFunction
-    from ..interfaces import IDescriptor
+    from ..interfaces import IDescriptor, IExtractedRows
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Dataset
@@ -417,31 +417,26 @@ class Package(Metadata):
     def extract(
         self,
         *,
-        limit_rows: Optional[int] = None,
-        process: Optional[IProcessFunction] = None,
         filter: Optional[IFilterFunction] = None,
-        stream: bool = False,
-    ):
-        """Extract package rows
+        process: Optional[IProcessFunction] = None,
+        limit_rows: Optional[int] = None,
+    ) -> IExtractedRows:
+        """Extract rows
 
         Parameters:
-            filter? (bool): a row filter function
-            process? (func): a row processor function
-            stream? (bool): return a row streams instead of loading into memory
+            filter: row filter function
+            process: row processor function
+            limit_rows: limit amount of rows to this number
 
         Returns:
-            {path: Row[]}: a dictionary of arrays/streams of rows
+            extracted rows indexed by resource name
 
         """
-        tables = {}
+        data: IExtractedRows = {}
         for resource in self.resources:
-            tables[resource.name] = resource.extract(
-                limit_rows=limit_rows,
-                process=process,
-                filter=filter,
-                stream=stream,
-            )
-        return tables
+            item = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
+            data.update(item)
+        return data
 
     # Transform
 

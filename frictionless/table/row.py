@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Dict, Any
 from itertools import zip_longest
 from functools import cached_property
 from ..platform import platform
@@ -221,7 +222,7 @@ class Row(dict):
         # Return
         return result
 
-    def to_dict(self, *, json=False, types=None):
+    def to_dict(self, *, json=False, types=None) -> Dict[str, Any]:
         """
         Parameters:
             json (bool): make data types compatible with JSON format

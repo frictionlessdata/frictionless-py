@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
-    from ..interfaces import IFilterFunction, IProcessFunction
+    from ..interfaces import IFilterFunction, IProcessFunction, IExtractedRows
     from ..formats.sql import IOnRow, IOnProgress
     from ..interfaces import ICallbackFunction
 
@@ -1002,38 +1002,23 @@ class Resource(Metadata):
     def extract(
         self,
         *,
-        limit_rows: Optional[int] = None,
-        process: Optional[IProcessFunction] = None,
         filter: Optional[IFilterFunction] = None,
-        stream: bool = False,
-    ):
-        """Extract resource rows
+        process: Optional[IProcessFunction] = None,
+        limit_rows: Optional[int] = None,
+    ) -> IExtractedRows:
+        """Extract rows
 
         Parameters:
-            process? (func): a row processor function
-            filter? (bool): a row filter function
-            stream? (bool): whether to stream data
+            filter: row filter function
+            process: row processor function
+            limit_rows: limit amount of rows to this number
 
         Returns:
-            Row[]: an array/stream of rows
+            extracted rows indexed by resource name
 
         """
-
-        # Stream
-        def read_row_stream():
-            with self:
-                row_count = 0
-                for row in self.row_stream:  # type: ignore
-                    row_count += 1
-                    yield row
-                    if limit_rows and limit_rows <= row_count:
-                        break
-
-        # Return
-        data = read_row_stream()
-        data = builtins.filter(filter, data) if filter else data
-        data = (process(row) for row in data) if process else data
-        return data if stream else list(data)
+        note = f"Extracting rows is not supported for data type: {self.datatype}"
+        raise FrictionlessException(note)
 
     # Index
 
