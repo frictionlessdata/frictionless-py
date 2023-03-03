@@ -222,7 +222,7 @@ class Row(dict):
         # Return
         return result
 
-    def to_dict(self, *, json=False, types=None) -> Dict[str, Any]:
+    def to_dict(self, *, csv=False, json=False, types=None) -> Dict[str, Any]:
         """
         Parameters:
             json (bool): make data types compatible with JSON format
@@ -236,6 +236,8 @@ class Row(dict):
         result = {name: self[name] for name in self.__field_info["names"]}
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
+        if types is None and csv:
+            types = platform.frictionless_formats.CsvParser.supported_types
 
         # Covert
         if types is not None:

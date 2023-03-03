@@ -1,6 +1,8 @@
 from __future__ import annotations
 import builtins
 from typing import TYPE_CHECKING, Optional
+
+from frictionless.exception import FrictionlessException
 from ..resource import Resource
 
 if TYPE_CHECKING:
@@ -16,12 +18,15 @@ class TableResource(Resource):
     def extract(
         self,
         *,
+        name: Optional[str] = None,
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
     ) -> IExtractedRows:
         if not process:
             process = lambda row: row.to_dict()
+        if name and self.name != name:
+            raise FrictionlessException(f"There is no resource with name: {name}")
         data = self.read_rows(size=limit_rows)
         data = builtins.filter(filter, data) if filter else data
         data = (process(row) for row in data) if process else data

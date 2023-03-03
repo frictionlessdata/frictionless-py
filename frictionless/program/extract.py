@@ -9,6 +9,7 @@ from ..resource import Resource
 from ..platform import platform
 from ..system import system
 from .program import program
+from .. import helpers
 from . import factory
 from . import common
 
@@ -49,7 +50,7 @@ def program_extract(
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
     # Command
-    resource_name: str = common.resource_name,
+    name: str = common.resource_name,
     valid: bool = common.valid_rows,
     invalid: bool = common.invalid_rows,
     limit_rows: int = common.limit_rows,
@@ -59,7 +60,10 @@ def program_extract(
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
+    # TODO: review
     keep_delimiter: bool = common.keep_delimiter,
+    # TODO: deprecate
+    resource_name: str = common.resource_name,
 ):
     """
     Extract rows from a data source.
@@ -68,6 +72,7 @@ def program_extract(
     Default output format is tabulated with a front matter. Output will be utf-8 encoded.
     """
     console = Console()
+    name = name or resource_name
 
     # Setup system
     if trusted:
@@ -136,12 +141,19 @@ def program_extract(
 
     # Create processor
     process: Optional[IProcessFunction] = None
-    if json or yaml:
+    if yaml or json:
         process = lambda row: row.to_dict(json=True)
+    if csv:
+        process = lambda row: row.to_dict(csv=True)
 
     # Extract data
     try:
-        data = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
+        data = resource.extract(
+            name=name,
+            filter=filter,
+            process=process,
+            limit_rows=limit_rows,
+        )
     except Exception as exception:
         if debug:
             console.print_exception(show_locals=True)
@@ -164,23 +176,27 @@ def program_extract(
     # TODO: rework
     # Csv mode
     if csv:
+        if len(data) > 1:
+            note = 'For the "csv" mode you need to provide a resource "name'
+            typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
+            raise typer.Exit(1)
         options = {}
-        if dialect and keep_delimiter:
-            options = resource.dialect.get_control("csv").to_descriptor()
-        for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
-            for index, row in enumerate(rows):
+        items = list(data.values())[0]
+        if items:
+            labels = list(items[0].keys())
+            if dialect and keep_delimiter:
+                options = resource.dialect.get_control("csv").to_descriptor()
+            for index, item in enumerate(items):
                 if index == 0:
-                    typer.secho(helpers.stringify_csv_string(row.field_names, **options))  # type: ignore
-                typer.secho(row.to_str(**options))  # type: ignore
-            if number < len(normdata):  # type: ignore
-                typer.secho("")
+                    typer.secho(helpers.stringify_csv_string(labels, **options))  # type: ignore
+                typer.secho(helpers.stringify_csv_string(item.values(), **options))  # type: ignore
         raise typer.Exit()
 
     # Default mode
     max_fields = 10
-    for name, items in data.items():
+    for title, items in data.items():
         if items:
-            view = Table(title=name)
+            view = Table(title=title)
             labels = list(items[0].keys())
             for label in labels[:max_fields]:
                 view.add_column(label)

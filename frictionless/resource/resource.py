@@ -3,7 +3,6 @@ import json
 import attrs
 import pprint
 import warnings
-import builtins
 from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
@@ -1002,6 +1001,7 @@ class Resource(Metadata):
     def extract(
         self,
         *,
+        name: Optional[str] = None,
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
@@ -1009,6 +1009,7 @@ class Resource(Metadata):
         """Extract rows
 
         Parameters:
+            name: extract only resource having this name
             filter: row filter function
             process: row processor function
             limit_rows: limit amount of rows to this number

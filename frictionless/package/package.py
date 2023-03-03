@@ -417,6 +417,7 @@ class Package(Metadata):
     def extract(
         self,
         *,
+        name: Optional[str] = None,
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
@@ -433,6 +434,8 @@ class Package(Metadata):
 
         """
         data: IExtractedRows = {}
+        if name is not None and name not in self.resource_names:
+            raise FrictionlessException(f"There is no resource with name: {name}")
         for resource in self.resources:
             item = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
             data.update(item)
