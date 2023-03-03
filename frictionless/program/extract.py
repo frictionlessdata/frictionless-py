@@ -2,30 +2,33 @@ from __future__ import annotations
 import sys
 import typer
 import json as pyjson
-from typing import List
+from rich.table import Table
+from rich.console import Console
+from typing import TYPE_CHECKING, List, Optional
+from ..resource import Resource
 from ..platform import platform
-from ..detector import Detector
-from ..dialect import Dialect
-from ..actions import extract
 from ..system import system
 from .program import program
-from .. import formats
-from .. import helpers
+from . import factory
 from . import common
+
+if TYPE_CHECKING:
+    from ..interfaces import IFilterFunction, IProcessFunction
 
 
 @program.command(name="extract")
 def program_extract(
-    # Source
+    # Resource
     source: List[str] = common.source,
     type: str = common.type,
-    # File
     path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
-    encoding: str = common.encoding,
-    innerpath: str = common.innerpath,
     compression: str = common.compression,
+    innerpath: str = common.innerpath,
+    encoding: str = common.encoding,
+    basepath: str = common.basepath,
+    schema: str = common.schema,
     # Dialect
     dialect: str = common.dialect,
     header_rows: str = common.header_rows,
@@ -36,8 +39,6 @@ def program_extract(
     table: str = common.table,
     keys: str = common.keys,
     keyed: bool = common.keyed,
-    # Schema
-    schema: str = common.schema,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -47,8 +48,7 @@ def program_extract(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
-    # Software
-    basepath: str = common.basepath,
+    # Command
     resource_name: str = common.resource_name,
     valid: bool = common.valid_rows,
     invalid: bool = common.invalid_rows,
@@ -59,15 +59,15 @@ def program_extract(
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
-    descriptor: str = common.descriptor,
     keep_delimiter: bool = common.keep_delimiter,
 ):
     """
-    Extract a data source.
+    Extract rows from a data source.
 
     Based on the inferred data source type it will return resource or package data.
     Default output format is tabulated with a front matter. Output will be utf-8 encoded.
     """
+    console = Console()
 
     # Setup system
     if trusted:
@@ -76,130 +76,97 @@ def program_extract(
         system.standards = standards  # type: ignore
 
     # Support stdin
-    is_stdin = False
-    if not source and not path and not descriptor:
+    if not source and not path:
         if not sys.stdin.isatty():
-            is_stdin = True
             source = [sys.stdin.buffer.read()]  # type: ignore
 
     # Validate input
-    if not source and not path and not descriptor:
+    if not source and not path:
         message = 'Providing "source" or "path" is required'
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
-    # Prepare source
-    def prepare_source():
-        return list(source) if len(source) > 1 else (source[0] if source else None)
+    # Create dialect
+    dialect_obj = factory.create_dialect(
+        descriptor=dialect,
+        header_rows=header_rows,
+        header_join=header_join,
+        comment_char=comment_char,
+        comment_rows=comment_rows,
+        sheet=sheet,
+        table=table,
+        keys=keys,
+        keyed=keyed,
+    )
 
-    # Prepare dialect
-    def prepare_dialect():
-        dialect_descriptor = helpers.parse_json_string(dialect)
-        if dialect_descriptor:
-            return Dialect.from_descriptor(dialect_descriptor)
-        controls = []
-        if sheet:
-            controls.append(formats.ExcelControl(sheet=sheet))
-        elif table:
-            controls.append(formats.SqlControl(table=table))
-        elif keys or keyed:
-            controls.append(
-                formats.JsonControl.from_options(
-                    keys=helpers.parse_csv_string(keys),
-                    keyed=keyed,
-                )
-            )
-        dialect_obj = Dialect.from_options(
-            header_rows=helpers.parse_csv_string(header_rows, convert=int),
-            header_join=header_join,
-            comment_char=comment_char,
-            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
-            controls=controls,
-        )
-        if dialect_obj.to_descriptor():
-            return dialect_obj
+    # Create detector
+    detector_obj = factory.create_detector(
+        buffer_size=buffer_size,
+        sample_size=sample_size,
+        field_type=field_type,
+        field_names=field_names,
+        field_confidence=field_confidence,
+        field_float_numbers=field_float_numbers,
+        field_missing_values=field_missing_values,
+        schema_sync=schema_sync,
+    )
 
-    # Prepare detector
-    def prepare_detector():
-        return Detector(
-            buffer_size=buffer_size,
-            sample_size=sample_size,
-            field_type=field_type,
-            field_names=helpers.parse_csv_string(field_names),
-            field_confidence=field_confidence,
-            field_float_numbers=field_float_numbers,
-            field_missing_values=helpers.parse_csv_string(field_missing_values),  # type: ignore
-            schema_sync=schema_sync,
-        )
+    # Create resource
+    resource = Resource(
+        source,
+        path=path,
+        scheme=scheme,
+        format=format,
+        datatype=type or "",
+        compression=compression,
+        innerpath=innerpath,
+        encoding=encoding,
+        dialect=dialect_obj,
+        schema=schema,
+        basepath=basepath,
+        detector=detector_obj,
+    )
 
-    # Prepare process
-    def prepare_process():
-        if json or yaml:
-            return lambda row: row.to_dict(json=True)
+    # Create filter
+    filter: Optional[IFilterFunction] = None
+    if valid:
+        filter = lambda row: row.valid
+    if invalid:
+        filter = lambda row: not row.valid
 
-    # Prepare filter
-    def prepare_filter():
-        if valid:
-            return lambda row: row.valid
-        if invalid:
-            return lambda row: not row.valid
-
-    # Prepare options
-    def prepare_options():
-        return dict(
-            type=type,
-            # Standard
-            path=path,
-            scheme=scheme,
-            format=format,
-            encoding=encoding,
-            innerpath=innerpath,
-            compression=compression,
-            dialect=prepare_dialect(),
-            schema=schema,
-            # Software
-            basepath=basepath,
-            detector=prepare_detector(),
-            # Action
-            descriptor=descriptor,
-            resource_name=resource_name,
-            limit_rows=limit_rows,
-            process=prepare_process(),
-            filter=prepare_filter(),
-        )
+    # Create processor
+    process: Optional[IProcessFunction] = None
+    if json or yaml:
+        process = lambda row: row.to_dict(json=True)
 
     # Extract data
     try:
-        data = extract(prepare_source(), **prepare_options())
+        data = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        if debug:
+            console.print_exception(show_locals=True)
             raise typer.Exit(1)
-        raise
+        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
 
-    # Normalize data
-    normdata = data
-    if isinstance(data, list):
-        normdata = {prepare_source(): data}  # type: ignore
-
-    # Return JSON
-    if json:
-        content = pyjson.dumps(data, indent=2, ensure_ascii=False)
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return YAML
+    # Yaml mode
     if yaml:
         content = platform.yaml.safe_dump(data, allow_unicode=True).strip()
         typer.secho(content)
         raise typer.Exit()
 
-    # Return CSV
+    # Json mode
+    if json:
+        content = pyjson.dumps(data, indent=2, ensure_ascii=False)
+        typer.echo(content)
+        raise typer.Exit()
+
     # TODO: rework
+    # Csv mode
     if csv:
         options = {}
         if dialect and keep_delimiter:
-            options = (prepare_dialect() or Dialect()).to_dict().get("csv")
+            options = resource.dialect.get_control("csv").to_descriptor()
         for number, rows in enumerate(normdata.values(), start=1):  # type: ignore
             for index, row in enumerate(rows):
                 if index == 0:
@@ -209,20 +176,20 @@ def program_extract(
                 typer.secho("")
         raise typer.Exit()
 
-    # Return default
-    for number, (name, rows) in enumerate(normdata.items(), start=1):  # type: ignore
-        if is_stdin:
-            name = "stdin"
-        prefix = "data"
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {name}", bold=True)
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho("")
-        subdata = helpers.rows_to_data(rows)
-        if len(subdata) <= 0:
-            valid_text = "valid" if valid else "invalid"
-            typer.secho(str(f"No {valid_text} rows"))
-            continue
-        typer.secho(str(platform.petl.util.vis.lookall(subdata, vrepr=str, style="simple")))  # type: ignore
-        if number < len(normdata):  # type: ignore
-            typer.secho("")
+    # Default mode
+    max_fields = 10
+    for name, items in data.items():
+        if items:
+            view = Table(title=name)
+            labels = list(items[0].keys())
+            for label in labels[:max_fields]:
+                view.add_column(label)
+            if len(labels) > max_fields:
+                view.add_column("...")
+            for item in items:
+                values = list(map(str, item.values()))
+                row = values[:max_fields]
+                if len(values) > max_fields:
+                    row.append("...")
+                view.add_row(*row)
+            console.print(view)

@@ -152,6 +152,7 @@ class Metadata(metaclass=Metaclass):
 
     # Convert
 
+    # TODO: remove
     @classmethod
     def from_options(cls, *args, **options) -> Self:
         return cls(*args, **helpers.remove_non_values(options))

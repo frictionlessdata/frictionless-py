@@ -138,25 +138,25 @@ def program_describe(
             raise typer.Exit(1)
         raise
 
-    # Return JSON
-    if json:
-        output = metadata.to_json()
-        typer.secho(output)
-        raise typer.Exit()
-
-    # Return YAML
+    # Yaml mode
     if yaml:
         output = metadata.to_yaml().strip()
         typer.secho(output)
         raise typer.Exit()
 
-    # Return Markdown
+    # Json mode
+    if json:
+        output = metadata.to_json()
+        typer.secho(output)
+        raise typer.Exit()
+
+    # Markdown mode
     if markdown:
         output = metadata.to_markdown().strip()
         typer.secho(output)
         raise typer.Exit()
 
-    # Return default
+    # Default mode
     typer.secho("")
     typer.secho(metadata.to_yaml().strip())
     typer.secho("")

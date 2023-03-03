@@ -14,6 +14,7 @@ import textwrap
 import stringcase
 from copy import deepcopy
 from pathlib import Path
+from typing import List, TypeVar, Type
 from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
@@ -346,6 +347,7 @@ def parse_descriptors_string(string):
     return descriptors
 
 
+# TODO: repalce by the typed version
 def parse_csv_string(string, *, convert: type = str, fallback=False):
     if string is None:
         return None
@@ -361,6 +363,27 @@ def parse_csv_string(string, *, convert: type = str, fallback=False):
                 pass
             result.append(cell)
         return result
+
+
+T = TypeVar("T", int, str)
+
+
+def parse_csv_string_typed(
+    string: str, *, convert: Type[T] = str, fallback=False
+) -> List[T]:
+    reader = csv.reader(io.StringIO(string), delimiter=",")
+    result = []
+    for row in reader:
+        for cell in row:
+            try:
+                cell = convert(cell)
+            except ValueError:
+                if not fallback:
+                    raise
+                pass
+            result.append(cell)
+        break
+    return result
 
 
 def stringify_csv_string(cells, **options):
