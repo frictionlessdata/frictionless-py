@@ -69,6 +69,8 @@ class CkanAdapter(Adapter):
                 descriptor.pop("sources", None)
                 for res in descriptor.get("resources", []):
                     res.pop("fields", None)
+                    if "format" in res:
+                        res["format"] = res["format"].lower()
                 package = Package.from_descriptor(descriptor)
                 dataset = Dataset(name=package.name, package=package)  # type: ignore
                 catalog.add_dataset(dataset)
@@ -100,6 +102,8 @@ class CkanAdapter(Adapter):
         descriptor.pop("sources", None)
         for res in descriptor.get("resources", []):
             res.pop("fields", None)
+            if "format" in res:
+                res["format"] = res["format"].lower()
 
         try:
             package = Package.from_descriptor(descriptor)
@@ -118,8 +122,6 @@ class CkanAdapter(Adapter):
 
         for resource in package.resources:
             resource.name = helpers.slugify(resource.name)
-            if resource.format:
-                resource.format = resource.format.lower()
 
         return package
 

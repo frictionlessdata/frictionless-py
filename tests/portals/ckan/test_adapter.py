@@ -9,11 +9,12 @@ from frictionless.exception import FrictionlessException
 
 OUTPUT = {
     "name": "dicionario-de-dados",
-    "type": "file",
+    "type": "text",
     "description": "Pagamentos",
     "path": "https://www.portaltransparencia.gov.br/pagina-interna/603397-dicionario-de-dados-bolsa-familia-pagamentos",
     "scheme": "https",
     "format": "html",
+    "mediatype": "text/html",
     "hash": "",
     "package_id": "f63dd0f4-fa56-45ec-811b-4509e6b54643",
     "created": "2018-11-21T12:39:43.066625",
