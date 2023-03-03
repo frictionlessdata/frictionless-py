@@ -439,7 +439,7 @@ class Package(Metadata):
         for resource in self.resources:
             if name is not None and name != resource.name:
                 continue
-            if not resource.tabular:
+            if not isinstance(resource, platform.frictionless_resources.TableResource):
                 continue
             item = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
             data.update(item)

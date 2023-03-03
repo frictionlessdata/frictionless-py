@@ -179,6 +179,12 @@ def program_extract(
         typer.echo(content)
         raise typer.Exit()
 
+    # No data
+    if not data:
+        note = "No tabular data have been found in the source"
+        typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
+
     # TODO: rework
     # Csv mode
     if csv:

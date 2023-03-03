@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Any
+from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:
@@ -27,7 +28,6 @@ def extract(
     Returns:
         extracted rows indexed by resource name
     """
-
     resource = Resource(source, datatype=type or "", **options)
     return resource.extract(
         name=name, filter=filter, process=process, limit_rows=limit_rows

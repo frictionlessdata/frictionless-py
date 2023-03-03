@@ -348,5 +348,6 @@ def test_extract_description_option_issue_1362():
         program,
         f"extract '{descriptor}' --type resource --json --limit-rows 1 --name name",
     )
+    print(json.loads(actual.stdout))
     assert actual.exit_code == 0
     assert json.loads(actual.stdout)["name"][0]["Wasserstand"] == 690

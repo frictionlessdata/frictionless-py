@@ -1018,8 +1018,7 @@ class Resource(Metadata):
             extracted rows indexed by resource name
 
         """
-        note = f'Extracting rows is not supported for data type "{self.datatype}"'
-        raise FrictionlessException(note)
+        return {}
 
     # Index
 
