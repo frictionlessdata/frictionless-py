@@ -226,6 +226,11 @@ class Resource(Metadata):
     # TODO: add docs
     """
 
+    tabular: ClassVar[bool] = False
+    """
+    Whether the resoruce is tabular
+    """
+
     @classmethod
     def from_source(
         cls,
@@ -399,11 +404,6 @@ class Resource(Metadata):
     def multipart(self) -> bool:
         """Whether resource is multipart"""
         return not self.memory and bool(self.extrapaths)
-
-    @property
-    def tabular(self) -> bool:
-        """Whether resource is tabular"""
-        return self.type == "table"
 
     @property
     def dialect(self) -> Dialect:

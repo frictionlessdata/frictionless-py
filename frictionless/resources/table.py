@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 class TableResource(Resource):
     type = "table"
     datatype = "table"
+    tabular = True
 
     # Extract
 
