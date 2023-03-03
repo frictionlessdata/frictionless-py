@@ -4,9 +4,10 @@ from .program import program
 from . import api
 from . import convert
 from . import describe
+from . import explore
 from . import extract
 from . import index
-from . import sql
+from . import query
 from . import summary
 from . import transform
 from . import validate

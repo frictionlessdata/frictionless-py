@@ -12,13 +12,13 @@ from .. import helpers
 from . import common
 
 
-@program.command(name="sql")
-def program_sql(
+@program.command(name="query")
+def program_query(
     source: str = typer.Argument(default=None),
     # Options
     debug: bool = common.debug,
 ):
-    """Explore a data resource or package"""
+    """Query data"""
 
     # Get tabular resources
     try:
