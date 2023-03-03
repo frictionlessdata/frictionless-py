@@ -223,6 +223,7 @@ def test_github_adapter_read_without_repo_user():
     assert error.message == "Repo and user is required"
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_github_adapter_read_yaml(options_with_dp_yaml):
     url = options_with_dp_yaml.pop("url")

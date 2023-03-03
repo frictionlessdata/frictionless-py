@@ -15,11 +15,11 @@ if TYPE_CHECKING:
 class Adapter:
     # Read
 
-    def read_catalog(self) -> Optional[Catalog]:
-        pass
+    def read_catalog(self) -> Catalog:
+        raise NotImplementedError()
 
-    def read_package(self) -> Optional[Package]:
-        pass
+    def read_package(self) -> Package:
+        raise NotImplementedError()
 
     # Write
 

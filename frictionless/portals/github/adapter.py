@@ -236,13 +236,13 @@ def get_package(
     if catalog:
         return multiple_packages(base_path)
 
-    package = Package(name=repository.name)
+    package = Package(name=repository.name, basepath=base_path)
     for file in paths:
         fullpath = f"{base_path}/{file.path}"
         if file.path in ["datapackage.json"]:
             package = Package.from_descriptor(fullpath)
             return package
         if any(file.path.endswith(ext) for ext in formats):
-            resource = Resource(path=file.path, basepath=base_path)
+            resource = Resource(path=file.path)
             package.add_resource(resource)
     return package
