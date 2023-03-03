@@ -1,8 +1,18 @@
-from typing import Optional
+from typing import Optional, Any
 from ..detector import Detector
 from ..platform import platform
 from ..dialect import Dialect
 from .. import helpers
+
+
+# Source
+
+
+# TODO: add stdin here
+def create_source(source: Any) -> Any:
+    if isinstance(source, list) and len(source) == 1:
+        return source[0]
+    return source
 
 
 # Dialect

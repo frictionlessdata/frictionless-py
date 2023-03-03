@@ -83,7 +83,7 @@ def program_extract(
     # Support stdin
     if not source and not path:
         if not sys.stdin.isatty():
-            source = [sys.stdin.buffer.read()]  # type: ignore
+            source = sys.stdin.buffer.read()  # type: ignore
 
     # Validate input
     if not source and not path:
@@ -118,7 +118,7 @@ def program_extract(
 
     # Create resource
     resource = Resource(
-        source,
+        source=factory.create_source(source),
         path=path,
         scheme=scheme,
         format=format,
