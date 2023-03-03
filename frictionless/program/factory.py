@@ -19,6 +19,7 @@ def create_source(source: Any) -> Any:
 
 
 def create_dialect(
+    *,
     descriptor: Optional[str],
     header_rows: Optional[str],
     header_join: Optional[str],
@@ -52,13 +53,12 @@ def create_dialect(
         dialect.comment_rows = helpers.parse_csv_string_typed(comment_rows, convert=int)
 
     # Controls
-    controls = []
-    if sheet:
-        controls.append(formats.ExcelControl(sheet=sheet))
-    elif table:
-        controls.append(formats.SqlControl(table=table))
-    elif keys or keyed:
-        controls.append(
+    if sheet is not None:
+        dialect.controls.append(formats.ExcelControl(sheet=sheet))
+    elif table is not None:
+        dialect.controls.append(formats.SqlControl(table=table))
+    elif keys is not None or keyed is not None:
+        dialect.controls.append(
             formats.JsonControl.from_options(
                 keys=helpers.parse_csv_string(keys),
                 keyed=keyed,
@@ -72,6 +72,7 @@ def create_dialect(
 
 
 def create_detector(
+    *,
     buffer_size: Optional[int],
     sample_size: Optional[int],
     field_type: Optional[str],

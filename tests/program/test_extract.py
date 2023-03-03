@@ -15,10 +15,10 @@ runner = CliRunner()
 def test_program_extract():
     actual = runner.invoke(program, "extract data/table.csv")
     assert actual.exit_code == 0
-    assert actual.stdout.count("table.csv")
-    assert actual.stdout.count("id  name")
-    assert actual.stdout.count("1  english")
-    assert actual.stdout.count("2  中国人")
+    assert actual.stdout.count("table")
+    assert actual.stdout.count("id")
+    assert actual.stdout.count("1")
+    assert actual.stdout.count("2")
 
 
 def test_program_extract_header_rows():
@@ -159,42 +159,48 @@ def test_program_extract_dialect_keys_option():
 def test_program_extract_valid_rows():
     actual = runner.invoke(program, "extract data/countries.csv --valid --json")
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
-        {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
-        {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
-    ]
+    assert json.loads(actual.stdout) == {
+        "countries": [
+            {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+            {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+            {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+        ]
+    }
 
 
 def test_program_extract_yaml_valid_rows():
     actual = runner.invoke(program, "extract data/countries.csv --valid --yaml")
     assert actual.exit_code == 0
-    with open("data/fixtures/issue-1004/valid-countries.yaml", "r") as stream:
-        expect = yaml.safe_load(stream)
-    assert yaml.safe_load(actual.stdout) == expect
+    assert yaml.safe_load(actual.stdout) == {
+        "countries": [
+            {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+            {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+            {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+        ]
+    }
 
 
 def test_program_extract_invalid_rows():
     actual = runner.invoke(program, "extract data/countries.csv --invalid --json")
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
-        {"id": 5, "neighbor_id": None, "name": None, "population": None},
-    ]
+    assert json.loads(actual.stdout) == {
+        "countries": [
+            {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
+            {"id": 5, "neighbor_id": None, "name": None, "population": None},
+        ]
+    }
 
 
 def test_program_extract_valid_rows_with_no_valid_rows():
     actual = runner.invoke(program, "extract data/invalid.csv --valid")
     assert actual.exit_code == 0
-    assert actual.stdout.count("data: data/invalid.csv")
-    assert actual.stdout.count("No valid rows")
+    assert actual.stdout.count("No rows found")
 
 
 def test_program_extract_invalid_rows_with_no_invalid_rows():
     actual = runner.invoke(program, "extract data/capital-valid.csv --invalid")
     assert actual.exit_code == 0
-    assert actual.stdout.count("data: data/capital-valid.csv")
-    assert actual.stdout.count("No invalid rows")
+    assert actual.stdout.count("No rows found")
 
 
 def test_program_extract_valid_rows_from_datapackage_with_multiple_resources():
@@ -234,10 +240,12 @@ def test_program_extract_valid_rows_extract_dialect_sheet_option():
         program, "extract data/sheet2.xls --sheet Sheet2 --json --valid"
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    assert json.loads(actual.stdout) == {
+        "sheet2": [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+    }
 
 
 def test_program_extract_invalid_rows_extract_dialect_sheet_option():

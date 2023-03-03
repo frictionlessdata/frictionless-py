@@ -204,8 +204,15 @@ def program_extract(
     # TODO: rework
     # Default mode
     for title, items in data.items():
-        if items:
-            view = Table(title=title)
+        view = Table(title=title)
+
+        # Empty
+        if not items:
+            view.add_column("Empty")
+            view.add_row(f"No rows found")
+
+        # General
+        else:
             labels = list(items[0].keys())
             for label in labels[:DEFAULT_MAX_FIELDS]:
                 view.add_column(label)
@@ -217,9 +224,10 @@ def program_extract(
                 if len(values) > DEFAULT_MAX_FIELDS:
                     row.append("...")
                 view.add_row(*row)
-            if limit_rows == DEFAULT_MAX_ROWS:
+            if len(items) == limit_rows == DEFAULT_MAX_ROWS:
                 row = ["..."] * min(len(labels), DEFAULT_MAX_FIELDS)
                 if len(labels) > DEFAULT_MAX_FIELDS:
                     row.append("...")
                 view.add_row(*row)
-            console.print(view)
+
+        console.print(view)
