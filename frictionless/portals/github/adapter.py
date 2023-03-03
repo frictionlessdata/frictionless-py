@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING, Any, Dict, List, Union, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Union
 from .control import GithubControl
 from ...system import Adapter
 from ...exception import FrictionlessException
@@ -111,7 +111,7 @@ class GithubAdapter(Adapter):
         note = "Package/s not found"
         raise FrictionlessException(note)
 
-    def read_package(self, *, packagify: bool = False) -> Optional[Package]:
+    def read_package(self) -> Package:
         if not (self.control.repo and self.control.user):
             note = "Repo and user is required"
             raise FrictionlessException(note)

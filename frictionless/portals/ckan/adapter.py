@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Union, Optional
+from typing import Union
 from ...exception import FrictionlessException
 from ...system import system, Adapter
 from ...platform import platform
@@ -79,7 +79,7 @@ class CkanAdapter(Adapter):
         return catalog
 
     # Read a package from a CKAN instance
-    def read_package(self, *, packagify: bool = False) -> Optional[Package]:
+    def read_package(self) -> Package:
         baseurl = self.control.baseurl
         dataset = self.control.dataset
         assert baseurl
