@@ -22,7 +22,6 @@ from . import methods
 
 if TYPE_CHECKING:
     from ..checklist import Checklist
-    from ..pipeline import Pipeline
     from ..package import Package
     from ..table import IRowStream
     from ..system import Loader, Parser
@@ -939,45 +938,6 @@ class Resource(Metadata):
                     break
             return rows
 
-    # Write
-
-    def write(
-        self,
-        target: Optional[Union[Resource, Any]] = None,
-        *,
-        control: Optional[Control] = None,
-        **options,
-    ) -> Resource:
-        """Write this resource to the target resource
-
-        Parameters:
-            target (Resource|Any): target or target resource instance
-            **options (dict): Resource constructor options
-        """
-        resource = target
-        if not isinstance(resource, Resource):
-            resource = Resource(target, control=control, **options)
-        parser = system.create_parser(resource)
-        parser.write_row_stream(self)
-        return resource
-
-    # Analyze
-
-    def analyze(self, *, detailed=False) -> Dict:
-        """Analyze the resource
-
-        This feature is currently experimental, and its API may change
-        without warning.
-
-        Parameters:
-            detailed? (bool): detailed analysis
-
-        Returns:
-            dict: resource analysis
-
-        """
-        return methods.analyze(self, detailed=detailed)
-
     # Describe
 
     @classmethod
@@ -1036,18 +996,8 @@ class Resource(Metadata):
         on_progress: Optional[IOnProgress] = None,
         use_fallback: bool = False,
     ) -> None:
-        """Index resource into a database"""
-        indexer = platform.frictionless_formats.sql.SqlIndexer(
-            resource=self,
-            database_url=database_url,
-            table_name=table_name,
-            fast=fast,
-            qsv_path=qsv_path,
-            on_row=on_row,
-            on_progress=on_progress,
-            use_fallback=use_fallback,
-        )
-        indexer.index()
+        """Index data into a database"""
+        pass
 
     # Validate
 
@@ -1075,19 +1025,6 @@ class Resource(Metadata):
             limit_rows=limit_rows,
             on_row=on_row,
         )
-
-    # Transform
-
-    def transform(self, pipeline: Optional[Pipeline] = None):
-        """Transform resource
-
-        Parameters:
-            steps (Step[]): transform steps
-
-        Returns:
-            Resource: the transform result
-        """
-        return methods.transform(self, pipeline)
 
     # Convert
 

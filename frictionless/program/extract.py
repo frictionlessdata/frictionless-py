@@ -118,7 +118,6 @@ def program_extract(
     # Create resource
     resource = Resource(
         source=library.create_source(source),
-        name=name,
         path=path,
         scheme=scheme,
         format=format,

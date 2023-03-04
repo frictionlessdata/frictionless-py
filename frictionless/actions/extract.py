@@ -11,6 +11,7 @@ def extract(
     *,
     name: Optional[str] = None,
     type: Optional[str] = None,
+    # Extract
     filter: Optional[IFilterFunction] = None,
     process: Optional[IProcessFunction] = None,
     limit_rows: Optional[int] = None,
@@ -27,6 +28,8 @@ def extract(
     Returns:
         extracted rows indexed by resource name
     """
+
+    # Extract resource
     resource = Resource(source, datatype=type or "", **options)
     return resource.extract(
         name=name, filter=filter, process=process, limit_rows=limit_rows

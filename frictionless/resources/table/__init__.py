@@ -1,0 +1,1 @@
+from .resource import TableResource

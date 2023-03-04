@@ -9,10 +9,10 @@ from math import fsum, sqrt
 from ... import helpers
 
 if TYPE_CHECKING:
-    from ..resource import Resource
+    from .resource import TableResource
 
 
-def analyze(self: Resource, *, detailed=False) -> Dict:
+def analyze(self: TableResource, *, detailed=False) -> Dict:
     # Create state
     timer = helpers.Timer()
 
