@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from ..exception import FrictionlessException
 from ..report import Report
 from ..package import Package
-from .json import JsonResource
+from .metadata import MetadataResource
 from .. import settings
 
 if TYPE_CHECKING:
@@ -12,15 +12,13 @@ if TYPE_CHECKING:
     from ..interfaces import IFilterFunction, IProcessFunction, IExtractedRows
 
 
-class PackageResource(JsonResource):
+class PackageResource(MetadataResource):
     datatype = "package"
 
     # Read
 
     def read_package(self) -> Package:
-        descriptor = self.data if self.data is not None else self.path
-        assert isinstance(descriptor, (str, dict))
-        return Package.from_descriptor(descriptor, basepath=self.basepath)
+        return Package.from_descriptor(self.descriptor, basepath=self.basepath)
 
     # Extract
 

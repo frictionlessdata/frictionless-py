@@ -17,9 +17,7 @@ class ResourceResource(MetadataResource):
     # Read
 
     def read_resource(self) -> Resource:
-        descriptor = self.data if self.data is not None else self.path
-        assert isinstance(descriptor, (str, dict))
-        return Resource.from_descriptor(descriptor, basepath=self.basepath)
+        return Resource.from_descriptor(self.descriptor, basepath=self.basepath)
 
     # Extract
 
