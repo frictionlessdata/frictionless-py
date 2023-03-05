@@ -1,5 +1,6 @@
 import sys
 from typing import Optional, Any
+from ..checklist import Checklist, Check
 from ..detector import Detector
 from ..platform import platform
 from ..dialect import Dialect
@@ -10,11 +11,15 @@ from .. import helpers
 
 
 def create_source(source: Any, *, path: Optional[str] = None) -> Any:
+    # Support stdin
     if source is None and path is None:
         if not sys.stdin.isatty():
             return sys.stdin.buffer.read()
+
+    # Normalize
     if isinstance(source, list) and len(source) == 1:
         return source[0]
+
     return source
 
 
@@ -123,3 +128,32 @@ def create_detector(
         detector.schema_sync = schema_sync
 
     return detector
+
+
+# Checklist
+
+
+def create_checklist(
+    *,
+    descriptor: Optional[str] = None,
+    checks: Optional[str] = None,
+    pick_errors: Optional[str] = None,
+    skip_errors: Optional[str] = None,
+):
+    # Checklist
+    descriptor = helpers.parse_json_string(descriptor)
+    checklist = Checklist.from_descriptor(descriptor) if descriptor else Checklist()
+
+    # Checks
+    for check in helpers.parse_descriptors_string(checks) or []:
+        checklist.add_check(Check.from_descriptor(check))
+
+    # Pick errors
+    if pick_errors is not None:
+        checklist.pick_errors = helpers.parse_csv_string_typed(pick_errors)
+
+    # Skip errors
+    if skip_errors is not None:
+        checklist.skip_errors = helpers.parse_csv_string_typed(skip_errors)
+
+    return checklist

@@ -32,8 +32,8 @@ def program_extract(
     compression: str = common.compression,
     innerpath: str = common.innerpath,
     encoding: str = common.encoding,
-    basepath: str = common.basepath,
     schema: str = common.schema,
+    basepath: str = common.basepath,
     # Dialect
     dialect: str = common.dialect,
     header_rows: str = common.header_rows,
