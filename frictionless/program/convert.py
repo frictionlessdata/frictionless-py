@@ -13,7 +13,7 @@ from ..system import system
 from . import common
 
 
-@program.command(name="convert")
+@program.command(name="convert", hidden=True)
 def program_convert(
     # Source
     source: str = common.source,

@@ -10,7 +10,7 @@ from .. import helpers
 from . import common
 
 
-@program.command(name="transform")
+@program.command(name="transform", hidden=True)
 def program_transform(
     # Source
     source: List[str] = common.source,

@@ -6,7 +6,7 @@ from .program import program
 from . import common
 
 
-@program.command(name="summary")
+@program.command(name="summary", hidden=True)
 def program_summary(
     source: str = common.source,
     # Command
