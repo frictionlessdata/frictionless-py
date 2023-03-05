@@ -160,7 +160,7 @@ def program_extract(
         )
     except Exception as exception:
         if debug:
-            console.print_exception(show_locals=True)
+            console.print_exception()
             raise typer.Exit(1)
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)

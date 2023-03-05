@@ -1,5 +1,6 @@
 from __future__ import annotations
 import typer
+from rich.console import Console
 from typing import List
 from tabulate import tabulate
 from ..resource import Resource
@@ -69,6 +70,7 @@ def program_validate(
     Based on the inferred data source type it will validate resource or package.
     Default output format is YAML with a front matter.
     """
+    console = Console()
     name = name or resource_name
 
     # Setup system
@@ -147,10 +149,11 @@ def program_validate(
             limit_errors=limit_errors,
         )
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        if debug:
+            console.print_exception()
             raise typer.Exit(1)
-        raise
+        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
 
     # Return JSON
     if json:
