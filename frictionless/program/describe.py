@@ -20,7 +20,6 @@ def program_describe(
     # Source
     source: List[str] = common.source,
     type: str = common.type,
-    # File
     path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
