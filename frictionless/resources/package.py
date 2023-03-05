@@ -12,13 +12,9 @@ if TYPE_CHECKING:
     from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
 
 
-class PackageResource(MetadataResource):
+class PackageResource(MetadataResource[Package]):
     datatype = "package"
-
-    # Read
-
-    def read_package(self) -> Package:
-        return Package.from_descriptor(self.descriptor, basepath=self.basepath)
+    dataclass = Package
 
     # Extract
 
@@ -30,7 +26,7 @@ class PackageResource(MetadataResource):
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
     ) -> ITabularData:
-        package = self.read_package()
+        package = self.read_metadata()
         return package.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
@@ -48,7 +44,7 @@ class PackageResource(MetadataResource):
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ) -> Report:
         try:
-            package = self.read_package()
+            package = self.read_metadata()
         except FrictionlessException as exception:
             return Report.from_validation(errors=exception.to_errors())
         return package.validate(

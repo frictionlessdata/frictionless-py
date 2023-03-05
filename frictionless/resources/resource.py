@@ -12,13 +12,8 @@ if TYPE_CHECKING:
     from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
 
 
-class ResourceResource(MetadataResource):
+class ResourceResource(MetadataResource[Resource]):
     datatype = "resource"
-
-    # Read
-
-    def read_resource(self) -> Resource:
-        return Resource.from_descriptor(self.descriptor, basepath=self.basepath)
 
     # Extract
 
@@ -30,7 +25,7 @@ class ResourceResource(MetadataResource):
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
     ) -> ITabularData:
-        resource = self.read_resource()
+        resource = self.read_metadata()
         return resource.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
@@ -48,7 +43,7 @@ class ResourceResource(MetadataResource):
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ) -> Report:
         try:
-            resource = self.read_resource()
+            resource = self.read_metadata()
         except FrictionlessException as exception:
             return Report.from_validation(errors=exception.to_errors())
         return resource.validate(

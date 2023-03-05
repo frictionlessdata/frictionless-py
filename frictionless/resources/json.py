@@ -5,3 +5,7 @@ from ..resource import Resource
 class JsonResource(Resource):
     type = "json"
     datatype = "json"
+
+
+class JsonschemaResource(JsonResource):
+    datatype = "jsonschema"
