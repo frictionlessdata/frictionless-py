@@ -139,11 +139,13 @@ class Metadata(metaclass=Metaclass):
     # Validate
 
     @classmethod
-    def validate_descriptor(cls, descriptor: Union[IDescriptor, str]) -> Report:
+    def validate_descriptor(
+        cls, descriptor: Union[IDescriptor, str], *, basepath: Optional[str] = None
+    ) -> Report:
         errors = []
         timer = helpers.Timer()
         try:
-            cls.from_descriptor(descriptor)
+            cls.from_descriptor(descriptor, basepath=basepath)
         except FrictionlessException as exception:
             errors = exception.reasons if exception.reasons else [exception.error]
         return platform.frictionless.Report.from_validation(

@@ -13,5 +13,5 @@ class MarkdownPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.format == "md":
-            resource.datatype = resource.datatype or "article"
+            resource.datatype = resource.datatype or "text"
             resource.mediatype = resource.mediatype or "text/markdown"
