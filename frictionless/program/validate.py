@@ -2,7 +2,7 @@ from __future__ import annotations
 import typer
 from rich.console import Console
 from typing import List
-from tabulate import tabulate
+from rich.table import Table
 from ..resource import Resource
 from ..system import system
 from .program import program
@@ -151,34 +151,42 @@ def program_validate(
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
-    # Return JSON
-    if json:
-        content = report.to_json()
-        print(content)
-        raise typer.Exit()
-
-    # Return YAML
+    # Yaml mode
     if yaml:
         content = report.to_yaml().strip()
         print(content)
         raise typer.Exit()
 
-    # Return validation report errors
-    if report.errors:
-        content = []
-        prefix = "invalid"
-        title = "stdin" if not source else source
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {title}", bold=True)
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        for error in report.errors:
-            content.append([error.type, error.message])
-        typer.secho(
-            str(tabulate(content, headers=["type", "message"], tablefmt="simple"))
-        )
+    # Json mode
+    if json:
+        content = report.to_json()
+        print(content)
+        raise typer.Exit()
 
-    # Return validation report summary and tables
-    typer.secho(str(report.to_summary()))
+    # Default mode
+    labels = ["Row", "Field", "Type", "Message"]
+    props = ["row_number", "field_number", "type", "message"]
+    names = ["general"] + [task.name for task in report.tasks]
+    matrix = [report.errors] + [task.errors for task in report.tasks]
 
-    # Return retcode
+    # Status
+    if report.valid:
+        utils.print_success(console, note="No validation errors", title="Valid")
+    else:
+        utils.print_error(console, note="There are validation errors", title="Invalid")
+
+    # Errors
+    for name, errors in zip(names, matrix):
+        if errors:
+            view = Table(title=name)
+            for label in labels:
+                view.add_column(label)
+            for error in errors:
+                row = []
+                for prop in props:
+                    row.append(str(getattr(error, prop, None)))
+                view.add_row(*row)
+            console.print(view)
+
+    # Proper retcode
     raise typer.Exit(code=int(not report.valid))

@@ -150,6 +150,7 @@ def program_extract(
             basepath=basepath,
             detector=detector_obj,
         )
+        # TODO: add progress
         data = resource.extract(
             name=name,
             filter=filter,
@@ -198,33 +199,30 @@ def program_extract(
                 typer.secho(helpers.stringify_csv_string(item.values(), **options))  # type: ignore
         raise typer.Exit()
 
-    # TODO: rework
     # Default mode
     for title, items in data.items():
-        view = Table(title=title)
-
         # Empty
         if not items:
-            view.add_column("Empty")
-            view.add_row("No rows found")
+            utils.print_error(console, note="No rows found", title="Empty")
+            continue
 
         # General
-        else:
-            labels = list(items[0].keys())
-            for label in labels[:DEFAULT_MAX_FIELDS]:
-                view.add_column(label)
+        # TODO: rework
+        view = Table(title=title)
+        labels = list(items[0].keys())
+        for label in labels[:DEFAULT_MAX_FIELDS]:
+            view.add_column(label)
+        if len(labels) > DEFAULT_MAX_FIELDS:
+            view.add_column("...")
+        for item in items:
+            values = list(map(str, item.values()))
+            row = values[:DEFAULT_MAX_FIELDS]
+            if len(values) > DEFAULT_MAX_FIELDS:
+                row.append("...")
+            view.add_row(*row)
+        if len(items) == limit_rows == DEFAULT_MAX_ROWS:
+            row = ["..."] * min(len(labels), DEFAULT_MAX_FIELDS)
             if len(labels) > DEFAULT_MAX_FIELDS:
-                view.add_column("...")
-            for item in items:
-                values = list(map(str, item.values()))
-                row = values[:DEFAULT_MAX_FIELDS]
-                if len(values) > DEFAULT_MAX_FIELDS:
-                    row.append("...")
-                view.add_row(*row)
-            if len(items) == limit_rows == DEFAULT_MAX_ROWS:
-                row = ["..."] * min(len(labels), DEFAULT_MAX_FIELDS)
-                if len(labels) > DEFAULT_MAX_FIELDS:
-                    row.append("...")
-                view.add_row(*row)
-
+                row.append("...")
+            view.add_row(*row)
         console.print(view)

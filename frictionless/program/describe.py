@@ -161,6 +161,4 @@ def program_describe(
     # Default mode
     descriptor = metadata.to_yaml().strip()
     syntax = Syntax(descriptor, "yaml")
-    console.print()
     console.print(syntax)
-    console.print()

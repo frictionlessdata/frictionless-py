@@ -164,8 +164,13 @@ def create_checklist(
 # Console
 
 
-def print_error(console: Console, *, note: str) -> None:
-    panel = Panel(note, title="Error", border_style="red", title_align="left")
+def print_success(console: Console, *, note: str, title: str = "Success") -> None:
+    panel = Panel(note, title=title, border_style="green", title_align="left")
+    console.print(panel)
+
+
+def print_error(console: Console, *, note: str, title: str = "Error") -> None:
+    panel = Panel(note, title=title, border_style="red", title_align="left")
     console.print(panel)
 
 
