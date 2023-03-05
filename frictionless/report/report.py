@@ -112,7 +112,7 @@ class Report(Metadata):
     @staticmethod
     def from_validation(
         *,
-        time: float,
+        time: float = 0,
         tasks: List[ReportTask] = [],
         errors: List[Error] = [],
         warnings: List[str] = [],

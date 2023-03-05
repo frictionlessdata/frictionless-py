@@ -1,9 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
-from ..exception import FrictionlessException
 from ..report import Report
-from ..package import Package
-from .json import JsonResource
+from ..resource import Resource
+from .metadata import MetadataResource
 from .. import settings
 
 if TYPE_CHECKING:
@@ -12,15 +11,15 @@ if TYPE_CHECKING:
     from ..interfaces import IFilterFunction, IProcessFunction, IExtractedRows
 
 
-class PackageResource(JsonResource):
-    datatype = "package"
+class ResourceResource(MetadataResource):
+    datatype = "resource"
 
     # Read
 
-    def read_package(self) -> Package:
+    def read_resource(self) -> Resource:
         descriptor = self.data if self.data is not None else self.path
         assert isinstance(descriptor, (str, dict))
-        return Package.from_descriptor(descriptor, basepath=self.basepath)
+        return Resource.from_descriptor(descriptor, basepath=self.basepath)
 
     # Extract
 
@@ -32,8 +31,8 @@ class PackageResource(JsonResource):
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
     ) -> IExtractedRows:
-        package = self.read_package()
-        return package.extract(
+        resource = self.read_resource()
+        return resource.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
 
@@ -47,10 +46,7 @@ class PackageResource(JsonResource):
         limit_rows: Optional[int] = None,
         on_row: Optional[ICallbackFunction] = None,
     ) -> Report:
-        try:
-            package = self.read_package()
-        except FrictionlessException as exception:
-            return Report.from_validation(errors=exception.to_errors())
-        return package.validate(
-            checklist, limit_errors=limit_errors, limit_rows=limit_rows
+        resource = self.read_resource()
+        return resource.validate(
+            checklist, limit_errors=limit_errors, limit_rows=limit_rows, on_row=on_row
         )
