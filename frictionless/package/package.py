@@ -405,16 +405,13 @@ class Package(Metadata):
             Package: data package
 
         """
-
-        # Support one fle path
-        if not helpers.is_expandable_source(source):
-            if isinstance(source, (str, Path)):
-                source = [source]
-
-        # Create package
-        package = cls(source, **options)
-        package.infer(stats=stats)
-        return package
+        resources = platform.frictionless_resources
+        resource = Resource(source, packagify=True, **options)
+        if isinstance(resource, resources.PackageResource):
+            package = resource.read_metadata()
+            package.infer(stats=stats)
+            return package
+        return Package(resources=[resource])
 
     # Extract
 

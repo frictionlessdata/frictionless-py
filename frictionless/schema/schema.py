@@ -170,8 +170,7 @@ class Schema(Metadata):
             Schema: table schema
         """
         resource = platform.frictionless.Resource.describe(source, **options)
-        schema = resource.schema
-        return schema
+        return resource.schema
 
     # Read
 

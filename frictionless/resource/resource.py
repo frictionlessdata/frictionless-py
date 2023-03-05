@@ -954,7 +954,7 @@ class Resource(Metadata):
             Resource: data resource
 
         """
-        resource = cls.from_options(source, **options)
+        resource = cls(source, **options)
         resource.infer(stats=stats)
         return resource
 

@@ -97,8 +97,7 @@ class Dialect(Metadata):
             Dialect: file dialect
         """
         resource = platform.frictionless.Resource.describe(source, **options)
-        dialect = resource.dialect
-        return dialect
+        return resource.dialect
 
     # Controls
 
