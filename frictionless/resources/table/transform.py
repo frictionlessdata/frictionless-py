@@ -11,20 +11,20 @@ if TYPE_CHECKING:
 
 
 # TODO: save transform info into resource.stats?
-def transform(self: Resource, pipeline: Optional[Pipeline] = None):
+def transform(resource: Resource, pipeline: Optional[Pipeline] = None):
     # Prepare resource
-    self.infer()
+    resource.infer()
 
     # Prepare pipeline
     pipeline = pipeline or Pipeline()
 
     # Run transforms
     for step in pipeline.steps:
-        data = self.data
+        data = resource.data
 
         # Transform
         try:
-            step.transform_resource(self)
+            step.transform_resource(resource)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
@@ -32,23 +32,23 @@ def transform(self: Resource, pipeline: Optional[Pipeline] = None):
         # Postprocess
         # TODO: review this code
         # https://github.com/frictionlessdata/frictionless-py/issues/722
-        if self.data is not data:
-            self.path = None
-            self.data = DataWithErrorHandling(self.data, step=step)
-            self.scheme = ""
-            self.format = "inline"
-            self.encoding = None
-            self.compression = None
-            self.extrapaths = []
-            self.innerpath = None
-            self.dialect = Dialect()
-            self.stats.md5 = None
-            self.stats.sha256 = None
-            self.stats.bytes = None
-            self.stats.fields = None
-            self.stats.rows = None
+        if resource.data is not data:
+            resource.path = None
+            resource.data = DataWithErrorHandling(resource.data, step=step)
+            resource.scheme = ""
+            resource.format = "inline"
+            resource.encoding = None
+            resource.compression = None
+            resource.extrapaths = []
+            resource.innerpath = None
+            resource.dialect = Dialect()
+            resource.stats.md5 = None
+            resource.stats.sha256 = None
+            resource.stats.bytes = None
+            resource.stats.fields = None
+            resource.stats.rows = None
 
-    return self
+    return resource
 
 
 # TODO: do we need error handling here?

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def validate(
-    self: TableResource,
+    resource: TableResource,
     checklist: Optional[Checklist] = None,
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
@@ -29,36 +29,36 @@ def validate(
 
     # Prepare checklist
     checklist = checklist or Checklist()
-    checks = checklist.connect(self)
+    checks = checklist.connect(resource)
 
     # Validate metadata
     try:
-        self.to_descriptor()
+        resource.to_descriptor()
     except FrictionlessException as exception:
         return Report.from_validation_task(
-            self, time=timer.time, errors=exception.to_errors()
+            resource, time=timer.time, errors=exception.to_errors()
         )
 
     # TODO: remove in next version
     # Ignore not-supported hashings
-    if self.hash:
-        algorithm, _ = helpers.parse_resource_hash_v1(self.hash)
+    if resource.hash:
+        algorithm, _ = helpers.parse_resource_hash_v1(resource.hash)
         if algorithm not in ["md5", "sha256"]:
             warning = "hash is ignored; supported algorithms: md5/sha256"
             warnings.append(warning)
 
     # Prepare resource
-    if self.closed:
+    if resource.closed:
         try:
-            self.open()
+            resource.open()
         except FrictionlessException as exception:
-            self.close()
+            resource.close()
             return Report.from_validation_task(
-                self, time=timer.time, errors=exception.to_errors()
+                resource, time=timer.time, errors=exception.to_errors()
             )
 
     # Validate data
-    with self:
+    with resource:
         # Validate start
         for index, check in enumerate(checks):
             for error in check.validate_start():
@@ -69,13 +69,13 @@ def validate(
 
         # Validate table
         row_count = 0
-        labels = self.labels
+        labels = resource.labels
         while True:
             row_count += 1
 
             # Emit row
             try:
-                row = next(self.row_stream)  # type: ignore
+                row = next(resource.row_stream)  # type: ignore
             except FrictionlessException as exception:
                 errors.append(exception.error)
                 continue
@@ -118,5 +118,5 @@ def validate(
 
     # Return report
     return Report.from_validation_task(
-        self, time=timer.time, labels=labels, errors=errors, warnings=warnings
+        resource, time=timer.time, labels=labels, errors=errors, warnings=warnings
     )

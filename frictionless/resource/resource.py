@@ -3,7 +3,7 @@ import json
 import attrs
 import pprint
 import warnings
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
@@ -13,14 +13,15 @@ from ..detector import Detector
 from ..metadata import Metadata
 from ..schema import Schema
 from ..system import system
+from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
 from .. import fields
-from . import methods
 
 
 if TYPE_CHECKING:
+    from ..report import Report
     from ..checklist import Checklist
     from ..package import Package
     from ..table import IRowStream
@@ -1008,23 +1009,20 @@ class Resource(Metadata):
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
         limit_rows: Optional[int] = None,
         on_row: Optional[ICallbackFunction] = None,
-    ):
+    ) -> Report:
         """Validate resource
 
         Parameters:
-            checklist? (checklist): a Checklist object
+            checklist: a Checklist object
+            limit_errors: limit amount of errors to this number
+            limit_rows: limit amount of rows to this number
+            on_row: callbacke for every row
 
         Returns:
             Report: validation report
 
         """
-        return methods.validate(
-            self,
-            checklist,
-            limit_errors=limit_errors,
-            limit_rows=limit_rows,
-            on_row=on_row,
-        )
+        return validate(self, checklist)
 
     # Convert
 

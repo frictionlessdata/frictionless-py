@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .resource import TableResource
 
 
-def analyze(self: TableResource, *, detailed=False) -> Dict:
+def analyze(resource: TableResource, *, detailed=False) -> Dict:
     # Create state
     timer = helpers.Timer()
 
@@ -26,11 +26,11 @@ def analyze(self: TableResource, *, detailed=False) -> Dict:
     # Iterate rows
     columns_data = {}
     numeric = ["integer", "numeric", "number"]
-    with self:
-        for row in self.row_stream:
+    with resource:
+        for row in resource.row_stream:
             null_columns = 0
             for field_name in row:
-                field = self.schema.get_field(field_name)
+                field = resource.schema.get_field(field_name)
                 cell = field.read_cell(row.get(field_name))[0]
                 if field.name not in columns_data:
                     columns_data[field.name] = []
@@ -47,7 +47,7 @@ def analyze(self: TableResource, *, detailed=False) -> Dict:
     # Field/Column Stats
     if columns_data and detailed:
         analysis_report["correlations"] = {}
-        for field in self.schema.fields:
+        for field in resource.schema.fields:
             analysis_report["fieldStats"][field.name] = {}
 
             if field.type not in analysis_report["variableTypes"]:
@@ -76,10 +76,10 @@ def analyze(self: TableResource, *, detailed=False) -> Dict:
                     _statistics(rows_without_nan_values)  # type: ignore
                 )
                 analysis_report["fieldStats"][field.name]["outliers"] = []
-                analysis_report["fieldStats"][field.name]["missingValues"] = self.stats.rows - len(rows_without_nan_values)  # type: ignore
+                analysis_report["fieldStats"][field.name]["missingValues"] = resource.stats.rows - len(rows_without_nan_values)  # type: ignore
 
                 # calculate correlation between variables(columns/fields)
-                for field_y in self.schema.fields:
+                for field_y in resource.schema.fields:
                     if field_y.type in numeric:
                         # filter rows with nan values, correlation return nan if any of the
                         # row has nan value.
@@ -114,14 +114,14 @@ def analyze(self: TableResource, *, detailed=False) -> Dict:
                                 cell
                             )
 
-    analysis_report["notNullRows"] = self.stats.rows - analysis_report["rowsWithNullValues"]  # type: ignore
+    analysis_report["notNullRows"] = resource.stats.rows - analysis_report["rowsWithNullValues"]  # type: ignore
     analysis_report["averageRecordSizeInBytes"] = 0
-    if self.stats.rows and self.stats.bytes:
-        analysis_report["averageRecordSizeInBytes"] = self.stats.bytes / self.stats.rows  # type: ignore
+    if resource.stats.rows and resource.stats.bytes:
+        analysis_report["averageRecordSizeInBytes"] = resource.stats.bytes / resource.stats.rows  # type: ignore
     analysis_report["timeTaken"] = timer.time
     return {
         **analysis_report,
-        **attrs.asdict(self.stats, filter=lambda _, v: v is not None),
+        **attrs.asdict(resource.stats, filter=lambda _, v: v is not None),
     }
 
 
