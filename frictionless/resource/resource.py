@@ -1,7 +1,6 @@
 from __future__ import annotations
 import json
 import attrs
-import pprint
 import warnings
 from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
 from ..exception import FrictionlessException
@@ -28,7 +27,7 @@ if TYPE_CHECKING:
     from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
-    from ..interfaces import IFilterFunction, IProcessFunction, IExtractedRows
+    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
     from ..formats.sql import IOnRow, IOnProgress
     from ..interfaces import ICallbackFunction
 
@@ -67,6 +66,7 @@ class Resource(Metadata):
     # TODO: add docs
     """
 
+    # TODO: review empty default
     name: str = ""
     """
     Resource name according to the specs.
@@ -138,6 +138,7 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
+    # TODO: review empty default
     datatype: str = ""
     """
     Frictionless Framework specific data type as "table" or "schema"
@@ -339,9 +340,6 @@ class Resource(Metadata):
         self.add_defined("mediatype")
         self.add_defined("dialect")
         self.add_defined("stats")
-
-    def __repr__(self) -> str:
-        return pprint.pformat(self.to_descriptor(debug=True), sort_dicts=False)
 
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
@@ -969,7 +967,7 @@ class Resource(Metadata):
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> IExtractedRows:
+    ) -> ITabularData:
         """Extract rows
 
         Parameters:
@@ -1006,17 +1004,21 @@ class Resource(Metadata):
         self,
         checklist: Optional[Checklist] = None,
         *,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_rows: Optional[int] = None,
+        name: Optional[str] = None,
         on_row: Optional[ICallbackFunction] = None,
+        parallel: bool = False,
+        limit_rows: Optional[int] = None,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ) -> Report:
         """Validate resource
 
         Parameters:
             checklist: a Checklist object
-            limit_errors: limit amount of errors to this number
-            limit_rows: limit amount of rows to this number
+            name: limit validation to one resource (if applicable)
             on_row: callbacke for every row
+            paraller: allow parallel validation (multiprocessing)
+            limit_rows: limit amount of rows to this number
+            limit_errors: limit amount of errors to this number
 
         Returns:
             Report: validation report

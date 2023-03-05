@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..pipeline import Pipeline
     from ..interfaces import IFilterFunction, IProcessFunction
-    from ..interfaces import IDescriptor, IExtractedRows
+    from ..interfaces import IDescriptor, ITabularData
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Dataset
@@ -380,7 +380,8 @@ class Package(Metadata):
         """
         analisis = {}
         for resource in self.resources:
-            analisis[resource.name] = resource.analyze(detailed=detailed)
+            if isinstance(resource, platform.frictionless_resources.TableResource):
+                analisis[resource.name] = resource.analyze(detailed=detailed)
         return analisis
 
     # Describe
@@ -424,7 +425,7 @@ class Package(Metadata):
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> IExtractedRows:
+    ) -> ITabularData:
         """Extract rows
 
         Parameters:
@@ -436,16 +437,12 @@ class Package(Metadata):
             extracted rows indexed by resource name
 
         """
-        data: IExtractedRows = {}
-        if name is not None and name not in self.resource_names:
-            raise FrictionlessException(f'There is no resource with name "{name}"')
-        for resource in self.resources:
-            if name is not None and name != resource.name:
-                continue
-            if not isinstance(resource, platform.frictionless_resources.TableResource):
-                continue
-            item = resource.extract(filter=filter, process=process, limit_rows=limit_rows)
-            data.update(item)
+        data: ITabularData = {}
+        resources = self.resources if name is None else [self.get_resource(name)]
+        for res in resources:
+            if isinstance(res, platform.frictionless_resources.TableResource):
+                item = res.extract(filter=filter, process=process, limit_rows=limit_rows)
+                data.update(item)
         return data
 
     # Transform
@@ -469,9 +466,10 @@ class Package(Metadata):
         self: Package,
         checklist: Optional[Checklist] = None,
         *,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_rows: Optional[int] = None,
+        name: Optional[str] = None,
         parallel: bool = False,
+        limit_rows: Optional[int] = None,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ):
         """Validate package
 
@@ -486,9 +484,10 @@ class Package(Metadata):
         return validate(
             self,
             checklist,
-            limit_errors=limit_errors,
-            limit_rows=limit_rows,
+            name=name,
             parallel=parallel,
+            limit_rows=limit_rows,
+            limit_errors=limit_errors,
         )
 
     # Convert

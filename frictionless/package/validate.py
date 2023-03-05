@@ -17,16 +17,16 @@ def validate(
     package: Package,
     checklist: Optional[Checklist] = None,
     *,
-    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-    limit_rows: Optional[int] = None,
+    name: Optional[str] = None,
     parallel: bool = False,
+    limit_rows: Optional[int] = None,
+    limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
 ):
     # Create state
     timer = helpers.Timer()
     reports: List[Report] = []
-    with_fks = any(
-        resource.schema and resource.schema.foreign_keys for resource in package.resources
-    )
+    resources = package.resources if name is None else [package.get_resource(name)]
+    with_fks = any(res.schema and res.schema.foreign_keys for res in resources)
 
     # Prepare checklist
     checklist = checklist or Checklist()
@@ -39,7 +39,7 @@ def validate(
 
     # Validate sequential
     if not parallel or with_fks:
-        for resource in package.resources:
+        for resource in resources:
             report = resource.validate(
                 limit_errors=limit_errors,
                 limit_rows=limit_rows,
@@ -50,7 +50,7 @@ def validate(
     else:
         with Pool() as pool:
             options_pool: List[dict] = []
-            for resource in package.resources:
+            for resource in resources:
                 options = {}
                 options["resource"] = {}
                 options["resource"]["descriptor"] = resource.to_descriptor()

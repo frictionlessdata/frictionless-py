@@ -7,11 +7,11 @@ from ...helpers import get_name
 from ... import errors
 
 if TYPE_CHECKING:
-    from ..resource import Resource
+    from .resource import TableResource
 
 
 # TODO: save transform info into resource.stats?
-def transform(resource: Resource, pipeline: Optional[Pipeline] = None):
+def transform(resource: TableResource, pipeline: Optional[Pipeline] = None):
     # Prepare resource
     resource.infer()
 

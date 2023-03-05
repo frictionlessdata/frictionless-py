@@ -11,7 +11,7 @@ from ... import settings
 
 if TYPE_CHECKING:
     from ...formats.sql import IOnRow, IOnProgress
-    from ...interfaces import IFilterFunction, IProcessFunction, IExtractedRows
+    from ...interfaces import IFilterFunction, IProcessFunction, ITabularData
     from ...interfaces import ICallbackFunction
     from ...checklist import Checklist
     from ...pipeline import Pipeline
@@ -49,7 +49,7 @@ class TableResource(Resource):
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> IExtractedRows:
+    ) -> ITabularData:
         if not process:
             process = lambda row: row.to_dict()
         data = self.read_rows(size=limit_rows)
@@ -101,16 +101,18 @@ class TableResource(Resource):
         self,
         checklist: Optional[Checklist] = None,
         *,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_rows: Optional[int] = None,
+        name: Optional[str] = None,
         on_row: Optional[ICallbackFunction] = None,
+        parallel: bool = False,
+        limit_rows: Optional[int] = None,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ):
         return validate(
             self,
             checklist,
-            limit_errors=limit_errors,
-            limit_rows=limit_rows,
             on_row=on_row,
+            limit_rows=limit_rows,
+            limit_errors=limit_errors,
         )
 
     # Write

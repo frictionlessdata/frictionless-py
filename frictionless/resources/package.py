@@ -9,7 +9,7 @@ from .. import settings
 if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..interfaces import ICallbackFunction
-    from ..interfaces import IFilterFunction, IProcessFunction, IExtractedRows
+    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
 
 
 class PackageResource(MetadataResource):
@@ -29,7 +29,7 @@ class PackageResource(MetadataResource):
         filter: Optional[IFilterFunction] = None,
         process: Optional[IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> IExtractedRows:
+    ) -> ITabularData:
         package = self.read_package()
         return package.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
@@ -41,14 +41,20 @@ class PackageResource(MetadataResource):
         self,
         checklist: Optional[Checklist] = None,
         *,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_rows: Optional[int] = None,
+        name: Optional[str] = None,
         on_row: Optional[ICallbackFunction] = None,
+        parallel: bool = False,
+        limit_rows: Optional[int] = None,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ) -> Report:
         try:
             package = self.read_package()
         except FrictionlessException as exception:
             return Report.from_validation(errors=exception.to_errors())
         return package.validate(
-            checklist, limit_errors=limit_errors, limit_rows=limit_rows
+            checklist,
+            name=name,
+            parallel=parallel,
+            limit_rows=limit_rows,
+            limit_errors=limit_errors,
         )

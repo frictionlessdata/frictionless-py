@@ -1,6 +1,8 @@
 from typing import Optional, List, Any, Union
-from ..resource import Resource
+from ..exception import FrictionlessException
 from ..checklist import Checklist, Check
+from ..resource import Resource
+from ..report import Report
 from .. import settings
 
 
@@ -18,6 +20,8 @@ def validate(
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_rows: Optional[int] = None,
     parallel: bool = False,
+    # Deprecated
+    resource_name: Optional[str] = None,
     **options,
 ):
     """Validate resource
@@ -30,6 +34,7 @@ def validate(
     Returns:
         Report: validation report
     """
+    name = name or resource_name
 
     # Create checklist
     if isinstance(checklist, str):
@@ -41,12 +46,18 @@ def validate(
             skip_errors=skip_errors,
         )
 
+    # Create resource
+    try:
+        resource = Resource(source, datatype=type or "", **options)
+    except FrictionlessException as exception:
+        errors = exception.reasons if exception.reasons else [exception.error]
+        return Report.from_validation(errors=errors)
+
     # Validate resource
-    resource = Resource(source, datatype=type or "", **options)
     return resource.validate(
         checklist,
         name=name,
-        limit_errors=limit_errors,
-        limit_rows=limit_rows,
         parallel=parallel,
+        limit_rows=limit_rows,
+        limit_errors=limit_errors,
     )

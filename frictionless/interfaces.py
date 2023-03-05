@@ -23,7 +23,7 @@ ISample = List[List[Any]]
 IFragment = List[List[Any]]
 ILabels = List[str]
 IOnerror = Literal["ignore", "warn", "raise"]
-IExtractedRows = Dict[str, List[dict]]
+ITabularData = Dict[str, List[dict]]
 
 
 # Functions

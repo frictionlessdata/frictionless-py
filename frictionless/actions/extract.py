@@ -15,6 +15,8 @@ def extract(
     filter: Optional[IFilterFunction] = None,
     process: Optional[IProcessFunction] = None,
     limit_rows: Optional[int] = None,
+    # Deprecated
+    resource_name: Optional[str] = None,
     **options,
 ):
     """Extract rows
@@ -28,6 +30,7 @@ def extract(
     Returns:
         extracted rows indexed by resource name
     """
+    name = name or resource_name
 
     # Extract resource
     resource = Resource(source, datatype=type or "", **options)

@@ -1,5 +1,6 @@
 import pytest
 from frictionless import validate
+from frictionless.exception import FrictionlessException
 
 
 # General
@@ -28,7 +29,7 @@ def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
     assert report.stats["errors"] == 1
     [[type, note]] = report.flatten(["type", "note"])
-    assert type == "scheme-error"
+    assert type == "resource-error"
     assert note.count("[Errno 2]") and note.count("bad.json")
 
 
@@ -91,13 +92,10 @@ def test_validate_package_single_resource_issue_221():
 
 
 def test_validate_package_single_resource_wrong_resource_name_issue_221():
-    report = validate("data/datapackage.json", resource_name="number-twoo")
-    assert report.flatten(["type", "message"]) == [
-        [
-            "package-error",
-            'The data package has an error: resource "number-twoo" does not exist',
-        ]
-    ]
+    with pytest.raises(FrictionlessException) as excinfo:
+        validate("data/datapackage.json", resource_name="bad")
+    error = excinfo.value.error
+    assert error.note.count('"bad"')
 
 
 def test_validate_multiple_files_issue_850():
