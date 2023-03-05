@@ -4,7 +4,9 @@ import typer
 from typing import List
 from rich.syntax import Syntax
 from rich.console import Console
+from ..platform import platform
 from ..detector import Detector
+from ..resource import Resource
 from ..actions import describe
 from ..dialect import Dialect
 from ..system import system
@@ -19,6 +21,7 @@ from . import utils
 def program_describe(
     # Source
     source: List[str] = common.source,
+    name: str = common.resource_name,
     type: str = common.type,
     path: str = common.path,
     scheme: str = common.scheme,
@@ -34,6 +37,8 @@ def program_describe(
     comment_rows: str = common.comment_rows,
     sheet: str = common.sheet,
     table: str = common.table,
+    keys: str = common.keys,
+    keyed: bool = common.keyed,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -60,6 +65,7 @@ def program_describe(
     Default output format is YAML with a front matter.
     """
     console = Console()
+    resources = platform.frictionless_resources
 
     # Setup system
     if trusted:
@@ -67,74 +73,67 @@ def program_describe(
     if standards:
         system.standards = standards  # type: ignore
 
-    # Support stdin
-    #  is_stdin = False
+    # Create source
+    source = utils.create_source(source, path=path)
     if not source and not path:
-        if not sys.stdin.isatty():
-            #  is_stdin = True
-            source = [sys.stdin.buffer.read()]  # type: ignore
-
-    # Validate input
-    if not source and not path:
-        message = 'Providing "source" or "path" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
         raise typer.Exit(code=1)
 
-    # Prepare source
-    def prepare_source():
-        return list(source) if len(source) > 1 else (source[0] if source else None)
+    # Create dialect
+    dialect_obj = utils.create_dialect(
+        descriptor=dialect,
+        header_rows=header_rows,
+        header_join=header_join,
+        comment_char=comment_char,
+        comment_rows=comment_rows,
+        sheet=sheet,
+        table=table,
+        keys=keys,
+        keyed=keyed,
+    )
 
-    # Prepare dialect
-    def prepare_dialect():
-        descriptor = helpers.parse_json_string(dialect)
-        if descriptor:
-            return Dialect.from_descriptor(descriptor)
-        controls = []
-        if sheet:
-            controls.append(formats.ExcelControl(sheet=sheet))
-        elif table:
-            controls.append(formats.SqlControl(table=table))
-        return Dialect.from_options(
-            header_rows=helpers.parse_csv_string(header_rows, convert=int),
-            header_join=header_join,
-            comment_char=comment_char,
-            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
-            controls=controls,
-        )
-
-    # Prepare detector
-    def prepare_detector():
-        return Detector(
-            buffer_size=buffer_size,
-            sample_size=sample_size,
-            field_type=field_type,
-            field_names=helpers.parse_csv_string(field_names),
-            field_confidence=field_confidence,
-            field_float_numbers=field_float_numbers,
-            field_missing_values=helpers.parse_csv_string(field_missing_values),  # type: ignore
-        )
-
-    # Prepare options
-    def prepare_options():
-        return dict(
-            type=type,
-            # Standard
-            path=path,
-            scheme=scheme,
-            format=format,
-            encoding=encoding,
-            innerpath=innerpath,
-            compression=compression,
-            dialect=prepare_dialect(),
-            # Software
-            detector=prepare_detector(),
-            basepath=basepath,
-            stats=stats,
-        )
+    # Create detector
+    detector_obj = utils.create_detector(
+        buffer_size=buffer_size,
+        sample_size=sample_size,
+        field_type=field_type,
+        field_names=field_names,
+        field_confidence=field_confidence,
+        field_float_numbers=field_float_numbers,
+        field_missing_values=field_missing_values,
+    )
 
     # Describe source
     try:
-        metadata = describe(prepare_source(), **prepare_options())
+        # Create resource
+        metadata = Resource(
+            source=utils.create_source(source),
+            path=path,
+            scheme=scheme,
+            format=format,
+            datatype=type or "",
+            compression=compression,
+            innerpath=innerpath,
+            encoding=encoding,
+            dialect=dialect_obj,
+            basepath=basepath,
+            detector=detector_obj,
+        )
+
+        # Infer package
+        if isinstance(metadata, resources.PackageResource):
+            metadata = metadata.read_metadata()
+            metadata.infer(stats=stats)
+            if name is not None:
+                metadata = metadata.get_resource(name)
+
+        # Infer resource
+        metadata.infer(stats=stats)
+        if type == "dialect":
+            metadata = metadata.dialect
+        elif type == "schema":
+            metadata = metadata.schema
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)

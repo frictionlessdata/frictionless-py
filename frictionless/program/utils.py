@@ -30,15 +30,15 @@ def create_source(source: Any, *, path: Optional[str] = None) -> Any:
 
 def create_dialect(
     *,
-    descriptor: Optional[str],
-    header_rows: Optional[str],
-    header_join: Optional[str],
-    comment_char: Optional[str],
-    comment_rows: Optional[str],
-    sheet: Optional[str],
-    table: Optional[str],
-    keys: Optional[str],
-    keyed: Optional[bool],
+    descriptor: Optional[str] = None,
+    header_rows: Optional[str] = None,
+    header_join: Optional[str] = None,
+    comment_char: Optional[str] = None,
+    comment_rows: Optional[str] = None,
+    sheet: Optional[str] = None,
+    table: Optional[str] = None,
+    keys: Optional[str] = None,
+    keyed: Optional[bool] = None,
 ) -> Dialect:
     formats = platform.frictionless_formats
 
@@ -83,14 +83,14 @@ def create_dialect(
 
 def create_detector(
     *,
-    buffer_size: Optional[int],
-    sample_size: Optional[int],
-    field_type: Optional[str],
-    field_names: Optional[str],
-    field_confidence: Optional[float],
-    field_float_numbers: Optional[bool],
-    field_missing_values: Optional[str],
-    schema_sync: Optional[bool],
+    buffer_size: Optional[int] = None,
+    sample_size: Optional[int] = None,
+    field_type: Optional[str] = None,
+    field_names: Optional[str] = None,
+    field_confidence: Optional[float] = None,
+    field_float_numbers: Optional[bool] = None,
+    field_missing_values: Optional[str] = None,
+    schema_sync: Optional[bool] = None,
 ) -> Detector:
     # Detector
     detector = Detector()
