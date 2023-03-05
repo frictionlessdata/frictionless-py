@@ -2,6 +2,8 @@ from __future__ import annotations
 import sys
 import typer
 from typing import List
+from rich.syntax import Syntax
+from rich.console import Console
 from ..detector import Detector
 from ..actions import describe
 from ..dialect import Dialect
@@ -57,6 +59,7 @@ def program_describe(
     Based on the inferred data source type it will return resource or package descriptor.
     Default output format is YAML with a front matter.
     """
+    console = Console()
 
     # Setup system
     if trusted:
@@ -140,23 +143,25 @@ def program_describe(
 
     # Yaml mode
     if yaml:
-        output = metadata.to_yaml().strip()
-        typer.secho(output)
+        descriptor = metadata.to_yaml().strip()
+        print(descriptor)
         raise typer.Exit()
 
     # Json mode
     if json:
-        output = metadata.to_json()
-        typer.secho(output)
+        descriptor = metadata.to_json()
+        print(descriptor)
         raise typer.Exit()
 
     # Markdown mode
     if markdown:
-        output = metadata.to_markdown().strip()
-        typer.secho(output)
+        descriptor = metadata.to_markdown().strip()
+        print(descriptor)
         raise typer.Exit()
 
     # Default mode
-    typer.secho("")
-    typer.secho(metadata.to_yaml().strip())
-    typer.secho("")
+    descriptor = metadata.to_yaml().strip()
+    syntax = Syntax(descriptor, "yaml")
+    console.print()
+    console.print(syntax)
+    console.print()
