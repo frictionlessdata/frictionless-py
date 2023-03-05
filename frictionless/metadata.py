@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 class Metaclass(type):
     # TODO: why it's called twice for every class?
-    def __init__(cls, *args, **kwarts):
+    def __init__(cls, *args, **kwargs):
         if cls.metadata_profile_patch:  # type: ignore
             cls.metadata_profile = helpers.merge_jsonschema(
                 cls.metadata_profile,  # type: ignore
@@ -78,7 +78,7 @@ class Metadata(metaclass=Metaclass):
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
-        return pprint.pformat(self.to_descriptor(debug=True), sort_dicts=False)
+        return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
     @property
     def description_html(self) -> str:
@@ -185,9 +185,9 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self, *, debug: bool = False) -> IDescriptor:
+    def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
         descriptor = self.metadata_export()
-        if not debug:
+        if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
             errors = list(self.metadata_validate(descriptor))
             if errors:

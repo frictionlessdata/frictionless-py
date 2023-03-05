@@ -74,7 +74,7 @@ class Schema(Metadata):
             field.schema = self
 
     def __bool__(self):
-        return bool(self.fields) or bool(self.to_descriptor(debug=True))
+        return bool(self.fields) or bool(self.to_descriptor())
 
     # Fields
 

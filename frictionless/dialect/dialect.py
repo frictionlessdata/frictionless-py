@@ -81,7 +81,7 @@ class Dialect(Metadata):
     """
 
     def __bool__(self):
-        return bool(self.controls) or bool(self.to_descriptor(debug=True))
+        return bool(self.controls) or bool(self.to_descriptor())
 
     # Describe
 
