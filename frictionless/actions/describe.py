@@ -1,10 +1,6 @@
 from typing import Any, Optional
-from ..dialect import Dialect
+from ..platform import platform
 from ..resource import Resource
-from ..package import Package
-from ..schema import Schema
-from ..exception import FrictionlessException
-from .. import helpers
 
 
 def describe(
@@ -17,36 +13,32 @@ def describe(
     """Describe the data source
 
     Parameters:
-        source (any): data source
-        type (str): source type - `schema`, `resource` or `package` (default: infer)
+        source: data source
+        type: source type - `dialect`, `schema`, `resource` or `package` (default: infer)
         stats? (bool): if `True` infer resource's stats
-        **options (dict): options for the underlaying describe function
+        **options (dict): options for the detecting Resource class
 
     Returns:
         Metadata: described metadata e.g. a Table Schema
     """
+    resources = platform.frictionless_resources
 
-    # Detect type
-    if not type:
-        type = "resource"
-        if helpers.is_expandable_source(source):
-            type = "package"
+    # Create resource
+    datatype = ""
+    if type:
+        datatype = "package" if type == "package" else "resource"
+    resource = Resource(source, datatype=datatype, **options)
 
-    # Describe resource
-    if type == "resource":
-        return Resource.describe(source, stats=stats, **options)
+    # Infer package
+    if isinstance(resource, resources.PackageResource):
+        package = resource.read_metadata()
+        package.infer(stats=stats)
+        return package
 
-    # Describe package
-    if type == "package":
-        return Package.describe(source, stats=stats, **options)
-
-    # Describe dialect
+    # Infer resource
+    resource.infer(stats=stats)
     if type == "dialect":
-        return Dialect.describe(source, **options)
-
-    # Describe schema
+        return resource.dialect
     if type == "schema":
-        return Schema.describe(source, **options)
-
-    # Not supported
-    raise FrictionlessException(f"Not supported describe type: {type}")
+        return resource.schema
+    return resource

@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class ResourceResource(MetadataResource[Resource]):
     datatype = "resource"
+    dataclass = Resource
 
     # Extract
 
