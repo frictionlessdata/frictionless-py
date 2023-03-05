@@ -7,7 +7,7 @@ from ..resource import Resource
 from ..system import system
 from .program import program
 from . import common
-from . import library
+from . import utils
 
 
 @program.command(name="validate")
@@ -80,14 +80,14 @@ def program_validate(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = library.create_source(source, path=path)
-    if source is None and path is None:
-        message = 'Providing "source" or "path" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+    source = utils.create_source(source, path=path)
+    if not source and not path:
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
     # Create dialect
-    dialect_obj = library.create_dialect(
+    dialect_obj = utils.create_dialect(
         descriptor=dialect,
         header_rows=header_rows,
         header_join=header_join,
@@ -100,7 +100,7 @@ def program_validate(
     )
 
     # Create detector
-    detector_obj = library.create_detector(
+    detector_obj = utils.create_detector(
         buffer_size=buffer_size,
         sample_size=sample_size,
         field_type=field_type,
@@ -111,29 +111,8 @@ def program_validate(
         schema_sync=schema_sync,
     )
 
-    # Create resource
-    resource = Resource(
-        source=library.create_source(source),
-        name=name,
-        path=path,
-        scheme=scheme,
-        format=format,
-        datatype=type or "",
-        compression=compression,
-        innerpath=innerpath,
-        encoding=encoding,
-        hash=hash,
-        bytes=bytes,
-        fields=fields,
-        rows=rows,
-        dialect=dialect_obj,
-        schema=schema,
-        basepath=basepath,
-        detector=detector_obj,
-    )
-
     # Create checklist
-    detector_obj = library.create_checklist(
+    checklist_obj = utils.create_checklist(
         descriptor=checklist,
         checks=checks,
         pick_errors=pick_errors,
@@ -142,29 +121,46 @@ def program_validate(
 
     # Validate resource
     try:
+        resource = Resource(
+            source=utils.create_source(source),
+            name=name,
+            path=path,
+            scheme=scheme,
+            format=format,
+            datatype=type or "",
+            compression=compression,
+            innerpath=innerpath,
+            encoding=encoding,
+            hash=hash,
+            bytes=bytes,
+            fields=fields,
+            rows=rows,
+            dialect=dialect_obj,
+            schema=schema,
+            basepath=basepath,
+            detector=detector_obj,
+        )
         report = resource.validate(
+            checklist_obj,
             name=name,
             parallel=parallel,
             limit_rows=limit_rows,
             limit_errors=limit_errors,
         )
     except Exception as exception:
-        if debug:
-            console.print_exception()
-            raise typer.Exit(1)
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
     # Return JSON
     if json:
         content = report.to_json()
-        typer.secho(content)
+        print(content)
         raise typer.Exit()
 
     # Return YAML
     if yaml:
         content = report.to_yaml().strip()
-        typer.secho(content)
+        print(content)
         raise typer.Exit()
 
     # Return validation report errors

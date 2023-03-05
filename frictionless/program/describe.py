@@ -12,6 +12,7 @@ from .program import program
 from .. import formats
 from .. import helpers
 from . import common
+from . import utils
 
 
 @program.command(name="describe")
@@ -78,7 +79,7 @@ def program_describe(
     if not source and not path:
         message = 'Providing "source" or "path" is required'
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        raise typer.Exit(code=1)
 
     # Prepare source
     def prepare_source():
@@ -136,11 +137,8 @@ def program_describe(
     try:
         metadata = describe(prepare_source(), **prepare_options())
     except Exception as exception:
-        if debug:
-            console.print_exception()
-            raise typer.Exit(1)
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
     # Yaml mode
     if yaml:

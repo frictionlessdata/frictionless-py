@@ -9,8 +9,8 @@ from ..platform import platform
 from ..system import system
 from .program import program
 from .. import helpers
-from . import library
 from . import common
+from . import utils
 
 if TYPE_CHECKING:
     from ..interfaces import IFilterFunction, IProcessFunction
@@ -84,14 +84,14 @@ def program_extract(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = library.create_source(source, path=path)
-    if source is None and path is None:
-        message = 'Providing "source" or "path" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+    source = utils.create_source(source, path=path)
+    if not source and not path:
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
     # Create dialect
-    dialect_obj = library.create_dialect(
+    dialect_obj = utils.create_dialect(
         descriptor=dialect,
         header_rows=header_rows,
         header_join=header_join,
@@ -104,7 +104,7 @@ def program_extract(
     )
 
     # Create detector
-    detector_obj = library.create_detector(
+    detector_obj = utils.create_detector(
         buffer_size=buffer_size,
         sample_size=sample_size,
         field_type=field_type,
@@ -113,22 +113,6 @@ def program_extract(
         field_float_numbers=field_float_numbers,
         field_missing_values=field_missing_values,
         schema_sync=schema_sync,
-    )
-
-    # Create resource
-    resource = Resource(
-        source=library.create_source(source),
-        path=path,
-        scheme=scheme,
-        format=format,
-        datatype=type or "",
-        compression=compression,
-        innerpath=innerpath,
-        encoding=encoding,
-        dialect=dialect_obj,
-        schema=schema,
-        basepath=basepath,
-        detector=detector_obj,
     )
 
     # Create filter
@@ -152,6 +136,20 @@ def program_extract(
 
     # Extract data
     try:
+        resource = Resource(
+            source=utils.create_source(source),
+            path=path,
+            scheme=scheme,
+            format=format,
+            datatype=type or "",
+            compression=compression,
+            innerpath=innerpath,
+            encoding=encoding,
+            dialect=dialect_obj,
+            schema=schema,
+            basepath=basepath,
+            detector=detector_obj,
+        )
         data = resource.extract(
             name=name,
             filter=filter,
@@ -159,29 +157,26 @@ def program_extract(
             limit_rows=limit_rows,
         )
     except Exception as exception:
-        if debug:
-            console.print_exception()
-            raise typer.Exit(1)
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
     # Yaml mode
     if yaml:
         content = platform.yaml.safe_dump(data, allow_unicode=True).strip()
-        typer.secho(content)
+        print(content)
         raise typer.Exit()
 
     # Json mode
     if json:
         content = pyjson.dumps(data, indent=2, ensure_ascii=False)
-        typer.echo(content)
+        print(content)
         raise typer.Exit()
 
     # No data
     if not data:
         note = "No tabular data have been found in the source"
-        typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
     # TODO: rework
     # Csv mode

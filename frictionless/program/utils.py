@@ -1,5 +1,7 @@
 import sys
 from typing import Optional, Any
+from rich.panel import Panel
+from rich.console import Console
 from ..checklist import Checklist, Check
 from ..detector import Detector
 from ..platform import platform
@@ -157,3 +159,24 @@ def create_checklist(
         checklist.skip_errors = helpers.parse_csv_string_typed(skip_errors)
 
     return checklist
+
+
+# Console
+
+
+def print_error(console: Console, *, note: str) -> None:
+    panel = Panel(note, title="Error", border_style="red", title_align="left")
+    console.print(panel)
+
+
+def print_exception(
+    console: Console,
+    *,
+    exception: Exception,
+    debug: Optional[bool] = False,
+) -> None:
+    if debug:
+        console.print_exception()
+        return
+    panel = Panel(str(exception), title="Error", border_style="red", title_align="left")
+    console.print(panel)
