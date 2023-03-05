@@ -1,20 +1,20 @@
 from __future__ import annotations
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Optional, List
-from ...exception import FrictionlessException
-from ...checklist import Checklist
-from ...resource import Resource
-from ...report import Report
-from ... import settings
-from ... import helpers
+from ..exception import FrictionlessException
+from ..checklist import Checklist
+from ..resource import Resource
+from ..report import Report
+from .. import settings
+from .. import helpers
 
 if TYPE_CHECKING:
-    from ...interfaces import IDescriptor
+    from ..interfaces import IDescriptor
     from ..package import Package
 
 
 def validate(
-    self: Package,
+    package: Package,
     checklist: Optional[Checklist] = None,
     *,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
@@ -25,7 +25,7 @@ def validate(
     timer = helpers.Timer()
     reports: List[Report] = []
     with_fks = any(
-        resource.schema and resource.schema.foreign_keys for resource in self.resources
+        resource.schema and resource.schema.foreign_keys for resource in package.resources
     )
 
     # Prepare checklist
@@ -33,13 +33,13 @@ def validate(
 
     # Validate metadata
     try:
-        self.to_descriptor()
+        package.to_descriptor()
     except FrictionlessException as exception:
         return Report.from_validation(time=timer.time, errors=exception.to_errors())
 
     # Validate sequential
     if not parallel or with_fks:
-        for resource in self.resources:
+        for resource in package.resources:
             report = resource.validate(
                 limit_errors=limit_errors,
                 limit_rows=limit_rows,
@@ -50,7 +50,7 @@ def validate(
     else:
         with Pool() as pool:
             options_pool: List[dict] = []
-            for resource in self.resources:
+            for resource in package.resources:
                 options = {}
                 options["resource"] = {}
                 options["resource"]["descriptor"] = resource.to_descriptor()

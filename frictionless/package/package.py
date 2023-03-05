@@ -7,11 +7,12 @@ from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
 from ..system import system
+from .transform import transform
+from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
 from .. import fields
-from . import methods
 
 if TYPE_CHECKING:
     from ..checklist import Checklist
@@ -460,7 +461,7 @@ class Package(Metadata):
         Returns:
             Package: the transform result
         """
-        return methods.transform(self, pipeline)
+        return transform(self, pipeline)
 
     # Validate
 
@@ -482,7 +483,7 @@ class Package(Metadata):
             Report: validation report
 
         """
-        return methods.validate(
+        return validate(
             self,
             checklist,
             limit_errors=limit_errors,
