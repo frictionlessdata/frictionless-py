@@ -13,6 +13,9 @@ def extras(*, name: str):
             try:
                 return func(*args, **kwargs)
             except Exception:
+                if name == "wkt" and sys.version_info >= (3, 10):
+                    note = "WKT is not supported in Python3.10+ (grako is unmaintained)"
+                    raise platform.frictionless.FrictionlessException(note)
                 module = import_module("frictionless.exception")
                 note = f'Please install "frictionless[{name}]"'
                 raise module.FrictionlessException(note)
