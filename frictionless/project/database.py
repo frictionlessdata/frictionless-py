@@ -283,7 +283,7 @@ class Database:
         schema = record["resource"]["schema"]
         return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
 
-    # TODO: temporary solution until we don't have proper database's table editing
+    # TODO: temporary solution while we don't have proper database's table editing
     def save_table(self, path: str, *, tablePatch: dict, basepath: str) -> Resource:
         resource = Resource(path, basepath=basepath)
         data = resource.read_rows()
