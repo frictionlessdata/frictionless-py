@@ -252,7 +252,8 @@ class Database:
         pass
 
     # Table
-
+    # TODO:This is a placeholder code for export and we need to export it from
+    # database.
     def export_table(self, path: str, newfilepath: str) -> Resource:
         resource = Resource(path=path).write(newfilepath)
         return resource
