@@ -212,11 +212,11 @@ class Project:
 
     # Table
 
-    def export_table(self, path: str, *, target: str) -> str:
+    def export_table(self, source: str, *, target: str) -> str:
         assert self.filesystem.is_filename(target)
-        newfilepath = self.filesystem.get_secure_fullpath(target)
-        path = self.filesystem.get_secure_fullpath(path)
-        self.database.export_table(path, newfilepath=newfilepath)
+        target = self.filesystem.get_secure_fullpath(target)
+        source = self.filesystem.get_secure_fullpath(source)
+        self.database.export_table(source, target=target)
         return target
 
     def query_table(self, query: str) -> ITable:

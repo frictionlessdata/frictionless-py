@@ -254,8 +254,8 @@ class Database:
     # Table
     # TODO:This is a placeholder code for export and we need to export it from
     # database.
-    def export_table(self, path: str, newfilepath: str) -> Resource:
-        resource = Resource(path=path).write(newfilepath)
+    def export_table(self, source: str, target: str) -> Resource:
+        resource = Resource(path=source).write(target)
         return resource
 
     def query_table(self, query: str) -> ITable:
