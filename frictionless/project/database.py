@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Optional, List, Dict
 from datetime import datetime
+from ..resource import Resource
 from ..schema import Schema
 from ..platform import platform
 from .interfaces import IRecord, IRecordItem, ITable, IQueryData, IFieldItem
@@ -11,7 +12,6 @@ if TYPE_CHECKING:
     from sqlalchemy import Table, MetaData
     from sqlalchemy.engine import Engine
     from ..formats.sql import SqlMapper
-    from ..resource import Resource
 
 
 class Database:
@@ -252,6 +252,11 @@ class Database:
         pass
 
     # Table
+    # TODO:This is a placeholder code for export and we need to export it from
+    # database.
+    def export_table(self, source: str, target: str) -> Resource:
+        resource = Resource(path=source).write(target)
+        return resource
 
     def query_table(self, query: str) -> ITable:
         result = self.query(query)
