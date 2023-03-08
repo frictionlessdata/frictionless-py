@@ -286,3 +286,16 @@ class Database:
         data = self.query(str(query))
         schema = record["resource"]["schema"]
         return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
+
+    # TODO: temporary solution while we don't have proper database's table editing
+    def save_table(self, path: str, *, tablePatch: dict, basepath: str) -> Resource:
+        resource = Resource(path, basepath=basepath)
+        data = resource.read_rows()
+        for index, row in enumerate(data):
+            rowNumber = index + 2
+            if rowNumber not in tablePatch:
+                continue
+            row.update(tablePatch[rowNumber])
+            data[index] = row
+        newresource = Resource(data, basepath=basepath)
+        return newresource.write(path)

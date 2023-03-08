@@ -232,6 +232,13 @@ class Project:
     ) -> ITable:
         return self.database.read_table(path, valid=valid, limit=limit, offset=offset)
 
+    def save_table(self, path: str, tablePatch: dict[str, str]) -> str:
+        assert self.filesystem.is_filename(path)
+        self.database.save_table(
+            path, tablePatch=tablePatch, basepath=str(self.filesystem.basepath)
+        )
+        return path
+
     # Text
 
     # TODO: use detected resource.encoding if indexed
