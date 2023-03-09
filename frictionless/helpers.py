@@ -69,6 +69,24 @@ class SafeFormatDict(dict):
         return ""
 
 
+def to_json(obj: Any, *, encoder_class: Optional[Any] = None) -> str:
+    return json.dumps(
+        obj,
+        indent=2,
+        ensure_ascii=False,
+        cls=encoder_class,
+    )
+
+
+def to_yaml(obj: Any) -> str:
+    return platform.yaml.dump(
+        obj,
+        sort_keys=False,
+        allow_unicode=True,
+        Dumper=create_yaml_dumper(),
+    )
+
+
 def cleaned_dict(**options):
     return dict(**remove_non_values(options))
 

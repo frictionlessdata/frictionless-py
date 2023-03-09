@@ -1,0 +1,134 @@
+from __future__ import annotations
+import typer
+from typing import List
+from rich.console import Console
+from rich.table import Table
+from ..resource import Resource
+from ..system import system
+from .program import program
+from .. import helpers
+from . import common
+from . import utils
+
+
+@program.command(name="list")
+def program_describe(
+    # Source
+    source: List[str] = common.source,
+    type: str = common.type,
+    path: str = common.path,
+    scheme: str = common.scheme,
+    format: str = common.format,
+    encoding: str = common.encoding,
+    innerpath: str = common.innerpath,
+    compression: str = common.compression,
+    # Dialect
+    dialect: str = common.dialect,
+    header_rows: str = common.header_rows,
+    header_join: str = common.header_join,
+    comment_char: str = common.comment_char,
+    comment_rows: str = common.comment_rows,
+    sheet: str = common.sheet,
+    table: str = common.table,
+    keys: str = common.keys,
+    keyed: bool = common.keyed,
+    # Detector
+    buffer_size: int = common.buffer_size,
+    sample_size: int = common.sample_size,
+    field_type: str = common.field_type,
+    field_names: str = common.field_names,
+    field_confidence: float = common.field_confidence,
+    field_float_numbers: bool = common.field_float_numbers,
+    field_missing_values: str = common.field_missing_values,
+    # Command
+    basepath: str = common.basepath,
+    yaml: bool = common.yaml,
+    json: bool = common.json,
+    debug: bool = common.debug,
+    trusted: bool = common.trusted,
+    standards: str = common.standards,
+):
+    """
+    List a data source.
+    """
+    console = Console()
+
+    # Setup system
+    if trusted:
+        system.trusted = trusted
+    if standards:
+        system.standards = standards  # type: ignore
+
+    # Create source
+    source = utils.create_source(source, path=path)
+    if not source and not path:
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
+
+    # Create dialect
+    dialect_obj = utils.create_dialect(
+        descriptor=dialect,
+        header_rows=header_rows,
+        header_join=header_join,
+        comment_char=comment_char,
+        comment_rows=comment_rows,
+        sheet=sheet,
+        table=table,
+        keys=keys,
+        keyed=keyed,
+    )
+
+    # Create detector
+    detector_obj = utils.create_detector(
+        buffer_size=buffer_size,
+        sample_size=sample_size,
+        field_type=field_type,
+        field_names=field_names,
+        field_confidence=field_confidence,
+        field_float_numbers=field_float_numbers,
+        field_missing_values=field_missing_values,
+    )
+
+    # List source
+    try:
+        resource = Resource(
+            source=utils.create_source(source),
+            path=path,
+            scheme=scheme,
+            format=format,
+            datatype=type or "",
+            compression=compression,
+            innerpath=innerpath,
+            encoding=encoding,
+            dialect=dialect_obj,
+            basepath=basepath,
+            detector=detector_obj,
+        )
+        resources = resource.list()
+        descriptors = [resource.to_descriptor() for resource in resources]
+    except Exception as exception:
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
+
+    # Yaml mode
+    if yaml:
+        descriptor = helpers.to_yaml(descriptors).strip()
+        print(descriptor)
+        raise typer.Exit()
+
+    # Json mode
+    if json:
+        descriptor = helpers.to_json(descriptors).strip()
+        print(descriptor)
+        raise typer.Exit()
+
+    # Default mode
+    view = Table(title="resources")
+    view.add_column("name")
+    view.add_column("type")
+    view.add_column("path")
+    for resource in resources:
+        row = [resource.name, resource.type, resource.path]
+        view.add_row(*row)
+    console.print(view)

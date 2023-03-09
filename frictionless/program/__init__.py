@@ -7,6 +7,7 @@ from . import describe
 from . import explore
 from . import extract
 from . import index
+from . import list
 from . import query
 from . import summary
 from . import transform

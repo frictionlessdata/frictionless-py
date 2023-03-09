@@ -220,12 +220,7 @@ class Metadata(metaclass=Metaclass):
             path (str): target path
         """
         Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        text = json.dumps(
-            self.to_descriptor(),
-            indent=2,
-            ensure_ascii=False,
-            cls=encoder_class,
-        )
+        text = helpers.to_json(self.to_descriptor(), encoder_class=encoder_class)
         if path:
             try:
                 helpers.write_file(path, text)
@@ -240,12 +235,7 @@ class Metadata(metaclass=Metaclass):
             path (str): target path
         """
         Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        text = platform.yaml.dump(
-            self.to_descriptor(),
-            sort_keys=False,
-            allow_unicode=True,
-            Dumper=helpers.create_yaml_dumper(),
-        )
+        text = helpers.to_yaml(self.to_descriptor())
         if path:
             try:
                 helpers.write_file(path, text)
