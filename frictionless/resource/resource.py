@@ -558,7 +558,7 @@ class Resource(Metadata):
             raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
 
-    # Actions
+    # Describe
 
     @classmethod
     def describe(
@@ -578,6 +578,8 @@ class Resource(Metadata):
         resource = cls(source, **options)
         resource.infer(stats=stats)
         return resource
+
+    # Extract
 
     def extract(
         self,
@@ -601,9 +603,13 @@ class Resource(Metadata):
         """
         return {}
 
+    # List
+
     def list(self) -> List[Resource]:
         """List dataset resources"""
         return [self]
+
+    # Index
 
     def index(
         self,
@@ -618,6 +624,21 @@ class Resource(Metadata):
     ) -> List[str]:
         """Index data into a database"""
         return []
+
+    # Transform
+
+    def transform(self, pipeline: Pipeline) -> Any:
+        """Transform resource
+
+        Parameters:
+            pipeline: transform Pipeline
+
+        Returns:
+            Resource: the transform result
+        """
+        return self
+
+    # Validate
 
     def validate(
         self,
@@ -644,17 +665,6 @@ class Resource(Metadata):
 
         """
         return validate(self, checklist)
-
-    def transform(self, pipeline: Pipeline) -> Any:
-        """Transform resource
-
-        Parameters:
-            pipeline: transform Pipeline
-
-        Returns:
-            Resource: the transform result
-        """
-        return self
 
     # Infer
 
