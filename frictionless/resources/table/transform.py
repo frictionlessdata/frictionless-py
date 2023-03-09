@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from ...pipeline import Pipeline
 from ...exception import FrictionlessException
 from ...dialect import Dialect
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 # TODO: save transform info into resource.stats?
-def transform(resource: TableResource, pipeline: Optional[Pipeline] = None):
+def transform(resource: TableResource, pipeline: Pipeline):
     # Prepare resource
     resource.infer()
 

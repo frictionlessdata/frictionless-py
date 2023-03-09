@@ -22,6 +22,7 @@ from .. import fields
 if TYPE_CHECKING:
     from ..report import Report
     from ..checklist import Checklist
+    from ..pipeline import Pipeline
     from ..package import Package
     from ..table import IRowStream
     from ..system import Loader, Parser
@@ -557,6 +558,104 @@ class Resource(Metadata):
             raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
 
+    # Actions
+
+    @classmethod
+    def describe(
+        cls, source: Optional[Any] = None, *, stats: bool = False, **options
+    ) -> Resource:
+        """Describe the given source as a resource
+
+        Parameters:
+            source (any): data source
+            stats? (bool): if `True` infer resource's stats
+            **options (dict): Resource constructor options
+
+        Returns:
+            Resource: data resource
+
+        """
+        resource = cls(source, **options)
+        resource.infer(stats=stats)
+        return resource
+
+    def extract(
+        self,
+        *,
+        name: Optional[str] = None,
+        filter: Optional[IFilterFunction] = None,
+        process: Optional[IProcessFunction] = None,
+        limit_rows: Optional[int] = None,
+    ) -> ITabularData:
+        """Extract rows
+
+        Parameters:
+            name: extract only resource having this name
+            filter: row filter function
+            process: row processor function
+            limit_rows: limit amount of rows to this number
+
+        Returns:
+            extracted rows indexed by resource name
+
+        """
+        return {}
+
+    def list(self) -> List[Resource]:
+        """List dataset resources"""
+        return [self]
+
+    def index(
+        self,
+        database_url: str,
+        *,
+        table_name: str,
+        fast: bool = False,
+        qsv_path: Optional[str] = None,
+        on_row: Optional[IOnRow] = None,
+        on_progress: Optional[IOnProgress] = None,
+        use_fallback: bool = False,
+    ) -> List[str]:
+        """Index data into a database"""
+        return []
+
+    def validate(
+        self,
+        checklist: Optional[Checklist] = None,
+        *,
+        name: Optional[str] = None,
+        on_row: Optional[ICallbackFunction] = None,
+        parallel: bool = False,
+        limit_rows: Optional[int] = None,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
+    ) -> Report:
+        """Validate resource
+
+        Parameters:
+            checklist: a Checklist object
+            name: limit validation to one resource (if applicable)
+            on_row: callbacke for every row
+            paraller: allow parallel validation (multiprocessing)
+            limit_rows: limit amount of rows to this number
+            limit_errors: limit amount of errors to this number
+
+        Returns:
+            Report: validation report
+
+        """
+        return validate(self, checklist)
+
+    def transform(self, pipeline: Pipeline) -> Any:
+        """Transform resource
+
+        Parameters:
+            pipeline: transform Pipeline
+
+        Returns:
+            Resource: the transform result
+        """
+        return self
+
     # Infer
 
     # TODO: allow cherry-picking stats for adding to a descriptor
@@ -936,95 +1035,6 @@ class Resource(Metadata):
                 if size and len(rows) >= size:
                     break
             return rows
-
-    # Describe
-
-    @classmethod
-    def describe(
-        cls, source: Optional[Any] = None, *, stats: bool = False, **options
-    ) -> Resource:
-        """Describe the given source as a resource
-
-        Parameters:
-            source (any): data source
-            stats? (bool): if `True` infer resource's stats
-            **options (dict): Resource constructor options
-
-        Returns:
-            Resource: data resource
-
-        """
-        resource = cls(source, **options)
-        resource.infer(stats=stats)
-        return resource
-
-    # Extract
-
-    def extract(
-        self,
-        *,
-        name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
-        limit_rows: Optional[int] = None,
-    ) -> ITabularData:
-        """Extract rows
-
-        Parameters:
-            name: extract only resource having this name
-            filter: row filter function
-            process: row processor function
-            limit_rows: limit amount of rows to this number
-
-        Returns:
-            extracted rows indexed by resource name
-
-        """
-        return {}
-
-    # Index
-
-    def index(
-        self,
-        database_url: str,
-        *,
-        table_name: str,
-        fast: bool = False,
-        qsv_path: Optional[str] = None,
-        on_row: Optional[IOnRow] = None,
-        on_progress: Optional[IOnProgress] = None,
-        use_fallback: bool = False,
-    ) -> None:
-        """Index data into a database"""
-        pass
-
-    # Validate
-
-    def validate(
-        self,
-        checklist: Optional[Checklist] = None,
-        *,
-        name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
-        parallel: bool = False,
-        limit_rows: Optional[int] = None,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-    ) -> Report:
-        """Validate resource
-
-        Parameters:
-            checklist: a Checklist object
-            name: limit validation to one resource (if applicable)
-            on_row: callbacke for every row
-            paraller: allow parallel validation (multiprocessing)
-            limit_rows: limit amount of rows to this number
-            limit_errors: limit amount of errors to this number
-
-        Returns:
-            Report: validation report
-
-        """
-        return validate(self, checklist)
 
     # Convert
 

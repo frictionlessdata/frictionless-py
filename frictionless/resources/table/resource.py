@@ -84,15 +84,7 @@ class TableResource(Resource):
 
     # Transform
 
-    def transform(self, pipeline: Optional[Pipeline] = None):
-        """Transform resource
-
-        Parameters:
-            steps (Step[]): transform steps
-
-        Returns:
-            Resource: the transform result
-        """
+    def transform(self, pipeline: Pipeline):
         return transform(self, pipeline)
 
     # Validate

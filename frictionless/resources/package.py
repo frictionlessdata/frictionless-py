@@ -7,6 +7,7 @@ from .metadata import MetadataResource
 from .. import settings
 
 if TYPE_CHECKING:
+    from ..pipeline import Pipeline
     from ..checklist import Checklist
     from ..interfaces import ICallbackFunction
     from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
@@ -54,3 +55,9 @@ class PackageResource(MetadataResource[Package]):
             limit_rows=limit_rows,
             limit_errors=limit_errors,
         )
+
+    # Transform
+
+    def transform(self, pipeline: Pipeline):
+        package = self.read_metadata()
+        return package.transform(pipeline)
