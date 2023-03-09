@@ -2,6 +2,7 @@ import sys
 from typing import Optional, Any
 from rich.panel import Panel
 from rich.console import Console
+from ..pipeline import Pipeline, Step
 from ..checklist import Checklist, Check
 from ..detector import Detector
 from ..platform import platform
@@ -159,6 +160,24 @@ def create_checklist(
         checklist.skip_errors = helpers.parse_csv_string_typed(skip_errors)
 
     return checklist
+
+
+# Pipeline
+
+
+def create_pipeline(
+    descriptor: Optional[str] = None,
+    steps: Optional[str] = None,
+):
+    # Pipeline
+    descriptor = helpers.parse_json_string(descriptor)
+    pipeline = Pipeline.from_descriptor(descriptor) if descriptor else Pipeline()
+
+    # Steps
+    for step in helpers.parse_descriptors_string(steps) or []:
+        pipeline.add_step(Step.from_descriptor(step))
+
+    return pipeline
 
 
 # Console

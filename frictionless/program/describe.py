@@ -1,18 +1,12 @@
 from __future__ import annotations
-import sys
 import typer
 from typing import List
 from rich.syntax import Syntax
 from rich.console import Console
 from ..platform import platform
-from ..detector import Detector
 from ..resource import Resource
-from ..actions import describe
-from ..dialect import Dialect
 from ..system import system
 from .program import program
-from .. import formats
-from .. import helpers
 from . import common
 from . import utils
 
