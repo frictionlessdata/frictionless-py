@@ -1,8 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 from ..exception import FrictionlessException
 from ..report import Report
 from ..package import Package
+from ..resource import Resource
 from .metadata import MetadataResource
 from .. import settings
 
@@ -31,6 +32,13 @@ class PackageResource(MetadataResource[Package]):
         return package.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
+
+    # List
+
+    def list(self) -> List[Resource]:
+        """List dataset resources"""
+        package = self.read_metadata()
+        return package.resources
 
     # Validate
 

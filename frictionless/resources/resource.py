@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 from ..exception import FrictionlessException
 from ..report import Report
 from ..resource import Resource
@@ -31,6 +31,13 @@ class ResourceResource(MetadataResource[Resource]):
         return resource.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
+
+    # List
+
+    def list(self) -> List[Resource]:
+        """List dataset resources"""
+        resource = self.read_metadata()
+        return [resource]
 
     # Validate
 
