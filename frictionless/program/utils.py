@@ -211,10 +211,10 @@ def index_resource(
             transient=True,
         ) as progress:
             status = progress.add_task(
-                description=f"\\[{resource.name}] Indexing...", total=None
+                description=f"\\[[bold]{resource.name}[/]] Indexing...", total=None
             )
             on_progress = lambda name, message: progress.update(
-                status, description=f"\\[{name}] Indexed {message}"
+                status, description=f"\\[[bold]{name}[/]] Indexed {message}"
             )
             names = resource.index(
                 database_url=database,
