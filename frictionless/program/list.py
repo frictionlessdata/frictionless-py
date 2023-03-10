@@ -65,33 +65,32 @@ def program_describe(
         note = 'Providing "source" or "path" is required'
         utils.print_error(console, note=note)
         raise typer.Exit(code=1)
-
-    # Create dialect
-    dialect_obj = utils.create_dialect(
-        descriptor=dialect,
-        header_rows=header_rows,
-        header_join=header_join,
-        comment_char=comment_char,
-        comment_rows=comment_rows,
-        sheet=sheet,
-        table=table,
-        keys=keys,
-        keyed=keyed,
-    )
-
-    # Create detector
-    detector_obj = utils.create_detector(
-        buffer_size=buffer_size,
-        sample_size=sample_size,
-        field_type=field_type,
-        field_names=field_names,
-        field_confidence=field_confidence,
-        field_float_numbers=field_float_numbers,
-        field_missing_values=field_missing_values,
-    )
-
-    # List source
     try:
+        # Create dialect
+        dialect_obj = utils.create_dialect(
+            descriptor=dialect,
+            header_rows=header_rows,
+            header_join=header_join,
+            comment_char=comment_char,
+            comment_rows=comment_rows,
+            sheet=sheet,
+            table=table,
+            keys=keys,
+            keyed=keyed,
+        )
+
+        # Create detector
+        detector_obj = utils.create_detector(
+            buffer_size=buffer_size,
+            sample_size=sample_size,
+            field_type=field_type,
+            field_names=field_names,
+            field_confidence=field_confidence,
+            field_float_numbers=field_float_numbers,
+            field_missing_values=field_missing_values,
+        )
+
+        # Create resource
         resource = Resource(
             source=utils.create_source(source),
             path=path,
@@ -105,6 +104,8 @@ def program_describe(
             basepath=basepath,
             detector=detector_obj,
         )
+
+        # List resources
         resources = resource.list()
         descriptors = [resource.to_descriptor() for resource in resources]
     except Exception as exception:

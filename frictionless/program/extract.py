@@ -90,52 +90,52 @@ def program_extract(
         utils.print_error(console, note=note)
         raise typer.Exit(code=1)
 
-    # Create dialect
-    dialect_obj = utils.create_dialect(
-        descriptor=dialect,
-        header_rows=header_rows,
-        header_join=header_join,
-        comment_char=comment_char,
-        comment_rows=comment_rows,
-        sheet=sheet,
-        table=table,
-        keys=keys,
-        keyed=keyed,
-    )
-
-    # Create detector
-    detector_obj = utils.create_detector(
-        buffer_size=buffer_size,
-        sample_size=sample_size,
-        field_type=field_type,
-        field_names=field_names,
-        field_confidence=field_confidence,
-        field_float_numbers=field_float_numbers,
-        field_missing_values=field_missing_values,
-        schema_sync=schema_sync,
-    )
-
-    # Create filter
-    filter: Optional[IFilterFunction] = None
-    if valid:
-        filter = lambda row: row.valid
-    elif invalid:
-        filter = lambda row: not row.valid
-
-    # Create processor
-    process: Optional[IProcessFunction] = None
-    if yaml or json:
-        process = lambda row: row.to_dict(json=True)
-    elif csv:
-        process = lambda row: row.to_dict(csv=True)
-
-    # Create limit
-    if limit_rows is None:
-        if not any([yaml, json, csv]):
-            limit_rows = DEFAULT_MAX_ROWS
-
-    # Extract data
     try:
+        # Create dialect
+        dialect_obj = utils.create_dialect(
+            descriptor=dialect,
+            header_rows=header_rows,
+            header_join=header_join,
+            comment_char=comment_char,
+            comment_rows=comment_rows,
+            sheet=sheet,
+            table=table,
+            keys=keys,
+            keyed=keyed,
+        )
+
+        # Create detector
+        detector_obj = utils.create_detector(
+            buffer_size=buffer_size,
+            sample_size=sample_size,
+            field_type=field_type,
+            field_names=field_names,
+            field_confidence=field_confidence,
+            field_float_numbers=field_float_numbers,
+            field_missing_values=field_missing_values,
+            schema_sync=schema_sync,
+        )
+
+        # Create filter
+        filter: Optional[IFilterFunction] = None
+        if valid:
+            filter = lambda row: row.valid
+        elif invalid:
+            filter = lambda row: not row.valid
+
+        # Create processor
+        process: Optional[IProcessFunction] = None
+        if yaml or json:
+            process = lambda row: row.to_dict(json=True)
+        elif csv:
+            process = lambda row: row.to_dict(csv=True)
+
+        # Create limit
+        if limit_rows is None:
+            if not any([yaml, json, csv]):
+                limit_rows = DEFAULT_MAX_ROWS
+
+        # Create resource
         resource = Resource(
             source=utils.create_source(source),
             path=path,
@@ -150,14 +150,17 @@ def program_extract(
             basepath=basepath,
             detector=detector_obj,
         )
-        # TODO: add progress
+
+        # List resources
+        resources = resource.list()
+
+        # Extract data
         data = resource.extract(
             name=name,
             filter=filter,
             process=process,
             limit_rows=limit_rows,
         )
-        resources = resource.list()
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)

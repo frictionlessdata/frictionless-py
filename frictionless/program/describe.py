@@ -1,11 +1,10 @@
 from __future__ import annotations
 import typer
-from typing import TYPE_CHECKING, List, Union
+from typing import List
 from rich.console import Console
 from rich.table import Table
 from ..platform import platform
 from ..resource import Resource
-from ..package import Package
 from ..dialect import Dialect
 from ..schema import Schema
 from ..system import system
@@ -13,9 +12,6 @@ from .program import program
 from .. import actions
 from . import common
 from . import utils
-
-if TYPE_CHECKING:
-    from ..package import Package
 
 
 DEFAULT_MAX_FIELDS = 10
@@ -83,32 +79,32 @@ def program_describe(
         utils.print_error(console, note=note)
         raise typer.Exit(code=1)
 
-    # Create dialect
-    dialect_obj = utils.create_dialect(
-        descriptor=dialect,
-        header_rows=header_rows,
-        header_join=header_join,
-        comment_char=comment_char,
-        comment_rows=comment_rows,
-        sheet=sheet,
-        table=table,
-        keys=keys,
-        keyed=keyed,
-    )
-
-    # Create detector
-    detector_obj = utils.create_detector(
-        buffer_size=buffer_size,
-        sample_size=sample_size,
-        field_type=field_type,
-        field_names=field_names,
-        field_confidence=field_confidence,
-        field_float_numbers=field_float_numbers,
-        field_missing_values=field_missing_values,
-    )
-
-    # Describe source
     try:
+        # Create dialect
+        dialect_obj = utils.create_dialect(
+            descriptor=dialect,
+            header_rows=header_rows,
+            header_join=header_join,
+            comment_char=comment_char,
+            comment_rows=comment_rows,
+            sheet=sheet,
+            table=table,
+            keys=keys,
+            keyed=keyed,
+        )
+
+        # Create detector
+        detector_obj = utils.create_detector(
+            buffer_size=buffer_size,
+            sample_size=sample_size,
+            field_type=field_type,
+            field_names=field_names,
+            field_confidence=field_confidence,
+            field_float_numbers=field_float_numbers,
+            field_missing_values=field_missing_values,
+        )
+
+        # Describe source
         metadata = actions.describe(
             source=utils.create_source(source),
             name=name,
