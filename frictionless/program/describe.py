@@ -10,6 +10,7 @@ from ..dialect import Dialect
 from ..schema import Schema
 from ..system import system
 from .program import program
+from .. import actions
 from . import common
 from . import utils
 
@@ -108,9 +109,10 @@ def program_describe(
 
     # Describe source
     try:
-        # Create resource
-        metadata: Union[Package, Resource, Dialect, Schema] = Resource(
+        metadata = actions.describe(
             source=utils.create_source(source),
+            name=name,
+            type=type,
             path=path,
             scheme=scheme,
             format=format,
@@ -120,24 +122,8 @@ def program_describe(
             dialect=dialect_obj,
             basepath=basepath,
             detector=detector_obj,
-            packagify=type == "package",
+            stats=stats,
         )
-
-        # Infer package
-        if isinstance(metadata, restypes.PackageResource):
-            metadata = metadata.read_metadata()
-            if name is not None:
-                metadata = metadata.get_resource(name)
-        elif type == "package":
-            metadata = Package(resources=[metadata])
-
-        # Infer resource
-        metadata.infer(stats=stats)
-        if isinstance(metadata, Resource):
-            if type == "dialect":
-                metadata = metadata.dialect
-            elif type == "schema":
-                metadata = metadata.schema
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
