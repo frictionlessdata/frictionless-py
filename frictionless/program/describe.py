@@ -1,14 +1,23 @@
 from __future__ import annotations
 import typer
-from typing import List
-from rich.syntax import Syntax
+from typing import TYPE_CHECKING, List, Union
 from rich.console import Console
+from rich.table import Table
 from ..platform import platform
 from ..resource import Resource
+from ..package import Package
+from ..dialect import Dialect
+from ..schema import Schema
 from ..system import system
 from .program import program
 from . import common
 from . import utils
+
+if TYPE_CHECKING:
+    from ..package import Package
+
+
+DEFAULT_MAX_FIELDS = 10
 
 
 @program.command(name="describe")
@@ -47,7 +56,6 @@ def program_describe(
     stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
-    markdown: bool = common.markdown,
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
@@ -59,7 +67,7 @@ def program_describe(
     Default output format is YAML with a front matter.
     """
     console = Console()
-    resources = platform.frictionless_resources
+    restypes = platform.frictionless_resources
 
     # Setup system
     if trusted:
@@ -101,39 +109,41 @@ def program_describe(
     # Describe source
     try:
         # Create resource
-        metadata = Resource(
+        metadata: Union[Package, Resource, Dialect, Schema] = Resource(
             source=utils.create_source(source),
             path=path,
             scheme=scheme,
             format=format,
-            datatype=type or "",
             compression=compression,
             innerpath=innerpath,
             encoding=encoding,
             dialect=dialect_obj,
             basepath=basepath,
             detector=detector_obj,
+            packagify=type == "package",
         )
 
         # Infer package
-        if isinstance(metadata, resources.PackageResource):
+        if isinstance(metadata, restypes.PackageResource):
             metadata = metadata.read_metadata()
-            metadata.infer(stats=stats)
             if name is not None:
                 metadata = metadata.get_resource(name)
+        elif type == "package":
+            metadata = Package(resources=[metadata])
 
         # Infer resource
         metadata.infer(stats=stats)
-        if type == "dialect":
-            metadata = metadata.dialect
-        elif type == "schema":
-            metadata = metadata.schema
+        if isinstance(metadata, Resource):
+            if type == "dialect":
+                metadata = metadata.dialect
+            elif type == "schema":
+                metadata = metadata.schema
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
-    if yaml:
+    if yaml or isinstance(metadata, (Dialect, Schema)):
         descriptor = metadata.to_yaml().strip()
         print(descriptor)
         raise typer.Exit()
@@ -144,13 +154,18 @@ def program_describe(
         print(descriptor)
         raise typer.Exit()
 
-    # Markdown mode
-    if markdown:
-        descriptor = metadata.to_markdown().strip()
-        print(descriptor)
-        raise typer.Exit()
-
     # Default mode
-    descriptor = metadata.to_yaml().strip()
-    syntax = Syntax(descriptor, "yaml")
-    console.print(syntax)
+    resources = [metadata] if isinstance(metadata, Resource) else metadata.resources
+    for resource in resources:
+        if isinstance(resource, restypes.TableResource):
+            view = Table(title=resource.name)
+            labels = list(resource.schema.field_names)
+            for label in labels[:DEFAULT_MAX_FIELDS]:
+                view.add_column(label)
+            if len(labels) > DEFAULT_MAX_FIELDS:
+                view.add_column("...")
+            row = resource.schema.field_types[:DEFAULT_MAX_FIELDS]
+            if len(labels) > DEFAULT_MAX_FIELDS:
+                row.append("...")
+            view.add_row(*row)
+            console.print(view)

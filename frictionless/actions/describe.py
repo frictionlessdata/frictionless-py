@@ -1,6 +1,12 @@
-from typing import Any, Optional
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any, Optional, Union
 from ..platform import platform
 from ..resource import Resource
+from ..package import Package
+
+if TYPE_CHECKING:
+    from ..dialect import Dialect
+    from ..schema import Schema
 
 
 def describe(
@@ -10,7 +16,7 @@ def describe(
     type: Optional[str] = None,
     stats: bool = False,
     **options,
-):
+) -> Union[Package, Resource, Dialect, Schema]:
     """Describe the data source
 
     Parameters:
@@ -25,10 +31,12 @@ def describe(
     resources = platform.frictionless_resources
 
     # Create resource
-    datatype = ""
-    if type:
-        datatype = "package" if type == "package" else "resource"
-    resource = Resource(source, name=name or "", datatype=datatype, **options)
+    resource = Resource(
+        source,
+        name=name or "",
+        packagify=type == "package",
+        **options,
+    )
 
     # Infer package
     if isinstance(resource, resources.PackageResource):
@@ -37,6 +45,8 @@ def describe(
         if name is not None:
             return package.get_resource(name)
         return package
+    elif type == "package":
+        return Package(resources=[resource])
 
     # Infer resource
     resource.infer(stats=stats)
