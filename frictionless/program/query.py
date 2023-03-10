@@ -4,101 +4,81 @@ import atexit
 import typer
 import tempfile
 from typing import List
-from rich.progress import Progress, SpinnerColumn, TextColumn
-from ..resources import TableResource, PackageResource
+from rich.console import Console
 from ..resource import Resource
 from .program import program
-from .. import helpers
+from ..system import system
 from . import common
+from . import utils
 
 
 @program.command(name="query")
 def program_query(
-    source: str = typer.Argument(default=None),
-    # Options
+    # Resource
+    source: List[str] = common.source,
+    name: str = common.resource_name,
+    type: str = common.type,
+    path: str = common.path,
+    # System
     debug: bool = common.debug,
+    trusted: bool = common.trusted,
+    standards: str = common.standards,
 ):
     """Query data"""
+    console = Console()
 
-    # Get tabular resources
+    # Setup system
+    if trusted:
+        system.trusted = trusted
+    if standards:
+        system.standards = standards  # type: ignore
+
+    # Create source
+    source = utils.create_source(source, path=path)
+    if not source and not path:
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
+
+    # Index resource
     try:
-        resources: List[TableResource] = []
-        resource = Resource(source)
-        if isinstance(resource, PackageResource):
-            package = resource.read_package()
-            for resource in package.resources:
-                if isinstance(resource, TableResource):
-                    resources.append(resource)
-        elif isinstance(resource, TableResource):
-            resources.append(resource)
+        # Create resource
+        resource = Resource(
+            source=utils.create_source(source),
+            name=name,
+            path=path,
+            datatype=type or "",
+        )
+
+        # Create database
+        file = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
+        atexit.register(os.remove, file.name)
+        database = file.name
+
+        # Index resources
+        names = []
+        resources = resource.list()
+        for resource in resources:
+            names.extend(
+                utils.index_resource(
+                    console,
+                    resource=resource,
+                    database=database,
+                    fast=True,
+                    use_fallback=True,
+                    debug=debug,
+                )
+            )
     except Exception as exception:
-        if debug:
-            raise
-        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
-    # Ensure tabular resources
-    if not resources:
-        note = "Not found any tabular resources"
-        typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
-    # Index resources
-    tables: List[str] = []
-    file = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
-    atexit.register(os.remove, file.name)
-    database_path = file.name
-    for resource in resources:
-        result = index_resource(resource, database_path=database_path, debug=debug)
-        if result:
-            tables.append(resource.name)
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
     # Ensure tables
-    if not tables:
-        note = "Not indexed any tabular resources"
-        typer.secho(note, err=True, fg=typer.colors.RED, bold=True)
+    if not names:
+        note = "Not found any tabular resources"
+        utils.print_error(console, note=note)
         raise typer.Exit(1)
 
     # Enter database
-    os.system(f"sqlite3 {database_path}")
+    os.system(f"sqlite3 {database}")
     raise typer.Exit()
-
-
-# Internal
-
-
-def index_resource(
-    resource: TableResource, *, database_path: str, debug: bool = False
-) -> bool:
-    try:
-        timer = helpers.Timer()
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            redirect_stdout=not debug,
-            redirect_stderr=not debug,
-            transient=True,
-        ) as progress:
-            status = progress.add_task(
-                description=f"\\[{resource.name}] Indexing...", total=None
-            )
-            on_progress = lambda m: progress.update(
-                status, description=f"({resource.name}) Indexed {m}"
-            )
-            resource.index(
-                database_url=f"sqlite:////{database_path}",
-                table_name=resource.name,
-                fast=True,
-                use_fallback=True,
-                on_progress=on_progress,
-            )
-        typer.secho(
-            f"{progress.tasks[status].description} in {timer.time} seconds",
-            bold=True,
-        )
-        return True
-    except Exception:
-        if debug:
-            raise
-        typer.secho(f"\\[{resource.name}] errored", bold=True)
-        return False
