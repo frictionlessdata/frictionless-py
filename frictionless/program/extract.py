@@ -157,6 +157,7 @@ def program_extract(
             process=process,
             limit_rows=limit_rows,
         )
+        resources = resource.list()
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
@@ -200,6 +201,18 @@ def program_extract(
         raise typer.Exit()
 
     # Default mode
+    console.rule("[bold]Dataset")
+    view = Table(title="dataset")
+    view.add_column("name")
+    view.add_column("type")
+    view.add_column("path")
+    for resource in resources:
+        style = "deep_sky_blue1" if resource.tabular else ""
+        row = [resource.name, resource.type, resource.path]
+        view.add_row(*row, style=style)
+    console.print(view)
+
+    console.rule("[bold]Tables")
     for title, items in data.items():
         # Empty
         if not items:
