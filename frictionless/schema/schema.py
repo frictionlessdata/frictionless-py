@@ -26,6 +26,13 @@ class Schema(Metadata):
     ```
     """
 
+    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+        default=None, kw_only=False
+    )
+    """
+    # TODO: add docs
+    """
+
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -68,6 +75,11 @@ class Schema(Metadata):
     """
     Specifies the foreign keys for the schema.
     """
+
+    @classmethod
+    def __create__(cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options):
+        if descriptor is not None:
+            return cls.from_descriptor(descriptor, **options)
 
     def __attrs_post_init__(self):
         for field in self.fields:
