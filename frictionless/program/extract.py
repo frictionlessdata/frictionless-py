@@ -60,13 +60,13 @@ def program_extract(
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
+    # System
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
-    # TODO: review
-    keep_delimiter: bool = common.keep_delimiter,
-    # TODO: deprecate
+    # Deprecated
     resource_name: str = common.resource_name,
+    keep_delimiter: bool = common.keep_delimiter,
 ):
     """
     Extract rows from a data source.
@@ -210,7 +210,7 @@ def program_extract(
     view.add_column("type")
     view.add_column("path")
     for resource in resources:
-        style = "deep_sky_blue1" if resource.tabular else ""
+        style = "sky_blue1" if resource.tabular else ""
         row = [resource.name, resource.type, resource.path]
         view.add_row(*row, style=style)
     console.print(view)

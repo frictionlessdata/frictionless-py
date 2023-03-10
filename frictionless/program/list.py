@@ -44,6 +44,7 @@ def program_describe(
     basepath: str = common.basepath,
     yaml: bool = common.yaml,
     json: bool = common.json,
+    # System
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
@@ -131,7 +132,7 @@ def program_describe(
     view.add_column("type")
     view.add_column("path")
     for resource in resources:
-        style = "deep_sky_blue1" if resource.tabular else ""
+        style = "sky_blue1" if resource.tabular else ""
         row = [resource.name, resource.type, resource.path]
         view.add_row(*row, style=style)
     console.print(view)

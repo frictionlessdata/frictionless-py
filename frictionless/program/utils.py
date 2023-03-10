@@ -1,13 +1,19 @@
+from __future__ import annotations
 import sys
-from typing import Optional, Any
+import typer
+from typing import TYPE_CHECKING, Optional, Any, List
 from rich.panel import Panel
 from rich.console import Console
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from ..pipeline import Pipeline, Step
 from ..checklist import Checklist, Check
 from ..detector import Detector
 from ..platform import platform
 from ..dialect import Dialect
 from .. import helpers
+
+if TYPE_CHECKING:
+    from ..resource import Resource
 
 
 # Source
@@ -178,6 +184,53 @@ def create_pipeline(
         pipeline.add_step(Step.from_descriptor(step))
 
     return pipeline
+
+
+# Index
+
+
+def index_resource(
+    console: Console,
+    *,
+    resource: Resource,
+    database: str,
+    fast: bool = False,
+    use_fallback: bool = False,
+    qsv_path: Optional[str] = None,
+    debug: bool = False,
+) -> List[str]:
+    try:
+        timer = helpers.Timer()
+        if "://" not in database:
+            database = f"sqlite:///{database}"
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            redirect_stdout=not debug,
+            redirect_stderr=not debug,
+            transient=True,
+        ) as progress:
+            status = progress.add_task(
+                description=f"\\[{resource.name}] Indexing...", total=None
+            )
+            on_progress = lambda name, message: progress.update(
+                status, description=f"\\[{name}] Indexed {message}"
+            )
+            names = resource.index(
+                database_url=database,
+                on_progress=on_progress,
+                fast=fast,
+                use_fallback=use_fallback,
+                qsv_path=qsv_path,
+            )
+        console.print(f"{progress.tasks[status].description} in {timer.time} seconds")
+        return names
+    except Exception as exception:
+        if debug:
+            print_exception(console, exception=exception, debug=debug)
+            raise typer.Exit(code=1)
+        console.print(f"\\[{resource.name}] errored")
+        return []
 
 
 # Console
