@@ -43,6 +43,7 @@ def program_index(
         raise typer.Exit(code=1)
 
     # Index resource
+    console.rule("[bold]Index")
     try:
         # Create resource
         resource = Resource(
@@ -53,17 +54,24 @@ def program_index(
         )
 
         # Index resources
+        names = []
         resources = resource.list()
         for resource in resources:
-            utils.index_resource(
-                console,
-                resource=resource,
-                database=database,
-                fast=fast,
-                use_fallback=fallback,
-                qsv_path=qsv,
-                debug=debug,
+            names.extend(
+                utils.index_resource(
+                    console,
+                    resource=resource,
+                    database=database,
+                    fast=fast,
+                    use_fallback=fallback,
+                    qsv_path=qsv,
+                    debug=debug,
+                )
             )
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
+
+    # Print usage
+    console.rule("[bold]Result")
+    console.print(f"Succesefuly indexed {len(names)} tables")

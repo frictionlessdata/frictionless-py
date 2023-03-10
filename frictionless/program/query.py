@@ -41,6 +41,7 @@ def program_query(
         raise typer.Exit(code=1)
 
     # Index resource
+    console.rule("[bold]Index")
     try:
         # Create resource
         resource = Resource(
@@ -80,5 +81,6 @@ def program_query(
         raise typer.Exit(1)
 
     # Enter database
+    console.rule("[bold]Query")
     os.system(f"sqlite3 {database}")
     raise typer.Exit()
