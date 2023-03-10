@@ -9,6 +9,7 @@ from . import extract
 from . import index
 from . import list
 from . import query
+from . import script
 from . import summary
 from . import transform
 from . import validate

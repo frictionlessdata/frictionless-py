@@ -83,4 +83,3 @@ def program_query(
     # Enter database
     console.rule("[bold]Query")
     os.system(f"sqlite3 {database}")
-    raise typer.Exit()
