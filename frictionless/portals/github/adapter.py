@@ -22,95 +22,6 @@ class GithubAdapter(Adapter):
 
     # Read
 
-    def read_catalog(self) -> Catalog:
-        packages: List[Union[Package, str]] = []
-        query: Dict[str, Any] = {}
-
-        if not (self.control.repo or self.control.user or self.control.search):
-            note = "Repo or user or search text is required"
-            raise FrictionlessException(note)
-
-        assert self.control.formats
-
-        # Search single repo
-        if self.control.user and self.control.repo:
-            client = platform.github.Github(self.control.apikey)
-            location = "/".join([self.control.user, self.control.repo])
-            try:
-                repository = client.get_repo(location)
-            except Exception as exception:
-                note = "Github API error" + repr(exception)
-                raise FrictionlessException(note)
-            base_path = f"https://raw.githubusercontent.com/{location}/{repository.default_branch}"
-            contents = repository.get_contents("")
-            resource_path = get_resources(contents, repository)
-            all_packages = get_package(
-                resource_path, repository, base_path, self.control.formats, catalog=True
-            )
-            if all_packages and isinstance(all_packages, list):
-                packages = packages + all_packages  # type: ignore
-                return Catalog(
-                    datasets=[
-                        Dataset(name=package.name, package=package)  # type: ignore
-                        for package in all_packages
-                    ]
-                )
-            note = "Package/s not found"
-            raise FrictionlessException(note)
-
-        # Search multiple repos
-        options = {}
-        if self.control.search:
-            query = {"q": self.control.search}
-            if self.control.user and "user:" not in self.control.search:
-                options["user"] = self.control.user
-
-        if not self.control.search and self.control.user:
-            query = {"q": f"user:{self.control.user}"}
-
-        if self.control.repo and "q" not in query:
-            query["q"] = f"repo:{self.control.repo}"
-
-        if self.control.order:
-            options["order"] = self.control.order
-
-        if self.control.sort:
-            options["sort"] = self.control.sort
-
-        try:
-            assert self.control.per_page
-            assert self.control.formats
-            client = platform.github.Github(
-                self.control.apikey, per_page=self.control.per_page
-            )
-            #  user = client.get_user()
-            repositories = client.search_repositories(query["q"], **options)
-            if self.control.page:
-                repositories = repositories.get_page(self.control.page)
-            for repository in repositories:
-                base_path = f"https://raw.githubusercontent.com/{repository.full_name}/{repository.default_branch}"
-                contents = repository.get_contents("")
-                resource_path = get_resources(contents, repository)
-                package = get_package(
-                    resource_path, repository, base_path, self.control.formats
-                )
-                if isinstance(package, Package) and package.resources:
-                    packages.append(package)
-        except Exception as exception:
-            note = "Github API error" + repr(exception)
-            raise FrictionlessException(note)
-
-        if packages:
-            return Catalog(
-                datasets=[
-                    Dataset(name=package.name, package=package)  # type: ignore
-                    for package in packages
-                ]
-            )
-
-        note = "Package/s not found"
-        raise FrictionlessException(note)
-
     def read_package(self) -> Package:
         if not (self.control.repo and self.control.user):
             note = "Repo and user is required"
@@ -202,6 +113,97 @@ class GithubAdapter(Adapter):
             raise FrictionlessException(note)
 
         return repository
+
+    # Catalog
+
+    def read_catalog(self) -> Catalog:
+        packages: List[Union[Package, str]] = []
+        query: Dict[str, Any] = {}
+
+        if not (self.control.repo or self.control.user or self.control.search):
+            note = "Repo or user or search text is required"
+            raise FrictionlessException(note)
+
+        assert self.control.formats
+
+        # Search single repo
+        if self.control.user and self.control.repo:
+            client = platform.github.Github(self.control.apikey)
+            location = "/".join([self.control.user, self.control.repo])
+            try:
+                repository = client.get_repo(location)
+            except Exception as exception:
+                note = "Github API error" + repr(exception)
+                raise FrictionlessException(note)
+            base_path = f"https://raw.githubusercontent.com/{location}/{repository.default_branch}"
+            contents = repository.get_contents("")
+            resource_path = get_resources(contents, repository)
+            all_packages = get_package(
+                resource_path, repository, base_path, self.control.formats, catalog=True
+            )
+            if all_packages and isinstance(all_packages, list):
+                packages = packages + all_packages  # type: ignore
+                return Catalog(
+                    datasets=[
+                        Dataset(name=package.name, package=package)  # type: ignore
+                        for package in all_packages
+                    ]
+                )
+            note = "Package/s not found"
+            raise FrictionlessException(note)
+
+        # Search multiple repos
+        options = {}
+        if self.control.search:
+            query = {"q": self.control.search}
+            if self.control.user and "user:" not in self.control.search:
+                options["user"] = self.control.user
+
+        if not self.control.search and self.control.user:
+            query = {"q": f"user:{self.control.user}"}
+
+        if self.control.repo and "q" not in query:
+            query["q"] = f"repo:{self.control.repo}"
+
+        if self.control.order:
+            options["order"] = self.control.order
+
+        if self.control.sort:
+            options["sort"] = self.control.sort
+
+        try:
+            assert self.control.per_page
+            assert self.control.formats
+            client = platform.github.Github(
+                self.control.apikey, per_page=self.control.per_page
+            )
+            #  user = client.get_user()
+            repositories = client.search_repositories(query["q"], **options)
+            if self.control.page:
+                repositories = repositories.get_page(self.control.page)
+            for repository in repositories:
+                base_path = f"https://raw.githubusercontent.com/{repository.full_name}/{repository.default_branch}"
+                contents = repository.get_contents("")
+                resource_path = get_resources(contents, repository)
+                package = get_package(
+                    resource_path, repository, base_path, self.control.formats
+                )
+                if isinstance(package, Package) and package.resources:
+                    packages.append(package)
+        except Exception as exception:
+            note = "Github API error" + repr(exception)
+            raise FrictionlessException(note)
+
+        if packages:
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
+
+        note = "Package/s not found"
+        raise FrictionlessException(note)
 
 
 def get_resources(

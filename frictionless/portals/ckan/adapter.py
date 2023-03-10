@@ -21,69 +21,8 @@ class CkanAdapter(Adapter):
             "fric_to_ckan": platform.frictionless_ckan_mapper_frictionless_to_ckan,
         }
 
-    # Read a set of CKAN datasets as a Catalog
-    def read_catalog(self) -> Catalog:
-        catalog = Catalog()
-        params = {}
-        endpoint: str = ""
-        response: dict = {}
-        descriptor: dict = {}
-        headers = set_headers(self)
+    # Read
 
-        assert self.control.baseurl
-        if self.control.group_id:
-            # Search only packages from a group
-            params = {"id": self.control.group_id}
-            endpoint = f"{self.control.baseurl}/api/3/action/group_package_show"
-        elif self.control.organization_name:
-            # Search only packages from an organization using search
-            params = {"q": f"organization:{self.control.organization_name}"}
-            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
-        elif self.control.search:
-            params = self.control.search
-            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
-        else:
-            # Get all packages from a CKAN instance
-            params = {"q": "*:*"}
-            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
-
-        if self.control.num_packages:
-            if not self.control.group_id:
-                params["rows"] = str(self.control.num_packages)
-            else:
-                params["limit"] = str(self.control.num_packages)
-
-        if self.control.results_offset:
-            params["start"] = str(self.control.results_offset)
-
-        response = make_ckan_request(endpoint, headers=headers, params=params)
-        if not self.control.group_id:
-            results = response["result"]["results"]
-        else:
-            results = response["result"]
-
-        for dataset in results:
-            try:
-                descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
-                descriptor.pop("type", None)
-                descriptor.pop("sources", None)
-                for res in descriptor.get("resources", []):
-                    res.pop("fields", None)
-                    if "format" in res:
-                        res["format"] = res["format"].lower()
-                package = Package.from_descriptor(descriptor)
-                dataset = Dataset(name=package.name, package=package)  # type: ignore
-                catalog.add_dataset(dataset)
-            except FrictionlessException as e:
-                if self.control.ignore_package_errors:
-                    print(f'Error in CKAN dataset {descriptor["id"]}: {e}')
-                    continue
-                else:
-                    raise e
-
-        return catalog
-
-    # Read a package from a CKAN instance
     def read_package(self) -> Package:
         baseurl = self.control.baseurl
         dataset = self.control.dataset
@@ -125,7 +64,8 @@ class CkanAdapter(Adapter):
 
         return package
 
-    # Write a Package to a CKAN instance as a dataset
+    # Write
+
     def write_package(self, package: Package) -> Union[None, str]:
         baseurl = self.control.baseurl
         endpoint = f"{baseurl}/api/action/package_create"
@@ -211,6 +151,69 @@ class CkanAdapter(Adapter):
         except Exception as exception:
             note = "CKAN API error:" + repr(exception)
             raise FrictionlessException(note)
+
+    # Experimental
+
+    def read_catalog(self) -> Catalog:
+        catalog = Catalog()
+        params = {}
+        endpoint: str = ""
+        response: dict = {}
+        descriptor: dict = {}
+        headers = set_headers(self)
+
+        assert self.control.baseurl
+        if self.control.group_id:
+            # Search only packages from a group
+            params = {"id": self.control.group_id}
+            endpoint = f"{self.control.baseurl}/api/3/action/group_package_show"
+        elif self.control.organization_name:
+            # Search only packages from an organization using search
+            params = {"q": f"organization:{self.control.organization_name}"}
+            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
+        elif self.control.search:
+            params = self.control.search
+            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
+        else:
+            # Get all packages from a CKAN instance
+            params = {"q": "*:*"}
+            endpoint = f"{self.control.baseurl}/api/3/action/package_search"
+
+        if self.control.num_packages:
+            if not self.control.group_id:
+                params["rows"] = str(self.control.num_packages)
+            else:
+                params["limit"] = str(self.control.num_packages)
+
+        if self.control.results_offset:
+            params["start"] = str(self.control.results_offset)
+
+        response = make_ckan_request(endpoint, headers=headers, params=params)
+        if not self.control.group_id:
+            results = response["result"]["results"]
+        else:
+            results = response["result"]
+
+        for dataset in results:
+            try:
+                descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
+                descriptor.pop("type", None)
+                descriptor.pop("sources", None)
+                for res in descriptor.get("resources", []):
+                    res.pop("fields", None)
+                    if "format" in res:
+                        res["format"] = res["format"].lower()
+                package = Package.from_descriptor(descriptor)
+                dataset = Dataset(name=package.name, package=package)  # type: ignore
+                catalog.add_dataset(dataset)
+            except FrictionlessException as e:
+                if self.control.ignore_package_errors:
+                    print(f'Error in CKAN dataset {descriptor["id"]}: {e}')
+                    continue
+                else:
+                    raise e
+
+        return catalog
 
 
 def set_headers(adapter: CkanAdapter) -> dict:

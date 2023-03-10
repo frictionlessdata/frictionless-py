@@ -26,73 +26,6 @@ class ZenodoAdapter(Adapter):
 
     # Read
 
-    def read_catalog(self) -> Catalog:
-        packages: List[Union[Package, str]] = []
-        options: Dict[str, Any] = {}
-
-        # Single record
-        if self.control.record:
-            packages.append(self.read_package())
-            return Catalog(
-                datasets=[
-                    Dataset(name=package.name, package=package)  # type: ignore
-                    for package in packages
-                ]
-            )
-
-        # DOI
-        assert self.control.formats
-        client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)
-        if self.control.doi:
-            dataset = client.find_record_by_doi(self.control.doi)
-            name = self.control.name or dataset.data["metadata"]["title"]
-            package = get_package(dataset, name, self.control.formats)
-            if isinstance(package, Package) and package.resources:
-                packages.append(package)
-            return Catalog(
-                datasets=[
-                    Dataset(name=package.name, package=package)  # type: ignore
-                    for package in packages
-                ]
-            )
-
-        # Search
-        if self.control.search:
-            search = self.control.search.replace(
-                "/", " "
-            )  # zenodo can't handle '/' in search query
-            options["q"] = search
-        options["status"] = self.control.status
-        options["sort"] = self.control.sort
-        options["page"] = self.control.page
-        options["size"] = self.control.size
-        options["all_versions"] = self.control.all_versions
-        options["communities"] = self.control.communities
-        options["type"] = self.control.rtype
-        options["subtype"] = self.control.subtype
-        options["bounds"] = self.control.bounds
-        options["custom"] = self.control.rcustom
-        options = {key: value for key, value in options.items() if value}
-        try:
-            records = client._get_records(options)
-            for dataset in records:
-                name = self.control.name or dataset.data["metadata"]["title"]
-                package = get_package(dataset, name, self.control.formats)
-                if isinstance(package, Package) and package.resources:
-                    packages.append(package)
-        except Exception as exception:
-            note = "Zenodo API error" + repr(exception)
-            raise FrictionlessException(note)
-        if packages:
-            return Catalog(
-                datasets=[
-                    Dataset(name=package.name, package=package)  # type: ignore
-                    for package in packages
-                ]
-            )
-        note = "Package/s not found"
-        raise FrictionlessException(note)
-
     def read_package(self) -> Package:
         client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)
         if not self.control.record:
@@ -114,6 +47,7 @@ class ZenodoAdapter(Adapter):
         raise FrictionlessException(note)
 
     # Write
+
     def write_package(self, package: Package) -> int:
         client = platform.pyzenodo3_upload
 
@@ -193,6 +127,75 @@ class ZenodoAdapter(Adapter):
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
+
+    # Experimental
+
+    def read_catalog(self) -> Catalog:
+        packages: List[Union[Package, str]] = []
+        options: Dict[str, Any] = {}
+
+        # Single record
+        if self.control.record:
+            packages.append(self.read_package())
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
+
+        # DOI
+        assert self.control.formats
+        client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)
+        if self.control.doi:
+            dataset = client.find_record_by_doi(self.control.doi)
+            name = self.control.name or dataset.data["metadata"]["title"]
+            package = get_package(dataset, name, self.control.formats)
+            if isinstance(package, Package) and package.resources:
+                packages.append(package)
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
+
+        # Search
+        if self.control.search:
+            search = self.control.search.replace(
+                "/", " "
+            )  # zenodo can't handle '/' in search query
+            options["q"] = search
+        options["status"] = self.control.status
+        options["sort"] = self.control.sort
+        options["page"] = self.control.page
+        options["size"] = self.control.size
+        options["all_versions"] = self.control.all_versions
+        options["communities"] = self.control.communities
+        options["type"] = self.control.rtype
+        options["subtype"] = self.control.subtype
+        options["bounds"] = self.control.bounds
+        options["custom"] = self.control.rcustom
+        options = {key: value for key, value in options.items() if value}
+        try:
+            records = client._get_records(options)
+            for dataset in records:
+                name = self.control.name or dataset.data["metadata"]["title"]
+                package = get_package(dataset, name, self.control.formats)
+                if isinstance(package, Package) and package.resources:
+                    packages.append(package)
+        except Exception as exception:
+            note = "Zenodo API error" + repr(exception)
+            raise FrictionlessException(note)
+        if packages:
+            return Catalog(
+                datasets=[
+                    Dataset(name=package.name, package=package)  # type: ignore
+                    for package in packages
+                ]
+            )
+        note = "Package/s not found"
+        raise FrictionlessException(note)
 
 
 def get_package(record: Record, title: str, formats: List[str]) -> Package:
