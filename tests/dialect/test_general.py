@@ -14,7 +14,7 @@ def test_dialect():
 
 def test_dialect_bad_property():
     with pytest.raises(FrictionlessException) as excinfo:
-        Dialect.from_descriptor({"headerRows": "bad"})
+        Dialect({"headerRows": "bad"})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "dialect-error"

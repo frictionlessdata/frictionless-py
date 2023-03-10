@@ -3,8 +3,8 @@ import yaml
 from frictionless import Dialect
 
 
-def test_dialect_from_descriptor_standards_v1():
-    dialect = Dialect.from_descriptor({"delimiter": ";"})
+def test_dialect_standards_v1():
+    dialect = Dialect({"delimiter": ";"})
     assert dialect.to_descriptor() == {"csv": {"delimiter": ";"}}
 
 
@@ -12,7 +12,7 @@ def test_dialect_from_descriptor_standards_v1():
 
 
 def test_dialect_to_yaml():
-    dialect = Dialect.from_descriptor("data/dialect.json")
+    dialect = Dialect("data/dialect.json")
     expected_file_path = "data/dialect.yaml"
 
     # Read
@@ -24,5 +24,5 @@ def test_dialect_to_yaml():
 
 
 def test_dialect_to_json():
-    dialect = Dialect.from_descriptor("data/dialect.yaml")
+    dialect = Dialect("data/dialect.yaml")
     assert json.loads(dialect.to_json()) == {"csv": {"delimiter": ";"}}

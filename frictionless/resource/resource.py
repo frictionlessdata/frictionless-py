@@ -603,12 +603,6 @@ class Resource(Metadata):
         """
         return {}
 
-    # List
-
-    def list(self) -> List[Resource]:
-        """List dataset resources"""
-        return [self]
-
     # Index
 
     def index(
@@ -624,6 +618,12 @@ class Resource(Metadata):
     ) -> List[str]:
         """Index data into a database"""
         return []
+
+    # List
+
+    def list(self) -> List[Resource]:
+        """List dataset resources"""
+        return [self]
 
     # Transform
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, List, Any, ClassVar, Union
+from typing import TYPE_CHECKING, Optional, List, Any, ClassVar, Union
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
@@ -10,10 +10,20 @@ from .. import settings
 from .. import helpers
 from .. import errors
 
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
+
 
 @attrs.define(kw_only=True)
 class Dialect(Metadata):
     """Dialect representation"""
+
+    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+        default=None, kw_only=False
+    )
+    """
+    # TODO: add docs
+    """
 
     name: Optional[str] = None
     """
@@ -79,6 +89,11 @@ class Dialect(Metadata):
     """
     A list of controls which defines different aspects of reading data.
     """
+
+    @classmethod
+    def __create__(cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options):
+        if descriptor is not None:
+            return cls.from_descriptor(descriptor, **options)
 
     def __bool__(self):
         return bool(self.controls) or bool(self.to_descriptor())
