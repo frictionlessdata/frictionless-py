@@ -609,12 +609,12 @@ class Resource(Metadata):
         self,
         database_url: str,
         *,
-        table_name: str,
+        name: Optional[str] = None,
         fast: bool = False,
-        qsv_path: Optional[str] = None,
         on_row: Optional[IOnRow] = None,
         on_progress: Optional[IOnProgress] = None,
         use_fallback: bool = False,
+        qsv_path: Optional[str] = None,
     ) -> List[str]:
         """Index data into a database"""
         return []

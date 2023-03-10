@@ -1,6 +1,6 @@
 from __future__ import annotations
 import builtins
-from typing import TYPE_CHECKING, Optional, Dict, Union, Any
+from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
 from ...platform import platform
 from ...resource import Resource
 from ...system import system
@@ -63,24 +63,26 @@ class TableResource(Resource):
         self,
         database_url: str,
         *,
-        table_name: str,
+        name: Optional[str] = None,
         fast: bool = False,
-        qsv_path: Optional[str] = None,
         on_row: Optional[IOnRow] = None,
         on_progress: Optional[IOnProgress] = None,
         use_fallback: bool = False,
-    ) -> None:
+        qsv_path: Optional[str] = None,
+    ) -> List[str]:
+        name = name or self.name
         indexer = platform.frictionless_formats.sql.SqlIndexer(
             resource=self,
             database_url=database_url,
-            table_name=table_name,
+            table_name=name,
             fast=fast,
-            qsv_path=qsv_path,
             on_row=on_row,
             on_progress=on_progress,
             use_fallback=use_fallback,
+            qsv_path=qsv_path,
         )
         indexer.index()
+        return [name]
 
     # Transform
 

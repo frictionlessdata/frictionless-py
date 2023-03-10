@@ -17,7 +17,7 @@ pytestmark = pytest.mark.skipif(
 def test_resource_index_sqlite(database_url):
     assert control.table
     resource = Resource("data/table.csv")
-    resource.index(database_url, table_name=control.table)
+    resource.index(database_url, name=control.table)
     assert Resource(database_url, control=control).read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -32,7 +32,7 @@ def test_resource_index_sqlite(database_url):
 def test_resource_index_sqlite_fast(database_url):
     assert control.table
     resource = Resource("data/table.csv")
-    resource.index(database_url, table_name=control.table, fast=True)
+    resource.index(database_url, name=control.table, fast=True)
     assert Resource(database_url, control=control).read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -49,7 +49,7 @@ def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     resource = Resource("data/table.csv")
     resource.infer()
     resource.schema.set_field_type("name", "integer")
-    resource.index(database_url, table_name=control.table, fast=True, use_fallback=True)
+    resource.index(database_url, name=control.table, fast=True, use_fallback=True)
     assert Resource(database_url, control=control).read_rows() == [
         {"id": 1, "name": None},
         {"id": 2, "name": None},
@@ -64,7 +64,7 @@ def test_resource_index_sqlite_on_progress(database_url, mocker):
     assert control.table
     on_progress = mocker.stub(name="on_progress")
     resource = Resource("data/table.csv")
-    resource.index(database_url, table_name=control.table, on_progress=on_progress)
+    resource.index(database_url, name=control.table, on_progress=on_progress)
     assert on_progress.call_count == 2
-    on_progress.assert_any_call("2 rows")
-    on_progress.assert_any_call("3 rows")
+    on_progress.assert_any_call(control.table, "2 rows")
+    on_progress.assert_any_call(control.table, "3 rows")

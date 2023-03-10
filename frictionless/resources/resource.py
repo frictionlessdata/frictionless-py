@@ -32,6 +32,12 @@ class ResourceResource(MetadataResource[Resource]):
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
 
+    # Index
+
+    def index(self, database_url: str, **options) -> List[str]:
+        resource = self.read_metadata()
+        return resource.index(database_url, **options)
+
     # List
 
     def list(self) -> List[Resource]:

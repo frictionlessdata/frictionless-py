@@ -1,6 +1,5 @@
 from __future__ import annotations
 import attrs
-from pathlib import Path
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..platform import platform
@@ -19,6 +18,7 @@ if TYPE_CHECKING:
     from ..pipeline import Pipeline
     from ..interfaces import IFilterFunction, IProcessFunction
     from ..interfaces import IDescriptor, ITabularData
+    from ..formats.sql import IOnRow, IOnProgress
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Dataset
@@ -441,6 +441,34 @@ class Package(Metadata):
                 item = res.extract(filter=filter, process=process, limit_rows=limit_rows)
                 data.update(item)
         return data
+
+    # Index
+
+    def index(
+        self,
+        database_url: str,
+        *,
+        name: Optional[str] = None,
+        fast: bool = False,
+        on_row: Optional[IOnRow] = None,
+        on_progress: Optional[IOnProgress] = None,
+        use_fallback: bool = False,
+        qsv_path: Optional[str] = None,
+    ) -> List[str]:
+        names: List[str] = []
+        resources = self.resources if name is None else [self.get_resource(name)]
+        for resource in resources:
+            names.extend(
+                resource.index(
+                    database_url=database_url,
+                    fast=fast,
+                    on_row=on_row,
+                    on_progress=on_progress,
+                    use_fallback=use_fallback,
+                    qsv_path=qsv_path,
+                )
+            )
+        return names
 
     # Transform
 

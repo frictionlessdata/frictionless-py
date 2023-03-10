@@ -33,10 +33,15 @@ class PackageResource(MetadataResource[Package]):
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
 
+    # Index
+
+    def index(self, database_url: str, **options) -> List[str]:
+        package = self.read_metadata()
+        return package.index(database_url, **options)
+
     # List
 
     def list(self) -> List[Resource]:
-        """List dataset resources"""
         package = self.read_metadata()
         return package.resources
 

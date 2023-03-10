@@ -109,9 +109,9 @@ class SqlIndexer:
 
     def report_row(self, row: Row):
         if self.on_row:
-            self.on_row(row)
+            self.on_row(self.table_name, row)
         self.report_progress(f"{row.row_number} rows")
 
     def report_progress(self, message: str):
         if self.on_progress:
-            self.on_progress(message)
+            self.on_progress(self.table_name, message)
