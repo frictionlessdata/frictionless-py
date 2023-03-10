@@ -124,11 +124,13 @@ def program_describe(
         raise typer.Exit()
 
     # Default mode
-    view = Table(title="resources")
+    console.rule("[bold]Dataset")
+    view = Table(title="dataset")
     view.add_column("name")
     view.add_column("type")
     view.add_column("path")
     for resource in resources:
+        style = "deep_sky_blue1" if resource.tabular else ""
         row = [resource.name, resource.type, resource.path]
-        view.add_row(*row)
+        view.add_row(*row, style=style)
     console.print(view)

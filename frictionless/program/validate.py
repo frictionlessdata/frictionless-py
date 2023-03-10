@@ -166,27 +166,38 @@ def program_validate(
     # Default mode
     labels = ["Row", "Field", "Type", "Message"]
     props = ["row_number", "field_number", "type", "message"]
-    names = ["general"] + [task.name for task in report.tasks]
+    names = ["DATASET"] + [task.name for task in report.tasks]
     matrix = [report.errors] + [task.errors for task in report.tasks]
 
     # Status
-    if report.valid:
-        utils.print_success(console, note="No validation errors", title="Valid")
-    else:
-        utils.print_error(console, note="There are validation errors", title="Invalid")
+    if report.tasks:
+        console.rule("[bold]Dataset")
+        view = Table(title="dataset")
+        view.add_column("name")
+        view.add_column("type")
+        view.add_column("path")
+        view.add_column("status")
+        for task in report.tasks:
+            status = "VALID" if task.valid else "INVALID"
+            style = "green" if task.valid else "bold red"
+            row = [task.name, task.type, task.place, status]
+            view.add_row(*row, style=style)
+        console.print(view)
 
     # Errors
-    for name, errors in zip(names, matrix):
-        if errors:
-            view = Table(title=name)
-            for label in labels:
-                view.add_column(label)
-            for error in errors:
-                row = []
-                for prop in props:
-                    row.append(str(getattr(error, prop, None)))
-                view.add_row(*row)
-            console.print(view)
+    if not report.valid:
+        console.rule("[bold]Tables")
+        for name, errors in zip(names, matrix):
+            if errors:
+                view = Table(title=name)
+                for label in labels:
+                    view.add_column(label)
+                for error in errors:
+                    row = []
+                    for prop in props:
+                        row.append(str(getattr(error, prop, None)))
+                    view.add_row(*row)
+                console.print(view)
 
     # Proper retcode
     raise typer.Exit(code=int(not report.valid))

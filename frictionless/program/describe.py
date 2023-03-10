@@ -155,7 +155,18 @@ def program_describe(
         raise typer.Exit()
 
     # Default mode
+    console.rule("[bold]Dataset")
     resources = [metadata] if isinstance(metadata, Resource) else metadata.resources
+    view = Table(title="dataset")
+    view.add_column("name")
+    view.add_column("type")
+    view.add_column("path")
+    for resource in resources:
+        style = "deep_sky_blue1" if resource.tabular else ""
+        row = [resource.name, resource.type, resource.path]
+        view.add_row(*row, style=style)
+    console.print(view)
+    console.rule("[bold]Tables")
     for resource in resources:
         if isinstance(resource, restypes.TableResource):
             view = Table(title=resource.name)

@@ -80,7 +80,7 @@ def index_resource(
             transient=True,
         ) as progress:
             status = progress.add_task(
-                description=f"({resource.name}) Indexing...", total=None
+                description=f"\\[{resource.name}] Indexing...", total=None
             )
             on_progress = lambda m: progress.update(
                 status, description=f"({resource.name}) Indexed {m}"
@@ -100,5 +100,5 @@ def index_resource(
     except Exception:
         if debug:
             raise
-        typer.secho(f"({resource.name}) errored", bold=True)
+        typer.secho(f"\\[{resource.name}] errored", bold=True)
         return False
