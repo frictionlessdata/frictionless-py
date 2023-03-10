@@ -15,6 +15,7 @@ from . import utils
 def program_describe(
     # Source
     source: List[str] = common.source,
+    name: str = common.resource_name,
     type: str = common.type,
     path: str = common.path,
     scheme: str = common.scheme,
@@ -94,6 +95,7 @@ def program_describe(
         # Create resource
         resource = Resource(
             source=utils.create_source(source),
+            name=name,
             path=path,
             scheme=scheme,
             format=format,
@@ -107,7 +109,7 @@ def program_describe(
         )
 
         # List resources
-        resources = resource.list()
+        resources = resource.list(name=name)
         descriptors = [resource.to_descriptor() for resource in resources]
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)

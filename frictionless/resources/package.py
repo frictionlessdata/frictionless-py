@@ -41,9 +41,9 @@ class PackageResource(MetadataResource[Package]):
 
     # List
 
-    def list(self) -> List[Resource]:
+    def list(self, *, name: Optional[str] = None) -> List[Resource]:
         package = self.read_metadata()
-        return package.resources
+        return package.resources if name is None else [package.get_resource(name)]
 
     # Validate
 

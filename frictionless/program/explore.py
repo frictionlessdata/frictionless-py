@@ -46,7 +46,7 @@ def program_explore(
             path=path,
             datatype=type or "",
         )
-        resources = resource.list()
+        resources = resource.list(name=name)
         paths = [resource.normpath for resource in resources if resource.normpath]
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)

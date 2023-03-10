@@ -58,7 +58,7 @@ def program_query(
 
         # Index resources
         names = []
-        resources = resource.list()
+        resources = resource.list(name=name)
         for resource in resources:
             names.extend(
                 utils.index_resource(

@@ -621,8 +621,13 @@ class Resource(Metadata):
 
     # List
 
-    def list(self) -> List[Resource]:
-        """List dataset resources"""
+    def list(self, *, name: Optional[str] = None) -> List[Resource]:
+        """List dataset resources
+
+        Parameters:
+            name: limit to one resource (if applicable)
+
+        """
         return [self]
 
     # Transform

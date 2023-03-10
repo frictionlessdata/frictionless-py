@@ -60,7 +60,7 @@ def program_script(
 
         # Index resources
         names = []
-        resources = resource.list()
+        resources = resource.list(name=name)
         for resource in resources:
             names.extend(
                 utils.index_resource(
