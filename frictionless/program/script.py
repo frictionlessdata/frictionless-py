@@ -112,4 +112,4 @@ def generate_startup(database: str, *, names: List[str]) -> str:
 
 
 def generate_dfname(name: str) -> str:
-    return "df_" + re.sub("[^0-9a-zA-Z_]+", "_", name)
+    return "df_" + re.sub("[^0-9a-zA-Z_]+", "_", name).lower()
