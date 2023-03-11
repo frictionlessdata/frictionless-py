@@ -558,6 +558,17 @@ class Resource(Metadata):
             raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
 
+    # Convert
+
+    def convert(
+        self,
+        to_path: str,
+        to_format: Optional[str] = None,
+        to_dialect: Optional[Union[Dialect, str]] = None,
+    ) -> str:
+        note = f'Not supported resource data type "{self.datatype}" for conversion'
+        raise FrictionlessException(note)
+
     # Describe
 
     @classmethod
@@ -578,17 +589,6 @@ class Resource(Metadata):
         resource = cls(source, **options)
         resource.infer(stats=stats)
         return resource
-
-    # Convert
-
-    def convert(
-        self,
-        to_path: str,
-        to_format: Optional[str] = None,
-        to_dialect: Optional[Union[Dialect, str]] = None,
-    ) -> str:
-        note = f'Not supported resource data type "{self.datatype}" for conversion'
-        raise FrictionlessException(note)
 
     # Extract
 
