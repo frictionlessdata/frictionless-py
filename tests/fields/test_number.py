@@ -1,6 +1,6 @@
 import pytest
 from decimal import Decimal
-from frictionless import Field
+from frictionless import Field, fields
 
 
 # General
@@ -101,5 +101,16 @@ def test_number_read_cell(format, source, target, options):
     descriptor = {"name": "name", "type": "number", "format": format}
     descriptor.update(options)
     field = Field.from_descriptor(descriptor)
-    cell, notes = field.read_cell(source)
+    cell = field.read_cell(source)[0]
     assert cell == target
+
+
+# Bugs
+
+
+def test_number_group_char_issue_1444():
+    field = fields.NumberField(name="name", decimal_char=",", group_char=".")
+    cell = field.read_cell("8.699,8")[0]
+    assert cell == Decimal("8699.8")
+    cell = field.write_cell(cell)[0]
+    assert cell == "8.699,8"

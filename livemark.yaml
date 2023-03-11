@@ -40,10 +40,15 @@ pages:
     - name: Working in Console
       items:
         - path: docs/console/overview
+        - path: docs/console/describe
+        - path: docs/console/convert
         - path: docs/console/explore
         - path: docs/console/extract
         - path: docs/console/index
+        - path: docs/console/list
+        - path: docs/console/publish
         - path: docs/console/query
+        - path: docs/console/script
         - path: docs/console/validate
     - name: Working in Python
       items:
