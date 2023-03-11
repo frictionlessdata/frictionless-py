@@ -100,15 +100,18 @@ class NumberField(Field):
 
     # Write
 
+    # TODO: optimize
     def create_value_writer(self):
         # Create writer
         def value_writer(cell):
             if self.has_defined("group_char"):
-                cell = f"{cell:,}".replace(",", self.group_char)
+                cell = f"{cell:,}".replace(",", "g")
             else:
                 cell = str(cell)
-            if self.has_defined("decimalChar"):
+            if self.has_defined("decimal_char"):
                 cell = cell.replace(".", self.decimal_char)
+            if self.has_defined("group_char"):
+                cell = cell.replace("g", self.group_char)
             return cell
 
         return value_writer
