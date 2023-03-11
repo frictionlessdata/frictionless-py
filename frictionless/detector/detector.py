@@ -2,9 +2,7 @@ from __future__ import annotations
 import os
 import attrs
 import codecs
-from pathlib import Path
 from copy import copy, deepcopy
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
