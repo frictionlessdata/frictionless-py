@@ -20,7 +20,7 @@ def describe(
         source (any): data source
         type (str): source type - `schema`, `resource` or `package` (default: infer)
         stats? (bool): if `True` infer resource's stats
-        **options (dict): options for the underlaying describe function
+        **options (dict): options for the underlying describe function
 
     Returns:
         Metadata: described metadata e.g. a Table Schema
