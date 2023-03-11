@@ -556,6 +556,7 @@ class Package(Metadata):
         "type": "object",
         "required": ["resources"],
         "properties": {
+            "$frictionless": {"type": "string"},
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
@@ -623,6 +624,9 @@ class Package(Metadata):
     @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
         super().metadata_transform(descriptor)
+
+        # Context
+        descriptor.pop("$frictionless", None)
 
         # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
@@ -721,6 +725,10 @@ class Package(Metadata):
 
     def metadata_export(self):
         descriptor = super().metadata_export()
+
+        # Context
+        version = "v1" if system.standards == "v1" else "v2"
+        descriptor = {"$frictionless": f"package/{version}", **descriptor}
 
         # Profile (standards/v1)
         if system.standards == "v1":
