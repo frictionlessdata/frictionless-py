@@ -1,7 +1,8 @@
 from __future__ import annotations
 import typer
-from rich.console import Console
 from typing import List
+from rich.console import Console
+from rich.progress import track
 from ..resource import Resource
 from ..system import system
 from .program import program
@@ -96,12 +97,20 @@ def program_convert(
             csv_delimiter=to_csv_delimiter,
         )
 
-        # List resources
+        # Convert resource
+        console.rule("[bold]Convert")
         resources = resource.list(name=name)
-        resources[0].convert(
-            to_path=to_path, to_format=to_format, to_dialect=to_dialect_obj
-        )
+        # TODO: replace dummy progress bar a normal one
+        for stage in track(["start", "end"], description="Converting..."):
+            if stage == "end":
+                resources[0].convert(
+                    to_path=to_path, to_format=to_format, to_dialect=to_dialect_obj
+                )
 
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
+
+    # Print result
+    console.rule("[bold]Result")
+    console.print(f"Succesefully converted to [bold]{to_path}[/bold]")
