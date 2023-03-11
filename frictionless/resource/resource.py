@@ -579,6 +579,17 @@ class Resource(Metadata):
         resource.infer(stats=stats)
         return resource
 
+    # Convert
+
+    def convert(
+        self,
+        to_path: str,
+        to_format: Optional[str] = None,
+        to_dialect: Optional[Union[Dialect, str]] = None,
+    ) -> str:
+        note = f'Not supported resource data type "{self.datatype}" for conversion'
+        raise FrictionlessException(note)
+
     # Extract
 
     def extract(
@@ -1051,7 +1062,7 @@ class Resource(Metadata):
                     break
             return rows
 
-    # Convert
+    # Export
 
     def to_copy(self, **options):
         """Create a copy from the resource"""

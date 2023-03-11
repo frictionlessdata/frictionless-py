@@ -46,6 +46,7 @@ def create_dialect(
     table: Optional[str] = None,
     keys: Optional[str] = None,
     keyed: Optional[bool] = None,
+    csv_delimiter: Optional[str] = None,
 ) -> Dialect:
     formats = platform.frictionless_formats
 
@@ -79,6 +80,12 @@ def create_dialect(
             formats.JsonControl.from_options(
                 keys=helpers.parse_csv_string(keys),
                 keyed=keyed,
+            )
+        )
+    elif csv_delimiter is not None:
+        dialect.controls.append(
+            formats.CsvControl.from_options(
+                delimiter=csv_delimiter,
             )
         )
 

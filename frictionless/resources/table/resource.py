@@ -1,6 +1,10 @@
 from __future__ import annotations
+import os
 import builtins
 from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
+
+from frictionless.exception import FrictionlessException
+from ...dialect import Dialect
 from ...platform import platform
 from ...resource import Resource
 from ...system import system
@@ -39,6 +43,22 @@ class TableResource(Resource):
 
         """
         return analyze(self, detailed=detailed)
+
+    # Convert
+
+    def convert(
+        self,
+        to_path: str,
+        to_format: Optional[str] = None,
+        to_dialect: Optional[Union[Dialect, str]] = None,
+    ) -> str:
+        dialect = to_dialect or Dialect()
+        target = TableResource(path=to_path, format=to_format, dialect=dialect)
+        if os.path.exists(to_path):
+            note = f'Cannot convert to the existent path "{to_path}"'
+            raise FrictionlessException(note)
+        self.write(target)
+        return to_path
 
     # Extract
 

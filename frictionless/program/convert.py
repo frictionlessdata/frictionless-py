@@ -1,33 +1,52 @@
+from __future__ import annotations
 import typer
-from .program import program
-from ..checklist import Checklist
-from ..dialect import Dialect
-from ..inquiry import Inquiry
-from ..package import Package
-from ..pipeline import Pipeline
+from rich.console import Console
+from typing import List
 from ..resource import Resource
-from ..report import Report
-from ..schema import Schema
-from ..detector import Detector
 from ..system import system
+from .program import program
 from . import common
+from . import utils
 
 
-@program.command(name="convert", hidden=True)
+@program.command(name="convert")
 def program_convert(
-    # Source
-    source: str = common.source,
+    # Resource
+    source: List[str] = common.source,
+    name: str = common.resource_name,
+    type: str = common.type,
+    path: str = common.path,
+    scheme: str = common.scheme,
+    format: str = common.format,
+    compression: str = common.compression,
+    innerpath: str = common.innerpath,
+    encoding: str = common.encoding,
+    schema: str = common.schema,
+    basepath: str = common.basepath,
+    # Dialect
+    dialect: str = common.dialect,
+    header_rows: str = common.header_rows,
+    header_join: str = common.header_join,
+    comment_char: str = common.comment_char,
+    comment_rows: str = common.skip_rows,
+    sheet: str = common.sheet,
+    table: str = common.table,
+    keys: str = common.keys,
+    keyed: bool = common.keyed,
     # Command
-    path: str = common.output_path,
-    json: bool = common.json,
-    yaml: bool = common.yaml,
-    er_diagram: bool = common.er_diagram,
-    markdown: bool = common.markdown,
+    to_path: str = common.path,
+    to_format: str = common.format,
+    to_dialect: str = common.dialect,
+    to_csv_delimiter: str = typer.Option(default=None),
+    # System
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
-    """Convert metadata to various output"""
+    """
+    Convert data table
+    """
+    console = Console()
 
     # Setup system
     if trusted:
@@ -35,73 +54,54 @@ def program_convert(
     if standards:
         system.standards = standards  # type: ignore
 
-    # Validate input
-    if not source:
-        message = 'Providing "source" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
+    # Create source
+    source = utils.create_source(source, path=path)
+    if not source and not path:
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
-    # Initialize metadata
-    metadata = None
-    metadata_type = Detector.detect_metadata_type(source)
     try:
-        if metadata_type == "package":
-            metadata = Package.from_descriptor(source)
-        elif metadata_type == "resource":
-            metadata = Resource.from_descriptor(source)
-        elif metadata_type == "schema":
-            metadata = Schema.from_descriptor(source)
-        elif metadata_type == "checklist":
-            metadata = Checklist.from_descriptor(source)
-        elif metadata_type == "dialect":
-            metadata = Dialect.from_descriptor(source)
-        elif metadata_type == "report":
-            metadata = Report.from_descriptor(source)
-        elif metadata_type == "inquiry":
-            metadata = Inquiry.from_descriptor(source)
-        elif metadata_type == "pipeline":
-            metadata = Pipeline.from_descriptor(source)
+        # Create dialect
+        dialect_obj = utils.create_dialect(
+            descriptor=dialect,
+            header_rows=header_rows,
+            header_join=header_join,
+            comment_char=comment_char,
+            comment_rows=comment_rows,
+            sheet=sheet,
+            table=table,
+            keys=keys,
+            keyed=keyed,
+        )
+
+        # Create resource
+        resource = Resource(
+            source=utils.create_source(source),
+            path=path,
+            scheme=scheme,
+            format=format,
+            datatype=type or "",
+            compression=compression,
+            innerpath=innerpath,
+            encoding=encoding,
+            dialect=dialect_obj,
+            schema=schema,
+            basepath=basepath,
+        )
+
+        # Create to_dialect
+        to_dialect_obj = utils.create_dialect(
+            descriptor=to_dialect,
+            csv_delimiter=to_csv_delimiter,
+        )
+
+        # List resources
+        resources = resource.list(name=name)
+        resources[0].convert(
+            to_path=to_path, to_format=to_format, to_dialect=to_dialect_obj
+        )
+
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
-        raise
-
-    # Not found/supported
-    if not metadata:
-        message = "File not found or not supported type of metadata"
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
-    # Return json
-    if json:
-        content = metadata.to_json(path)
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return yaml
-    if yaml:
-        content = metadata.to_yaml(path)
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return ER Diagram
-    if er_diagram:
-        if not isinstance(metadata, Package):
-            message = "ER-diagram format is only available for package"
-            typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
-        content = metadata.to_er_diagram(path)
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return markdown
-    if markdown:
-        content = metadata.to_markdown(path)
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return retcode
-    message = "No format specified. For example --yaml"
-    typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-    raise typer.Exit(1)
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
