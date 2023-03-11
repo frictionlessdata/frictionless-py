@@ -40,7 +40,7 @@ class ResourceResource(MetadataResource[Resource]):
 
     # List
 
-    def list(self) -> List[Resource]:
+    def list(self, *, name: Optional[str] = None) -> List[Resource]:
         """List dataset resources"""
         resource = self.read_metadata()
         return [resource]
