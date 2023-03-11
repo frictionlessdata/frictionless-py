@@ -22,7 +22,11 @@ def program_explore(
     trusted: bool = common.trusted,
     standards: str = common.standards,
 ):
-    """Script data"""
+    """Explore dataset with Visidata
+
+    Please read the commands reference:
+    - https://www.visidata.org/man/
+    """
     console = Console()
 
     # Setup system

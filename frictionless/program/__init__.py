@@ -8,6 +8,7 @@ from . import explore
 from . import extract
 from . import index
 from . import list
+from . import publish
 from . import query
 from . import script
 from . import summary
