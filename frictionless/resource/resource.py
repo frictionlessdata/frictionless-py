@@ -573,21 +573,54 @@ class Resource(Metadata):
 
     @classmethod
     def describe(
-        cls, source: Optional[Any] = None, *, stats: bool = False, **options
-    ) -> Resource:
+        cls,
+        source: Optional[Any] = None,
+        *,
+        name: Optional[str] = None,
+        type: Optional[str] = None,
+        stats: bool = False,
+        **options,
+    ) -> Metadata:
         """Describe the given source as a resource
 
         Parameters:
-            source (any): data source
-            stats? (bool): if `True` infer resource's stats
-            **options (dict): Resource constructor options
+            source: data source
+            name: resoucrce name
+            type: data type: "package", "resource", "dialect", or "schema"
+            stats: if `True` infer resource's stats
+            **options: Resource constructor options
 
         Returns:
-            Resource: data resource
+            Metadata: metadata describing this data source
 
         """
-        resource = cls(source, **options)
+        Package = platform.frictionless.Package
+        PackageResource = platform.frictionless_resources.PackageResource
+
+        # Create resource
+        resource = Resource(
+            source,
+            name=name or "",
+            packagify=type == "package",
+            **options,
+        )
+
+        # Infer package
+        if isinstance(resource, PackageResource):
+            package = resource.read_metadata()
+            package.infer(stats=stats)
+            if name is not None:
+                return package.get_resource(name)
+            return package
+        elif type == "package":
+            return Package(resources=[resource])
+
+        # Infer resource
         resource.infer(stats=stats)
+        if type == "dialect":
+            return resource.dialect
+        if type == "schema":
+            return resource.schema
         return resource
 
     # Extract

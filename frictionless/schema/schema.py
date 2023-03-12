@@ -171,7 +171,7 @@ class Schema(Metadata):
     # Describe
 
     @staticmethod
-    def describe(source: Optional[Any] = None, **options):
+    def describe(source: Optional[Any] = None, **options) -> Schema:
         """Describe the given source as a schema
 
         Parameters:
@@ -181,8 +181,10 @@ class Schema(Metadata):
         Returns:
             Schema: table schema
         """
-        resource = platform.frictionless.Resource.describe(source, **options)
-        return resource.schema
+        Resource = platform.frictionless.Resource
+        metadata = Resource.describe(source, type="schema", **options)
+        assert isinstance(metadata, Schema)
+        return metadata
 
     # Read
 

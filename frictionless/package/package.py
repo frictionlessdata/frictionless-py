@@ -405,13 +405,11 @@ class Package(Metadata):
             Package: data package
 
         """
-        resources = platform.frictionless_resources
-        resource = Resource(source, packagify=True, **options)
-        if isinstance(resource, resources.PackageResource):
-            package = resource.read_metadata()
-            package.infer(stats=stats)
-            return package
-        return Package(resources=[resource])
+        metadata = Resource.describe(source, type="package", stats=stats, **options)
+        if isinstance(metadata, Resource):
+            metadata = Package(resources=[metadata])
+        assert isinstance(metadata, Package)
+        return metadata
 
     # Extract
 

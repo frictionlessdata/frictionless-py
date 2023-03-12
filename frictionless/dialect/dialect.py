@@ -101,7 +101,7 @@ class Dialect(Metadata):
     # Describe
 
     @staticmethod
-    def describe(source: Optional[Any] = None, **options):
+    def describe(source: Optional[Any] = None, **options) -> Dialect:
         """Describe the given source as a dialect
 
         Parameters:
@@ -111,8 +111,10 @@ class Dialect(Metadata):
         Returns:
             Dialect: file dialect
         """
-        resource = platform.frictionless.Resource.describe(source, **options)
-        return resource.dialect
+        Resource = platform.frictionless.Resource
+        metadata = Resource.describe(source, type="dialect", **options)
+        assert isinstance(metadata, Dialect)
+        return metadata
 
     # Controls
 
