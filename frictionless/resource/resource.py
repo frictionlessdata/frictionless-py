@@ -558,17 +558,6 @@ class Resource(Metadata):
             raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
 
-    # Convert
-
-    def convert(
-        self,
-        to_path: str,
-        to_format: Optional[str] = None,
-        to_dialect: Optional[Union[Dialect, str]] = None,
-    ) -> str:
-        note = f'Not supported resource data type "{self.datatype}" for conversion'
-        raise FrictionlessException(note)
-
     # Describe
 
     @classmethod
@@ -623,46 +612,6 @@ class Resource(Metadata):
             return resource.schema
         return resource
 
-    # Extract
-
-    def extract(
-        self,
-        *,
-        name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
-        limit_rows: Optional[int] = None,
-    ) -> ITabularData:
-        """Extract rows
-
-        Parameters:
-            name: extract only resource having this name
-            filter: row filter function
-            process: row processor function
-            limit_rows: limit amount of rows to this number
-
-        Returns:
-            extracted rows indexed by resource name
-
-        """
-        return {}
-
-    # Index
-
-    def index(
-        self,
-        database_url: str,
-        *,
-        name: Optional[str] = None,
-        fast: bool = False,
-        on_row: Optional[IOnRow] = None,
-        on_progress: Optional[IOnProgress] = None,
-        use_fallback: bool = False,
-        qsv_path: Optional[str] = None,
-    ) -> List[str]:
-        """Index data into a database"""
-        return []
-
     # List
 
     def list(self, *, name: Optional[str] = None) -> List[Resource]:
@@ -673,19 +622,6 @@ class Resource(Metadata):
 
         """
         return [self]
-
-    # Transform
-
-    def transform(self, pipeline: Pipeline) -> Any:
-        """Transform resource
-
-        Parameters:
-            pipeline: transform Pipeline
-
-        Returns:
-            Resource: the transform result
-        """
-        return self
 
     # Validate
 

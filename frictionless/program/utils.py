@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional, Any, List
 from rich.panel import Panel
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
+from ..exception import FrictionlessException
 from ..pipeline import Pipeline, Step
 from ..checklist import Checklist, Check
 from ..detector import Detector
@@ -206,6 +207,12 @@ def index_resource(
     qsv_path: Optional[str] = None,
     debug: bool = False,
 ) -> List[str]:
+    # Ensure trait
+    if not isinstance(resource, platform.frictionless_resources.Indexable):
+        note = f'Resource with data type "{resource.datatype}" is not indexable'
+        raise FrictionlessException(note)
+
+    # Index resource
     try:
         timer = helpers.Timer()
         if "://" not in database:

@@ -7,3 +7,4 @@ from .resource import ResourceResource
 from .table import TableResource
 from .text import TextResource
 from .view import ViewResource
+from .traits import *

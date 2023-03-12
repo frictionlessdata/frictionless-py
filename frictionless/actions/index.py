@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Any, List
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:
@@ -21,9 +23,10 @@ def index(
     **options,
 ) -> List[str]:
     """Index data into a database"""
-
-    # Index resource
     resource = Resource(source, name=name or "", datatype=type or "", **options)
+    if not isinstance(resource, platform.frictionless_resources.Indexable):
+        note = f'Resource with data type "{resource.datatype}" is not indexable'
+        raise FrictionlessException(note)
     return resource.index(
         database_url,
         fast=fast,

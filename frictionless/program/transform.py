@@ -2,6 +2,8 @@ from __future__ import annotations
 import typer
 from typing import List
 from rich.console import Console
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..resource import Resource
 from ..system import system
 from .program import program
@@ -51,6 +53,9 @@ def program_transform(
     # Transform resource
     try:
         resource = Resource(source, path=path)
+        if not isinstance(resource, platform.frictionless_resources.Transformable):
+            note = f'Resource with data type "{resource.datatype}" is not transformable'
+            raise FrictionlessException(note)
         result = resource.transform(pipeline_obj)
     # TODO: we don't catch errors here because it's streaming
     except Exception as exception:

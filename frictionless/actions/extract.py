@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Any
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:
@@ -31,9 +33,10 @@ def extract(
         extracted rows indexed by resource name
     """
     name = name or resource_name
-
-    # Extract resource
     resource = Resource(source, datatype=type or "", **options)
+    if not isinstance(resource, platform.frictionless_resources.Extractable):
+        note = f'Resource with data type "{resource.datatype}" is not convertible'
+        raise FrictionlessException(note)
     return resource.extract(
         name=name, filter=filter, process=process, limit_rows=limit_rows
     )

@@ -2,6 +2,8 @@ from __future__ import annotations
 import typer
 from typing import List
 from rich.console import Console
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..resource import Resource
 from ..system import system
 from .program import program

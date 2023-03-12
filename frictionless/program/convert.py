@@ -3,6 +3,8 @@ import typer
 from typing import List
 from rich.console import Console
 from rich.progress import track
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..resource import Resource
 from ..system import system
 from .program import program
@@ -97,13 +99,22 @@ def program_convert(
             csv_delimiter=to_csv_delimiter,
         )
 
+        # Get resource
+        # TODO: rework; don't use resources[0]
+        resources = resource.list(name=name)
+        res = resources[0]
+
+        # Ensure trait
+        if not isinstance(res, platform.frictionless_resources.Convertible):
+            note = f'Resource with data type "{resource.datatype}" is not convertible'
+            raise FrictionlessException(note)
+
         # Convert resource
         console.rule("[bold]Convert")
-        resources = resource.list(name=name)
         # TODO: replace dummy progress bar a normal one
         for stage in track(["start", "end"], description="Converting..."):
             if stage == "end":
-                resources[0].convert(
+                res.convert(
                     to_path=to_path, to_format=to_format, to_dialect=to_dialect_obj
                 )
 

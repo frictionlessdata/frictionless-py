@@ -1,4 +1,6 @@
 from typing import Optional, List, Any, Union
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..pipeline import Pipeline, Step
 from ..resource import Resource
 
@@ -32,4 +34,7 @@ def transform(
 
     # Transform resource
     resource = Resource(source, datatype=type or "", **options)
+    if not isinstance(resource, platform.frictionless_resources.Transformable):
+        note = f'Resource with data type "{resource.datatype}" is not transformable'
+        raise FrictionlessException(note)
     return resource.transform(pipeline)

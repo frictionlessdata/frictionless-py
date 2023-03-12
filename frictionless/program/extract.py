@@ -4,6 +4,7 @@ import json as pyjson
 from rich.table import Table
 from rich.console import Console
 from typing import TYPE_CHECKING, List, Optional
+from ..exception import FrictionlessException
 from ..resource import Resource
 from ..platform import platform
 from ..system import system
@@ -151,8 +152,10 @@ def program_extract(
             detector=detector_obj,
         )
 
-        # List resources
-        resources = resource.list()
+        # Ensure trait
+        if not isinstance(resource, platform.frictionless_resources.Extractable):
+            note = f'Resource with data type "{resource.datatype}" is not extractable'
+            raise FrictionlessException(note)
 
         # Extract data
         data = resource.extract(
@@ -161,6 +164,9 @@ def program_extract(
             process=process,
             limit_rows=limit_rows,
         )
+
+        # List resources
+        resources = resource.list()
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
