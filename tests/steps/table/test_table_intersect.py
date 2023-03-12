@@ -1,16 +1,17 @@
-from frictionless import Resource, Pipeline, Step, steps
+from frictionless import Pipeline, steps, Step
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_table_intersect():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
-                resource=Resource(
+                resource=TableResource(
                     data=[
                         ["id", "name", "population"],
                         [1, "germany", 83],
@@ -36,7 +37,7 @@ def test_step_table_intersect():
 
 
 def test_step_table_intersect_from_dict():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -71,12 +72,12 @@ def test_step_table_intersect_from_dict():
 
 
 def test_step_table_intersect_with_use_hash():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
-                resource=Resource(
+                resource=TableResource(
                     data=[
                         ["id", "name", "population"],
                         [1, "germany", 83],

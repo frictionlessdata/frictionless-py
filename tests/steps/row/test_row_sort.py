@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, Step, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_row_sort():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_sort(field_names=["name"]),
@@ -27,7 +28,7 @@ def test_step_row_sort():
 
 
 def test_step_row_sort_with_reverse():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_sort(field_names=["id"], reverse=True),
@@ -52,7 +53,7 @@ def test_step_row_sort_with_reverse():
 
 
 def test_step_row_sort_with_reverse_in_desriptor_issue_996():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             Step.from_descriptor(

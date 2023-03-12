@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_field_remove():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_remove(names=["id"]),
@@ -29,7 +30,7 @@ def test_step_field_remove():
 
 
 def test_step_field_remove_missing_label():
-    source = Resource(b"field1,\n1,2", format="csv")
+    source = TableResource(b"field1,\n1,2", format="csv")
     pipeline = Pipeline(
         steps=[
             steps.field_remove(names=["field2"]),

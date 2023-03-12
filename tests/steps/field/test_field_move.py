@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_field_move():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_move(name="id", position=3),
@@ -30,7 +31,7 @@ def test_step_field_move():
 
 
 def test_transform_rename_move_field_issue_953():
-    source = Resource(
+    source = TableResource(
         [
             {"id": 1, "name": "germany", "population": 83},
             {"id": 2, "name": "france", "population": 66},

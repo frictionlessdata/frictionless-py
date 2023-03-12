@@ -1,16 +1,17 @@
-from frictionless import Resource, Pipeline, Step, steps
+from frictionless import Pipeline, steps, Step
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_table_diff():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_diff(
-                resource=Resource(
+                resource=TableResource(
                     data=[
                         ["id", "name", "population"],
                         [1, "germany", 83],
@@ -35,7 +36,7 @@ def test_step_table_diff():
 
 
 def test_step_table_diff_from_dict():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -69,11 +70,11 @@ def test_step_table_diff_from_dict():
 
 
 def test_step_table_diff_with_ignore_order():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_diff(
-                resource=Resource(
+                resource=TableResource(
                     data=[
                         ["name", "id", "population"],
                         ["germany", "1", "83"],
@@ -99,12 +100,12 @@ def test_step_table_diff_with_ignore_order():
 
 
 def test_step_table_diff_with_use_hash():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_diff(
-                resource=Resource(
+                resource=TableResource(
                     data=[
                         ["id", "name", "population"],
                         [1, "germany", 83],

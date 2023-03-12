@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, Pipeline, Step, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
@@ -7,11 +8,13 @@ from frictionless import Resource, Pipeline, Step, steps
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
-                resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]])
+                resource=TableResource(
+                    data=[["id", "name", "note"], [4, "malta", "island"]]
+                )
             ),
         ],
     )
@@ -34,7 +37,7 @@ def test_step_table_merge():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_from_dict():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             Step.from_descriptor(
@@ -66,11 +69,13 @@ def test_step_table_merge_from_dict():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_field_names():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
-                resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]]),
+                resource=TableResource(
+                    data=[["id", "name", "note"], [4, "malta", "island"]]
+                ),
                 field_names=["id", "name"],
             ),
         ],
@@ -92,11 +97,11 @@ def test_step_table_merge_with_field_names():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_merge_ignore_fields():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
-                resource=Resource(data=[["id2", "name2"], [4, "malta"]]),
+                resource=TableResource(data=[["id2", "name2"], [4, "malta"]]),
                 ignore_fields=True,
             ),
         ],
@@ -119,11 +124,13 @@ def test_step_merge_ignore_fields():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_sort():
-    source = Resource("data/transform.csv")
+    source = TableResource("data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
-                resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),
+                resource=TableResource(
+                    data=[["id", "name", "population"], [4, "malta", 1]]
+                ),
                 sort_by_field=["population"],  # type: ignore
             ),
         ],

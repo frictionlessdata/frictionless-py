@@ -22,14 +22,11 @@ from .. import fields
 if TYPE_CHECKING:
     from ..report import Report
     from ..checklist import Checklist
-    from ..pipeline import Pipeline
     from ..package import Package
     from ..table import IRowStream
     from ..system import Loader, Parser
     from ..interfaces import IDescriptor, IBuffer, ISample, IFragment
     from ..interfaces import ILabels, IByteStream, ITextStream, ICellStream
-    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
-    from ..formats.sql import IOnRow, IOnProgress
     from ..interfaces import ICallbackFunction
 
 

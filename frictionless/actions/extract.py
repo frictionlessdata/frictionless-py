@@ -35,7 +35,7 @@ def extract(
     name = name or resource_name
     resource = Resource(source, datatype=type or "", **options)
     if not isinstance(resource, platform.frictionless_resources.Extractable):
-        note = f'Resource with data type "{resource.datatype}" is not convertible'
+        note = f'Resource with data type "{resource.datatype}" is not extractable'
         raise FrictionlessException(note)
     return resource.extract(
         name=name, filter=filter, process=process, limit_rows=limit_rows

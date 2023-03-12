@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_cell_fill():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace=None),  # type: ignore
@@ -28,7 +29,7 @@ def test_step_cell_fill():
 
 
 def test_step_cell_fill_direction_down():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace=None),  # type: ignore
@@ -51,7 +52,7 @@ def test_step_cell_fill_direction_down():
 
 
 def test_step_cell_fill_direction_right():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", descriptor={"type": "string"}),
@@ -76,7 +77,7 @@ def test_step_cell_fill_direction_right():
 
 
 def test_step_cell_fill_direction_left():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", descriptor={"type": "string"}),

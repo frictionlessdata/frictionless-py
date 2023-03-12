@@ -5,8 +5,6 @@ import typer
 import tempfile
 from typing import List
 from rich.console import Console
-from ..exception import FrictionlessException
-from ..platform import platform
 from ..resource import Resource
 from .program import program
 from ..system import system
@@ -52,11 +50,6 @@ def program_query(
             path=path,
             datatype=type or "",
         )
-
-        # Ensure trait
-        if not isinstance(resource, platform.frictionless_resources.Indexable):
-            note = f'Resource with data type "{resource.datatype}" is not indexable'
-            raise FrictionlessException(note)
 
         # Create database
         file = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
