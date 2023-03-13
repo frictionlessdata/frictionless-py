@@ -1,4 +1,5 @@
-from frictionless import Resource, Dialect, Schema, Detector
+from frictionless import Dialect, Schema, Detector
+from frictionless.resources import TableResource
 
 
 # General
@@ -14,7 +15,9 @@ def test_resource_validate_detector_sync_schema():
         }
     )
     detector = Detector(schema_sync=True)
-    resource = Resource("data/sync-schema.csv", schema=schema, detector=detector)
+    resource = TableResource(
+        path="data/sync-schema.csv", schema=schema, detector=detector
+    )
     report = resource.validate()
     assert report.valid
     assert resource.schema.to_descriptor() == {
@@ -37,7 +40,7 @@ def test_resource_validate_detector_sync_schema_invalid():
         }
     )
     detector = Detector(schema_sync=True)
-    resource = Resource(source, schema=schema, detector=detector)
+    resource = TableResource(data=source, schema=schema, detector=detector)
     report = resource.validate()
     assert report.valid
 
@@ -59,7 +62,7 @@ def test_resource_validate_detector_headers_errors():
         }
     )
     detector = Detector(schema_sync=True)
-    resource = Resource(source, schema=schema, detector=detector)
+    resource = TableResource(data=source, schema=schema, detector=detector)
     report = resource.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
         [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
@@ -68,7 +71,7 @@ def test_resource_validate_detector_headers_errors():
 
 def test_resource_validate_detector_patch_schema():
     detector = Detector(schema_patch={"missingValues": ["-"]})
-    resource = Resource("data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
     assert resource.schema.to_descriptor() == {
@@ -84,7 +87,7 @@ def test_resource_validate_detector_patch_schema_fields():
     detector = Detector(
         schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
     )
-    resource = Resource("data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
     assert resource.schema.to_descriptor() == {
@@ -95,7 +98,7 @@ def test_resource_validate_detector_patch_schema_fields():
 
 def test_resource_validate_detector_infer_type_string():
     detector = Detector(field_type="string")
-    resource = Resource("data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
     assert resource.schema.to_descriptor() == {
@@ -105,7 +108,7 @@ def test_resource_validate_detector_infer_type_string():
 
 def test_resource_validate_detector_infer_type_any():
     detector = Detector(field_type="any")
-    resource = Resource("data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
     assert resource.schema.to_descriptor() == {
@@ -116,7 +119,9 @@ def test_resource_validate_detector_infer_type_any():
 def test_resource_validate_detector_infer_names():
     dialect = Dialect(header=False)
     detector = Detector(field_names=["id", "name"])
-    resource = Resource("data/without-headers.csv", dialect=dialect, detector=detector)
+    resource = TableResource(
+        path="data/without-headers.csv", dialect=dialect, detector=detector
+    )
     report = resource.validate()
     assert report.valid
     assert resource.schema.fields[0].name == "id"

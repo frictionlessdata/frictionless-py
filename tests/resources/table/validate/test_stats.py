@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, platform
+from frictionless import platform
+from frictionless.resources import TableResource
 
 
 # General
@@ -8,7 +9,7 @@ from frictionless import Resource, platform
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_hash():
     hash = "sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    resource = Resource("data/table.csv", hash=hash)
+    resource = TableResource(path="data/table.csv", hash=hash)
     report = resource.validate()
     assert report.task.valid
 
@@ -16,7 +17,7 @@ def test_resource_validate_stats_hash():
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_hash_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
-    resource = Resource("data/table.csv", hash="bad")
+    resource = TableResource(path="data/table.csv", hash="bad")
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
         [
@@ -28,14 +29,14 @@ def test_resource_validate_stats_hash_invalid():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_bytes():
-    resource = Resource("data/table.csv", bytes=30)
+    resource = TableResource(path="data/table.csv", bytes=30)
     report = resource.validate()
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_bytes_invalid():
-    resource = Resource("data/table.csv", bytes=40)
+    resource = TableResource(path="data/table.csv", bytes=40)
     report = resource.validate()
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
@@ -46,14 +47,14 @@ def test_resource_validate_stats_bytes_invalid():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_rows():
-    resource = Resource("data/table.csv", rows=2)
+    resource = TableResource(path="data/table.csv", rows=2)
     report = resource.validate()
     assert report.task.valid
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_validate_stats_rows_invalid():
-    resource = Resource("data/table.csv", rows=3)
+    resource = TableResource(path="data/table.csv", rows=3)
     report = resource.validate()
     assert report.task.error.to_descriptor().get("rowNumber") is None
     assert report.task.error.to_descriptor().get("fieldNumber") is None
@@ -63,7 +64,7 @@ def test_resource_validate_stats_rows_invalid():
 
 
 def test_resource_validate_stats_not_supported_hash_algorithm():
-    resource = Resource.from_descriptor(
+    resource = TableResource.from_descriptor(
         {
             "name": "name",
             "path": "data/table.csv",

@@ -1,7 +1,8 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, formats, platform
+from frictionless import Package, formats, platform
+from frictionless.resources import TableResource
 
 
 # General
@@ -170,7 +171,7 @@ def test_sql_adapter_mysql_constraints(mysql_url):
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_adapter_mysql_constraints_not_valid_error(mysql_url, field_name, cell):
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("constraints")
+    resource = package.get_table_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
@@ -192,7 +193,9 @@ def test_sql_adapter_mysql_views_support(mysql_url):
         conn.execute(sa.text("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)"))
         conn.execute(sa.text("INSERT INTO data VALUES (1, 'english'), (2, '中国人')"))
         conn.execute(sa.text("CREATE VIEW view AS SELECT * FROM data"))
-    with Resource(mysql_url, control=formats.sql.SqlControl(table="view")) as resource:
+    with TableResource(
+        path=mysql_url, control=formats.sql.SqlControl(table="view")
+    ) as resource:
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -211,14 +214,14 @@ def test_sql_adapter_mysql_comment_support(mysql_url):
     control = formats.SqlControl(table="table")
 
     # Write
-    source = Resource(path="data/table.csv")
+    source = TableResource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
     source.write(mysql_url, control=control)
 
     # Read
-    target = Resource(mysql_url, control=control)
+    target = TableResource(path=mysql_url, control=control)
     with target:
         assert target.schema.to_descriptor() == {
             "fields": [

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Package, Resource, Pipeline, steps
+from frictionless import Package, Pipeline, steps
 from frictionless.resources import TableResource
 
 
@@ -37,7 +37,7 @@ def test_transform_resource_with_melt():
         ],
     )
     target = source.transform(pipeline)
-    assert isinstance(target, Resource)
+    assert isinstance(target, TableResource)
     assert target.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -83,7 +83,7 @@ def test_resource_transform_cell_set():
 @pytest.mark.ci
 def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     # write table
-    resource = Resource.from_descriptor(
+    resource = TableResource.from_descriptor(
         {
             "name": "commune",
             "schema": {
@@ -126,7 +126,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
 @pytest.mark.ci
 def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url):
     # write table
-    resource = Resource.from_descriptor(
+    resource = TableResource.from_descriptor(
         {
             "name": "commune",
             "schema": {

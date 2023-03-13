@@ -1,7 +1,8 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, formats, platform
+from frictionless import Package, formats, platform
+from frictionless.resources import TableResource
 
 
 # General
@@ -170,7 +171,7 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_adapter_postgresql_constraints_not_valid_error(postgresql_url, name, cell):
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("constraints")
+    resource = package.get_table_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == name:
@@ -190,7 +191,9 @@ def test_sql_adapter_postgresql_views_support(postgresql_url):
         conn.execute(sa.text("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)"))
         conn.execute(sa.text("INSERT INTO data VALUES (1, 'english'), (2, '中国人')"))
         conn.execute(sa.text("CREATE VIEW view AS SELECT * FROM data"))
-    with Resource(postgresql_url, control=formats.sql.SqlControl(table="view")) as res:
+    with TableResource(
+        path=postgresql_url, control=formats.sql.SqlControl(table="view")
+    ) as res:
         assert res.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -209,14 +212,14 @@ def test_sql_adapter_postgresql_comment_support(postgresql_url):
     control = formats.SqlControl(table="table")
 
     # Write
-    source = Resource(path="data/table.csv")
+    source = TableResource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
     source.write(postgresql_url, control=control)
 
     # Read
-    with Resource(postgresql_url, control=control) as target:
+    with TableResource(path=postgresql_url, control=control) as target:
         assert target.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer", "description": "integer field"},

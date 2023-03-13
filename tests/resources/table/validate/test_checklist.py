@@ -1,4 +1,5 @@
-from frictionless import Resource, Checklist
+from frictionless import Checklist
+from frictionless.resources import TableResource
 
 
 # General
@@ -6,7 +7,7 @@ from frictionless import Resource, Checklist
 
 def test_resource_validate_bound_checklist():
     checklist = Checklist(pick_errors=["blank-label", "blank-row"])
-    resource = Resource("data/invalid.csv")
+    resource = TableResource(path="data/invalid.csv")
     report = resource.validate(checklist)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "blank-label"],
