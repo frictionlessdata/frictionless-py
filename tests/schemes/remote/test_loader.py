@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, Dialect, schemes, platform
+from frictionless import Dialect, schemes, platform
+from frictionless.resources import TableResource
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -10,7 +11,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 @pytest.mark.vcr
 def test_remote_loader():
-    with Resource(BASEURL % "data/table.csv") as resource:
+    with TableResource(path=BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -21,7 +22,7 @@ def test_remote_loader():
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`
-    with Resource(BASEURL % "data/latin1.csv") as resource:
+    with TableResource(path=BASEURL % "data/latin1.csv") as resource:
         assert resource.read_rows()
 
 
@@ -29,7 +30,7 @@ def test_remote_loader_latin1():
 @pytest.mark.vcr
 def test_remote_loader_big_file():
     dialect = Dialect(header=False)
-    with Resource(BASEURL % "data/table1.csv", dialect=dialect) as resource:
+    with TableResource(path=BASEURL % "data/table1.csv", dialect=dialect) as resource:
         assert resource.read_rows()
         assert resource.stats.md5 == "78ea269458be04a0e02816c56fc684ef"
         assert (
@@ -44,7 +45,7 @@ def test_remote_loader_big_file():
 @pytest.mark.vcr
 def test_remote_loader_http_preload():
     control = schemes.RemoteControl(http_preload=True)
-    with Resource(BASEURL % "data/table.csv", control=control) as resource:
+    with TableResource(path=BASEURL % "data/table.csv", control=control) as resource:
         control = resource.dialect.get_control("remote")
         assert isinstance(control, schemes.RemoteControl)
         assert control.http_preload is True
@@ -63,7 +64,7 @@ def test_remote_loader_http_preload():
 def test_remote_loader_write(requests_mock):
     path = "https://example.com/post/table.csv"
     requests_mock.post("https://example.com/post/")
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     target = source.write(path)
     assert target
 
@@ -73,7 +74,7 @@ def test_remote_loader_write(requests_mock):
 
 @pytest.mark.vcr
 def test_remote_loader_if_remote_basepath_and_file_scheme_issue_1388():
-    resource = Resource(path="table.csv", scheme="file", basepath=BASEURL % "data")
+    resource = TableResource(path="table.csv", scheme="file", basepath=BASEURL % "data")
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

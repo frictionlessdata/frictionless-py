@@ -16,6 +16,7 @@ from .. import fields
 if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..pipeline import Pipeline
+    from ..resources import TableResource
     from ..interfaces import IFilterFunction, IProcessFunction
     from ..interfaces import IDescriptor, ITabularData
     from ..formats.sql import IOnRow, IOnProgress
@@ -260,6 +261,14 @@ class Package(Metadata):
         error = errors.PackageError(note=f'resource "{name}" does not exist')
         raise FrictionlessException(error)
 
+    def get_table_resource(self, name: str) -> TableResource:
+        """Get table resource by name (raise if not table)"""
+        resource = self.get_resource(name)
+        if isinstance(resource, platform.frictionless_resources.TableResource):
+            return resource
+        error = errors.PackageError(note=f'resource "{name}" is not tabular')
+        raise FrictionlessException(error)
+
     def set_resource(self, resource: Resource) -> Optional[Resource]:
         """Set resource by name"""
         assert resource.name
@@ -456,16 +465,17 @@ class Package(Metadata):
         names: List[str] = []
         resources = self.resources if name is None else [self.get_resource(name)]
         for resource in resources:
-            names.extend(
-                resource.index(
-                    database_url=database_url,
-                    fast=fast,
-                    on_row=on_row,
-                    on_progress=on_progress,
-                    use_fallback=use_fallback,
-                    qsv_path=qsv_path,
+            if isinstance(resource, platform.frictionless_resources.TableResource):
+                names.extend(
+                    resource.index(
+                        database_url=database_url,
+                        fast=fast,
+                        on_row=on_row,
+                        on_progress=on_progress,
+                        use_fallback=use_fallback,
+                        qsv_path=qsv_path,
+                    )
                 )
-            )
         return names
 
     # Transform

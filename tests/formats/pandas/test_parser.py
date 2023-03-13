@@ -90,8 +90,7 @@ def test_pandas_parser_nan_in_integer_csv_column():
 
 
 def test_pandas_parser_write_types():
-    source = Package("data/storage/types.json").get_resource("types")
-    assert isinstance(source, TableResource)
+    source = Package("data/storage/types.json").get_table_resource("types")
     target = source.write(format="pandas")
     with target:
         # Assert schema
@@ -140,8 +139,7 @@ def test_pandas_parser_write_types():
 
 
 def test_pandas_write_constraints():
-    source = Package("data/storage/constraints.json").get_resource("constraints")
-    assert isinstance(source, TableResource)
+    source = Package("data/storage/constraints.json").get_table_resource("constraints")
     target = source.write(format="pandas")
     with target:
         # Assert schema
@@ -208,9 +206,7 @@ def test_pandas_parser_write_timezone():
 
 
 def test_pandas_parser_write_bug_1100():
-    datapackage = Package("data/issue-1100.package.json")
-    source = datapackage.resources[0]
-    assert isinstance(source, TableResource)
+    source = Package("data/issue-1100.package.json").get_table_resource("issue1100")
     target = source.to_pandas()
     assert target.to_dict("records") == [  # type: ignore
         {"timestamp": pd.Timestamp(2022, 5, 25, 10, 39, 15)},
@@ -219,9 +215,7 @@ def test_pandas_parser_write_bug_1100():
 
 
 def test_pandas_parser_write_bug_1105():
-    datapackage = Package("data/issue-1105.package.json")
-    source = datapackage.resources[0]
-    assert isinstance(source, TableResource)
+    source = Package("data/issue-1105.package.json").get_table_resource("issue1105")
     target = source.to_pandas()
     assert target.to_dict() == {  # type: ignore
         "id": {
