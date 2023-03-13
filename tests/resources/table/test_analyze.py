@@ -172,7 +172,7 @@ def test_analyze_resource_detailed_non_numeric_data_identification():
         ["female", "italy"],
         ["female", "italy"],
     ]
-    resource = TableResource(data)
+    resource = TableResource(data=data)
     analysis = resource.analyze(detailed=True)
     assert analysis["fieldStats"]["gender"]["type"] == "categorical"
     assert analysis["fieldStats"]["gender"]["values"] == {"male", "female"}
@@ -182,7 +182,7 @@ def test_analyze_resource_detailed_non_numeric_data_identification():
 
 def test_analyze_resource_with_empty_rows():
     data = [["a", "b"]]
-    resource = TableResource(data)
+    resource = TableResource(data=data)
     analysis = resource.analyze()
     assert list(analysis.keys()) == [
         "variableTypes",
@@ -199,7 +199,7 @@ def test_analyze_resource_with_empty_rows():
 
 def test_analyze_resource_detailed_with_empty_rows():
     data = [["a", "b"]]
-    resource = TableResource(data)
+    resource = TableResource(data=data)
     analysis = resource.analyze(detailed=True)
     assert list(analysis.keys()) == [
         "variableTypes",

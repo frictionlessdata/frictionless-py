@@ -1,13 +1,13 @@
 import pytest
-from frictionless import Resource, Pipeline, steps
-from frictionless import Package
+from frictionless import Package, Resource, Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_resource_transform():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -29,7 +29,7 @@ def test_resource_transform():
 
 
 def test_transform_resource_with_melt():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -56,7 +56,7 @@ def test_transform_resource_with_melt():
 
 
 def test_resource_transform_cell_set():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline.from_descriptor(
         {
             "steps": [
@@ -83,7 +83,7 @@ def test_resource_transform_cell_set():
 @pytest.mark.ci
 def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     # write table
-    resource = Resource(
+    resource = Resource.from_descriptor(
         {
             "name": "commune",
             "schema": {
@@ -102,7 +102,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
     package.resources[1].pipeline.steps[0].path = sqlite_url  # type: ignore
     for resource in package.resources:
         if resource.pipeline:  # type: ignore
-            resource.transform()
+            resource.transform()  # type: ignore
 
     # read tables
     target = Package(sqlite_url)
@@ -126,7 +126,7 @@ def test_resource_transform_table_creation_with_foreign_key(sqlite_url):
 @pytest.mark.ci
 def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url):
     # write table
-    resource = Resource(
+    resource = Resource.from_descriptor(
         {
             "name": "commune",
             "schema": {
@@ -147,7 +147,7 @@ def test_resource_transform_multiple_table_creation_with_foreign_key(sqlite_url)
 
     for resource in package.resources:
         if resource.pipeline:  # type: ignore
-            resource.transform()
+            resource.transform()  # type: ignore
 
     # read tables
     target = Package(sqlite_url)

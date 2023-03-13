@@ -7,6 +7,7 @@ from frictionless import formats, Resource, Dialect, Detector, platform
 
 def test_resource_describe():
     resource = Resource.describe("data/table.csv")
+    assert isinstance(resource, Resource)
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
@@ -27,6 +28,7 @@ def test_resource_describe():
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_describe_with_stats():
     resource = Resource.describe("data/table.csv", stats=True)
+    assert isinstance(resource, Resource)
     assert resource.to_descriptor() == {
         "name": "table",
         "path": "data/table.csv",
@@ -50,6 +52,7 @@ def test_resource_describe_with_stats():
 
 def test_resource_describe_schema():
     resource = Resource.describe("data/table-infer.csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -61,6 +64,7 @@ def test_resource_describe_schema():
 
 def test_resource_describe_schema_utf8():
     resource = Resource.describe("data/table-infer-utf8.csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -73,6 +77,7 @@ def test_resource_describe_schema_utf8():
 def test_resource_describe_schema_infer_volume():
     detector = Detector(sample_size=4)
     resource = Resource.describe("data/table-infer-row-limit.csv", detector=detector)
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -84,6 +89,7 @@ def test_resource_describe_schema_infer_volume():
 
 def test_resource_describe_schema_with_missing_values_default():
     resource = Resource.describe("data/table-infer-missing-values.csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "string"},
@@ -96,6 +102,7 @@ def test_resource_describe_schema_with_missing_values_default():
 def test_resource_describe_schema_with_missing_values_using_the_argument():
     detector = Detector(field_missing_values=["-"])
     resource = Resource.describe("data/table-infer-missing-values.csv", detector=detector)
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -112,12 +119,13 @@ def test_resource_describe_schema_check_type_boolean_string_tie():
     resource = Resource.describe(
         [["f"], ["stringish"]], dialect=dialect, detector=detector
     )
+    assert isinstance(resource, Resource)
     assert resource.schema.get_field("field").type == "string"
 
 
 def test_resource_describe_schema_summary():
     resource = Resource.describe("data/countries.csv")
-    resource.infer()
+    assert isinstance(resource, Resource)
     output = resource.schema.to_summary()
     assert (
         output.count("| name        | type    | required   |")
@@ -134,6 +142,7 @@ def test_resource_describe_schema_summary():
 def test_resource_describe_blank_cells_issue_7():
     source = b"header1,header2\n1,\n2,\n3,\n"
     resource = Resource.describe(source, format="csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
@@ -145,6 +154,7 @@ def test_resource_describe_blank_cells_issue_7():
 def test_resource_describe_whitespace_cells_issue_7():
     source = b"header1,header2\n1, \n2, \n3, \n"
     resource = Resource.describe(source, format="csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "header1", "type": "integer"},
@@ -157,6 +167,7 @@ def test_resource_describe_schema_xlsx_file_with_boolean_column_issue_203():
     resource = Resource.describe(
         "data/table-infer-boolean.xlsx", control=formats.ExcelControl(stringified=True)
     )
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "number", "type": "number"},
@@ -169,6 +180,7 @@ def test_resource_describe_schema_xlsx_file_with_boolean_column_issue_203():
 def test_resource_describe_schema_increase_limit_issue_212():
     detector = Detector(sample_size=200)
     resource = Resource.describe("data/table-infer-increase-limit.csv", detector=detector)
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "a", "type": "integer"},
@@ -184,6 +196,7 @@ def test_resource_describe_values_with_leading_zeros_issue_492_1232_1364():
     #  "fields": [{"name": "value", "type": "string"}]
     #  }
     # assert resource.read_rows() == [{"value": "01"}, {"value": "002"}, {"value": "00003"}]
+    assert isinstance(resource, Resource)
     assert resource.schema.to_descriptor() == {
         "fields": [{"name": "value", "type": "integer"}]
     }
@@ -192,18 +205,20 @@ def test_resource_describe_values_with_leading_zeros_issue_492_1232_1364():
 
 def test_resource_describe_schema_proper_quote_issue_493():
     resource = Resource.describe("data/issue-493.csv")
+    assert isinstance(resource, Resource)
     assert resource.dialect.to_descriptor() == {}
     assert len(resource.schema.fields) == 126
 
 
 def test_resource_describe_file_with_different_characters_name_issue_600():
-    assert Resource.describe("data/table_with_data.csv").name == "table_with_data"
-    assert Resource.describe("data/Table With Data.csv").name == "table-with-data"
-    assert Resource.describe("data/Таблица.csv").name == "tablitsa"
+    assert Resource("data/table_with_data.csv").name == "table_with_data"
+    assert Resource("data/Table With Data.csv").name == "table-with-data"
+    assert Resource("data/Таблица.csv").name == "tablitsa"
 
 
 def test_resource_describe_compression_gzip_issue_606():
     resource = Resource.describe("data/table.csv.gz", stats=True)
+    assert isinstance(resource, Resource)
     assert resource.name == "table"
     assert (
         resource.stats.sha256
@@ -241,9 +256,11 @@ def test_resource_describe_non_tabular_html_issue_715():
 
 def test_resource_describe_with_years_in_the_header_issue_825():
     resource = Resource.describe("data/issue-825.csv")
+    assert isinstance(resource, Resource)
     assert resource.schema.field_names == ["Musei", "2011", "2010"]
 
 
 def test_resource_describe_with_json_format_issue_827():
     resource = Resource.describe(path="data/table.json")
+    assert isinstance(resource, Resource)
     assert resource.name == "table"

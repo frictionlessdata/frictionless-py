@@ -1,6 +1,7 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
 from frictionless import Resource, platform, formats
+from frictionless.resources import TableResource
 
 control = formats.sql.SqlControl(table="table")
 database_urls = [lazy_fixture("sqlite_url"), lazy_fixture("postgresql_url")]
@@ -16,7 +17,7 @@ pytestmark = pytest.mark.skipif(
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite(database_url):
     assert control.table
-    resource = Resource("data/table.csv")
+    resource = TableResource(path="data/table.csv")
     resource.index(database_url, name=control.table)
     assert Resource(database_url, control=control).read_rows() == [
         {"id": 1, "name": "english"},
@@ -31,7 +32,7 @@ def test_resource_index_sqlite(database_url):
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast(database_url):
     assert control.table
-    resource = Resource("data/table.csv")
+    resource = TableResource(path="data/table.csv")
     resource.index(database_url, name=control.table, fast=True)
     assert Resource(database_url, control=control).read_rows() == [
         {"id": 1, "name": "english"},
@@ -46,7 +47,7 @@ def test_resource_index_sqlite_fast(database_url):
 @pytest.mark.parametrize("database_url", database_urls)
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     assert control.table
-    resource = Resource("data/table.csv")
+    resource = TableResource(path="data/table.csv")
     resource.infer()
     resource.schema.set_field_type("name", "integer")
     resource.index(database_url, name=control.table, fast=True, use_fallback=True)
@@ -63,7 +64,7 @@ def test_resource_index_sqlite_fast_with_use_fallback(database_url):
 def test_resource_index_sqlite_on_progress(database_url, mocker):
     assert control.table
     on_progress = mocker.stub(name="on_progress")
-    resource = Resource("data/table.csv")
+    resource = TableResource(path="data/table.csv")
     resource.index(database_url, name=control.table, on_progress=on_progress)
     assert on_progress.call_count == 2
     on_progress.assert_any_call(control.table, "2 rows")
