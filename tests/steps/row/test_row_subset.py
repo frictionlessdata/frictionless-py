@@ -1,4 +1,4 @@
-from frictionless import Pipeline, steps
+from frictionless import Pipeline, Step, steps
 from frictionless.resources import TableResource
 
 

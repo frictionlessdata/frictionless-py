@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
 from frictionless import Resource, system, resources
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_extract_resource():
-    resource = Resource("data/resource.json")
+    resource = TableResource.from_descriptor("data/resource.json")
     assert resource.extract() == {
         "name": [
             {"id": 1, "name": "english"},
@@ -17,7 +18,7 @@ def test_extract_resource():
 
 
 def test_extract_resource_process():
-    resource = Resource("data/resource.json")
+    resource = TableResource.from_descriptor("data/resource.json")
     process = lambda row: {**row.to_dict(), "id": 3}
     assert resource.extract(process=process) == {
         "name": [
@@ -28,7 +29,7 @@ def test_extract_resource_process():
 
 
 def test_extract_resource_from_file():
-    resource = Resource("data/table.csv")
+    resource = TableResource(path="data/table.csv")
     assert resource.extract() == {
         "table": [
             {"id": 1, "name": "english"},
@@ -38,7 +39,7 @@ def test_extract_resource_from_file():
 
 
 def test_extract_resource_from_file_process():
-    resource = Resource("data/table.csv")
+    resource = TableResource(path="data/table.csv")
     process = lambda row: {**row.to_dict(), "id": 3}
     assert resource.extract(process=process) == {
         "table": [
@@ -50,6 +51,7 @@ def test_extract_resource_from_file_process():
 
 def test_extract_resource_from_file_pathlib():
     resource = Resource(Path("data/table.csv"))
+    assert isinstance(resource, TableResource)
     assert resource.extract() == {
         "table": [
             {"id": 1, "name": "english"},
@@ -74,7 +76,7 @@ def test_extract_resource_from_json_format_issue_827():
 def test_extract_resource_basepath_and_abspath_issue_856():
     descriptor = {"name": "name", "path": os.path.abspath("data/table.csv")}
     with system.use_context(trusted=True):
-        resource = Resource(descriptor, basepath="data")
+        resource = TableResource.from_descriptor(descriptor, basepath="data")
         assert resource.extract() == {
             "name": [
                 {"id": 1, "name": "english"},
@@ -84,7 +86,7 @@ def test_extract_resource_basepath_and_abspath_issue_856():
 
 
 def test_extract_resource_string_with_leading_zeros_issue_1232_1364():
-    resource = Resource("data/issue-1232.csv")
+    resource = TableResource(path="data/issue-1232.csv")
     assert resource.extract(limit_rows=1) == {
         "issue-1232": [
             {
