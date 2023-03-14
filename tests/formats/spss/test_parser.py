@@ -105,8 +105,8 @@ def test_spss_storage_constraints(tmpdir):
 
 
 def test_spss_parser_write_timezone(tmpdir):
-    source = TableResource("data/timezone.csv")
-    target = source.write(str(tmpdir.join("table.sav")))
+    source = TableResource(path="data/timezone.csv")
+    target = source.write(path=str(tmpdir.join("table.sav")))
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [

@@ -239,7 +239,7 @@ basepath = Option(
 
 resource_name = Option(
     default=None,
-    help="Name of resource to validate",
+    help="Name of resource or table",
 )
 
 valid_rows = Option(
