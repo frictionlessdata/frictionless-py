@@ -149,6 +149,7 @@ def program_validate(
             limit_rows=limit_rows,
             limit_errors=limit_errors,
         )
+        code = int(not report.valid)
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
@@ -157,18 +158,18 @@ def program_validate(
     if yaml:
         content = report.to_yaml().strip()
         print(content)
-        raise typer.Exit()
+        raise typer.Exit(code=code)
 
     # Json mode
     if json:
         content = report.to_json()
         print(content)
-        raise typer.Exit()
+        raise typer.Exit(code=code)
 
     # Default mode
     labels = ["Row", "Field", "Type", "Message"]
     props = ["row_number", "field_number", "type", "message"]
-    names = ["DATASET"] + [task.name for task in report.tasks]
+    names = ["dataset"] + [task.name for task in report.tasks]
     matrix = [report.errors] + [task.errors for task in report.tasks]
 
     # Status
@@ -202,4 +203,4 @@ def program_validate(
                 console.print(view)
 
     # Proper retcode
-    raise typer.Exit(code=int(not report.valid))
+    raise typer.Exit(code=code)
