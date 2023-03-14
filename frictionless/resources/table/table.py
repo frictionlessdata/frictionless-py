@@ -429,7 +429,7 @@ class TableResource(Resource):
         *,
         control: Optional[Control] = None,
         **options,
-    ) -> Resource:
+    ) -> TableResource:
         """Write this resource to the target resource
 
         Parameters:
@@ -437,8 +437,9 @@ class TableResource(Resource):
             **options (dict): Resource constructor options
         """
         resource = target
-        if not isinstance(resource, Resource):
+        if not isinstance(resource, TableResource):
             resource = Resource(target, control=control, **options)
+            assert isinstance(resource, TableResource)
         parser = system.create_parser(resource)
         parser.write_row_stream(self)
         return resource

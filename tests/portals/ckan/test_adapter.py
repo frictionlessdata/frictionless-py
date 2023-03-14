@@ -113,6 +113,7 @@ def test_ckan_adapter_read_data(options_lh):
     dataset = options_lh.pop("dataset")
     control = portals.CkanControl(baseurl=url, dataset=dataset)
     package = Package(control=control)
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == OUTPUT_DATA_CSV
     assert package.resources[0].name == "countries-csv"
 
@@ -124,6 +125,7 @@ def test_ckan_adapter_read_data_xls(options_lh):
     dataset = options_lh.pop("dataset")
     control = portals.CkanControl(baseurl=url, dataset=dataset)
     package = Package(control=control)
+    assert isinstance(package.resources[1], TableResource)
     assert package.resources[1].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -138,6 +140,7 @@ def test_ckan_adapter_read_data_ods(options_lh):
     dataset = options_lh.pop("dataset")
     control = portals.CkanControl(baseurl=url, dataset=dataset)
     package = Package(control=control)
+    assert isinstance(package.resources[2], TableResource)
     assert package.resources[2].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -152,6 +155,7 @@ def test_ckan_adapter_read_data_json(options_lh):
     dataset = options_lh.pop("dataset")
     control = portals.CkanControl(baseurl=url, dataset=dataset)
     package = Package(control=control)
+    assert isinstance(package.resources[3], TableResource)
     assert package.resources[3].read_rows() == [
         {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": 67},
         {"id": 2, "neighbor_id": 3, "name": "France", "population": "n/a"},
@@ -211,6 +215,7 @@ def test_ckan_adapter_catalog_read_package_resources(options_br):
     url = options_br.pop("url")
     control = portals.CkanControl(baseurl=url)
     catalog = Catalog(control=control)
+    assert isinstance(catalog.datasets[1].package.resources[3], TableResource)
     rows = catalog.datasets[1].package.resources[3].read_rows(size=2)
     data = [[field["id"], field["receita_despesa"]] for field in rows]
     assert data == [[149633, "Despesa"], [149661, "Despesa"]]
@@ -446,7 +451,7 @@ def test_ckan_parser(options_lh):
         baseurl=baseurl, dataset=dataset, apikey="env:CKAN_APIKEY"
     )
     source = TableResource(path="data/table.csv")
-    target = source.write(baseurl, control=control, format="csv")
+    target = source.write(path=baseurl, control=control, format="csv")
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
