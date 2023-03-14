@@ -23,7 +23,7 @@ class cell_interpolate(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         if not self.field_name:
             resource.data = table.interpolateall(self.template)  # type: ignore
         else:

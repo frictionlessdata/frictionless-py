@@ -25,7 +25,7 @@ class table_validate(Step):
             with current:
                 if not current.header.valid:  # type: ignore
                     raise FrictionlessException(error=current.header.errors[0])  # type: ignore
-                yield current.header
+                yield current.header  # type: ignore
                 for row in current.row_stream:  # type: ignore
                     if not row.valid:
                         raise FrictionlessException(error=row.errors[0])  # type: ignore

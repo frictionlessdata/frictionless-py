@@ -51,7 +51,7 @@ class field_update(Step):
     def transform_resource(self, resource):
         function = self.function
         pass_row = False
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         descriptor = deepcopy(self.descriptor) or {}
         new_name = descriptor.get("name")
         resource.schema.update_field(self.name, descriptor)

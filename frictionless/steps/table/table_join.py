@@ -52,7 +52,7 @@ class table_join(Step):
             assert target.package
             source = target.package.get_resource(source)
         source.infer()  # type: ignore
-        view1 = target.to_petl()
+        view1 = target.to_petl()  # type: ignore
         view2 = source.to_petl()  # type: ignore
         if self.mode not in ["negate"]:
             for field in source.schema.fields:  # type: ignore

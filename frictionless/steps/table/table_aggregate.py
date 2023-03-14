@@ -29,7 +29,7 @@ class table_aggregate(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         field = resource.schema.get_field(self.group_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)

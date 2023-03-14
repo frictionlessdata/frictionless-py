@@ -40,7 +40,7 @@ class field_split(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         for to_name in self.to_names:
             field = fields.StringField(name=to_name)
             resource.schema.add_field(field)

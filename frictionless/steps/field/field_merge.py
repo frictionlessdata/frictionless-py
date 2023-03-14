@@ -46,7 +46,7 @@ class field_merge(Step):
     # Transform
 
     def transform_resource(self, resource: Resource) -> None:
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         field = fields.StringField(name=self.name)
         resource.schema.add_field(field)
         if not self.preserve:

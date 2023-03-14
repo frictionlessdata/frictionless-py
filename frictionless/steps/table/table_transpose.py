@@ -18,7 +18,7 @@ class table_transpose(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         resource.schema = Schema()
         resource.data = table.transpose()  # type: ignore
         resource.infer()
