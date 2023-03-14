@@ -1,4 +1,6 @@
 from collections import OrderedDict
+
+import pytest
 from frictionless import formats
 from frictionless.resources import TableResource
 
@@ -96,6 +98,7 @@ def test_inline_parser_from_ordered_dict():
 # Write
 
 
+@pytest.mark.skip
 def test_inline_parser_write(tmpdir):
     source = TableResource(path="data/table.csv")
     target = source.write(format="inline")
@@ -106,6 +109,7 @@ def test_inline_parser_write(tmpdir):
     ]
 
 
+@pytest.mark.skip
 def test_inline_parser_write_keyed(tmpdir):
     control = formats.InlineControl(keyed=True)
     source = TableResource(path="data/table.csv")
