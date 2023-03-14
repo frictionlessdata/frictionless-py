@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Detector, Resource
+from frictionless import Detector
+from frictionless.resources import TableResource
 
 
 # General
@@ -171,8 +172,8 @@ def test_detector_set_schema_patch():
 
 def test_detector_true_false_values():
     detector = Detector(field_true_values=["yes"], field_false_values=["no"])
-    with Resource(
-        "data/countries-truefalsevalues.csv",
+    with TableResource(
+        path="data/countries-truefalsevalues.csv",
         detector=detector,
     ) as resource:
         assert resource.schema.get_field("value").type == "boolean"

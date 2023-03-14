@@ -93,7 +93,7 @@ def test_package_from_path():
 
 def test_package_from_pathlib():
     package = Package(Path("data/package/datapackage.json"))
-    assert len(package.get_resource("data").read_rows()) == 2
+    assert len(package.get_table_resource("data").read_rows()) == 2
 
 
 def test_package_from_path_error_bad_path():
@@ -268,7 +268,7 @@ def test_package_pprint():
 
 def test_package_dialect_no_header_issue_167():
     package = Package("data/package-dialect-no-header.json")
-    resource = package.get_resource("people")
+    resource = package.get_table_resource("people")
     rows = resource.read_rows()
     assert rows[0]["score"] == 1
     assert rows[1]["score"] == 1
@@ -305,5 +305,5 @@ def test_package_remote_scheme_regression_for_resources_issue_1388():
     package = Package.from_descriptor(
         "https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/datapackage.json"
     )
-    rows = package.get_resource("countries").read_rows()
+    rows = package.get_table_resource("countries").read_rows()
     assert len(rows) == 2

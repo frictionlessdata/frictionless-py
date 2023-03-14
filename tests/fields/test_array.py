@@ -26,7 +26,7 @@ def test_array_read_cell(format, source, target, options):
     descriptor = {"name": "name", "type": "array", "format": format}
     descriptor.update(options)
     field = Field.from_descriptor(descriptor)
-    cell, notes = field.read_cell(source)
+    cell = field.read_cell(source)[0]
     assert cell == target
 
 
@@ -68,7 +68,7 @@ def test_array_read_cell_array_item_with_constraint_error():
 
 def test_array_unhashable_type_list_issue_1293():
     package = Package("data/issue-1293/datapackage.json")
-    assert package.get_resource("sample").read_rows() == [
+    assert package.get_table_resource("sample").read_rows() == [
         {"field": ["aaa", "bbb"]},
         {"field": []},
     ]

@@ -21,7 +21,7 @@ def test_transform_package():
     )
     target = source.transform(pipeline)
     assert target.resource_names == ["chunk1"]
-    assert target.get_resource("chunk1").read_rows() == [
+    assert target.get_table_resource("chunk1").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
