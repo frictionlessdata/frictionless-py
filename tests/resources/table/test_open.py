@@ -1,12 +1,13 @@
 import pytest
-from frictionless import Resource, Dialect, Detector, FrictionlessException, resources
+from frictionless import Dialect, Detector, FrictionlessException, resources
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_resource_open():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.name == "table"
         assert resource.path == "data/table.csv"
         assert resource.normpath == "data/table.csv"
@@ -32,7 +33,7 @@ def test_resource_open():
 
 
 def test_resource_open_read_rows():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         headers = resource.header
         row1, row2 = resource.read_rows()
         assert headers == ["id", "name"]
@@ -52,7 +53,7 @@ def test_resource_open_read_rows():
 
 
 def test_resource_open_row_stream():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert list(resource.row_stream) == [
             {"id": 1, "name": "english"},
@@ -62,7 +63,7 @@ def test_resource_open_row_stream():
 
 
 def test_resource_open_row_stream_iterate():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         for row in resource.row_stream:
             assert len(row) == 2
@@ -75,7 +76,7 @@ def test_resource_open_row_stream_iterate():
 
 def test_resource_open_row_stream_error_cells():
     detector = Detector(field_type="integer")
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
         assert resource.header == ["id", "name"]
         assert row1.errors[0].type == "type-error"
@@ -90,7 +91,7 @@ def test_resource_open_row_stream_error_cells():
 
 def test_resource_open_row_stream_blank_cells():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
         assert resource.header == ["id", "name"]
         assert row1.blank_cells == {"id": "1"}
@@ -102,7 +103,7 @@ def test_resource_open_row_stream_blank_cells():
 
 
 def test_resource_open_read_cells():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.read_cells() == [
             ["id", "name"],
             ["1", "english"],
@@ -111,7 +112,7 @@ def test_resource_open_read_cells():
 
 
 def test_resource_open_cell_stream():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert list(resource.cell_stream) == [
             ["id", "name"],
             ["1", "english"],
@@ -121,7 +122,7 @@ def test_resource_open_cell_stream():
 
 
 def test_resource_open_cell_stream_iterate():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         for number, cells in enumerate(resource.cell_stream):
             assert len(cells) == 2
             if number == 0:
@@ -133,7 +134,7 @@ def test_resource_open_cell_stream_iterate():
 
 
 def test_resource_open_empty():
-    with Resource("data/empty.csv") as resource:
+    with TableResource(path="data/empty.csv") as resource:
         assert resource.header.missing
         assert resource.header == []
         assert resource.schema.to_descriptor() == {"fields": []}
@@ -141,7 +142,7 @@ def test_resource_open_empty():
 
 
 def test_resource_open_without_rows():
-    with Resource("data/without-rows.csv") as resource:
+    with TableResource(path="data/without-rows.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == []
         assert resource.schema.to_descriptor() == {
@@ -154,7 +155,7 @@ def test_resource_open_without_rows():
 
 def test_resource_open_without_headers():
     dialect = Dialect(header=False)
-    with Resource("data/without-headers.csv", dialect=dialect) as resource:
+    with TableResource(path="data/without-headers.csv", dialect=dialect) as resource:
         assert resource.labels == []
         assert resource.header.missing
         assert resource.header == ["field1", "field2"]
@@ -181,7 +182,7 @@ def test_resource_open_source_error_data():
 
 
 def test_resource_reopen():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         # Open
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -200,7 +201,7 @@ def test_resource_reopen():
 
 def test_resource_reopen_and_detector_sample_size():
     detector = Detector(sample_size=3)
-    with Resource("data/long.csv", detector=detector) as resource:
+    with TableResource(path="data/long.csv", detector=detector) as resource:
         # Before reset
         assert resource.sample == [["id", "name"], ["1", "a"], ["2", "b"]]
         assert resource.fragment == [["1", "a"], ["2", "b"]]
@@ -233,7 +234,7 @@ def test_resource_reopen_generator():
         yield [2]
 
     dialect = Dialect(header=False)
-    with Resource(generator, dialect=dialect) as resource:
+    with TableResource(data=generator, dialect=dialect) as resource:
         # Before reopen
         assert resource.read_rows() == [{"field1": 1}, {"field1": 2}]
         # Reset resource

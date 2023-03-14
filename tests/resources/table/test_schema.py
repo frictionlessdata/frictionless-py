@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, Schema, Detector, FrictionlessException, platform
+from frictionless import Schema, Detector, FrictionlessException, platform
+from frictionless.resources import TableResource
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -29,7 +30,7 @@ def test_resource_schema():
         "path": "table.csv",
         "schema": "resource-schema.json",
     }
-    resource = Resource(descriptor, basepath="data")
+    resource = TableResource.from_descriptor(descriptor, basepath="data")
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -49,7 +50,7 @@ def test_resource_schema_source_data():
         "data": [["id", "name"], ["1", "english"], ["2", "中国人"]],
         "schema": "resource-schema.json",
     }
-    resource = Resource(descriptor, basepath="data")
+    resource = TableResource.from_descriptor(descriptor, basepath="data")
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -71,7 +72,7 @@ def test_resource_schema_source_remote():
         "path": "table.csv",
         "schema": "schema.json",
     }
-    resource = Resource(descriptor, basepath=BASEURL % "data")
+    resource = TableResource.from_descriptor(descriptor, basepath=BASEURL % "data")
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -86,7 +87,7 @@ def test_resource_schema_source_remote():
 
 def test_resource_schema_from_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource(
+        TableResource.from_descriptor(
             {
                 "name": "name",
                 "path": "data/table.csv",
@@ -99,7 +100,7 @@ def test_resource_schema_from_path_error_bad_path():
 
 
 def test_resource_schema_inferred():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema.to_descriptor() == {
             "fields": [
@@ -122,7 +123,7 @@ def test_resource_schema_provided():
             ]
         }
     )
-    with Resource("data/table.csv", schema=schema) as resource:
+    with TableResource(path="data/table.csv", schema=schema) as resource:
         assert resource.labels == ["id", "name"]
         assert resource.header == ["new1", "new2"]
         assert resource.schema.to_descriptor() == {
@@ -142,7 +143,7 @@ def test_resource_schema_unique():
     detector = Detector(
         schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
     )
-    with Resource(source, detector=detector) as resource:
+    with TableResource(data=source, detector=detector) as resource:
         for row in resource.row_stream:
             assert row.valid
 
@@ -152,7 +153,7 @@ def test_resource_schema_unique_error():
     detector = Detector(
         schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
     )
-    with Resource(source, detector=detector) as resource:
+    with TableResource(data=source, detector=detector) as resource:
         for row in resource.row_stream:
             if row.row_number == 4:
                 assert row.valid is False
@@ -164,7 +165,7 @@ def test_resource_schema_unique_error():
 def test_resource_schema_primary_key():
     source = [["name"], [1], [2], [3]]
     detector = Detector(schema_patch={"primaryKey": ["name"]})
-    with Resource(source, detector=detector) as resource:
+    with TableResource(data=source, detector=detector) as resource:
         for row in resource.row_stream:
             assert row.valid
 
@@ -172,7 +173,7 @@ def test_resource_schema_primary_key():
 def test_resource_schema_primary_key_error():
     source = [["name"], [1], [2], [2]]
     detector = Detector(schema_patch={"primaryKey": ["name"]})
-    with Resource(source, detector=detector) as resource:
+    with TableResource(data=source, detector=detector) as resource:
         for row in resource.row_stream:
             if row.row_number == 4:
                 assert row.valid is False
@@ -182,7 +183,7 @@ def test_resource_schema_primary_key_error():
 
 
 def test_resource_schema_foreign_keys():
-    resource = Resource(DESCRIPTOR_FK)
+    resource = TableResource.from_descriptor(DESCRIPTOR_FK)
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -195,7 +196,9 @@ def test_resource_schema_foreign_keys():
 
 
 def test_resource_schema_foreign_keys_invalid():
-    resource = Resource(DESCRIPTOR_FK, path="data/nested-invalid.csv")
+    resource = TableResource.from_descriptor(
+        DESCRIPTOR_FK, path="data/nested-invalid.csv"
+    )
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid

@@ -1,4 +1,5 @@
-from frictionless import Resource, Schema, Detector
+from frictionless import Schema, Detector
+from frictionless.resources import TableResource
 
 
 # General
@@ -6,7 +7,7 @@ from frictionless import Resource, Schema, Detector
 
 def test_resource_detector_encoding_function():
     detector = Detector(encoding_function=lambda buffer: "utf-8")
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         assert resource.encoding == "utf-8"
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
@@ -15,7 +16,7 @@ def test_resource_detector_encoding_function():
 
 def test_resource_detector_field_type():
     detector = Detector(field_type="string")
-    resource = Resource(path="data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
     assert resource.schema.to_descriptor() == {
         "fields": [
@@ -32,7 +33,7 @@ def test_resource_detector_field_type():
 
 def test_resource_detector_field_names():
     detector = Detector(field_names=["new1", "new2"])
-    resource = Resource(path="data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
     assert resource.schema.to_descriptor() == {
         "fields": [
@@ -51,7 +52,7 @@ def test_resource_detector_field_names():
 def test_resource_detector_field_float_numbers():
     data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
     detector = Detector(field_float_numbers=True)
-    resource = Resource(data=data, detector=detector)
+    resource = TableResource(data=data, detector=detector)
     resource.infer(stats=True)
     assert resource.schema.to_descriptor() == {
         "fields": [
@@ -68,7 +69,7 @@ def test_resource_detector_field_float_numbers():
 
 def test_resource_detector_field_type_with_open():
     detector = Detector(field_type="string")
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema.to_descriptor() == {
             "fields": [
@@ -84,7 +85,7 @@ def test_resource_detector_field_type_with_open():
 
 def test_resource_detector_field_names_with_open():
     detector = Detector(field_names=["new1", "new2"])
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "new1", "type": "integer"},
@@ -109,7 +110,9 @@ def test_resource_detector_schema_sync():
         }
     )
     detector = Detector(schema_sync=True)
-    with Resource("data/sync-schema.csv", schema=schema, detector=detector) as resource:
+    with TableResource(
+        path="data/sync-schema.csv", schema=schema, detector=detector
+    ) as resource:
         assert resource.schema == schema
         assert resource.sample == [["name", "id"], ["english", "1"], ["中国人", "2"]]
         assert resource.fragment == [["english", "1"], ["中国人", "2"]]
@@ -130,7 +133,9 @@ def test_resource_detector_schema_sync_with_infer():
         }
     )
     detector = Detector(schema_sync=True)
-    resource = Resource(path="data/sync-schema.csv", schema=schema, detector=detector)
+    resource = TableResource(
+        path="data/sync-schema.csv", schema=schema, detector=detector
+    )
     resource.infer(stats=True)
     assert resource.schema == schema
     assert resource.sample == [["name", "id"], ["english", "1"], ["中国人", "2"]]
@@ -144,7 +149,7 @@ def test_resource_detector_schema_sync_with_infer():
 
 def test_resource_detector_schema_patch():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "ID", "type": "string"},
@@ -161,7 +166,7 @@ def test_resource_detector_schema_patch():
 
 def test_resource_detector_schema_patch_missing_values():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
-    with Resource("data/table.csv", detector=detector) as resource:
+    with TableResource(path="data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema.to_descriptor() == {
             "fields": [
@@ -178,7 +183,7 @@ def test_resource_detector_schema_patch_missing_values():
 
 def test_resource_detector_schema_patch_with_infer():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
-    resource = Resource(path="data/table.csv", detector=detector)
+    resource = TableResource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
     assert resource.schema.to_descriptor() == {
         "fields": [

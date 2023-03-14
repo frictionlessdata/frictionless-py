@@ -1,12 +1,13 @@
 import pytest
-from frictionless import Resource, Dialect, FrictionlessException, platform
+from frictionless import Dialect, FrictionlessException, platform
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_resource_encoding():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.encoding == "utf-8"
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -16,7 +17,7 @@ def test_resource_encoding():
 
 
 def test_resource_encoding_explicit_utf8():
-    with Resource("data/table.csv", encoding="utf-8") as resource:
+    with TableResource(path="data/table.csv", encoding="utf-8") as resource:
         assert resource.encoding == "utf-8"
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -26,7 +27,7 @@ def test_resource_encoding_explicit_utf8():
 
 
 def test_resource_encoding_explicit_latin1():
-    with Resource("data/latin1.csv", encoding="latin1") as resource:
+    with TableResource(path="data/latin1.csv", encoding="latin1") as resource:
         assert resource.encoding == "iso8859-1"
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -39,7 +40,7 @@ def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     source = "en,English\nja,日本語".encode("utf-16")
     dialect = Dialect(header=False)
-    with Resource(source, format="csv", dialect=dialect) as resource:
+    with TableResource(data=source, format="csv", dialect=dialect) as resource:
         assert resource.encoding == "utf-16"
         assert resource.read_rows() == [
             {"field1": "en", "field2": "English"},
@@ -48,7 +49,7 @@ def test_resource_encoding_utf_16():
 
 
 def test_resource_encoding_error_bad_encoding():
-    resource = Resource("data/table.csv", encoding="bad")
+    resource = TableResource(path="data/table.csv", encoding="bad")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
@@ -57,7 +58,7 @@ def test_resource_encoding_error_bad_encoding():
 
 
 def test_resource_encoding_error_non_matching_encoding():
-    resource = Resource("data/table.csv", encoding="ascii")
+    resource = TableResource(path="data/table.csv", encoding="ascii")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error

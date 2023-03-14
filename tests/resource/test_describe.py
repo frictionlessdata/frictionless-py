@@ -189,20 +189,6 @@ def test_resource_describe_schema_increase_limit_issue_212():
     }
 
 
-def test_resource_describe_values_with_leading_zeros_issue_492_1232_1364():
-    resource = Resource.describe("data/leading-zeros.csv")
-    # The behaviour has been reverted in #1364 to follow Table Schema standard
-    #  assert resource.schema.to_descriptor() == {
-    #  "fields": [{"name": "value", "type": "string"}]
-    #  }
-    # assert resource.read_rows() == [{"value": "01"}, {"value": "002"}, {"value": "00003"}]
-    assert isinstance(resource, Resource)
-    assert resource.schema.to_descriptor() == {
-        "fields": [{"name": "value", "type": "integer"}]
-    }
-    assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
-
-
 def test_resource_describe_schema_proper_quote_issue_493():
     resource = Resource.describe("data/issue-493.csv")
     assert isinstance(resource, Resource)

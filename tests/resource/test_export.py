@@ -42,11 +42,6 @@ def test_resource_to_copy():
     assert source.to_descriptor() == target.to_descriptor()
 
 
-def test_resource_to_view():
-    resource = Resource("data/table.csv")
-    assert resource.to_view()
-
-
 def test_resource_from_descriptor_layout_framework_v4():
     with pytest.warns(UserWarning):
         resource = Resource.from_descriptor(
