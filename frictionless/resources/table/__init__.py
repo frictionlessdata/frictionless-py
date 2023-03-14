@@ -1,1 +1,1 @@
-from .resource import TableResource
+from .table import TableResource

@@ -5,7 +5,7 @@ import atexit
 import tempfile
 from typing import Optional
 from ...exception import FrictionlessException
-from ...resources import TableResource
+from ...resources import FileResource, TableResource
 from ...platform import platform
 from ...system import Adapter
 from ...resource import Resource
@@ -30,9 +30,9 @@ class ZipAdapter(Adapter):
 
     def read_package(self):
         innerpath = self.control.innerpath
-        resource = Resource(path=self.source)
+        resource = FileResource(path=self.source)
         resource.compression = None
-        with resource.open(as_file=True) as resource:
+        with resource:
             byte_stream = resource.byte_stream
             if resource.remote:
                 byte_stream = tempfile.TemporaryFile()
