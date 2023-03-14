@@ -2,7 +2,7 @@ from __future__ import annotations
 import json
 import attrs
 import warnings
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, TypeVar, Type
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control

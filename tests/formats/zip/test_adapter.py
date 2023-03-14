@@ -2,7 +2,7 @@ import os
 import pytest
 import zipfile
 from frictionless import FrictionlessException
-from frictionless import Package, Resource, formats, platform, validate
+from frictionless import Package, Resource, formats, platform
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 import subprocess as sp
 from typing import TYPE_CHECKING
 from ...resources import TableResource
-from ...platform import platform
 from ...system import Adapter
 from .mapper import QsvMapper
 

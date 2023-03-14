@@ -734,7 +734,7 @@ class Package(Metadata):
 
         # Frictionless
         if system.standards == "v2":
-            descriptor = {"$frictionless": f"package/v2", **descriptor}
+            descriptor = {"$frictionless": "package/v2", **descriptor}
 
         # Profile (standards/v1)
         if system.standards == "v1":
