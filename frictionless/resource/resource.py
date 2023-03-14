@@ -1,5 +1,4 @@
 from __future__ import annotations
-import json
 import attrs
 import warnings
 from typing_extensions import Self
@@ -428,6 +427,8 @@ class Resource(Metadata):
     def basepath(self, value: Optional[str]):
         self._basepath = value
 
+    # Open/Close
+
     @property
     def buffer(self) -> IBuffer:
         """File's bytes used as a sample
@@ -467,14 +468,6 @@ class Resource(Metadata):
             self.__loader.open()
         return self.__loader.text_stream
 
-    # Open/Close
-
-    def close(self) -> None:
-        """Close the resource as "filelike.close" does"""
-        if self.__loader:
-            self.__loader.close()
-            self.__loader = None
-
     @property
     def closed(self) -> bool:
         """Whether the table is closed
@@ -484,24 +477,23 @@ class Resource(Metadata):
         """
         return self.__loader is None
 
+    def close(self) -> None:
+        """Close the resource as "filelike.close" does"""
+        if self.__loader:
+            self.__loader.close()
+            self.__loader = None
+
     def open(self):
         """Open the resource as "io.open" does"""
         self.close()
         try:
-            self.__open_loader()
-            self.__open_buffer()
+            self.__loader = system.create_loader(self)
+            self.__loader.open()
+            self.__buffer = self.__loader.buffer
         except Exception:
             self.close()
             raise
         return self
-
-    def __open_loader(self):
-        self.__loader = system.create_loader(self)
-        self.__loader.open()
-
-    def __open_buffer(self):
-        if self.__loader:
-            self.__buffer = self.__loader.buffer
 
     # Read
 
@@ -538,19 +530,37 @@ class Resource(Metadata):
         with helpers.ensure_open(self):
             return self.text_stream.read(size)  # type: ignore
 
-    # TODO: support yaml?
-    def read_data(self, *, size: Optional[int] = None) -> Any:
-        """Read data into memory
+    # Infer
 
-        Returns:
-            any: resource data
+    # TODO: allow cherry-picking stats for adding to a descriptor
+    def infer(self, *, stats: bool = False) -> None:
+        """Infer metadata
+
+        Parameters:
+            stats: stream file completely and infer stats
         """
-        if self.data is not None:
-            return self.data
-        with helpers.ensure_open(self):
-            text = self.read_text(size=size)
-            data = json.loads(text)
-            return data
+        if not self.closed:
+            note = "Resource.infer canot be used on a open resource"
+            raise FrictionlessException(errors.ResourceError(note=note))
+        with self:
+            if not stats:
+                return
+            helpers.pass_through(self.byte_stream)
+            self.hash = f"sha256:{self.stats.sha256}"
+            self.bytes = self.stats.bytes
+
+    # Dereference
+
+    def dereference(self):
+        """Dereference underlaying metadata
+
+        If some of underlaying metadata is provided as a string
+        it will replace it by the metadata object
+        """
+        self.dialect.metadata_descriptor_path = None
+        self.dialect.metadata_descriptor_initial = None
+        self.schema.metadata_descriptor_path = None
+        self.schema.metadata_descriptor_initial = None
 
     # Describe
 
@@ -653,38 +663,6 @@ class Resource(Metadata):
 
         """
         return validate(self, checklist)
-
-    # Infer
-
-    # TODO: allow cherry-picking stats for adding to a descriptor
-    def infer(self, *, stats: bool = False) -> None:
-        """Infer metadata
-
-        Parameters:
-            stats: stream file completely and infer stats
-        """
-        if not self.closed:
-            note = "Resource.infer canot be used on a open resource"
-            raise FrictionlessException(errors.ResourceError(note=note))
-        with self:
-            if not stats:
-                return
-            helpers.pass_through(self.byte_stream)
-            self.hash = f"sha256:{self.stats.sha256}"
-            self.bytes = self.stats.bytes
-
-    # Dereference
-
-    def dereference(self):
-        """Dereference underlaying metadata
-
-        If some of underlaying metadata is provided as a string
-        it will replace it by the metadata object
-        """
-        self.dialect.metadata_descriptor_path = None
-        self.dialect.metadata_descriptor_initial = None
-        self.schema.metadata_descriptor_path = None
-        self.schema.metadata_descriptor_initial = None
 
     # Export
 

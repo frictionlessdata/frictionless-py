@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import json
 import warnings
 import builtins
 from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
@@ -22,7 +21,7 @@ if TYPE_CHECKING:
     from ...formats.sql import IOnRow, IOnProgress
     from ...interfaces import IBuffer, ISample, IFragment, ILabels
     from ...interfaces import IFilterFunction, IProcessFunction, ITabularData
-    from ...interfaces import ITextStream, ICellStream
+    from ...interfaces import ICellStream
     from ...interfaces import ICallbackFunction
     from ...checklist import Checklist
     from ...pipeline import Pipeline
@@ -46,6 +45,8 @@ class TableResource(Resource):
         self.__header: Optional[Header] = None
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
+
+    # Open/Close
 
     @property
     def buffer(self) -> IBuffer:
@@ -138,7 +139,14 @@ class TableResource(Resource):
             raise FrictionlessException("resource is not open or non tabular")
         return self.__row_stream
 
-    # Open/Close
+    @property
+    def closed(self) -> bool:
+        """Whether the table is closed
+
+        Returns:
+            bool: if closed
+        """
+        return self.__parser is None
 
     def close(self) -> None:
         """Close the resource as "filelike.close" does"""
@@ -148,15 +156,6 @@ class TableResource(Resource):
         if self.__loader:
             self.__loader.close()
             self.__loader = None
-
-    @property
-    def closed(self) -> bool:
-        """Whether the table is closed
-
-        Returns:
-            bool: if closed
-        """
-        return self.__parser is None
 
     def open(self):
         """Open the resource as "io.open" does"""
@@ -392,30 +391,7 @@ class TableResource(Resource):
         # Crreate row stream
         self.__row_stream = row_stream()
 
-    def read_text(self, *, size: Optional[int] = None) -> str:
-        """Read text into memory
-
-        Returns:
-            str: resource text
-        """
-        if self.memory:
-            return ""
-        with helpers.ensure_open(self):
-            return self.text_stream.read(size)  # type: ignore
-
-    # TODO: support yaml?
-    def read_data(self, *, size: Optional[int] = None) -> Any:
-        """Read data into memory
-
-        Returns:
-            any: resource data
-        """
-        if self.data is not None:
-            return self.data
-        with helpers.ensure_open(self):
-            text = self.read_text(size=size)
-            data = json.loads(text)
-            return data
+    # Read
 
     def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
         """Read lists into memory
@@ -444,6 +420,28 @@ class TableResource(Resource):
                 if size and len(rows) >= size:
                     break
             return rows
+
+    # Write
+
+    def write(
+        self,
+        target: Optional[Union[Resource, Any]] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
+    ) -> Resource:
+        """Write this resource to the target resource
+
+        Parameters:
+            target (Resource|Any): target or target resource instance
+            **options (dict): Resource constructor options
+        """
+        resource = target
+        if not isinstance(resource, Resource):
+            resource = Resource(target, control=control, **options)
+        parser = system.create_parser(resource)
+        parser.write_row_stream(self)
+        return resource
 
     # Infer
 
@@ -567,28 +565,6 @@ class TableResource(Resource):
             limit_rows=limit_rows,
             limit_errors=limit_errors,
         )
-
-    # Write
-
-    def write(
-        self,
-        target: Optional[Union[Resource, Any]] = None,
-        *,
-        control: Optional[Control] = None,
-        **options,
-    ) -> Resource:
-        """Write this resource to the target resource
-
-        Parameters:
-            target (Resource|Any): target or target resource instance
-            **options (dict): Resource constructor options
-        """
-        resource = target
-        if not isinstance(resource, Resource):
-            resource = Resource(target, control=control, **options)
-        parser = system.create_parser(resource)
-        parser.write_row_stream(self)
-        return resource
 
     # Export
 
