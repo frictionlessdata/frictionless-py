@@ -5,6 +5,7 @@ import datetime
 import secrets
 from pathlib import Path
 from typing import Optional, List
+from ..resources import FileResource
 from ..exception import FrictionlessException
 from ..package import Package
 from ..resource import Resource
@@ -80,7 +81,7 @@ class Project:
         return len(self.filesystem.list_files())
 
     def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        resource = Resource(path)
+        resource = FileResource(path=path)
         name = str(path.split("/")[-1])
         if "?" in name:
             name = str(name.split("?")[0])
