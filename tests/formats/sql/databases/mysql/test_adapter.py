@@ -16,7 +16,7 @@ def test_sql_adapter_mysql_types(mysql_url):
     target = Package(mysql_url)
 
     # Assert metadata
-    assert target.get_resource("types").schema.to_descriptor() == {
+    assert target.get_table_resource("types").schema.to_descriptor() == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "string"},  # type fallback
@@ -38,7 +38,7 @@ def test_sql_adapter_mysql_types(mysql_url):
     }
 
     # Assert data
-    assert target.get_resource("types").read_rows() == [
+    assert target.get_table_resource("types").read_rows() == [
         {
             "any": "中国人",
             "array": '["Mike", "John"]',
@@ -68,7 +68,7 @@ def test_sql_adapter_mysql_integrity(mysql_url):
     target = Package(mysql_url)
 
     # Assert metadata (main)
-    assert target.get_resource("integrity_main").schema.to_descriptor() == {
+    assert target.get_table_resource("integrity_main").schema.to_descriptor() == {
         "fields": [
             # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
@@ -82,7 +82,7 @@ def test_sql_adapter_mysql_integrity(mysql_url):
     }
 
     # Assert metadata (link)
-    assert target.get_resource("integrity_link").schema.to_descriptor() == {
+    assert target.get_table_resource("integrity_link").schema.to_descriptor() == {
         "fields": [
             # added required
             {"name": "main_id", "type": "integer", "constraints": {"required": True}},
@@ -101,13 +101,13 @@ def test_sql_adapter_mysql_integrity(mysql_url):
     }
 
     # Assert data (main)
-    assert target.get_resource("integrity_main").read_rows() == [
+    assert target.get_table_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("integrity_link").read_rows() == [
+    assert target.get_table_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
@@ -121,7 +121,7 @@ def test_sql_adapter_mysql_constraints(mysql_url):
     target = Package(mysql_url)
 
     # Assert metadata
-    assert target.get_resource("constraints").schema.to_descriptor() == {
+    assert target.get_table_resource("constraints").schema.to_descriptor() == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -142,7 +142,7 @@ def test_sql_adapter_mysql_constraints(mysql_url):
     }
 
     # Assert data
-    assert target.get_resource("constraints").read_rows() == [
+    assert target.get_table_resource("constraints").read_rows() == [
         {
             "required": "passing",
             "minLength": "passing",

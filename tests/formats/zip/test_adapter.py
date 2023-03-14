@@ -16,9 +16,9 @@ def test_zip_adapter_to_zip(tmpdir):
     source.publish(path)
     target = Package(path)
     assert target.name == "name"
-    assert target.get_resource("name").name == "name"
-    assert target.get_resource("name").path == "table.csv"
-    assert target.get_resource("name").read_rows() == [
+    assert target.get_table_resource("name").name == "name"
+    assert target.get_table_resource("name").path == "table.csv"
+    assert target.get_table_resource("name").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -29,8 +29,8 @@ def test_zip_adapter_to_zip_resource_path(tmpdir):
     source = Package(resources=[Resource(path="data/table.csv")])
     source.publish(path)
     target = Package(path)
-    assert target.get_resource("table").path == "data/table.csv"
-    assert target.get_resource("table").read_rows() == [
+    assert target.get_table_resource("table").path == "data/table.csv"
+    assert target.get_table_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -42,8 +42,8 @@ def test_zip_adapter_to_zip_resource_remote_path(tmpdir):
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
     source.publish(path)
     target = Package(path)
-    assert target.get_resource("table").path == BASEURL % "data/table.csv"
-    assert target.get_resource("table").read_rows() == [
+    assert target.get_table_resource("table").path == BASEURL % "data/table.csv"
+    assert target.get_table_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -55,8 +55,8 @@ def test_zip_adapter_to_zip_resource_memory_inline(tmpdir):
     source = Package(resources=[Resource(name="table", data=data)])
     source.publish(path)
     target = Package(path)
-    assert target.get_resource("table").data == data
-    assert target.get_resource("table").read_rows() == [
+    assert target.get_table_resource("table").data == data
+    assert target.get_table_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -69,8 +69,8 @@ def test_zip_adapter_to_zip_resource_memory_function(tmpdir):
     source = Package(resources=[Resource(name="table", data=data)])
     source.publish(path)
     target = Package(path)
-    assert target.get_resource("table").path == "table.csv"
-    assert target.get_resource("table").read_rows() == [
+    assert target.get_table_resource("table").path == "table.csv"
+    assert target.get_table_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -82,9 +82,9 @@ def test_zip_adapter_to_zip_resource_multipart(tmpdir):
     source = Package(resources=[resource])
     source.publish(path)
     target = Package(path)
-    assert target.get_resource("chunk").path == "data/chunk1.csv"
-    assert target.get_resource("chunk").extrapaths == ["data/chunk2.csv"]
-    assert target.get_resource("chunk").read_rows() == [
+    assert target.get_table_resource("chunk").path == "data/chunk1.csv"
+    assert target.get_table_resource("chunk").extrapaths == ["data/chunk2.csv"]
+    assert target.get_table_resource("chunk").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -96,8 +96,8 @@ def test_zip_adapter_to_zip_resource_sql(tmpdir, database_url):
     source = Package(resources=[Resource(database_url, name="table", control=control)])
     source.publish(path)
     target = Package(path)
-    assert target.get_resource("table").path == database_url
-    assert target.get_resource("table").read_rows() == [
+    assert target.get_table_resource("table").path == database_url
+    assert target.get_table_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -107,7 +107,7 @@ def test_zip_adapter_from_zip():
     package = Package("data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
-    assert package.get_resource("data2").read_rows() == [
+    assert package.get_table_resource("data2").read_rows() == [
         {"parent": "A3001", "comment": "comment1"},
         {"parent": "A3001", "comment": "comment2"},
         {"parent": "A5032", "comment": "comment3"},
@@ -119,7 +119,7 @@ def test_zip_adapter_from_zip_remote():
     package = Package(BASEURL % "data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
-    assert package.get_resource("data2").read_rows() == [
+    assert package.get_table_resource("data2").read_rows() == [
         {"parent": "A3001", "comment": "comment1"},
         {"parent": "A3001", "comment": "comment2"},
         {"parent": "A5032", "comment": "comment3"},
