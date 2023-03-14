@@ -291,7 +291,7 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
-def is_directory_source(source: Any):
+def is_directory_source(source: str) -> bool:
     if not isinstance(source, str):
         return False
     if is_remote_path(source):
@@ -309,7 +309,7 @@ def is_expandable_source(source: Any):
         return False
     if is_remote_path(source):
         return False
-    return glob.has_magic(source) or os.path.isdir(source)
+    return glob.has_magic(source)
 
 
 def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):

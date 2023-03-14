@@ -11,7 +11,7 @@ def test_package_profiles_invalid_local():
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profile=profile)
     with pytest.raises(FrictionlessException) as excinfo:
-        package.to_descriptor()
+        package.to_descriptor(validate=True)
     reasons = excinfo.value.reasons
     assert len(reasons) == 5
     for error in reasons:
@@ -38,7 +38,7 @@ def test_package_external_profile_invalid_remote():
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profile=profile)
     with pytest.raises(FrictionlessException) as excinfo:
-        package.to_descriptor()
+        package.to_descriptor(validate=True)
     reasons = excinfo.value.reasons
     assert len(reasons) == 5
     for error in reasons:

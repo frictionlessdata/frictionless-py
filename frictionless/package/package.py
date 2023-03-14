@@ -732,9 +732,9 @@ class Package(Metadata):
     def metadata_export(self):
         descriptor = super().metadata_export()
 
-        # Context
-        version = "v1" if system.standards == "v1" else "v2"
-        descriptor = {"$frictionless": f"package/{version}", **descriptor}
+        # Frictionless
+        if system.standards == "v2":
+            descriptor = {"$frictionless": f"package/v2", **descriptor}
 
         # Profile (standards/v1)
         if system.standards == "v1":

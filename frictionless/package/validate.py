@@ -33,7 +33,7 @@ def validate(
 
     # Validate metadata
     try:
-        package.to_descriptor()
+        package.to_descriptor(validate=True)
     except FrictionlessException as exception:
         return Report.from_validation(time=timer.time, errors=exception.to_errors())
 

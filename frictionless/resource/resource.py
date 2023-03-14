@@ -2,7 +2,7 @@ from __future__ import annotations
 import json
 import attrs
 import warnings
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, TypeVar, Type
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..dialect import Dialect, Control
@@ -591,26 +591,31 @@ class Resource(Metadata):
             **options,
         )
 
-        # Infer package
-        if isinstance(resource, PackageResource):
+        # Package (guessed)
+        if type in ["package", None] and isinstance(resource, PackageResource):
             package = resource.read_metadata()
             package.infer(stats=stats)
             if name is not None:
                 return package.get_resource(name)
             return package
-        elif type == "package":
+
+        # Package
+        resource.infer(stats=stats)
+        if type == "package":
             package = Package(resources=[resource])
             package.infer(stats=stats)
             if name is not None:
                 return package.get_resource(name)
             return package
 
-        # Infer resource
-        resource.infer(stats=stats)
+        # Dialect
         if type == "dialect":
             return resource.dialect
+
+        # Schema
         if type == "schema":
             return resource.schema
+
         return resource
 
     # List

@@ -12,17 +12,17 @@ class LocalAdapter:
         self.basepath = basepath
 
     def read_package(self):
-        normsource = helpers.join_basepath(self.source, basepath=self.basepath)
-
         # Directory
-        if helpers.is_directory_source(normsource):
-            name = "datapackage.json"
-            path = os.path.join(normsource, name)  # type: ignore
-            if os.path.isfile(path):
-                return Package.from_descriptor(path)
+        if isinstance(self.source, str):
+            normsource = helpers.join_basepath(self.source, basepath=self.basepath)
+            if helpers.is_directory_source(normsource):
+                name = "datapackage.json"
+                path = os.path.join(normsource, name)  # type: ignore
+                if os.path.isfile(path):
+                    return Package.from_descriptor(path)
 
         # Expandable
-        if helpers.is_expandable_source(normsource):
+        if helpers.is_expandable_source(self.source):
             package = Package(basepath=self.basepath)
             for path in helpers.expand_source(self.source, basepath=self.basepath):  # type: ignore
                 package.add_resource(Resource(path=path))
