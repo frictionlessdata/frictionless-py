@@ -1,7 +1,8 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, formats
+from frictionless import Package, formats
+from frictionless.resources import TableResource
 
 
 # General
@@ -162,7 +163,7 @@ def test_sql_adapter_constraints(sqlite_url):
 )
 def test_sql_adapter_constraints_not_valid_error(sqlite_url, field_name, cell):
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("constraints")
+    resource = package.get_table_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
@@ -170,7 +171,7 @@ def test_sql_adapter_constraints_not_valid_error(sqlite_url, field_name, cell):
     # NOTE: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):  # type: ignore
         control = formats.SqlControl(table="table")
-        resource.write(sqlite_url, control=control)
+        resource.write(path=sqlite_url, control=control)
 
 
 def test_sql_adapter_views_support(sqlite_url):
@@ -179,7 +180,9 @@ def test_sql_adapter_views_support(sqlite_url):
         conn.execute(sa.text("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)"))
         conn.execute(sa.text("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')"))
         conn.execute(sa.text("CREATE VIEW 'view' AS SELECT * FROM 'table'"))
-    with Resource(sqlite_url, control=formats.sql.SqlControl(table="view")) as res:
+    with TableResource(
+        path=sqlite_url, control=formats.sql.SqlControl(table="view")
+    ) as res:
         assert res.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -193,7 +196,7 @@ def test_sql_adapter_views_support(sqlite_url):
 
 
 def test_sql_adapter_resource_url_argument(sqlite_url):
-    source = Resource(path="data/table.csv")
+    source = TableResource(path="data/table.csv")
     control = formats.SqlControl(table="table")
     target = source.write(sqlite_url, control=control)
     with target:
@@ -210,7 +213,7 @@ def test_sql_adapter_resource_url_argument(sqlite_url):
 
 
 def test_sql_adapter_package_url_argument(sqlite_url):
-    source = Package(resources=[Resource(path="data/table.csv")])
+    source = Package(resources=[TableResource(path="data/table.csv")])
     source.infer()
     source.publish(sqlite_url)
     target = Package(sqlite_url)
@@ -231,7 +234,7 @@ def test_sql_adapter_package_url_argument(sqlite_url):
 
 def test_sql_adapter_integer_enum_issue_776(sqlite_url):
     control = formats.SqlControl(table="table")
-    source = Resource(path="data/table.csv")
+    source = TableResource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").constraints["enum"] = [1, 2]
     target = source.write(sqlite_url, control=control)
@@ -245,7 +248,7 @@ def test_sql_adapter_integer_enum_issue_776(sqlite_url):
 @pytest.mark.skip
 def test_sql_adapter_dialect_basepath_issue_964(sqlite_url):
     control = formats.SqlControl(table="test_table", basepath="data")
-    with Resource(path="sqlite:///sqlite.db", control=control) as resource:
+    with TableResource(path="sqlite:///sqlite.db", control=control) as resource:
         assert resource.read_rows() == [
             {"id": 1, "name": "foo"},
             {"id": 2, "name": "bar"},
@@ -278,7 +281,7 @@ def test_sql_adapter_max_parameters_issue_1196(sqlite_url, sqlite_max_variable_n
 
     # Write to the SQLite db. This must not raise an exception i.e. test is
     # successful if it runs without error.
-    with Resource(data, format="csv") as resource:
+    with TableResource(data=data, format="csv") as resource:
         resource.write(
             sqlite_url, control=formats.SqlControl(table="test_max_param_table")
         )

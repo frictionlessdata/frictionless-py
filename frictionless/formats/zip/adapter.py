@@ -5,6 +5,7 @@ import atexit
 import tempfile
 from typing import Optional
 from ...exception import FrictionlessException
+from ...resources import TableResource
 from ...platform import platform
 from ...system import Adapter
 from ...resource import Resource
@@ -69,8 +70,9 @@ class ZipAdapter(Adapter):
                             descriptor["scheme"] = "file"
                             descriptor["format"] = "csv"
                             descriptor["mediatype"] = "text/csv"
+                            assert isinstance(resource, TableResource)
                             with tempfile.NamedTemporaryFile() as file:
-                                target = Resource(path=file.name, format="csv")
+                                target = TableResource(path=file.name, format="csv")
                                 resource.write(target)
                                 archive.write(file.name, path)
 

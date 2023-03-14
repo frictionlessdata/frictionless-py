@@ -1,6 +1,7 @@
 from __future__ import annotations
 import subprocess as sp
 from typing import TYPE_CHECKING
+from ...resources import TableResource
 from ...platform import platform
 from ...system import Adapter
 from .mapper import QsvMapper
@@ -32,7 +33,7 @@ class QsvAdapter(Adapter):
                 process.stdin.write(chunk)  # type: ignore
             process.stdin.close()  # type: ignore
             buffer = process.stdout.read()  # type: ignore
-        res = platform.frictionless_resources.TableResource(data=buffer, format="csv")
-        stats = res.read_rows()
+        result = TableResource(data=buffer, format="csv")
+        stats = result.read_rows()
         schema = QsvMapper().read_schema(stats)  # type: ignore
         return schema

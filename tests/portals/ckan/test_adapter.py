@@ -1,10 +1,9 @@
 from _pytest._code.code import ExceptionInfo
 import pytest
-
 from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc
-from frictionless import Package, Catalog, Resource, portals
-from frictionless.exception import FrictionlessException
+from frictionless import FrictionlessException, Package, Catalog, portals
+from frictionless.resources import TableResource
 
 
 OUTPUT = {
@@ -446,7 +445,7 @@ def test_ckan_parser(options_lh):
     control = portals.CkanControl(
         baseurl=baseurl, dataset=dataset, apikey="env:CKAN_APIKEY"
     )
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     target = source.write(baseurl, control=control, format="csv")
     with target:
         assert target.header == ["id", "name"]
@@ -464,7 +463,7 @@ def test_ckan_parser_timezone(options_lh):
     control = portals.CkanControl(
         baseurl=baseurl, dataset=dataset, apikey="env:CKAN_APIKEY"
     )
-    source = Resource("data/timezone.csv")
+    source = TableResource(path="data/timezone.csv")
     target = source.write(baseurl, control=control, format="csv")
     with target:
         assert target.read_rows() == [

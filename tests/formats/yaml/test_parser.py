@@ -1,4 +1,4 @@
-from frictionless import TableResource
+from frictionless.resources import TableResource
 
 
 # Read

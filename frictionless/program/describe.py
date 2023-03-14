@@ -3,13 +3,13 @@ import typer
 from typing import List
 from rich.console import Console
 from rich.table import Table
-from ..platform import platform
+from ..resources import TableResource
 from ..resource import Resource
+from ..package import Package
 from ..dialect import Dialect
 from ..schema import Schema
 from ..system import system
 from .program import program
-from .. import actions
 from . import common
 from . import utils
 
@@ -64,7 +64,6 @@ def program_describe(
     Default output format is YAML with a front matter.
     """
     console = Console()
-    restypes = platform.frictionless_resources
 
     # Setup system
     if trusted:
@@ -105,7 +104,7 @@ def program_describe(
         )
 
         # Describe source
-        metadata = actions.describe(
+        metadata = Resource.describe(
             source=utils.create_source(source),
             name=name,
             type=type,
@@ -120,6 +119,7 @@ def program_describe(
             detector=detector_obj,
             stats=stats,
         )
+        assert isinstance(metadata, (Resource, Package))
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
@@ -150,7 +150,7 @@ def program_describe(
     console.print(view)
     console.rule("[bold]Tables")
     for resource in resources:
-        if isinstance(resource, restypes.TableResource):
+        if isinstance(resource, TableResource):
             view = Table(title=resource.name)
             labels = list(resource.schema.field_names)
             for label in labels[:DEFAULT_MAX_FIELDS]:

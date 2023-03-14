@@ -1,8 +1,8 @@
 from __future__ import annotations
 import attrs
+from ...resources import TableResource
 from ...pipeline import Step
 from ...dialect import Dialect
-from ... import resources
 
 
 @attrs.define(kw_only=True)
@@ -25,7 +25,8 @@ class table_write(Step):
     # Transform
 
     def transform_resource(self, resource):
-        target = resources.TableResource(path=self.path)
+        assert isinstance(resource, TableResource)
+        target = TableResource(path=self.path)
         if "dialect" in self.custom:
             dialect = Dialect.from_descriptor(self.custom["dialect"])
             target.dialect = dialect

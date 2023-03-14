@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List
 from ..exception import FrictionlessException
+from .table import TableResource
 from ..report import Report
 from ..resource import Resource
 from .metadata import MetadataResource
@@ -28,15 +29,11 @@ class ResourceResource(MetadataResource[Resource]):
         limit_rows: Optional[int] = None,
     ) -> ITabularData:
         resource = self.read_metadata()
+        if not isinstance(resource, TableResource):
+            return {}
         return resource.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
         )
-
-    # Index
-
-    def index(self, database_url: str, **options) -> List[str]:
-        resource = self.read_metadata()
-        return resource.index(database_url, **options)
 
     # List
 
@@ -64,9 +61,3 @@ class ResourceResource(MetadataResource[Resource]):
         return resource.validate(
             checklist, limit_errors=limit_errors, limit_rows=limit_rows, on_row=on_row
         )
-
-    # Transform
-
-    def transform(self, pipeline: Pipeline):
-        resource = self.read_metadata()
-        return resource.transform(pipeline)
