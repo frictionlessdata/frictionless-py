@@ -25,6 +25,7 @@ OUTPUT_OPTIONS_WITH_DP_YAML = {
     ]
 }
 OUTPUT_OPTIONS_WITH_DP = {
+    "$frictionless": "package/v2",
     "name": "test-package",
     "resources": [
         {
@@ -45,6 +46,7 @@ OUTPUT_OPTIONS_WITH_DP = {
 }
 
 OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
+    "$frictionless": "package/v2",
     "name": "test-repo-without-datapackage",
     "resources": [
         {
@@ -66,6 +68,7 @@ OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
     ],
 }
 OUTPUT_OPTIONS_WITHOUT_DP = {
+    "$frictionless": "package/v2",
     "name": "test-repo-without-datapackage",
     "resources": [
         {
@@ -160,6 +163,7 @@ def test_github_adapter_read_with_url_and_control(options_without_dp):
     control = portals.GithubControl(formats=["xlsx"])
     package = Package(url, control=control)
     assert package.to_descriptor() == {
+        "$frictionless": "package/v2",
         "name": "test-repo-without-datapackage",
         "resources": [
             {
