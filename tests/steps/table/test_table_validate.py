@@ -7,7 +7,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_validate():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value="bad"),

@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_field_pack():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_pack(name="details", from_names=["name", "population"]),
@@ -26,7 +26,7 @@ def test_step_field_pack():
 
 
 def test_step_field_pack_header_preserve():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_pack(
@@ -52,7 +52,7 @@ def test_step_field_pack_header_preserve():
 
 
 def test_step_field_pack_object():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_pack(

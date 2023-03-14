@@ -31,7 +31,7 @@ def test_step_resource_update_new_name():
 
 
 def test_step_resource_update_standalone_issue_1351():
-    source = TableResource("data/resource.json")
+    source = TableResource.from_descriptor("data/resource.json")
     pipeline = Pipeline(
         steps=[
             steps.resource_update(descriptor={"title": "New title"}),

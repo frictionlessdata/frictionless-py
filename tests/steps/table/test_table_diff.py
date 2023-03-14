@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_diff():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -36,7 +36,7 @@ def test_step_table_diff():
 
 
 def test_step_table_diff_from_dict():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -70,7 +70,7 @@ def test_step_table_diff_from_dict():
 
 
 def test_step_table_diff_with_ignore_order():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_diff(
@@ -100,7 +100,7 @@ def test_step_table_diff_with_ignore_order():
 
 
 def test_step_table_diff_with_use_hash():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

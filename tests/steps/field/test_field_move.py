@@ -32,7 +32,7 @@ def test_step_field_move():
 
 def test_transform_rename_move_field_issue_953():
     source = TableResource(
-        [
+        data=[
             {"id": 1, "name": "germany", "population": 83},
             {"id": 2, "name": "france", "population": 66},
             {"id": 3, "name": "spain", "population": 47},

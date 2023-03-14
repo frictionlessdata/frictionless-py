@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_row_filter():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -28,7 +28,7 @@ def test_step_row_filter():
 
 
 def test_step_row_filter_with_function():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -50,7 +50,7 @@ def test_step_row_filter_with_function():
 
 
 def test_step_row_filter_petl_selectop():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -71,7 +71,7 @@ def test_step_row_filter_petl_selectop():
 
 
 def test_step_row_filter_petl_selecteq():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -92,7 +92,7 @@ def test_step_row_filter_petl_selecteq():
 
 
 def test_step_row_filter_petl_selectne():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -114,7 +114,7 @@ def test_step_row_filter_petl_selectne():
 
 
 def test_step_row_filter_petl_selectlt():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -135,7 +135,7 @@ def test_step_row_filter_petl_selectlt():
 
 
 def test_step_row_filter_petl_selectle():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -157,7 +157,7 @@ def test_step_row_filter_petl_selectle():
 
 
 def test_step_row_filter_petl_selectgt():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -178,7 +178,7 @@ def test_step_row_filter_petl_selectgt():
 
 
 def test_step_row_filter_petl_selectge():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -200,7 +200,7 @@ def test_step_row_filter_petl_selectge():
 
 
 def test_step_row_filter_petl_selectrangeopen():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -223,7 +223,7 @@ def test_step_row_filter_petl_selectrangeopen():
 
 
 def test_step_row_filter_petl_selectrangeopenleft():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -245,7 +245,7 @@ def test_step_row_filter_petl_selectrangeopenleft():
 
 
 def test_step_row_filter_petl_selectrangeopenright():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -267,7 +267,7 @@ def test_step_row_filter_petl_selectrangeopenright():
 
 
 def test_step_row_filter_petl_selectrangeclosed():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -288,7 +288,7 @@ def test_step_row_filter_petl_selectrangeclosed():
 
 
 def test_step_row_filter_petl_selectcontains():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_filter(formula="'er' in name"),
@@ -308,7 +308,7 @@ def test_step_row_filter_petl_selectcontains():
 
 
 def test_step_row_filter_petl_selectin():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -329,7 +329,7 @@ def test_step_row_filter_petl_selectin():
 
 
 def test_step_row_filter_petl_selectnoin():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -350,7 +350,7 @@ def test_step_row_filter_petl_selectnoin():
 
 
 def test_step_row_filter_petl_selectis():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -371,7 +371,7 @@ def test_step_row_filter_petl_selectis():
 
 
 def test_step_row_filter_petl_selectisnot():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -393,7 +393,7 @@ def test_step_row_filter_petl_selectisnot():
 
 
 def test_step_row_filter_petl_selectisinstance():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -416,7 +416,7 @@ def test_step_row_filter_petl_selectisinstance():
 
 
 def test_step_row_filter_petl_selectistrue():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_filter(function=lambda row: bool(row["id"])),
@@ -438,7 +438,7 @@ def test_step_row_filter_petl_selectistrue():
 
 
 def test_step_row_filter_petl_selectisfalse():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_filter(function=lambda row: not bool(row["id"])),
@@ -456,7 +456,7 @@ def test_step_row_filter_petl_selectisfalse():
 
 
 def test_step_row_filter_petl_selectnone():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_filter(formula="id is None"),
@@ -474,7 +474,7 @@ def test_step_row_filter_petl_selectnone():
 
 
 def test_step_row_filter_petl_selectisnone():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_filter(formula="id is not None"),
@@ -496,7 +496,7 @@ def test_step_row_filter_petl_selectisnone():
 
 
 def test_step_row_filter_petl_rowlenselect():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_filter(function=lambda row: len(row) == 3),

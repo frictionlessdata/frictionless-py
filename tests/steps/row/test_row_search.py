@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_row_search():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_search(regex=r"^f.*"),
@@ -26,7 +26,7 @@ def test_step_row_search():
 
 
 def test_step_row_search_with_name():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_search(regex=r"^f.*", field_name="name"),
@@ -46,7 +46,7 @@ def test_step_row_search_with_name():
 
 
 def test_step_row_search_with_negate():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_search(regex=r"^f.*", negate=True),

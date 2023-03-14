@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_row_ungroup_first():
-    source = TableResource("data/transform-groups.csv")
+    source = TableResource(path="data/transform-groups.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_ungroup(group_name="name", selection="first"),
@@ -29,7 +29,7 @@ def test_step_row_ungroup_first():
 
 
 def test_step_row_ungroup_last():
-    source = TableResource("data/transform-groups.csv")
+    source = TableResource(path="data/transform-groups.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_ungroup(group_name="name", selection="last"),
@@ -52,7 +52,7 @@ def test_step_row_ungroup_last():
 
 
 def test_step_row_ungroup_min():
-    source = TableResource("data/transform-groups.csv")
+    source = TableResource(path="data/transform-groups.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_ungroup(
@@ -77,7 +77,7 @@ def test_step_row_ungroup_min():
 
 
 def test_step_row_ungroup_max():
-    source = TableResource("data/transform-groups.csv")
+    source = TableResource(path="data/transform-groups.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_ungroup(

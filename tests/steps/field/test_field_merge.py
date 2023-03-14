@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_field_merge():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_merge(name="details", from_names=["name", "population"]),
@@ -26,7 +26,7 @@ def test_step_field_merge():
 
 
 def test_step_field_merge_preserve():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_merge(

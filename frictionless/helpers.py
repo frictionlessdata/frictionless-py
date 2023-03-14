@@ -301,7 +301,7 @@ def is_directory_source(source: str) -> bool:
     return True
 
 
-def is_expandable_source(source: Any):
+def is_expandable_source(source: Any) -> bool:
     if isinstance(source, list):
         if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):
             return True
@@ -309,7 +309,7 @@ def is_expandable_source(source: Any):
         return False
     if is_remote_path(source):
         return False
-    return glob.has_magic(source)
+    return glob.has_magic(source) or os.path.isdir(source)
 
 
 def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):

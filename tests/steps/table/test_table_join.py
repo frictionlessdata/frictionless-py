@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_join():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -32,7 +32,7 @@ def test_step_table_join():
 
 
 def test_step_table_join_from_dict():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -64,7 +64,7 @@ def test_step_table_join_from_dict():
 
 
 def test_step_table_join_with_name_is_not_first_field():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_join(
@@ -91,7 +91,7 @@ def test_step_table_join_with_name_is_not_first_field():
 
 
 def test_step_table_join_mode_left():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -119,7 +119,7 @@ def test_step_table_join_mode_left():
 
 
 def test_step_table_join_mode_right():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -146,7 +146,7 @@ def test_step_table_join_mode_right():
 
 
 def test_step_table_join_mode_outer():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -175,7 +175,7 @@ def test_step_table_join_mode_outer():
 
 
 def test_step_table_join_mode_cross():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_join(
@@ -205,7 +205,7 @@ def test_step_table_join_mode_cross():
 
 
 def test_step_table_join_mode_negate():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_join(
@@ -231,7 +231,7 @@ def test_step_table_join_mode_negate():
 
 
 def test_step_table_join_hash_is_true():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -261,7 +261,7 @@ def test_step_table_join_hash_is_true():
 
 
 def test_step_table_join_mode_left_from_descriptor_issue_996():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

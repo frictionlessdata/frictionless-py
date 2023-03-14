@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_row_split():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_split(field_name="name", pattern="a"),

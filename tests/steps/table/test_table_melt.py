@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_melt():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -32,7 +32,7 @@ def test_step_table_melt():
 
 
 def test_step_table_melt_with_variables():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -55,7 +55,7 @@ def test_step_table_melt_with_variables():
 
 
 def test_step_table_melt_with_to_field_names():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

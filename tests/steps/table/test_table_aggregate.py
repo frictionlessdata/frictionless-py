@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_aggregate():
-    source = TableResource("data/transform-groups.csv")
+    source = TableResource(path="data/transform-groups.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -30,7 +30,7 @@ def test_step_table_aggregate():
 
 
 def test_step_table_aggregate_multiple():
-    source = TableResource("data/transform-groups.csv")
+    source = TableResource(path="data/transform-groups.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

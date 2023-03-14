@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_row_slice():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_slice(stop=2),
@@ -27,7 +27,7 @@ def test_step_row_slice():
 
 
 def test_step_row_slice_with_start():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_slice(start=1, stop=2),
@@ -47,7 +47,7 @@ def test_step_row_slice_with_start():
 
 
 def test_step_row_slice_with_start_and_step():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_slice(start=1, stop=3, step=2),
@@ -67,7 +67,7 @@ def test_step_row_slice_with_start_and_step():
 
 
 def test_step_row_slice_with_head():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_slice(head=2),
@@ -88,7 +88,7 @@ def test_step_row_slice_with_head():
 
 
 def test_step_row_slice_with_tail():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_slice(tail=2),

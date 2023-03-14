@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_intersect():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -37,7 +37,7 @@ def test_step_table_intersect():
 
 
 def test_step_table_intersect_from_dict():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -72,7 +72,7 @@ def test_step_table_intersect_from_dict():
 
 
 def test_step_table_intersect_with_use_hash():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

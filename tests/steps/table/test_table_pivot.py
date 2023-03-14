@@ -8,7 +8,7 @@ from frictionless.resources import TableResource
 
 @pytest.mark.skip(reason="issue-1220")
 def test_step_table_pivot():
-    source = TableResource("data/transform-pivot.csv")
+    source = TableResource(path="data/transform-pivot.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

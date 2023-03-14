@@ -370,7 +370,7 @@ def test_resource_validate_missing_local_file_raises_scheme_error_issue_315():
 
 def test_resource_validate_inline_not_a_binary_issue_349():
     with open("data/table.csv") as source:
-        resource = TableResource(data=source)
+        resource = TableResource(data=source, format="csv")
         report = resource.validate()
         assert report.valid
 

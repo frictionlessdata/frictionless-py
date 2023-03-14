@@ -11,7 +11,7 @@ def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
     # Write
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value=100),

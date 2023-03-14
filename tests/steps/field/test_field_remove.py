@@ -30,7 +30,7 @@ def test_step_field_remove():
 
 
 def test_step_field_remove_missing_label():
-    source = TableResource(b"field1,\n1,2", format="csv")
+    source = TableResource(data=b"field1,\n1,2", format="csv")
     pipeline = Pipeline(
         steps=[
             steps.field_remove(names=["field2"]),

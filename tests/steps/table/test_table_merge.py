@@ -8,7 +8,7 @@ from frictionless.resources import TableResource
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
@@ -37,7 +37,7 @@ def test_step_table_merge():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_from_dict():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             Step.from_descriptor(
@@ -69,7 +69,7 @@ def test_step_table_merge_from_dict():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_field_names():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
@@ -97,7 +97,7 @@ def test_step_table_merge_with_field_names():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_merge_ignore_fields():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
@@ -124,7 +124,7 @@ def test_step_merge_ignore_fields():
 
 @pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_sort():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(

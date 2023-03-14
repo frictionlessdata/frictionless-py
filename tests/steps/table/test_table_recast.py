@@ -6,7 +6,7 @@ from frictionless.resources import TableResource
 
 
 def test_step_table_recast():
-    source = TableResource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
