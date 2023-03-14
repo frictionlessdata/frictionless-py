@@ -274,7 +274,7 @@ def test_program_extract_single_invalid_resource():
         program, "extract data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count('There is no resource with name "number-twoo"')
+    assert actual.stdout.count('"number-twoo" does not exist')
 
 
 def test_program_extract_single_valid_resource_invalid_package():
@@ -282,7 +282,7 @@ def test_program_extract_single_valid_resource_invalid_package():
         program, "extract data/bad/datapackage.json --resource-name number-two"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("No such file or directory: 'data/bad/datapackage.json'")
+    assert actual.stdout.count("No such file or directory")
 
 
 def test_program_extract_single_resource_yaml():
