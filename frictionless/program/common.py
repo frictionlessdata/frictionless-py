@@ -113,7 +113,7 @@ keys = Option(
 
 
 keyed = Option(
-    default=False,
+    default=None,
     help="Whether the input data is keyed for the Inline or JSON data plugins",
 )
 

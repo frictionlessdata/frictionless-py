@@ -119,16 +119,9 @@ def program_describe(
             detector=detector_obj,
             stats=stats,
         )
-        assert isinstance(metadata, (Resource, Package))
     except Exception as exception:
         utils.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
-
-    # Yaml mode
-    if yaml or isinstance(metadata, (Dialect, Schema)):
-        descriptor = metadata.to_yaml().strip()
-        print(descriptor)
-        raise typer.Exit()
 
     # Json mode
     if json:
@@ -136,16 +129,33 @@ def program_describe(
         print(descriptor)
         raise typer.Exit()
 
+    # Yaml mode
+    if yaml or isinstance(metadata, (Dialect, Schema)):
+        descriptor = metadata.to_yaml().strip()
+        print(descriptor)
+        raise typer.Exit()
+
     # Default mode
     console.rule("[bold]Dataset")
+    assert isinstance(metadata, (Resource, Package))
     resources = [metadata] if isinstance(metadata, Resource) else metadata.resources
     view = Table(title="dataset")
     view.add_column("name")
     view.add_column("type")
     view.add_column("path")
+    if stats:
+        view.add_column("hash")
+        view.add_column("bytes")
+        view.add_column("fields")
+        view.add_column("rows")
     for resource in resources:
         style = "sky_blue1" if resource.tabular else ""
         row = [resource.name, resource.type, resource.path]
+        if stats:
+            row.append(str(resource.hash))
+            row.append(str(resource.bytes))
+            row.append(str(resource.fields or ""))
+            row.append(str(resource.rows or ""))
         view.add_row(*row, style=style)
     console.print(view)
     console.rule("[bold]Tables")
