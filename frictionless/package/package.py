@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+from typing_extensions import Self
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..platform import platform
@@ -523,7 +524,7 @@ class Package(Metadata):
 
     # Convert
 
-    def to_copy(self, **options):
+    def to_copy(self, **options) -> Self:
         """Create a copy of the package"""
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],

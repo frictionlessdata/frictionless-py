@@ -8,7 +8,6 @@ from ...exception import FrictionlessException
 from ...resources import FileResource, TableResource
 from ...platform import platform
 from ...system import Adapter
-from ...resource import Resource
 from ...package import Package
 from ... import helpers
 from ... import errors

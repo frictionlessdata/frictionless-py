@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ...formats.sql import IOnRow, IOnProgress
     from ...interfaces import IBuffer, ISample, IFragment, ILabels
     from ...interfaces import IFilterFunction, IProcessFunction, ITabularData
-    from ...interfaces import IByteStream, ITextStream, ICellStream
+    from ...interfaces import ITextStream, ICellStream
     from ...interfaces import ICallbackFunction
     from ...checklist import Checklist
     from ...pipeline import Pipeline
@@ -117,34 +117,6 @@ class TableResource(Resource):
         return self.__lookup
 
     @property
-    def byte_stream(self) -> IByteStream:
-        """Byte stream in form of a generator
-
-        Yields:
-            gen<bytes>?: byte stream
-        """
-        if self.closed:
-            raise FrictionlessException("resource is not open or non binary")
-        if not self.__loader:
-            self.__loader = system.create_loader(self)
-            self.__loader.open()
-        return self.__loader.byte_stream
-
-    @property
-    def text_stream(self) -> ITextStream:
-        """Text stream in form of a generator
-
-        Yields:
-            gen<str[]>?: text stream
-        """
-        if self.closed:
-            raise FrictionlessException("resource is not open or non textual")
-        if not self.__loader:
-            self.__loader = system.create_loader(self)
-            self.__loader.open()
-        return self.__loader.text_stream
-
-    @property
     def cell_stream(self) -> ICellStream:
         """Cell stream in form of a generator
 
@@ -168,25 +140,6 @@ class TableResource(Resource):
 
     # Open/Close
 
-    def open(self):
-        """Open the resource as "io.open" does"""
-        self.close()
-        try:
-            self.__prepare_parser()
-            self.__prepare_buffer()
-            self.__prepare_sample()
-            self.__prepare_dialect()
-            self.__prepare_labels()
-            self.__prepare_fragment()
-            self.__prepare_schema()
-            self.__prepare_header()
-            self.__prepare_lookup()
-            self.__prepare_row_stream()
-        except Exception:
-            self.close()
-            raise
-        return self
-
     def close(self) -> None:
         """Close the resource as "filelike.close" does"""
         if self.__parser:
@@ -203,37 +156,52 @@ class TableResource(Resource):
         Returns:
             bool: if closed
         """
-        return self.__parser is None and self.__loader is None
+        return self.__parser is None
 
-    def __prepare_loader(self):
-        self.__loader = system.create_loader(self)
-        self.__loader.open()
+    def open(self):
+        """Open the resource as "io.open" does"""
+        self.close()
+        try:
+            self.__open_parser()
+            self.__open_buffer()
+            self.__open_sample()
+            self.__open_dialect()
+            self.__open_labels()
+            self.__open_fragment()
+            self.__open_schema()
+            self.__open_header()
+            self.__open_lookup()
+            self.__open_row_stream()
+        except Exception:
+            self.close()
+            raise
+        return self
 
-    def __prepare_buffer(self):
+    def __open_parser(self):
+        self.__parser = system.create_parser(self)
+        self.__parser.open()
+
+    def __open_buffer(self):
         if self.__parser and self.__parser.requires_loader:
             self.__buffer = self.__parser.loader.buffer
         elif self.__loader:
             self.__buffer = self.__loader.buffer
 
-    def __prepare_parser(self):
-        self.__parser = system.create_parser(self)
-        self.__parser.open()
-
-    def __prepare_sample(self):
+    def __open_sample(self):
         if self.__parser:
             self.__sample = self.__parser.sample
 
-    def __prepare_dialect(self):
+    def __open_dialect(self):
         self.metadata_assigned.add("dialect")
         self.dialect = self.detector.detect_dialect(self.sample, dialect=self.dialect)
 
-    def __prepare_labels(self):
+    def __open_labels(self):
         self.__labels = self.dialect.read_labels(self.sample)
 
-    def __prepare_fragment(self):
+    def __open_fragment(self):
         self.__fragment = self.dialect.read_fragment(self.sample)
 
-    def __prepare_schema(self):
+    def __open_schema(self):
         self.metadata_assigned.add("schema")
         self.schema = self.detector.detect_schema(
             self.fragment,
@@ -243,7 +211,7 @@ class TableResource(Resource):
         )
         self.stats.fields = len(self.schema.fields)
 
-    def __prepare_header(self):
+    def __open_header(self):
         # Create header
         self.__header = Header(
             self.__labels,
@@ -260,7 +228,7 @@ class TableResource(Resource):
             elif system.onerror == "raise":
                 raise FrictionlessException(error)
 
-    def __prepare_lookup(self):
+    def __open_lookup(self):
         self.__lookup = Lookup()
         for fk in self.schema.foreign_keys:
             # Prepare source
@@ -295,7 +263,7 @@ class TableResource(Resource):
                         continue
                     self.__lookup[source_name][source_key].add(cells)
 
-    def __prepare_row_stream(self):
+    def __open_row_stream(self):
         # TODO: we need to rework this field_info / row code
         # During row streaming we crate a field info structure
         # This structure is optimized and detached version of schema.fields
@@ -423,29 +391,6 @@ class TableResource(Resource):
 
         # Crreate row stream
         self.__row_stream = row_stream()
-
-    # TODO: open as a file?
-    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
-        """Read bytes into memory
-
-        Returns:
-            any[][]: resource bytes
-        """
-        if self.memory:
-            return b""
-        with helpers.ensure_open(self):
-            # Without size we need to read chunk by chunk because read1 doesn't return
-            # the full contents by default (just an arbitrary amount of bytes)
-            # and we use read1 as it includes stats calculation (system.loader)
-            if not size:
-                buffer = b""
-                while True:
-                    chunk = self.byte_stream.read1()  # type: ignore
-                    buffer += chunk
-                    if not chunk:
-                        break
-                return buffer
-            return self.byte_stream.read1(size)  # type: ignore
 
     def read_text(self, *, size: Optional[int] = None) -> str:
         """Read text into memory
@@ -699,7 +644,7 @@ class TableResource(Resource):
 
     def to_petl(self, normalize=False):
         """Export resource as a PETL table"""
-        resource = self
+        resource = self.to_copy()
 
         # Define view
         class ResourceView(platform.petl.Table):

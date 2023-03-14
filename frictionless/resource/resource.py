@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 import attrs
 import warnings
+from typing_extensions import Self
 from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
 from ..exception import FrictionlessException
 from ..dialect import Dialect, Control
@@ -466,6 +467,91 @@ class Resource(Metadata):
             self.__loader.open()
         return self.__loader.text_stream
 
+    # Open/Close
+
+    def close(self) -> None:
+        """Close the resource as "filelike.close" does"""
+        if self.__loader:
+            self.__loader.close()
+            self.__loader = None
+
+    @property
+    def closed(self) -> bool:
+        """Whether the table is closed
+
+        Returns:
+            bool: if closed
+        """
+        return self.__loader is None
+
+    def open(self):
+        """Open the resource as "io.open" does"""
+        self.close()
+        try:
+            self.__open_loader()
+            self.__open_buffer()
+        except Exception:
+            self.close()
+            raise
+        return self
+
+    def __open_loader(self):
+        self.__loader = system.create_loader(self)
+        self.__loader.open()
+
+    def __open_buffer(self):
+        if self.__loader:
+            self.__buffer = self.__loader.buffer
+
+    # Read
+
+    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
+        """Read bytes into memory
+
+        Returns:
+            any[][]: resource bytes
+        """
+        if self.memory:
+            return b""
+        with helpers.ensure_open(self):
+            # Without size we need to read chunk by chunk because read1 doesn't return
+            # the full contents by default (just an arbitrary amount of bytes)
+            # and we use read1 as it includes stats calculation (system.loader)
+            if not size:
+                buffer = b""
+                while True:
+                    chunk = self.byte_stream.read1()  # type: ignore
+                    buffer += chunk
+                    if not chunk:
+                        break
+                return buffer
+            return self.byte_stream.read1(size)  # type: ignore
+
+    def read_text(self, *, size: Optional[int] = None) -> str:
+        """Read text into memory
+
+        Returns:
+            str: resource text
+        """
+        if self.memory:
+            return ""
+        with helpers.ensure_open(self):
+            return self.text_stream.read(size)  # type: ignore
+
+    # TODO: support yaml?
+    def read_data(self, *, size: Optional[int] = None) -> Any:
+        """Read data into memory
+
+        Returns:
+            any: resource data
+        """
+        if self.data is not None:
+            return self.data
+        with helpers.ensure_open(self):
+            text = self.read_text(size=size)
+            data = json.loads(text)
+            return data
+
     # Describe
 
     @classmethod
@@ -600,94 +686,9 @@ class Resource(Metadata):
         self.schema.metadata_descriptor_path = None
         self.schema.metadata_descriptor_initial = None
 
-    # Open/Close
-
-    def open(self):
-        """Open the resource as "io.open" does"""
-        self.close()
-        try:
-            self.__prepare_loader()
-            self.__prepare_buffer()
-        except Exception:
-            self.close()
-            raise
-        return self
-
-    def close(self) -> None:
-        """Close the resource as "filelike.close" does"""
-        if self.__loader:
-            self.__loader.close()
-            self.__loader = None
-
-    @property
-    def closed(self) -> bool:
-        """Whether the table is closed
-
-        Returns:
-            bool: if closed
-        """
-        return self.__loader is None
-
-    def __prepare_loader(self):
-        self.__loader = system.create_loader(self)
-        self.__loader.open()
-
-    def __prepare_buffer(self):
-        if self.__loader:
-            self.__buffer = self.__loader.buffer
-
-    # Read
-
-    def read_bytes(self, *, size: Optional[int] = None) -> bytes:
-        """Read bytes into memory
-
-        Returns:
-            any[][]: resource bytes
-        """
-        if self.memory:
-            return b""
-        with helpers.ensure_open(self):
-            # Without size we need to read chunk by chunk because read1 doesn't return
-            # the full contents by default (just an arbitrary amount of bytes)
-            # and we use read1 as it includes stats calculation (system.loader)
-            if not size:
-                buffer = b""
-                while True:
-                    chunk = self.byte_stream.read1()  # type: ignore
-                    buffer += chunk
-                    if not chunk:
-                        break
-                return buffer
-            return self.byte_stream.read1(size)  # type: ignore
-
-    def read_text(self, *, size: Optional[int] = None) -> str:
-        """Read text into memory
-
-        Returns:
-            str: resource text
-        """
-        if self.memory:
-            return ""
-        with helpers.ensure_open(self):
-            return self.text_stream.read(size)  # type: ignore
-
-    # TODO: support yaml?
-    def read_data(self, *, size: Optional[int] = None) -> Any:
-        """Read data into memory
-
-        Returns:
-            any: resource data
-        """
-        if self.data is not None:
-            return self.data
-        with helpers.ensure_open(self):
-            text = self.read_text(size=size)
-            data = json.loads(text)
-            return data
-
     # Export
 
-    def to_copy(self, **options):
+    def to_copy(self, **options) -> Self:
         """Create a copy from the resource"""
         return super().to_copy(
             data=self.data,
