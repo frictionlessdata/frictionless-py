@@ -415,8 +415,6 @@ class Package(Metadata):
 
         """
         metadata = Resource.describe(source, type="package", stats=stats, **options)
-        if isinstance(metadata, Resource):
-            metadata = Package(resources=[metadata])
         assert isinstance(metadata, Package)
         return metadata
 

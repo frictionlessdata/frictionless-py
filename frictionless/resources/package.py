@@ -18,6 +18,16 @@ class PackageResource(MetadataResource[Package]):
     datatype = "package"
     dataclass = Package
 
+    # Read
+
+    def read_metadata(self) -> Package:
+        return self.dataclass.from_descriptor(
+            self.descriptor,
+            basepath=self.basepath,
+            dialect=self.dialect or None,
+            detector=self.detector or None,
+        )
+
     # Extract
 
     def extract(

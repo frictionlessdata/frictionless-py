@@ -8,7 +8,6 @@ from .metadata import MetadataResource
 from .. import settings
 
 if TYPE_CHECKING:
-    from ..pipeline import Pipeline
     from ..checklist import Checklist
     from ..interfaces import ICallbackFunction
     from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
@@ -17,6 +16,16 @@ if TYPE_CHECKING:
 class ResourceResource(MetadataResource[Resource]):
     datatype = "resource"
     dataclass = Resource
+
+    # Read
+
+    def read_metadata(self) -> Resource:
+        return self.dataclass.from_descriptor(
+            self.descriptor,
+            basepath=self.basepath,
+            dialect=self.dialect or None,
+            detector=self.detector or None,
+        )
 
     # Extract
 

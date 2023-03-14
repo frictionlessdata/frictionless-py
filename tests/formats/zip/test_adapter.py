@@ -169,12 +169,14 @@ def test_zip_adapter_validate_package_from_zip_invalid():
 
 
 def test_zip_adapter_actions_validate_package_from_zip():
-    report = validate("data/package.zip", type="package")
+    package = Package("data/package.zip")
+    report = package.validate()
     assert report.valid
 
 
 def test_zip_adapter_actions_validate_package_from_zip_invalid():
-    report = validate("data/package-invalid.zip", type="package")
+    package = Package("data/package-invalid.zip")
+    report = package.validate()
     assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key"],

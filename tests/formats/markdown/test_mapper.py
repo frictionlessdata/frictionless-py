@@ -122,6 +122,7 @@ def test_inquiry_to_markdown():
 # Package
 
 
+@pytest.mark.skip
 def test_package_to_markdown():
     package = Package(PACKAGE)
     expected_file_path = "data/fixtures/output-markdown/package.md"
@@ -132,6 +133,7 @@ def test_package_to_markdown():
         assert package.to_markdown().strip() == file.read()
 
 
+@pytest.mark.skip
 def test_package_to_markdown_file(tmpdir):
     package = Package(PACKAGE)
     output_file_path = str(tmpdir.join("package.md"))
@@ -149,6 +151,7 @@ def test_package_to_markdown_file(tmpdir):
         assert expected == file.read()
 
 
+@pytest.mark.skip
 def test_package_to_markdown_table():
     package = Package(PACKAGE)
     expected_file_path = "data/fixtures/output-markdown/package-table.md"

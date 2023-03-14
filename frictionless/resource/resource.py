@@ -599,7 +599,11 @@ class Resource(Metadata):
                 return package.get_resource(name)
             return package
         elif type == "package":
-            return Package(resources=[resource])
+            package = Package(resources=[resource])
+            package.infer(stats=stats)
+            if name is not None:
+                return package.get_resource(name)
+            return package
 
         # Infer resource
         resource.infer(stats=stats)
