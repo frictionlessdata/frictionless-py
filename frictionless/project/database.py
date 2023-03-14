@@ -290,7 +290,7 @@ class Database:
 
     # TODO: temporary solution while we don't have proper database's table editing
     def save_table(self, path: str, *, tablePatch: dict, basepath: str) -> Resource:
-        resource = Resource(path, basepath=basepath)
+        resource = TableResource(path=path, basepath=basepath)
         data = resource.read_rows()
         for index, row in enumerate(data):
             rowNumber = index + 2

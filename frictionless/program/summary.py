@@ -47,7 +47,7 @@ def program_summary(
     typer.secho("")
     typer.secho("# Extract ", bold=True)
     typer.secho("")
-    typer.secho(str(resource.to_view()))
+    typer.secho(str(resource.to_view()))  # type: ignore
 
     # Validate
     try:

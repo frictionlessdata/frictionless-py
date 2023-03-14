@@ -7,7 +7,7 @@ from ... import settings
 from ... import helpers
 
 if TYPE_CHECKING:
-    from .resource import TableResource
+    from .table import TableResource
     from ...interfaces import ICallbackFunction
     from ...error import Error
 

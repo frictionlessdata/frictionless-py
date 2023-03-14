@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, FrictionlessException, platform, system
+from frictionless import Resource, FrictionlessException, platform
 
 
 # General

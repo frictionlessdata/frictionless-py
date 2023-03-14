@@ -254,6 +254,14 @@ class Package(Metadata):
                 return True
         return False
 
+    def has_table_resource(self, name: str) -> bool:
+        """Check if a table resource is present"""
+        for resource in self.resources:
+            if resource.name == name:
+                if isinstance(resource, platform.frictionless_resources.TableResource):
+                    return True
+        return False
+
     def get_resource(self, name: str) -> Resource:
         """Get resource by name"""
         for resource in self.resources:

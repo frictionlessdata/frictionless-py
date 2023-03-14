@@ -9,7 +9,7 @@ from math import fsum, sqrt
 from ... import helpers
 
 if TYPE_CHECKING:
-    from .resource import TableResource
+    from .table import TableResource
 
 
 def analyze(resource: TableResource, *, detailed=False) -> Dict:

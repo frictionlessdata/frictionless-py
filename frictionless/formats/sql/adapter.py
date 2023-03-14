@@ -89,8 +89,8 @@ class SqlAdapter(Adapter):
                 tables.append(table)
             self.metadata.create_all(conn, tables=tables)
         for table in self.metadata.sorted_tables:
-            if package.has_resource(table.name):
-                resource = package.get_resource(table.name)
+            if package.has_table_resource(table.name):
+                resource = package.get_table_resource(table.name)
                 with resource:
                     self.write_row_stream(resource.row_stream, table_name=table.name)
         return bool(tables)

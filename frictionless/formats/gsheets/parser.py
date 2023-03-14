@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 from ...platform import platform
 from ...system import Parser
-from ...resource import Resource
+from ...resources import TableResource
 from ...exception import FrictionlessException
 from .control import GsheetsControl
 from ... import errors
@@ -29,7 +29,7 @@ class GsheetsParser(Parser):
         path = path % (key, key)
         if gid:
             path = "%s&gid=%s" % (path, gid)
-        with Resource(path=path) as resource:
+        with TableResource(path=path) as resource:
             # TODO: remove this cludge
             resource.stats = self.resource.stats
             yield from resource.cell_stream

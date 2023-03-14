@@ -24,7 +24,8 @@ class QsvAdapter(Adapter):
     def read_schema(self, resource: Resource) -> Schema:
         command = [self.qsv_path, "stats", "--infer-dates", "--dates-whitelist", "all"]
         process = sp.Popen(command, stdout=sp.PIPE, stdin=sp.PIPE)
-        with resource.open(as_file=True):
+        # TODO: Use FileResource here (or future resource.stream_bytes())
+        with resource:
             while True:
                 chunk = resource.read_bytes(size=BLOCK_SIZE)
                 if not chunk:

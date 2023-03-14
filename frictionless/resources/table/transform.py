@@ -7,7 +7,7 @@ from ...helpers import get_name
 from ... import errors
 
 if TYPE_CHECKING:
-    from .resource import TableResource
+    from .table import TableResource
 
 
 # TODO: save transform info into resource.stats?

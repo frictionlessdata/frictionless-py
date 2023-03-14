@@ -11,13 +11,13 @@ from .adapter import SqlAdapter
 from . import settings
 
 if TYPE_CHECKING:
-    from ...resource import Resource
+    from ...resources import TableResource
     from ...table import Row
 
 
 @attrs.define(kw_only=True)
 class SqlIndexer:
-    resource: Resource
+    resource: TableResource
     database_url: str
     table_name: str
     fast: bool = False

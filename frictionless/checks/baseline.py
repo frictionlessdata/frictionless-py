@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+from ..resources import TableResource
 from ..checklist import Check
 from .. import errors
 from .. import helpers
@@ -49,7 +50,7 @@ class baseline(Check):
     # Validate
 
     def validate_start(self):
-        if self.resource.tabular:
+        if isinstance(self.resource, TableResource):
             empty = not (self.resource.labels or self.resource.fragment)
             yield from [errors.SourceError(note="the source is empty")] if empty else []
             yield from self.resource.header.errors  # type: ignore

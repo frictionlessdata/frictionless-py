@@ -1,6 +1,6 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
-from frictionless import Resource, platform, formats
+from frictionless import platform, formats
 from frictionless.resources import TableResource
 
 control = formats.sql.SqlControl(table="table")
