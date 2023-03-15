@@ -20,10 +20,10 @@ frictionless convert table.csv table.xlsx
 
 ## Downloading Files
 
-The command can be used for downloading files as well. For example, let's cherry-pick on CSV file from a Zenodo dataset:
+The command can be used for downloading files as well. For example, let's cherry-pick one CSV file from a Zenodo dataset:
 
 ```bash tabs=CLI
-frictionless convert https://zenodo.org/record/3977957#.ZBGs1NLP2is --name aaawrestlers --to-path test.csv
+frictionless convert https://zenodo.org/record/3977957 --name aaawrestlers --to-path test.csv
 ```
 
 ## Dialect Updates
