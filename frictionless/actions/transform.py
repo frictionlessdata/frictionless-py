@@ -33,7 +33,7 @@ def transform(
         pipeline = Pipeline(steps=steps or [])
 
     # Transform resource
-    resource = Resource(source, datatype=type or "", **options)
+    resource = Resource(source, datatype=type, **options)
     if not isinstance(resource, platform.frictionless_resources.Transformable):
         note = f'Resource with data type "{resource.datatype}" is not transformable'
         raise FrictionlessException(note)

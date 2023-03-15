@@ -127,7 +127,7 @@ def program_validate(
             path=path,
             scheme=scheme,
             format=format,
-            datatype=type or "",
+            datatype=type,
             compression=compression,
             innerpath=innerpath,
             encoding=encoding,

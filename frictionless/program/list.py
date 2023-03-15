@@ -99,7 +99,7 @@ def program_describe(
             path=path,
             scheme=scheme,
             format=format,
-            datatype=type or "",
+            datatype=type,
             compression=compression,
             innerpath=innerpath,
             encoding=encoding,

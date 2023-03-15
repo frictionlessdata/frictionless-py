@@ -50,7 +50,7 @@ def program_script(
             source=utils.create_source(source),
             name=name,
             path=path,
-            datatype=type or "",
+            datatype=type,
         )
 
         # Create database

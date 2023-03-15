@@ -48,7 +48,7 @@ def program_explore(
             source=utils.create_source(source),
             name=name,
             path=path,
-            datatype=type or "",
+            datatype=type,
         )
         resources = resource.list(name=name)
         paths = [resource.normpath for resource in resources if resource.normpath]

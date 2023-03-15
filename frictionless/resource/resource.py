@@ -62,8 +62,7 @@ class Resource(Metadata):
     # TODO: add docs
     """
 
-    # TODO: review empty default
-    name: str = ""
+    _name: Optional[str] = attrs.field(default="", alias="name")
     """
     Resource name according to the specs.
     It should be a slugified name of the resource.
@@ -134,8 +133,7 @@ class Resource(Metadata):
     If not set, it'll be inferred from `source`.
     """
 
-    # TODO: review empty default
-    datatype: str = ""
+    _datatype: Optional[str] = attrs.field(default="", alias="datatype")
     """
     Frictionless Framework specific data type as "table" or "schema"
     """
@@ -306,10 +304,12 @@ class Resource(Metadata):
             return resource
 
     def __attrs_post_init__(self):
+        self.name = self._name or ""
+        self.datatype = self._datatype or ""
         self.stats = ResourceStats()
 
         # Datatype
-        datatype = type(self).datatype
+        datatype = getattr(type(self), "datatype", None)
         if isinstance(datatype, str):
             self.datatype = datatype
 

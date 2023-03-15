@@ -50,7 +50,7 @@ def program_index(
             source=utils.create_source(source),
             name=name,
             path=path,
-            datatype=type or "",
+            datatype=type,
         )
 
         # Index resources

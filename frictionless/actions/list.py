@@ -20,5 +20,5 @@ def list(
         data resources
     """
     # List resources
-    resource = Resource(source, name=name or "", datatype=type or "", **options)
+    resource = Resource(source, name=name, datatype=type, **options)
     return resource.list(name=name)

@@ -52,7 +52,7 @@ def program_publish(
             source=utils.create_source(source),
             name=name,
             path=path,
-            datatype=type or "",
+            datatype=type,
         )
         resources = resource.list(name=name)
         package = Package(title=title, resources=resources)
