@@ -10,6 +10,7 @@ With the `explore` command you can open your dataset in [Visidata](https://www.v
 
 ```bash tabs=CLI
 pip install frictionless[visidata]
+pip install frictionless[visidata,zenodo] # for examples in this tutorial
 ```
 
 ## Example
