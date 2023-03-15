@@ -3,11 +3,11 @@ import attrs
 from typing_extensions import Self
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
+from ..transformer import Transformer
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
 from ..system import system
-from .transform import transform
 from .validate import validate
 from .. import settings
 from .. import helpers
@@ -498,7 +498,8 @@ class Package(Metadata):
         Returns:
             Package: the transform result
         """
-        return transform(self, pipeline)
+        transformer = Transformer()
+        return transformer.transform_package(self, pipeline)
 
     # Validate
 

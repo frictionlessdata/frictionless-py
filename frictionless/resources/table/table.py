@@ -5,13 +5,13 @@ import builtins
 from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
 from ...exception import FrictionlessException
 from ...table import Header, Lookup, Row
+from ...transformer import Transformer
 from ...analyzer import Analyzer
 from ...indexer import Indexer
 from ...dialect import Dialect
 from ...platform import platform
 from ...resource import Resource
 from ...system import system
-from .transform import transform
 from .validate import validate
 from ... import settings
 from ... import helpers
@@ -547,7 +547,8 @@ class TableResource(Resource):
     # Transform
 
     def transform(self, pipeline: Pipeline):
-        return transform(self, pipeline)
+        transformer = Transformer()
+        return transformer.transform_table_resource(self, pipeline)
 
     # Validate
 
