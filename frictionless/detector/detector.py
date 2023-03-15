@@ -124,7 +124,7 @@ class Detector:
     For more information, please check "Extracting Data" guide.
     """
 
-    # Detect
+    # Metadta
 
     # TODO: remove static method?
     @staticmethod
@@ -152,6 +152,8 @@ class Detector:
             for type, item in settings.METADATA_TRAITS.items():
                 if set(item["props"]).intersection(source.keys()):
                     return type
+
+    # Resource
 
     def detect_resource(self, resource: Resource) -> None:
         """Detects path details"""
@@ -184,6 +186,8 @@ class Detector:
         resource.scheme = resource.scheme or scheme
         resource.format = resource.format or format
         resource.compression = resource.compression or compression
+
+    # Encoding
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
@@ -227,6 +231,8 @@ class Detector:
                 encoding = "utf-16"
 
         return encoding
+
+    # Dialect
 
     def detect_dialect(
         self,
@@ -277,6 +283,8 @@ class Detector:
                 dialect.header_rows = header_rows
 
         return dialect
+
+    # Schema
 
     # TODO: detect fields without type
     def detect_schema(

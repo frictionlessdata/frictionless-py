@@ -5,11 +5,11 @@ import builtins
 from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
 from ...exception import FrictionlessException
 from ...table import Header, Lookup, Row
+from ...analyzer import Analyzer
 from ...dialect import Dialect
 from ...platform import platform
 from ...resource import Resource
 from ...system import system
-from .analyze import analyze
 from .transform import transform
 from .validate import validate
 from ... import settings
@@ -474,13 +474,14 @@ class TableResource(Resource):
         without warning.
 
         Parameters:
-            detailed? (bool): detailed analysis
+            detailed: do detailed analysis
 
         Returns:
             dict: resource analysis
 
         """
-        return analyze(self, detailed=detailed)
+        analyzer = Analyzer()
+        return analyzer.analyze_table_resource(self, detailed=detailed)
 
     # Convert
 
