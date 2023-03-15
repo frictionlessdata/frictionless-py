@@ -411,9 +411,9 @@ class Platform:
     @cached_property
     @extras(name="wkt")
     def wkt(self):
-        import frictionless.vendor.wkt
+        import frictionless.vendors.wkt
 
-        return frictionless.vendor.wkt
+        return frictionless.vendors.wkt
 
 
 platform = Platform()

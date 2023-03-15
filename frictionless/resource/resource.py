@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
 from ..exception import FrictionlessException
 from ..dialect import Dialect, Control
 from .stats import ResourceStats
+from ..validator import Validator
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
 from ..schema import Schema
 from ..system import system
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -662,7 +662,8 @@ class Resource(Metadata):
             Report: validation report
 
         """
-        return validate(self, checklist)
+        validator = Validator()
+        return validator.validate_resource(self, checklist=checklist)
 
     # Export
 

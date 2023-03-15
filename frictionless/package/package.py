@@ -4,11 +4,11 @@ from typing_extensions import Self
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..transformer import Transformer
+from ..validator import Validator
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
 from ..system import system
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
@@ -522,9 +522,10 @@ class Package(Metadata):
             Report: validation report
 
         """
-        return validate(
+        validator = Validator()
+        return validator.validate_package(
             self,
-            checklist,
+            checklist=checklist,
             name=name,
             parallel=parallel,
             limit_rows=limit_rows,

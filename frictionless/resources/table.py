@@ -3,31 +3,31 @@ import os
 import warnings
 import builtins
 from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
-from ...exception import FrictionlessException
-from ...table import Header, Lookup, Row
-from ...transformer import Transformer
-from ...analyzer import Analyzer
-from ...indexer import Indexer
-from ...dialect import Dialect
-from ...platform import platform
-from ...resource import Resource
-from ...system import system
-from .validate import validate
-from ... import settings
-from ... import helpers
-from ... import errors
+from ..exception import FrictionlessException
+from ..table import Header, Lookup, Row
+from ..transformer import Transformer
+from ..validator import Validator
+from ..analyzer import Analyzer
+from ..indexer import Indexer
+from ..dialect import Dialect
+from ..platform import platform
+from ..resource import Resource
+from ..system import system
+from .. import settings
+from .. import helpers
+from .. import errors
 
 if TYPE_CHECKING:
-    from ...system import Loader, Parser
-    from ...indexer import IOnRow, IOnProgress
-    from ...interfaces import IBuffer, ISample, IFragment, ILabels
-    from ...interfaces import IFilterFunction, IProcessFunction, ITabularData
-    from ...interfaces import ICellStream
-    from ...interfaces import ICallbackFunction
-    from ...checklist import Checklist
-    from ...pipeline import Pipeline
-    from ...dialect import Control
-    from ...table import IRowStream
+    from ..system import Loader, Parser
+    from ..indexer import IOnRow, IOnProgress
+    from ..interfaces import IBuffer, ISample, IFragment, ILabels
+    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
+    from ..interfaces import ICellStream
+    from ..interfaces import ICallbackFunction
+    from ..checklist import Checklist
+    from ..pipeline import Pipeline
+    from ..dialect import Control
+    from ..table import IRowStream
 
 
 class TableResource(Resource):
@@ -562,9 +562,10 @@ class TableResource(Resource):
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ):
-        return validate(
+        validator = Validator()
+        return validator.validate_resource(
             self,
-            checklist,
+            checklist=checklist,
             on_row=on_row,
             limit_rows=limit_rows,
             limit_errors=limit_errors,

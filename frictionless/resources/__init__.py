@@ -6,5 +6,5 @@ from .package import PackageResource
 from .resource import ResourceResource
 from .table import TableResource
 from .text import TextResource
+from .types import *
 from .view import ViewResource
-from .traits import *
