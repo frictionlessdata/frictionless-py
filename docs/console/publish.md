@@ -10,4 +10,10 @@ With `publish` command you can publish your dataset to a data publishing platfor
 frictionless publish data/tables/*.csv --target http://ckan:5000/dataset/my-best --title "My best dataset"
 ```
 
-It will ask for an API Key to upload your metadata and data.
+It will ask for an API Key to upload your metadata and data. As a result:
+
+```yaml image
+path: ../../assets/publish.png
+width: unset
+height: unset
+```

@@ -1,5 +1,17 @@
+---
+script:
+  basepath: data
+---
+
 # File Resource
 
-```markdown remark type=danger
-This documentation page is under development
+A `file` resource is the most basic one. Actually, every data file can be maked as `file`. For example:
+
+
+```python script tabs=Python
+from frictionless.resources import FileResource
+
+resource = FileResource(path='text.txt')
+resource.infer(stats=True)
+print(resource)
 ```
