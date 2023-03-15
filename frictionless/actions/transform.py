@@ -3,6 +3,7 @@ from ..exception import FrictionlessException
 from ..platform import platform
 from ..pipeline import Pipeline, Step
 from ..resource import Resource
+from ..package import Package
 
 
 def transform(
@@ -31,6 +32,10 @@ def transform(
         pipeline = Pipeline.from_descriptor(pipeline)
     elif not pipeline:
         pipeline = Pipeline(steps=steps or [])
+
+    # Transform package
+    if isinstance(source, Package):
+        return source.transform(pipeline)
 
     # Create resource
     resource = (
