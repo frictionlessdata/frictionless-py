@@ -2,6 +2,21 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.10
+
+- Various architectural and standards-compatibility improvements (minor breaking changes):
+    - Added new Console commands:
+        - list
+        - explore
+        - query
+        - script
+        - convert
+        - publish
+    - Rebased Console commands on Rich (nice output in the Console)
+    - Fixed `extract` returning the results depends on the source type (now it's always a dictionary indexed by the resource name)
+    - Enforced type safety -- many tabular command will be marked as impossible for non-tabular resources if a type checker is used
+    - Improved `frictionless.Resource(source)` guessing abilities; if you just like to open a table resource use `frictionless.resources.TableResource(path=path)`
+
 ## v5.8
 
 - Implemented Implemented `catalog/dataset/package/resource.deference` (#1451)

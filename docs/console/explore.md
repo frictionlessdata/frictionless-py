@@ -6,12 +6,18 @@ If you started an exploration session and can't get out: press "q" on your keybo
 
 With the `explore` command you can open your dataset in [Visidata](https://www.visidata.org/) which is an amazing visual tool for working with tabular data in Console. For example try "Shift+F" for creating data histograms!
 
+## Installation
+
+```bash tabs=CLI
+pip install frictionless[visidata]
+```
+
 ## Example
 
 For example, let's expore this interesing dataset:
 
 ```bash tabs=CLI
-frictionless explore frictionless explore https://zenodo.org/record/3977957
+frictionless explore https://zenodo.org/record/3977957
 ```
 
 ```yaml image

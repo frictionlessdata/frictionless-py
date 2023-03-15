@@ -15,6 +15,12 @@ This functionality has been published in `frictionless@5.5` as a feature preview
 
 Indexing resource in Frictionless terms means loading a data table into a database. Let's explore how this feature works in different modes.
 
+## Installation
+
+```bash tabs=CLI
+pip install frictionless[sql]
+```
+
 ## Normal Mode
 
 This mode is supported for any database that is supported by `sqlalchemy`. Under the hood, Frictionless will infer Table Schema and populate the data table as it normally reads data. It means that type errors will be replaced by `null` values and in-general it guarantees to finish successfully for any data even very invalid.
