@@ -36,7 +36,7 @@ class CkanAdapter(Adapter):
 
         endpoint = f"{self.control.baseurl}/api/3/action/package_show"
         response = make_ckan_request(endpoint, **args, params=params)
-        descriptor = self.mapper["ckan_to_fric"].dataset(response["result"])
+        descriptor = self.mapper["ckan_to_fric"].dataset(response["result"])  # type: ignore
         descriptor.pop("type", None)
         descriptor.pop("sources", None)
         for res in descriptor.get("resources", []):
@@ -71,7 +71,7 @@ class CkanAdapter(Adapter):
         endpoint = f"{baseurl}/api/action/package_create"
         headers = set_headers(self)
         package_descriptor = package.to_descriptor()
-        package_data = self.mapper["fric_to_ckan"].package(package_descriptor)
+        package_data = self.mapper["fric_to_ckan"].package(package_descriptor)  # type: ignore
 
         # Assure that the package has a name
         if "name" not in package_data:
@@ -123,7 +123,7 @@ class CkanAdapter(Adapter):
         endpoint = f"{baseurl}/api/action/resource_create"
         headers = set_headers(self)
         resource_descriptor = resource.to_descriptor()
-        resource_data = self.mapper["fric_to_ckan"].resource(resource_descriptor)
+        resource_data = self.mapper["fric_to_ckan"].resource(resource_descriptor)  # type: ignore
         resource_data["package_id"] = dataset_id
         resource_filename = resource_data["url"].split("/")[-1]
 
@@ -196,7 +196,7 @@ class CkanAdapter(Adapter):
 
         for dataset in results:
             try:
-                descriptor = self.mapper["ckan_to_fric"].dataset(dataset)
+                descriptor = self.mapper["ckan_to_fric"].dataset(dataset)  # type: ignore
                 descriptor.pop("type", None)
                 descriptor.pop("sources", None)
                 for res in descriptor.get("resources", []):

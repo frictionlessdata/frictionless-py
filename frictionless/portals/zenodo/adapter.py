@@ -27,7 +27,7 @@ class ZenodoAdapter(Adapter):
     # Read
 
     def read_package(self) -> Package:
-        client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)
+        client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)  # type: ignore
         if not self.control.record:
             note = "Record is required."
             raise FrictionlessException(note)
@@ -53,7 +53,7 @@ class ZenodoAdapter(Adapter):
 
         assert self.control.base_url
         assert self.control.apikey
-        client.BASE_URL = self.control.base_url
+        client.BASE_URL = self.control.base_url  # type: ignore
         metafn = self.control.metafn
 
         if not metafn:
@@ -74,14 +74,14 @@ class ZenodoAdapter(Adapter):
             deposition_id = self.control.deposition_id
             if not deposition_id:
                 # Create a deposition resource
-                deposition_id = client.create(
+                deposition_id = client.create(  # type: ignore
                     token=self.control.apikey, base_url=self.control.base_url
                 )
             metafn = Path(metafn).expanduser()
-            client.upload_meta(
+            client.upload_meta(  # type: ignore
                 token=self.control.apikey,
                 metafn=metafn,
-                depid=deposition_id,
+                depid=deposition_id,  # type: ignore
             )
 
             # Process resources
@@ -109,21 +109,21 @@ class ZenodoAdapter(Adapter):
             package.to_json(package_path)
 
             # Upload package and resources
-            client.upload_data(
+            client.upload_data(  # type: ignore
                 token=self.control.apikey,
                 datafn=Path(package_path).expanduser(),
-                depid=deposition_id,
+                depid=deposition_id,  # type: ignore
                 base_url=self.control.base_url,
             )
             for resource_path in resources:
                 resource_path = Path(resource_path).expanduser()
-                client.upload_data(
+                client.upload_data(  # type: ignore
                     token=self.control.apikey,
                     datafn=resource_path,
-                    depid=deposition_id,
+                    depid=deposition_id,  # type: ignore
                     base_url=self.control.base_url,
                 )
-            return deposition_id
+            return deposition_id  # type: ignore
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
@@ -146,7 +146,7 @@ class ZenodoAdapter(Adapter):
 
         # DOI
         assert self.control.formats
-        client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)
+        client = platform.pyzenodo3.Zenodo(api_key=self.control.apikey)  # type: ignore
         if self.control.doi:
             dataset = client.find_record_by_doi(self.control.doi)
             name = self.control.name or dataset.data["metadata"]["title"]
@@ -260,7 +260,7 @@ def generate_metadata(
         "access_right": "open",
     }
     if package.licenses:
-        meta_data["metadata"]["creators"] = package.licenses[0].get("name")
+        meta_data["metadata"]["creators"] = package.licenses[0].get("name")  # type: ignore
 
     creators = []
     for contributor in package.contributors:
@@ -275,6 +275,6 @@ def generate_metadata(
         keywords.append("frictionlessdata")
 
     if creators:
-        meta_data["metadata"]["creators"] = creators
-    meta_data["metadata"]["keywords"] = keywords
+        meta_data["metadata"]["creators"] = creators  # type: ignore
+    meta_data["metadata"]["keywords"] = keywords  # type: ignore
     return helpers.remove_non_values(meta_data)
