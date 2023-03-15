@@ -33,7 +33,15 @@ def extract(
         extracted rows indexed by resource name
     """
     name = name or resource_name
-    resource = Resource(source, datatype=type, **options)
+
+    # Create resource
+    resource = (
+        source
+        if isinstance(source, Resource)
+        else Resource(source, datatype=type, **options)
+    )
+
+    # Extract resource
     if not isinstance(resource, platform.frictionless_resources.Extractable):
         note = f'Resource with data type "{resource.datatype}" is not extractable'
         raise FrictionlessException(note)

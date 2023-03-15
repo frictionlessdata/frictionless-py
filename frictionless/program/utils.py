@@ -207,7 +207,7 @@ def index_resource(
     qsv_path: Optional[str] = None,
     debug: bool = False,
 ) -> List[str]:
-    # Ensure trait
+    # Ensure type
     if not isinstance(resource, platform.frictionless_resources.Indexable):
         note = f'Resource with data type "{resource.datatype}" is not indexable'
         raise FrictionlessException(note)

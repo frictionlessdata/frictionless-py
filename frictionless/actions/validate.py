@@ -48,7 +48,12 @@ def validate(
 
     # Create resource
     try:
-        resource = Resource(source, datatype=type, **options)
+        # Create resource
+        resource = (
+            source
+            if isinstance(source, Resource)
+            else Resource(source, datatype=type, **options)
+        )
     except FrictionlessException as exception:
         errors = exception.reasons if exception.reasons else [exception.error]
         return Report.from_validation(errors=errors)

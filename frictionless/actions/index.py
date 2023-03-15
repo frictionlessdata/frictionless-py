@@ -23,7 +23,15 @@ def index(
     **options,
 ) -> List[str]:
     """Index data into a database"""
-    resource = Resource(source, name=name, datatype=type, **options)
+
+    # Create resource
+    resource = (
+        source
+        if isinstance(source, Resource)
+        else Resource(source, datatype=type, **options)
+    )
+
+    # Index resource
     if not isinstance(resource, platform.frictionless_resources.Indexable):
         note = f'Resource with data type "{resource.datatype}" is not indexable'
         raise FrictionlessException(note)

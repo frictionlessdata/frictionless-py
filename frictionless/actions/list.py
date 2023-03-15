@@ -19,6 +19,13 @@ def list(
     Returns:
         data resources
     """
-    # List resources
-    resource = Resource(source, name=name, datatype=type, **options)
+
+    # Create resource
+    resource = (
+        source
+        if isinstance(source, Resource)
+        else Resource(source, datatype=type, **options)
+    )
+
+    # List resource
     return resource.list(name=name)

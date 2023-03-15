@@ -152,7 +152,7 @@ def program_extract(
             detector=detector_obj,
         )
 
-        # Ensure trait
+        # Ensure type
         if not isinstance(resource, platform.frictionless_resources.Extractable):
             note = f'Resource with data type "{resource.datatype}" is not extractable'
             raise FrictionlessException(note)

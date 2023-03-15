@@ -102,10 +102,10 @@ def program_convert(
         # Get resource
         # TODO: rework; don't use resources[0]
         resources = resource.list(name=name)
-        res = resources[0]
+        resource = resources[0]
 
-        # Ensure trait
-        if not isinstance(res, platform.frictionless_resources.Convertible):
+        # Ensure type
+        if not isinstance(resource, platform.frictionless_resources.Convertible):
             note = f'Resource with data type "{resource.datatype}" is not convertible'
             raise FrictionlessException(note)
 
@@ -114,7 +114,7 @@ def program_convert(
         # TODO: replace dummy progress bar a normal one
         for stage in track(["start", "end"], description="Converting..."):
             if stage == "end":
-                res.convert(
+                resource.convert(
                     to_path=to_path, to_format=to_format, to_dialect=to_dialect_obj
                 )
 

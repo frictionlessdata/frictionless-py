@@ -20,7 +20,20 @@ def convert(
     **options,
 ) -> str:
     """Convert data source"""
-    resource = Resource(source, name=name, datatype=type, **options)
+
+    # Create resource
+    resource = (
+        source
+        if isinstance(source, Resource)
+        else Resource(source, datatype=type, **options)
+    )
+
+    # Get resource
+    # TODO: rework; don't use resources[0]
+    resources = resource.list(name=name)
+    resource = resources[0]
+
+    # Convert resource
     if not isinstance(resource, platform.frictionless_resources.Convertible):
         note = f'Resource with data type "{resource.datatype}" is not convertible'
         raise FrictionlessException(note)
