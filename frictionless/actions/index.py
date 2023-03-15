@@ -5,7 +5,7 @@ from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:
-    from ..formats.sql import IOnRow, IOnProgress
+    from ..indexer import IOnRow, IOnProgress
 
 
 def index(

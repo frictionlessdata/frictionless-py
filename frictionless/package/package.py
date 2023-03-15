@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ..resources import TableResource
     from ..interfaces import IFilterFunction, IProcessFunction
     from ..interfaces import IDescriptor, ITabularData
-    from ..formats.sql import IOnRow, IOnProgress
+    from ..indexer import IOnRow, IOnProgress
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Dataset

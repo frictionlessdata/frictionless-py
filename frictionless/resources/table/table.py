@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
 from ...exception import FrictionlessException
 from ...table import Header, Lookup, Row
 from ...analyzer import Analyzer
+from ...indexer import Indexer
 from ...dialect import Dialect
 from ...platform import platform
 from ...resource import Resource
@@ -18,7 +19,7 @@ from ... import errors
 
 if TYPE_CHECKING:
     from ...system import Loader, Parser
-    from ...formats.sql import IOnRow, IOnProgress
+    from ...indexer import IOnRow, IOnProgress
     from ...interfaces import IBuffer, ISample, IFragment, ILabels
     from ...interfaces import IFilterFunction, IProcessFunction, ITabularData
     from ...interfaces import ICellStream
@@ -530,7 +531,7 @@ class TableResource(Resource):
         qsv_path: Optional[str] = None,
     ) -> List[str]:
         name = name or self.name
-        indexer = platform.frictionless_formats.sql.SqlIndexer(
+        indexer = Indexer(
             resource=self,
             database_url=database_url,
             table_name=name,

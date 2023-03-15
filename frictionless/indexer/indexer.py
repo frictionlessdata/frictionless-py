@@ -3,20 +3,19 @@ import attrs
 import subprocess
 from subprocess import PIPE
 from typing import TYPE_CHECKING, Optional
-from ...exception import FrictionlessException
-from ...platform import platform
-from ..qsv import QsvAdapter
+from ..exception import FrictionlessException
+from ..platform import platform
 from .interfaces import IOnProgress, IOnRow
-from .adapter import SqlAdapter
 from . import settings
 
 if TYPE_CHECKING:
-    from ...resources import TableResource
-    from ...table import Row
+    from ..formats.sql import SqlAdapter
+    from ..resources import TableResource
+    from ..table import Row
 
 
 @attrs.define(kw_only=True)
-class SqlIndexer:
+class Indexer:
     resource: TableResource
     database_url: str
     table_name: str
@@ -28,7 +27,9 @@ class SqlIndexer:
     adapter: SqlAdapter = attrs.field(init=False)
 
     def __attrs_post_init__(self):
-        self.adapter = SqlAdapter(platform.sqlalchemy.create_engine(self.database_url))
+        self.adapter = platform.frictionless_formats.SqlAdapter(
+            platform.sqlalchemy.create_engine(self.database_url)
+        )
 
     # Index
 
@@ -51,7 +52,7 @@ class SqlIndexer:
 
     def prepare_resource(self):
         if self.qsv_path:
-            adapter = QsvAdapter(self.qsv_path)
+            adapter = platform.frictionless_formats.QsvAdapter(self.qsv_path)
             schema = adapter.read_schema(self.resource)
             self.resource.schema = schema
 
