@@ -1,5 +1,9 @@
 # Query
 
+```markdown remark type=info
+Wit this command Frictionless will drop all invalid data like type errors in cells. Use `validate` if needed.
+```
+
 With `query` command you can explore tabular files within a Sqlite database. For example:
 
 ```bash

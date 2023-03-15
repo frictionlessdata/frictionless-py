@@ -5,6 +5,10 @@ script:
 
 # Index
 
+```markdown remark type=info
+Wit this command Frictionless will drop all invalid data like type errors in cells. Use `validate` if needed.
+```
+
 ```markdown remark type=warning
 This functionality has been published in `frictionless@5.5` as a feature preview and request for comments. The implementation is raw and doesn't cover many edge cases.
 ```

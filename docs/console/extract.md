@@ -5,6 +5,10 @@ script:
 
 # Extract
 
+```markdown remark type=info
+Wit this command Frictionless will drop all invalid data like type errors in cells. Use `validate` if needed.
+```
+
 With Frtictionless `extract` command you can extract data from a file or a dataset.
 
 ## Normal Mode
