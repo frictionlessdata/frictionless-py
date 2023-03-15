@@ -12,9 +12,14 @@ The `frictionless` binary requires providing a command like `describe` or `valid
 
 ```bash tabs=CLI
 frictionless describe # to describe your data
+frictionless explore # to explore your data
 frictionless extract # to extract your data
+frictionless index # to index your data
+frictionless list # to list your data
+frictionless publish # to publish your data
+frictionless query # to query your data
+frictionless script # to script your data
 frictionless validate # to validate your data
-frictionless transform # to transform your data
 frictionless --help # to get list of the command
 frictionless --version # to get the version
 ```

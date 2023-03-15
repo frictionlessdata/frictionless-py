@@ -154,7 +154,7 @@ This mode is supported for any database that is supported by `sqlalchemy`. Under
 
 ```bash script tabs=CLI
 frictionless index table.csv --database sqlite:///index/project.db --name table
-frictionless extract sqlite:///index/project.db --name table --json
+frictionless extract sqlite:///index/project.db --table table --json
 ```
 
 ```python script tabs=Python
@@ -176,7 +176,7 @@ Fast mode is supported for SQLite and Postgresql databases. It will infer Table 
 
 ```bash script tabs=CLI
 frictionless index table.csv --database sqlite:///index/project.db --name table --fast
-frictionless extract sqlite:///index/project.db --name table --json
+frictionless extract sqlite:///index/project.db --table table --json
 ```
 
 ```python script tabs=Python
