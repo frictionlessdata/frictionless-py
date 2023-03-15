@@ -29,7 +29,7 @@ csv:
   delimiter: ';'
 ```
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import Dialect, Control, formats
 
 dialect = Dialect(header=True, header_rows=[2, 3], comment_char='#')
@@ -44,7 +44,7 @@ header: true
 delimiter: ';'
 ```
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import Dialect, Control, formats
 
 dialect = Dialect.from_descriptor({"header": True, "delimiter": ';'})
@@ -68,7 +68,7 @@ skipErrors:
   - duplicate-label
 ```
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import Checklist, checks
 
 checklist = Checklist(
@@ -106,7 +106,7 @@ steps:
     value: v5
 ```
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import Pipeline, steps
 
 pipeline = Pipeline(
@@ -175,7 +175,7 @@ frictionless transform resource.yaml  # will use the pipeline above
 
 There are minor changes in the `stats` property. Now it uses named keys to simplify hash distinction (md5/sha256 are calculated by default and it's not possible to change for performance reasons as it was in v4):
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import describe
 
 resource = describe('table.csv', stats=True)
@@ -224,7 +224,7 @@ Read an article about [Catalog Class](../../docs/framework/catalog.html) for mor
 
 Detector is now a metadata class (it wasn't in v4) so it can be saved and shared as other metadata classes:
 
-```python script tabs=Python
+```python tabs=Python
 from frictionless import Detector
 
 detector = Detector(sample_size=1000)
@@ -249,7 +249,7 @@ Read an article about [Inquiry Class](../../docs/framework/inquiry.html) for mor
 
 The Report concept has been significantly simplified by removing the `resource` property from `reportTask`. It's been replaced by `name/type/place/labels` properties. Also `report.time` is now `report.stats.seconds`. The `report/reportTask.warnings: List[str]` have been added to provide non-error information like reached limits:
 
-```bash script tabs=CLI output=yaml
+```bash tabs=CLI output=yaml
 frictionless validate table.csv --yaml
 ```
 

@@ -46,7 +46,7 @@ class row_slice(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         if self.head:
             resource.data = table.head(self.head)  # type: ignore
         elif self.tail:

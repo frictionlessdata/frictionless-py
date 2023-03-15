@@ -17,5 +17,5 @@ class table_print(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         print(table.look(vrepr=str, style="simple"))  # type: ignore

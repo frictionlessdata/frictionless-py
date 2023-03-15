@@ -11,6 +11,7 @@ def test_package_resources():
     assert package.name == "name"
     assert package.basepath == "data"
     assert package.to_descriptor() == {
+        "$frictionless": "package/v2",
         "name": "name",
         "resources": [
             {
@@ -28,7 +29,7 @@ def test_package_resources():
 def test_package_resources_inline():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     package = Package({"resources": [{"name": "name", "data": data}]})
-    resource = package.get_resource("name")
+    resource = package.get_table_resource("name")
     assert len(package.resources) == 1
     assert resource.path is None
     assert resource.data == data
@@ -87,6 +88,7 @@ def test_package_update_resource():
     resource = package.get_resource("name")
     resource.name = "newname"
     assert package.to_descriptor() == {
+        "$frictionless": "package/v2",
         "resources": [
             {
                 "name": "newname",
@@ -94,7 +96,7 @@ def test_package_update_resource():
                 "data": data,
                 "format": "inline",
             }
-        ]
+        ],
     }
 
 
@@ -103,7 +105,7 @@ def test_package_update_resource():
 
 def test_package_resources_respect_layout_set_after_creation_issue_503():
     package = Package(resources=[Resource(path="data/table.csv")])
-    resource = package.get_resource("table")
+    resource = package.get_table_resource("table")
     resource.dialect = Dialect(comment_rows=[3])
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
     assert resource.header == ["id", "name"]

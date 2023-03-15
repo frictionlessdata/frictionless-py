@@ -1,7 +1,7 @@
 from __future__ import annotations
 import tempfile
 from .control import MultipartControl
-from ...resource import Resource
+from ...resources import FileResource
 from ...system import Loader
 from ... import helpers
 
@@ -103,7 +103,7 @@ class MultipartByteStream:
 
     def read_line_stream(self):
         for number, path in enumerate(self.__paths, start=1):
-            with Resource(path=path).open(as_file=True) as resource:
+            with FileResource(path=path) as resource:
                 for line_number, line in enumerate(resource.byte_stream, start=1):
                     if not self.__headless and number > 1 and line_number == 1:
                         continue

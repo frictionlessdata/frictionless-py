@@ -1,103 +1,50 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any, Union
-from ..detector import Detector
-from ..resource import Resource
-from ..package import Package
+from typing import TYPE_CHECKING, Optional, Any
 from ..exception import FrictionlessException
-from .. import resources
-from .. import helpers
+from ..platform import platform
+from ..resource import Resource
 
 if TYPE_CHECKING:
-    from ..schema import Schema
-    from ..dialect import Dialect
-    from ..interfaces import IDescriptor, IFilterFunction, IProcessFunction
+    from ..interfaces import IFilterFunction, IProcessFunction
 
 
 def extract(
     source: Optional[Any] = None,
     *,
+    name: Optional[str] = None,
     type: Optional[str] = None,
-    dialect: Optional[Union[Dialect, str]] = None,
-    schema: Optional[Union[Schema, str]] = None,
-    limit_rows: Optional[int] = None,
-    process: Optional[IProcessFunction] = None,
+    # Extract
     filter: Optional[IFilterFunction] = None,
-    stream: bool = False,
-    descriptor: Optional[Union[IDescriptor, str]] = None,
+    process: Optional[IProcessFunction] = None,
+    limit_rows: Optional[int] = None,
+    # Deprecated
     resource_name: Optional[str] = None,
     **options,
 ):
-    """Extract resource rows
+    """Extract rows
 
     Parameters:
-        source: data source
-        type: source type - package of resource (default: infer)
-        dialect: Table Dialect for the resource
-        schema: Table Schema for the resource
-        limit_rows: maximum amount of rows to be returned
-        process: a row processor function
-        filter: a row filter function
-        stream: return a row stream(s) instead of loading into memory
-        descriptor: provide a descriptor explicitely instead of guessing from source
-        resource_name: extract from a resource by name if a package provided
-        **options: options for the underlaying classes
+        name: extract only resource having this name
+        filter: row filter function
+        process: row processor function
+        limit_rows: limit amount of rows to this number
 
     Returns:
-        rows in a form depending on the source type and the options
+        extracted rows indexed by resource name
     """
+    name = name or resource_name
 
-    # Detect type
-    if resource_name:
-        type = "resource"
-    if not type:
-        type = getattr(source, "metadata_type", None)
-    if not type:
-        type = Detector.detect_metadata_type(source)
-    if not type:
-        type = "resource"
-        if helpers.is_expandable_source(source):
-            type = "package"
+    # Create resource
+    resource = (
+        source
+        if isinstance(source, Resource)
+        else Resource(source, datatype=type, **options)
+    )
 
     # Extract resource
-    if type == "resource":
-        if resource_name:
-            package = source
-            if descriptor:
-                package = Package.from_descriptor(descriptor, **options)
-            elif not isinstance(package, Package):
-                package = Package.from_options(source, **options)
-            resource = package.get_resource(resource_name)
-        else:
-            resource = source
-            if descriptor:
-                resource = resources.TableResource.from_descriptor(descriptor, **options)
-            elif not isinstance(resource, Resource):
-                resource = resources.TableResource.from_options(
-                    source,
-                    dialect=dialect,
-                    schema=schema,
-                    **options,
-                )
-        return resource.extract(
-            limit_rows=limit_rows,
-            process=process,
-            filter=filter,
-            stream=stream,
-        )
-
-    # Extract package
-    if type == "package":
-        package = source
-        if descriptor:
-            package = Package.from_descriptor(descriptor, **options)
-        elif not isinstance(package, Package):
-            package = Package.from_options(source, **options)
-        return package.extract(
-            limit_rows=limit_rows,
-            process=process,
-            filter=filter,
-            stream=stream,
-        )
-
-    # Not supported
-    raise FrictionlessException(f"Not supported extract type: {type}")
+    if not isinstance(resource, platform.frictionless_resources.Extractable):
+        note = f'Resource with data type "{resource.datatype}" is not extractable'
+        raise FrictionlessException(note)
+    return resource.extract(
+        name=name, filter=filter, process=process, limit_rows=limit_rows
+    )

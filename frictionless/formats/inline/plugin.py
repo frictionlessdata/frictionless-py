@@ -1,6 +1,7 @@
 from __future__ import annotations
 import typing
 from typing import TYPE_CHECKING
+from ...detector import Detector
 from ...system import Plugin
 from .control import InlineControl
 from .parser import InlineParser
@@ -25,6 +26,14 @@ class InlinePlugin(Plugin):
                 if callable(resource.data) or isinstance(resource.data, types):
                     resource.format = resource.format or "inline"
                     resource.datatype = resource.datatype or "table"
+                elif isinstance(resource.data, dict):
+                    resource.format = resource.format or "inline"
+                    resource.datatype = (
+                        resource.datatype
+                        or Detector.detect_metadata_type(resource.data)
+                        or "json"
+                    )
+        # TODO: remove
         elif resource.format == "inline":
             resource.data = []
 

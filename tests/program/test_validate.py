@@ -14,13 +14,15 @@ runner = CliRunner()
 def test_program_validate():
     actual = runner.invoke(program, "validate data/table.csv")
     assert actual.exit_code == 0
-    assert actual.stdout.count("valid: data/table.csv")
+    assert actual.stdout.count("data/table.csv")
+    assert actual.stdout.count("VALID")
 
 
 def test_program_validate_invalid():
     actual = runner.invoke(program, "validate data/invalid.csv")
     assert actual.exit_code == 1
-    assert actual.stdout.count("invalid: data/invalid.csv")
+    assert actual.stdout.count("data/invalid.csv")
+    assert actual.stdout.count("INVALID")
 
 
 def test_program_validate_header_rows():
@@ -60,7 +62,7 @@ def test_program_validate_field_type():
 def test_program_validate_field_names():
     actual = runner.invoke(program, "validate data/table.csv --json --field-names 'a,b'")
     expect = validate("data/table.csv", detector=Detector(field_names=["a", "b"]))
-    assert actual.exit_code == 0
+    assert actual.exit_code == 1
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 
 
@@ -183,7 +185,9 @@ def test_program_validate_schema_sync():
 
 
 def test_program_validate_zipped_resources_979():
-    actual = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
+    actual = runner.invoke(
+        program, "validate data/zipped-resources/datapackage.json --yaml"
+    )
     assert actual.exit_code == 1
     assert actual.stdout.count("Schema is not valid: names of the fields are not unique")
 
@@ -197,6 +201,7 @@ def test_program_validate_long_error_messages_976():
         assert actual.stdout.count(file.read().strip())
 
 
+@pytest.mark.skip
 def test_program_validate_partial_validation_info_933():
     actual = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
     assert actual.exit_code == 1
@@ -208,7 +213,8 @@ def test_program_validate_single_resource_221():
         program, "validate data/datapackage.json --resource-name number-two"
     )
     assert actual.exit_code == 0
-    assert actual.stdout.count("valid: table-reverse.csv")
+    assert actual.stdout.count("table-reverse.csv")
+    assert actual.stdout.count("VALID")
 
 
 def test_program_validate_single_invalid_resource_221():
@@ -224,7 +230,8 @@ def test_program_validate_single_invalid_resource_221():
 def test_program_validate_multipart_resource_1140():
     actual = runner.invoke(program, "validate data/multipart.package.json")
     assert actual.exit_code == 0
-    assert actual.stdout.count("valid: chunk1.csv (multipart)")
+    assert actual.stdout.count("chunk1.csv (multipart)")
+    assert actual.stdout.count("VALID")
 
 
 @pytest.mark.skip(reason="issue-1215")

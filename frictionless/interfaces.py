@@ -23,6 +23,7 @@ ISample = List[List[Any]]
 IFragment = List[List[Any]]
 ILabels = List[str]
 IOnerror = Literal["ignore", "warn", "raise"]
+ITabularData = Dict[str, List[dict]]
 
 
 # Functions
@@ -44,7 +45,7 @@ class IFilterFunction(Protocol):
 
 
 class IProcessFunction(Protocol):
-    def __call__(self, row: Row) -> Iterable[Any]:
+    def __call__(self, row: Row) -> Dict[str, Any]:
         ...
 
 

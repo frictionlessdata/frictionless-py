@@ -9,6 +9,7 @@ from .. import errors
 if TYPE_CHECKING:
     from .loader import Loader
     from ..resource import Resource
+    from ..resources import TableResource
     from ..interfaces import ICellStream, ISample
 
 
@@ -165,7 +166,7 @@ class Parser:
 
     # Write
 
-    def write_row_stream(self, source: Resource) -> None:
+    def write_row_stream(self, source: TableResource) -> None:
         """Write row stream from the source resource
 
         Parameters:

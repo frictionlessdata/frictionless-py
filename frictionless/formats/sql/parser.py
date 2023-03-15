@@ -7,7 +7,7 @@ from .control import SqlControl
 from .adapter import SqlAdapter
 
 if TYPE_CHECKING:
-    from ...resource import Resource
+    from ...resources import TableResource
 
 
 class SqlParser(Parser):
@@ -40,7 +40,7 @@ class SqlParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source: Resource):
+    def write_row_stream(self, source: TableResource):
         assert self.resource.normpath
         control = SqlControl.from_dialect(self.resource.dialect)
         if not control.table:

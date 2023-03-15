@@ -3,7 +3,8 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Package, Resource, Dialect, platform
+from frictionless import Package, Dialect, platform
+from frictionless.resources import TableResource
 
 
 # Read
@@ -23,7 +24,7 @@ def test_s3_loader(bucket_name):
     )
 
     # Read
-    with Resource("s3://%s/table.csv" % bucket_name) as resource:
+    with TableResource(path="s3://%s/table.csv" % bucket_name) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -41,11 +42,11 @@ def test_s3_loader_write(bucket_name):
     client.create_bucket(Bucket=bucket_name, ACL="public-read")  # type: ignore
 
     # Write
-    with Resource("data/table.csv") as resource:
-        resource.write(Resource("s3://%s/table.csv" % bucket_name))
+    with TableResource(path="data/table.csv") as resource:
+        resource.write(TableResource(path="s3://%s/table.csv" % bucket_name))
 
     # Read
-    with Resource("s3://%s/table.csv" % bucket_name) as resource:
+    with TableResource(path="s3://%s/table.csv" % bucket_name) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -70,7 +71,9 @@ def test_s3_loader_big_file(bucket_name):
 
     # Read
     dialect = Dialect(header=False)
-    with Resource("s3://%s/table1.csv" % bucket_name, dialect=dialect) as resource:
+    with TableResource(
+        path="s3://%s/table1.csv" % bucket_name, dialect=dialect
+    ) as resource:
         assert resource.read_rows()
         assert resource.stats.md5 == "78ea269458be04a0e02816c56fc684ef"
         assert (
@@ -127,7 +130,7 @@ def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
     )
 
     # Read
-    with Resource("s3://%s/table with space.csv" % bucket_name) as resource:
+    with TableResource(path="s3://%s/table with space.csv" % bucket_name) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

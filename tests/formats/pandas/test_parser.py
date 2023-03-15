@@ -5,7 +5,8 @@ from decimal import Decimal
 from dateutil.tz import tzoffset, tzutc
 from datetime import datetime, time
 from pandas.core.dtypes.common import is_datetime64_ns_dtype
-from frictionless import Package, Resource, Schema, validate
+from frictionless import Package, Schema, validate
+from frictionless.resources import TableResource
 
 
 # Read
@@ -13,7 +14,7 @@ from frictionless import Package, Resource, Schema, validate
 
 def test_pandas_parser():
     dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
-    with Resource(dataframe) as resource:
+    with TableResource(data=dataframe) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -23,7 +24,7 @@ def test_pandas_parser():
 
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
     df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])  # type: ignore
-    with Resource(df) as resource:
+    with TableResource(data=df) as resource:
         # Assert meta
         assert resource.schema.to_descriptor() == {
             "fields": [
@@ -59,7 +60,7 @@ def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
 
 
 def test_pandas_parser_write():
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     target = source.write(format="pandas")
     assert target.data.to_dict("records") == [  # type: ignore
         {"id": 1, "name": "english"},
@@ -69,8 +70,8 @@ def test_pandas_parser_write():
 
 def test_pandas_parser_nan_in_integer_resource_column():
     # see issue 1109
-    res = Resource(
-        [
+    res = TableResource(
+        data=[
             ["int", "number", "string"],
             ["1", "2.3", "string"],
             ["", "4.3", "string"],
@@ -83,13 +84,13 @@ def test_pandas_parser_nan_in_integer_resource_column():
 
 def test_pandas_parser_nan_in_integer_csv_column():
     # see issue 1109
-    res = Resource("data/issue-1109.csv")
+    res = TableResource(path="data/issue-1109.csv")
     df = res.to_pandas()
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
 
 def test_pandas_parser_write_types():
-    source = Package("data/storage/types.json").get_resource("types")
+    source = Package("data/storage/types.json").get_table_resource("types")
     target = source.write(format="pandas")
     with target:
         # Assert schema
@@ -138,7 +139,7 @@ def test_pandas_parser_write_types():
 
 
 def test_pandas_write_constraints():
-    source = Package("data/storage/constraints.json").get_resource("constraints")
+    source = Package("data/storage/constraints.json").get_table_resource("constraints")
     target = source.write(format="pandas")
     with target:
         # Assert schema
@@ -169,7 +170,7 @@ def test_pandas_write_constraints():
 
 
 def test_pandas_parser_write_timezone():
-    source = Resource("data/timezone.csv")
+    source = TableResource(path="data/timezone.csv")
     target = source.write(format="pandas")
     with target:
         # Assert schema
@@ -205,8 +206,8 @@ def test_pandas_parser_write_timezone():
 
 
 def test_pandas_parser_write_bug_1100():
-    datapackage = Package("data/issue-1100.package.json")
-    target = datapackage.resources[0].to_pandas()
+    source = Package("data/issue-1100.package.json").get_table_resource("issue1100")
+    target = source.to_pandas()
     assert target.to_dict("records") == [  # type: ignore
         {"timestamp": pd.Timestamp(2022, 5, 25, 10, 39, 15)},
         {"timestamp": pd.Timestamp(2022, 5, 25, 10, 39, 15)},
@@ -214,8 +215,8 @@ def test_pandas_parser_write_bug_1100():
 
 
 def test_pandas_parser_write_bug_1105():
-    datapackage = Package("data/issue-1105.package.json")
-    target = datapackage.resources[0].to_pandas()
+    source = Package("data/issue-1105.package.json").get_table_resource("issue1105")
+    target = source.to_pandas()
     assert target.to_dict() == {  # type: ignore
         "id": {
             pd.Timestamp("2020-01-01 12:00:00+0000", tz="UTC"): 1,
@@ -237,7 +238,7 @@ def test_pandas_parser_nan_with_field_type_information_1143():
             ]
         },
     }
-    res = Resource(descriptor)
+    res = TableResource.from_descriptor(descriptor)
     df = res.to_pandas()
     assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
 
@@ -255,7 +256,7 @@ def test_pandas_parser_nan_without_field_type_information_1143():
             ]
         },
     }
-    res = Resource(descriptor)
+    res = TableResource.from_descriptor(descriptor)
     df = res.to_pandas()
     assert all(df.dtypes.values == pd.array([object, object, object]))  # type: ignore
 
@@ -275,7 +276,7 @@ def test_pandas_parser_preserve_datetime_field_type_1138():
             ["2", "2020-01-01 15:00:00"],
         ],
     }
-    resource = Resource(descriptor)
+    resource = TableResource.from_descriptor(descriptor)
     df = resource.to_pandas()
     assert is_datetime64_ns_dtype(df.dtypes.values[1])  # type: ignore
 
@@ -302,26 +303,23 @@ def test_pandas_parser_test_issue_sample_data_1138():
             ]
         },
     }
-    resource = Resource(descriptor)
+    resource = TableResource.from_descriptor(descriptor)
     df = resource.to_pandas()
     assert is_datetime64_ns_dtype(df.dtypes.values[0])  # type: ignore
 
 
 def test_validate_package_with_in_code_resources_1245():
     datapackage = Package(name="package", basepath="")
-
     dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
-
     schema = {
         "fields": [
             {"name": "id", "title": "ID", "type": "number"},
             {"name": "name", "title": "Name", "type": "string"},
         ]
     }
-    resource = Resource(dataframe, name="resource", schema=Schema.from_descriptor(schema))
-
+    resource = TableResource(
+        data=dataframe, name="resource", schema=Schema.from_descriptor(schema)
+    )
     datapackage.add_resource(resource)
-
     report = validate(datapackage)
-
     assert len(report.errors) == 0

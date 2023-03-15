@@ -29,7 +29,7 @@ class table_recast(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         resource.schema = Schema()
         resource.data = table.recast(  # type: ignore
             key=self.field_name,

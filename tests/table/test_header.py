@@ -1,11 +1,12 @@
-from frictionless import Schema, Resource, fields
+from frictionless import Schema, fields
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_basic():
-    with Resource(data=[["field1", "field2", "field3"], [1, 2, 3]]) as resource:
+    with TableResource(data=[["field1", "field2", "field3"], [1, 2, 3]]) as resource:
         header = resource.header
         assert header == ["field1", "field2", "field3"]
         assert header.labels == ["field1", "field2", "field3"]
@@ -17,7 +18,7 @@ def test_basic():
 
 def test_extra_label():
     schema = Schema(fields=[fields.AnyField(name="id")])
-    with Resource(path="data/table.csv", schema=schema) as resource:
+    with TableResource(path="data/table.csv", schema=schema) as resource:
         header = resource.header
         assert header == ["id"]
         assert header.labels == ["id", "name"]
@@ -32,7 +33,7 @@ def test_missing_label():
             fields.AnyField(name="extra"),
         ]
     )
-    with Resource(path="data/table.csv", schema=schema) as resource:
+    with TableResource(path="data/table.csv", schema=schema) as resource:
         header = resource.header
         assert header == ["id", "name", "extra"]
         assert header.labels == ["id", "name"]

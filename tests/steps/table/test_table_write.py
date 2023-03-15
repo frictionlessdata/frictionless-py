@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, Pipeline, steps, resources
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
@@ -10,7 +11,7 @@ def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
     # Write
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value=100),
@@ -20,7 +21,7 @@ def test_step_table_write(tmpdir):
     source.transform(pipeline)
 
     # Read
-    resource = resources.TableResource(path=path)
+    resource = TableResource(path=path)
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

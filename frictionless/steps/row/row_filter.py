@@ -32,7 +32,7 @@ class row_filter(Step):
 
     def transform_resource(self, resource):
         function = self.function
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         if self.formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes

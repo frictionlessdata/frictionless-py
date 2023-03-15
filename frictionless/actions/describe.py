@@ -1,52 +1,29 @@
-from typing import Any, Optional
-from ..dialect import Dialect
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any, Optional
 from ..resource import Resource
-from ..package import Package
-from ..schema import Schema
-from ..exception import FrictionlessException
-from .. import helpers
+
+if TYPE_CHECKING:
+    from ..metadata import Metadata
 
 
 def describe(
     source: Optional[Any] = None,
     *,
+    name: Optional[str] = None,
     type: Optional[str] = None,
     stats: bool = False,
     **options,
-):
+) -> Metadata:
     """Describe the data source
 
     Parameters:
-        source (any): data source
-        type (str): source type - `schema`, `resource` or `package` (default: infer)
-        stats? (bool): if `True` infer resource's stats
-        **options (dict): options for the underlying describe function
+        source: data source
+        name: resoucrce name
+        type: data type: "package", "resource", "dialect", or "schema"
+        stats: if `True` infer resource's stats
+        **options: Resource constructor options
 
     Returns:
         Metadata: described metadata e.g. a Table Schema
     """
-
-    # Detect type
-    if not type:
-        type = "resource"
-        if helpers.is_expandable_source(source):
-            type = "package"
-
-    # Describe resource
-    if type == "resource":
-        return Resource.describe(source, stats=stats, **options)
-
-    # Describe package
-    if type == "package":
-        return Package.describe(source, stats=stats, **options)
-
-    # Describe dialect
-    if type == "dialect":
-        return Dialect.describe(source, **options)
-
-    # Describe schema
-    if type == "schema":
-        return Schema.describe(source, **options)
-
-    # Not supported
-    raise FrictionlessException(f"Not supported describe type: {type}")
+    return Resource.describe(source, name=name, type=type, stats=stats, **options)

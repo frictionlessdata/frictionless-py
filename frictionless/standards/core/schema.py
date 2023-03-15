@@ -29,6 +29,7 @@ class IAnyField(IField, total=False):
 
 class IArrayField(IField, total=False):
     type: Required[Literal["array"]]
+    # support json/csv format
     arrayItem: Dict
 
 
@@ -61,11 +62,14 @@ class IGeopointField(IField, total=False):
 class IIntegerField(IField, total=False):
     type: Required[Literal["integer"]]
     bareNumber: bool
+    groupChar: str
 
 
 class INumberField(IField, total=False):
     type: Required[Literal["number"]]
     bareNumber: bool
+    groupChar: str
+    decimalChar: str
 
 
 class IObjectField(IField, total=False):

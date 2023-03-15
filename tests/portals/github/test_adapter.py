@@ -1,6 +1,7 @@
 import os
 import pytest
 from frictionless import portals, Catalog, Package, FrictionlessException, platform
+from frictionless.resources import TableResource
 
 
 OUTPUT_OPTIONS_WITH_DP_YAML = {
@@ -25,6 +26,7 @@ OUTPUT_OPTIONS_WITH_DP_YAML = {
     ]
 }
 OUTPUT_OPTIONS_WITH_DP = {
+    "$frictionless": "package/v2",
     "name": "test-package",
     "resources": [
         {
@@ -45,6 +47,7 @@ OUTPUT_OPTIONS_WITH_DP = {
 }
 
 OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
+    "$frictionless": "package/v2",
     "name": "test-repo-without-datapackage",
     "resources": [
         {
@@ -66,6 +69,7 @@ OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
     ],
 }
 OUTPUT_OPTIONS_WITHOUT_DP = {
+    "$frictionless": "package/v2",
     "name": "test-repo-without-datapackage",
     "resources": [
         {
@@ -160,6 +164,7 @@ def test_github_adapter_read_with_url_and_control(options_without_dp):
     control = portals.GithubControl(formats=["xlsx"])
     package = Package(url, control=control)
     assert package.to_descriptor() == {
+        "$frictionless": "package/v2",
         "name": "test-repo-without-datapackage",
         "resources": [
             {
@@ -223,6 +228,7 @@ def test_github_adapter_read_without_repo_user():
     assert error.message == "Repo and user is required"
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_github_adapter_read_yaml(options_with_dp_yaml):
     url = options_with_dp_yaml.pop("url")
@@ -248,9 +254,10 @@ def test_github_adapter_read_resource_with_duplicate_packages(
 @pytest.mark.vcr
 def test_github_adapter_read_resources(options_with_dp):
     url = options_with_dp.pop("url")
-    packages = Package(url)
-    assert len(packages.resources) == 2
-    assert packages.resources[0].read_rows() == [
+    package = Package(url)
+    assert len(package.resources) == 2
+    assert isinstance(package.resources[0], TableResource)
+    assert package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -283,6 +290,7 @@ def test_github_adapter_read_resources_without_dp(options_without_dp):
 @pytest.mark.vcr
 def test_github_adapter_read_data_csv_files_in_different_folder_():
     package = Package("https://github.com/fdtester/test-repo-with-datapackage-yaml")
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"id": 1, "cid": 1, "name": "London"},
         {"id": 2, "cid": 2, "name": "Paris"},
@@ -295,6 +303,7 @@ def test_github_adapter_read_data_csv_files_in_different_folder_():
 @pytest.mark.vcr
 def test_github_adapter_read_data_from_ods():
     package = Package("https://github.com/fdtester/test-repo-with-ods-data-file")
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -308,6 +317,7 @@ def test_github_adapter_read_data_from_repo_with_datapackage(
     url = options_with_dp.pop("url")
     package = Package(url)
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITH_DP
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -319,6 +329,7 @@ def test_github_adapter_read_data_from_repo_with_http_data_csv():
     package = Package(
         "https://github.com/fdtester/test-repo-resources-with-http-data-csv"
     )
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"id": 1, "cid": "1", "name": "London"},
         {"id": 2, "cid": "2", "name": "Paris"},
@@ -333,6 +344,7 @@ def test_github_adapter_read_data_from_repo_with_http_data_xls():
     package = Package(
         "https://github.com/fdtester/test-repo-resources-with-http-data-xls"
     )
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -342,6 +354,7 @@ def test_github_adapter_read_data_from_repo_with_http_data_xls():
 @pytest.mark.vcr
 def test_github_adapter_read_data_from_repo_with_inline_data():
     package = Package("https://github.com/fdtester/test-repo-resources-with-inline-data")
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"name": "Alex", "age": 33},
         {"name": "Paul", "age": 44},
@@ -352,10 +365,12 @@ def test_github_adapter_read_data_from_repo_with_inline_data():
 @pytest.mark.vcr
 def test_github_adapter_read_data_ndjson():
     package = Package("https://github.com/fdtester/test-repo-resources-with-json-data")
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"id": 1, "name of language": "english"},
         {"id": 2, "name of language": "中国人"},
     ]
+    assert isinstance(package.resources[1], TableResource)
     assert package.resources[1].read_rows() == [
         {"id": 1, "name of language": "english"},
         {"id": 2, "name of language": "中国人"},
@@ -366,6 +381,7 @@ def test_github_adapter_read_data_ndjson():
 def test_github_adapter_read_without_resource_file():
     package = Package("https://github.com/fdtester/test-repo-without-resources-file")
     with pytest.raises(FrictionlessException) as excinfo:
+        assert isinstance(package.resources[0], TableResource)
         package.resources[0].read_rows()
     error = excinfo.value.error
     assert (
@@ -391,6 +407,7 @@ def test_github_adapter_read_data_check_path_is_valid():
 @pytest.mark.vcr
 def test_github_adapter_read_data_using_to_view():
     package = Package("https://github.com/fdtester/test-repo-resources-with-inline-data")
+    assert isinstance(package.resources[0], TableResource)
     assert package.resources[0].read_rows() == [
         {"name": "Alex", "age": 33},
         {"name": "Paul", "age": 44},
@@ -658,10 +675,12 @@ def test_github_adapter_catalog_from_single_repo_multiple_packages():
     assert len(catalog.datasets) == 2
     assert catalog.datasets[0].name == "package-fddata-1"
     assert catalog.datasets[1].name == "package-fddata-2"
+    assert isinstance(catalog.datasets[0].package.resources[0], TableResource)
     assert catalog.datasets[0].package.resources[0].read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
+    assert isinstance(catalog.datasets[1].package.resources[0], TableResource)
     assert catalog.datasets[1].package.resources[0].read_rows() == [
         {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
         {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},

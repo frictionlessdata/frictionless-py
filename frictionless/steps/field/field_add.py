@@ -65,7 +65,7 @@ class field_add(Step):
         value = self.value
         position = self.position
         function = self.function
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         descriptor = deepcopy(self.descriptor) or {}
         if self.name:
             descriptor["name"] = self.name

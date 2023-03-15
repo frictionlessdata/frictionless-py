@@ -26,6 +26,13 @@ class Schema(Metadata):
     ```
     """
 
+    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+        default=None, kw_only=False
+    )
+    """
+    # TODO: add docs
+    """
+
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -69,12 +76,17 @@ class Schema(Metadata):
     Specifies the foreign keys for the schema.
     """
 
+    @classmethod
+    def __create__(cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options):
+        if descriptor is not None:
+            return cls.from_descriptor(descriptor, **options)
+
     def __attrs_post_init__(self):
         for field in self.fields:
             field.schema = self
 
     def __bool__(self):
-        return bool(self.fields) or bool(self.to_descriptor(debug=True))
+        return bool(self.fields) or bool(self.to_descriptor())
 
     # Fields
 
@@ -159,7 +171,7 @@ class Schema(Metadata):
     # Describe
 
     @staticmethod
-    def describe(source: Optional[Any] = None, **options):
+    def describe(source: Optional[Any] = None, **options) -> Schema:
         """Describe the given source as a schema
 
         Parameters:
@@ -169,9 +181,10 @@ class Schema(Metadata):
         Returns:
             Schema: table schema
         """
-        resource = platform.frictionless.Resource.describe(source, **options)
-        schema = resource.schema
-        return schema
+        Resource = platform.frictionless.Resource
+        metadata = Resource.describe(source, type="schema", **options)
+        assert isinstance(metadata, Schema)
+        return metadata
 
     # Read
 

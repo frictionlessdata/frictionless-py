@@ -39,7 +39,7 @@ class table_pivot(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         resource.data = table.pivot(self.f1, self.f2, self.f3, self.aggfun)  # type: ignore
         resource.infer()
 

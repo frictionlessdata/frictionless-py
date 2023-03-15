@@ -27,15 +27,6 @@ def test_resource_read_text():
     assert text == "text\n"
 
 
-def test_resource_read_data():
-    resource = resources.TableResource(path="data/table.json")
-    assert resource.read_cells() == [
-        ["id", "name"],
-        [1, "english"],
-        [2, "中国人"],
-    ]
-
-
 def test_resource_read_cells():
     resource = resources.TableResource(path="data/table.json")
     assert resource.read_cells() == [

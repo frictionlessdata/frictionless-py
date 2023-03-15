@@ -5,9 +5,9 @@ import atexit
 import tempfile
 from typing import Optional
 from ...exception import FrictionlessException
+from ...resources import FileResource, TableResource
 from ...platform import platform
 from ...system import Adapter
-from ...resource import Resource
 from ...package import Package
 from ... import helpers
 from ... import errors
@@ -29,9 +29,9 @@ class ZipAdapter(Adapter):
 
     def read_package(self):
         innerpath = self.control.innerpath
-        resource = Resource(path=self.source)
+        resource = FileResource(path=self.source)
         resource.compression = None
-        with resource.open(as_file=True) as resource:
+        with resource:
             byte_stream = resource.byte_stream
             if resource.remote:
                 byte_stream = tempfile.TemporaryFile()
@@ -41,15 +41,8 @@ class ZipAdapter(Adapter):
                 tempdir = tempfile.mkdtemp()
                 zip.extractall(tempdir)
                 atexit.register(shutil.rmtree, tempdir)
-                if not innerpath:
-                    innerpath = "datapackage.json"
-                    extensions = ("json", "yaml")
-                    default_names = (f"datapackage.{ext}" for ext in extensions)
-                    for name in default_names:
-                        if os.path.isfile(os.path.join(tempdir, name)):
-                            innerpath = name
-                            break
-                descriptor = os.path.join(tempdir, innerpath)
+                innerpath = innerpath or "datapackage.json"
+            descriptor = os.path.join(tempdir, innerpath)
         return Package.from_descriptor(descriptor)
 
     # Write
@@ -76,8 +69,9 @@ class ZipAdapter(Adapter):
                             descriptor["scheme"] = "file"
                             descriptor["format"] = "csv"
                             descriptor["mediatype"] = "text/csv"
+                            assert isinstance(resource, TableResource)
                             with tempfile.NamedTemporaryFile() as file:
-                                target = Resource(path=file.name, format="csv")
+                                target = TableResource(path=file.name, format="csv")
                                 resource.write(target)
                                 archive.write(file.name, path)
 

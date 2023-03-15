@@ -20,11 +20,11 @@ class OdsAdapter(Adapter):
 
     # Read
 
-    # TODO: dedup names
     def read_package(self) -> Package:
-        package = Package(resources=[])
+        package = Package()
         with self.resource:
-            book = platform.ezodf.opendoc(io.BytesIO(self.resource.byte_stream.read()))
+            bytes = io.BytesIO(self.resource.byte_stream.read())
+            book = platform.ezodf.opendoc(bytes)
             for sheet in book.sheets:
                 resource = Resource(
                     name=slugify(sheet.name),
@@ -32,6 +32,7 @@ class OdsAdapter(Adapter):
                     control=OdsControl(sheet=sheet.name),
                 )
                 package.add_resource(resource)
+        package.deduplicate_resoures()
         return package
 
     # Write

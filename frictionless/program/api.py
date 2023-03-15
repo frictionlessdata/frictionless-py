@@ -4,7 +4,7 @@ from .program import program
 from . import common
 
 
-@program.command(name="api")
+@program.command(name="api", hidden=True)
 def program_api(
     basepath: str = common.basepath,
     root: bool = common.root,

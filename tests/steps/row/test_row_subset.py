@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, Step, steps
+from frictionless import Pipeline, Step, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_row_subset_conflicts():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="conflicts", field_name="id"),
@@ -23,7 +24,7 @@ def test_step_row_subset_conflicts():
 
 
 def test_step_row_subset_conflicts_with_duplicates():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
@@ -46,7 +47,7 @@ def test_step_row_subset_conflicts_with_duplicates():
 
 
 def test_step_row_subset_distinct():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="distinct", field_name="id"),
@@ -68,7 +69,7 @@ def test_step_row_subset_distinct():
 
 
 def test_step_row_subset_distinct_with_duplicates():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
@@ -89,7 +90,7 @@ def test_step_row_subset_distinct_with_duplicates():
 
 
 def test_step_row_subset_duplicates():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="duplicates"),
@@ -107,7 +108,7 @@ def test_step_row_subset_duplicates():
 
 
 def test_step_row_subset_duplicates_with_name():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
@@ -130,7 +131,7 @@ def test_step_row_subset_duplicates_with_name():
 
 
 def test_step_row_subset_unique():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="unique"),
@@ -152,7 +153,7 @@ def test_step_row_subset_unique():
 
 
 def test_step_row_subset_unique_with_name():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
@@ -174,7 +175,7 @@ def test_step_row_subset_unique_with_name():
 
 
 def test_step_row_subset_conflicts_from_descriptor_issue_996():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             Step.from_descriptor(

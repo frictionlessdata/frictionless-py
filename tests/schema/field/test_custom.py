@@ -1,5 +1,6 @@
 import pytest
-from frictionless import system, Plugin, Resource, Schema, Field, describe
+from frictionless import system, Plugin, Schema, Field, describe
+from frictionless.resources import TableResource
 
 
 # General
@@ -14,7 +15,7 @@ def test_type_custom(enable_custom_plugin):
             ]
         }
     )
-    with Resource(path="data/table.csv", schema=schema) as resource:
+    with TableResource(path="data/table.csv", schema=schema) as resource:
         assert resource.read_rows() == [
             {"integer": 1, "custom": ["english"]},
             {"integer": 2, "custom": ["中国人"]},
@@ -23,7 +24,7 @@ def test_type_custom(enable_custom_plugin):
 
 def test_type_custom_detect(enable_custom_plugin):
     resource = describe("data/table.csv")
-    assert isinstance(resource, Resource)
+    assert isinstance(resource, TableResource)
     assert resource.schema.fields[0].type == "custom"
     assert resource.schema.fields[1].type == "custom"
 

@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime, time
-from frictionless import Resource, formats, platform
+from frictionless import formats, platform
+from frictionless.resources import TableResource
 
 
 # General
@@ -9,9 +10,9 @@ from frictionless import Resource, formats, platform
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test  in Windows")
 def test_sql_parser_write_timezone_mysql(mysql_url):
-    source = Resource("data/timezone.csv")
+    source = TableResource(path="data/timezone.csv")
     control = formats.SqlControl(table="timezone")
-    target = source.write(mysql_url, control=control)
+    target = source.write(path=mysql_url, control=control)
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
@@ -40,12 +41,12 @@ def test_sql_parser_write_timezone_mysql(mysql_url):
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_parser_write_string_pk_issue_777_mysql(mysql_url):
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     source.infer()
     source.schema.primary_key = ["name"]
     source.schema.get_field("name").constraints["maxLength"] = 100
     control = formats.SqlControl(table="name")
-    target = source.write(mysql_url, control=control)
+    target = source.write(path=mysql_url, control=control)
     with target:
         assert target.schema.primary_key == ["name"]
         assert target.header == ["id", "name"]

@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_cell_interpolate():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", descriptor={"type": "string"}),
@@ -29,7 +30,7 @@ def test_step_cell_interpolate():
 
 
 def test_step_cell_interpolate_with_name():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_interpolate(template="Prefix: %s", field_name="name"),

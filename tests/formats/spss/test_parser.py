@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime, date, time
-from frictionless import Package, Resource, platform
+from frictionless import Package, platform
+from frictionless.resources import TableResource
 
 
 pytestmark = pytest.mark.skipif(
@@ -13,7 +14,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_spss_parser_write(tmpdir):
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     target = source.write(str(tmpdir.join("table.sav")))
     with target:
         assert target.header == ["id", "name"]
@@ -24,7 +25,7 @@ def test_spss_parser_write(tmpdir):
 
 
 def test_spss_parser_write_types(tmpdir):
-    source = Package("data/storage/types.json").get_resource("types")
+    source = Package("data/storage/types.json").get_table_resource("types")
     target = source.write(str(tmpdir.join("table.sav")))
     with target:
         # Assert schema
@@ -73,7 +74,7 @@ def test_spss_parser_write_types(tmpdir):
 
 
 def test_spss_storage_constraints(tmpdir):
-    source = Package("data/storage/constraints.json").get_resource("constraints")
+    source = Package("data/storage/constraints.json").get_table_resource("constraints")
     target = source.write(str(tmpdir.join("table.sav")))
     with target:
         # Assert schema
@@ -104,8 +105,8 @@ def test_spss_storage_constraints(tmpdir):
 
 
 def test_spss_parser_write_timezone(tmpdir):
-    source = Resource("data/timezone.csv")
-    target = source.write(str(tmpdir.join("table.sav")))
+    source = TableResource(path="data/timezone.csv")
+    target = source.write(path=str(tmpdir.join("table.sav")))
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [

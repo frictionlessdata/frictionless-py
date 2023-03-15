@@ -1,6 +1,7 @@
 import pytest
 from pathlib import Path
-from frictionless import Project, helpers
+from frictionless import helpers
+from frictionless.project import Project
 
 
 name1 = "name1.txt"

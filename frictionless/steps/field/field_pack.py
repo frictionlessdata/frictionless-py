@@ -44,7 +44,7 @@ class field_pack(Step):
     # Transform
 
     def transform_resource(self, resource: Resource) -> None:
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         Field = fields.ObjectField if self.as_object else fields.ArrayField
         field = Field(name=self.name)
         resource.schema.add_field(field)

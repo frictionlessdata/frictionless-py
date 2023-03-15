@@ -44,7 +44,7 @@ DESCRIPTOR_FK = {
 
 def test_package_schema_foreign_key():
     package = Package(DESCRIPTOR_FK)
-    resource = package.get_resource("main")
+    resource = package.get_table_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -72,7 +72,7 @@ def test_package_schema_foreign_key():
 def test_package_schema_foreign_key_invalid():
     package = Package(DESCRIPTOR_FK)
     package.resources[1].data[3][0] = "bad"  # type: ignore
-    resource = package.get_resource("main")
+    resource = package.get_table_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -102,7 +102,7 @@ def test_package_schema_foreign_key_self_reference():
     package.resources[0].schema.foreign_keys = [
         {"fields": ["parent_id"], "reference": {"resource": "", "fields": ["id"]}}
     ]
-    resource = package.get_resource("main")
+    resource = package.get_table_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -115,7 +115,7 @@ def test_package_schema_foreign_key_self_reference_invalid():
     package.resources[0].schema.foreign_keys = [
         {"fields": ["parent_id"], "reference": {"resource": "", "fields": ["id"]}}
     ]
-    resource = package.get_resource("main")
+    resource = package.get_table_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -130,7 +130,7 @@ def test_package_schema_foreign_key_multifield():
             "reference": {"resource": "people", "fields": ["firstname", "surname"]},
         }
     ]
-    resource = package.get_resource("main")
+    resource = package.get_table_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -146,7 +146,7 @@ def test_package_schema_foreign_key_multifield_invalid():
         }
     ]
     package.resources[1].data[3][0] = "bad"  # type: ignore
-    resource = package.get_resource("main")
+    resource = package.get_table_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid

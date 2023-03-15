@@ -1,10 +1,10 @@
 from __future__ import annotations
-import os
 import attrs
-from pathlib import Path
-from collections.abc import Mapping
+from typing_extensions import Self
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
+from ..transformer import Transformer
+from ..validator import Validator
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
@@ -13,13 +13,14 @@ from .. import settings
 from .. import helpers
 from .. import errors
 from .. import fields
-from . import methods
 
 if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..pipeline import Pipeline
+    from ..resources import TableResource
     from ..interfaces import IFilterFunction, IProcessFunction
-    from ..interfaces import IDescriptor
+    from ..interfaces import IDescriptor, ITabularData
+    from ..indexer import IOnRow, IOnProgress
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Dataset
@@ -46,6 +47,11 @@ class Package(Metadata):
     """
 
     control: Optional[Control] = None
+    """
+    # TODO: add docs
+    """
+
+    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
     """
     # TODO: add docs
     """
@@ -144,11 +150,6 @@ class Package(Metadata):
     is not part of any catalog, then it is set to None.
     """
 
-    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
-    """
-    # TODO: add docs
-    """
-
     _dialect: Optional[Dialect] = attrs.field(default=None, alias="dialect")
     """
     # TODO: add docs
@@ -160,48 +161,48 @@ class Package(Metadata):
     """
 
     @classmethod
+    def from_source(
+        cls,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = True,
+    ) -> Optional[Package]:
+        source = helpers.normalize_source(source)
+
+        # Adapter
+        if source is not None or control is not None:
+            adapter = system.create_adapter(
+                source,
+                control=control,
+                basepath=basepath,
+                packagify=packagify,
+            )
+            if adapter:
+                package = adapter.read_package()
+                return package
+
+    @classmethod
     def __create__(
         cls,
         source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
+        basepath: Optional[str] = None,
         **options,
     ):
-        # Normalize
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
+        source = helpers.normalize_source(source)
 
-        # Source/Control
+        # Source/control
         if source is not None or control is not None:
-            # Adapter
-            if not helpers.is_expandable_source(source):
-                adapter = system.create_adapter(source, control=control)
-                if adapter:
-                    package = adapter.read_package()
-                    if package:
-                        return package
-
-        # Source
-        if source is not None:
-            # Directory
-            if helpers.is_directory_source(source):
-                for name in ["datapackage.json", "datapackage.yaml"]:
-                    path = os.path.join(source, name)  # type: ignore
-                    if os.path.isfile(path):
-                        return cls.from_descriptor(path)
-
-            # Expandable
-            if helpers.is_expandable_source(source):
-                options["resources"] = []
-                basepath = options.get("basepath")
-                for path in helpers.expand_source(source, basepath=basepath):  # type: ignore
-                    options["resources"].append(Resource(path=path))
-                return cls.from_options(**options)
-
-            # Descriptor
-            return cls.from_descriptor(source, **options)  # type: ignore
+            if cls is not Package:
+                note = 'Providing "source" argument is only possible to "Package" class'
+                raise FrictionlessException(note)
+            package = cls.from_source(source, control=control, basepath=basepath)
+            if not package:
+                package = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
+            return package
 
     def __attrs_post_init__(self):
         for resource in self.resources:
@@ -253,12 +254,28 @@ class Package(Metadata):
                 return True
         return False
 
+    def has_table_resource(self, name: str) -> bool:
+        """Check if a table resource is present"""
+        for resource in self.resources:
+            if resource.name == name:
+                if isinstance(resource, platform.frictionless_resources.TableResource):
+                    return True
+        return False
+
     def get_resource(self, name: str) -> Resource:
         """Get resource by name"""
         for resource in self.resources:
             if resource.name == name:
                 return resource
         error = errors.PackageError(note=f'resource "{name}" does not exist')
+        raise FrictionlessException(error)
+
+    def get_table_resource(self, name: str) -> TableResource:
+        """Get table resource by name (raise if not table)"""
+        resource = self.get_resource(name)
+        if isinstance(resource, platform.frictionless_resources.TableResource):
+            return resource
+        error = errors.PackageError(note=f'resource "{name}" is not tabular')
         raise FrictionlessException(error)
 
     def set_resource(self, resource: Resource) -> Optional[Resource]:
@@ -327,7 +344,7 @@ class Package(Metadata):
         Returns:
             Any: Response from the target
         """
-        adapter = system.create_adapter(target, control=control)
+        adapter = system.create_adapter(target, control=control, packagify=True)
         if not adapter:
             raise FrictionlessException(f"Not supported target: {target} or control")
         response = adapter.write_package(self.to_copy())
@@ -381,7 +398,8 @@ class Package(Metadata):
         """
         analisis = {}
         for resource in self.resources:
-            analisis[resource.name] = resource.analyze(detailed=detailed)
+            if isinstance(resource, platform.frictionless_resources.TableResource):
+                analisis[resource.name] = resource.analyze(detailed=detailed)
         return analisis
 
     # Describe
@@ -405,47 +423,67 @@ class Package(Metadata):
             Package: data package
 
         """
-
-        # Support one fle path
-        if not helpers.is_expandable_source(source):
-            if isinstance(source, (str, Path)):
-                source = [source]
-
-        # Create package
-        package = cls.from_options(source, **options)
-        package.infer(stats=stats)
-        return package
+        metadata = Resource.describe(source, type="package", stats=stats, **options)
+        assert isinstance(metadata, Package)
+        return metadata
 
     # Extract
 
     def extract(
         self,
         *,
-        limit_rows: Optional[int] = None,
-        process: Optional[IProcessFunction] = None,
+        name: Optional[str] = None,
         filter: Optional[IFilterFunction] = None,
-        stream: bool = False,
-    ):
-        """Extract package rows
+        process: Optional[IProcessFunction] = None,
+        limit_rows: Optional[int] = None,
+    ) -> ITabularData:
+        """Extract rows
 
         Parameters:
-            filter? (bool): a row filter function
-            process? (func): a row processor function
-            stream? (bool): return a row streams instead of loading into memory
+            filter: row filter function
+            process: row processor function
+            limit_rows: limit amount of rows to this number
 
         Returns:
-            {path: Row[]}: a dictionary of arrays/streams of rows
+            extracted rows indexed by resource name
 
         """
-        tables = {}
-        for resource in self.resources:
-            tables[resource.name] = resource.extract(
-                limit_rows=limit_rows,
-                process=process,
-                filter=filter,
-                stream=stream,
-            )
-        return tables
+        data: ITabularData = {}
+        resources = self.resources if name is None else [self.get_resource(name)]
+        for res in resources:
+            if isinstance(res, platform.frictionless_resources.TableResource):
+                item = res.extract(filter=filter, process=process, limit_rows=limit_rows)
+                data.update(item)
+        return data
+
+    # Index
+
+    def index(
+        self,
+        database_url: str,
+        *,
+        name: Optional[str] = None,
+        fast: bool = False,
+        on_row: Optional[IOnRow] = None,
+        on_progress: Optional[IOnProgress] = None,
+        use_fallback: bool = False,
+        qsv_path: Optional[str] = None,
+    ) -> List[str]:
+        names: List[str] = []
+        resources = self.resources if name is None else [self.get_resource(name)]
+        for resource in resources:
+            if isinstance(resource, platform.frictionless_resources.TableResource):
+                names.extend(
+                    resource.index(
+                        database_url=database_url,
+                        fast=fast,
+                        on_row=on_row,
+                        on_progress=on_progress,
+                        use_fallback=use_fallback,
+                        qsv_path=qsv_path,
+                    )
+                )
+        return names
 
     # Transform
 
@@ -460,7 +498,8 @@ class Package(Metadata):
         Returns:
             Package: the transform result
         """
-        return methods.transform(self, pipeline)
+        transformer = Transformer()
+        return transformer.transform_package(self, pipeline)
 
     # Validate
 
@@ -468,9 +507,10 @@ class Package(Metadata):
         self: Package,
         checklist: Optional[Checklist] = None,
         *,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_rows: Optional[int] = None,
+        name: Optional[str] = None,
         parallel: bool = False,
+        limit_rows: Optional[int] = None,
+        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ):
         """Validate package
 
@@ -482,17 +522,19 @@ class Package(Metadata):
             Report: validation report
 
         """
-        return methods.validate(
+        validator = Validator()
+        return validator.validate_package(
             self,
-            checklist,
-            limit_errors=limit_errors,
-            limit_rows=limit_rows,
+            checklist=checklist,
+            name=name,
             parallel=parallel,
+            limit_rows=limit_rows,
+            limit_errors=limit_errors,
         )
 
     # Convert
 
-    def to_copy(self, **options):
+    def to_copy(self, **options) -> Self:
         """Create a copy of the package"""
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],
@@ -531,6 +573,7 @@ class Package(Metadata):
         "type": "object",
         "required": ["resources"],
         "properties": {
+            "$frictionless": {"type": "string"},
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
@@ -598,6 +641,9 @@ class Package(Metadata):
     @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
         super().metadata_transform(descriptor)
+
+        # Context
+        descriptor.pop("$frictionless", None)
 
         # Profile (standards/v1)
         profile = descriptor.pop("profile", None)
@@ -696,6 +742,10 @@ class Package(Metadata):
 
     def metadata_export(self):
         descriptor = super().metadata_export()
+
+        # Frictionless
+        if system.standards == "v2":
+            descriptor = {"$frictionless": "package/v2", **descriptor}
 
         # Profile (standards/v1)
         if system.standards == "v1":

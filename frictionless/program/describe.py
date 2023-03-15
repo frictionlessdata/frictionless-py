@@ -1,23 +1,28 @@
 from __future__ import annotations
-import sys
 import typer
 from typing import List
-from ..detector import Detector
-from ..actions import describe
+from rich.console import Console
+from rich.table import Table
+from ..resources import TableResource
+from ..resource import Resource
+from ..package import Package
 from ..dialect import Dialect
+from ..schema import Schema
 from ..system import system
 from .program import program
-from .. import formats
-from .. import helpers
 from . import common
+from . import utils
+
+
+DEFAULT_MAX_FIELDS = 10
 
 
 @program.command(name="describe")
 def program_describe(
     # Source
     source: List[str] = common.source,
+    name: str = common.resource_name,
     type: str = common.type,
-    # File
     path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
@@ -32,6 +37,8 @@ def program_describe(
     comment_rows: str = common.comment_rows,
     sheet: str = common.sheet,
     table: str = common.table,
+    keys: str = common.keys,
+    keyed: bool = common.keyed,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -46,7 +53,6 @@ def program_describe(
     stats: bool = common.stats,
     yaml: bool = common.yaml,
     json: bool = common.json,
-    markdown: bool = common.markdown,
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
@@ -57,6 +63,7 @@ def program_describe(
     Based on the inferred data source type it will return resource or package descriptor.
     Default output format is YAML with a front matter.
     """
+    console = Console()
 
     # Setup system
     if trusted:
@@ -64,99 +71,104 @@ def program_describe(
     if standards:
         system.standards = standards  # type: ignore
 
-    # Support stdin
-    #  is_stdin = False
+    # Create source
+    source = utils.create_source(source, path=path)
     if not source and not path:
-        if not sys.stdin.isatty():
-            #  is_stdin = True
-            source = [sys.stdin.buffer.read()]  # type: ignore
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
-    # Validate input
-    if not source and not path:
-        message = 'Providing "source" or "path" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
-    # Prepare source
-    def prepare_source():
-        return list(source) if len(source) > 1 else (source[0] if source else None)
-
-    # Prepare dialect
-    def prepare_dialect():
-        descriptor = helpers.parse_json_string(dialect)
-        if descriptor:
-            return Dialect.from_descriptor(descriptor)
-        controls = []
-        if sheet:
-            controls.append(formats.ExcelControl(sheet=sheet))
-        elif table:
-            controls.append(formats.SqlControl(table=table))
-        return Dialect.from_options(
-            header_rows=helpers.parse_csv_string(header_rows, convert=int),
+    try:
+        # Create dialect
+        dialect_obj = utils.create_dialect(
+            descriptor=dialect,
+            header_rows=header_rows,
             header_join=header_join,
             comment_char=comment_char,
-            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
-            controls=controls,
+            comment_rows=comment_rows,
+            sheet=sheet,
+            table=table,
+            keys=keys,
+            keyed=keyed,
         )
 
-    # Prepare detector
-    def prepare_detector():
-        return Detector(
+        # Create detector
+        detector_obj = utils.create_detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
-            field_names=helpers.parse_csv_string(field_names),
+            field_names=field_names,
             field_confidence=field_confidence,
             field_float_numbers=field_float_numbers,
-            field_missing_values=helpers.parse_csv_string(field_missing_values),  # type: ignore
+            field_missing_values=field_missing_values,
         )
 
-    # Prepare options
-    def prepare_options():
-        return dict(
+        # Describe source
+        metadata = Resource.describe(
+            source=utils.create_source(source),
+            name=name,
             type=type,
-            # Standard
             path=path,
             scheme=scheme,
             format=format,
-            encoding=encoding,
-            innerpath=innerpath,
             compression=compression,
-            dialect=prepare_dialect(),
-            # Software
-            detector=prepare_detector(),
+            innerpath=innerpath,
+            encoding=encoding,
+            dialect=dialect_obj,
             basepath=basepath,
+            detector=detector_obj,
             stats=stats,
         )
-
-    # Describe source
-    try:
-        metadata = describe(prepare_source(), **prepare_options())
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
-        raise
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
-    # Return JSON
+    # Json mode
     if json:
-        output = metadata.to_json()
-        typer.secho(output)
+        descriptor = metadata.to_json()
+        print(descriptor)
         raise typer.Exit()
 
-    # Return YAML
-    if yaml:
-        output = metadata.to_yaml().strip()
-        typer.secho(output)
+    # Yaml mode
+    if yaml or isinstance(metadata, (Dialect, Schema)):
+        descriptor = metadata.to_yaml().strip()
+        print(descriptor)
         raise typer.Exit()
 
-    # Return Markdown
-    if markdown:
-        output = metadata.to_markdown().strip()
-        typer.secho(output)
-        raise typer.Exit()
-
-    # Return default
-    typer.secho("")
-    typer.secho(metadata.to_yaml().strip())
-    typer.secho("")
+    # Default mode
+    console.rule("[bold]Dataset")
+    assert isinstance(metadata, (Resource, Package))
+    resources = [metadata] if isinstance(metadata, Resource) else metadata.resources
+    view = Table(title="dataset")
+    view.add_column("name")
+    view.add_column("type")
+    view.add_column("path")
+    if stats:
+        view.add_column("hash")
+        view.add_column("bytes")
+        view.add_column("fields")
+        view.add_column("rows")
+    for resource in resources:
+        style = "sky_blue1" if resource.tabular else ""
+        row = [resource.name, resource.type, resource.path]
+        if stats:
+            row.append(str(resource.hash))
+            row.append(str(resource.bytes))
+            row.append(str(resource.fields or ""))
+            row.append(str(resource.rows or ""))
+        view.add_row(*row, style=style)
+    console.print(view)
+    console.rule("[bold]Tables")
+    for resource in resources:
+        if isinstance(resource, TableResource):
+            view = Table(title=resource.name)
+            labels = list(resource.schema.field_names)
+            for label in labels[:DEFAULT_MAX_FIELDS]:
+                view.add_column(label)
+            if len(labels) > DEFAULT_MAX_FIELDS:
+                view.add_column("...")
+            row = resource.schema.field_types[:DEFAULT_MAX_FIELDS]
+            if len(labels) > DEFAULT_MAX_FIELDS:
+                row.append("...")
+            view.add_row(*row)
+            console.print(view)

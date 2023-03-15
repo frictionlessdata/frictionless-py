@@ -26,7 +26,7 @@ def test_resource_format_xls():
 
 
 def test_resource_format_xlsx():
-    with Resource("data/table.xlsx") as resource:
+    with Resource(path="data/table.xlsx") as resource:
         assert resource.format == "xlsx"
 
 

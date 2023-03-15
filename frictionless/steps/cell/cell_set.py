@@ -23,7 +23,7 @@ class cell_set(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata

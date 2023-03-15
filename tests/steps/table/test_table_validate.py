@@ -1,12 +1,13 @@
 import pytest
-from frictionless import Resource, Pipeline, FrictionlessException, steps
+from frictionless import Pipeline, steps, FrictionlessException
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_table_validate():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value="bad"),

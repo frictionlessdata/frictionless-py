@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 class Metaclass(type):
     # TODO: why it's called twice for every class?
-    def __init__(cls, *args, **kwarts):
+    def __init__(cls, *args, **kwargs):
         if cls.metadata_profile_patch:  # type: ignore
             cls.metadata_profile = helpers.merge_jsonschema(
                 cls.metadata_profile,  # type: ignore
@@ -78,7 +78,7 @@ class Metadata(metaclass=Metaclass):
         super().__setattr__(name, value)
 
     def __repr__(self) -> str:
-        return pprint.pformat(self.to_descriptor(debug=True), sort_dicts=False)
+        return pprint.pformat(self.to_descriptor(), sort_dicts=False)
 
     @property
     def description_html(self) -> str:
@@ -139,11 +139,13 @@ class Metadata(metaclass=Metaclass):
     # Validate
 
     @classmethod
-    def validate_descriptor(cls, descriptor: Union[IDescriptor, str]) -> Report:
+    def validate_descriptor(
+        cls, descriptor: Union[IDescriptor, str], *, basepath: Optional[str] = None
+    ) -> Report:
         errors = []
         timer = helpers.Timer()
         try:
-            cls.from_descriptor(descriptor)
+            cls.from_descriptor(descriptor, basepath=basepath)
         except FrictionlessException as exception:
             errors = exception.reasons if exception.reasons else [exception.error]
         return platform.frictionless.Report.from_validation(
@@ -152,6 +154,7 @@ class Metadata(metaclass=Metaclass):
 
     # Convert
 
+    # TODO: remove
     @classmethod
     def from_options(cls, *args, **options) -> Self:
         return cls(*args, **helpers.remove_non_values(options))
@@ -182,9 +185,9 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self, *, debug: bool = False) -> IDescriptor:
+    def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
         descriptor = self.metadata_export()
-        if not debug:
+        if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
             errors = list(self.metadata_validate(descriptor))
             if errors:
@@ -217,12 +220,7 @@ class Metadata(metaclass=Metaclass):
             path (str): target path
         """
         Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        text = json.dumps(
-            self.to_descriptor(),
-            indent=2,
-            ensure_ascii=False,
-            cls=encoder_class,
-        )
+        text = helpers.to_json(self.to_descriptor(), encoder_class=encoder_class)
         if path:
             try:
                 helpers.write_file(path, text)
@@ -237,12 +235,7 @@ class Metadata(metaclass=Metaclass):
             path (str): target path
         """
         Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-        text = platform.yaml.dump(
-            self.to_descriptor(),
-            sort_keys=False,
-            allow_unicode=True,
-            Dumper=helpers.create_yaml_dumper(),
-        )
+        text = helpers.to_yaml(self.to_descriptor())
         if path:
             try:
                 helpers.write_file(path, text)

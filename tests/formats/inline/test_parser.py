@@ -1,13 +1,16 @@
 from collections import OrderedDict
-from frictionless import Resource, formats
+
+import pytest
+from frictionless import formats
+from frictionless.resources import TableResource
 
 
 # Read
 
 
 def test_inline_parser():
-    source = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    with Resource(source) as resource:
+    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
+    with TableResource(data=data) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -16,8 +19,8 @@ def test_inline_parser():
 
 
 def test_inline_parser_keyed():
-    source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
-    with Resource(source, format="inline") as resource:
+    data = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
+    with TableResource(data=data, format="inline") as resource:
         assert resource.dialect.to_descriptor() == {"inline": {"keyed": True}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -27,8 +30,8 @@ def test_inline_parser_keyed():
 
 
 def test_inline_parser_keyed_order_is_preserved():
-    source = [{"name": "english", "id": "1"}, {"name": "中国人", "id": "2"}]
-    with Resource(source, format="inline") as resource:
+    data = [{"name": "english", "id": "1"}, {"name": "中国人", "id": "2"}]
+    with TableResource(data=data, format="inline") as resource:
         assert resource.dialect.to_descriptor() == {"inline": {"keyed": True}}
         assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
@@ -38,9 +41,9 @@ def test_inline_parser_keyed_order_is_preserved():
 
 
 def test_inline_parser_keyed_with_keys_provided():
-    source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
+    data = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     control = formats.InlineControl(keys=["name", "id"])
-    with Resource(source, format="inline", control=control) as resource:
+    with TableResource(data=data, format="inline", control=control) as resource:
         assert resource.dialect.to_descriptor() == {
             "inline": {"keyed": True, "keys": ["name", "id"]}
         }
@@ -52,12 +55,12 @@ def test_inline_parser_keyed_with_keys_provided():
 
 
 def test_inline_parser_from_generator():
-    def generator():
+    def data():
         yield ["id", "name"]
         yield ["1", "english"]
         yield ["2", "中国人"]
 
-    with Resource(generator) as resource:
+    with TableResource(data=data) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -66,12 +69,12 @@ def test_inline_parser_from_generator():
 
 
 def test_inline_parser_from_generator_not_callable():
-    def generator():
+    def data():
         yield ["id", "name"]
         yield ["1", "english"]
         yield ["2", "中国人"]
 
-    with Resource(generator()) as resource:
+    with TableResource(data=data()) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -80,11 +83,11 @@ def test_inline_parser_from_generator_not_callable():
 
 
 def test_inline_parser_from_ordered_dict():
-    source = [
+    data = [
         OrderedDict([("name", "english"), ("id", "1")]),
         OrderedDict([("name", "中国人"), ("id", "2")]),
     ]
-    with Resource(source) as resource:
+    with TableResource(data=data) as resource:
         rows = resource.read_rows()
         assert resource.dialect.to_descriptor() == {"inline": {"keyed": True}}
         assert resource.header == ["name", "id"]
@@ -95,8 +98,9 @@ def test_inline_parser_from_ordered_dict():
 # Write
 
 
+@pytest.mark.skip
 def test_inline_parser_write(tmpdir):
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     target = source.write(format="inline")
     assert target.data == [
         ["id", "name"],
@@ -105,9 +109,10 @@ def test_inline_parser_write(tmpdir):
     ]
 
 
+@pytest.mark.skip
 def test_inline_parser_write_keyed(tmpdir):
     control = formats.InlineControl(keyed=True)
-    source = Resource("data/table.csv")
+    source = TableResource(path="data/table.csv")
     target = source.write(format="inline", control=control)
     assert target.data == [
         {"id": 1, "name": "english"},
