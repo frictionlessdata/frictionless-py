@@ -10,6 +10,7 @@ With `query` command you can explore tabular files within a Sqlite database.
 
 ```bash tabs=CLI
 pip install frictionless[sql]
+pip install frictionless[sql,zenodo] # for examples in this tutorial
 ```
 
 ## Usage

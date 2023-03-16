@@ -10,6 +10,7 @@ With `script` command you can explore tabular files with Pandas by one console c
 
 ```bash tabs=CLI
 pip install frictionless[sql]
+pip install frictionless[sql,zenodo] # for examples in this tutorial
 ```
 
 ## Usage
