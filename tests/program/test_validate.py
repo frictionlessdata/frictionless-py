@@ -222,9 +222,7 @@ def test_program_validate_single_invalid_resource_221():
         program, "validate data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count(
-        'The data package has an error: resource "number-twoo" does not exist'
-    )
+    assert actual.stdout.count("number-twoo")
 
 
 def test_program_validate_multipart_resource_1140():

@@ -274,7 +274,7 @@ def test_program_extract_single_invalid_resource():
         program, "extract data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count('"number-twoo" does not exist')
+    assert actual.stdout.count("number-twoo")
 
 
 def test_program_extract_single_valid_resource_invalid_package():

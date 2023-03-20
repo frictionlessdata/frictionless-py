@@ -33,6 +33,12 @@ Data management framework for Python that provides functionality to describe, ex
 - The included API server
 - More than 1000+ tests
 
+## Installation
+
+```bash
+$ pip install frictionless
+```
+
 ## Example
 
 ```bash
