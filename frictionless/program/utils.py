@@ -3,6 +3,7 @@ import sys
 import typer
 from typing import TYPE_CHECKING, Optional, Any, List
 from rich.panel import Panel
+from rich.markup import escape
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from ..exception import FrictionlessException
@@ -269,5 +270,6 @@ def print_exception(
     if debug:
         console.print_exception()
         return
-    panel = Panel(str(exception), title="Error", border_style="red", title_align="left")
+    text = escape(str(exception))
+    panel = Panel(text, title="Error", border_style="red", title_align="left")
     console.print(panel)
