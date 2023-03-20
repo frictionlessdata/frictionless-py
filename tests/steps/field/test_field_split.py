@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_field_split():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_split(name="name", to_names=["name1", "name2"], pattern="a"),
@@ -28,7 +29,7 @@ def test_step_field_split():
 
 
 def test_step_field_split_with_preserve():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_split(
@@ -54,7 +55,7 @@ def test_step_field_split_with_preserve():
 
 
 def test_step_field_split_with_capturing_groups():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_split(

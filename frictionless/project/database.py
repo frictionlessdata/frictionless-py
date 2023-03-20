@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Optional, List, Dict
 from datetime import datetime
+from ..resources import TableResource
 from ..resource import Resource
 from ..schema import Schema
 from ..platform import platform
@@ -255,7 +256,7 @@ class Database:
     # TODO:This is a placeholder code for export and we need to export it from
     # database.
     def export_table(self, source: str, target: str) -> Resource:
-        resource = Resource(path=source).write(target)
+        resource = TableResource(path=source).write(target)
         return resource
 
     def query_table(self, query: str) -> ITable:
@@ -289,7 +290,7 @@ class Database:
 
     # TODO: temporary solution while we don't have proper database's table editing
     def save_table(self, path: str, *, tablePatch: dict, basepath: str) -> Resource:
-        resource = Resource(path, basepath=basepath)
+        resource = TableResource(path=path, basepath=basepath)
         data = resource.read_rows()
         for index, row in enumerate(data):
             rowNumber = index + 2
@@ -297,5 +298,5 @@ class Database:
                 continue
             row.update(tablePatch[rowNumber])
             data[index] = row
-        newresource = Resource(data, basepath=basepath)
+        newresource = TableResource(data=data, basepath=basepath)
         return newresource.write(path)

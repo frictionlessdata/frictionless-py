@@ -36,7 +36,7 @@ class row_search(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         search = platform.petl.searchcomplement if self.negate else platform.petl.search
         if self.field_name:
             resource.data = search(table, self.field_name, self.regex)  # type: ignore

@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, Dialect, FrictionlessException
+from frictionless import Dialect, FrictionlessException
+from frictionless.resources import TableResource
 
 
 # General
@@ -14,7 +15,7 @@ def test_dialect():
 
 def test_dialect_bad_property():
     with pytest.raises(FrictionlessException) as excinfo:
-        Dialect.from_descriptor({"headerRows": "bad"})
+        Dialect({"headerRows": "bad"})
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "dialect-error"
@@ -36,7 +37,7 @@ def test_dialect_bad_property():
 )
 def test_dialect_skip_blank_rows(path):
     dialect = Dialect(skip_blank_rows=True)
-    with Resource(path, dialect=dialect) as resource:
+    with TableResource(path=path, dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"id": 1101, "name": "John", "age": 30},
             {"id": 1102, "name": "Julie", "age": 26},

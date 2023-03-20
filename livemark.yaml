@@ -37,7 +37,20 @@ pages:
         - path: docs/guides/extracting-data
         - path: docs/guides/validating-data
         - path: docs/guides/transforming-data
-    - name: Framework In-Depth
+    - name: Working in Console
+      items:
+        - path: docs/console/overview
+        - path: docs/console/describe
+        - path: docs/console/convert
+        - path: docs/console/explore
+        - path: docs/console/extract
+        - path: docs/console/index
+        - path: docs/console/list
+        - path: docs/console/publish
+        - path: docs/console/query
+        - path: docs/console/script
+        - path: docs/console/validate
+    - name: Working in Python
       items:
         - path: docs/framework/actions
           name: Actions
@@ -67,8 +80,6 @@ pages:
           name: Error
     - name: Advanced Topics
       items:
-        - path: docs/advanced/program
-        - path: docs/advanced/server
         - path: docs/advanced/design
         - path: docs/advanced/system
         - path: docs/advanced/extending

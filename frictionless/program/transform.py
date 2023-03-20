@@ -1,19 +1,21 @@
 from __future__ import annotations
-import sys
 import typer
 from typing import List
-from ..pipeline import Pipeline, Step
-from ..actions import transform
+from rich.console import Console
+from ..exception import FrictionlessException
+from ..platform import platform
+from ..resource import Resource
 from ..system import system
 from .program import program
-from .. import helpers
 from . import common
+from . import utils
 
 
-@program.command(name="transform")
+@program.command(name="transform", hidden=True)
 def program_transform(
     # Source
     source: List[str] = common.source,
+    path: str = common.path,
     # Pipeline
     pipeline: str = common.pipeline,
     steps: str = common.steps,
@@ -27,6 +29,7 @@ def program_transform(
     Please read more about Transform pipelines to write a pipeline
     that can be accepted by this function.
     """
+    console = Console()
 
     # Setup system
     if trusted:
@@ -34,57 +37,36 @@ def program_transform(
     if standards:
         system.standards = standards  # type: ignore
 
-    # Support stdin
-    is_stdin = False
-    if not source:
-        if not sys.stdin.isatty():
-            is_stdin = True
-            source = [sys.stdin.buffer.read()]  # type: ignore
+    # Create source
+    source = utils.create_source(source, path=path)
+    if not source and not path:
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
-    # TODO: implement
-    assert not is_stdin
+    # Create pipeline
+    pipeline_obj = utils.create_pipeline(
+        descriptor=pipeline,
+        steps=steps,
+    )
 
-    # Validate input
-    if not source:
-        message = 'Providing "source" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
-    # Prepare source
-    def prepare_source():
-        return list(source) if len(source) > 1 else (source[0] if source else None)
-
-    # Prepare pipeline
-    def prepare_pipeline():
-        descriptor = helpers.parse_json_string(pipeline)
-        if descriptor:
-            return Pipeline.from_descriptor(descriptor)
-        step_objects = []
-        for step_descriptor in helpers.parse_descriptors_string(steps) or []:
-            step_objects.append(Step.from_descriptor(step_descriptor))
-        return Pipeline.from_options(
-            steps=step_objects,
-        )
-
-    # Prepare options
-    def prepare_options():
-        return dict(pipeline=prepare_pipeline())
-
-    # Transform source
+    # Transform resource
     try:
-        resource = transform(prepare_source(), **prepare_options())
+        resource = Resource(source, path=path)
+        if not isinstance(resource, platform.frictionless_resources.Transformable):
+            note = f'Resource with data type "{resource.datatype}" is not transformable'
+            raise FrictionlessException(note)
+        result = resource.transform(pipeline_obj)
     # TODO: we don't catch errors here because it's streaming
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
-        raise
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
     # TODO: support outputing packages
 
     # Return default
-    table = resource.to_petl()  # type: ignore
-    schema = resource.schema.to_summary()  # type: ignore
+    table = result.to_petl()  # type: ignore
+    schema = result.schema.to_summary()  # type: ignore
     typer.secho("\n## Schema\n")
     typer.secho(schema)
     typer.secho("\n## Table\n")

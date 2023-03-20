@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_cell_replace():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace="FRANCE"),
@@ -27,7 +28,7 @@ def test_step_cell_replace():
 
 
 def test_step_cell_replace_with_field_name():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace="FRANCE", field_name="id"),
@@ -49,7 +50,7 @@ def test_step_cell_replace_with_field_name():
 
 
 def test_step_cell_replace_using_regex():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.cell_replace(

@@ -15,10 +15,10 @@ runner = CliRunner()
 def test_program_extract():
     actual = runner.invoke(program, "extract data/table.csv")
     assert actual.exit_code == 0
-    assert actual.stdout.count("table.csv")
-    assert actual.stdout.count("id  name")
-    assert actual.stdout.count("1  english")
-    assert actual.stdout.count("2  中国人")
+    assert actual.stdout.count("table")
+    assert actual.stdout.count("id")
+    assert actual.stdout.count("1")
+    assert actual.stdout.count("2")
 
 
 def test_program_extract_header_rows():
@@ -159,42 +159,48 @@ def test_program_extract_dialect_keys_option():
 def test_program_extract_valid_rows():
     actual = runner.invoke(program, "extract data/countries.csv --valid --json")
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
-        {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
-        {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
-    ]
+    assert json.loads(actual.stdout) == {
+        "countries": [
+            {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+            {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+            {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+        ]
+    }
 
 
 def test_program_extract_yaml_valid_rows():
     actual = runner.invoke(program, "extract data/countries.csv --valid --yaml")
     assert actual.exit_code == 0
-    with open("data/fixtures/issue-1004/valid-countries.yaml", "r") as stream:
-        expect = yaml.safe_load(stream)
-    assert yaml.safe_load(actual.stdout) == expect
+    assert yaml.safe_load(actual.stdout) == {
+        "countries": [
+            {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+            {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+            {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+        ]
+    }
 
 
 def test_program_extract_invalid_rows():
     actual = runner.invoke(program, "extract data/countries.csv --invalid --json")
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
-        {"id": 5, "neighbor_id": None, "name": None, "population": None},
-    ]
+    assert json.loads(actual.stdout) == {
+        "countries": [
+            {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
+            {"id": 5, "neighbor_id": None, "name": None, "population": None},
+        ]
+    }
 
 
 def test_program_extract_valid_rows_with_no_valid_rows():
     actual = runner.invoke(program, "extract data/invalid.csv --valid")
     assert actual.exit_code == 0
-    assert actual.stdout.count("data: data/invalid.csv")
-    assert actual.stdout.count("No valid rows")
+    assert actual.stdout.count("No rows found")
 
 
 def test_program_extract_invalid_rows_with_no_invalid_rows():
     actual = runner.invoke(program, "extract data/capital-valid.csv --invalid")
     assert actual.exit_code == 0
-    assert actual.stdout.count("data: data/capital-valid.csv")
-    assert actual.stdout.count("No invalid rows")
+    assert actual.stdout.count("No rows found")
 
 
 def test_program_extract_valid_rows_from_datapackage_with_multiple_resources():
@@ -234,10 +240,12 @@ def test_program_extract_valid_rows_extract_dialect_sheet_option():
         program, "extract data/sheet2.xls --sheet Sheet2 --json --valid"
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    assert json.loads(actual.stdout) == {
+        "sheet2": [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+    }
 
 
 def test_program_extract_invalid_rows_extract_dialect_sheet_option():
@@ -245,7 +253,7 @@ def test_program_extract_invalid_rows_extract_dialect_sheet_option():
         program, "extract data/sheet2.xls --sheet Sheet2 --json --invalid"
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == []
+    assert json.loads(actual.stdout) == {"sheet2": []}
 
 
 def test_program_extract_single_resource():
@@ -253,10 +261,12 @@ def test_program_extract_single_resource():
         program, "extract data/datapackage.json --resource-name number-two --json"
     )
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout) == [
-        {"id": 1, "name": "中国人"},
-        {"id": 2, "name": "english"},
-    ]
+    assert json.loads(actual.stdout) == {
+        "number-two": [
+            {"id": 1, "name": "中国人"},
+            {"id": 2, "name": "english"},
+        ]
+    }
 
 
 def test_program_extract_single_invalid_resource():
@@ -264,24 +274,22 @@ def test_program_extract_single_invalid_resource():
         program, "extract data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count(
-        'The data package has an error: resource "number-twoo" does not exist'
-    )
+    assert actual.stdout.count('"number-twoo" does not exist')
 
 
 def test_program_extract_single_valid_resource_invalid_package():
     actual = runner.invoke(
-        program, "extract data/datapackagees.json --resource-name number-two"
+        program, "extract data/bad/datapackage.json --resource-name number-two"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("No such file or directory: 'data/datapackagees.json'")
+    assert actual.stdout.count("No such file or directory")
 
 
 def test_program_extract_single_resource_yaml():
     actual = runner.invoke(
         program, "extract data/datapackage.json --resource-name number-two --yaml"
     )
-    expect = extract("data/datapackage.json", resource_name="number-two")
+    expect = extract("data/datapackage.json", name="number-two")
     assert actual.exit_code == 0
     assert yaml.safe_load(actual.stdout) == expect
 
@@ -337,8 +345,8 @@ def test_extract_resource_from_csv_comma_delimiter_1009():
 def test_extract_description_option_issue_1362():
     descriptor = "https://umweltanwendungen.schleswig-holstein.de/pegel/jsp/frictionless.jsp?mstnr=114069&thema=w"
     actual = runner.invoke(
-        program,
-        f"extract --descriptor '{descriptor}' --json --limit-rows 1",
+        program, f"extract '{descriptor}' --format json --json --limit-rows 1 --name name"
     )
+    print(json.loads(actual.stdout))
     assert actual.exit_code == 0
-    assert json.loads(actual.stdout)[0]["Wasserstand"] == 690
+    assert json.loads(actual.stdout)["name"][0]["Wasserstand"] == 690

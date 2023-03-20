@@ -1,14 +1,17 @@
-from frictionless import Resource, Pipeline, Step, steps
+from frictionless import Pipeline, steps, Step
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_table_attach():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
-            steps.table_attach(resource=Resource(data=[["note"], ["large"], ["mid"]]))
+            steps.table_attach(
+                resource=TableResource(data=[["note"], ["large"], ["mid"]])
+            )
         ],
     )
     target = source.transform(pipeline)
@@ -28,7 +31,7 @@ def test_step_table_attach():
 
 
 def test_step_table_attach_from_descriptor():
-    source = Resource("data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             Step.from_descriptor(

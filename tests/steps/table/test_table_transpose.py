@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_table_transpose():
-    source = Resource("data/transpose.csv")
+    source = TableResource(path="data/transpose.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),

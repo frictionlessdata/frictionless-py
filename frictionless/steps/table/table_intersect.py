@@ -39,8 +39,8 @@ class table_intersect(Step):
             assert target.package
             source = target.package.get_resource(source)
         source.infer()
-        view1 = target.to_petl()
-        view2 = source.to_petl()
+        view1 = target.to_petl()  # type: ignore
+        view2 = source.to_petl()  # type: ignore
         function = (
             platform.petl.hashintersection
             if self.use_hash

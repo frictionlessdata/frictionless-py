@@ -15,16 +15,18 @@ if TYPE_CHECKING:
 class Adapter:
     # Read
 
-    def read_catalog(self) -> Catalog:
-        raise NotImplementedError()
-
     def read_package(self) -> Package:
         raise NotImplementedError()
 
     # Write
 
+    def write_package(self, package: Package) -> Any:
+        raise NotImplementedError()
+
+    # Experimental
+
     def write_catalog(self, catalog: Catalog) -> Any:
         raise NotImplementedError()
 
-    def write_package(self, package: Package) -> Any:
+    def read_catalog(self) -> Catalog:
         raise NotImplementedError()

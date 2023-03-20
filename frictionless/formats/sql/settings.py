@@ -2,7 +2,6 @@ from __future__ import annotations
 
 # General
 
-BLOCK_SIZE = 8096
 BUFFER_SIZE = 1000
 ROW_NUMBER_IDENTIFIER = "_rowNumber"
 ROW_VALID_IDENTIFIER = "_rowValid"

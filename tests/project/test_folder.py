@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Project
+from frictionless.project import Project
 
 
 name1 = "name1.txt"

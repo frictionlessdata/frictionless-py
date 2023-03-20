@@ -1,4 +1,5 @@
-from frictionless import Package, Pipeline, steps, Resource
+from frictionless import Package, Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
@@ -26,8 +27,11 @@ def test_step_resource_update_new_name():
     assert target.get_resource("new-name").path == "data.csv"
 
 
+# Bugs
+
+
 def test_step_resource_update_standalone_issue_1351():
-    source = Resource("data/resource.json")
+    source = TableResource.from_descriptor("data/resource.json")
     pipeline = Pipeline(
         steps=[
             steps.resource_update(descriptor={"title": "New title"}),

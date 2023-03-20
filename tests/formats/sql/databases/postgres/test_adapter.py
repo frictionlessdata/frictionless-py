@@ -1,7 +1,8 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, formats, platform
+from frictionless import Package, formats, platform
+from frictionless.resources import TableResource
 
 
 # General
@@ -15,7 +16,7 @@ def test_sql_adapter_postgresql_types(postgresql_url):
     target = Package(postgresql_url)
 
     # Assert metadata
-    assert target.get_resource("types").schema.to_descriptor() == {
+    assert target.get_table_resource("types").schema.to_descriptor() == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "object"},  # type downgrade
@@ -37,7 +38,7 @@ def test_sql_adapter_postgresql_types(postgresql_url):
     }
 
     # Assert data
-    assert target.get_resource("types").read_rows() == [
+    assert target.get_table_resource("types").read_rows() == [
         {
             "any": "中国人",
             "array": None,  # NOTE: review why it's None
@@ -67,7 +68,7 @@ def test_sql_adapter_postgresql_integrity(postgresql_url):
     target = Package(postgresql_url)
 
     # Assert metadata (main)
-    assert target.get_resource("integrity_main").schema.to_descriptor() == {
+    assert target.get_table_resource("integrity_main").schema.to_descriptor() == {
         "fields": [
             # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
@@ -81,7 +82,7 @@ def test_sql_adapter_postgresql_integrity(postgresql_url):
     }
 
     # Assert metadata (link)
-    assert target.get_resource("integrity_link").schema.to_descriptor() == {
+    assert target.get_table_resource("integrity_link").schema.to_descriptor() == {
         "fields": [
             # added required
             {"name": "main_id", "type": "integer", "constraints": {"required": True}},
@@ -100,13 +101,13 @@ def test_sql_adapter_postgresql_integrity(postgresql_url):
     }
 
     # Assert data (main)
-    assert target.get_resource("integrity_main").read_rows() == [
+    assert target.get_table_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("integrity_link").read_rows() == [
+    assert target.get_table_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
@@ -120,7 +121,7 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
     target = Package(postgresql_url)
 
     # Assert metadata
-    assert target.get_resource("constraints").schema.to_descriptor() == {
+    assert target.get_table_resource("constraints").schema.to_descriptor() == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -141,7 +142,7 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
     }
 
     # Assert data
-    assert target.get_resource("constraints").read_rows() == [
+    assert target.get_table_resource("constraints").read_rows() == [
         {
             "required": "passing",
             "minLength": "passing",
@@ -170,7 +171,7 @@ def test_sql_adapter_postgresql_constraints(postgresql_url):
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_adapter_postgresql_constraints_not_valid_error(postgresql_url, name, cell):
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("constraints")
+    resource = package.get_table_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == name:
@@ -190,7 +191,9 @@ def test_sql_adapter_postgresql_views_support(postgresql_url):
         conn.execute(sa.text("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)"))
         conn.execute(sa.text("INSERT INTO data VALUES (1, 'english'), (2, '中国人')"))
         conn.execute(sa.text("CREATE VIEW view AS SELECT * FROM data"))
-    with Resource(postgresql_url, control=formats.sql.SqlControl(table="view")) as res:
+    with TableResource(
+        path=postgresql_url, control=formats.sql.SqlControl(table="view")
+    ) as res:
         assert res.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -209,14 +212,14 @@ def test_sql_adapter_postgresql_comment_support(postgresql_url):
     control = formats.SqlControl(table="table")
 
     # Write
-    source = Resource(path="data/table.csv")
+    source = TableResource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
     source.write(postgresql_url, control=control)
 
     # Read
-    with Resource(postgresql_url, control=control) as target:
+    with TableResource(path=postgresql_url, control=control) as target:
         assert target.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer", "description": "integer field"},

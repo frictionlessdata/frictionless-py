@@ -1,21 +1,22 @@
 import pytest
-from frictionless import Resource, formats, platform, resources
+from frictionless import formats, platform
+from frictionless.resources import TableResource
 
 
 # General
 
 
 @pytest.mark.parametrize(
-    "source, selector",
+    "path, selector",
     [
         ("data/table1.html", "table"),
         ("data/table2.html", "table"),
         ("data/table3.html", ".mememe"),
     ],
 )
-def test_html_parser(source, selector):
+def test_html_parser(path, selector):
     control = formats.HtmlControl(selector=selector)
-    with resources.TableResource(source, control=control) as resource:
+    with TableResource(path=path, control=control) as resource:
         assert resource.format == "html"
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -29,8 +30,8 @@ def test_html_parser(source, selector):
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_html_parser_write(tmpdir):
-    source = Resource("data/table.csv")
-    target = resources.TableResource(str(tmpdir.join("table.html")))
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.html")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -44,7 +45,7 @@ def test_html_parser_write(tmpdir):
 
 
 def test_html_parser_newline_in_cell_issue_865(tmpdir):
-    source = resources.TableResource("data/table-with-newline.html")
+    source = TableResource(path="data/table-with-newline.html")
     target = source.write(str(tmpdir.join("table.csv")))
     with target:
         assert target.header == ["id", "name"]
@@ -57,7 +58,7 @@ def test_html_parser_newline_in_cell_issue_865(tmpdir):
 
 
 def test_html_parser_newline_in_cell_construction_file_issue_865(tmpdir):
-    source = resources.TableResource("data/construction.html")
+    source = TableResource(path="data/construction.html")
     target = source.write(str(tmpdir.join("table.csv")))
     target.infer(stats=True)
     assert target.stats.rows == 226

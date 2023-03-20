@@ -80,13 +80,13 @@ class PandasParser(Parser):
         pdc = platform.pandas_core_dtypes_api
 
         # Pandas types
-        if pdc.is_bool_dtype(dtype):
+        if pdc.is_bool_dtype(dtype):  # type: ignore
             return "boolean"
-        elif pdc.is_datetime64_any_dtype(dtype):
+        elif pdc.is_datetime64_any_dtype(dtype):  # type: ignore
             return "datetime"
-        elif pdc.is_integer_dtype(dtype):
+        elif pdc.is_integer_dtype(dtype):  # type: ignore
             return "integer"
-        elif pdc.is_numeric_dtype(dtype):
+        elif pdc.is_numeric_dtype(dtype):  # type: ignore
             return "number"
 
         # Python types

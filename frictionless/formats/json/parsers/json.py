@@ -5,7 +5,7 @@ from ....exception import FrictionlessException
 from ....platform import platform
 from ...inline import InlineControl
 from ..control import JsonControl
-from ....resource import Resource
+from ....resources import TableResource
 from ....system import system, Parser
 from .... import errors
 
@@ -33,7 +33,9 @@ class JsonParser(Parser):
             path = "%s.item" % control.property
         source = platform.ijson.items(self.loader.byte_stream, path)
         inline_control = InlineControl(keys=control.keys)
-        with Resource(data=source, format="inline", control=inline_control) as resource:
+        with TableResource(
+            data=source, format="inline", control=inline_control
+        ) as resource:
             try:
                 yield next(resource.cell_stream)  # type: ignore
             except StopIteration:

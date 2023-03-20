@@ -113,7 +113,7 @@ keys = Option(
 
 
 keyed = Option(
-    default=False,
+    default=None,
     help="Whether the input data is keyed for the Inline or JSON data plugins",
 )
 
@@ -239,7 +239,7 @@ basepath = Option(
 
 resource_name = Option(
     default=None,
-    help="Name of resource to validate",
+    help="Name of resource or table",
 )
 
 valid_rows = Option(

@@ -22,7 +22,7 @@ class field_filter(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         for name in resource.schema.field_names:
             if name not in self.names:
                 resource.schema.remove_field(name)

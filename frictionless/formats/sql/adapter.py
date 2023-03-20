@@ -1,11 +1,10 @@
 from __future__ import annotations
 import re
-from typing import TYPE_CHECKING, Any, Optional, Generator, List, Dict
+from typing import TYPE_CHECKING, Any, Optional, Generator, List, Dict, Callable
 from ...platform import platform
 from ...resource import Resource
 from ...package import Package
 from ...system import Adapter
-from .interfaces import IOnRow
 from .control import SqlControl
 from .mapper import SqlMapper
 from . import settings
@@ -14,6 +13,7 @@ if TYPE_CHECKING:
     from sqlalchemy import MetaData
     from sqlalchemy.engine import Engine
     from ...schema import Schema
+    from ...table import Row
 
 
 class SqlAdapter(Adapter):
@@ -89,8 +89,8 @@ class SqlAdapter(Adapter):
                 tables.append(table)
             self.metadata.create_all(conn, tables=tables)
         for table in self.metadata.sorted_tables:
-            if package.has_resource(table.name):
-                resource = package.get_resource(table.name)
+            if package.has_table_resource(table.name):
+                resource = package.get_table_resource(table.name)
                 with resource:
                     self.write_row_stream(resource.row_stream, table_name=table.name)
         return bool(tables)
@@ -109,7 +109,11 @@ class SqlAdapter(Adapter):
             self.metadata.create_all(conn, tables=[table])
 
     def write_row_stream(
-        self, row_stream, *, table_name: str, on_row: Optional[IOnRow] = None
+        self,
+        row_stream,
+        *,
+        table_name: str,
+        on_row: Optional[Callable[[Row], None]] = None,
     ) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:

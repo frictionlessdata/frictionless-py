@@ -36,24 +36,24 @@ DESCRIPTOR_MAX = {
 
 
 def test_schema():
-    assert Schema.from_descriptor(DESCRIPTOR_MIN)
-    assert Schema.from_descriptor(DESCRIPTOR_MAX)
-    assert Schema.from_descriptor("data/schema-valid-full.json")
-    assert Schema.from_descriptor("data/schema-valid-simple.json")
+    assert Schema(DESCRIPTOR_MIN)
+    assert Schema(DESCRIPTOR_MAX)
+    assert Schema("data/schema-valid-full.json")
+    assert Schema("data/schema-valid-simple.json")
 
 
 def test_schema_extract_metadata_error():
     with pytest.raises(FrictionlessException):
-        Schema.from_descriptor([])  # type: ignore
+        Schema([])  # type: ignore
 
 
 def test_schema_descriptor():
-    assert Schema.from_descriptor(DESCRIPTOR_MAX).to_descriptor() == DESCRIPTOR_MAX
+    assert Schema(DESCRIPTOR_MAX).to_descriptor() == DESCRIPTOR_MAX
 
 
 def test_schema_descriptor_path():
     path = "data/schema-valid-simple.json"
-    schema = Schema.from_descriptor(path)
+    schema = Schema(path)
     with io.open(path, encoding="utf-8") as file:
         descriptor = json.load(file)
     assert schema.to_descriptor() == descriptor
@@ -62,13 +62,13 @@ def test_schema_descriptor_path():
 @pytest.mark.vcr
 def test_schema_descriptor_url():
     url = BASEURL % "data/schema.json"
-    schema = Schema.from_descriptor(url)
+    schema = Schema(url)
     descriptor = requests.get(url).json()
     assert schema.to_descriptor() == descriptor
 
 
 def test_schema_read_cells():
-    schema = Schema.from_descriptor(DESCRIPTOR_MAX)
+    schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string", "string"]
     target = ["string", Decimal(10.0), 1, "string", "string"]
     cells, notes = schema.read_cells(source)
@@ -77,7 +77,7 @@ def test_schema_read_cells():
 
 
 def test_schema_read_cells_null_values():
-    schema = Schema.from_descriptor(DESCRIPTOR_MAX)
+    schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "", "-", "string", "null"]
     target = ["string", None, None, "string", None]
     cells, notes = schema.read_cells(source)
@@ -86,7 +86,7 @@ def test_schema_read_cells_null_values():
 
 
 def test_schema_read_cells_too_short():
-    schema = Schema.from_descriptor(DESCRIPTOR_MAX)
+    schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string"]
     target = ["string", Decimal(10.0), 1, "string", None]
     cells, notes = schema.read_cells(source)
@@ -95,7 +95,7 @@ def test_schema_read_cells_too_short():
 
 
 def test_schema_read_cells_too_long():
-    schema = Schema.from_descriptor(DESCRIPTOR_MAX)
+    schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string", "string", "string"]
     target = ["string", Decimal(10.0), 1, "string", "string"]
     cells, notes = schema.read_cells(source)
@@ -104,7 +104,7 @@ def test_schema_read_cells_too_long():
 
 
 def test_schema_read_cells_wrong_type():
-    schema = Schema.from_descriptor(DESCRIPTOR_MAX)
+    schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "notdecimal", "10.6", "string", "string"]
     target = ["string", None, None, "string", "string"]
     cells, notes = schema.read_cells(source)
@@ -114,24 +114,24 @@ def test_schema_read_cells_wrong_type():
 
 
 def test_schema_missing_values():
-    assert Schema.from_descriptor(DESCRIPTOR_MIN).missing_values == [""]
-    assert Schema.from_descriptor(DESCRIPTOR_MAX).missing_values == ["", "-", "null"]
+    assert Schema(DESCRIPTOR_MIN).missing_values == [""]
+    assert Schema(DESCRIPTOR_MAX).missing_values == ["", "-", "null"]
 
 
 def test_schema_fields():
     expect = ["id", "height"]
-    actual = [field.name for field in Schema.from_descriptor(DESCRIPTOR_MIN).fields]
+    actual = [field.name for field in Schema(DESCRIPTOR_MIN).fields]
     assert expect == actual
 
 
 def test_schema_get_field():
-    schema = Schema.from_descriptor(DESCRIPTOR_MIN)
+    schema = Schema(DESCRIPTOR_MIN)
     assert schema.get_field("id").name == "id"
     assert schema.get_field("height").name == "height"
 
 
 def test_schema_get_field_error_not_found():
-    schema = Schema.from_descriptor(DESCRIPTOR_MIN)
+    schema = Schema(DESCRIPTOR_MIN)
     with pytest.raises(FrictionlessException) as excinfo:
         schema.get_field("bad")
     error = excinfo.value.error
@@ -140,7 +140,7 @@ def test_schema_get_field_error_not_found():
 
 
 def test_schema_update_field():
-    schema = Schema.from_descriptor(DESCRIPTOR_MIN)
+    schema = Schema(DESCRIPTOR_MIN)
     schema.set_field_type("id", "number")
     schema.set_field_type("height", "number")
     assert schema.get_field("id").type == "number"
@@ -148,20 +148,20 @@ def test_schema_update_field():
 
 
 def test_schema_has_field():
-    schema = Schema.from_descriptor(DESCRIPTOR_MIN)
+    schema = Schema(DESCRIPTOR_MIN)
     assert schema.has_field("id")
     assert schema.has_field("height")
     assert not schema.has_field("undefined")
 
 
 def test_schema_remove_field():
-    schema = Schema.from_descriptor(DESCRIPTOR_MIN)
+    schema = Schema(DESCRIPTOR_MIN)
     assert schema.remove_field("height")
     assert schema.field_names == ["id"]
 
 
 def test_schema_remove_field_error_not_found():
-    schema = Schema.from_descriptor(DESCRIPTOR_MIN)
+    schema = Schema(DESCRIPTOR_MIN)
     with pytest.raises(FrictionlessException) as excinfo:
         schema.remove_field("bad")
     error = excinfo.value.error
@@ -170,25 +170,22 @@ def test_schema_remove_field_error_not_found():
 
 
 def test_schema_field_names():
-    assert Schema.from_descriptor(DESCRIPTOR_MIN).field_names == ["id", "height"]
+    assert Schema(DESCRIPTOR_MIN).field_names == ["id", "height"]
 
 
 def test_schema_primary_key():
-    assert Schema.from_descriptor(DESCRIPTOR_MIN).primary_key == []
-    assert Schema.from_descriptor(DESCRIPTOR_MAX).primary_key == ["id"]
+    assert Schema(DESCRIPTOR_MIN).primary_key == []
+    assert Schema(DESCRIPTOR_MAX).primary_key == ["id"]
 
 
 def test_schema_foreign_keys():
-    assert Schema.from_descriptor(DESCRIPTOR_MIN).foreign_keys == []
-    assert (
-        Schema.from_descriptor(DESCRIPTOR_MAX).foreign_keys
-        == DESCRIPTOR_MAX["foreignKeys"]
-    )
+    assert Schema(DESCRIPTOR_MIN).foreign_keys == []
+    assert Schema(DESCRIPTOR_MAX).foreign_keys == DESCRIPTOR_MAX["foreignKeys"]
 
 
 def test_schema_add_then_remove_field():
     schema = Schema()
-    schema.add_field(Field.from_descriptor({"name": "name", "type": "string"}))
+    schema.add_field(Field.from_descriptor(({"name": "name", "type": "string"})))
     field = schema.remove_field("name")
     assert field.name == "name"
 
@@ -207,7 +204,7 @@ def test_schema_primary_foreign_keys_as_array():
             }
         ],
     }
-    schema = Schema.from_descriptor(descriptor)
+    schema = Schema(descriptor)
     assert schema.primary_key == ["name"]
     assert schema.foreign_keys == [
         {"fields": ["parent_id"], "reference": {"resource": "resource", "fields": ["id"]}}
@@ -225,7 +222,7 @@ def test_schema_primary_foreign_keys_as_string():
             {"fields": "parent_id", "reference": {"resource": "resource", "fields": "id"}}
         ],
     }
-    schema = Schema.from_descriptor(descriptor)
+    schema = Schema(descriptor)
     assert schema.primary_key == ["name"]
     assert schema.foreign_keys == [
         {"fields": ["parent_id"], "reference": {"resource": "resource", "fields": ["id"]}}
@@ -242,7 +239,7 @@ def test_schema_primary_foreign_keys_as_string():
     ],
 )
 def test_schema_metadata_valid(source):
-    assert Schema.from_descriptor(source)
+    assert Schema(source)
 
 
 @pytest.mark.parametrize(
@@ -260,7 +257,7 @@ def test_schema_metadata_valid(source):
 )
 def test_schema_metadata_not_valid(source):
     with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor(source)
+        Schema(source)
     error = excinfo.value.error
     assert error.type == "schema-error"
     assert error.note == "descriptor is not valid"
@@ -268,21 +265,21 @@ def test_schema_metadata_not_valid(source):
 
 @pytest.mark.skip(reason="issue-1222")
 def test_schema_metadata_not_valid_multiple_errors():
-    schema = Schema.from_descriptor("data/schema-invalid-multiple-errors.json")
+    schema = Schema("data/schema-invalid-multiple-errors.json")
     assert len(schema.list_metadata_errors()) == 5  # type: ignore
 
 
 @pytest.mark.skip(reason="issue-1222")
 def test_schema_metadata_not_valid_multiple_errors_with_pk():
     with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor("data/schema-invalid-pk-is-wrong-type.json")
+        Schema("data/schema-invalid-pk-is-wrong-type.json")
     reasons = excinfo.value.reasons
     assert len(reasons) == 3
 
 
 def test_schema_metadata_error_message():
     with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor({"fields": [{"name": "name", "type": "other"}]})
+        Schema({"fields": [{"name": "name", "type": "other"}]})
     error = excinfo.value.error
     assert error.type == "field-error"
     assert error.note == 'field type "other" is not supported'
@@ -290,7 +287,7 @@ def test_schema_metadata_error_message():
 
 def test_schema_metadata_error_bad_schema_format():
     with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor(
+        Schema(
             {
                 "fields": [
                     {
@@ -310,7 +307,7 @@ def test_schema_metadata_error_bad_schema_format():
 
 
 def test_schema_valid_examples():
-    schema = Schema.from_descriptor(
+    schema = Schema(
         {
             "fields": [
                 {"name": "name", "type": "string", "example": "John"},
@@ -323,7 +320,7 @@ def test_schema_valid_examples():
 
 def test_schema_invalid_example():
     with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor(
+        Schema(
             {
                 "fields": [
                     {
@@ -354,7 +351,7 @@ def test_schema_standard_specs_properties(create_descriptor):
     schema = (
         Schema(**options)
         if not create_descriptor
-        else Schema.from_descriptor(helpers.create_descriptor(**options))
+        else Schema(helpers.create_descriptor(**options))
     )
     assert schema.fields == []
     assert schema.missing_values == []
@@ -370,7 +367,7 @@ def test_schema_pprint():
             {"name": "test_3", "type": "string", "format": "default"},
         ]
     }
-    schema = Schema.from_descriptor(descriptor)
+    schema = Schema(descriptor)
     expected = """
     {'fields': [{'name': 'test_1', 'type': 'string', 'format': 'default'},
                 {'name': 'test_2', 'type': 'string', 'format': 'default'},
@@ -381,7 +378,7 @@ def test_schema_pprint():
 
 
 def test_schema_pprint_with_constraints():
-    schema = Schema.from_descriptor("data/schema-valid.json")
+    schema = Schema("data/schema-valid.json")
     expected = """
     {'fields': [{'name': 'id',
                  'type': 'integer',
@@ -409,13 +406,13 @@ def test_schema_pprint_with_constraints():
 
 def test_schema_field_date_format_issue_177():
     descriptor = {"fields": [{"name": "myfield", "type": "date", "format": "%d/%m/%y"}]}
-    schema = Schema.from_descriptor(descriptor)
+    schema = Schema(descriptor)
     assert schema
 
 
 def test_schema_field_time_format_issue_177():
     descriptor = {"fields": [{"name": "myfield", "type": "time", "format": "%H:%M:%S"}]}
-    schema = Schema.from_descriptor(descriptor)
+    schema = Schema(descriptor)
     assert schema
 
 
@@ -427,7 +424,7 @@ def test_schema_add_remove_field_issue_218():
             {"name": "test_3", "type": "string", "format": "default"},
         ]
     }
-    test_schema = Schema.from_descriptor(descriptor)
+    test_schema = Schema(descriptor)
     test_schema.remove_field("test_1")
     test_schema.add_field(
         Field.from_descriptor({"name": "test_4", "type": "string", "format": "default"})
@@ -436,7 +433,7 @@ def test_schema_add_remove_field_issue_218():
 
 def test_schema_not_supported_type_issue_goodatbles_304():
     with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor(
+        Schema(
             {
                 "fields": [
                     {"name": "name"},

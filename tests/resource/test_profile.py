@@ -9,7 +9,7 @@ def test_resource_profiles_to_descriptor():
     profile = "data/resource.profile.json"
     resource = Resource(path="data/table.csv", profile=profile)
     with pytest.raises(FrictionlessException) as excinfo:
-        resource.to_descriptor()
+        resource.to_descriptor(validate=True)
     error = excinfo.value.error
     reasons = excinfo.value.reasons
     assert error.type == "resource-error"

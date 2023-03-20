@@ -35,7 +35,7 @@ class row_ungroup(Step):
     """
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         function = getattr(platform.petl, f"groupselect{self.selection}")
         if self.selection in ["first", "last"]:
             resource.data = function(table, self.group_name)

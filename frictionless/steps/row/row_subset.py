@@ -29,7 +29,7 @@ class row_subset(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         if self.subset == "conflicts":
             resource.data = table.conflicts(self.field_name)  # type: ignore
         elif self.subset == "distinct":

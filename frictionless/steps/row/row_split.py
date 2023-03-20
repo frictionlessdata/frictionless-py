@@ -27,7 +27,7 @@ class row_split(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         resource.data = table.splitdown(self.field_name, self.pattern)  # type: ignore
 
     # Metadata

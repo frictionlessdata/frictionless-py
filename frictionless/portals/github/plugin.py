@@ -3,11 +3,6 @@ from ...system import Plugin
 from urllib.parse import urlparse
 from .control import GithubControl
 from .adapter import GithubAdapter
-from typing import TYPE_CHECKING, Optional
-
-
-if TYPE_CHECKING:
-    from ... import portals
 
 
 class GithubPlugin(Plugin):
@@ -16,9 +11,7 @@ class GithubPlugin(Plugin):
     # Hooks
 
     # TODO: improve
-    def create_adapter(
-        self, source: str, *, control: Optional[portals.GithubControl] = None
-    ):
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, GithubControl):
@@ -31,7 +24,7 @@ class GithubPlugin(Plugin):
                     if len(splited_url) == 2:
                         control.user, control.repo = splited_url
                     return GithubAdapter(control)
-        if not source and isinstance(control, GithubControl):
+        if source is None and isinstance(control, GithubControl):
             return GithubAdapter(control=control)
 
     def select_control_class(self, type):

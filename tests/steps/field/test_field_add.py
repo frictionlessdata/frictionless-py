@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_field_add():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_add(name="note", value="eu", descriptor={"type": "string"}),
@@ -28,7 +29,7 @@ def test_step_field_add():
 
 
 def test_step_field_add_with_position():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_add(name="note", position=1, value="eu"),
@@ -51,7 +52,7 @@ def test_step_field_add_with_position():
 
 
 def test_step_field_add_with_formula():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -75,7 +76,7 @@ def test_step_field_add_with_formula():
 
 
 def test_step_field_add_with_function():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
@@ -101,7 +102,7 @@ def test_step_field_add_with_function():
 
 
 def test_step_field_add_with_incremental():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_add(name="number", incremental=True),

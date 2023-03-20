@@ -30,7 +30,7 @@ class cell_convert(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         function = self.function
         if not self.field_name:
             if not function:

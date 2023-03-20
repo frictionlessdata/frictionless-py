@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Resource, Dialect, Detector, formats, platform
+from frictionless import Dialect, Detector, formats, platform
+from frictionless.resources import TableResource
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -9,7 +10,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 def test_csv_parser():
-    with Resource("data/table.csv") as resource:
+    with TableResource(path="data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -18,7 +19,7 @@ def test_csv_parser():
 
 
 def test_csv_parser_with_bom():
-    with Resource("data/bom.csv") as resource:
+    with TableResource(path="data/bom.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -27,7 +28,7 @@ def test_csv_parser_with_bom():
 
 
 def test_csv_parser_with_bom_with_encoding():
-    with Resource("data/bom.csv", encoding="utf-8") as resource:
+    with TableResource(path="data/bom.csv", encoding="utf-8") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -36,8 +37,8 @@ def test_csv_parser_with_bom_with_encoding():
 
 
 def test_csv_parser_excel():
-    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
-    with Resource(source, format="csv") as resource:
+    data = b"header1,header2\nvalue1,value2\nvalue3,value4"
+    with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -46,9 +47,9 @@ def test_csv_parser_excel():
 
 
 def test_csv_parser_excel_tab():
-    source = b"header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
+    data = b"header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
     control = formats.CsvControl(delimiter="\t")
-    with Resource(source, format="csv", control=control) as resource:
+    with TableResource(data=data, format="csv", control=control) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -57,8 +58,8 @@ def test_csv_parser_excel_tab():
 
 
 def test_csv_parser_unix():
-    source = b'"header1","header2"\n"value1","value2"\n"value3","value4"'
-    with Resource(source, format="csv") as resource:
+    data = b'"header1","header2"\n"value1","value2"\n"value3","value4"'
+    with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -68,7 +69,7 @@ def test_csv_parser_unix():
 
 def test_csv_parser_escaping():
     control = formats.CsvControl(escape_char="\\")
-    with Resource("data/escaping.csv", control=control) as resource:
+    with TableResource(path="data/escaping.csv", control=control) as resource:
         assert resource.header == ["ID", "Test"]
         assert resource.read_rows() == [
             {"ID": 1, "Test": "Test line 1"},
@@ -78,15 +79,15 @@ def test_csv_parser_escaping():
 
 
 def test_csv_parser_doublequote():
-    with Resource("data/doublequote.csv") as resource:
+    with TableResource(path="data/doublequote.csv") as resource:
         assert len(resource.header) == 17
         for row in resource.row_stream:
             assert len(row) == 17
 
 
 def test_csv_parser_stream():
-    source = open("data/table.csv", mode="rb")
-    with Resource(source, format="csv") as resource:
+    data = open("data/table.csv", mode="rb")
+    with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -95,8 +96,8 @@ def test_csv_parser_stream():
 
 
 def test_csv_parser_buffer():
-    source = "id,name\n1,english\n2,中国人\n".encode("utf-8")
-    with Resource(source, format="csv") as resource:
+    data = "id,name\n1,english\n2,中国人\n".encode("utf-8")
+    with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -106,7 +107,7 @@ def test_csv_parser_buffer():
 
 @pytest.mark.vcr
 def test_csv_parser_remote():
-    with Resource(BASEURL % "data/table.csv") as resource:
+    with TableResource(path=BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -116,8 +117,8 @@ def test_csv_parser_remote():
 
 @pytest.mark.vcr
 def test_csv_parser_remote_non_ascii_url():
-    source = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"
-    with Resource(source) as resource:
+    path = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"
+    with TableResource(path=path) as resource:
         assert resource.header == [
             "Entity",
             "Transaction Posting Date",
@@ -128,9 +129,9 @@ def test_csv_parser_remote_non_ascii_url():
 
 
 def test_csv_parser_delimiter():
-    source = b'"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
+    data = b'"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
     control = formats.CsvControl(delimiter=";")
-    with Resource(source, format="csv", control=control) as resource:
+    with TableResource(data=data, format="csv", control=control) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -139,9 +140,9 @@ def test_csv_parser_delimiter():
 
 
 def test_csv_parser_escapechar():
-    source = b"header1%,header2\nvalue1%,value2\nvalue3%,value4"
+    data = b"header1%,header2\nvalue1%,value2\nvalue3%,value4"
     control = formats.CsvControl(escape_char="%")
-    with Resource(source, format="csv", control=control) as resource:
+    with TableResource(data=data, format="csv", control=control) as resource:
         assert resource.header == ["header1,header2"]
         assert resource.read_rows() == [
             {"header1,header2": "value1,value2"},
@@ -150,9 +151,9 @@ def test_csv_parser_escapechar():
 
 
 def test_csv_parser_quotechar():
-    source = b"%header1,header2%\n%value1,value2%\n%value3,value4%"
+    data = b"%header1,header2%\n%value1,value2%\n%value3,value4%"
     control = formats.CsvControl(quote_char="%")
-    with Resource(source, format="csv", control=control) as resource:
+    with TableResource(data=data, format="csv", control=control) as resource:
         assert resource.header == ["header1,header2"]
         assert resource.read_rows() == [
             {"header1,header2": "value1,value2"},
@@ -161,9 +162,9 @@ def test_csv_parser_quotechar():
 
 
 def test_csv_parser_skipinitialspace():
-    source = b"header1, header2\nvalue1, value2\nvalue3, value4"
+    data = b"header1, header2\nvalue1, value2\nvalue3, value4"
     control = formats.CsvControl(skip_initial_space=False)
-    with Resource(source, format="csv", control=control) as resource:
+    with TableResource(data=data, format="csv", control=control) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": " value2"},
@@ -172,8 +173,8 @@ def test_csv_parser_skipinitialspace():
 
 
 def test_csv_parser_skipinitialspace_default():
-    source = b"header1, header2\nvalue1, value2\nvalue3, value4"
-    with Resource(source, format="csv") as resource:
+    data = b"header1, header2\nvalue1, value2\nvalue3, value4"
+    with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -182,9 +183,9 @@ def test_csv_parser_skipinitialspace_default():
 
 
 def test_csv_parser_detect_delimiter_tab():
-    source = b"a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
+    data = b"a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
     dialect = Dialect(header=False)
-    with Resource(source, format="csv", dialect=dialect) as resource:
+    with TableResource(data=data, format="csv", dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1", "field3": "c1A,c1B"},
             {"field1": "a2", "field2": "b2", "field3": "c2"},
@@ -192,9 +193,9 @@ def test_csv_parser_detect_delimiter_tab():
 
 
 def test_csv_parser_detect_delimiter_semicolon():
-    source = b"a1;b1\na2;b2\n"
+    data = b"a1;b1\na2;b2\n"
     dialect = Dialect(header=False)
-    with Resource(source, format="csv", dialect=dialect) as resource:
+    with TableResource(data=data, format="csv", dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1"},
             {"field1": "a2", "field2": "b2"},
@@ -202,9 +203,9 @@ def test_csv_parser_detect_delimiter_semicolon():
 
 
 def test_csv_parser_detect_delimiter_pipe():
-    source = b"a1|b1\na2|b2\n"
+    data = b"a1|b1\na2|b2\n"
     dialect = Dialect(header=False)
-    with Resource(source, format="csv", dialect=dialect) as resource:
+    with TableResource(data=data, format="csv", dialect=dialect) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1"},
             {"field1": "a2", "field2": "b2"},
@@ -212,19 +213,19 @@ def test_csv_parser_detect_delimiter_pipe():
 
 
 def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
-    source1 = b"a;b;c\n#comment"
-    source2 = b"a,b,c\n#comment"
+    data1 = b"a;b;c\n#comment"
+    data2 = b"a,b,c\n#comment"
     control = formats.CsvControl(delimiter=";")
-    with Resource(source1, format="csv", control=control) as resource:
+    with TableResource(data=data1, format="csv", control=control) as resource:
         assert resource.header == ["a", "b", "c"]
-    with Resource(source2, format="csv") as resource:
+    with TableResource(data=data2, format="csv") as resource:
         assert resource.header == ["a", "b", "c"]
 
 
 def test_csv_parser_quotechar_is_empty_string():
-    source = b'header1,header2",header3\nvalue1,value2",value3'
+    data = b'header1,header2",header3\nvalue1,value2",value3'
     control = formats.CsvControl(quote_char="")
-    with Resource(source, format="csv", control=control) as resource:
+    with TableResource(data=data, format="csv", control=control) as resource:
         assert resource.header == ["header1", 'header2"', "header3"]
         assert resource.read_rows() == [
             {"header1": "value1", 'header2"': 'value2"', "header3": "value3"},
@@ -233,7 +234,7 @@ def test_csv_parser_quotechar_is_empty_string():
 
 def test_csv_parser_format_tsv():
     detector = Detector(schema_patch={"missingValues": ["\\N"]})
-    with Resource("data/table.tsv", detector=detector) as resource:
+    with TableResource(path="data/table.tsv", detector=detector) as resource:
         assert resource.dialect.to_descriptor() == {"csv": {"delimiter": "\t"}}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -248,8 +249,8 @@ def test_csv_parser_format_tsv():
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_csv_parser_write(tmpdir):
-    source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")))
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -262,8 +263,8 @@ def test_csv_parser_write(tmpdir):
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_csv_parser_write_delimiter(tmpdir):
     control = formats.CsvControl(delimiter=";")
-    source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), control=control)
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -276,8 +277,8 @@ def test_csv_parser_write_delimiter(tmpdir):
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_csv_parser_write_inline_source(tmpdir):
-    source = Resource([{"key1": "value1", "key2": "value2"}])
-    target = Resource(str(tmpdir.join("table.csv")))
+    source = TableResource(data=[{"key1": "value1", "key2": "value2"}])
+    target = TableResource(path=str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
         assert target.header == ["key1", "key2"]
@@ -288,8 +289,8 @@ def test_csv_parser_write_inline_source(tmpdir):
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_csv_parser_tsv_write(tmpdir):
-    source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.tsv")))
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.tsv")))
     source.write(target)
     assert target.normpath
     with open(target.normpath, encoding="utf-8") as file:
@@ -299,8 +300,8 @@ def test_csv_parser_tsv_write(tmpdir):
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_csv_parser_write_newline_lf(tmpdir):
     control = formats.CsvControl(line_terminator="\n")
-    source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), control=control)
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
         assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\n"}}
@@ -312,8 +313,8 @@ def test_csv_parser_write_newline_lf(tmpdir):
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_csv_parser_write_newline_crlf(tmpdir):
     control = formats.CsvControl(line_terminator="\r\n")
-    source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), control=control)
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
         assert target.dialect.to_descriptor() == {"csv": {"lineTerminator": "\r\n"}}
@@ -326,6 +327,7 @@ def test_csv_parser_write_newline_crlf(tmpdir):
 
 
 def test_csv_parser_proper_quote_issue_493():
-    resource = Resource.describe("data/issue-493.csv")
+    resource = TableResource(path="data/issue-493.csv")
+    resource.infer()
     assert resource.dialect.to_descriptor() == {}
     assert len(resource.schema.fields) == 126

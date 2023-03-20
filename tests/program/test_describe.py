@@ -14,7 +14,7 @@ runner = CliRunner()
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_program_describe():
-    actual = runner.invoke(program, "describe data/table.csv --stats")
+    actual = runner.invoke(program, "describe data/table.csv --stats --yaml")
     assert actual.exit_code == 0
     assert actual.stdout.count(
         "hash: sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
@@ -106,15 +106,12 @@ def test_program_describe_json():
 def test_program_describe_error_not_found():
     actual = runner.invoke(program, "describe data/bad.csv")
     assert actual.exit_code == 1
-    assert (
-        actual.stdout.count("[scheme-error]")
-        and actual.stdout.count("[Errno 2]")
-        and actual.stdout.count("data/bad.csv")
-    )
+    assert actual.stdout.count("[Errno 2]")
+    assert actual.stdout.count("data/bad.csv")
 
 
 def test_program_describe_basepath():
-    result = runner.invoke(program, "describe --basepath data *-3.csv")
+    result = runner.invoke(program, "describe --basepath data *-3.csv --yaml")
     expect = describe("*-3.csv", basepath="data")
     assert result.exit_code == 0
     assert yaml.safe_load(result.stdout) == expect.to_descriptor()

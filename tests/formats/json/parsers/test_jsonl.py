@@ -1,11 +1,12 @@
-from frictionless import Resource, formats
+from frictionless import formats
+from frictionless.resources import TableResource
 
 
 # Read
 
 
 def test_jsonl_parser():
-    with Resource("data/table.jsonl") as resource:
+    with TableResource(path="data/table.jsonl") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -14,7 +15,7 @@ def test_jsonl_parser():
 
 
 def test_jsonl_parser_ndjson():
-    with Resource("data/table.ndjson") as resource:
+    with TableResource(path="data/table.ndjson") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -26,8 +27,8 @@ def test_jsonl_parser_ndjson():
 
 
 def test_jsonl_parser_write(tmpdir):
-    source = Resource("data/table.csv")
-    target = source.write(str(tmpdir.join("table.jsonl")))
+    source = TableResource(path="data/table.csv")
+    target = source.write(path=str(tmpdir.join("table.jsonl")))
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -38,8 +39,8 @@ def test_jsonl_parser_write(tmpdir):
 
 def test_jsonl_parser_write_keyed(tmpdir):
     control = formats.JsonControl(keyed=True)
-    source = Resource("data/table.csv")
-    target = source.write(str(tmpdir.join("table.jsonl")), control=control)
+    source = TableResource(path="data/table.csv")
+    target = source.write(path=str(tmpdir.join("table.jsonl")), control=control)
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [

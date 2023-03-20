@@ -30,7 +30,7 @@ class row_sort(Step):
     # Transform
 
     def transform_resource(self, resource):
-        table = resource.to_petl()
+        table = resource.to_petl()  # type: ignore
         resource.data = table.sort(self.field_names, reverse=self.reverse)  # type: ignore
 
     # Metadata

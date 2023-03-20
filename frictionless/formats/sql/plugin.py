@@ -17,13 +17,14 @@ class SqlPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None):
-        if isinstance(source, str):
-            parsed = urlparse(source)
-            for prefix in settings.SCHEME_PREFIXES:
-                if parsed.scheme.startswith(prefix):
-                    engine = platform.sqlalchemy.create_engine(source)
-                    return SqlAdapter(engine, control=control)  # type: ignore
+    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+        if packagify:
+            if isinstance(source, str):
+                parsed = urlparse(source)
+                for prefix in settings.SCHEME_PREFIXES:
+                    if parsed.scheme.startswith(prefix):
+                        engine = platform.sqlalchemy.create_engine(source)
+                        return SqlAdapter(engine, control=control)  # type: ignore
 
     def create_parser(self, resource):
         if resource.format == "sql":

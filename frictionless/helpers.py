@@ -14,6 +14,8 @@ import textwrap
 import stringcase
 from copy import deepcopy
 from pathlib import Path
+from typing import List, TypeVar, Type
+from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 from typing import Union, Any, Optional
@@ -67,6 +69,24 @@ class SafeFormatDict(dict):
         return ""
 
 
+def to_json(obj: Any, *, encoder_class: Optional[Any] = None) -> str:
+    return json.dumps(
+        obj,
+        indent=2,
+        ensure_ascii=False,
+        cls=encoder_class,
+    )
+
+
+def to_yaml(obj: Any) -> str:
+    return platform.yaml.dump(
+        obj,
+        sort_keys=False,
+        allow_unicode=True,
+        Dumper=create_yaml_dumper(),
+    )
+
+
 def cleaned_dict(**options):
     return dict(**remove_non_values(options))
 
@@ -88,6 +108,14 @@ def rows_to_data(rows):
 def is_class_accept_option(cls, name):
     sig = inspect.signature(cls.__init__)
     return name in sig.parameters
+
+
+def normalize_source(source: Any) -> Any:
+    if isinstance(source, Path):
+        source = str(source)
+    if isinstance(source, Mapping):
+        source = {key: value for key, value in source.items()}
+    return source
 
 
 @contextmanager
@@ -263,7 +291,7 @@ def is_safe_path(path):
     return not any(unsafeness_conditions)
 
 
-def is_directory_source(source: Any):
+def is_directory_source(source: str) -> bool:
     if not isinstance(source, str):
         return False
     if is_remote_path(source):
@@ -273,7 +301,7 @@ def is_directory_source(source: Any):
     return True
 
 
-def is_expandable_source(source: Any):
+def is_expandable_source(source: Any) -> bool:
     if isinstance(source, list):
         if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):
             return True
@@ -337,6 +365,7 @@ def parse_descriptors_string(string):
     return descriptors
 
 
+# TODO: repalce by the typed version
 def parse_csv_string(string, *, convert: type = str, fallback=False):
     if string is None:
         return None
@@ -352,6 +381,27 @@ def parse_csv_string(string, *, convert: type = str, fallback=False):
                 pass
             result.append(cell)
         return result
+
+
+T = TypeVar("T", int, str)
+
+
+def parse_csv_string_typed(
+    string: str, *, convert: Type[T] = str, fallback=False
+) -> List[T]:
+    reader = csv.reader(io.StringIO(string), delimiter=",")
+    result = []
+    for row in reader:
+        for cell in row:
+            try:
+                cell = convert(cell)
+            except ValueError:
+                if not fallback:
+                    raise
+                pass
+            result.append(cell)
+        break
+    return result
 
 
 def stringify_csv_string(cells, **options):

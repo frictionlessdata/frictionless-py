@@ -1,6 +1,6 @@
 from __future__ import annotations
 from ...platform import platform
-from ...resource import Resource
+from ...resources import TableResource
 from .control import ParquetControl
 from ...system import Parser
 
@@ -33,7 +33,7 @@ class ParquetParser(Parser):
             handle = handles.handle
         file = platform.fastparquet.ParquetFile(handle)
         for group, df in enumerate(file.iter_row_groups(**control.to_python()), start=1):
-            with Resource(data=df, format="pandas") as resource:
+            with TableResource(data=df, format="pandas") as resource:
                 for line, cells in enumerate(resource.cell_stream, start=1):
                     # Starting from second group we don't need a header row
                     if group != 1 and line == 1:

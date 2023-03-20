@@ -1,31 +1,33 @@
 from __future__ import annotations
-import sys
 import typer
+from rich.console import Console
 from typing import List
-from tabulate import tabulate
-from ..actions import validate
-from ..detector import Detector
-from ..checklist import Checklist, Check
-from ..dialect import Dialect
+from rich.table import Table
+from ..resource import Resource
 from ..system import system
 from .program import program
-from .. import formats
-from .. import helpers
 from . import common
+from . import utils
 
 
 @program.command(name="validate")
 def program_validate(
     # Source
     source: List[str] = common.source,
+    name: str = common.resource_name,
     type: str = common.type,
-    # File
     path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
+    schema: str = common.schema,
+    hash: str = common.hash,
+    bytes: int = common.bytes,
+    fields: int = common.fields,
+    rows: int = common.rows,
+    basepath: str = common.basepath,
     # Dialect
     dialect: str = common.dialect,
     header_rows: str = common.header_rows,
@@ -36,18 +38,6 @@ def program_validate(
     table: str = common.table,
     keys: str = common.keys,
     keyed: bool = common.keyed,
-    # Schema
-    schema: str = common.schema,
-    # Checklist
-    checklist: str = common.checklist,
-    checks: str = common.checks,
-    pick_errors: str = common.pick_errors,
-    skip_errors: str = common.skip_errors,
-    # Stats
-    hash: str = common.hash,
-    bytes: int = common.bytes,
-    fields: int = common.fields,
-    rows: int = common.rows,
     # Detector
     buffer_size: int = common.buffer_size,
     sample_size: int = common.sample_size,
@@ -57,17 +47,22 @@ def program_validate(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
-    # Software
-    basepath: str = common.basepath,
-    resource_name: str = common.resource_name,
-    limit_errors: int = common.limit_errors,
-    limit_rows: int = common.limit_rows,
+    # Checklist
+    checklist: str = common.checklist,
+    checks: str = common.checks,
+    pick_errors: str = common.pick_errors,
+    skip_errors: str = common.skip_errors,
+    # Command
     parallel: bool = common.parallel,
+    limit_rows: int = common.limit_rows,
+    limit_errors: int = common.limit_errors,
     yaml: bool = common.yaml,
     json: bool = common.json,
     debug: bool = common.debug,
     trusted: bool = common.trusted,
     standards: str = common.standards,
+    # Deprecated
+    resource_name: str = common.resource_name,
 ):
     """
     Validate a data source.
@@ -75,6 +70,8 @@ def program_validate(
     Based on the inferred data source type it will validate resource or package.
     Default output format is YAML with a front matter.
     """
+    console = Console()
+    name = name or resource_name
 
     # Setup system
     if trusted:
@@ -82,139 +79,128 @@ def program_validate(
     if standards:
         system.standards = standards  # type: ignore
 
-    # Support stdin
-    is_stdin = False
+    # Create source
+    source = utils.create_source(source, path=path)
     if not source and not path:
-        if not sys.stdin.isatty():
-            is_stdin = True
-            source = [sys.stdin.buffer.read()]  # type: ignore
+        note = 'Providing "source" or "path" is required'
+        utils.print_error(console, note=note)
+        raise typer.Exit(code=1)
 
-    # Validate input
-    if not source and not path:
-        message = 'Providing "source" or "path" is required'
-        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
-        raise typer.Exit(1)
-
-    # Prepare source
-    def prepare_source():
-        return list(source) if len(source) > 1 else (source[0] if source else None)
-
-    # Prepare dialect
-    def prepare_dialect():
-        descriptor = helpers.parse_json_string(dialect)
-        if descriptor:
-            return Dialect.from_descriptor(descriptor)
-        controls = []
-        if sheet:
-            controls.append(formats.ExcelControl(sheet=sheet))
-        elif table:
-            controls.append(formats.SqlControl(table=table))
-        elif keys or keyed:
-            controls.append(formats.JsonControl.from_options(keys=keys, keyed=keyed))
-        dialect_obj = Dialect.from_options(
-            header_rows=helpers.parse_csv_string(header_rows, convert=int),
+    try:
+        # Create dialect
+        dialect_obj = utils.create_dialect(
+            descriptor=dialect,
+            header_rows=header_rows,
             header_join=header_join,
             comment_char=comment_char,
-            comment_rows=helpers.parse_csv_string(comment_rows, convert=int),
-            controls=controls,
+            comment_rows=comment_rows,
+            sheet=sheet,
+            table=table,
+            keys=keys,
+            keyed=keyed,
         )
-        if dialect_obj.to_descriptor():
-            return dialect_obj
 
-    # Prepare checklist
-    def prepare_checklist():
-        descriptor = helpers.parse_json_string(checklist)
-        if descriptor:
-            return Checklist.from_descriptor(descriptor)
-        check_objects = []
-        for check_descriptor in helpers.parse_descriptors_string(checks) or []:
-            check_objects.append(Check.from_descriptor(check_descriptor))
-        checklist_obj = Checklist.from_options(
-            checks=check_objects,
-            pick_errors=helpers.parse_csv_string(pick_errors),
-            skip_errors=helpers.parse_csv_string(skip_errors),
-        )
-        if checklist_obj.checks or checklist_obj.pick_errors or checklist_obj.skip_errors:
-            return checklist_obj
-
-    # Prepare detector
-    def prepare_detector():
-        return Detector(
+        # Create detector
+        detector_obj = utils.create_detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
-            field_names=helpers.parse_csv_string(field_names),
+            field_names=field_names,
             field_confidence=field_confidence,
             field_float_numbers=field_float_numbers,
-            field_missing_values=helpers.parse_csv_string(field_missing_values),  # type: ignore
+            field_missing_values=field_missing_values,
             schema_sync=schema_sync,
         )
 
-    # Prepare options
-    def prepare_options():
-        return dict(
-            type=type,
-            # Standard
+        # Create checklist
+        checklist_obj = utils.create_checklist(
+            descriptor=checklist,
+            checks=checks,
+            pick_errors=pick_errors,
+            skip_errors=skip_errors,
+        )
+
+        # Create resource
+        resource = Resource(
+            source=utils.create_source(source),
+            name=name,
             path=path,
             scheme=scheme,
             format=format,
-            encoding=encoding,
-            innerpath=innerpath,
+            datatype=type,
             compression=compression,
-            dialect=prepare_dialect(),
-            schema=schema,
-            checklist=prepare_checklist(),
+            innerpath=innerpath,
+            encoding=encoding,
             hash=hash,
             bytes=bytes,
             fields=fields,
             rows=rows,
-            # Software
+            dialect=dialect_obj,
+            schema=schema,
             basepath=basepath,
-            detector=prepare_detector(),
-            # Action
-            resource_name=resource_name,
-            limit_errors=limit_errors,
-            limit_rows=limit_rows,
-            parallel=parallel,
+            detector=detector_obj,
         )
 
-    # Validate source
-    try:
-        report = validate(prepare_source(), **prepare_options())
+        # Validate resource
+        report = resource.validate(
+            checklist_obj,
+            name=name,
+            parallel=parallel,
+            limit_rows=limit_rows,
+            limit_errors=limit_errors,
+        )
+        code = int(not report.valid)
     except Exception as exception:
-        if not debug:
-            typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
-            raise typer.Exit(1)
-        raise
+        utils.print_exception(console, debug=debug, exception=exception)
+        raise typer.Exit(code=1)
 
-    # Return JSON
-    if json:
-        content = report.to_json()
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return YAML
+    # Yaml mode
     if yaml:
         content = report.to_yaml().strip()
-        typer.secho(content)
-        raise typer.Exit()
+        print(content)
+        raise typer.Exit(code=code)
 
-    # Return validation report errors
-    if report.errors:
-        content = []
-        prefix = "invalid"
-        name = "stdin" if is_stdin else source
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {name}", bold=True)
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        for error in report.errors:
-            content.append([error.type, error.message])
-        typer.secho(
-            str(tabulate(content, headers=["type", "message"], tablefmt="simple"))
-        )
+    # Json mode
+    if json:
+        content = report.to_json()
+        print(content)
+        raise typer.Exit(code=code)
 
-    # Return validation report summary and tables
-    typer.secho(str(report.to_summary()))
+    # Default mode
+    labels = ["Row", "Field", "Type", "Message"]
+    props = ["row_number", "field_number", "type", "message"]
+    names = ["dataset"] + [task.name for task in report.tasks]
+    matrix = [report.errors] + [task.errors for task in report.tasks]
 
-    # Return retcode
-    raise typer.Exit(code=int(not report.valid))
+    # Status
+    if report.tasks:
+        console.rule("[bold]Dataset")
+        view = Table(title="dataset")
+        view.add_column("name")
+        view.add_column("type")
+        view.add_column("path")
+        view.add_column("status")
+        for task in report.tasks:
+            status = "VALID" if task.valid else "INVALID"
+            style = "green" if task.valid else "bold red"
+            row = [task.name, task.type, task.place, status]
+            view.add_row(*row, style=style)
+        console.print(view)
+
+    # Errors
+    if not report.valid:
+        console.rule("[bold]Tables")
+        for name, errors in zip(names, matrix):
+            if errors:
+                view = Table(title=name)
+                for label in labels:
+                    view.add_column(label)
+                for error in errors:
+                    row = []
+                    for prop in props:
+                        row.append(str(getattr(error, prop, None)))
+                    view.add_row(*row)
+                console.print(view)
+
+    # Proper retcode
+    raise typer.Exit(code=code)

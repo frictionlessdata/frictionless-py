@@ -1,11 +1,12 @@
 from __future__ import annotations
 import subprocess as sp
 from typing import TYPE_CHECKING
-from ...resource import Resource
+from ...resources import TableResource
 from ...system import Adapter
 from .mapper import QsvMapper
 
 if TYPE_CHECKING:
+    from ...resource import Resource
     from ...schema import Schema
 
 
@@ -23,7 +24,8 @@ class QsvAdapter(Adapter):
     def read_schema(self, resource: Resource) -> Schema:
         command = [self.qsv_path, "stats", "--infer-dates", "--dates-whitelist", "all"]
         process = sp.Popen(command, stdout=sp.PIPE, stdin=sp.PIPE)
-        with resource.open(as_file=True):
+        # TODO: Use FileResource here (or future resource.stream_bytes())
+        with resource:
             while True:
                 chunk = resource.read_bytes(size=BLOCK_SIZE)
                 if not chunk:
@@ -31,6 +33,7 @@ class QsvAdapter(Adapter):
                 process.stdin.write(chunk)  # type: ignore
             process.stdin.close()  # type: ignore
             buffer = process.stdout.read()  # type: ignore
-        stats = Resource(buffer, format="csv").extract()
+        result = TableResource(data=buffer, format="csv")
+        stats = result.read_rows()
         schema = QsvMapper().read_schema(stats)  # type: ignore
         return schema

@@ -1,11 +1,11 @@
-from frictionless import Resource, resources
+from frictionless.resources import TableResource
 
 
 # Read
 
 
 def test_yaml_parser():
-    with resources.TableResource(path="data/table.yaml") as resource:
+    with TableResource(path="data/table.yaml") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -14,7 +14,7 @@ def test_yaml_parser():
 
 
 def test_yaml_parser_keyed():
-    with resources.TableResource(path="data/table.keyed.yaml") as resource:
+    with TableResource(path="data/table.keyed.yaml") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -26,8 +26,8 @@ def test_yaml_parser_keyed():
 
 
 def test_yaml_parser_write(tmpdir):
-    source = Resource("data/table.csv")
-    target = resources.TableResource(path=str(tmpdir.join("table.yaml")))
+    source = TableResource(path="data/table.csv")
+    target = TableResource(path=str(tmpdir.join("table.yaml")))
     source.write(target)
     with target:
         assert target.format == "yaml"

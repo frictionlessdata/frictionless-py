@@ -2,9 +2,7 @@ from __future__ import annotations
 import os
 import attrs
 import codecs
-from pathlib import Path
 from copy import copy, deepcopy
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
@@ -126,25 +124,23 @@ class Detector:
     For more information, please check "Extracting Data" guide.
     """
 
-    # Detect
+    # Metadta
 
     # TODO: remove static method?
     @staticmethod
-    def detect_metadata_type(source: Any) -> Optional[str]:
+    def detect_metadata_type(
+        source: Any, *, format: Optional[str] = None
+    ) -> Optional[str]:
         """Return an descriptor type as 'resource' or 'package'"""
-
-        # Normalize
-        if isinstance(source, Path):
-            source = str(source)
-        if isinstance(source, Mapping):
-            source = {key: value for key, value in source.items()}
+        source = helpers.normalize_source(source)
 
         # String
         if isinstance(source, str):
             for type, item in settings.METADATA_TRAITS.items():
                 if source.endswith(tuple(item["names"])):
                     return type
-            if source.endswith(("json", "yaml")):
+            format = format or helpers.parse_scheme_and_format(source)[1]
+            if format in ["json", "yaml"]:
                 try:
                     size = settings.DEFAULT_BUFFER_SIZE * 10
                     source = Metadata.metadata_retrieve(source, size=size)
@@ -156,6 +152,8 @@ class Detector:
             for type, item in settings.METADATA_TRAITS.items():
                 if set(item["props"]).intersection(source.keys()):
                     return type
+
+    # Resource
 
     def detect_resource(self, resource: Resource) -> None:
         """Detects path details"""
@@ -188,6 +186,8 @@ class Detector:
         resource.scheme = resource.scheme or scheme
         resource.format = resource.format or format
         resource.compression = resource.compression or compression
+
+    # Encoding
 
     def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
         """Detect encoding from buffer
@@ -231,6 +231,8 @@ class Detector:
                 encoding = "utf-16"
 
         return encoding
+
+    # Dialect
 
     def detect_dialect(
         self,
@@ -281,6 +283,8 @@ class Detector:
                 dialect.header_rows = header_rows
 
         return dialect
+
+    # Schema
 
     # TODO: detect fields without type
     def detect_schema(

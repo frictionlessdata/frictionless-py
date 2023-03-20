@@ -1,11 +1,12 @@
-from frictionless import Resource, Pipeline, steps
+from frictionless import Pipeline, steps
+from frictionless.resources import TableResource
 
 
 # General
 
 
 def test_step_field_update():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", function=str, descriptor={"type": "string"}),
@@ -28,7 +29,7 @@ def test_step_field_update():
 
 
 def test_step_field_update_with_exact_value():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value="x", descriptor={"type": "string"}),
@@ -50,7 +51,7 @@ def test_step_field_update_with_exact_value():
 
 
 def test_step_field_update_new_name():
-    source = Resource(path="data/transform.csv")
+    source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", descriptor={"name": "new-name"}),

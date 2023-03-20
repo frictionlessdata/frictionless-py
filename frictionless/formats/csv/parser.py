@@ -8,7 +8,7 @@ from ...system import system, Parser
 from . import settings
 
 if TYPE_CHECKING:
-    from ...resource import Resource
+    from ...resources import TableResource
     from ...interfaces import ITextStream, ISample
 
 
@@ -49,7 +49,7 @@ class CsvParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source: Resource):
+    def write_row_stream(self, source: TableResource):
         options = {}
         control = CsvControl.from_dialect(self.resource.dialect)
         if self.resource.format == "tsv":

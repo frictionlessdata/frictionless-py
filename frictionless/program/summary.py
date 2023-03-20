@@ -6,7 +6,7 @@ from .program import program
 from . import common
 
 
-@program.command(name="summary")
+@program.command(name="summary", hidden=True)
 def program_summary(
     source: str = common.source,
     # Command
@@ -47,7 +47,7 @@ def program_summary(
     typer.secho("")
     typer.secho("# Extract ", bold=True)
     typer.secho("")
-    typer.secho(str(resource.to_view()))
+    typer.secho(str(resource.to_view()))  # type: ignore
 
     # Validate
     try:
