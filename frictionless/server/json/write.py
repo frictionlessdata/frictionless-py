@@ -8,14 +8,15 @@ from ..router import router
 class Props(BaseModel):
     session: Optional[str]
     path: str
-
-
-class Result(BaseModel):
     data: Any
 
 
-@router.post("/json/read")
+class Result(BaseModel):
+    path: str
+
+
+@router.post("/json/write")
 def server_json_read(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    data = project.read_json(props.path)
-    return Result(data=data)
+    project.write_json(props.path, data=props.data)
+    return Result(path=props.path)

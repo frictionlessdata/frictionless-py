@@ -4,7 +4,7 @@ import json
 import datetime
 import secrets
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Any
 from ..resources import FileResource
 from ..exception import FrictionlessException
 from ..package import Package
@@ -153,17 +153,15 @@ class Project:
 
     # Json
 
-    def read_json(self, path: str) -> IData:
+    def read_json(self, path: str) -> Any:
         path = self.filesystem.get_secure_fullpath(path)
         resource = JsonResource(path=path)
-        data = resource.read_data()
-        assert isinstance(data, dict)
-        return data
+        return resource.read_json()
 
-    def write_json(self, path: str, *, data: IData):
+    def write_json(self, path: str, *, data: Any):
         path = self.filesystem.get_secure_fullpath(path)
         resource = JsonResource(data=data)
-        resource.write(path)
+        resource.write_json(path=path)
 
     # Package
 
