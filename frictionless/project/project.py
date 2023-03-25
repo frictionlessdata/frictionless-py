@@ -12,6 +12,7 @@ from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
 from .interfaces import IQueryData, ITable, IFile, IFileItem, IData, IFieldItem
+from ..resources import JsonResource
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -64,14 +65,6 @@ class Project:
     def read_bytes(self, path: str) -> bytes:
         return self.filesystem.read_bytes(path)
 
-    # Data
-
-    def read_data(self, path: str) -> IData:
-        text = self.read_text(path)
-        data = json.loads(text)
-        assert isinstance(data, dict)
-        return data
-
     # File
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
@@ -101,6 +94,7 @@ class Project:
         self.filesystem.delete_file(path)
         return path
 
+    # TODO: fix not safe
     def index_file(self, path: str) -> Optional[IFile]:
         file = self.read_file(path)
         if file:
@@ -156,6 +150,20 @@ class Project:
 
     def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.create_folder(name, folder=folder)
+
+    # Json
+
+    def read_json(self, path: str) -> IData:
+        path = self.filesystem.get_secure_fullpath(path)
+        resource = JsonResource(path=path)
+        data = resource.read_data()
+        assert isinstance(data, dict)
+        return data
+
+    def write_json(self, path: str, *, data: IData):
+        path = self.filesystem.get_secure_fullpath(path)
+        resource = JsonResource(data=data)
+        resource.write(path)
 
     # Package
 
