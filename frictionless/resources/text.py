@@ -18,7 +18,7 @@ class TextResource(Resource):
             str: resource text
         """
         if self.memory:
-            return ""
+            return str(self.data)
         with helpers.ensure_open(self):
             return self.text_stream.read(size)  # type: ignore
 
@@ -32,7 +32,7 @@ class TextResource(Resource):
             res = Resource(target, **options)
             assert isinstance(res, TextResource)
         text = self.read_text()
-        bytes = text.encode(self.encoding or "utf-8")
+        bytes = text.encode(res.encoding or "utf-8")
         assert res.normpath
         helpers.write_file(res.normpath, bytes, mode="wb")
         return res

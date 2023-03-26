@@ -12,7 +12,7 @@ from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
 from .interfaces import IQueryData, ITable, IFile, IFileItem, IData, IFieldItem
-from ..resources import JsonResource
+from ..resources import JsonResource, TextResource
 from .. import settings
 from .. import helpers
 from .. import portals
@@ -252,7 +252,12 @@ class Project:
     # Text
 
     # TODO: use detected resource.encoding if indexed
-    def read_text(self, path: str) -> str:
-        bytes = self.filesystem.read_bytes(path)
-        text = bytes.decode("utf-8")
-        return text
+    def read_text(self, path: str) -> Any:
+        path = self.filesystem.get_secure_fullpath(path)
+        resource = TextResource(path=path)
+        return resource.read_text()
+
+    def write_text(self, path: str, *, text: str):
+        path = self.filesystem.get_secure_fullpath(path)
+        resource = TextResource(data=text)
+        resource.write_text(path=path)
