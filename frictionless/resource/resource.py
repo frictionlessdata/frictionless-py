@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 import attrs
 import warnings
 from typing_extensions import Self
@@ -497,6 +498,7 @@ class Resource(Metadata):
 
     # Read
 
+    # TODO: deprecate in favour of fileResource.read_file
     def read_bytes(self, *, size: Optional[int] = None) -> bytes:
         """Read bytes into memory
 
@@ -519,6 +521,7 @@ class Resource(Metadata):
                 return buffer
             return self.byte_stream.read1(size)  # type: ignore
 
+    # TODO: deprecate in favour of textResource.read_text
     def read_text(self, *, size: Optional[int] = None) -> str:
         """Read text into memory
 
@@ -529,6 +532,20 @@ class Resource(Metadata):
             return ""
         with helpers.ensure_open(self):
             return self.text_stream.read(size)  # type: ignore
+
+    # TODO: deprecate in favour of jsonResource.read_json
+    def read_data(self, *, size: Optional[int] = None) -> Any:
+        """Read data into memory
+
+        Returns:
+            any: resource data
+        """
+        if self.data is not None:
+            return self.data
+        with helpers.ensure_open(self):
+            text = self.read_text(size=size)
+            data = json.loads(text)
+            return data
 
     # Infer
 
