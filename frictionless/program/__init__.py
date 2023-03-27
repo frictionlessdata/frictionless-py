@@ -10,6 +10,7 @@ from . import index
 from . import list
 from . import publish
 from . import query
+from . import datasette
 from . import script
 from . import summary
 from . import transform
