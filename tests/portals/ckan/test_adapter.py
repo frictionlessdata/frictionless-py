@@ -378,11 +378,15 @@ def test_ckan_adapter_catalog_search_with_results_offset(options_br):
 def test_ckan_adapter_publish_minimal_package_info(options_lh):
     # Write
     url = options_lh.pop("url")
-    control = portals.CkanControl(baseurl=url, apikey="env:CKAN_APIKEY")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-organization",
+    )
     package = Package("data/package.json")
     package_name = package.name
     response = package.publish(control=control)
-    assert "dataset/effc1c30-f165-4b2f-a169-eeba0b13c7fb" in response
+    assert "dataset/0696c380-3fe6-4a62-9948-c0f09f17b389" in response
 
     # Read
     control = portals.CkanControl(baseurl=url, dataset="name")
@@ -394,11 +398,13 @@ def test_ckan_adapter_publish_minimal_package_info(options_lh):
 def test_ckan_adapter_publish_with_detail_info(options_lh):
     # Write
     url = options_lh.pop("url")
-    control = portals.CkanControl(baseurl=url, apikey="env:CKAN_APIKEY")
+    control = portals.CkanControl(
+        baseurl=url, apikey="env:CKAN_APIKEY", organization_name="frictionless-data"
+    )
     package = Package("data/detailed.package.json")
     package_name = package.name
     response = package.publish(control=control)
-    assert "dataset/755cfcac-cd87-4522-9a81-99e82298047b" in response
+    assert "dataset/e1c26a30-5689-450f-af0a-262afba1e55c" in response
 
     # Read
     control = portals.CkanControl(

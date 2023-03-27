@@ -103,6 +103,27 @@ class CkanAdapter(Adapter):
             if response.status_code == 200:
                 response_dict = json.loads(response.content)
                 dataset_id = response_dict["result"]["id"]
+                package_resource_data = {
+                    "name": "package",
+                    "type": "json",
+                    "package_id": dataset_id,
+                }
+
+                # upload package
+                endpoint = f"{baseurl}/api/action/resource_create"
+                make_ckan_request(
+                    endpoint,
+                    method="POST",
+                    headers=headers,
+                    data=package_resource_data,
+                    files={
+                        "upload": (
+                            "package.json",
+                            json.dumps(package_data, indent=2).encode("utf-8"),
+                            "application/octet-stream",
+                        )
+                    },
+                )
 
                 # upload resources
                 # TODO: See if it's possible to upload only the resources that need to be uploaded
