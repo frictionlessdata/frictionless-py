@@ -1,0 +1,21 @@
+{
+    "name":"dataset-test-package-file-write",
+    "title":"Dataset Test Package File Write",
+    "created":"1985-04-12T23:20:50.52Z",
+    "description":"This is a test package to test zenodo write function",
+    "organization":"frictionless-organization",
+    "licenses":[
+             {
+                "name":"CC-BY-4.0",
+                "title":"Creative Commons Attribution 4.0",
+                "path":"https://creativecommons.org/licenses/by/4.0/"
+             }
+    ],
+    "resources":[
+       {
+          "name":"data",
+          "path":"data.csv"
+       }
+    ]
+ }
+ 

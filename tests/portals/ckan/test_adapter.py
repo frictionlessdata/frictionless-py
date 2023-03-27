@@ -1,5 +1,6 @@
 from _pytest._code.code import ExceptionInfo
 import pytest
+import requests
 from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc
 from frictionless import FrictionlessException, Package, Catalog, portals
@@ -422,6 +423,29 @@ def test_ckan_adapter_publish_with_detail_info_with_schema(options_lh):
     control = portals.CkanControl(baseurl=url, dataset="dataset-test-package-with-schema")
     package = Package(control=control)
     assert package.name == package_name
+
+
+@pytest.mark.vcr
+def test_ckan_adapter_publish_list_published_files(options_lh):
+    # Write
+    url = options_lh.pop("url")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-data",
+    )
+    package = Package("data/ckan.package.json")
+    response = package.publish(control=control)
+    assert "dataset/f1228d08-f1bd-4974-bae5-935d4dae331d" in response
+
+    # Read
+    dataset_dict = {"id": "dataset-test-package-file-write"}
+    url = url + "api/action/package_show"
+    response = requests.get(url, params=dataset_dict).json()
+    package_data = response["result"]["resources"][0]
+    assert package_data["name"] == "package"
+    assert package_data["format"] == "JSON"
+    assert len(response["result"]["resources"]) == 2
 
 
 @pytest.mark.vcr
