@@ -12,8 +12,9 @@ from . import common
 from . import utils
 
 
-@program.command(name="datasette")
-def program_datasette(
+# TODO: figure out how we can reduce duplication among commands like this: query/etc
+@program.command(name="inspect", hidden=True)
+def program_inspect(
     # Resource
     source: List[str] = common.source,
     name: str = common.resource_name,
@@ -81,5 +82,5 @@ def program_datasette(
         raise typer.Exit(1)
 
     # Enter database
-    console.rule("[bold]Datasette")
+    console.rule("[bold]Inspect")
     os.system(f"datasette {database}")
