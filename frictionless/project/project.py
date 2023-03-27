@@ -11,7 +11,7 @@ from ..package import Package
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem, IData, IFieldItem
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem
 from ..resources import JsonResource, TextResource
 from .. import settings
 from .. import helpers
