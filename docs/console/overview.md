@@ -2,9 +2,9 @@
 
 The Command-Line interface is a vital part for the Frictionless Framework. While working within Python provides more flexibility, CLI is the easist way to interact with Frictionless.
 
-'''yaml video/youtube
+```yaml video/youtube
 code: 7a_rL9j-gn8
-'''
+```
 
 ## Install
 
