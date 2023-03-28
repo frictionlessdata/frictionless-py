@@ -72,6 +72,7 @@ class CkanAdapter(Adapter):
         headers = set_headers(self)
         package_descriptor = package.to_descriptor()
         package_data = self.mapper["fric_to_ckan"].package(package_descriptor)  # type: ignore
+        package_data["owner_org"] = self.control.organization_name
 
         # Assure that the package has a name
         if "name" not in package_data:
@@ -104,7 +105,7 @@ class CkanAdapter(Adapter):
                 response_dict = json.loads(response.content)
                 dataset_id = response_dict["result"]["id"]
                 package_resource_data = {
-                    "name": "package",
+                    "name": "datapackage",
                     "type": "json",
                     "package_id": dataset_id,
                 }
@@ -118,8 +119,8 @@ class CkanAdapter(Adapter):
                     data=package_resource_data,
                     files={
                         "upload": (
-                            "package.json",
-                            json.dumps(package_data, indent=2).encode("utf-8"),
+                            "datapackage.json",
+                            json.dumps(package.to_descriptor(), indent=2).encode("utf-8"),
                             "application/octet-stream",
                         )
                     },
@@ -147,6 +148,7 @@ class CkanAdapter(Adapter):
         resource_data = self.mapper["fric_to_ckan"].resource(resource_descriptor)  # type: ignore
         resource_data["package_id"] = dataset_id
         resource_filename = resource_data["url"].split("/")[-1]
+        resource_data["owner_org"] = self.control.organization_name
 
         del resource_data["url"]
 
