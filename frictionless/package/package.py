@@ -699,7 +699,7 @@ class Package(Metadata):
 
         # Licenses
         for item in descriptor.get("licenses", []):
-            if not item.get("path") or not item.get("name"):
+            if not item.get("path") and not item.get("name"):
                 note = f'license requires "path" or "name": {item}'
                 yield errors.PackageError(note=note)
 

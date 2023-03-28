@@ -877,6 +877,12 @@ class Resource(Metadata):
             note = 'properties "path" and "data" is mutually exclusive'
             yield errors.ResourceError(note=note)
 
+        # Licenses
+        for item in descriptor.get("licenses", []):
+            if not item.get("path") and not item.get("name"):
+                note = f'license requires "path" or "name": {item}'
+                yield errors.ResourceError(note=note)
+
         # Contributors/Sources
         for name in ["contributors", "sources"]:
             for item in descriptor.get(name, []):
