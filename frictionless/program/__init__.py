@@ -7,6 +7,7 @@ from . import describe
 from . import explore
 from . import extract
 from . import index
+from . import inspect
 from . import list
 from . import publish
 from . import query

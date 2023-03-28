@@ -60,6 +60,7 @@ EXTRAS_REQUIRE = {
     "visidata": ["visidata>=2.10"],
     "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
+    "datasette": ["datasette>=0.64.2"]
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",

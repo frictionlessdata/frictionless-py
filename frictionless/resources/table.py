@@ -422,8 +422,22 @@ class TableResource(Resource):
                     break
             return rows
 
+    # TODO: implement
+    def read_table(self):
+        raise NotImplementedError()
+
     # Write
 
+    def write_table(
+        self,
+        target: Optional[Union[Resource, Any]] = None,
+        *,
+        control: Optional[Control] = None,
+        **options,
+    ) -> TableResource:
+        return self.write(target, control=control, **options)
+
+    # TODO: deprecate in favour of write_table
     def write(
         self,
         target: Optional[Union[Resource, Any]] = None,
