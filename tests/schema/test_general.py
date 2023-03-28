@@ -444,3 +444,12 @@ def test_schema_not_supported_type_issue_goodatbles_304():
     error = excinfo.value.error
     assert error.type == "field-error"
     assert error.note == 'field type "bad" is not supported'
+
+
+def test_schema_updating_field_type_by_setter_warning_issue_1466():
+    schema = Schema(DESCRIPTOR_MIN)
+    with pytest.raises(FrictionlessException) as excinfo:
+        schema.get_field("id").type = "integer"  # type: ignore
+    error = excinfo.value.error
+    assert error.type == "field-error"
+    assert error.note == 'Use "schema.set_field_type()" to update the type of the field'

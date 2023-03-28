@@ -4,6 +4,7 @@ import attrs
 import decimal
 from functools import partial
 from typing import TYPE_CHECKING, ClassVar, Optional, List
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
@@ -80,6 +81,12 @@ class Field(Metadata):
     """
     List of supported constraints for a field.
     """
+
+    def __setattr__(self, name, value):
+        if name == "type":
+            note = 'Use "schema.set_field_type()" to update the type of the field'
+            raise FrictionlessException(errors.FieldError(note=note))
+        return super().__setattr__(name, value)
 
     @property
     def required(self):
