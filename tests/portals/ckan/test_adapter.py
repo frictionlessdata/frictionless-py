@@ -466,7 +466,7 @@ def test_ckan_adapter_publish_list_resources(options_lh):
     package = Package("data/ckan.package.yaml")
     package_name = package.name
     response = package.publish(control=control)
-    assert "dataset/58d26ef1-84e3-4ad2-bc9b-6f6d0151deb2" in response
+    assert "dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76" in response
 
     # Read
     control = portals.CkanControl(
@@ -476,6 +476,8 @@ def test_ckan_adapter_publish_list_resources(options_lh):
     assert package.name == package_name
     assert len(package.resources) == 2
     assert package.resources[0].name == "chunk1"
+    assert package.resources[0].path == "chunk1.csv"
+    assert package.resources[1].path == "chunk2.csv"
 
 
 @pytest.mark.vcr
