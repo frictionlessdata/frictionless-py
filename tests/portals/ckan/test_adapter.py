@@ -481,6 +481,34 @@ def test_ckan_adapter_publish_list_resources(options_lh):
 
 
 @pytest.mark.vcr
+def test_ckan_adapter_publish_list_resources_same_name_in_different_folder(options_lh):
+    # Write
+    url = options_lh.pop("url")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-data",
+    )
+    package = Package("data/ckan.package-sameresourcename.yaml")
+    package_name = package.name
+    response = package.publish(control=control)
+    assert "dataset/c979b90a-6662-4b60-b53c-ab5200ca9369" in response
+
+    # Read
+    control = portals.CkanControl(
+        baseurl=url,
+        dataset="test-package-file-write-with-same-resource-name-inside-different-folder",
+    )
+    package = Package(control=control)
+    assert package.name == package_name
+    assert len(package.resources) == 2
+    assert package.resources[0].name == "chunkf1"
+    assert package.resources[0].path == "chunkf1.csv"
+    assert package.resources[1].name == "chunkf2"
+    assert package.resources[1].path == "chunkf2.csv"
+
+
+@pytest.mark.vcr
 @pytest.mark.skip(reason="Fails to update")
 def test_ckan_adapter_publish_update_info(options_lh):
     # Write

@@ -104,13 +104,17 @@ class CkanAdapter(Adapter):
             if response.status_code == 200:
                 response_dict = json.loads(response.content)
                 dataset_id = response_dict["result"]["id"]
+                package_descriptor = package.to_descriptor(validate=True)
 
                 # upload resources
                 # TODO: See if it's possible to upload only the resources that need to be uploaded
                 for index, resource in enumerate(package.resources):
                     if resource.path:
-                        resource_filename = resource.path.split("/")[-1]
-                        package.resources[index].path = resource_filename
+                        _, resource_filename = os.path.split(resource.path)
+                        resource_filename = (
+                            f"{resource.name}.{resource_filename.split('.')[1]}"
+                        )
+                        package_descriptor["resources"][index]["path"] = resource_filename
                     self.write_resource(dataset_id, resource)
 
                 # upload package
@@ -128,7 +132,7 @@ class CkanAdapter(Adapter):
                     files={
                         "upload": (
                             "datapackage.json",
-                            json.dumps(package.to_descriptor(), indent=2).encode("utf-8"),
+                            json.dumps(package_descriptor, indent=2).encode("utf-8"),
                             "application/octet-stream",
                         )
                     },
@@ -150,7 +154,7 @@ class CkanAdapter(Adapter):
         resource_descriptor = resource.to_descriptor()
         resource_data = self.mapper["fric_to_ckan"].resource(resource_descriptor)  # type: ignore
         resource_data["package_id"] = dataset_id
-        resource_filename = resource_data["url"].split("/")[-1]
+        _, resource_filename = os.path.split(resource_data["url"])
         resource_data["owner_org"] = self.control.organization_name
 
         del resource_data["url"]

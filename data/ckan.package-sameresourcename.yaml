@@ -1,0 +1,30 @@
+$frictionless: package/v2
+name: test-package-file-write-with-same-resource-name-inside-different-folder
+title: Test Package File Write With Same Resource Name Inside Different Folder
+resources:
+  - name: chunkf1
+    type: table
+    path: table-chunks/data1/chunk2.csv
+    scheme: file
+    format: csv
+    mediatype: text/csv
+    encoding: utf-8
+    schema:
+      fields:
+        - name: id
+          type: integer
+        - name: name
+          type: string
+  - name: chunkf2
+    type: table
+    path: table-chunks/data2/chunk2.csv
+    scheme: file
+    format: csv
+    mediatype: text/csv
+    encoding: utf-8
+    schema:
+      fields:
+        - name: id
+          type: integer
+        - name: name
+          type: string
