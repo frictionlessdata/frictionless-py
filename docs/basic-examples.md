@@ -62,7 +62,7 @@ from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "n/a"])
 resource = describe("countries.csv", detector=detector)
-resource.schema.get_field("neighbor_id").type = "integer"
+resource.schema.set_field_type("neighbor_id", "integer")
 resource.schema.foreign_keys.append(
     {"fields": ["neighbor_id"], "reference": {"resource": "", "fields": ["id"]}}
 )
