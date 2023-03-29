@@ -10,6 +10,7 @@ from .interfaces import IFileItem
 from .. import helpers
 
 
+# TODO: is it possible to move most of this functionality to resources.FileResource?
 class Filesystem:
     basepath: Path
 
@@ -89,7 +90,7 @@ class Filesystem:
         items = list(sorted(items, key=lambda item: item["path"]))
         return items
 
-    def get_file(self, path: str) -> Optional[IFileItem]:
+    def select_file(self, path: str) -> Optional[IFileItem]:
         type = self.get_filetype(path)
         path = self.get_secure_fullpath(path)
         if self.is_existent(path):

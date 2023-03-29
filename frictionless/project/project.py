@@ -123,7 +123,7 @@ class Project:
         return target
 
     def select_file(self, path: str) -> Optional[IFile]:
-        item = self.filesystem.get_file(path)
+        item = self.filesystem.select_file(path)
         if item:
             file = IFile(**item)
             record = self.database.select_record(path)
