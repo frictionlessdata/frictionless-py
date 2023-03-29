@@ -14,8 +14,8 @@ class Result(BaseModel):
     file: Optional[IFile]
 
 
-@router.post("/file/read")
-def server_file_read(request: Request, props: Props) -> Result:
+@router.post("/file/get")
+def server_file_get(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    file = project.read_file(props.path)
+    file = project.get_file(props.path)
     return Result(file=file)

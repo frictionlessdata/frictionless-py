@@ -94,9 +94,18 @@ class Project:
         self.filesystem.delete_file(path)
         return path
 
+    def get_file(self, path: str) -> Optional[IFile]:
+        item = self.filesystem.get_file(path)
+        if item:
+            file = IFile(**item)
+            record = self.database.read_record(path)
+            if record:
+                file["record"] = record
+            return file
+
     # TODO: fix not safe
     def index_file(self, path: str) -> Optional[IFile]:
-        file = self.read_file(path)
+        file = self.get_file(path)
         if file:
             if not file.get("record"):
                 resource = Resource(path=path, basepath=str(self.public))
@@ -118,15 +127,6 @@ class Project:
         target = self.filesystem.move_file(path, folder=folder)
         self.database.move_record(source, target)
         return target
-
-    def read_file(self, path: str) -> Optional[IFile]:
-        item = self.filesystem.read_file(path)
-        if item:
-            file = IFile(**item)
-            record = self.database.read_record(path)
-            if record:
-                file["record"] = record
-            return file
 
     def rename_file(self, path: str, *, name: str) -> str:
         source = path

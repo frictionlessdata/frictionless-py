@@ -98,6 +98,18 @@ class Filesystem:
         items = list(sorted(items, key=lambda item: item["path"]))
         return items
 
+    def get_file(self, path: str) -> Optional[IFileItem]:
+        type = self.get_filetype(path)
+        path = self.get_secure_fullpath(path)
+        if self.is_existent(path):
+            if self.is_folder(path):
+                type = "folder"
+            path = self.get_secure_relpath(path)
+            file = IFileItem(path=path)
+            if type:
+                file["type"] = type
+            return file
+
     def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
         name = self.get_filename(path)
         if folder:
@@ -116,18 +128,6 @@ class Filesystem:
             raise FrictionlessException("file doesn't exist")
         path = self.get_secure_relpath(target)
         return path
-
-    def read_file(self, path: str) -> Optional[IFileItem]:
-        type = self.get_filetype(path)
-        path = self.get_secure_fullpath(path)
-        if self.is_existent(path):
-            if self.is_folder(path):
-                type = "folder"
-            path = self.get_secure_relpath(path)
-            file = IFileItem(path=path)
-            if type:
-                file["type"] = type
-            return file
 
     def rename_file(self, path: str, *, name: str) -> str:
         folder = self.get_folder(path)
