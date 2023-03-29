@@ -289,7 +289,7 @@ class Database:
         return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
 
     # TODO: temporary solution while we don't have proper database's table editing
-    def save_table(self, path: str, *, tablePatch: dict, basepath: str) -> Resource:
+    def write_table(self, path: str, *, tablePatch: dict, basepath: str) -> Resource:
         resource = TableResource(path=path, basepath=basepath)
         data = resource.read_rows()
         for index, row in enumerate(data):
