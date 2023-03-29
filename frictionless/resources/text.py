@@ -26,11 +26,12 @@ class TextResource(Resource):
 
     # TODO: rebase on using loader
     def write_text(self, target: Optional[Union[TextResource, Any]] = None, **options):
-        """Write json data to the target"""
+        """Write text data to the target"""
         res = target
-        if not isinstance(res, Resource):
-            res = Resource(target, **options)
-            assert isinstance(res, TextResource)
+        if not isinstance(res, TextResource):
+            if res:
+                options["path"] = res
+            res = TextResource(**options)
         text = self.read_text()
         bytes = text.encode(res.encoding or "utf-8")
         assert res.normpath
