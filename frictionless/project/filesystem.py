@@ -147,7 +147,7 @@ class Filesystem:
 
     def write_file(self, path: str, *, bytes: bytes) -> None:
         path = self.get_secure_fullpath(path)
-        assert self.is_file(path)
+        assert not self.is_existent(path)
         resource = FileResource(data=bytes)
         resource.write_file(path)
 

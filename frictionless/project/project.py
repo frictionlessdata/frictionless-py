@@ -131,8 +131,8 @@ class Project:
                 file["record"] = record
             return file
 
-    def write_file(self, name: str, *, bytes: bytes) -> None:
-        return self.filesystem.write_file(name, bytes=bytes)
+    def write_file(self, path: str, *, bytes: bytes) -> None:
+        return self.filesystem.write_file(path, bytes=bytes)
 
     # Field
 
