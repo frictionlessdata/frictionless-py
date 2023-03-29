@@ -59,12 +59,6 @@ class Project:
         self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
 
-    # Bytes
-
-    # TODO: add read_file_text/data?
-    def read_bytes(self, path: str) -> bytes:
-        return self.filesystem.read_bytes(path)
-
     # File
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
@@ -127,6 +121,9 @@ class Project:
         target = self.filesystem.move_file(path, folder=folder)
         self.database.move_record(source, target)
         return target
+
+    def read_file(self, path: str) -> bytes:
+        return self.filesystem.read_file(path)
 
     def rename_file(self, path: str, *, name: str) -> str:
         source = path

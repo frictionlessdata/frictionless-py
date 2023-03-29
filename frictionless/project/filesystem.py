@@ -16,16 +16,6 @@ class Filesystem:
         # We need to get resolve here to get absolute path
         self.basepath = Path(basepath).resolve()
 
-    # Bytes
-
-    # TODO: use Resource?
-    # TODO: use streaming?
-    def read_bytes(self, path: str) -> bytes:
-        path = self.get_secure_fullpath(path)
-        assert self.is_file(path)
-        bytes = helpers.read_file(path, "rb")
-        return bytes
-
     # File
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
@@ -128,6 +118,14 @@ class Filesystem:
             raise FrictionlessException("file doesn't exist")
         path = self.get_secure_relpath(target)
         return path
+
+    # TODO: use Resource?
+    # TODO: use streaming?
+    def read_file(self, path: str) -> bytes:
+        path = self.get_secure_fullpath(path)
+        assert self.is_file(path)
+        bytes = helpers.read_file(path, "rb")
+        return bytes
 
     def rename_file(self, path: str, *, name: str) -> str:
         folder = self.get_folder(path)
