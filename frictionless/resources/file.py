@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Union, Any
+from typing import Optional, Union
 from ..resource import Resource
 from .. import helpers
 

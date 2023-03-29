@@ -14,15 +14,14 @@ class Result(BaseModel):
     path: str
 
 
-@router.post("/file/save")
-async def server_file_save(
+@router.post("/file/write")
+async def server_file_write(
     request: Request,
     file: UploadFile = File(),
-    folder: Optional[str] = Form(None),
+    path: str = Form(None),
     session: Optional[str] = Form(None),
 ) -> Result:
     project: Project = request.app.get_project(session)
-    name = file.filename or "name"
     bytes = await file.read()
-    path = project.save_file(name, bytes=bytes, folder=folder)
+    project.write_file(path, bytes=bytes)
     return Result(path=path)

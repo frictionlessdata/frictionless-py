@@ -131,12 +131,8 @@ class Project:
         self.database.move_record(source, target)
         return target
 
-    def save_file(self, name: str, *, bytes: bytes, folder: Optional[str] = None) -> str:
-        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
-
-    # TODO: implement
-    def update_file(self, path: str):
-        pass
+    def write_file(self, name: str, *, bytes: bytes) -> None:
+        return self.filesystem.write_file(name, bytes=bytes)
 
     # Field
 

@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Optional, Union, List
 from ..resource import Resource
+from ..resources import FileResource
 from ..exception import FrictionlessException
 from .interfaces import IFileItem
 from .. import helpers
@@ -119,13 +120,11 @@ class Filesystem:
         path = self.get_secure_relpath(target)
         return path
 
-    # TODO: use Resource?
-    # TODO: use streaming?
     def read_file(self, path: str) -> bytes:
         path = self.get_secure_fullpath(path)
         assert self.is_file(path)
-        bytes = helpers.read_file(path, "rb")
-        return bytes
+        resource = FileResource(path=path)
+        return resource.read_file()
 
     def rename_file(self, path: str, *, name: str) -> str:
         folder = self.get_folder(path)
@@ -145,6 +144,12 @@ class Filesystem:
             raise FrictionlessException("file doesn't exist")
         path = self.get_secure_relpath(target)
         return path
+
+    def write_file(self, path: str, *, bytes: bytes) -> None:
+        path = self.get_secure_fullpath(path)
+        assert self.is_file(path)
+        resource = FileResource(data=bytes)
+        resource.write_file(path)
 
     # Folder
 
