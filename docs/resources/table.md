@@ -3,7 +3,7 @@ script:
   basepath: data
 ---
 
-# Json Resource
+# Table Resource
 
 A `table` resource contains a tabular data file (can be validated with Table Schema):
 
