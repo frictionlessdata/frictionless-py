@@ -1,5 +1,6 @@
 from _pytest._code.code import ExceptionInfo
 import pytest
+import requests
 from datetime import datetime, time
 from dateutil.tz import tzoffset, tzutc
 from frictionless import FrictionlessException, Package, Catalog, portals
@@ -377,11 +378,15 @@ def test_ckan_adapter_catalog_search_with_results_offset(options_br):
 def test_ckan_adapter_publish_minimal_package_info(options_lh):
     # Write
     url = options_lh.pop("url")
-    control = portals.CkanControl(baseurl=url, apikey="env:CKAN_APIKEY")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-organization",
+    )
     package = Package("data/package.json")
     package_name = package.name
     response = package.publish(control=control)
-    assert "dataset/effc1c30-f165-4b2f-a169-eeba0b13c7fb" in response
+    assert "dataset/0696c380-3fe6-4a62-9948-c0f09f17b389" in response
 
     # Read
     control = portals.CkanControl(baseurl=url, dataset="name")
@@ -393,11 +398,13 @@ def test_ckan_adapter_publish_minimal_package_info(options_lh):
 def test_ckan_adapter_publish_with_detail_info(options_lh):
     # Write
     url = options_lh.pop("url")
-    control = portals.CkanControl(baseurl=url, apikey="env:CKAN_APIKEY")
+    control = portals.CkanControl(
+        baseurl=url, apikey="env:CKAN_APIKEY", organization_name="frictionless-data"
+    )
     package = Package("data/detailed.package.json")
     package_name = package.name
     response = package.publish(control=control)
-    assert "dataset/755cfcac-cd87-4522-9a81-99e82298047b" in response
+    assert "dataset/e1c26a30-5689-450f-af0a-262afba1e55c" in response
 
     # Read
     control = portals.CkanControl(
@@ -422,6 +429,83 @@ def test_ckan_adapter_publish_with_detail_info_with_schema(options_lh):
     control = portals.CkanControl(baseurl=url, dataset="dataset-test-package-with-schema")
     package = Package(control=control)
     assert package.name == package_name
+
+
+@pytest.mark.vcr
+def test_ckan_adapter_publish_list_published_files(options_lh):
+    # Write
+    url = options_lh.pop("url")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-data",
+    )
+    package = Package("data/ckan.package.json")
+    response = package.publish(control=control)
+    assert "dataset/f1228d08-f1bd-4974-bae5-935d4dae331d" in response
+
+    # Read
+    dataset_dict = {"id": "dataset-test-package-file-write"}
+    url = url + "api/action/package_show"
+    response = requests.get(url, params=dataset_dict).json()
+    package_data = response["result"]["resources"][0]
+    assert package_data["name"] == "package"
+    assert package_data["format"] == "JSON"
+    assert len(response["result"]["resources"]) == 2
+
+
+@pytest.mark.vcr
+def test_ckan_adapter_publish_list_resources(options_lh):
+    # Write
+    url = options_lh.pop("url")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-data",
+    )
+    package = Package("data/ckan.package.yaml")
+    package_name = package.name
+    response = package.publish(control=control)
+    assert "dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76" in response
+
+    # Read
+    control = portals.CkanControl(
+        baseurl=url, dataset="test-package-file-write-with-resources-inside-folder"
+    )
+    package = Package(control=control)
+    assert package.name == package_name
+    assert len(package.resources) == 2
+    assert package.resources[0].name == "chunk1"
+    assert package.resources[0].path == "chunk1.csv"
+    assert package.resources[1].path == "chunk2.csv"
+
+
+@pytest.mark.vcr
+def test_ckan_adapter_publish_list_resources_same_name_in_different_folder(options_lh):
+    # Write
+    url = options_lh.pop("url")
+    control = portals.CkanControl(
+        baseurl=url,
+        apikey="env:CKAN_APIKEY",
+        organization_name="frictionless-data",
+    )
+    package = Package("data/ckan.package-sameresourcename.yaml")
+    package_name = package.name
+    response = package.publish(control=control)
+    assert "dataset/c979b90a-6662-4b60-b53c-ab5200ca9369" in response
+
+    # Read
+    control = portals.CkanControl(
+        baseurl=url,
+        dataset="test-package-file-write-with-same-resource-name-inside-different-folder",
+    )
+    package = Package(control=control)
+    assert package.name == package_name
+    assert len(package.resources) == 2
+    assert package.resources[0].name == "chunkf1"
+    assert package.resources[0].path == "chunkf1.csv"
+    assert package.resources[1].name == "chunkf2"
+    assert package.resources[1].path == "chunkf2.csv"
 
 
 @pytest.mark.vcr

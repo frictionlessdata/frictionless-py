@@ -1,0 +1,356 @@
+interactions:
+- request:
+    body: '{"name": "test-package-file-write-with-resources-inside-folder", "title":
+      "Test Package File Write With Resource inside folder", "extras": [{"key": "$frictionless",
+      "value": "package/v2"}], "owner_org": "frictionless-data"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '223'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/package_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_create",
+        "success": true, "result": {"author": null, "author_email": null, "creator_user_id":
+        "38bc2990-bae8-4c81-a4fc-b0327e102d0b", "id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76",
+        "isopen": false, "license_id": null, "license_title": null, "maintainer":
+        null, "maintainer_email": null, "metadata_created": "2023-03-28T10:38:39.124526",
+        "metadata_modified": "2023-03-28T10:38:39.124532", "name": "test-package-file-write-with-resources-inside-folder",
+        "notes": null, "num_resources": 0, "num_tags": 0, "organization": {"id": "04c805fb-c358-49f6-8aca-8546b8bec6c8",
+        "name": "frictionless-data", "title": "Frictionless data", "type": "organization",
+        "description": "", "image_url": "", "created": "2023-03-27T14:07:45.016645",
+        "is_organization": true, "approval_status": "approved", "state": "active"},
+        "owner_org": "04c805fb-c358-49f6-8aca-8546b8bec6c8", "private": false, "state":
+        "active", "title": "Test Package File Write With Resource inside folder",
+        "type": "dataset", "url": null, "version": null, "extras": [{"key": "$frictionless",
+        "value": "package/v2"}], "resources": [], "tags": [], "groups": [], "relationships_as_subject":
+        [], "relationships_as_object": []}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '1238'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.10
+      Set-cookie:
+      - ckan=7448ec963163c93f05034e770b28343b892ee8655e275654c656409994e41754d6713110;
+        expires=Tue, 19-Jan-2038 08:59:07 GMT; Path=/; SameSite=Lax
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nchunk1\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"type\"\r\n\r\ntable\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"scheme\"\r\n\r\nfile\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"format\"\r\n\r\ncsv\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"encoding\"\r\n\r\nutf-8\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"schema\"\r\n\r\nfields\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"mimetype\"\r\n\r\ntext/csv\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"package_id\"\r\n\r\nea8fbe1b-3702-47f1-a958-fa22db4b5a76\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"owner_org\"\r\n\r\nfrictionless-data\r\n--6090f5a66a7c915eee188a2971c01dae\r\nContent-Disposition:
+      form-data; name=\"upload\"; filename=\"chunk1.csv\"\r\nContent-Type: application/octet-stream\r\n\r\nid,name\n1,english\n\r\n--6090f5a66a7c915eee188a2971c01dae--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1086'
+      Content-Type:
+      - multipart/form-data; boundary=6090f5a66a7c915eee188a2971c01dae
+      Cookie:
+      - ckan=7448ec963163c93f05034e770b28343b892ee8655e275654c656409994e41754d6713110
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/resource_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=resource_create",
+        "success": true, "result": {"cache_last_updated": null, "cache_url": null,
+        "created": "2023-03-28T10:38:39.354670", "datastore_contains_all_records_of_source_file":
+        false, "description": null, "encoding": "utf-8", "format": "CSV", "hash":
+        "", "id": "8000c182-917f-4f44-a1b0-953df6a496be", "last_modified": "2023-03-28T10:38:39.347015",
+        "metadata_modified": "2023-03-28T10:38:39.353031", "mimetype": "text/csv",
+        "mimetype_inner": null, "name": "chunk1", "owner_org": "frictionless-data",
+        "package_id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76", "position": 0, "resource_type":
+        null, "schema": "fields", "scheme": "file", "size": 18, "state": "active",
+        "type": "table", "url": "http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/8000c182-917f-4f44-a1b0-953df6a496be/download/chunk1.csv",
+        "url_type": "upload"}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '908'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.10
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nchunk2\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"type\"\r\n\r\ntable\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"scheme\"\r\n\r\nfile\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"format\"\r\n\r\ncsv\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"encoding\"\r\n\r\nutf-8\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"schema\"\r\n\r\nfields\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"mimetype\"\r\n\r\ntext/csv\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"package_id\"\r\n\r\nea8fbe1b-3702-47f1-a958-fa22db4b5a76\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"owner_org\"\r\n\r\nfrictionless-data\r\n--d8ee57bf129d797b9e68ce91bea8b0b7\r\nContent-Disposition:
+      form-data; name=\"upload\"; filename=\"chunk2.csv\"\r\nContent-Type: application/octet-stream\r\n\r\nid,name\n2,\u4E2D\u56FD\u4EBA\n\r\n--d8ee57bf129d797b9e68ce91bea8b0b7--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1088'
+      Content-Type:
+      - multipart/form-data; boundary=d8ee57bf129d797b9e68ce91bea8b0b7
+      Cookie:
+      - ckan=7448ec963163c93f05034e770b28343b892ee8655e275654c656409994e41754d6713110
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/resource_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=resource_create",
+        "success": true, "result": {"cache_last_updated": null, "cache_url": null,
+        "created": "2023-03-28T10:38:39.527517", "datastore_contains_all_records_of_source_file":
+        false, "description": null, "encoding": "utf-8", "format": "CSV", "hash":
+        "", "id": "bd733639-e34a-4dc8-8cdb-05721cad591f", "last_modified": "2023-03-28T10:38:39.518696",
+        "metadata_modified": "2023-03-28T10:38:39.525674", "mimetype": "text/csv",
+        "mimetype_inner": null, "name": "chunk2", "owner_org": "frictionless-data",
+        "package_id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76", "position": 1, "resource_type":
+        null, "schema": "fields", "scheme": "file", "size": 20, "state": "active",
+        "type": "table", "url": "http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/bd733639-e34a-4dc8-8cdb-05721cad591f/download/chunk2.csv",
+        "url_type": "upload"}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '908'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.10
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--0b1807bc7b063f064c5b174aa9ef359e\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\ndatapackage\r\n--0b1807bc7b063f064c5b174aa9ef359e\r\nContent-Disposition:
+      form-data; name=\"type\"\r\n\r\njson\r\n--0b1807bc7b063f064c5b174aa9ef359e\r\nContent-Disposition:
+      form-data; name=\"package_id\"\r\n\r\nea8fbe1b-3702-47f1-a958-fa22db4b5a76\r\n--0b1807bc7b063f064c5b174aa9ef359e\r\nContent-Disposition:
+      form-data; name=\"upload\"; filename=\"datapackage.json\"\r\nContent-Type: application/octet-stream\r\n\r\n{\n
+      \ \"$frictionless\": \"package/v2\",\n  \"name\": \"test-package-file-write-with-resources-inside-folder\",\n
+      \ \"title\": \"Test Package File Write With Resource inside folder\",\n  \"resources\":
+      [\n    {\n      \"name\": \"chunk1\",\n      \"type\": \"table\",\n      \"path\":
+      \"chunk1.csv\",\n      \"scheme\": \"file\",\n      \"format\": \"csv\",\n      \"mediatype\":
+      \"text/csv\",\n      \"encoding\": \"utf-8\",\n      \"schema\": {\n        \"fields\":
+      [\n          {\n            \"name\": \"id\",\n            \"type\": \"integer\"\n
+      \         },\n          {\n            \"name\": \"name\",\n            \"type\":
+      \"string\"\n          }\n        ]\n      }\n    },\n    {\n      \"name\":
+      \"chunk2\",\n      \"type\": \"table\",\n      \"path\": \"chunk2.csv\",\n      \"scheme\":
+      \"file\",\n      \"format\": \"csv\",\n      \"mediatype\": \"text/csv\",\n
+      \     \"encoding\": \"utf-8\",\n      \"schema\": {\n        \"fields\": [\n
+      \         {\n            \"name\": \"id\",\n            \"type\": \"integer\"\n
+      \         },\n          {\n            \"name\": \"name\",\n            \"type\":
+      \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\r\n--0b1807bc7b063f064c5b174aa9ef359e--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1516'
+      Content-Type:
+      - multipart/form-data; boundary=0b1807bc7b063f064c5b174aa9ef359e
+      Cookie:
+      - ckan=7448ec963163c93f05034e770b28343b892ee8655e275654c656409994e41754d6713110
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: POST
+    uri: http://localhost:5000//api/action/resource_create
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=resource_create",
+        "success": true, "result": {"cache_last_updated": null, "cache_url": null,
+        "created": "2023-03-28T10:38:39.724738", "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "JSON", "hash": "", "id": "9c5e4994-fefb-40e3-8d51-e8e38e3528f1",
+        "last_modified": "2023-03-28T10:38:39.711870", "metadata_modified": "2023-03-28T10:38:39.722117",
+        "mimetype": "application/json", "mimetype_inner": null, "name": "datapackage",
+        "package_id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76", "position": 2, "resource_type":
+        null, "size": 1010, "state": "active", "type": "json", "url": "http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/9c5e4994-fefb-40e3-8d51-e8e38e3528f1/download/datapackage.json",
+        "url_type": "upload"}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '836'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.10
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - ckan=7448ec963163c93f05034e770b28343b892ee8655e275654c656409994e41754d6713110
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: http://localhost:5000//api/3/action/package_show?id=test-package-file-write-with-resources-inside-folder
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_show",
+        "success": true, "result": {"author": null, "author_email": null, "creator_user_id":
+        "38bc2990-bae8-4c81-a4fc-b0327e102d0b", "id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76",
+        "isopen": false, "license_id": null, "license_title": null, "maintainer":
+        null, "maintainer_email": null, "metadata_created": "2023-03-28T10:38:39.124526",
+        "metadata_modified": "2023-03-28T10:38:39.717001", "name": "test-package-file-write-with-resources-inside-folder",
+        "notes": null, "num_resources": 3, "num_tags": 0, "organization": {"id": "04c805fb-c358-49f6-8aca-8546b8bec6c8",
+        "name": "frictionless-data", "title": "Frictionless data", "type": "organization",
+        "description": "", "image_url": "", "created": "2023-03-27T14:07:45.016645",
+        "is_organization": true, "approval_status": "approved", "state": "active"},
+        "owner_org": "04c805fb-c358-49f6-8aca-8546b8bec6c8", "private": false, "state":
+        "active", "title": "Test Package File Write With Resource inside folder",
+        "type": "dataset", "url": null, "version": null, "extras": [{"key": "$frictionless",
+        "value": "package/v2"}], "resources": [{"cache_last_updated": null, "cache_url":
+        null, "created": "2023-03-28T10:38:39.354670", "datastore_contains_all_records_of_source_file":
+        false, "description": null, "encoding": "utf-8", "format": "CSV", "hash":
+        "", "id": "8000c182-917f-4f44-a1b0-953df6a496be", "last_modified": "2023-03-28T10:38:39.347015",
+        "metadata_modified": "2023-03-28T10:38:39.525527", "mimetype": "text/csv",
+        "mimetype_inner": null, "name": "chunk1", "owner_org": "frictionless-data",
+        "package_id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76", "position": 0, "resource_type":
+        null, "schema": "fields", "scheme": "file", "size": 18, "state": "active",
+        "type": "table", "url": "http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/8000c182-917f-4f44-a1b0-953df6a496be/download/chunk1.csv",
+        "url_type": "upload"}, {"cache_last_updated": null, "cache_url": null, "created":
+        "2023-03-28T10:38:39.527517", "datastore_contains_all_records_of_source_file":
+        false, "description": null, "encoding": "utf-8", "format": "CSV", "hash":
+        "", "id": "bd733639-e34a-4dc8-8cdb-05721cad591f", "last_modified": "2023-03-28T10:38:39.518696",
+        "metadata_modified": "2023-03-28T10:38:39.721958", "mimetype": "text/csv",
+        "mimetype_inner": null, "name": "chunk2", "owner_org": "frictionless-data",
+        "package_id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76", "position": 1, "resource_type":
+        null, "schema": "fields", "scheme": "file", "size": 20, "state": "active",
+        "type": "table", "url": "http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/bd733639-e34a-4dc8-8cdb-05721cad591f/download/chunk2.csv",
+        "url_type": "upload"}, {"cache_last_updated": null, "cache_url": null, "created":
+        "2023-03-28T10:38:39.724738", "datastore_contains_all_records_of_source_file":
+        false, "description": null, "format": "JSON", "hash": "", "id": "9c5e4994-fefb-40e3-8d51-e8e38e3528f1",
+        "last_modified": "2023-03-28T10:38:39.711870", "metadata_modified": "2023-03-28T10:38:39.722117",
+        "mimetype": "application/json", "mimetype_inner": null, "name": "datapackage",
+        "package_id": "ea8fbe1b-3702-47f1-a958-fa22db4b5a76", "position": 2, "resource_type":
+        null, "size": 1010, "state": "active", "type": "json", "url": "http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/9c5e4994-fefb-40e3-8d51-e8e38e3528f1/download/datapackage.json",
+        "url_type": "upload"}], "tags": [], "groups": [], "relationships_as_subject":
+        [], "relationships_as_object": []}}'
+    headers:
+      Cache-Control:
+      - public, max-age=0, must-revalidate
+      Content-Length:
+      - '3574'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.10
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - ckan=7448ec963163c93f05034e770b28343b892ee8655e275654c656409994e41754d6713110
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: http://localhost:5000/dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76/resource/9c5e4994-fefb-40e3-8d51-e8e38e3528f1/download/datapackage.json
+  response:
+    body:
+      string: "{\n  \"$frictionless\": \"package/v2\",\n  \"name\": \"test-package-file-write-with-resources-inside-folder\",\n
+        \ \"title\": \"Test Package File Write With Resource inside folder\",\n  \"resources\":
+        [\n    {\n      \"name\": \"chunk1\",\n      \"type\": \"table\",\n      \"path\":
+        \"chunk1.csv\",\n      \"scheme\": \"file\",\n      \"format\": \"csv\",\n
+        \     \"mediatype\": \"text/csv\",\n      \"encoding\": \"utf-8\",\n      \"schema\":
+        {\n        \"fields\": [\n          {\n            \"name\": \"id\",\n            \"type\":
+        \"integer\"\n          },\n          {\n            \"name\": \"name\",\n
+        \           \"type\": \"string\"\n          }\n        ]\n      }\n    },\n
+        \   {\n      \"name\": \"chunk2\",\n      \"type\": \"table\",\n      \"path\":
+        \"chunk2.csv\",\n      \"scheme\": \"file\",\n      \"format\": \"csv\",\n
+        \     \"mediatype\": \"text/csv\",\n      \"encoding\": \"utf-8\",\n      \"schema\":
+        {\n        \"fields\": [\n          {\n            \"name\": \"id\",\n            \"type\":
+        \"integer\"\n          },\n          {\n            \"name\": \"name\",\n
+        \           \"type\": \"string\"\n          }\n        ]\n      }\n    }\n
+        \ ]\n}"
+    headers:
+      Cache-Control:
+      - no-cache, public, max-age=0, must-revalidate
+      Content-Disposition:
+      - inline; filename=datapackage.json
+      Content-Length:
+      - '1010'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      ETag:
+      - '"1679999919.8400958-1010-1929714912"'
+      Last-Modified:
+      - Tue, 28 Mar 2023 10:38:39 GMT
+      Server:
+      - Werkzeug/2.1.1 Python/3.8.10
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -72,6 +72,7 @@ class CkanAdapter(Adapter):
         headers = set_headers(self)
         package_descriptor = package.to_descriptor()
         package_data = self.mapper["fric_to_ckan"].package(package_descriptor)  # type: ignore
+        package_data["owner_org"] = self.control.organization_name
 
         # Assure that the package has a name
         if "name" not in package_data:
@@ -103,11 +104,39 @@ class CkanAdapter(Adapter):
             if response.status_code == 200:
                 response_dict = json.loads(response.content)
                 dataset_id = response_dict["result"]["id"]
+                package_descriptor = package.to_descriptor(validate=True)
 
                 # upload resources
                 # TODO: See if it's possible to upload only the resources that need to be uploaded
-                for resource in package.resources:
+                for index, resource in enumerate(package.resources):
+                    if resource.path:
+                        _, resource_filename = os.path.split(resource.path)
+                        resource_filename = (
+                            f"{resource.name}.{resource_filename.split('.')[1]}"
+                        )
+                        package_descriptor["resources"][index]["path"] = resource_filename
                     self.write_resource(dataset_id, resource)
+
+                # upload package
+                package_resource_data = {
+                    "name": "datapackage",
+                    "type": "json",
+                    "package_id": dataset_id,
+                }
+                endpoint = f"{baseurl}/api/action/resource_create"
+                make_ckan_request(
+                    endpoint,
+                    method="POST",
+                    headers=headers,
+                    data=package_resource_data,
+                    files={
+                        "upload": (
+                            "datapackage.json",
+                            json.dumps(package_descriptor, indent=2).encode("utf-8"),
+                            "application/octet-stream",
+                        )
+                    },
+                )
 
                 return f"{self.control.baseurl}/dataset/{dataset_id}"
             else:
@@ -125,7 +154,8 @@ class CkanAdapter(Adapter):
         resource_descriptor = resource.to_descriptor()
         resource_data = self.mapper["fric_to_ckan"].resource(resource_descriptor)  # type: ignore
         resource_data["package_id"] = dataset_id
-        resource_filename = resource_data["url"].split("/")[-1]
+        _, resource_filename = os.path.split(resource_data["url"])
+        resource_data["owner_org"] = self.control.organization_name
 
         del resource_data["url"]
 
