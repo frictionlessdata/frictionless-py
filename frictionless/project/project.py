@@ -131,6 +131,11 @@ class Project:
                 file["record"] = record
             return file
 
+    # TODO: it should trigger re-indexing etc
+    def update_file(self, path: str, *, resource: dict):
+        return self.database.update_record(path, resource=resource)
+
+    # TODO: it should trigger re-indexing etc
     def write_file(self, path: str, *, bytes: bytes) -> None:
         return self.filesystem.write_file(path, bytes=bytes)
 

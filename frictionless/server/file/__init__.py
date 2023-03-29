@@ -9,5 +9,6 @@ from . import move
 from . import read
 from . import rename
 from . import select
+from . import update
 from . import upload
 from . import write

@@ -14,6 +14,7 @@ class Result(BaseModel):
     path: str
 
 
+# TODO: merge into write?
 @router.post("/file/upload")
 async def server_file_upload(
     request: Request,

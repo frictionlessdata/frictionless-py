@@ -7,6 +7,7 @@ from ..resource import Resource
 from ..schema import Schema
 from ..platform import platform
 from .interfaces import IRecord, IRecordItem, ITable, IQueryData, IFieldItem
+from .. import helpers
 from . import settings
 
 if TYPE_CHECKING:
@@ -248,7 +249,17 @@ class Database:
                     report=json.loads(row.report),  # type: ignore
                 )
 
+    def update_record(self, path: str, *, resource: dict):
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            conn.execute(
+                sa.update(self.records)
+                .where(self.records.c.path == path)
+                .values(resource=helpers.to_json(resource))
+            )
+
     # Table
+
     # TODO:This is a placeholder code for export and we need to export it from
     # database.
     def export_table(self, source: str, target: str) -> Resource:
