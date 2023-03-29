@@ -176,13 +176,13 @@ class Database:
             )
 
         # Return record
-        record = self.read_record(resource.path)
+        record = self.select_record(resource.path)
         assert record
         return record
 
     def delete_record(self, path: str) -> Optional[IRecord]:
         sa = platform.sqlalchemy
-        record = self.read_record(path)
+        record = self.select_record(path)
         if record:
             with self.engine.begin() as conn:
                 if record["tableName"]:
@@ -231,7 +231,7 @@ class Database:
             )
             return target
 
-    def read_record(self, path: str) -> Optional[IRecord]:
+    def select_record(self, path: str) -> Optional[IRecord]:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             row = conn.execute(
@@ -247,10 +247,6 @@ class Database:
                     resource=json.loads(row.resource),  # type: ignore
                     report=json.loads(row.report),  # type: ignore
                 )
-
-    # TODO: implement
-    def update_record(self, path: str):
-        pass
 
     # Table
     # TODO:This is a placeholder code for export and we need to export it from
@@ -273,7 +269,7 @@ class Database:
         offset: Optional[int] = None,
     ) -> ITable:
         sa = platform.sqlalchemy
-        record = self.read_record(path)
+        record = self.select_record(path)
         assert record
         assert "tableName" in record
         table = self.metadata.tables[record["tableName"]]

@@ -14,8 +14,8 @@ class Result(BaseModel):
     file: Optional[IFile]
 
 
-@router.post("/file/get")
-def server_file_get(request: Request, props: Props) -> Result:
+@router.post("/file/select")
+def server_file_select(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project(props.session)
-    file = project.get_file(props.path)
+    file = project.select_file(props.path)
     return Result(file=file)

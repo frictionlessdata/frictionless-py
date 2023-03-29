@@ -213,25 +213,6 @@ def test_project_delete_file_security(tmpdir, path):
         project.delete_file(path)
 
 
-# Get
-
-
-def test_project_get_file(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
-    project.upload_file(name1, bytes=bytes1)
-    assert project.get_file(name1) == {"path": name1, "type": "file"}
-    assert project.list_files() == [
-        {"path": name1, "type": "file"},
-    ]
-
-
-@pytest.mark.parametrize("path", not_secure)
-def test_project_get_file_security(tmpdir, path):
-    project = Project(basepath=tmpdir, is_root=True)
-    with pytest.raises(Exception):
-        project.get_file(path)
-
-
 # List
 
 
@@ -376,3 +357,22 @@ def test_project_rename_file_security(tmpdir, path):
         project.rename_file(path, name=name2)
     with pytest.raises(Exception):
         project.rename_file(name1, name=path)
+
+
+# Select
+
+
+def test_project_select_file(tmpdir):
+    project = Project(basepath=tmpdir, is_root=True)
+    project.upload_file(name1, bytes=bytes1)
+    assert project.select_file(name1) == {"path": name1, "type": "file"}
+    assert project.list_files() == [
+        {"path": name1, "type": "file"},
+    ]
+
+
+@pytest.mark.parametrize("path", not_secure)
+def test_project_select_file_security(tmpdir, path):
+    project = Project(basepath=tmpdir, is_root=True)
+    with pytest.raises(Exception):
+        project.select_file(path)
