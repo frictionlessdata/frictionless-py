@@ -29,7 +29,9 @@ class TextResource(Resource):
         assert self.normpath
         assert self.format == "md"
         document = platform.livemark.Document(source=self.normpath)
-        return document.build()
+        document.read()
+        document.process()
+        return document.output
 
     # Write
 
