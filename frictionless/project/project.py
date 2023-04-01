@@ -250,10 +250,15 @@ class Project:
     # Text
 
     # TODO: use detected resource.encoding if indexed
-    def read_text(self, path: str) -> Any:
+    def read_text(self, path: str) -> str:
         path = self.filesystem.get_secure_fullpath(path)
         resource = TextResource(path=path)
         return resource.read_text()
+
+    def render_text(self, path: str) -> str:
+        path = self.filesystem.get_secure_fullpath(path)
+        resource = TextResource(path=path)
+        return resource.render_text()
 
     def write_text(self, path: str, *, text: str):
         path = self.filesystem.get_secure_fullpath(path)
