@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Union, Any
+from ..platform import platform
 from ..resource import Resource
 from .. import helpers
 
@@ -21,6 +22,14 @@ class TextResource(Resource):
             return str(self.data)
         with helpers.ensure_open(self):
             return self.text_stream.read(size)  # type: ignore
+
+    # Render
+
+    def render_text(self) -> str:
+        assert self.normpath
+        assert self.format == "md"
+        document = platform.livemark.Document(source=self.normpath)
+        return document.build()
 
     # Write
 
