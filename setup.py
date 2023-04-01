@@ -50,6 +50,7 @@ EXTRAS_REQUIRE = {
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
+    "livemark": ["livemark>=0.110"],
     "mysql": ["sqlalchemy>=1.4", "pymysql>=1.0"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
@@ -60,7 +61,7 @@ EXTRAS_REQUIRE = {
     "visidata": ["visidata>=2.10"],
     "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
-    "datasette": ["datasette>=0.64.2"]
+    "datasette": ["datasette>=0.64.2"],
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",

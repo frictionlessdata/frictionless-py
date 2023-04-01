@@ -318,6 +318,13 @@ class Platform:
         return ezodf
 
     @cached_property
+    @extras(name="livemark")
+    def livemark(self):
+        import livemark
+
+        return livemark
+
+    @cached_property
     @extras(name="pandas")
     def pandas(self):
         import pandas
