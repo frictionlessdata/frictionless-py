@@ -3,6 +3,7 @@ from typing import Dict, List, Literal
 from typing_extensions import Required, TypedDict
 
 
+# TODO: replace by frictionless-standards
 class ISchema(TypedDict, total=False):
     name: str
     type: str

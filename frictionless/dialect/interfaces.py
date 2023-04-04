@@ -3,6 +3,7 @@ from typing import List, Union
 from typing_extensions import TypedDict
 
 
+# TODO: replace by frictionless-standards
 class IDialect(TypedDict, total=False):
     name: str
     type: str

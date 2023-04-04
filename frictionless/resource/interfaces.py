@@ -1,10 +1,11 @@
 from __future__ import annotations
 from typing import List, Any, Dict
 from typing_extensions import Required, TypedDict, Literal
-from .dialect import IDialect
-from .schema import ISchema
+from ..dialect import IDialect
+from ..schema import ISchema
 
 
+# TODO: replace by frictionless-standards
 class IResource(TypedDict, total=False):
     name: Required[str]
     #  type: required

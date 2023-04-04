@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Union
 from typing_extensions import TypedDict, Required
-from ..core import IPackage
+from ..package import IPackage
 
 
 class ICatalog(TypedDict, total=False):
