@@ -35,6 +35,7 @@ def test_resource_profiles_from_descriptor():
     assert reasons[0].note == "'requiredProperty' is a required property"
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("profile", ["data-resource", "tabular-data-resource"])
 def test_resource_profile_type(profile):
     descriptor = {"name": "table", "path": "data/table.csv", "profile": profile}

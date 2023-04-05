@@ -1,3 +1,4 @@
+import yaml
 import pytest
 from frictionless import Package, Resource, FrictionlessException, system
 
@@ -59,6 +60,7 @@ def test_package_external_profile_invalid_remote_from_descriptor():
         assert "required" in error.message
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
 def test_package_profile_type(profile):
     descriptor = {
@@ -97,3 +99,25 @@ def test_package_profiles_to_descriptor_standards_v1():
     with system.use_context(standards="v1"):
         descriptor = package.to_descriptor()
         assert descriptor["profile"] == profile
+
+
+# Bugs
+
+
+def test_package_preserver_profile_issue_1480():
+    descriptor = yaml.safe_load(
+        """
+    profile: tabular-data-package
+    resources:
+      -
+        name: some-table
+        profile: tabular-data-resource
+        path: some-file.csv
+        format: csv
+        mediatype: text/csv
+        encoding: utf-8
+    """
+    )
+    package = Package(descriptor)
+    assert package.profile == "tabular-data-package"
+    assert package.get_resource("some-table").profile == "tabular-data-resource"

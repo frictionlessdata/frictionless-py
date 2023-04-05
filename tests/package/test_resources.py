@@ -11,7 +11,6 @@ def test_package_resources():
     assert package.name == "name"
     assert package.basepath == "data"
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "name": "name",
         "resources": [
             {
@@ -88,7 +87,6 @@ def test_package_update_resource():
     resource = package.get_resource("name")
     resource.name = "newname"
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "resources": [
             {
                 "name": "newname",

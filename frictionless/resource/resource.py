@@ -745,6 +745,7 @@ class Resource(Metadata):
             "rows": {"type": "integer"},
             "dialect": {"type": ["object", "string"]},
             "schema": {"type": ["object", "string"]},
+            "profile": {"type": "string"},
         },
     }
 
@@ -775,14 +776,6 @@ class Resource(Metadata):
         if path and isinstance(path, list):
             descriptor["path"] = path[0]
             descriptor["extrapaths"] = path[1:]
-
-        # Profile (standards/v1)
-        profile = descriptor.pop("profile", None)
-        if profile:
-            if profile == "tabular-data-resource":
-                descriptor["type"] = "table"
-            elif profile not in ["data-resource"]:
-                descriptor["profile"] = profile
 
         # Profiles (framework/v5)
         profiles = descriptor.pop("profiles", None)
@@ -837,6 +830,12 @@ class Resource(Metadata):
             note = 'Resource "compression=no" is deprecated in favor not set value'
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
+
+        # Profile (standards/v1)
+        profile = descriptor.get("profile", None)
+        if profile:
+            if profile == "tabular-data-resource":
+                descriptor["type"] = "table"
 
         # Layout (framework/v4)
         layout = descriptor.pop("layout", None)
@@ -934,16 +933,6 @@ class Resource(Metadata):
                 if path:
                     descriptor["path"].append(path)
                 descriptor["path"].extend(extrapaths)
-
-        # Profile (standards/v1)
-        if system.standards == "v1":
-            type = descriptor.pop("type", None)
-            profiles = descriptor.pop("profiles", None)
-            descriptor["profile"] = "data-resource"
-            if type == "table":
-                descriptor["profile"] = "tabular-data-resource"
-            elif profiles:
-                descriptor["profile"] = profiles[0]
 
         # Stats (standards/v1)
         if system.standards == "v1":

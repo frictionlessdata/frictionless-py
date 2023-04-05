@@ -5,7 +5,6 @@ from frictionless import portals, Catalog, Package, FrictionlessException
 
 
 PACKAGE_WITHOUT_DP = {
-    "$frictionless": "package/v2",
     "title": "Frictionless Data Test Dataset Without Descriptor",
     "resources": [
         {
@@ -43,7 +42,6 @@ PACKAGE_WITHOUT_DP = {
     ],
 }
 PACKAGE_WITH_DP = {
-    "$frictionless": "package/v2",
     "title": "Frictionless Data Test Dataset",
     "name": "testing",
     "resources": [
@@ -88,7 +86,6 @@ PACKAGE_WITH_DP = {
 }
 
 ZIPPED_PACKAGE_WITH_DP = {
-    "$frictionless": "package/v2",
     "name": "testing",
     "title": "Frictionless Data Test Dataset Zip -2",
     "resources": [
@@ -193,7 +190,6 @@ def test_zenodo_adapter_read_record_only_csv(options_with_dp_multiple_files_with
     package.infer()
     assert len(package.resources) == 1
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "title": "Frictionless Data Test Dataset Multiple File Types Without Descriptor",
         "resources": [
             {

@@ -573,7 +573,6 @@ class Package(Metadata):
         "type": "object",
         "required": ["resources"],
         "properties": {
-            "$frictionless": {"type": "string"},
             "name": {"type": "string", "pattern": settings.NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
@@ -626,6 +625,7 @@ class Package(Metadata):
                 "type": "array",
                 "items": {"type": "object"},
             },
+            "profile": {"type": "string"},
         },
     }
 
@@ -644,16 +644,6 @@ class Package(Metadata):
 
         # Context
         descriptor.pop("$frictionless", None)
-
-        # Profile (standards/v1)
-        profile = descriptor.pop("profile", None)
-        if profile:
-            if profile == "fiscal-data-package":
-                descriptor[
-                    "profile"
-                ] = "https://specs.frictionlessdata.io/schemas/fiscal-data-package.json"
-            elif profile not in ["data-package", "tabular-data-package"]:
-                descriptor["profile"] = profile
 
         # Profiles (framework/v5)
         profiles = descriptor.pop("profiles", None)
@@ -743,15 +733,9 @@ class Package(Metadata):
     def metadata_export(self):
         descriptor = super().metadata_export()
 
+        # TODO: recover after standards v2 release?
         # Frictionless
-        if system.standards == "v2":
-            descriptor = {"$frictionless": "package/v2", **descriptor}
-
-        # Profile (standards/v1)
-        if system.standards == "v1":
-            profiles = descriptor.pop("profiles", None)
-            descriptor["profile"] = "data-package"
-            if profiles:
-                descriptor["profile"] = profiles[0]
+        #  if system.standards == "v2":
+        #  descriptor = {"$frictionless": "package/v2", **descriptor}
 
         return descriptor

@@ -18,7 +18,6 @@ def test_package():
     assert package.name == "name"
     assert package.basepath == "data"
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "name": "name",
         "resources": [
             {
@@ -36,8 +35,8 @@ def test_package():
 def test_package_from_dict_to_standards_v1():
     package = Package({"name": "name", "profile": "data-package", "resources": []})
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "name": "name",
+        "profile": "data-package",
         "resources": [],
     }
     with system.use_context(standards="v1"):
@@ -65,7 +64,6 @@ class NotADict(Mapping):
 def test_package_from_mapping():
     package = Package(NotADict(name="name", resources=[]))
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "name": "name",
         "resources": [],
     }
@@ -76,7 +74,6 @@ def test_package_from_path():
     assert package.name == "name"
     assert package.basepath == "data"
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "name": "name",
         "resources": [
             {
@@ -133,7 +130,6 @@ def test_package_from_path_remote():
     package = Package.from_descriptor(BASEURL % "data/package.json")
     assert package.basepath == BASEURL % "data"
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "name": "name",
         "resources": [
             {

@@ -7,7 +7,6 @@ from frictionless import Package
 def test_excel_adapter_package():
     package = Package("data/sheets.xlsx")
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "resources": [
             {
                 "name": "sheet1",

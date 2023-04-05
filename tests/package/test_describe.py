@@ -9,7 +9,6 @@ from frictionless import Package, Dialect, platform
 def test_describe_package():
     package = Package.describe("data/tables/chunk*.csv")
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "resources": [
             {
                 "path": "data/tables/chunk1.csv",
@@ -49,7 +48,6 @@ def test_describe_package():
 def test_describe_package_with_stats():
     package = Package.describe("data/tables/chunk*.csv", stats=True)
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "resources": [
             {
                 "path": "data/tables/chunk1.csv",
