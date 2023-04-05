@@ -10,7 +10,6 @@ def test_package_infer():
     package = Package("data/infer/*.csv")
     package.infer(stats=True)
     assert package.to_descriptor() == {
-        "$frictionless": "package/v2",
         "resources": [
             {
                 "name": "data",

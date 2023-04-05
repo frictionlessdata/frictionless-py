@@ -14,7 +14,6 @@ def test_catalog_infer():
             {
                 "name": "name",
                 "package": {
-                    "$frictionless": "package/v2",
                     "resources": [
                         {
                             "name": "data",
