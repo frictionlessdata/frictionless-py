@@ -573,3 +573,14 @@ def test_ckan_parser_timezone(options_lh):
                 "time": time(15, 0, tzinfo=tzoffset(None, -10800)),
             },
         ]
+
+
+# Bugs
+
+
+def test_ckan_adapter_detects_ckan_wrongly_issue_1479():
+    plugin = portals.CkanPlugin()
+    adapter = plugin.create_adapter(
+        "https://opendata.schleswig-holstein.de/dataset/8049b860-6d5c-4ad8-a584-43bec41a6220/resource/13269a62-71af-499e-b4b2-e28882c4d6c1/download/badegewasser-stammdaten-aktuell.json"
+    )
+    assert adapter is None

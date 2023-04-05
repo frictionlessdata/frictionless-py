@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 from ...system import Plugin
 from urllib.parse import urlparse
 from .control import CkanControl
@@ -15,7 +16,7 @@ class CkanPlugin(Plugin):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, CkanControl):
-                if parsed.path.startswith("/dataset/"):
+                if re.search(r"^/dataset/[^/]+$", parsed.path):
                     control = control or CkanControl()
                     if not control.baseurl:
                         baseurl, dataset = source.split("/dataset/")
