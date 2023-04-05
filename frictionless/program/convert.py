@@ -88,10 +88,13 @@ def program_convert(
             compression=compression,
             innerpath=innerpath,
             encoding=encoding,
-            dialect=dialect_obj,
             schema=schema,
             basepath=basepath,
         )
+
+        # Add dialect
+        if dialect_obj:
+            resource.dialect = dialect_obj
 
         # Create to_dialect
         to_dialect_obj = utils.create_dialect(

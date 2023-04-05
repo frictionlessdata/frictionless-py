@@ -103,10 +103,13 @@ def program_describe(
             compression=compression,
             innerpath=innerpath,
             encoding=encoding,
-            dialect=dialect_obj,
             basepath=basepath,
             detector=detector_obj,
         )
+
+        # Add dialect
+        if dialect_obj:
+            resource.dialect = dialect_obj
 
         # List resources
         resources = resource.list(name=name)

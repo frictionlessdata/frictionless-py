@@ -1,0 +1,53 @@
+{
+  "path": "table.csv",
+  "name": "badegewasser-saisondauer",
+  "profile": "tabular-data-resource",
+  "format": "csv",
+  "encoding": "utf-8",
+  "languages": ["de","en"],
+  "dialect": {
+    "delimiter": "|",
+    "header": false
+  },
+  "schema": {
+    "fields": [
+      {
+        "type": "string",
+        "name": "BADEGEWAESSERID",
+        "title": "Badegewässer-ID",
+        "title@en": "bathing waters id",
+        "description": "eindeutige Kennung des Badegewässers",
+        "description@en": "unique identifier of the bathing waters"
+      },
+      {
+        "type": "date",
+        "format": "%d.%m.%Y",
+        "name": "SAISONBEGINN",
+        "title": "Saisonbeginn",
+        "title@en": "season opening"
+      },
+      {
+        "type": "date",
+        "format": "%d.%m.%Y",
+        "name": "SAISONENDE",
+        "title": "Saisonende",
+        "title@en": "end of season"
+      },
+      {
+        "type": "string",
+        "name": "GESCHLOSSEN",
+        "title": "geschlossen",
+        "title@en": "closed",
+        "description": "Angabe, ob die Badestelle geschlossen ist/war",
+        "description@en": "Indication if the bathing place is/was closed",
+        "constraints": {
+          "enum": [
+            "nicht geschlossen",
+            "ganze Saison geschlossen",
+            "zeitweise geschlossen"
+          ]
+        }
+      }
+    ]
+  }
+}

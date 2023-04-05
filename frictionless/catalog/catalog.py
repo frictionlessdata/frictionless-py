@@ -96,10 +96,15 @@ class Catalog(Metadata):
             if cls is not Catalog:
                 note = 'Providing "source" argument is only possible to "Catalog" class'
                 raise FrictionlessException(note)
-            catalog = cls.from_source(source, control=control, basepath=basepath)
-            if not catalog:
-                catalog = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
-            return catalog
+
+            # Adapter
+            adapter = system.create_adapter(source, control=control, basepath=basepath)
+            if adapter:
+                catalog = adapter.read_catalog()
+                return catalog
+
+            # Descriptor
+            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
 
     def __attrs_post_init__(self):
         for dataset in self.datasets:

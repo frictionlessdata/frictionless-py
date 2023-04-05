@@ -146,11 +146,14 @@ def program_extract(
             compression=compression,
             innerpath=innerpath,
             encoding=encoding,
-            dialect=dialect_obj,
             schema=schema,
             basepath=basepath,
             detector=detector_obj,
         )
+
+        # Add dialect
+        if dialect_obj:
+            resource.dialect = dialect_obj
 
         # Ensure type
         if not isinstance(resource, platform.frictionless_resources.Extractable):

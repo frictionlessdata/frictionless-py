@@ -161,18 +161,24 @@ class Package(Metadata):
     """
 
     @classmethod
-    def from_source(
+    def __create__(
         cls,
-        source: Any,
+        source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
         basepath: Optional[str] = None,
         packagify: bool = True,
-    ) -> Optional[Package]:
+        **options,
+    ):
         source = helpers.normalize_source(source)
 
-        # Adapter
+        # Source/control
         if source is not None or control is not None:
+            if cls is not Package:
+                note = 'Providing "source" argument is only possible to "Package" class'
+                raise FrictionlessException(note)
+
+            # Adapter
             adapter = system.create_adapter(
                 source,
                 control=control,
@@ -183,26 +189,8 @@ class Package(Metadata):
                 package = adapter.read_package()
                 return package
 
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        **options,
-    ):
-        source = helpers.normalize_source(source)
-
-        # Source/control
-        if source is not None or control is not None:
-            if cls is not Package:
-                note = 'Providing "source" argument is only possible to "Package" class'
-                raise FrictionlessException(note)
-            package = cls.from_source(source, control=control, basepath=basepath)
-            if not package:
-                package = cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
-            return package
+            # Descriptor
+            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
 
     def __attrs_post_init__(self):
         for resource in self.resources:

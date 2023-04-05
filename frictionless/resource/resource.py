@@ -228,35 +228,40 @@ class Resource(Metadata):
     """
 
     @classmethod
-    def from_source(
+    def __create__(
         cls,
-        source: Any,
+        source: Optional[Any] = None,
         *,
         control: Optional[Control] = None,
         basepath: Optional[str] = None,
         packagify: bool = False,
         **options,
-    ) -> Optional[Resource]:
+    ):
         resources = platform.frictionless_resources
-        Package = platform.frictionless.Package
         source = helpers.normalize_source(source)
 
-        # Package
-        if source is not None or control is not None:
-            package = Package.from_source(
+        # Source
+        if source is not None:
+            if cls is not Resource:
+                note = 'Providing "source" argument is only possible to "Resource" class'
+                raise FrictionlessException(note)
+
+            # Adapter
+            adapter = system.create_adapter(
                 source,
                 control=control,
                 basepath=basepath,
                 packagify=packagify,
             )
-            if package:
-                data = package.to_descriptor()
-                return resources.PackageResource(
-                    data=data, basepath=package.basepath, **options
-                )
+            if adapter:
+                package = adapter.read_package()
+                if package:
+                    data = package.to_descriptor()
+                    return resources.PackageResource(
+                        data=data, basepath=package.basepath, **options
+                    )
 
-        # Path/data
-        if source is not None:
+            # Path/data
             path = source
             if isinstance(source, str):
                 path = helpers.join_basepath(source, basepath=basepath)
@@ -265,27 +270,9 @@ class Resource(Metadata):
                 options["path" if isinstance(source, str) else "data"] = source
                 return cls(control=control, basepath=basepath, **options)
 
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        **options,
-    ):
-        source = helpers.normalize_source(source)
-
-        # Source
-        if source is not None:
-            if cls is not Resource:
-                note = 'Providing "source" argument is only possible to "Resource" class'
-                raise FrictionlessException(note)
-            res = cls.from_source(source, control=control, basepath=basepath, **options)
-            if not res:
-                options.pop("format", None)
-                res = cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
-            return res
+            # Descriptor
+            options.pop("format", None)
+            return cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
 
         # Control
         if control is not None:

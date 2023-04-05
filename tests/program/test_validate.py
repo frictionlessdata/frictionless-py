@@ -252,6 +252,11 @@ def test_program_validate_enforce_required_fields_only_for_data_using_schema_syn
     assert "incorrect-label" not in expect
 
 
+def test_program_validate_dialect_overrided_issue_1478():
+    actual = runner.invoke(program, "validate data/issue-1478/resource.json")
+    assert actual.exit_code == 0
+
+
 # Helpers
 
 
