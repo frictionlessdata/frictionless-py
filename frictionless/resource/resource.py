@@ -900,6 +900,13 @@ class Resource(Metadata):
                 error_class=cls.metadata_Error,
             )
 
+        # Profile (tabular)
+        schema = descriptor.get("schema")
+        if profile == "tabular-data-resource":
+            if not schema:
+                note = f'profile "tabular-data-resource" requries "schema" to be present'
+                yield errors.ResourceError(note=note)
+
         # Misleading
         for name in ["missingValues"]:
             if name in descriptor:

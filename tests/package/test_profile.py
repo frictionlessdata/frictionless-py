@@ -116,6 +116,7 @@ def test_package_preserver_profile_issue_1480():
         format: csv
         mediatype: text/csv
         encoding: utf-8
+        schema: schema.json
     """
     )
     package = Package(descriptor)
