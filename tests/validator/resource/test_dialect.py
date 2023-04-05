@@ -1,4 +1,4 @@
-from frictionless import Dialect, formats
+from frictionless import Resource, Dialect, formats
 from frictionless.resources import TableResource
 
 
@@ -68,3 +68,12 @@ def test_resource_validate_dialect_skip_rows():
     assert resource.header == ["f1", "f2", "f3", "f4"]
     assert report.task.stats.get("rows") == 2
     assert report.task.valid
+
+
+# Bugs
+
+
+def test_resource_dialect_header_false_issue_1478():
+    resource = Resource("data/issue-1478/resource.json")
+    report = resource.validate()
+    assert report.valid
