@@ -135,11 +135,14 @@ def program_validate(
             bytes=bytes,
             fields=fields,
             rows=rows,
-            dialect=dialect_obj,
             schema=schema,
             basepath=basepath,
             detector=detector_obj,
         )
+
+        # Add dialect
+        if dialect_obj:
+            resource.dialect = dialect_obj
 
         # Validate resource
         report = resource.validate(

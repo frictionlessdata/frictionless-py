@@ -49,7 +49,7 @@ def create_dialect(
     keys: Optional[str] = None,
     keyed: Optional[bool] = None,
     csv_delimiter: Optional[str] = None,
-) -> Dialect:
+) -> Optional[Dialect]:
     formats = platform.frictionless_formats
 
     # Dialect
