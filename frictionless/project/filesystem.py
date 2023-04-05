@@ -2,9 +2,9 @@ from __future__ import annotations
 import os
 import shutil
 from pathlib import Path
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Any
 from ..resource import Resource
-from ..resources import FileResource
+from ..resources import FileResource, TextResource, JsonResource
 from ..exception import FrictionlessException
 from .interfaces import IFileItem
 from .. import helpers
@@ -163,6 +163,38 @@ class Filesystem:
         helpers.create_folder(path)
         path = self.get_secure_relpath(path)
         return path
+
+    # Json
+
+    def read_json(self, path: str) -> Any:
+        path = self.get_secure_fullpath(path)
+        resource = JsonResource(path=path)
+        return resource.read_json()
+
+    def write_json(self, path: str, *, data: Any):
+        path = self.get_secure_fullpath(path)
+        assert not self.is_existent(path)
+        resource = JsonResource(data=data)
+        resource.write_json(path=path)
+
+    # Text
+
+    # TODO: use detected resource.encoding if indexed
+    def read_text(self, path: str) -> str:
+        path = self.get_secure_fullpath(path)
+        resource = TextResource(path=path)
+        return resource.read_text()
+
+    def render_text(self, path: str) -> str:
+        path = self.get_secure_fullpath(path)
+        resource = TextResource(path=path)
+        return resource.render_text()
+
+    def write_text(self, path: str, *, text: str):
+        path = self.get_secure_fullpath(path)
+        assert not self.is_existent(path)
+        resource = TextResource(data=text)
+        resource.write_text(path=path)
 
     # Helpers
 

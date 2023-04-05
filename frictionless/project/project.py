@@ -1,8 +1,6 @@
 from __future__ import annotations
-import os
-import json
-import datetime
 import secrets
+import datetime
 from pathlib import Path
 from typing import Optional, List, Any
 from ..resources import FileResource
@@ -12,12 +10,8 @@ from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
 from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem
-from ..resources import JsonResource, TextResource
 from .. import settings
-from .. import helpers
 from .. import portals
-
-# TODO: handle method errors?
 
 
 class Project:
@@ -67,6 +61,7 @@ class Project:
     def count_files(self):
         return len(self.filesystem.list_files())
 
+    # TODO: review
     def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
         resource = FileResource(path=path)
         name = str(path.split("/")[-1])
@@ -78,17 +73,12 @@ class Project:
             name, bytes=resource.read_bytes(), folder=folder
         )
 
-    def upload_file(
-        self, name: str, *, bytes: bytes, folder: Optional[str] = None
-    ) -> str:
-        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
-
     def delete_file(self, path: str) -> str:
         self.database.delete_record(path)
         self.filesystem.delete_file(path)
         return path
 
-    # TODO: fix not safe
+    # TODO: fix not safe (move resource creation to filesystem)
     def index_file(self, path: str) -> Optional[IFile]:
         file = self.select_file(path)
         if file:
@@ -135,6 +125,11 @@ class Project:
     def update_file(self, path: str, *, resource: dict):
         return self.database.update_record(path, resource=resource)
 
+    def upload_file(
+        self, name: str, *, bytes: bytes, folder: Optional[str] = None
+    ) -> str:
+        return self.filesystem.create_file(name, bytes=bytes, folder=folder)
+
     # TODO: it should trigger re-indexing etc
     def write_file(self, path: str, *, bytes: bytes) -> None:
         return self.filesystem.write_file(path, bytes=bytes)
@@ -152,24 +147,19 @@ class Project:
     # Json
 
     def read_json(self, path: str) -> Any:
-        path = self.filesystem.get_secure_fullpath(path)
-        resource = JsonResource(path=path)
-        return resource.read_json()
+        return self.filesystem.read_json(path)
 
     def write_json(self, path: str, *, data: Any):
-        path = self.filesystem.get_secure_fullpath(path)
-        resource = JsonResource(data=data)
-        resource.write_json(path=path)
+        return self.filesystem.write_json(path, data=data)
 
     # Package
 
     def create_package(self):
-        path = str(self.public / settings.PACKAGE_PATH)
-        if not os.path.exists(path):
-            helpers.write_file(path, json.dumps({"resource": []}))
-        path = str(Path(path).relative_to(self.public))
+        path = settings.PACKAGE_PATH
+        self.filesystem.write_json(path, data={"resources": []})
         return path
 
+    # TODO: review
     def publish_package(self, **params):
         response = {}
         controls = {
@@ -220,6 +210,7 @@ class Project:
 
     # Table
 
+    # TODO: review
     def export_table(self, source: str, *, target: str) -> str:
         assert self.filesystem.is_filename(target)
         target = self.filesystem.get_secure_fullpath(target)
@@ -240,6 +231,7 @@ class Project:
     ) -> ITable:
         return self.database.read_table(path, valid=valid, limit=limit, offset=offset)
 
+    # TODO: review
     def write_table(self, path: str, tablePatch: dict[str, str]) -> str:
         assert self.filesystem.is_filename(path)
         self.database.write_table(
@@ -249,18 +241,11 @@ class Project:
 
     # Text
 
-    # TODO: use detected resource.encoding if indexed
     def read_text(self, path: str) -> str:
-        path = self.filesystem.get_secure_fullpath(path)
-        resource = TextResource(path=path)
-        return resource.read_text()
+        return self.filesystem.read_text(path)
 
     def render_text(self, path: str) -> str:
-        path = self.filesystem.get_secure_fullpath(path)
-        resource = TextResource(path=path)
-        return resource.render_text()
+        return self.filesystem.render_text(path)
 
     def write_text(self, path: str, *, text: str):
-        path = self.filesystem.get_secure_fullpath(path)
-        resource = TextResource(data=text)
-        resource.write_text(path=path)
+        return self.filesystem.write_text(path, text=text)

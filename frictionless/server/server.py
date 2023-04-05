@@ -7,6 +7,7 @@ from .router import router
 from .. import settings
 
 
+# TODO: handle errors
 # TODO: rebase on async endpoints
 # TODO: review endpoints to use proper imports (use platform)
 
