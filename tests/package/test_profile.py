@@ -122,3 +122,49 @@ def test_package_preserver_profile_issue_1480():
     package = Package(descriptor)
     assert package.profile == "tabular-data-package"
     assert package.get_resource("some-table").profile == "tabular-data-resource"
+
+
+def test_package_profile_tabular_requirements_issue_1484():
+    descriptor = yaml.safe_load(
+        """
+    profile: tabular-data-package
+    resources:
+      -
+        name: some-table
+        path: some-file.csv
+        format: csv
+        mediatype: text/csv
+        encoding: utf-8
+        schema: schema.json
+    """
+    )
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == [
+        [
+            "package-error",
+            'profile "tabular-data-package" requries all the resources to be "tabular-data-resource"',
+        ]
+    ]
+
+
+def test_package_profile_tabular_requirements_schema_issue_1484():
+    descriptor = yaml.safe_load(
+        """
+    profile: tabular-data-package
+    resources:
+      -
+        name: some-table
+        profile: tabular-data-resource
+        path: some-file.csv
+        format: csv
+        mediatype: text/csv
+        encoding: utf-8
+    """
+    )
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == [
+        [
+            "resource-error",
+            'profile "tabular-data-resource" requries "schema" to be present',
+        ]
+    ]

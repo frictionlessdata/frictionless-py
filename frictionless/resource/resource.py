@@ -904,7 +904,7 @@ class Resource(Metadata):
         schema = descriptor.get("schema")
         if profile == "tabular-data-resource":
             if not schema:
-                note = f'profile "tabular-data-resource" requries "schema" to be present'
+                note = 'profile "tabular-data-resource" requries "schema" to be present'
                 yield errors.ResourceError(note=note)
 
         # Misleading

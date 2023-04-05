@@ -320,7 +320,7 @@ class Platform:
     @cached_property
     @extras(name="livemark")
     def livemark(self):
-        import livemark
+        import livemark  # type: ignore
 
         return livemark
 
