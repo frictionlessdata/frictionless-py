@@ -745,7 +745,6 @@ class Resource(Metadata):
             "rows": {"type": "integer"},
             "dialect": {"type": ["object", "string"]},
             "schema": {"type": ["object", "string"]},
-            "profile": {"type": "string"},
         },
     }
 

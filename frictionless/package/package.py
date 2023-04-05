@@ -625,7 +625,6 @@ class Package(Metadata):
                 "type": "array",
                 "items": {"type": "object"},
             },
-            "profile": {"type": "string"},
         },
     }
 
