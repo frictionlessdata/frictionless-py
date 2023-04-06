@@ -148,7 +148,6 @@ class Filesystem:
 
     def write_file(self, path: str, *, bytes: bytes) -> None:
         path = self.get_secure_fullpath(path)
-        assert not self.is_existent(path)
         resource = FileResource(data=bytes)
         resource.write_file(path)
 
@@ -173,7 +172,6 @@ class Filesystem:
 
     def write_json(self, path: str, *, data: Any):
         path = self.get_secure_fullpath(path)
-        assert not self.is_existent(path)
         resource = JsonResource(data=data)
         resource.write_json(path=path)
 
@@ -192,7 +190,6 @@ class Filesystem:
 
     def write_text(self, path: str, *, text: str):
         path = self.get_secure_fullpath(path)
-        assert not self.is_existent(path)
         resource = TextResource(data=text)
         resource.write_text(path=path)
 
