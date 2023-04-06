@@ -318,7 +318,21 @@ class Platform:
         return ezodf
 
     @cached_property
-    @extras(name="livemark")
+    @extras(name="markdown")
+    def marko(self):
+        import marko  # type: ignore
+
+        return marko
+
+    @cached_property
+    @extras(name="markdown")
+    def marko_ext_gfm(self):
+        import marko.ext.gfm  # type: ignore
+
+        return marko.ext.gfm
+
+    @cached_property
+    @extras(name="markdown")
     def livemark(self):
         import livemark  # type: ignore
 

@@ -183,10 +183,10 @@ class Filesystem:
         resource = TextResource(path=path)
         return resource.read_text()
 
-    def render_text(self, path: str) -> str:
+    def render_text(self, path: str, livemark: bool = False) -> str:
         path = self.get_secure_fullpath(path)
         resource = TextResource(path=path)
-        return resource.render_text()
+        return resource.render_text(livemark=livemark)
 
     def write_text(self, path: str, *, text: str):
         path = self.get_secure_fullpath(path)

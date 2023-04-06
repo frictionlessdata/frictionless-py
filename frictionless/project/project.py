@@ -245,7 +245,7 @@ class Project:
         return self.filesystem.read_text(path)
 
     def render_text(self, path: str) -> str:
-        return self.filesystem.render_text(path)
+        return self.filesystem.render_text(path, livemark=self.is_root)
 
     def write_text(self, path: str, *, text: str):
         return self.filesystem.write_text(path, text=text)

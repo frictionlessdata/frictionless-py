@@ -161,6 +161,10 @@ class Database:
                 if len(buffer):
                     conn.execute(sa.insert(table), buffer)
 
+            # Other file types
+            else:
+                report = resource.validate()
+
             # Register resource
             conn.execute(
                 sa.delete(self.records).where(self.records.c.path == resource.path)
