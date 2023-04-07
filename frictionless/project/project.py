@@ -152,6 +152,12 @@ class Project:
     def write_json(self, path: str, *, data: Any):
         return self.filesystem.write_json(path, data=data)
 
+    # Metadata
+
+    def write_metadata(self, path: str, *, data: Dict[str, Any]):
+        self.database.delete_record(path)
+        return self.filesystem.write_json(path, data=data)
+
     # Package
 
     def create_package(self):
