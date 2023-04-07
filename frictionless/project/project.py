@@ -165,46 +165,8 @@ class Project:
         self.filesystem.write_json(path, data={"resources": []})
         return path
 
-    # TODO: review
-    def publish_package(self, **params):
-        response = {}
-        controls = {
-            "github": portals.GithubControl,
-            "zenodo": portals.ZenodoControl,
-            "ckan": portals.CkanControl,
-        }
-        control_type = params["type"]
-        allow_update = params["allow_update"]
-
-        del params["type"]
-        del params["sandbox"]
-        if not allow_update:
-            del params["allow_update"]
-
-        package = Package(str(self.public / settings.PACKAGE_PATH))
-        if not package.name and not allow_update:
-            now = datetime.datetime.now()
-            date_time = now.strftime("%H-%M-%S")
-            package.name = f"test_package_{date_time}"
-
-        control = controls.get(control_type)
-        if not control:
-            response["error"] = "Matching control[Github|Zenodo|CKAN] not found"
-            return response
-        try:
-            if "url" in params:
-                target = params["url"]
-                del params["url"]
-                result = package.publish(target=target, control=control(**params))
-            else:
-                result = package.publish(control=control(**params))
-            if control_type == "github":
-                result = result.full_name
-            response["url"] = result
-        except FrictionlessException as exception:
-            response["error"] = exception.error.message
-
-        return response
+    def publish_package(self, path: str, *, control: Dict[str, Any]):
+        return self.filesystem.publish_package(path, control=control)
 
     def write_package(self, path: str, *, data: Dict[str, Any]):
         self.database.delete_record(path)

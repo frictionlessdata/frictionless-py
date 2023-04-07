@@ -2,7 +2,9 @@ from __future__ import annotations
 import os
 import shutil
 from pathlib import Path
-from typing import Optional, Union, List, Any
+from typing import Optional, Union, List, Any, Dict
+from ..dialect import Control
+from ..package import Package
 from ..resource import Resource
 from ..resources import FileResource, TextResource, JsonResource
 from ..exception import FrictionlessException
@@ -174,6 +176,15 @@ class Filesystem:
         path = self.get_secure_fullpath(path)
         resource = JsonResource(data=data)
         resource.write_json(path=path)
+
+    # Package
+
+    def publish_package(self, path: str, *, control: Dict[str, Any]):
+        path = self.get_secure_fullpath(path)
+        package = Package.from_descriptor(path)
+        package.publish(control=Control.from_descriptor(control))
+        # TODO: get real path
+        return "path"
 
     # Text
 
