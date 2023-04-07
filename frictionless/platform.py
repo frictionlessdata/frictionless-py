@@ -156,6 +156,12 @@ class Platform:
         return marko
 
     @cached_property
+    def marko_ext_gfm(self):
+        import marko.ext.gfm
+
+        return marko.ext.gfm
+
+    @cached_property
     def petl(self):
         import petl
 
@@ -316,20 +322,6 @@ class Platform:
         import ezodf
 
         return ezodf
-
-    @cached_property
-    @extras(name="markdown")
-    def marko(self):
-        import marko  # type: ignore
-
-        return marko
-
-    @cached_property
-    @extras(name="markdown")
-    def marko_ext_gfm(self):
-        import marko.ext.gfm  # type: ignore
-
-        return marko.ext.gfm
 
     @cached_property
     @extras(name="markdown")

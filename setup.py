@@ -50,7 +50,7 @@ EXTRAS_REQUIRE = {
     "github": ["pygithub>=1.50"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
-    "markdown": ["marko>=1.0", "livemark>=0.110"],
+    "markdown": ["livemark>=0.110"],
     "mysql": ["sqlalchemy>=1.4", "pymysql>=1.0"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],

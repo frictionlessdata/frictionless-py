@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Union, Optional, Type, TypeVar, Generic
+from ..exception import FrictionlessException
+from ..platform import platform
 from ..metadata import Metadata
 from ..catalog import Catalog
 from ..checklist import Checklist
@@ -10,6 +12,7 @@ from ..inquiry import Inquiry
 from ..report import Report
 from .json import JsonResource
 from .. import settings
+from .. import helpers
 
 if TYPE_CHECKING:
     from ..interfaces import IDescriptor
@@ -44,7 +47,15 @@ class MetadataResource(JsonResource, Generic[T]):
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     ) -> Report:
-        return self.dataclass.validate_descriptor(self.descriptor, basepath=self.basepath)
+        errors = []
+        timer = helpers.Timer()
+        try:
+            self.read_metadata()
+        except FrictionlessException as exception:
+            errors = exception.reasons if exception.reasons else [exception.error]
+        return platform.frictionless.Report.from_validation_task(
+            self, time=timer.time, errors=errors
+        )
 
 
 class CatalogResource(MetadataResource[Catalog]):
