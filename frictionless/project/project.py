@@ -2,7 +2,7 @@ from __future__ import annotations
 import secrets
 import datetime
 from pathlib import Path
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from ..resources import FileResource
 from ..exception import FrictionlessException
 from ..package import Package
@@ -199,6 +199,10 @@ class Project:
             response["error"] = exception.error.message
 
         return response
+
+    def write_package(self, path: str, *, data: Dict[str, Any]):
+        self.database.delete_record(path)
+        return self.filesystem.write_json(path, data=data)
 
     # Project
 
