@@ -20,6 +20,7 @@ class Adapter:
 
     # Write
 
+    # TODO: should return path: str
     def write_package(self, package: Package) -> Any:
         raise NotImplementedError()
 

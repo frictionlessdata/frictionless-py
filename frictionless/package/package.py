@@ -322,7 +322,7 @@ class Package(Metadata):
 
     # Publish
 
-    def publish(self, target: Any = None, *, control: Optional[Control] = None) -> Any:
+    def publish(self, target: Any = None, *, control: Optional[Control] = None) -> str:
         """Publish package to any supported data portal
 
         Parameters:
@@ -335,10 +335,10 @@ class Package(Metadata):
         adapter = system.create_adapter(target, control=control, packagify=True)
         if not adapter:
             raise FrictionlessException(f"Not supported target: {target} or control")
-        response = adapter.write_package(self.to_copy())
-        if not response:
+        path = adapter.write_package(self.to_copy())
+        if not path:
             raise FrictionlessException("Not supported action")
-        return response
+        return path
 
     # Flatten
 

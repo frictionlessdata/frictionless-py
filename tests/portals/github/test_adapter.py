@@ -1,3 +1,4 @@
+# type: ignore
 import os
 import pytest
 from frictionless import portals, Catalog, Package, FrictionlessException, platform

@@ -48,6 +48,7 @@ class ZenodoAdapter(Adapter):
 
     # Write
 
+    # TODO: should return path: str
     def write_package(self, package: Package) -> int:
         client = platform.pyzenodo3_upload
 

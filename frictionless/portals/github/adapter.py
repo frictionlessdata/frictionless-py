@@ -50,6 +50,7 @@ class GithubAdapter(Adapter):
 
     # Write
 
+    # TODO: should return path: str
     def write_package(self, package: Package) -> Repository:
         assert self.control.repo
         assert self.control.apikey

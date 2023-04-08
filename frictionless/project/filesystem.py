@@ -179,12 +179,10 @@ class Filesystem:
 
     # Package
 
-    def publish_package(self, path: str, *, control: Dict[str, Any]):
+    def publish_package(self, path: str, *, control: Dict[str, Any]) -> str:
         path = self.get_secure_fullpath(path)
         package = Package.from_descriptor(path)
-        package.publish(control=Control.from_descriptor(control))
-        # TODO: get real path
-        return "path"
+        return package.publish(control=Control.from_descriptor(control))
 
     # Text
 
