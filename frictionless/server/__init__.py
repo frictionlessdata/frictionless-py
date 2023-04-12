@@ -12,3 +12,4 @@ from . import package
 from . import project
 from . import table
 from . import text
+from . import view

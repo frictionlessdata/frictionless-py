@@ -2,14 +2,17 @@ from __future__ import annotations
 import secrets
 from pathlib import Path
 from typing import Optional, List, Any, Dict
+from ..platform import platform
 from ..resources import FileResource
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem, IChart
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem, IChart, IView
 from .. import settings
 
 
+# TODO: move entities specific logic to its own modules from project/database/filysystem
+# It should have the same structure as server's endpoints have
 class Project:
     is_root: bool
     session: Optional[str]
@@ -236,3 +239,44 @@ class Project:
 
     def write_text(self, path: str, *, text: str):
         return self.filesystem.write_text(path, text=text)
+
+    # View
+
+    # TODO: fix not safe
+    # TODO: remove duplication
+    def write_view(self, path: str, *, view: IView):
+        sa = platform.sqlalchemy
+        query = view["query"]
+        self.filesystem.write_view(path, view=view)
+        resource = FileResource(path=path, basepath=str(self.public))
+        self.database.create_record(resource=resource)
+
+        # Get table name
+        found = False
+        table_names = []
+        table_name = resource.name
+        template = f"{table_name}%s"
+        items = self.database.list_records()
+        for item in items:
+            name = item.get("tableName")
+            if not name:
+                continue
+            table_names.append(name)
+            if item["path"] == resource.path:
+                table_name = name
+                found = True
+        if not found:
+            suffix = 1
+            while table_name in table_names:
+                table_name = template % suffix
+                suffix += 1
+
+        # Create view
+        with self.database.engine.begin() as conn:
+            conn.execute(sa.text(f'DROP VIEW IF EXISTS "{table_name}"'))
+            conn.execute(sa.text(f'CREATE VIEW "{table_name}" AS {query}'))
+            conn.execute(
+                sa.update(self.database.records)
+                .where(self.database.records.c.path == path)
+                .values(tableName=table_name)
+            )

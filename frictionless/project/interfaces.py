@@ -54,3 +54,7 @@ class ITable(TypedDict):
 class IQueryData(TypedDict):
     header: IHeader
     rows: List[IRow]
+
+
+class IView(TypedDict):
+    query: str

@@ -6,7 +6,7 @@ from ..resources import TableResource
 from ..resource import Resource
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IRecord, IRecordItem, ITable, IQueryData, IFieldItem
+from .interfaces import IRecord, IRecordItem, ITable, IQueryData, IFieldItem, IView
 from .. import helpers
 from . import settings
 

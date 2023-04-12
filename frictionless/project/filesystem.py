@@ -8,7 +8,7 @@ from ..package import Package
 from ..resource import Resource
 from ..resources import FileResource, TextResource, JsonResource
 from ..exception import FrictionlessException
-from .interfaces import IFileItem
+from .interfaces import IFileItem, IView
 from .. import helpers
 
 
@@ -201,6 +201,14 @@ class Filesystem:
         path = self.get_secure_fullpath(path)
         resource = TextResource(data=text)
         resource.write_text(path=path)
+
+    # View
+
+    def write_view(self, path: str, *, view: IView):
+        path = self.get_secure_fullpath(path)
+        # TODO: use ViewResource?
+        resource = JsonResource(data=view)
+        resource.write_json(path=path)
 
     # Helpers
 
