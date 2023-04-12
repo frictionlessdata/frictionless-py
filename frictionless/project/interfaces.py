@@ -6,6 +6,7 @@ from typing_extensions import Required, TypedDict
 IData = Dict[str, Any]
 IHeader = List[str]
 IRow = Dict[str, Any]
+IChart = Dict[str, Any]
 
 
 class IFileItem(TypedDict, total=False):

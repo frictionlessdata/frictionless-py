@@ -6,7 +6,7 @@ from ..resources import FileResource
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem, IChart
 from .. import settings
 
 
@@ -48,6 +48,25 @@ class Project:
         self.private = private
         self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
+
+    # Chart
+
+    def render_chart(self, chart: IChart) -> IChart:
+        chart = chart.copy()
+        path = chart.get("data", {}).pop("url", None)
+        if not path:
+            return chart
+        record = self.database.select_record(path)
+        if not record:
+            return chart
+        table_name = record.get("tableName")
+        if not table_name:
+            return chart
+        # TODO: cherry-pick fields based on presense in the chart
+        result = self.database.query(f'SELECT * from "{table_name}"')
+        # TODO: check if some data types need to be stringified
+        chart["data"]["values"] = result["rows"]
+        return chart
 
     # File
 

@@ -7,6 +7,7 @@ from ..router import router
 
 class Props(BaseModel):
     session: Optional[str]
+    # TODO: render provided test (not by path)
     path: str
 
 
