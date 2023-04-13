@@ -64,6 +64,13 @@ EXTRAS_REQUIRE = {
     "zenodo": ["pyzenodo3>=1.0"],
     "datasette": ["datasette>=0.64.2"],
 }
+EXTRAS_REQUIRE["framework"] = (
+    EXTRAS_REQUIRE["ckan"]
+    + EXTRAS_REQUIRE["csv"]
+    + EXTRAS_REQUIRE["excel"]
+    + EXTRAS_REQUIRE["json"]
+    + EXTRAS_REQUIRE["sql"]
+)
 EXTRAS_REQUIRE["application"] = (
     EXTRAS_REQUIRE["ckan"]
     + EXTRAS_REQUIRE["csv"]
