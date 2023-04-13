@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from ..formats.sql import SqlMapper
 
 
+# TODO: move specific logic to endpoint classes
 class Database:
     database_url: str
     engine: Engine

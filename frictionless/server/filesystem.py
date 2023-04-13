@@ -12,6 +12,7 @@ from .interfaces import IFileItem, IView
 from .. import helpers
 
 
+# TODO: move specific logic to endpoint classes
 # TODO: is it possible to move most of this functionality to resources.FileResource?
 class Filesystem:
     basepath: Path

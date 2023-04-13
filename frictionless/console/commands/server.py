@@ -4,8 +4,8 @@ from ..console import console
 from .. import common
 
 
-@console.command(name="api", hidden=True)
-def console_api(
+@console.command(name="server", hidden=True)
+def console_server(
     basepath: str = common.basepath,
     root: bool = common.root,
     port: int = common.port,

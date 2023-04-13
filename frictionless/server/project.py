@@ -11,8 +11,7 @@ from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem, IChart
 from .. import settings
 
 
-# TODO: move entities specific logic to its own modules from project/database/filysystem
-# It should have the same structure as server's endpoints have
+# TODO: move specific logic to endpoint classes
 class Project:
     is_root: bool
     session: Optional[str]
