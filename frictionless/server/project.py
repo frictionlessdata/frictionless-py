@@ -112,6 +112,8 @@ class Project:
     def select_file(self, path: str) -> Optional[IFile]:
         item = self.filesystem.select_file(path)
         if item:
+            # TODO: don't use interfaces runtime here and in other places!
+            # [correct] file: IFile = dict(**item)
             file = IFile(**item)
             record = self.database.select_record(path)
             if record:
