@@ -1,5 +1,5 @@
-from .program import program
+from .console import console
 
 
 if __name__ == "__main__":
-    program(prog_name="frictionless")
+    console(prog_name="frictionless")
