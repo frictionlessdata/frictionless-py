@@ -72,13 +72,7 @@ EXTRAS_REQUIRE["framework"] = (
     + EXTRAS_REQUIRE["sql"]
 )
 EXTRAS_REQUIRE["application"] = (
-    EXTRAS_REQUIRE["ckan"]
-    + EXTRAS_REQUIRE["csv"]
-    + EXTRAS_REQUIRE["excel"]
-    + EXTRAS_REQUIRE["json"]
-    + EXTRAS_REQUIRE["markdown"]
-    + EXTRAS_REQUIRE["server"]
-    + EXTRAS_REQUIRE["sql"]
+    EXTRAS_REQUIRE["framework"] + EXTRAS_REQUIRE["markdown"] + EXTRAS_REQUIRE["server"]
 )
 INSTALL_REQUIRES = [
     "petl>=1.6",
