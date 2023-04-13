@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Optional
 from ..platform import platform
-from ..project import Project
+from .project import Project
 from .config import Config
 from .router import router
 from .. import settings
@@ -18,7 +17,7 @@ class Server(platform.fastapi.FastAPI):
     @staticmethod
     def create(config: Config):
         server = Server(
-            title="Frictionless API",
+            title="Frictionless Server",
             version=settings.VERSION,
             debug=config.debug,
         )
@@ -38,9 +37,5 @@ class Server(platform.fastapi.FastAPI):
 
     # Project
 
-    def get_project(self, session: Optional[str]):
-        return Project(
-            basepath=self.config.basepath,
-            is_root=self.config.is_root,
-            session=session,
-        )
+    def get_project(self):
+        return Project(self.config.folder)

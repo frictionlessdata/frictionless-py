@@ -212,21 +212,21 @@ class Platform:
     # Extras
 
     @cached_property
-    @extras(name="api")
+    @extras(name="server")
     def frictionless_server(self):
         import frictionless.server
 
         return frictionless.server
 
     @cached_property
-    @extras(name="api")
+    @extras(name="server")
     def fastapi(self):
         import fastapi
 
         return fastapi
 
     @cached_property
-    @extras(name="api")
+    @extras(name="server")
     def uvicorn(self):
         import uvicorn
 
