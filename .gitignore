@@ -81,10 +81,10 @@ target/
 .spyderproject
 
 # Livemark
-blog/**/*.html
-docs/**/*.html
-index.html
-404.html
+/blog/**/*.html
+/docs/**/*.html
+/index.html
+/404.html
 
 # Extras
 .frictionless/
