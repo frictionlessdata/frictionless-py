@@ -2,7 +2,7 @@
 
 
 PACKAGE := $(shell grep '^PACKAGE =' setup.py | cut -d '"' -f2)
-VERSION := $(shell head -n 1 $(PACKAGE)/assets/VERSION)
+VERSION := $(shell head -n 1 $(PACKAGE)/__version__)
 LEAD := $(shell head -n 1 LEAD.md)
 
 

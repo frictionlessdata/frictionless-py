@@ -86,9 +86,9 @@ INSTALL_REQUIRES = [
     "typing-extensions>=4.3",
 ]
 README = read("README.md")
-VERSION = read(PACKAGE, "assets", "VERSION")
+VERSION = read(PACKAGE, "__version__")
 PACKAGES = find_packages(exclude=["tests"])
-ENTRY_POINTS = {"console_scripts": ["frictionless = frictionless.__main__:program"]}
+ENTRY_POINTS = {"console_scripts": ["frictionless = frictionless.__main__:console"]}
 
 
 # Run

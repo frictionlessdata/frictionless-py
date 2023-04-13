@@ -8,7 +8,7 @@ from .. import helpers
 @attrs.define(kw_only=True)
 class Config:
     folder: Optional[str] = None
-    port: int = settings.DEFAULT_SERVER_PORT
+    port: int = settings.DEFAULT_HTTP_PORT
     debug: bool = False
 
     # Convert

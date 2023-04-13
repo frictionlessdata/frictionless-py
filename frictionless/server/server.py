@@ -25,7 +25,7 @@ class Server(platform.fastapi.FastAPI):
         server.include_router(router)
         return server
 
-    # Server
+    # Run
 
     def run(self):
         log_level = "debug" if self.config.debug else None
@@ -35,7 +35,7 @@ class Server(platform.fastapi.FastAPI):
             log_level=log_level,
         )
 
-    # Project
+    # Context
 
     def get_project(self):
         return Project(self.config.folder)
