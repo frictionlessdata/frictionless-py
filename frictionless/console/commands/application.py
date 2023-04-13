@@ -17,12 +17,12 @@ def console_application(
     """
     Start Frictionless Application
     """
-    threading.Timer(0.1, webbrowser.open_new_tab, [f"http://localhost:{port}"]).start()
     module = platform.frictionless_application
     config = module.Config.from_options(
         folder=folder,
         port=port,
         debug=debug,
     )
+    threading.Timer(0.1, webbrowser.open_new_tab, [f"http://localhost:{port}"]).start()
     application = module.Application.create(config)
     application.run()
