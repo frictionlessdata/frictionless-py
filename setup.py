@@ -43,6 +43,7 @@ EXTRAS_REQUIRE = {
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
+    "csv": [],
     "dev": TESTS_REQUIRE,
     "excel": ["xlrd>=1.2", "xlwt>=1.2", "openpyxl>=3.0", "tableschema-to-template>=0.0"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
@@ -63,6 +64,15 @@ EXTRAS_REQUIRE = {
     "zenodo": ["pyzenodo3>=1.0"],
     "datasette": ["datasette>=0.64.2"],
 }
+EXTRAS_REQUIRE["application"] = (
+    EXTRAS_REQUIRE["ckan"]
+    + EXTRAS_REQUIRE["csv"]
+    + EXTRAS_REQUIRE["excel"]
+    + EXTRAS_REQUIRE["json"]
+    + EXTRAS_REQUIRE["markdown"]
+    + EXTRAS_REQUIRE["server"]
+    + EXTRAS_REQUIRE["sql"]
+)
 INSTALL_REQUIRES = [
     "petl>=1.6",
     "marko>=1.0",
