@@ -298,7 +298,7 @@ er_diagram = Option(
 )
 
 port = Option(
-    settings.DEFAULT_SERVER_PORT,
+    settings.DEFAULT_HTTP_PORT,
     help="Specify server port",
 )
 

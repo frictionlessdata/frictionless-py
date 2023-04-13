@@ -6,9 +6,9 @@ import json
 # Helpers
 
 
-def read_asset(*paths, encoding="utf-8"):
+def read(*paths, encoding="utf-8"):
     dirname = os.path.dirname(__file__)
-    with open(os.path.join(dirname, "assets", *paths), encoding=encoding) as file:
+    with open(os.path.join(dirname, *paths), encoding=encoding) as file:
         return file.read().strip()
 
 
@@ -18,11 +18,11 @@ def read_asset(*paths, encoding="utf-8"):
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z/])+$"
-VERSION = read_asset("VERSION")
+VERSION = read("__version__")
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]
-GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson.json"))
-TOPOJSON_PROFILE = json.loads(read_asset("profiles", "topojson.json"))
+GEOJSON_PROFILE = json.loads(read("assets", "profiles", "geojson.json"))
+TOPOJSON_PROFILE = json.loads(read("assets", "profiles", "topojson.json"))
 
 
 # Defaults
@@ -63,7 +63,7 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
-DEFAULT_SERVER_PORT = 4040
+DEFAULT_HTTP_PORT = 4040
 DEFAULT_HTTP_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
@@ -133,10 +133,10 @@ METADATA_TRAITS = {
     },
     "chart": {
         "names": ["chart.json", "chart.yaml"],
-        "props": ["chart"],
+        "props": ["layers", "encoding", "mark"],
     },
     "view": {
         "names": ["view.json", "view.yaml"],
-        "props": ["view"],
+        "props": ["query"],
     },
 }

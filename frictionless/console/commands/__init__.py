@@ -1,4 +1,5 @@
 # Register modules
+from . import application
 from . import convert
 from . import describe
 from . import explore

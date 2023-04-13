@@ -86,7 +86,7 @@ We also recommend running underlying commands like `pytest` or `pylama` to speed
 
 To release a new version:
 - check that you have push access to the `master` branch
-- update `frictionless/assets/VERSION` following the SemVer standard
+- update `frictionless/__version__` following the SemVer standard
 - add changes to `CHANGELOG.md` if it's not a patch release (major or micro)
 - run `make release` which create a release commit and tag and push it to Github
 - an actual release will happen on the Travis CI platform after running the tests
