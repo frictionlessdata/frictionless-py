@@ -17,7 +17,7 @@ not_secure = ["/path", "../path", "../", "./"]
 
 
 def test_project_read_json(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
+    project = Project(tmpdir)
     project.upload_file(name3, bytes=bytes3)
     assert project.read_json(name3) == {"key": "value"}
     assert project.list_files() == [
@@ -27,6 +27,6 @@ def test_project_read_json(tmpdir):
 
 @pytest.mark.parametrize("path", not_secure)
 def test_project_read_json_security(tmpdir, path):
-    project = Project(basepath=tmpdir, is_root=True)
+    project = Project(tmpdir)
     with pytest.raises(Exception):
         project.read_json(path)

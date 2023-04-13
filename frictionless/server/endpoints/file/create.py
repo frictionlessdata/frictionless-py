@@ -8,7 +8,6 @@ from ...router import router
 # See the signature
 class Props(BaseModel):
     path: str
-    session: Optional[str]
     folder: Optional[str]
 
 
@@ -20,7 +19,7 @@ class Result(BaseModel):
 
 @router.post("/file/create")
 async def server_file_create(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project(props.session)
+    project: Project = request.app.get_project()
     try:
         path = project.create_file(props.path, folder=props.folder)
     except:

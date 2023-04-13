@@ -1,5 +1,4 @@
 from __future__ import annotations
-import secrets
 from pathlib import Path
 from typing import Optional, List, Any, Dict
 from ..platform import platform
@@ -13,39 +12,20 @@ from .. import settings
 
 # TODO: move specific logic to endpoint classes
 class Project:
-    is_root: bool
-    session: Optional[str]
     public: Path
     private: Path
     database: Database
     filesystem: Filesystem
 
-    def __init__(
-        self,
-        *,
-        basepath: Optional[str] = None,
-        session: Optional[str] = None,
-        is_root: bool = False,
-    ):
-        # Provide authz
-        base = Path(basepath or "")
-        if is_root:
-            assert not session
-        if not is_root:
-            if not session:
-                session = secrets.token_urlsafe(16)
-            assert len(session) == 22
-
+    def __init__(self, folder: Optional[str] = None):
         # Ensure structure
-        public = base / (session or "")
+        public = Path(folder or "")
         private = public / ".frictionless"
         database = private / "project.db"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
 
         # Store attributes
-        self.is_root = is_root
-        self.session = session
         self.public = public
         self.private = private
         self.database = Database(f"sqlite:///{database}")
@@ -233,8 +213,8 @@ class Project:
     def read_text(self, path: str) -> str:
         return self.filesystem.read_text(path)
 
-    def render_text(self, path: str) -> str:
-        return self.filesystem.render_text(path, livemark=self.is_root)
+    def render_text(self, path: str, *, livemark=False) -> str:
+        return self.filesystem.render_text(path, livemark=livemark)
 
     def write_text(self, path: str, *, text: str):
         return self.filesystem.write_text(path, text=text)

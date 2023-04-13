@@ -6,7 +6,6 @@ from ...router import router
 
 
 class Props(BaseModel):
-    session: Optional[str]
     path: str
 
 
@@ -16,6 +15,6 @@ class Result(BaseModel):
 
 @router.post("/file/select")
 def server_file_select(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project(props.session)
+    project: Project = request.app.get_project()
     file = project.select_file(props.path)
     return Result(file=file)

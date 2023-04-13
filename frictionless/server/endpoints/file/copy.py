@@ -6,7 +6,6 @@ from ...router import router
 
 
 class Props(BaseModel):
-    session: Optional[str]
     path: str
     folder: Optional[str]
 
@@ -18,6 +17,6 @@ class Result(BaseModel):
 @router.post("/file/copy")
 def server_file_copy(request: Request, props: Props) -> Result:
     # TODO: why do we need to provide type explicetly?
-    project: Project = request.app.get_project(props.session)
+    project: Project = request.app.get_project()
     path = project.copy_file(props.path, folder=props.folder)
     return Result(path=path)

@@ -16,7 +16,7 @@ not_secure = ["/path", "../path", "../", "./"]
 
 
 def test_project_create_folder(tmpdir):
-    project = Project(basepath=tmpdir, is_root=True)
+    project = Project(tmpdir)
     path = project.create_folder(folder1)
     assert path == folder1
     assert project.list_files() == [
@@ -26,7 +26,7 @@ def test_project_create_folder(tmpdir):
 
 @pytest.mark.parametrize("path", not_secure)
 def test_project_create_folder_security(tmpdir, path):
-    project = Project(basepath=tmpdir, is_root=True)
+    project = Project(tmpdir)
     project.upload_file(name1, bytes=bytes1)
     with pytest.raises(Exception):
         project.create_folder(path)

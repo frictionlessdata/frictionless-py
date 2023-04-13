@@ -6,7 +6,6 @@ from ...router import router
 
 
 class Props(BaseModel):
-    session: Optional[str]
     path: str
     valid: Optional[bool]
     limit: Optional[int]
@@ -19,7 +18,7 @@ class Result(BaseModel):
 
 @router.post("/table/read")
 def server_table_read(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project(props.session)
+    project: Project = request.app.get_project()
     table = project.read_table(
         props.path,
         valid=props.valid,

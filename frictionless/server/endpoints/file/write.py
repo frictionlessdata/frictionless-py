@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request, UploadFile, File, Form
 from ...project import Project
@@ -19,9 +18,8 @@ async def server_file_write(
     request: Request,
     file: UploadFile = File(),
     path: str = Form(None),
-    session: Optional[str] = Form(None),
 ) -> Result:
-    project: Project = request.app.get_project(session)
+    project: Project = request.app.get_project()
     bytes = await file.read()
     project.write_file(path, bytes=bytes)
     return Result(path=path)

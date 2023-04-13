@@ -40,7 +40,6 @@ TESTS_REQUIRE = [
     "pytest-lazy-fixture",
 ]
 EXTRAS_REQUIRE = {
-    "api": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0"],
     "aws": ["boto3>=1.9"],
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
@@ -56,6 +55,7 @@ EXTRAS_REQUIRE = {
     "pandas": ["pandas>=1.0"],
     "parquet": ["fastparquet>=0.8"],
     "postgresql": ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"],
+    "server": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.4"],
     "visidata": ["visidata>=2.10"],

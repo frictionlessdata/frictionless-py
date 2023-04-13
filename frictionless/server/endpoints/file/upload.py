@@ -20,9 +20,8 @@ async def server_file_upload(
     request: Request,
     file: UploadFile = File(),
     folder: Optional[str] = Form(None),
-    session: Optional[str] = Form(None),
 ) -> Result:
-    project: Project = request.app.get_project(session)
+    project: Project = request.app.get_project()
     name = file.filename or "name"
     bytes = await file.read()
     path = project.upload_file(name, bytes=bytes, folder=folder)

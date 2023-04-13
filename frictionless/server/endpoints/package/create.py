@@ -6,7 +6,7 @@ from ...router import router
 
 
 class Props(BaseModel):
-    session: Optional[str]
+    pass
 
 
 class Result(BaseModel):
@@ -15,6 +15,6 @@ class Result(BaseModel):
 
 @router.post("/package/create")
 def server_package_create(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project(props.session)
+    project: Project = request.app.get_project()
     path = project.create_package()
     return Result(path=path)
