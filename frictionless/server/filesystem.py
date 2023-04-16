@@ -87,8 +87,8 @@ class Filesystem:
             for file in files:
                 if self.is_hidden_path(file):
                     continue
+                type = self.get_filetype(os.path.join(root, file))
                 path = self.get_secure_relpath(os.path.join(root, file))
-                type = self.get_filetype(path)
                 item = IFileItem(path=path)
                 if type:
                     item["type"] = type
@@ -102,9 +102,9 @@ class Filesystem:
         return items
 
     def select_file(self, path: str) -> Optional[IFileItem]:
-        type = self.get_filetype(path)
         path = self.get_secure_fullpath(path)
         if self.is_existent(path):
+            type = self.get_filetype(path)
             if self.is_folder(path):
                 type = "folder"
             path = self.get_secure_relpath(path)
