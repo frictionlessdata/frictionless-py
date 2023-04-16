@@ -84,7 +84,9 @@ class Project:
         if file:
             if not file.get("record"):
                 resource = Resource(path=path, basepath=str(self.public))
-                file["record"] = self.database.create_record(resource)
+                record = self.database.create_record(resource)
+                file["type"] = record["type"]
+                file["record"] = record
             return file
 
     def list_files(self) -> List[IFileItem]:
@@ -120,6 +122,7 @@ class Project:
             file = IFile(**item)
             record = self.database.select_record(path)
             if record:
+                file["type"] = record["type"]
                 file["record"] = record
             return file
 

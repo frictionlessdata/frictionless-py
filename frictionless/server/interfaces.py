@@ -21,7 +21,7 @@ class IFile(IFileItem, total=False):
 
 class IRecordItem(TypedDict, total=False):
     path: Required[str]
-    type: str
+    type: Required[str]
     updated: Required[str]
     tableName: str
     errorCount: int

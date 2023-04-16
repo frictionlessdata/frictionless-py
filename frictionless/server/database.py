@@ -173,7 +173,7 @@ class Database:
             conn.execute(
                 sa.insert(self.records).values(
                     path=resource.path,
-                    type=resource.type,
+                    type=resource.datatype,
                     tableName=table.name if table is not None else None,
                     updated=datetime.now(),
                     resource=resource.to_json(),

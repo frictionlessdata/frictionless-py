@@ -101,7 +101,7 @@ METADATA_TRAITS = {
     },
     "resource": {
         "names": ["resource.json", "resource.yaml"],
-        "props": ["path", "data"],
+        "props": ["path"],
     },
     "dialect": {
         "names": ["dialect.json", "dialect.yaml"],
