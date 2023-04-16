@@ -21,6 +21,14 @@ class Filesystem:
         # We need to get resolve here to get absolute path
         self.basepath = Path(basepath).resolve()
 
+    # Chart
+
+    def create_chart(self):
+        path = self.get_secure_fullpath("chart.json", deduplicate=True)
+        self.write_json(path, data={"encoding": {}})
+        path = self.get_secure_relpath(path)
+        return path
+
     # File
 
     def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
@@ -180,6 +188,12 @@ class Filesystem:
 
     # Package
 
+    def create_package(self):
+        path = self.get_secure_fullpath("datapackage.json", deduplicate=True)
+        self.write_json(path, data={"resources": []})
+        path = self.get_secure_relpath(path)
+        return path
+
     def publish_package(self, path: str, *, control: Dict[str, Any]) -> str:
         path = self.get_secure_fullpath(path)
         package = Package.from_descriptor(path)
@@ -204,6 +218,12 @@ class Filesystem:
         resource.write_text(path=path)
 
     # View
+
+    def create_view(self):
+        path = self.get_secure_fullpath("view.json", deduplicate=True)
+        self.write_json(path, data={"query": ""})
+        path = self.get_secure_relpath(path)
+        return path
 
     def write_view(self, path: str, *, view: IView):
         path = self.get_secure_fullpath(path)
