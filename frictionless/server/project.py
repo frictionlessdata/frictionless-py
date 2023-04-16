@@ -7,7 +7,6 @@ from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
 from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem, IChart, IView
-from .. import settings
 
 
 # TODO: move specific logic to endpoint classes
