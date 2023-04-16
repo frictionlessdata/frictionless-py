@@ -207,9 +207,8 @@ class Filesystem:
         resource = TextResource(path=path)
         return resource.read_text()
 
-    def render_text(self, path: str, livemark: bool = False) -> str:
-        path = self.get_secure_fullpath(path)
-        resource = TextResource(path=path)
+    def render_text(self, text: str, livemark: bool = False) -> str:
+        resource = TextResource(data=text)
         return resource.render_text(livemark=livemark)
 
     def write_text(self, path: str, *, text: str):

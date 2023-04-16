@@ -219,8 +219,8 @@ class Project:
     def read_text(self, path: str) -> str:
         return self.filesystem.read_text(path)
 
-    def render_text(self, path: str, *, livemark=False) -> str:
-        return self.filesystem.render_text(path, livemark=livemark)
+    def render_text(self, text: str, *, livemark=False) -> str:
+        return self.filesystem.render_text(text, livemark=livemark)
 
     def write_text(self, path: str, *, text: str):
         return self.filesystem.write_text(path, text=text)

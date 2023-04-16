@@ -5,8 +5,7 @@ from ...router import router
 
 
 class Props(BaseModel):
-    # TODO: render provided test (not by path)
-    path: str
+    text: str
 
 
 class Result(BaseModel):
@@ -16,5 +15,5 @@ class Result(BaseModel):
 @router.post("/text/render")
 def server_text_render(request: Request, props: Props) -> Result:
     project: Project = request.app.get_project()
-    text = project.render_text(props.path)
+    text = project.render_text(props.text)
     return Result(text=text)

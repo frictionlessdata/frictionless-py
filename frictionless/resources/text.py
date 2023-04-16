@@ -26,9 +26,9 @@ class TextResource(Resource):
     # Render
 
     def render_text(self, *, livemark: bool = False) -> str:
-        assert self.normpath
-        assert self.format == "md"
         if livemark:
+            assert self.normpath
+            assert self.format == "md"
             document = platform.livemark.Document(source=self.normpath)
             document.read()
             document.process()
