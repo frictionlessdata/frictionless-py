@@ -292,10 +292,16 @@ class Database:
         query = sa.select(table)
         if valid is not None:
             query = query.where(table.c._rowValid == valid)
+        # TODO: recover (parameters have not been added)
+        #  if limit:
+        #  query = query.limit(limit)
+        #  if offset:
+        #  query = query.offset(offset)
+        query = str(query)
         if limit:
-            query = query.limit(limit)
+            query += f" LIMIT {limit}"
             if offset:
-                query = query.offset(offset)
+                query += f" OFFSET {offset}"
         data = self.query(str(query))
         schema = record["resource"]["schema"]
         return ITable(tableSchema=schema, header=data["header"], rows=data["rows"])
