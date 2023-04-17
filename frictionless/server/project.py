@@ -202,8 +202,12 @@ class Project:
         valid: Optional[bool] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
+        order: Optional[str] = None,
+        desc: Optional[bool] = None,
     ) -> ITable:
-        return self.database.read_table(path, valid=valid, limit=limit, offset=offset)
+        return self.database.read_table(
+            path, valid=valid, limit=limit, offset=offset, order=order, desc=desc
+        )
 
     # TODO: review
     def write_table(self, path: str, tablePatch: dict[str, str]) -> str:

@@ -10,6 +10,8 @@ class Props(BaseModel):
     valid: Optional[bool]
     limit: Optional[int]
     offset: Optional[int]
+    order: Optional[str]
+    desc: Optional[bool]
 
 
 class Result(BaseModel):
@@ -24,5 +26,7 @@ def server_table_read(request: Request, props: Props) -> Result:
         valid=props.valid,
         limit=props.limit,
         offset=props.offset,
+        order=props.order,
+        desc=props.desc,
     )
     return Result(table=table)

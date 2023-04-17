@@ -283,6 +283,8 @@ class Database:
         valid: Optional[bool] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
+        order: Optional[str] = None,
+        desc: Optional[bool] = None,
     ) -> ITable:
         sa = platform.sqlalchemy
         record = self.select_record(path)
@@ -298,6 +300,10 @@ class Database:
         #  if offset:
         #  query = query.offset(offset)
         query = str(query)
+        if order:
+            query += f" ORDER BY {order}"
+            if desc:
+                query += f" DESC"
         if limit:
             query += f" LIMIT {limit}"
             if offset:
