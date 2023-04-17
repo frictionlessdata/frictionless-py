@@ -184,6 +184,9 @@ class Project:
 
     # Table
 
+    def count_table(self, path: str) -> int:
+        return self.database.count_table(path)
+
     # TODO: review
     def export_table(self, source: str, *, target: str) -> str:
         assert self.filesystem.is_filename(target)

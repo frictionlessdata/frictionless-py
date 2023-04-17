@@ -265,6 +265,16 @@ class Database:
 
     # Table
 
+    def count_table(self, path: str) -> int:
+        sa = platform.sqlalchemy
+        record = self.select_record(path)
+        assert record
+        assert "tableName" in record
+        table = self.metadata.tables[record["tableName"]]
+        query = sa.select(sa.func.count()).select_from(table)
+        with self.engine.begin() as conn:
+            return conn.execute(query).scalar_one()
+
     # TODO:This is a placeholder code for export and we need to export it from
     # database.
     def export_table(self, source: str, target: str) -> Resource:
