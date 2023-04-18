@@ -265,13 +265,15 @@ class Database:
 
     # Table
 
-    def count_table(self, path: str) -> int:
+    def count_table(self, path: str, valid: Optional[bool] = None) -> int:
         sa = platform.sqlalchemy
         record = self.select_record(path)
         assert record
         assert "tableName" in record
         table = self.metadata.tables[record["tableName"]]
         query = sa.select(sa.func.count()).select_from(table)
+        if valid is not None:
+            query = query.where(table.c._rowValid == valid)
         with self.engine.begin() as conn:
             return conn.execute(query).scalar_one()
 

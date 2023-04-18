@@ -190,8 +190,8 @@ class Project:
 
     # Table
 
-    def count_table(self, path: str) -> int:
-        return self.database.count_table(path)
+    def count_table(self, path: str, *, valid: Optional[bool] = None) -> int:
+        return self.database.count_table(path, valid=valid)
 
     # TODO: review
     def export_table(self, source: str, *, target: str) -> str:
