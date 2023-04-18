@@ -125,8 +125,12 @@ class Project:
                 file["record"] = record
             return file
 
-    # TODO: it should trigger re-indexing etc
-    def update_file(self, path: str, *, resource: dict):
+    def update_file(self, path: str, *, resource: dict, reindex: Optional[bool] = None):
+        if reindex:
+            res = Resource.from_descriptor(resource, basepath=str(self.public))
+            self.database.delete_record(path)
+            self.database.create_record(res)
+            return
         return self.database.update_record(path, resource=resource)
 
     def upload_file(
