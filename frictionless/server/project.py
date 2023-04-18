@@ -32,8 +32,8 @@ class Project:
 
     # Chart
 
-    def create_chart(self, *, path: Optional[str] = None):
-        return self.filesystem.create_chart(path=path)
+    def create_chart(self, *, path: Optional[str] = None, chart: Optional[IChart] = None):
+        return self.filesystem.create_chart(path=path, chart=chart)
 
     def render_chart(self, chart: IChart) -> IChart:
         chart = chart.copy()

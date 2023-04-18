@@ -8,7 +8,7 @@ from ..package import Package
 from ..resource import Resource
 from ..resources import FileResource, TextResource, JsonResource
 from ..exception import FrictionlessException
-from .interfaces import IFileItem, IView
+from .interfaces import IFileItem, IView, IChart
 from .. import helpers
 
 
@@ -23,9 +23,9 @@ class Filesystem:
 
     # Chart
 
-    def create_chart(self, *, path: Optional[str] = None):
+    def create_chart(self, *, path: Optional[str] = None, chart: Optional[IChart] = None):
         path = self.get_secure_fullpath(path or "chart.json", deduplicate=True)
-        self.write_json(path, data={"encoding": {}})
+        self.write_json(path, data=chart or {"encoding": {}})
         path = self.get_secure_relpath(path)
         return path
 
