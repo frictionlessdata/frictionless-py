@@ -3,4 +3,4 @@ from .project import Project
 from .server import Server
 
 # Register modules
-from . import endpoints
+from . import actions
