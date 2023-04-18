@@ -23,8 +23,8 @@ class Filesystem:
 
     # Chart
 
-    def create_chart(self):
-        path = self.get_secure_fullpath("chart.json", deduplicate=True)
+    def create_chart(self, *, path: Optional[str] = None):
+        path = self.get_secure_fullpath(path or "chart.json", deduplicate=True)
         self.write_json(path, data={"encoding": {}})
         path = self.get_secure_relpath(path)
         return path
@@ -190,8 +190,8 @@ class Filesystem:
 
     # Package
 
-    def create_package(self):
-        path = self.get_secure_fullpath("datapackage.json", deduplicate=True)
+    def create_package(self, *, path: Optional[str] = None):
+        path = self.get_secure_fullpath(path or "datapackage.json", deduplicate=True)
         self.write_json(path, data={"resources": []})
         path = self.get_secure_relpath(path)
         return path
@@ -220,8 +220,8 @@ class Filesystem:
 
     # View
 
-    def create_view(self):
-        path = self.get_secure_fullpath("view.json", deduplicate=True)
+    def create_view(self, *, path: Optional[str] = None):
+        path = self.get_secure_fullpath(path or "view.json", deduplicate=True)
         self.write_json(path, data={"query": ""})
         path = self.get_secure_relpath(path)
         return path

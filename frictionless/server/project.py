@@ -32,8 +32,8 @@ class Project:
 
     # Chart
 
-    def create_chart(self):
-        return self.filesystem.create_chart()
+    def create_chart(self, *, path: Optional[str] = None):
+        return self.filesystem.create_chart(path=path)
 
     def render_chart(self, chart: IChart) -> IChart:
         chart = chart.copy()
@@ -170,8 +170,8 @@ class Project:
 
     # Package
 
-    def create_package(self):
-        return self.filesystem.create_package()
+    def create_package(self, *, path: Optional[str] = None):
+        return self.filesystem.create_package(path=path)
 
     def publish_package(self, path: str, *, control: Dict[str, Any]):
         return self.filesystem.publish_package(path, control=control)
@@ -239,8 +239,8 @@ class Project:
 
     # View
 
-    def create_view(self):
-        return self.filesystem.create_view()
+    def create_view(self, *, path: Optional[str] = None):
+        return self.filesystem.create_view(path=path)
 
     # TODO: fix not safe
     # TODO: remove duplication
