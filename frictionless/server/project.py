@@ -54,8 +54,10 @@ class Project:
 
     # File
 
-    def copy_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        return self.filesystem.copy_file(path, folder=folder)
+    def copy_file(
+        self, path: str, *, folder: Optional[str] = None, new_path: Optional[str] = None
+    ) -> str:
+        return self.filesystem.copy_file(path, folder=folder, new_path=new_path)
 
     def count_files(self):
         return len(self.filesystem.list_files())
