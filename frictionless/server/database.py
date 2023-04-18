@@ -315,7 +315,7 @@ class Database:
         if order:
             query += f" ORDER BY {order}"
             if desc:
-                query += f" DESC"
+                query += " DESC"
         if limit:
             query += f" LIMIT {limit}"
             if offset:
