@@ -15,7 +15,7 @@ You can read SQL database:
 from pprint import pprint
 from frictionless import Package
 
-package = Package.from_sql('postgresql://database')
+package = Package('postgresql://database')
 pprint(package)
 for resource in package.resources:
   pprint(resource.read_rows())
