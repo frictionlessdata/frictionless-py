@@ -10,9 +10,7 @@ from frictionless.resources import TableResource
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
 @pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
 def test_sql_parser_read(pg_database_url):
-    control = formats.SqlControl(table="language", basepath="data")
-    print(pg_database_url)
-    package = Package(pg_database_url, control=control)
+    package = Package(pg_database_url)
     assert len(package.resources) == 2
     assert package.resources[0].name == "fruits"
 

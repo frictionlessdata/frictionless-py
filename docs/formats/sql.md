@@ -13,9 +13,8 @@ You can read SQL database:
 
 ```python tabs=Python
 from pprint import pprint
-from frictionless import Package
+from frictionless import Package, formats
 
-control = formats.SqlControl(table="language", basepath="data")
 package = Package('postgresql://database')
 pprint(package)
 for resource in package.resources:
