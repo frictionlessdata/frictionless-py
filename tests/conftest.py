@@ -37,6 +37,27 @@ def database_url(sqlite_url):
 
 
 @pytest.fixture
+def pg_database_url(postgresql_url):
+    engine = sa.create_engine(postgresql_url)
+    with engine.begin() as conn:
+        conn.execute(
+            sa.text("CREATE TABLE languages (id INTEGER PRIMARY KEY, name TEXT)")
+        )
+        conn.execute(sa.text("INSERT INTO languages VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(
+            sa.text(
+                "CREATE TABLE fruits (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
+            )
+        )
+        conn.execute(
+            sa.text(
+                "INSERT INTO fruits VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)"
+            )
+        )
+    yield postgresql_url
+
+
+@pytest.fixture
 def sqlite_url(tmpdir):
     path = str(tmpdir.join("database.db"))
     return "sqlite:///%s" % path

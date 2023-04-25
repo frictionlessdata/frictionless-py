@@ -1,10 +1,20 @@
 import pytest
 from datetime import datetime, time
-from frictionless import formats, platform
+from frictionless import formats, platform, Package
 from frictionless.resources import TableResource
 
 
 # General
+
+
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
+def test_sql_parser_read(pg_database_url):
+    control = formats.SqlControl(table="language", basepath="data")
+    print(pg_database_url)
+    package = Package(pg_database_url, control=control)
+    assert len(package.resources) == 2
+    assert package.resources[0].name == "fruits"
 
 
 @pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
