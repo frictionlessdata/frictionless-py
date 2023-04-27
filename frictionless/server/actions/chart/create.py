@@ -14,8 +14,15 @@ class Result(BaseModel):
     path: str
 
 
-@router.post("/chart/create")
-def server_chart_render(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    path = project.create_chart(path=props.path, chart=props.chart)
+def chart_create(project: Project, props: Props) -> Result:
+    path = props.path or "chart.json"
+    data = props.chart or {"encoding": {}}
+    path = project.get_secure_fullpath(path, deduplicate=True)
+    project.filesystem.write_json(path, data=data)
+    path = project.get_secure_relpath(path)
     return Result(path=path)
+
+
+@router.post("/chart/create")
+def server_chart_create(request: Request, props: Props) -> Result:
+    return chart_create(request.app.get_project(), props)

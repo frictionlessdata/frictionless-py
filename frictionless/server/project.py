@@ -1,6 +1,7 @@
 from __future__ import annotations
+import os
 from pathlib import Path
-from typing import Optional, List, Any, Dict
+from typing import Optional, List, Any, Dict, Union
 from ..platform import platform
 from ..resources import FileResource
 from ..resource import Resource
@@ -280,3 +281,33 @@ class Project:
                 .where(self.database.records.c.path == path)
                 .values(tableName=table_name)
             )
+
+    # Filesystem
+
+    def get_secure_fullpath(
+        self, *paths: Optional[str], deduplicate: Union[bool, str] = False
+    ) -> str:
+        # We need to use resolve here to get normalized path
+        fullpath = str(self.public.joinpath(*filter(None, paths)).resolve())
+        assert self.get_secure_relpath(fullpath)
+        if deduplicate:
+            suffix = deduplicate if isinstance(deduplicate, str) else ""
+            fullpath = self.deduplicate_fullpath(fullpath, suffix=suffix)
+        return fullpath
+
+    def get_secure_relpath(self, fullpath: str) -> str:
+        # We need to use resolve here to prevent path traversing
+        path = str(Path(fullpath).resolve().relative_to(self.public))
+        assert path != "."
+        assert path != ""
+        return path
+
+    def deduplicate_fullpath(self, fullpath: str, *, suffix: str = "") -> str:
+        if os.path.exists(fullpath):
+            number = 1
+            parts = os.path.splitext(fullpath)
+            template = f"{parts[0]} ({suffix}%s){parts[1]}"
+            while os.path.exists(fullpath):
+                fullpath = template % number
+                number += 1
+        return fullpath
