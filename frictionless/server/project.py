@@ -139,14 +139,6 @@ class Project:
         self.database.delete_record(path)
         return self.filesystem.write_json(path, data=data)  # type: ignore
 
-    # Project
-
-    def index_project(self):
-        pass
-
-    def query_project(self, query: str) -> IQueryData:
-        return self.database.query(query)
-
     # Table
 
     def count_table(self, path: str, *, valid: Optional[bool] = None) -> int:
