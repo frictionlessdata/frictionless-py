@@ -22,7 +22,7 @@ class CsvParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self):  # type: ignore
         control = CsvControl.from_dialect(self.resource.dialect)
         sample = extract_samle(self.loader.text_stream)
         if self.resource.format == "tsv":
