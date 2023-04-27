@@ -122,44 +122,6 @@ class Project:
     def write_file(self, path: str, *, bytes: bytes) -> None:
         return self.filesystem.write_file(path, bytes=bytes)
 
-    # Table
-
-    def count_table(self, path: str, *, valid: Optional[bool] = None) -> int:
-        return self.database.count_table(path, valid=valid)
-
-    # TODO: review
-    def export_table(self, source: str, *, target: str) -> str:
-        assert self.filesystem.is_filename(target)
-        target = self.filesystem.get_secure_fullpath(target)
-        source = self.filesystem.get_secure_fullpath(source)
-        self.database.export_table(source, target=target)
-        return target
-
-    def query_table(self, query: str) -> ITable:
-        return self.database.query_table(query)
-
-    def read_table(
-        self,
-        path: str,
-        *,
-        valid: Optional[bool] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-        order: Optional[str] = None,
-        desc: Optional[bool] = None,
-    ) -> ITable:
-        return self.database.read_table(
-            path, valid=valid, limit=limit, offset=offset, order=order, desc=desc
-        )
-
-    # TODO: review
-    def write_table(self, path: str, tablePatch: dict[str, str]) -> str:
-        assert self.filesystem.is_filename(path)
-        self.database.write_table(
-            path, tablePatch=tablePatch, basepath=str(self.filesystem.basepath)
-        )
-        return path
-
     # Filesystem
 
     def get_secure_fullpath(

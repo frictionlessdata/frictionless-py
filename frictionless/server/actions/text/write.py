@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from fastapi import Request
+from ....resources import TextResource
 from ...project import Project
 from ...router import router
 
@@ -15,6 +16,11 @@ class Result(BaseModel):
 
 @router.post("/text/write")
 def server_text_write(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    project.write_text(props.path, text=props.text)
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    fullpath = project.get_secure_fullpath(props.path)
+    resource = TextResource(data=props.text)
+    resource.write_text(path=fullpath)
     return Result(path=props.path)

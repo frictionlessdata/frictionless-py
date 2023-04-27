@@ -16,7 +16,7 @@ class Result(BaseModel):
 
 
 @router.post("/metadata/write")
-def server_metadata_write(request: Request, props: Props) -> Result:
+def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 

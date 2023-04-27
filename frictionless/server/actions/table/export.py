@@ -14,7 +14,14 @@ class Result(BaseModel):
 
 
 @router.post("/table/export")
-def server_table_export(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    path = project.export_table(props.source, target=props.target)
-    return Result(path=path)
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+# TODO: rework
+def action(project: Project, props: Props) -> Result:
+    assert project.is_filename(props.target)
+    target = project.get_secure_fullpath(props.target)
+    source = project.get_secure_fullpath(props.source)
+    project.database.export_table(source, target=target)
+    return Result(path=target)

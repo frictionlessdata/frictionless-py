@@ -19,9 +19,12 @@ class Result(BaseModel):
 
 
 @router.post("/table/read")
-def server_table_read(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    table = project.read_table(
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    table = project.database.read_table(
         props.path,
         valid=props.valid,
         limit=props.limit,

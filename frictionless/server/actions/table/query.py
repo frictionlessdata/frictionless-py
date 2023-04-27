@@ -13,7 +13,10 @@ class Result(BaseModel):
 
 
 @router.post("/table/query")
-def server_table_query(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    table = project.query_table(props.query)
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    table = project.database.query_table(props.query)
     return Result(table=table)

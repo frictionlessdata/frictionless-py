@@ -15,7 +15,10 @@ class Result(BaseModel):
 
 
 @router.post("/table/count")
-def server_table_count(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    count = project.count_table(props.path, valid=props.valid)
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    count = project.database.count_table(props.path, valid=props.valid)
     return Result(count=count)

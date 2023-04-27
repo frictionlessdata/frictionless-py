@@ -18,7 +18,7 @@ class Result(BaseModel):
 
 
 @router.post("/package/create")
-def server_package_create(request: Request, props: Props) -> Result:
+def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
