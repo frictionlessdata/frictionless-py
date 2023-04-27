@@ -2,11 +2,9 @@ from __future__ import annotations
 import os
 import shutil
 from pathlib import Path
-from typing import Optional, Union, List, Any, Dict
-from ..dialect import Control
-from ..package import Package
+from typing import Optional, Union, List
 from ..resource import Resource
-from ..resources import FileResource, TextResource
+from ..resources import FileResource
 from ..exception import FrictionlessException
 from .interfaces import IFileItem
 from .. import helpers
@@ -167,19 +165,6 @@ class Filesystem:
         helpers.create_folder(path)
         path = self.get_secure_relpath(path)
         return path
-
-    # Package
-
-    def create_package(self, *, path: Optional[str] = None):
-        path = self.get_secure_fullpath(path or "datapackage.json", deduplicate=True)
-        self.write_json(path, data={"resources": []})  # type: ignore
-        path = self.get_secure_relpath(path)
-        return path
-
-    def publish_package(self, path: str, *, control: Dict[str, Any]) -> str:
-        path = self.get_secure_fullpath(path)
-        package = Package.from_descriptor(path)
-        return package.publish(control=Control.from_descriptor(control))
 
     # Helpers
 

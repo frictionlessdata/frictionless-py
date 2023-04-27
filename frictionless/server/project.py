@@ -1,12 +1,12 @@
 from __future__ import annotations
 import os
 from pathlib import Path
-from typing import Optional, List, Any, Dict, Union
+from typing import Optional, List, Union
 from ..resources import FileResource
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem
+from .interfaces import ITable, IFile, IFileItem
 
 
 # TODO: move specific logic to endpoint classes
@@ -126,18 +126,6 @@ class Project:
 
     def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.create_folder(name, folder=folder)
-
-    # Package
-
-    def create_package(self, *, path: Optional[str] = None):
-        return self.filesystem.create_package(path=path)
-
-    def publish_package(self, path: str, *, control: Dict[str, Any]):
-        return self.filesystem.publish_package(path, control=control)
-
-    def write_package(self, path: str, *, data: Dict[str, Any]):
-        self.database.delete_record(path)
-        return self.filesystem.write_json(path, data=data)  # type: ignore
 
     # Table
 
