@@ -1,6 +1,7 @@
 from typing import Any
 from pydantic import BaseModel
 from fastapi import Request
+from ....resources import JsonResource
 from ...project import Project
 from ...router import router
 
@@ -14,7 +15,12 @@ class Result(BaseModel):
 
 
 @router.post("/json/read")
-def server_json_read(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    data = project.read_json(props.path)
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    fullpath = project.get_secure_fullpath(props.path)
+    resource = JsonResource(path=fullpath)
+    data = resource.read_json()
     return Result(data=data)
