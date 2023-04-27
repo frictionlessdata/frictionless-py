@@ -154,18 +154,6 @@ class Filesystem:
         resource = FileResource(data=bytes)
         resource.write_file(path)
 
-    # Folder
-
-    def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
-        assert self.is_filename(name)
-        if folder:
-            folder = self.get_secure_fullpath(folder)
-            assert self.is_folder(folder)
-        path = self.get_secure_fullpath(folder, name, deduplicate=True)
-        helpers.create_folder(path)
-        path = self.get_secure_relpath(path)
-        return path
-
     # Helpers
 
     def get_secure_fullpath(

@@ -122,11 +122,6 @@ class Project:
     def write_file(self, path: str, *, bytes: bytes) -> None:
         return self.filesystem.write_file(path, bytes=bytes)
 
-    # Folder
-
-    def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
-        return self.filesystem.create_folder(name, folder=folder)
-
     # Table
 
     def count_table(self, path: str, *, valid: Optional[bool] = None) -> int:
@@ -194,3 +189,34 @@ class Project:
                 fullpath = template % number
                 number += 1
         return fullpath
+
+    def get_filetype(self, path: str) -> Optional[str]:
+        resource = Resource(path=path)
+        return resource.datatype
+
+    def get_filename(self, path: str) -> str:
+        return os.path.basename(path)
+
+    def get_folder(self, path: str) -> str:
+        return os.path.dirname(path)
+
+    def is_hidden_path(self, path: str) -> bool:
+        for part in os.path.split(path):
+            if part.startswith(".") and len(part) > 1:
+                return True
+        return False
+
+    def is_basepath(self, path: str) -> bool:
+        return self.public.samefile(path)
+
+    def is_existent(self, fullpath: str) -> bool:
+        return os.path.exists(fullpath)
+
+    def is_filename(self, name: str) -> bool:
+        return not os.path.dirname(name)
+
+    def is_folder(self, fullpath: str) -> bool:
+        return os.path.isdir(fullpath)
+
+    def is_file(self, fullpath: str) -> bool:
+        return os.path.isfile(fullpath)
