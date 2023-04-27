@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Optional
 from pydantic import BaseModel
 from fastapi import Request
+from ....resources import JsonResource
 from ...project import Project
 from ...router import router
 
@@ -8,6 +9,7 @@ from ...router import router
 class Props(BaseModel):
     path: str
     data: Any
+    deduplicate: Optional[bool] = None
 
 
 class Result(BaseModel):
@@ -15,7 +17,13 @@ class Result(BaseModel):
 
 
 @router.post("/json/write")
-def server_json_read(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    project.write_json(props.path, data=props.data)
-    return Result(path=props.path)
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    fullpath = project.get_secure_fullpath(props.path, deduplicate=props.deduplicate)
+    resource = JsonResource(data=props.data)
+    resource.write_json(path=fullpath)
+    path = project.get_secure_relpath(fullpath)
+    return Result(path=path)
