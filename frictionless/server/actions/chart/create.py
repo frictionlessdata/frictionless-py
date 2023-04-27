@@ -7,8 +7,8 @@ from .. import json
 
 
 class Props(BaseModel):
-    path: Optional[str]
-    chart: Optional[IChart]
+    path: Optional[str] = None
+    chart: Optional[IChart] = None
 
 
 class Result(BaseModel):
