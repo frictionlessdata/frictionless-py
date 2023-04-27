@@ -25,14 +25,14 @@ class TextResource(Resource):
 
     # Render
 
-    def render_text(self, *, livemark: bool = False) -> str:
+    def render_text(self, *, livemark: Optional[bool] = None) -> str:
         if livemark:
             assert self.normpath
             assert self.format == "md"
             document = platform.livemark.Document(source=self.normpath)
             document.read()
             document.process()
-            return document.output
+            return document.output  # type: ignore
         markdown = platform.marko.Markdown()
         markdown.use(platform.marko_ext_gfm.GFM)
         text = self.read_text()

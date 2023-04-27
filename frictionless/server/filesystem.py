@@ -181,23 +181,6 @@ class Filesystem:
         package = Package.from_descriptor(path)
         return package.publish(control=Control.from_descriptor(control))
 
-    # Text
-
-    # TODO: use detected resource.encoding if indexed
-    def read_text(self, path: str) -> str:
-        path = self.get_secure_fullpath(path)
-        resource = TextResource(path=path)
-        return resource.read_text()
-
-    def render_text(self, text: str, livemark: bool = False) -> str:
-        resource = TextResource(data=text)
-        return resource.render_text(livemark=livemark)
-
-    def write_text(self, path: str, *, text: str):
-        path = self.get_secure_fullpath(path)
-        resource = TextResource(data=text)
-        resource.write_text(path=path)
-
     # Helpers
 
     def get_secure_fullpath(

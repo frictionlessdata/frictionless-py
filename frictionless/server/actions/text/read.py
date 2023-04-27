@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from fastapi import Request
+from ....resources import TextResource
 from ...project import Project
 from ...router import router
 
@@ -14,6 +15,12 @@ class Result(BaseModel):
 
 @router.post("/text/read")
 def server_text_read(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    text = project.read_text(props.path)
+    return action(request.app.get_project(), props)
+
+
+# TODO: use detected resource.encoding if indexed
+def action(project: Project, props: Props) -> Result:
+    fullpath = project.get_secure_fullpath(props.path)
+    resource = TextResource(path=fullpath)
+    text = resource.read_text()
     return Result(text=text)
