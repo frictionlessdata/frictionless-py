@@ -6,9 +6,9 @@ from typing import Optional, Union, List, Any, Dict
 from ..dialect import Control
 from ..package import Package
 from ..resource import Resource
-from ..resources import FileResource, TextResource, JsonResource
+from ..resources import FileResource, TextResource
 from ..exception import FrictionlessException
-from .interfaces import IFileItem, IView, IChart
+from .interfaces import IFileItem
 from .. import helpers
 
 
@@ -20,14 +20,6 @@ class Filesystem:
     def __init__(self, basepath: str):
         # We need to get resolve here to get absolute path
         self.basepath = Path(basepath).resolve()
-
-    # Chart
-
-    def create_chart(self, *, path: Optional[str] = None, chart: Optional[IChart] = None):
-        path = self.get_secure_fullpath(path or "chart.json", deduplicate=True)
-        self.write_json(path, data=chart or {"encoding": {}})
-        path = self.get_secure_relpath(path)
-        return path
 
     # File
 
@@ -176,23 +168,11 @@ class Filesystem:
         path = self.get_secure_relpath(path)
         return path
 
-    # Json
-
-    def read_json(self, path: str) -> Any:
-        path = self.get_secure_fullpath(path)
-        resource = JsonResource(path=path)
-        return resource.read_json()
-
-    def write_json(self, path: str, *, data: Any):
-        path = self.get_secure_fullpath(path)
-        resource = JsonResource(data=data)
-        resource.write_json(path=path)
-
     # Package
 
     def create_package(self, *, path: Optional[str] = None):
         path = self.get_secure_fullpath(path or "datapackage.json", deduplicate=True)
-        self.write_json(path, data={"resources": []})
+        self.write_json(path, data={"resources": []})  # type: ignore
         path = self.get_secure_relpath(path)
         return path
 
@@ -217,20 +197,6 @@ class Filesystem:
         path = self.get_secure_fullpath(path)
         resource = TextResource(data=text)
         resource.write_text(path=path)
-
-    # View
-
-    def create_view(self, *, path: Optional[str] = None):
-        path = self.get_secure_fullpath(path or "view.json", deduplicate=True)
-        self.write_json(path, data={"query": ""})
-        path = self.get_secure_relpath(path)
-        return path
-
-    def write_view(self, path: str, *, view: IView):
-        path = self.get_secure_fullpath(path)
-        # TODO: use ViewResource?
-        resource = JsonResource(data=view)
-        resource.write_json(path=path)
 
     # Helpers
 

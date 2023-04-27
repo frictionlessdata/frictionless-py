@@ -2,12 +2,11 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import Optional, List, Any, Dict, Union
-from ..platform import platform
 from ..resources import FileResource
 from ..resource import Resource
 from .database import Database
 from .filesystem import Filesystem
-from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem, IChart, IView
+from .interfaces import IQueryData, ITable, IFile, IFileItem, IFieldItem
 
 
 # TODO: move specific logic to endpoint classes
@@ -30,28 +29,6 @@ class Project:
         self.private = private
         self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
-
-    # Chart
-
-    def create_chart(self, *, path: Optional[str] = None, chart: Optional[IChart] = None):
-        return self.filesystem.create_chart(path=path, chart=chart)
-
-    def render_chart(self, chart: IChart) -> IChart:
-        chart = chart.copy()
-        path = chart.get("data", {}).pop("url", None)
-        if not path:
-            return chart
-        record = self.database.select_record(path)
-        if not record:
-            return chart
-        table_name = record.get("tableName")
-        if not table_name:
-            return chart
-        # TODO: cherry-pick fields based on presense in the chart
-        result = self.database.query(f'SELECT * from "{table_name}"')
-        # TODO: check if some data types need to be stringified
-        chart["data"]["values"] = result["rows"]
-        return chart
 
     # File
 
@@ -145,29 +122,16 @@ class Project:
     def write_file(self, path: str, *, bytes: bytes) -> None:
         return self.filesystem.write_file(path, bytes=bytes)
 
-    # Field
-
-    def list_fields(self) -> List[IFieldItem]:
-        return self.database.list_fields()
-
     # Folder
 
     def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.create_folder(name, folder=folder)
 
-    # Json
-
-    def read_json(self, path: str) -> Any:
-        return self.filesystem.read_json(path)
-
-    def write_json(self, path: str, *, data: Any):
-        return self.filesystem.write_json(path, data=data)
-
     # Metadata
 
     def write_metadata(self, path: str, *, data: Dict[str, Any]):
         self.database.delete_record(path)
-        return self.filesystem.write_json(path, data=data)
+        return self.filesystem.write_json(path, data=data)  # type: ignore
 
     # Package
 
@@ -179,7 +143,7 @@ class Project:
 
     def write_package(self, path: str, *, data: Dict[str, Any]):
         self.database.delete_record(path)
-        return self.filesystem.write_json(path, data=data)
+        return self.filesystem.write_json(path, data=data)  # type: ignore
 
     # Project
 
@@ -237,50 +201,6 @@ class Project:
 
     def write_text(self, path: str, *, text: str):
         return self.filesystem.write_text(path, text=text)
-
-    # View
-
-    def create_view(self, *, path: Optional[str] = None):
-        return self.filesystem.create_view(path=path)
-
-    # TODO: fix not safe
-    # TODO: remove duplication
-    def write_view(self, path: str, *, view: IView):
-        sa = platform.sqlalchemy
-        query = view["query"]
-        self.filesystem.write_view(path, view=view)
-        resource = FileResource(path=path, basepath=str(self.public))
-        self.database.create_record(resource=resource)
-
-        # Get table name
-        found = False
-        table_names = []
-        table_name = resource.name
-        template = f"{table_name}%s"
-        items = self.database.list_records()
-        for item in items:
-            name = item.get("tableName")
-            if not name:
-                continue
-            table_names.append(name)
-            if item["path"] == resource.path:
-                table_name = name
-                found = True
-        if not found:
-            suffix = 1
-            while table_name in table_names:
-                table_name = template % suffix
-                suffix += 1
-
-        # Create view
-        with self.database.engine.begin() as conn:
-            conn.execute(sa.text(f'DROP VIEW IF EXISTS "{table_name}"'))
-            conn.execute(sa.text(f'CREATE VIEW "{table_name}" AS {query}'))
-            conn.execute(
-                sa.update(self.database.records)
-                .where(self.database.records.c.path == path)
-                .values(tableName=table_name)
-            )
 
     # Filesystem
 

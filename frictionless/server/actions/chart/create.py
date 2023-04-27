@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import Request
-from ...project import Project, IChart
+from ...interfaces import IChart
+from ...project import Project
 from ...router import router
 from .. import json
 

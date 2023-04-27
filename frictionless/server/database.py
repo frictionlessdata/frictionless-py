@@ -6,7 +6,7 @@ from ..resources import TableResource
 from ..resource import Resource
 from ..schema import Schema
 from ..platform import platform
-from .interfaces import IRecord, IRecordItem, ITable, IQueryData, IFieldItem
+from .interfaces import IRecord, IRecordItem, ITable, IQueryData
 from .. import helpers
 from . import settings
 
@@ -71,37 +71,6 @@ class Database:
             header = list(result.keys())
             rows = [row._asdict() for row in result]
             return IQueryData(header=header, rows=rows)
-
-    # Field
-
-    def list_fields(self) -> List[IFieldItem]:
-        sa = platform.sqlalchemy
-        items: List[IFieldItem] = []
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                sa.select(
-                    self.records.c.path,
-                    self.records.c.tableName,
-                    sa.literal_column("json_extract(resource, '$.schema')").label(
-                        "schema"
-                    ),
-                )
-                .where(self.records.c.type == "table")
-                .order_by(self.records.c.tableName)
-            )
-            for row in result:
-                schema = Schema.from_descriptor(json.loads(row.schema))
-                for field in schema.fields:
-                    items.append(
-                        IFieldItem(
-                            # TODO: review why it's not required
-                            name=field.name,  # type: ignore
-                            type=field.type,
-                            tableName=row.tableName,
-                            tablePath=row.path,
-                        )
-                    )
-            return items
 
     # Record
 
