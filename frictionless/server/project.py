@@ -127,12 +127,6 @@ class Project:
     def create_folder(self, name: str, *, folder: Optional[str] = None) -> str:
         return self.filesystem.create_folder(name, folder=folder)
 
-    # Metadata
-
-    def write_metadata(self, path: str, *, data: Dict[str, Any]):
-        self.database.delete_record(path)
-        return self.filesystem.write_json(path, data=data)  # type: ignore
-
     # Package
 
     def create_package(self, *, path: Optional[str] = None):
