@@ -21,6 +21,8 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 # TODO: rewrite
+# TODO: fix not safe
+# TODO: remove duplication
 def action(project: Project, props: Props) -> Result:
     sa = platform.sqlalchemy
     query = props.view["query"]

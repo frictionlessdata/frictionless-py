@@ -3,10 +3,13 @@ from typing import Optional
 from fastapi import Request
 from ...project import Project
 from ...router import router
+from ...interfaces import IView
+from .. import json
 
 
 class Props(BaseModel):
-    path: Optional[str]
+    path: Optional[str] = None
+    view: Optional[IView] = None
 
 
 class Result(BaseModel):
@@ -14,7 +17,15 @@ class Result(BaseModel):
 
 
 @router.post("/view/create")
-def server_view_render(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    path = project.create_view(path=props.path)
-    return Result(path=path)
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+# TODO: reuse view.write?
+def action(project: Project, props: Props) -> Result:
+    path = props.path or "view.json"
+    data = props.view or {"query": ""}
+    result = json.write.action(
+        project, json.write.Props(path=path, data=data, deduplicate=True)
+    )
+    return Result(path=result.path)
