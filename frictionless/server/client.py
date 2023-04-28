@@ -10,7 +10,7 @@ class Client:
         self.project = Project(folder)
 
     def invoke(self, endpoint, **props):
-        package_name, module_name = endpoint.split("/")
+        package_name, module_name = endpoint.split("/")[1:]
         package = getattr(endpoints, package_name)
         module = getattr(package, module_name)
         return module.action(self.project, module.Props(**props))
