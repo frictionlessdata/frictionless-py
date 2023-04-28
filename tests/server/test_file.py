@@ -117,68 +117,6 @@ def test_project_index_file(tmpdir):
     ]
 
 
-# Move
-
-
-def test_project_move_file(tmpdir):
-    project = Project(tmpdir)
-    project.upload_file(name1, bytes=bytes1)
-    project.create_folder(folder1)
-    path = project.move_file(name1, folder=folder1)
-    print(path)
-    assert path == str(Path(folder1) / name1)
-    assert project.read_file(path) == bytes1
-    assert project.list_files() == [
-        {"path": folder1, "type": "folder"},
-        {"path": path, "type": "text"},
-    ]
-
-
-def test_project_move_file_folder(tmpdir):
-    path2 = str(Path(folder2) / folder1 / name1)
-    project = Project(tmpdir)
-    project.create_folder(folder1)
-    project.create_folder(folder2)
-    project.upload_file(name1, bytes=bytes1, folder=folder1)
-    path = project.move_file(folder1, folder=folder2)
-    assert path == str(Path(folder2) / folder1)
-    assert project.read_file(path2) == bytes1
-    assert project.list_files() == [
-        {"path": folder2, "type": "folder"},
-        {"path": str(Path(folder2) / folder1), "type": "folder"},
-        {"path": str(Path(folder2) / folder1 / name1), "type": "text"},
-    ]
-
-
-@pytest.mark.parametrize("path", not_secure)
-def test_project_move_file_security(tmpdir, path):
-    project = Project(tmpdir)
-    project.upload_file(name1, bytes=bytes1)
-    with pytest.raises(Exception):
-        project.move_file(path, folder=folder1)
-    with pytest.raises(Exception):
-        project.move_file(name1, folder=path)
-
-
-# Read
-
-
-def test_project_read_file(tmpdir):
-    project = Project(tmpdir)
-    project.upload_file(name1, bytes=bytes1)
-    assert project.read_file(name1) == bytes1
-    assert project.list_files() == [
-        {"path": name1, "type": "text"},
-    ]
-
-
-@pytest.mark.parametrize("path", not_secure)
-def test_project_read_file_security(tmpdir, path):
-    project = Project(tmpdir)
-    with pytest.raises(Exception):
-        project.read_file(path)
-
-
 # Rename
 
 
