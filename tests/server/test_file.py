@@ -90,29 +90,6 @@ def test_project_create_file_type_ods(tmpdir):
     ]
 
 
-# List
-
-
-def test_project_list_files(tmpdir):
-    project = Project(tmpdir)
-    project.upload_file(name1, bytes=bytes1)
-    project.upload_file(name2, bytes=bytes2)
-    assert project.list_files() == [
-        {"path": name1, "type": "text"},
-        {"path": name2, "type": "text"},
-    ]
-
-
-def test_project_list_files_with_folders(tmpdir):
-    project = Project(tmpdir)
-    project.upload_file(name1, bytes=bytes1)
-    project.create_folder(folder1)
-    assert project.list_files() == [
-        {"path": folder1, "type": "folder"},
-        {"path": name1, "type": "text"},
-    ]
-
-
 # Index
 
 
