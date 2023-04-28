@@ -10,8 +10,8 @@ from .... import helpers
 # See the signature
 class Props(BaseModel):
     name: str
-    folder: Optional[str]
     bytes: bytes
+    folder: Optional[str] = None
 
 
 class Result(BaseModel):

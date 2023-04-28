@@ -9,7 +9,7 @@ class Filesystem:
     basepath: Path
 
     def __init__(self, basepath: str):
-        # We need to get resolve here to get absolute path
+        # We need to use resolve here to get an absolute path
         self.basepath = Path(basepath).resolve()
 
     def deduplicate_fullpath(self, fullpath: str, *, suffix: str = "") -> str:

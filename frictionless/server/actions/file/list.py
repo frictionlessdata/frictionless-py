@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project, IFileItem
@@ -19,7 +19,7 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-def action(project: Project, props: Props = None) -> Result:
+def action(project: Project, props: Optional[Props] = None) -> Result:
     fs = project.filesystem
 
     items: List[IFileItem] = []

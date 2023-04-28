@@ -2,11 +2,9 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Optional, List, Dict
 from datetime import datetime
-from ..resources import TableResource
 from ..resource import Resource
-from ..schema import Schema
 from ..platform import platform
-from .interfaces import IRecord, IRecordItem, ITable, IQueryData
+from .interfaces import IRecord, IRecordItem, IQueryData
 from .. import helpers
 from . import settings
 
