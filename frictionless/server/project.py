@@ -36,31 +36,6 @@ class Project:
 
     # File
 
-    def copy_file(
-        self, path: str, *, folder: Optional[str] = None, new_path: Optional[str] = None
-    ) -> str:
-        return self.filesystem.copy_file(path, folder=folder, new_path=new_path)
-
-    def count_files(self):
-        return len(self.filesystem.list_files())
-
-    # TODO: review
-    def create_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        resource = FileResource(path=path)
-        name = str(path.split("/")[-1])
-        if "?" in name:
-            name = str(name.split("?")[0])
-        if "." not in name:
-            name = f"{name}.csv"
-        return self.filesystem.create_file(
-            name, bytes=resource.read_bytes(), folder=folder
-        )
-
-    def delete_file(self, path: str) -> str:
-        self.database.delete_record(path)
-        self.filesystem.delete_file(path)
-        return path
-
     # TODO: fix not safe (move resource creation to filesystem)
     def index_file(self, path: str) -> Optional[IFile]:
         file = self.select_file(path)

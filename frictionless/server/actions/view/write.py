@@ -25,9 +25,9 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: fix not safe
 # TODO: remove duplication
 def action(project: Project, props: Props) -> Result:
+    sa = platform.sqlalchemy
     fs = project.filesystem
     db = project.database
-    sa = platform.sqlalchemy
 
     query = props.view["query"]
     fullpath = fs.get_secure_fullpath(props.path)

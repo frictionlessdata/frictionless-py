@@ -21,33 +21,6 @@ class Filesystem:
 
     # File
 
-    # TODO: use streaming?
-    def create_file(
-        self, name: str, *, bytes: bytes, folder: Optional[str] = None
-    ) -> str:
-        assert self.is_filename(name)
-        if folder:
-            folder = self.get_secure_fullpath(folder)
-            assert self.is_folder(folder)
-        path = self.get_secure_fullpath(folder, name, deduplicate=True)
-        helpers.write_file(path, bytes, mode="wb")
-        path = self.get_secure_relpath(path)
-        return path
-
-    def delete_file(self, path: str) -> str:
-        path = self.get_secure_fullpath(path)
-        # File
-        if self.is_file(path):
-            os.remove(path)
-        # Folder
-        elif self.is_folder(path):
-            shutil.rmtree(path)
-        # Missing
-        else:
-            FrictionlessException("file doesn't exist")
-        path = self.get_secure_relpath(path)
-        return path
-
     def list_files(self) -> List[IFileItem]:
         items: List[IFileItem] = []
         for root, folders, files in os.walk(self.basepath):

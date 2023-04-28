@@ -18,7 +18,7 @@ class Result(BaseModel):
 
 
 @router.post("/file/copy")
-def server_file_copy(request: Request, props: Props) -> Result:
+def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
@@ -42,6 +42,6 @@ def action(project: Project, props: Props) -> Result:
     # Missing
     else:
         raise FrictionlessException("file doesn't exist")
-    path = fs.get_secure_relpath(target)
 
+    path = fs.get_secure_relpath(target)
     return Result(path=path)

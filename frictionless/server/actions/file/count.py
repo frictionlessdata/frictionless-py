@@ -13,7 +13,14 @@ class Result(BaseModel):
 
 
 @router.post("/file/count")
-def server_file_count(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    count = project.count_files()
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    fs = project.filesystem
+
+    # TODO: rebase on action
+    count = len(fs.list_files())
+
     return Result(count=count)
