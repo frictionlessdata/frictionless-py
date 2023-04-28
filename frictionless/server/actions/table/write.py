@@ -18,10 +18,12 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: rework
+# TODO: implement
 def action(project: Project, props: Props) -> Result:
-    assert project.is_filename(props.path)
-    project.database.write_table(
-        props.path, tablePatch=props.tablePatch, basepath=str(project.public)
-    )
+    fs = project.filesystem
+    db = project.database
+
+    print(fs)
+    print(db)
+
     return Result(path=props.path)

@@ -28,4 +28,5 @@ def action(project: Project, props: Props) -> Result:
     result = json.write.action(
         project, json.write.Props(path=path, data=data, deduplicate=True)
     )
+
     return Result(path=result.path)

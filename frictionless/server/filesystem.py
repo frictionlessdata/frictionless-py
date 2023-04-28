@@ -157,7 +157,7 @@ class Filesystem:
     # Helpers
 
     def get_secure_fullpath(
-        self, *paths: Optional[str], deduplicate: Union[bool, str] = False
+        self, *paths: Optional[str], deduplicate: Optional[Union[bool, str]] = None
     ) -> str:
         # We need to use resolve here to get normalized path
         fullpath = str(self.basepath.joinpath(*filter(None, paths)).resolve())

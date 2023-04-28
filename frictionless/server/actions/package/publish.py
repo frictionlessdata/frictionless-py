@@ -23,7 +23,10 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    fullpath = project.get_secure_fullpath(props.path)
+    fs = project.filesystem
+
+    fullpath = fs.get_secure_fullpath(props.path)
     package = Package.from_descriptor(fullpath)
     path = package.publish(control=Control.from_descriptor(props.control))
+
     return Result(path=path)

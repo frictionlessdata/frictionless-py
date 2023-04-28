@@ -20,7 +20,10 @@ def server_text_read(request: Request, props: Props) -> Result:
 
 # TODO: use detected resource.encoding if indexed
 def action(project: Project, props: Props) -> Result:
-    fullpath = project.get_secure_fullpath(props.path)
+    fs = project.filesystem
+
+    fullpath = fs.get_secure_fullpath(props.path)
     resource = TextResource(path=fullpath)
     text = resource.read_text()
+
     return Result(text=text)

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from fastapi import Request
+from ....resources import TableResource
 from ...project import Project
 from ...router import router
 
@@ -19,9 +20,13 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 # TODO: rework
+# TODO: This is a placeholder code for export and we need to export it from database.
 def action(project: Project, props: Props) -> Result:
-    assert project.is_filename(props.target)
-    target = project.get_secure_fullpath(props.target)
-    source = project.get_secure_fullpath(props.source)
-    project.database.export_table(source, target=target)
+    fs = project.filesystem
+
+    assert fs.is_filename(props.target)
+    source = fs.get_secure_fullpath(props.source)
+    target = fs.get_secure_fullpath(props.target)
+    TableResource(path=source).write(target)
+
     return Result(path=target)

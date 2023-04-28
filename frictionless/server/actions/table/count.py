@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import Request
+from ....platform import platform
 from ...project import Project
 from ...router import router
 
@@ -20,5 +21,17 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    count = project.database.count_table(props.path, valid=props.valid)
+    sa = platform.sqlalchemy
+    db = project.database
+
+    record = db.select_record(props.path)
+    assert record
+    assert "tableName" in record
+    table = db.metadata.tables[record["tableName"]]
+    query = sa.select(sa.func.count()).select_from(table)
+    if props.valid is not None:
+        query = query.where(table.c._rowValid == props.valid)
+    with db.engine.begin() as conn:
+        count = conn.execute(query).scalar_one()
+
     return Result(count=count)

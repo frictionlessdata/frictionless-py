@@ -20,7 +20,10 @@ def server_text_write(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    fullpath = project.get_secure_fullpath(props.path)
+    fs = project.filesystem
+
+    fullpath = fs.get_secure_fullpath(props.path)
     resource = TextResource(data=props.text)
     resource.write_text(path=fullpath)
+
     return Result(path=props.path)

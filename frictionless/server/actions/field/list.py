@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from fastapi import Request
 from ....schema import Schema
 from ....platform import platform
-from ...project import Project, IFieldItem
+from ...project import Project
+from ...interfaces import IFieldItem
 from ...router import router
 
 
@@ -24,6 +25,7 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     sa = platform.sqlalchemy
     db = project.database
+
     items: List[IFieldItem] = []
     with db.engine.begin() as conn:
         result = conn.execute(
@@ -47,4 +49,5 @@ def action(project: Project, props: Props) -> Result:
                         tablePath=row.path,
                     )
                 )
+
     return Result(items=items)

@@ -21,8 +21,11 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    project.database.delete_record(props.path)
+    db = project.database
+
+    db.delete_record(props.path)
     result = json.write.action(
         project, json.write.Props(path=props.path, data=props.data)
     )
+
     return Result(path=result.path)

@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import Optional, List, Union
 from ..resources import FileResource
 from ..resource import Resource
-from .database import Database
 from .filesystem import Filesystem
+from .metadata import Metadata
+from .database import Database
 from .interfaces import ITable, IFile, IFileItem
 
 
@@ -20,6 +21,8 @@ class Project:
         # Ensure structure
         public = Path(folder or "")
         private = public / ".frictionless"
+        metadata = private / "datapackage.json"
+        # TODO: rename to datapackage.db
         database = private / "project.db"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
@@ -27,8 +30,9 @@ class Project:
         # Store attributes
         self.public = public
         self.private = private
-        self.database = Database(f"sqlite:///{database}")
         self.filesystem = Filesystem(str(self.public))
+        self.metadata = Metadata(str(metadata))
+        self.database = Database(f"sqlite:///{database}")
 
     # File
 
@@ -121,64 +125,3 @@ class Project:
     # TODO: it should trigger re-indexing etc
     def write_file(self, path: str, *, bytes: bytes) -> None:
         return self.filesystem.write_file(path, bytes=bytes)
-
-    # Filesystem
-
-    def get_secure_fullpath(
-        self, *paths: Optional[str], deduplicate: Optional[Union[bool, str]] = None
-    ) -> str:
-        # We need to use resolve here to get normalized path
-        fullpath = str(self.public.joinpath(*filter(None, paths)).resolve())
-        assert self.get_secure_relpath(fullpath)
-        if deduplicate:
-            suffix = deduplicate if isinstance(deduplicate, str) else ""
-            fullpath = self.deduplicate_fullpath(fullpath, suffix=suffix)
-        return fullpath
-
-    def get_secure_relpath(self, fullpath: str) -> str:
-        # We need to use resolve here to prevent path traversing
-        path = str(Path(fullpath).resolve().relative_to(self.public))
-        assert path != "."
-        assert path != ""
-        return path
-
-    def deduplicate_fullpath(self, fullpath: str, *, suffix: str = "") -> str:
-        if os.path.exists(fullpath):
-            number = 1
-            parts = os.path.splitext(fullpath)
-            template = f"{parts[0]} ({suffix}%s){parts[1]}"
-            while os.path.exists(fullpath):
-                fullpath = template % number
-                number += 1
-        return fullpath
-
-    def get_filetype(self, path: str) -> Optional[str]:
-        resource = Resource(path=path)
-        return resource.datatype
-
-    def get_filename(self, path: str) -> str:
-        return os.path.basename(path)
-
-    def get_folder(self, path: str) -> str:
-        return os.path.dirname(path)
-
-    def is_hidden_path(self, path: str) -> bool:
-        for part in os.path.split(path):
-            if part.startswith(".") and len(part) > 1:
-                return True
-        return False
-
-    def is_basepath(self, path: str) -> bool:
-        return self.public.samefile(path)
-
-    def is_existent(self, fullpath: str) -> bool:
-        return os.path.exists(fullpath)
-
-    def is_filename(self, name: str) -> bool:
-        return not os.path.dirname(name)
-
-    def is_folder(self, fullpath: str) -> bool:
-        return os.path.isdir(fullpath)
-
-    def is_file(self, fullpath: str) -> bool:
-        return os.path.isfile(fullpath)

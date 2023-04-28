@@ -20,18 +20,21 @@ def endpoint(request: Request, props: Props) -> Result:
 
 # TODO: review/rewrite
 def action(project: Project, props: Props) -> Result:
+    db = project.database
+
     chart = props.chart.copy()
     path = chart.get("data", {}).pop("url", None)
     if not path:
         return Result(chart=chart)
-    record = project.database.select_record(path)
+    record = db.select_record(path)
     if not record:
         return Result(chart=chart)
     table_name = record.get("tableName")
     if not table_name:
         return Result(chart=chart)
     # TODO: cherry-pick fields based on presense in the chart
-    result = project.database.query(f'SELECT * from "{table_name}"')
+    result = db.query(f'SELECT * from "{table_name}"')
     # TODO: check if some data types need to be stringified
     chart["data"]["values"] = result["rows"]
+
     return Result(chart=chart)

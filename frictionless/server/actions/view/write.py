@@ -25,21 +25,24 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: fix not safe
 # TODO: remove duplication
 def action(project: Project, props: Props) -> Result:
+    fs = project.filesystem
+    db = project.database
     sa = platform.sqlalchemy
+
     query = props.view["query"]
-    fullpath = project.get_secure_fullpath(props.path)
+    fullpath = fs.get_secure_fullpath(props.path)
     # TODO: use ViewResource?
     resource = JsonResource(data=props.view)
     resource.write_json(path=fullpath)
     resource = FileResource(path=fullpath)
-    project.database.create_record(resource=resource)
+    db.create_record(resource=resource)
 
     # Get table name
     found = False
     table_names = []
     table_name = resource.name
     template = f"{table_name}%s"
-    items = project.database.list_records()
+    items = db.list_records()
     for item in items:
         name = item.get("tableName")
         if not name:
@@ -55,12 +58,12 @@ def action(project: Project, props: Props) -> Result:
             suffix += 1
 
     # Create view
-    with project.database.engine.begin() as conn:
+    with db.engine.begin() as conn:
         conn.execute(sa.text(f'DROP VIEW IF EXISTS "{table_name}"'))
         conn.execute(sa.text(f'CREATE VIEW "{table_name}" AS {query}'))
         conn.execute(
-            sa.update(project.database.records)
-            .where(project.database.records.c.path == props.path)
+            sa.update(db.records)
+            .where(db.records.c.path == props.path)
             .values(tableName=table_name)
         )
 

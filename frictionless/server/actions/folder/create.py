@@ -22,12 +22,15 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    assert project.is_filename(props.name)
+    fs = project.filesystem
+
+    assert fs.is_filename(props.name)
     folder = props.folder
     if folder:
-        folder = project.get_secure_fullpath(folder)
-        assert project.is_folder(folder)
-    fullpath = project.get_secure_fullpath(folder, props.name, deduplicate=True)
+        folder = fs.get_secure_fullpath(folder)
+        assert fs.is_folder(folder)
+    fullpath = fs.get_secure_fullpath(folder, props.name, deduplicate=True)
     helpers.create_folder(fullpath)
-    path = project.get_secure_relpath(fullpath)
+    path = fs.get_secure_relpath(fullpath)
+
     return Result(path=path)

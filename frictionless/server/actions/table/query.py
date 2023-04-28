@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from fastapi import Request
+from ....schema import Schema
 from ...project import Project, ITable
 from ...router import router
 
@@ -18,5 +19,14 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    table = project.database.query_table(props.query)
+    db = project.database
+
+    result = db.query(props.query)
+    schema = Schema.describe(result["rows"]).to_descriptor()
+    table: ITable = {
+        "tableSchema": schema,
+        "header": result["header"],
+        "rows": result["rows"],
+    }
+
     return Result(table=table)
