@@ -1,17 +1,10 @@
 from __future__ import annotations
 import os
-import shutil
 from pathlib import Path
-from typing import Optional, Union, List
+from typing import Optional, Union
 from ..resource import Resource
-from ..resources import FileResource
-from ..exception import FrictionlessException
-from .interfaces import IFileItem
-from .. import helpers
 
 
-# TODO: move specific logic to endpoint classes
-# TODO: is it possible to move most of this functionality to resources.FileResource?
 class Filesystem:
     basepath: Path
 
@@ -19,94 +12,15 @@ class Filesystem:
         # We need to get resolve here to get absolute path
         self.basepath = Path(basepath).resolve()
 
-    # File
-
-    def list_files(self) -> List[IFileItem]:
-        items: List[IFileItem] = []
-        for root, folders, files in os.walk(self.basepath):
-            if not self.is_basepath(root):
-                folder = self.get_secure_relpath(root)
-                if self.is_hidden_path(folder):
-                    continue
-            for file in files:
-                if self.is_hidden_path(file):
-                    continue
-                type = self.get_filetype(os.path.join(root, file))
-                path = self.get_secure_relpath(os.path.join(root, file))
-                item = IFileItem(path=path)
-                if type:
-                    item["type"] = type
-                items.append(item)
-            for folder in folders:
-                if self.is_hidden_path(folder):
-                    continue
-                path = self.get_secure_relpath(os.path.join(root, folder))
-                items.append(IFileItem(path=path, type="folder"))
-        items = list(sorted(items, key=lambda item: item["path"]))
-        return items
-
-    def select_file(self, path: str) -> Optional[IFileItem]:
-        path = self.get_secure_fullpath(path)
-        if self.is_existent(path):
-            type = self.get_filetype(path)
-            if self.is_folder(path):
-                type = "folder"
-            path = self.get_secure_relpath(path)
-            file = IFileItem(path=path)
-            if type:
-                file["type"] = type
-            return file
-
-    def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        name = self.get_filename(path)
-        if folder:
-            folder = self.get_secure_fullpath(folder)
-            assert self.is_folder(folder)
-        source = self.get_secure_fullpath(path)
-        target = self.get_secure_fullpath(folder, name, deduplicate=True)
-        # File
-        if self.is_file(source):
-            helpers.move_file(source, target)
-        # Folder
-        elif self.is_folder(source):
-            helpers.move_folder(source, target)
-        # Missing
-        else:
-            raise FrictionlessException("file doesn't exist")
-        path = self.get_secure_relpath(target)
-        return path
-
-    def read_file(self, path: str) -> bytes:
-        path = self.get_secure_fullpath(path)
-        assert self.is_file(path)
-        resource = FileResource(path=path)
-        return resource.read_file()
-
-    def rename_file(self, path: str, *, name: str) -> str:
-        folder = self.get_folder(path)
-        if folder:
-            folder = self.get_secure_fullpath(folder)
-            assert self.is_folder(folder)
-        source = self.get_secure_fullpath(path)
-        target = self.get_secure_fullpath(folder, name, deduplicate="renamed")
-        # File
-        if self.is_file(source):
-            helpers.move_file(source, target)
-        # Folder
-        elif self.is_folder(source):
-            helpers.move_folder(source, target)
-        # Missing
-        else:
-            raise FrictionlessException("file doesn't exist")
-        path = self.get_secure_relpath(target)
-        return path
-
-    def write_file(self, path: str, *, bytes: bytes) -> None:
-        path = self.get_secure_fullpath(path)
-        resource = FileResource(data=bytes)
-        resource.write_file(path)
-
-    # Helpers
+    def deduplicate_fullpath(self, fullpath: str, *, suffix: str = "") -> str:
+        if os.path.exists(fullpath):
+            number = 1
+            parts = os.path.splitext(fullpath)
+            template = f"{parts[0]} ({suffix}%s){parts[1]}"
+            while os.path.exists(fullpath):
+                fullpath = template % number
+                number += 1
+        return fullpath
 
     def get_secure_fullpath(
         self, *paths: Optional[str], deduplicate: Optional[Union[bool, str]] = None
@@ -156,13 +70,3 @@ class Filesystem:
 
     def is_file(self, fullpath: str) -> bool:
         return os.path.isfile(fullpath)
-
-    def deduplicate_fullpath(self, fullpath: str, *, suffix: str = "") -> str:
-        if os.path.exists(fullpath):
-            number = 1
-            parts = os.path.splitext(fullpath)
-            template = f"{parts[0]} ({suffix}%s){parts[1]}"
-            while os.path.exists(fullpath):
-                fullpath = template % number
-                number += 1
-        return fullpath

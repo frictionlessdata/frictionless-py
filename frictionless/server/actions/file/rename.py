@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from fastapi import Request
+from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
+from .... import helpers
 
 
 class Props(BaseModel):
@@ -15,6 +17,28 @@ class Result(BaseModel):
 
 @router.post("/file/rename")
 def server_file_rename(request: Request, props: Props) -> Result:
-    project: Project = request.app.get_project()
-    path = project.rename_file(props.path, name=props.name)
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    fs = project.filesystem
+
+    folder = fs.get_folder(props.path)
+    if folder:
+        folder = fs.get_secure_fullpath(folder)
+        assert fs.is_folder(folder)
+    source = fs.get_secure_fullpath(props.path)
+    target = fs.get_secure_fullpath(folder, props.name, deduplicate="renamed")
+
+    # File
+    if fs.is_file(source):
+        helpers.move_file(source, target)
+    # Folder
+    elif fs.is_folder(source):
+        helpers.move_folder(source, target)
+    # Missing
+    else:
+        raise FrictionlessException("file doesn't exist")
+    path = fs.get_secure_relpath(target)
+
     return Result(path=path)

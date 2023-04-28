@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
+from fastapi import Request, UploadFile, File, Form
 from ...project import Project
 from ...router import router
 from .... import helpers
@@ -10,18 +11,25 @@ from .... import helpers
 class Props(BaseModel):
     name: str
     folder: Optional[str]
+    bytes: bytes
 
 
 class Result(BaseModel):
     path: str
 
 
-@router.post("/file/create")
-async def endpoint(request: Request, props: Props) -> Result:
-    return action(request.app.get_project(), props)
-
-
 # TODO: use streaming?
+@router.post("/file/create")
+async def endpoint(
+    request: Request,
+    file: UploadFile = File(),
+    folder: Optional[str] = Form(None),
+) -> Result:
+    name = file.filename or "name"
+    bytes = await file.read()
+    return action(request.app.get_project(), Props(name=name, folder=folder, bytes=bytes))
+
+
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 

@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
 from ...router import router
+from . import list
 
 
 class Props(BaseModel):
@@ -18,9 +19,7 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    fs = project.filesystem
-
-    # TODO: rebase on action
-    count = len(fs.list_files())
+    result = list.action(project, list.Props())
+    count = len(result.items)
 
     return Result(count=count)

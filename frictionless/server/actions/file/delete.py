@@ -20,6 +20,7 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: shall we move db delection to resource.delete?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     db = project.database

@@ -12,6 +12,7 @@ IChart = Dict[str, Any]
 class IFileItem(TypedDict, total=False):
     path: Required[str]
     type: str
+    # TODO: move to IResourceItem
     errorCount: int
 
 
