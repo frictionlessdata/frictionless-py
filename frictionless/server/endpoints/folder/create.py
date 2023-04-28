@@ -1,15 +1,15 @@
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
+from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
 from .... import helpers
 
 
 class Props(BaseModel):
-    # TODO: rebase on path?
-    name: str
-    folder: Optional[str]
+    path: str
+    folder: Optional[str] = None
 
 
 class Result(BaseModel):
@@ -24,12 +24,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    assert fs.is_filename(props.name)
-    folder = props.folder
-    if folder:
-        folder = fs.get_secure_fullpath(folder)
-        assert fs.is_folder(folder)
-    fullpath = fs.get_secure_fullpath(folder, props.name, deduplicate=True)
+    fullpath = fs.get_secure_fullpath(props.folder, props.path)
+    if fs.is_existent(fullpath):
+        raise FrictionlessException("Folder already exists")
     helpers.create_folder(fullpath)
     path = fs.get_secure_relpath(fullpath)
 

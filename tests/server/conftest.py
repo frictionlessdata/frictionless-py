@@ -9,11 +9,3 @@ def api_client(tmpdir_factory):
     server = Server.create(config)
     client = TestClient(server)
     return client
-
-
-@pytest.fixture(scope="session")
-def api_client_root():
-    config = Config()
-    server = Server.create(config)
-    client = TestClient(server)
-    return client
