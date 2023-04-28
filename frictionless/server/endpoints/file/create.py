@@ -39,7 +39,7 @@ def action(project: Project, props: Props) -> Result:
         folder = fs.get_secure_fullpath(folder)
         assert fs.is_folder(folder)
     fullpath = fs.get_secure_fullpath(folder, props.name, deduplicate=True)
-    helpers.write_file(fullpath, bytes, mode="wb")
+    helpers.write_file(fullpath, props.bytes, mode="wb")
     path = fs.get_secure_relpath(fullpath)
 
     return Result(path=path)
