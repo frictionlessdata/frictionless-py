@@ -26,7 +26,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     db.delete_record(props.path)
-    fullpath = fs.get_secure_fullpath(props.path)
+    fullpath = fs.get_fullpath(props.path)
     # File
     if fs.is_file(fullpath):
         os.remove(fullpath)
@@ -36,6 +36,6 @@ def action(project: Project, props: Props) -> Result:
     # Missing
     else:
         FrictionlessException("file doesn't exist")
-    path = fs.get_secure_relpath(fullpath)
+    path = fs.get_relpath(fullpath)
 
     return Result(path=path)

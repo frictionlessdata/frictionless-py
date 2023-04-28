@@ -25,8 +25,8 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
     assert fs.is_filename(props.target)
-    source = fs.get_secure_fullpath(props.source)
-    target = fs.get_secure_fullpath(props.target)
+    source = fs.get_fullpath(props.source)
+    target = fs.get_fullpath(props.target)
     TableResource(path=source).write(target)
 
     return Result(path=target)

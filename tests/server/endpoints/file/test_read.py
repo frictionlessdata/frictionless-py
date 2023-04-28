@@ -1,22 +1,19 @@
 import pytest
-from frictionless.server import Client
-from ... import fixtures as fx
+from ...fixtures import name1, bytes1, not_secure
 
 
 # Action
 
 
-def test_server_file_read(tmpdir):
-    client = Client(tmpdir)
-    client.invoke("/file/create", name=fx.name1, bytes=fx.bytes1)
-    assert client.invoke("/file/read", path=fx.name1).bytes == fx.bytes1
-    assert client.invoke("/file/list").items == [
-        {"path": fx.name1, "type": "text"},
+def test_server_file_read(client):
+    client("/file/create", path=name1, bytes=bytes1)
+    assert client("/file/read", path=name1).bytes == bytes1
+    assert client("/file/list").items == [
+        {"path": name1, "type": "text"},
     ]
 
 
-@pytest.mark.parametrize("path", fx.not_secure)
-def test_server_file_read_security(tmpdir, path):
-    client = Client(tmpdir)
+@pytest.mark.parametrize("path", not_secure)
+def test_server_file_read_security(client, path):
     with pytest.raises(Exception):
-        client.invoke("/file/read", path=path)
+        client("/file/read", path=path)

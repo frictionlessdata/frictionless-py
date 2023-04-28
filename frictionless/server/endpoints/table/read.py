@@ -2,7 +2,8 @@ from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....platform import platform
-from ...project import Project, ITable
+from ...project import Project
+from ...interfaces import ITable
 from ...router import router
 
 

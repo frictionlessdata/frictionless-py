@@ -22,7 +22,7 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_secure_fullpath(props.path)
+    fullpath = fs.get_fullpath(props.path)
     resource = JsonResource(path=fullpath)
     data = resource.read_json()
 

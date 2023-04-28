@@ -30,7 +30,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     query = props.view["query"]
-    fullpath = fs.get_secure_fullpath(props.path)
+    fullpath = fs.get_fullpath(props.path)
     # TODO: use ViewResource?
     resource = JsonResource(data=props.view)
     resource.write_json(path=fullpath)

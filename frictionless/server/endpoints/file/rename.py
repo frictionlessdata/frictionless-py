@@ -25,10 +25,10 @@ def action(project: Project, props: Props) -> Result:
 
     folder = fs.get_folder(props.path)
     if folder:
-        folder = fs.get_secure_fullpath(folder)
+        folder = fs.get_fullpath(folder)
         assert fs.is_folder(folder)
-    source = fs.get_secure_fullpath(props.path)
-    target = fs.get_secure_fullpath(folder, props.name, deduplicate="renamed")
+    source = fs.get_fullpath(props.path)
+    target = fs.get_fullpath(folder, props.name, deduplicate="renamed")
 
     # File
     if fs.is_file(source):
@@ -39,6 +39,6 @@ def action(project: Project, props: Props) -> Result:
     # Missing
     else:
         raise FrictionlessException("file doesn't exist")
-    path = fs.get_secure_relpath(target)
+    path = fs.get_relpath(target)
 
     return Result(path=path)

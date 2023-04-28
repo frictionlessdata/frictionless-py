@@ -23,16 +23,16 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
     fs = project.filesystem
 
     items: List[IFileItem] = []
-    for root, folders, files in os.walk(fs.basepath):
+    for root, folders, files in os.walk(fs.folder):
         if not fs.is_basepath(root):
-            folder = fs.get_secure_relpath(root)
+            folder = fs.get_relpath(root)
             if fs.is_hidden_path(folder):
                 continue
         for file in files:
             if fs.is_hidden_path(file):
                 continue
             type = fs.get_filetype(os.path.join(root, file))
-            path = fs.get_secure_relpath(os.path.join(root, file))
+            path = fs.get_relpath(os.path.join(root, file))
             item = IFileItem(path=path)
             if type:
                 item["type"] = type
@@ -40,7 +40,7 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
         for folder in folders:
             if fs.is_hidden_path(folder):
                 continue
-            path = fs.get_secure_relpath(os.path.join(root, folder))
+            path = fs.get_relpath(os.path.join(root, folder))
             items.append(IFileItem(path=path, type="folder"))
     items = list(sorted(items, key=lambda item: item["path"]))
 

@@ -22,7 +22,7 @@ def server_file_read(request: Request, props: Props) -> Response:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_secure_fullpath(props.path)
+    fullpath = fs.get_fullpath(props.path)
     assert fs.is_file(fullpath)
     resource = FileResource(path=fullpath)
     bytes = resource.read_file()

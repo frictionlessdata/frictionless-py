@@ -1,44 +1,35 @@
 import pytest
 from pathlib import Path
 from frictionless import helpers
-from frictionless.server import Client
-from ... import fixtures as fx
+from ...fixtures import name1, bytes1, folder1, not_secure
 
 
 # Action
 
 
-def test_server_file_create(tmpdir):
-    client = Client(tmpdir)
-    path = client.invoke("/file/create", name=fx.name1, bytes=fx.bytes1).path
-    assert helpers.read_file(tmpdir / fx.name1, "rb") == fx.bytes1
-    assert path == fx.name1
-    assert client.invoke("/file/list").items == [
-        {"path": fx.name1, "type": "text"},
+def test_server_file_create(client):
+    path = client("/file/create", path=name1, bytes=bytes1).path
+    assert helpers.read_file(client.project.public / name1, "rb") == bytes1
+    assert path == name1
+    assert client("/file/list").items == [
+        {"path": name1, "type": "text"},
     ]
 
 
-def test_server_file_create_in_folder(tmpdir):
-    client = Client(tmpdir)
-    client.invoke("/folder/create", path=fx.folder1)
-    path = client.invoke(
-        "/file/create",
-        name=fx.name1,
-        bytes=fx.bytes1,
-        folder=fx.folder1,
-    ).path
-    assert path == str(Path(fx.folder1) / fx.name1)
-    assert helpers.read_file(tmpdir / path, "rb") == fx.bytes1
-    assert client.invoke("/file/list").items == [
-        {"path": fx.folder1, "type": "folder"},
+def test_server_file_create_in_folder(client):
+    client("/folder/create", path=folder1)
+    path = client("/file/create", path=name1, bytes=bytes1, folder=folder1).path
+    assert path == str(Path(folder1) / name1)
+    assert helpers.read_file(client.project.public / path, "rb") == bytes1
+    assert client("/file/list").items == [
+        {"path": folder1, "type": "folder"},
         {"path": path, "type": "text"},
     ]
 
 
-@pytest.mark.parametrize("path", fx.not_secure)
-def test_server_file_create_security(tmpdir, path):
-    client = Client(tmpdir)
+@pytest.mark.parametrize("path", not_secure)
+def test_server_file_create_security(client, path):
     with pytest.raises(Exception):
-        client.invoke("/file/create", path=path, bytes=fx.bytes1)
+        client("/file/create", path=path, bytes=bytes1)
     with pytest.raises(Exception):
-        client.invoke("/file/create", name=fx.name1, bytes=fx.bytes1, folder=path)
+        client("/file/create", name=name1, bytes=bytes1, folder=path)

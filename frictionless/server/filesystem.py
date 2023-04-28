@@ -6,11 +6,11 @@ from ..resource import Resource
 
 
 class Filesystem:
-    basepath: Path
+    folder: Path
 
-    def __init__(self, basepath: str):
+    def __init__(self, folder: str):
         # We need to use resolve here to get an absolute path
-        self.basepath = Path(basepath).resolve()
+        self.folder = Path(folder).resolve()
 
     def deduplicate_fullpath(self, fullpath: str, *, suffix: str = "") -> str:
         if os.path.exists(fullpath):
@@ -22,20 +22,20 @@ class Filesystem:
                 number += 1
         return fullpath
 
-    def get_secure_fullpath(
+    def get_fullpath(
         self, *paths: Optional[str], deduplicate: Optional[Union[bool, str]] = None
     ) -> str:
         # We need to use resolve here to get normalized path
-        fullpath = str(self.basepath.joinpath(*filter(None, paths)).resolve())
-        assert self.get_secure_relpath(fullpath)
+        fullpath = str(self.folder.joinpath(*filter(None, paths)).resolve())
+        assert self.get_relpath(fullpath)
         if deduplicate:
             suffix = deduplicate if isinstance(deduplicate, str) else ""
             fullpath = self.deduplicate_fullpath(fullpath, suffix=suffix)
         return fullpath
 
-    def get_secure_relpath(self, fullpath: str) -> str:
+    def get_relpath(self, fullpath: str) -> str:
         # We need to use resolve here to prevent path traversing
-        path = str(Path(fullpath).resolve().relative_to(self.basepath))
+        path = str(Path(fullpath).resolve().relative_to(self.folder))
         assert path != "."
         assert path != ""
         return path
@@ -57,7 +57,7 @@ class Filesystem:
         return False
 
     def is_basepath(self, path: str) -> bool:
-        return self.basepath.samefile(path)
+        return self.folder.samefile(path)
 
     def is_existent(self, fullpath: str) -> bool:
         return os.path.exists(fullpath)

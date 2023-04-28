@@ -24,10 +24,10 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_secure_fullpath(props.folder, props.path)
+    fullpath = fs.get_fullpath(props.folder, props.path)
     if fs.is_existent(fullpath):
         raise FrictionlessException("Folder already exists")
     helpers.create_folder(fullpath)
-    path = fs.get_secure_relpath(fullpath)
+    path = fs.get_relpath(fullpath)
 
     return Result(path=path)

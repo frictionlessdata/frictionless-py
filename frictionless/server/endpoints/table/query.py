@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from fastapi import Request
 from ....schema import Schema
-from ...project import Project, ITable
+from ...project import Project
+from ...interfaces import ITable
 from ...router import router
 
 

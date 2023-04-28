@@ -1,6 +1,12 @@
 import pytest
 from fastapi.testclient import TestClient
-from frictionless.server import Server, Config
+from frictionless.server import Server, Config, Client
+
+
+@pytest.fixture
+def client(tmpdir):
+    client = Client(tmpdir)
+    return client
 
 
 @pytest.fixture(scope="session")

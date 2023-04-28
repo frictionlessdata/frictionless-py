@@ -22,16 +22,17 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: copy resource as well?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
     name = fs.get_filename(props.path)
     folder = props.folder
     if folder:
-        folder = fs.get_secure_fullpath(folder)
+        folder = fs.get_fullpath(folder)
         assert fs.is_folder(folder)
-    source = fs.get_secure_fullpath(props.path)
-    target = fs.get_secure_fullpath(folder, props.newPath or name, deduplicate="copy")
+    source = fs.get_fullpath(props.path)
+    target = fs.get_fullpath(folder, props.newPath or name, deduplicate="copy")
 
     # File
     if fs.is_file(source):
@@ -43,5 +44,5 @@ def action(project: Project, props: Props) -> Result:
     else:
         raise FrictionlessException("file doesn't exist")
 
-    path = fs.get_secure_relpath(target)
+    path = fs.get_relpath(target)
     return Result(path=path)

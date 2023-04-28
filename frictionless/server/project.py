@@ -1,13 +1,11 @@
 from __future__ import annotations
-import os
 from pathlib import Path
-from typing import Optional, List, Union
-from ..resources import FileResource
+from typing import Optional, List
 from ..resource import Resource
 from .filesystem import Filesystem
 from .metadata import Metadata
 from .database import Database
-from .interfaces import ITable, IFile, IFileItem
+from .interfaces import IFile, IFileItem
 
 
 # TODO: move specific logic to endpoint classes
@@ -56,21 +54,6 @@ class Project:
             if record and "errorCount" in record:
                 item["errorCount"] = record["errorCount"]
         return items
-
-    def move_file(self, path: str, *, folder: Optional[str] = None) -> str:
-        source = path
-        target = self.filesystem.move_file(path, folder=folder)
-        self.database.move_record(source, target)
-        return target
-
-    def read_file(self, path: str) -> bytes:
-        return self.filesystem.read_file(path)
-
-    def rename_file(self, path: str, *, name: str) -> str:
-        source = path
-        target = self.filesystem.rename_file(path, name=name)
-        self.database.move_record(source, target)
-        return target
 
     def select_file(self, path: str) -> Optional[IFile]:
         item = self.filesystem.select_file(path)
