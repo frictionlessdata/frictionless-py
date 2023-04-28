@@ -21,27 +21,6 @@ class Filesystem:
 
     # File
 
-    def copy_file(
-        self, path: str, *, folder: Optional[str] = None, new_path: Optional[str] = None
-    ) -> str:
-        name = self.get_filename(path)
-        if folder:
-            folder = self.get_secure_fullpath(folder)
-            assert self.is_folder(folder)
-        source = self.get_secure_fullpath(path)
-        target = self.get_secure_fullpath(folder, new_path or name, deduplicate="copy")
-        # File
-        if self.is_file(source):
-            helpers.copy_file(source, target)
-        # Folder
-        elif self.is_folder(source):
-            helpers.copy_folder(source, target)
-        # Missing
-        else:
-            raise FrictionlessException("file doesn't exist")
-        path = self.get_secure_relpath(target)
-        return path
-
     # TODO: use streaming?
     def create_file(
         self, name: str, *, bytes: bytes, folder: Optional[str] = None
