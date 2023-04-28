@@ -15,7 +15,7 @@ def test_project_read_file(tmpdir):
 
 
 def test_project_read_file_2(tmpdir):
-    client = TestClient(tmpdir)
+    client = Client(tmpdir)
     client("file/create", name=name1, bytes=bytes1)
     assert client("file/read", path=name1) == bytes1
     assert client("file/list") == [
