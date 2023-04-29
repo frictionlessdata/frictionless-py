@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 from fastapi import Request
 from pydantic import BaseModel
@@ -26,7 +27,7 @@ def server_file_read(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     # Path
     parsed = urlparse(props.url)
-    path = parsed.path[1:] or "name"
+    path = Path(parsed.path).name or "name"
 
     # Bytes
     resource = FileResource(path=props.url)

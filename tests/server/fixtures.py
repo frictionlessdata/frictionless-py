@@ -14,6 +14,6 @@ folder1 = "folder1"
 folder2 = "folder2"
 data3 = json.loads(bytes3)
 url1 = "https://raw.githubusercontent.com/frictionlessdata/framework/main/data/table.csv"
-url1name = "table1.csv"
+url1name = "table.csv"
 url1bytes = bytes5
 not_secure = ["/path", "../path", "../", "./"]

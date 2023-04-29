@@ -5,6 +5,7 @@ from ...fixtures import url1, url1name, url1bytes, not_secure
 # Action
 
 
+@pytest.mark.vcr
 def test_server_link_fetch(client):
     client("/link/fetch", url=url1)
     assert client("/file/read", path=url1name).bytes == url1bytes
@@ -13,6 +14,7 @@ def test_server_link_fetch(client):
     ]
 
 
+@pytest.mark.vcr
 @pytest.mark.parametrize("path", not_secure)
 def test_server_link_fetch_security(client, path):
     with pytest.raises(Exception):
