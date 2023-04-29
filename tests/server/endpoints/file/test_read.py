@@ -9,7 +9,7 @@ def test_server_file_read(client):
     client("/file/create", path=name1, bytes=bytes1)
     assert client("/file/read", path=name1).bytes == bytes1
     assert client("/file/list").items == [
-        {"path": name1, "type": "text"},
+        {"path": name1, "type": "file"},
     ]
 
 

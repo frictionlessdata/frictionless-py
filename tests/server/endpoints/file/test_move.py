@@ -11,34 +11,44 @@ def test_server_file_move(client):
     client("/file/move", source=name1, target=name2)
     assert client("/file/read", path=name2).bytes == bytes1
     assert client("/file/list").items == [
-        {"path": name2, "type": "text"},
+        {"path": name2, "type": "file"},
     ]
 
 
 def test_server_file_move_to_folder(client):
     client("/file/create", path=name1, bytes=bytes1)
     client("/folder/create", path=folder1)
-    path = client("/file/move", path=name1, folder=folder1).path
+    path = client("/file/move", source=name1, folder=folder1).path
     assert path == str(Path(folder1) / name1)
     assert client("/file/read", path=path).bytes == bytes1
     assert client("/file/list").items == [
         {"path": folder1, "type": "folder"},
-        {"path": path, "type": "text"},
+        {"path": path, "type": "file"},
     ]
 
 
 def test_server_file_move_folder(client):
+    client("/folder/create", path=folder1)
+    client("/file/create", path=name1, bytes=bytes1, folder=folder1)
+    client("/file/move", source=folder1, target=folder2)
+    assert client("/file/list").items == [
+        {"path": folder2, "type": "folder"},
+        {"path": str(Path(folder2) / name1), "type": "file"},
+    ]
+
+
+def test_server_file_move_folder_to_folder(client):
     path2 = str(Path(folder2) / folder1 / name1)
     client("/folder/create", path=folder1)
     client("/folder/create", path=folder2)
     client("/file/create", path=name1, bytes=bytes1, folder=folder1)
-    path = client("/file/move", path=folder1, folder=folder2).path
+    path = client("/file/move", source=folder1, folder=folder2).path
     assert path == str(Path(folder2) / folder1)
     assert client("/file/read", path=path2).bytes == bytes1
     assert client("/file/list").items == [
         {"path": folder2, "type": "folder"},
         {"path": str(Path(folder2) / folder1), "type": "folder"},
-        {"path": str(Path(folder2) / folder1 / name1), "type": "text"},
+        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
     ]
 
 
@@ -46,6 +56,6 @@ def test_server_file_move_folder(client):
 def test_server_file_move_security(client, path):
     client("/file/create", path=name1, bytes=bytes1)
     with pytest.raises(Exception):
-        client("/file/move", path=path, folder=folder1)
+        client("/file/move", source=path, folder=folder1)
     with pytest.raises(Exception):
-        client("/file/move", path=name1, folder=path)
+        client("/file/move", source=name1, folder=path)

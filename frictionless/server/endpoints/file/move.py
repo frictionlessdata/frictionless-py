@@ -37,8 +37,9 @@ def action(project: Project, props: Props) -> Result:
         raise FrictionlessException("Source doesn't exist")
 
     # Target
-    target = fs.get_fullpath(props.folder, props.target, deduplicate=props.deduplicate)
-    if target.is_file() and target.exists():
+    target_path = props.target or props.source
+    target = fs.get_fullpath(props.folder, target_path, deduplicate=props.deduplicate)
+    if target.is_file():
         raise FrictionlessException("Target already exists")
 
     # Move

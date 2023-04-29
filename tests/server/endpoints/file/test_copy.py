@@ -51,7 +51,7 @@ def test_server_file_copy_from_folder_to_folder(client):
     client("/folder/create", path=folder1)
     client("/folder/create", path=folder2)
     client("/file/create", path=name1, bytes=bytes1, folder=folder1)
-    path = client("/file/copy", path=folder1, folder=folder2).path
+    path = client("/file/copy", source=folder1, folder=folder2).path
     assert path == str(Path(folder2) / folder1)
     assert client("/file/read", path=path1).bytes == bytes1
     assert client("/file/read", path=path2).bytes == bytes1

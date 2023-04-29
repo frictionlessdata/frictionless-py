@@ -37,7 +37,7 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
                 folders.remove(folder)
                 continue
             path = fs.get_path(root / folder)
-            items.append({"path": folder, "type": "folder"})
+            items.append({"path": path, "type": "folder"})
 
     items = list(sorted(items, key=lambda item: item["path"]))
     return Result(items=items)
