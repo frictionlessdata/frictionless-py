@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import Request
@@ -22,26 +23,26 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Optional[Props] = None) -> Result:
     fs = project.filesystem
 
+    # List
     items: List[IFileItem] = []
     for root, folders, files in os.walk(fs.folder):
-        if not fs.is_basepath(root):
-            folder = fs.get_relpath(root)
-            if fs.is_hidden_path(folder):
-                continue
+        root = Path(root)
         for file in files:
-            if fs.is_hidden_path(file):
+            if file.startswith("."):
                 continue
-            type = fs.get_filetype(os.path.join(root, file))
-            path = fs.get_relpath(os.path.join(root, file))
-            item = IFileItem(path=path)
-            if type:
-                item["type"] = type
-            items.append(item)
-        for folder in folders:
-            if fs.is_hidden_path(folder):
+            path = fs.get_path(root / file)
+            items.append({"path": path, "type": "file"})
+        for folder in list(folders):
+            if folder.startswith(".") or folder in IGNORED_FOLDERS:
+                folders.remove(folder)
                 continue
-            path = fs.get_relpath(os.path.join(root, folder))
-            items.append(IFileItem(path=path, type="folder"))
-    items = list(sorted(items, key=lambda item: item["path"]))
+            path = fs.get_path(root / folder)
+            items.append({"path": folder, "type": "folder"})
 
+    items = list(sorted(items, key=lambda item: item["path"]))
     return Result(items=items)
+
+
+IGNORED_FOLDERS = [
+    "node_modules",
+]

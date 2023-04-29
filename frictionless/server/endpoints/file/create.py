@@ -24,21 +24,33 @@ class Result(BaseModel):
 async def endpoint(
     request: Request,
     file: UploadFile = File(),
-    path: Optional[str] = Form(None),
+    name: Optional[str] = Form(None),
     folder: Optional[str] = Form(None),
+    deduplicate: Optional[bool] = Form(None),
 ) -> Result:
-    path = path or file.filename or "name"
     bytes = await file.read()
-    return action(request.app.get_project(), Props(path=path, folder=folder, bytes=bytes))
+    name = name or file.filename or "name"
+    return action(
+        request.app.get_project(),
+        Props(path=name, bytes=bytes, folder=folder, deduplicate=deduplicate),
+    )
 
 
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(props.folder, props.path, deduplicate=props.deduplicate)
-    if fs.is_existent(fullpath):
-        raise FrictionlessException("Folder already exists")
-    helpers.write_file(fullpath, props.bytes, mode="wb")
-    path = fs.get_relpath(fullpath)
+    # Folder
+    if props.folder:
+        if not fs.get_fullpath(props.folder).exists():
+            raise FrictionlessException("Folder doesn't exist")
+
+    # Target
+    target = fs.get_fullpath(props.folder, props.path, deduplicate=props.deduplicate)
+    if target.exists():
+        raise FrictionlessException("File already exists")
+
+    # Create
+    helpers.write_file(str(target), props.bytes, mode="wb")
+    path = fs.get_path(target)
 
     return Result(path=path)

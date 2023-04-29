@@ -1,16 +1,17 @@
+import shutil
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from .... import helpers
 
 
 class Props(BaseModel):
-    path: str
-    folder: Optional[str]
-    newPath: Optional[str]
+    source: str
+    target: Optional[str] = None
+    folder: Optional[str] = None
+    deduplicate: Optional[bool] = None
 
 
 class Result(BaseModel):
@@ -26,23 +27,24 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    name = fs.get_filename(props.path)
-    folder = props.folder
-    if folder:
-        folder = fs.get_fullpath(folder)
-        assert fs.is_folder(folder)
-    source = fs.get_fullpath(props.path)
-    target = fs.get_fullpath(folder, props.newPath or name, deduplicate="copy")
-
-    # File
-    if fs.is_file(source):
-        helpers.copy_file(source, target)
     # Folder
-    elif fs.is_folder(source):
-        helpers.copy_folder(source, target)
-    # Missing
-    else:
-        raise FrictionlessException("file doesn't exist")
+    if props.folder:
+        if not fs.get_fullpath(props.folder).exists():
+            raise FrictionlessException("Folder doesn't exist")
 
-    path = fs.get_relpath(target)
+    # Source
+    source = fs.get_fullpath(props.source)
+    if not source.exists():
+        raise FrictionlessException("Source doesn't exist")
+
+    # Target
+    target = fs.get_fullpath(props.folder, props.target, deduplicate=props.deduplicate)
+    if target.is_file() and target.exists():
+        raise FrictionlessException("Target already exists")
+
+    # Copy
+    copy = shutil.copytree if source.is_dir() else shutil.copy
+    copy(source, target)
+
+    path = fs.get_path(target)
     return Result(path=path)

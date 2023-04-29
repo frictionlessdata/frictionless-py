@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from fastapi import Request, Response
+from ....exception import FrictionlessException
 from ....resources import FileResource
 from ...project import Project
 from ...router import router
@@ -22,9 +23,13 @@ def server_file_read(request: Request, props: Props) -> Response:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(props.path)
-    assert fs.is_file(fullpath)
-    resource = FileResource(path=fullpath)
+    # Source
+    source = fs.get_fullpath(props.path)
+    if not source.is_file():
+        raise FrictionlessException("File doesn't exist")
+
+    # Bytes
+    resource = FileResource(path=str(source))
     bytes = resource.read_file()
 
     return Result(bytes=bytes)

@@ -1,12 +1,21 @@
 import pytest
 from pathlib import Path
-from ...fixtures import name1, bytes1, folder1, folder2, not_secure
+from ...fixtures import name1, name2, bytes1, folder1, folder2, not_secure
 
 
 # Action
 
 
 def test_server_file_move(client):
+    client("/file/create", path=name1, bytes=bytes1)
+    client("/file/move", source=name1, target=name2)
+    assert client("/file/read", path=name2).bytes == bytes1
+    assert client("/file/list").items == [
+        {"path": name2, "type": "text"},
+    ]
+
+
+def test_server_file_move_to_folder(client):
     client("/file/create", path=name1, bytes=bytes1)
     client("/folder/create", path=folder1)
     path = client("/file/move", path=name1, folder=folder1).path

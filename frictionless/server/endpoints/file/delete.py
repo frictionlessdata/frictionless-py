@@ -25,17 +25,17 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     db = project.database
 
+    # Database
     db.delete_record(props.path)
-    fullpath = fs.get_fullpath(props.path)
-    # File
-    if fs.is_file(fullpath):
-        os.remove(fullpath)
-    # Folder
-    elif fs.is_folder(fullpath):
-        shutil.rmtree(fullpath)
-    # Missing
-    else:
-        FrictionlessException("file doesn't exist")
-    path = fs.get_relpath(fullpath)
 
+    # Source
+    source = fs.get_fullpath(props.path)
+    if not source.exists():
+        raise FrictionlessException("Source doesn't exist")
+
+    # Delete
+    delete = shutil.rmtree if source.is_dir() else os.remove
+    delete(source)
+
+    path = fs.get_path(source)
     return Result(path=path)

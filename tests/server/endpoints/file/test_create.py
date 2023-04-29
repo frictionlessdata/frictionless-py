@@ -12,7 +12,7 @@ def test_server_file_create(client):
     assert helpers.read_file(client.project.public / name1, "rb") == bytes1
     assert path == name1
     assert client("/file/list").items == [
-        {"path": name1, "type": "text"},
+        {"path": name1, "type": "file"},
     ]
 
 
@@ -23,7 +23,7 @@ def test_server_file_create_in_folder(client):
     assert helpers.read_file(client.project.public / path, "rb") == bytes1
     assert client("/file/list").items == [
         {"path": folder1, "type": "folder"},
-        {"path": path, "type": "text"},
+        {"path": path, "type": "file"},
     ]
 
 

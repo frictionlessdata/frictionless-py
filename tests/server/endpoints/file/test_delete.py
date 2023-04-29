@@ -11,7 +11,7 @@ def test_server_file_delete(client):
     path = client("/file/delete", path=name2).path
     assert path == name2
     assert client("/file/list").items == [
-        {"path": name1, "type": "text"},
+        {"path": name1, "type": "file"},
     ]
 
 
