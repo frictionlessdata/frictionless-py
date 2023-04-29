@@ -25,7 +25,7 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
 
     # List
     items: List[IFileItem] = []
-    for root, folders, files in os.walk(fs.folder):
+    for root, folders, files in os.walk(fs.root):
         root = Path(root)
         for file in files:
             if file.startswith("."):

@@ -5,15 +5,15 @@ from typing import Optional, Union
 
 
 class Filesystem:
-    folder: Path
+    root: Path
 
-    def __init__(self, folder: str):
+    def __init__(self, root: str):
         # We need to use resolve here to get an absolute path
-        self.folder = Path(folder).resolve()
+        self.root = Path(root).resolve()
 
     def get_path(self, fullpath: Path) -> str:
         # We need to use resolve here to prevent path traversing
-        path = str(Path(fullpath).resolve().relative_to(self.folder))
+        path = str(Path(fullpath).resolve().relative_to(self.root))
         assert path != "."
         assert path != ""
         return path
@@ -22,7 +22,7 @@ class Filesystem:
         self, *paths: Optional[str], deduplicate: Optional[Union[bool, str]] = None
     ) -> Path:
         # We need to use resolve here to get normalized path
-        fullpath = self.folder.joinpath(*filter(None, paths)).resolve()
+        fullpath = self.root.joinpath(*filter(None, paths)).resolve()
         assert self.get_path(fullpath)
         if deduplicate:
             suffix = deduplicate if isinstance(deduplicate, str) else ""

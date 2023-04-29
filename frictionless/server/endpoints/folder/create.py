@@ -23,10 +23,17 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    # Create
+    # Folder
+    if props.folder:
+        if not fs.get_fullpath(props.folder).exists():
+            raise FrictionlessException("Folder doesn't exist")
+
+    # Target
     target = fs.get_fullpath(props.folder, props.path)
     if target.exists():
         raise FrictionlessException("Folder already exists")
+
+    # Create
     target.mkdir(parents=True)
     path = fs.get_path(target)
 

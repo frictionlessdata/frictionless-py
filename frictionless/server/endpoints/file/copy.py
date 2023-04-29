@@ -7,14 +7,13 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     source: str
     target: Optional[str] = None
-    folder: Optional[str] = None
     deduplicate: Optional[bool] = None
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     path: str
 
 
@@ -27,22 +26,19 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    # Folder
-    if props.folder:
-        if not fs.get_fullpath(props.folder).exists():
-            raise FrictionlessException("Folder doesn't exist")
-
     # Source
     source = fs.get_fullpath(props.source)
     if not source.exists():
         raise FrictionlessException("Source doesn't exist")
 
     # Target
-    deduplicate = "copy" if props.deduplicate else True
-    target_path = props.target or props.source
-    target = fs.get_fullpath(props.folder, target_path, deduplicate=deduplicate)
+    target = fs.get_fullpath(props.target) if props.target else fs.root
     if target.is_file():
         raise FrictionlessException("Target already exists")
+    if target.is_dir():
+        target = target / source.name
+        if props.deduplicate:
+            target = fs.deduplicate_fullpath(target, suffix="copy")
 
     # Copy
     copy = shutil.copytree if source.is_dir() else shutil.copy

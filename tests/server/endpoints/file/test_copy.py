@@ -34,7 +34,7 @@ def test_server_file_copy_deduplicate(client):
 def test_server_file_copy_to_folder(client):
     client("/file/create", path=name1, bytes=bytes1)
     client("/folder/create", path=folder1)
-    path = client("/file/copy", source=name1, folder=folder1).path
+    path = client("/file/copy", source=name1, target=folder1).path
     assert path == str(Path(folder1) / name1)
     assert client("/file/read", path=name1).bytes == bytes1
     assert client("/file/read", path=path).bytes == bytes1
@@ -51,7 +51,7 @@ def test_server_file_copy_from_folder_to_folder(client):
     client("/folder/create", path=folder1)
     client("/folder/create", path=folder2)
     client("/file/create", path=name1, bytes=bytes1, folder=folder1)
-    path = client("/file/copy", source=folder1, folder=folder2).path
+    path = client("/file/copy", source=folder1, target=folder2).path
     assert path == str(Path(folder2) / folder1)
     assert client("/file/read", path=path1).bytes == bytes1
     assert client("/file/read", path=path2).bytes == bytes1
@@ -70,4 +70,4 @@ def test_server_file_copy_security(client, path):
     with pytest.raises(Exception):
         client("/file/copy", path=path)
     with pytest.raises(Exception):
-        client("/file/copy", path=name1, folder=path)
+        client("/file/copy", path=name1, target=path)

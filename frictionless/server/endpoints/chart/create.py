@@ -16,6 +16,7 @@ class Result(BaseModel):
     path: str
 
 
+# TODO: move to write?
 @router.post("/chart/create")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
