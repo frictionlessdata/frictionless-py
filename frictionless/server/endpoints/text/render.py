@@ -21,6 +21,7 @@ def server_text_render(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
+    # Render
     resource = TextResource(data=props.text)
     text = resource.render_text(livemark=props.livemark)
 

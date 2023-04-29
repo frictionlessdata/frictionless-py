@@ -22,8 +22,11 @@ def server_text_read(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(props.path)
-    resource = TextResource(path=fullpath)
+    # Source
+    source = fs.get_fullpath(props.path)
+
+    # Read
+    resource = TextResource(path=str(source))
     text = resource.read_text()
 
     return Result(text=text)

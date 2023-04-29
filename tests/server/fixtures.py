@@ -13,6 +13,7 @@ bytes5 = b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
 folder1 = "folder1"
 folder2 = "folder2"
 data3 = json.loads(bytes3)
+text1 = bytes1.decode("utf-8")
 url1 = "https://raw.githubusercontent.com/frictionlessdata/framework/main/data/table.csv"
 url1name = "table.csv"
 url1bytes = bytes5

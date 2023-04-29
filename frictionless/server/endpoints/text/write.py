@@ -22,8 +22,12 @@ def server_text_write(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(props.path)
-    resource = TextResource(data=props.text)
-    resource.write_text(path=fullpath)
+    # Target
+    target = fs.get_fullpath(props.path)
 
-    return Result(path=props.path)
+    # Write
+    resource = TextResource(data=props.text)
+    resource.write_text(path=str(target))
+
+    path = fs.get_path(target)
+    return Result(path=path)
