@@ -24,9 +24,10 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(props.path, deduplicate=props.deduplicate)
+    # Write
+    target = fs.get_fullpath(props.path, deduplicate=props.deduplicate)
     resource = JsonResource(data=props.data)
-    resource.write_json(path=fullpath)
-    path = fs.get_relpath(fullpath)
+    resource.write_json(path=str(target))
+    path = fs.get_path(target)
 
     return Result(path=path)
