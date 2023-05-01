@@ -137,6 +137,8 @@ class PandasParser(Parser):
                     # https://github.com/pandas-dev/pandas/issues/25423#issuecomment-485784044
                     if isinstance(value, datetime.datetime) and value.tzinfo:
                         value = value.astimezone(datetime.timezone.utc)
+                    # For datetime.time having zero offset from UTC, the tzinfo is set to tzutc() which
+                    # causes error while reading.
                     if isinstance(value, datetime.time) and value.tzinfo:
                         value = value.replace(
                             tzinfo=tzoffset(
