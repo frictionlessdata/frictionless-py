@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime
 import decimal
+from dateutil.tz import tzoffset
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Parser
@@ -136,6 +137,13 @@ class PandasParser(Parser):
                     # https://github.com/pandas-dev/pandas/issues/25423#issuecomment-485784044
                     if isinstance(value, datetime.datetime) and value.tzinfo:
                         value = value.astimezone(datetime.timezone.utc)
+                    if isinstance(value, datetime.time) and value.tzinfo:
+                        value = value.replace(
+                            tzinfo=tzoffset(
+                                datetime.timezone.utc,
+                                value.utcoffset().total_seconds(),
+                            )
+                        )
                     # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
                     if value is None and field.type in ("number", "integer"):
                         fixed_types[field.name] = "number"
