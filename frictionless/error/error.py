@@ -59,7 +59,7 @@ class Error(Metadata):
             if isinstance(item, type) and issubclass(item, cls):
                 if not root and item is cls:
                     continue
-                if exclude and issubclass(item, tuple(exclude)):
+                if exclude and issubclass(item, tuple(exclude)):  # type: ignore
                     continue
                 children.append(item)
         return children
