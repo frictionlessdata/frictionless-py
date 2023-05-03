@@ -259,6 +259,23 @@ def test_package_pprint():
     assert repr(package) == textwrap.dedent(expected).strip()
 
 
+@pytest.mark.parametrize("allow_invalid", [False, True])
+def test_package_allow_invalid(allow_invalid):
+    try:
+        package = Package.from_descriptor(
+            {
+                "resources": [
+                    {"name": "name", "data": []},
+                    {"name": "name", "data": []},
+                ]
+            },
+            allow_invalid=allow_invalid,
+        )
+        assert allow_invalid is True
+    except FrictionlessException:
+        assert allow_invalid is False
+
+
 # Bugs
 
 
