@@ -160,7 +160,9 @@ class Metadata(metaclass=Metaclass):
         return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod
-    def from_descriptor(cls, descriptor: Union[IDescriptor, str], **options) -> Self:
+    def from_descriptor(
+        cls, descriptor: Union[IDescriptor, str], allow_invalid: bool = False, **options
+    ) -> Self:
         descriptor_path = None
         if isinstance(descriptor, str):
             descriptor_path = descriptor
@@ -176,9 +178,10 @@ class Metadata(metaclass=Metaclass):
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
         Class.metadata_transform(descriptor)
         errors = list(Class.metadata_validate(descriptor))
-        if errors:
-            error = Error(note="descriptor is not valid")
-            raise FrictionlessException(error, reasons=errors)
+        if not allow_invalid:
+            if errors:
+                error = Error(note="descriptor is not valid")
+                raise FrictionlessException(error, reasons=errors)
         metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
