@@ -32,7 +32,7 @@ class TextResource(Resource):
             document = platform.livemark.Document(source=self.normpath)
             document.read()
             document.process()
-            return document.output
+            return document.output  # type: ignore
         markdown = platform.marko.Markdown()
         markdown.use(platform.marko_ext_gfm.GFM)
         text = self.read_text()

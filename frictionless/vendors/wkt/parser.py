@@ -39,7 +39,7 @@ class WktBuffer(Buffer):
             nameguard=nameguard,
             comments_re=comments_re,
             eol_comments_re=eol_comments_re,
-            ignorecase=ignorecase,
+            ignorecase=ignorecase,  # type: ignore
             namechars=namechars,
             **kwargs
         )
@@ -67,7 +67,7 @@ class WktParser(Parser):
             nameguard=nameguard,
             comments_re=comments_re,
             eol_comments_re=eol_comments_re,
-            ignorecase=ignorecase,
+            ignorecase=ignorecase,  # type: ignore
             left_recursion=left_recursion,
             parseinfo=parseinfo,
             keywords=keywords,
