@@ -262,7 +262,7 @@ def test_package_pprint():
 @pytest.mark.parametrize("allow_invalid", [False, True])
 def test_package_allow_invalid(allow_invalid):
     try:
-        package = Package.from_descriptor(
+        Package.from_descriptor(
             {
                 "resources": [
                     {"name": "name", "data": []},
