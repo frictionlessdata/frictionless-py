@@ -57,3 +57,8 @@ class IQueryData(TypedDict):
 
 class IView(TypedDict):
     query: str
+
+
+class IResourceItem(TypedDict):
+    id: str
+    path: str

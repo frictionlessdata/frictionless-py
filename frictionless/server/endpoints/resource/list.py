@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
@@ -21,7 +21,7 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 # TODO: implement actual logic
-def action(project: Project, props: Props) -> Result:
+def action(project: Project, props: Optional[Props] = None) -> Result:
     return Result(
         items=[
             {"id": "id", "path": "path"},
