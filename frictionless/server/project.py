@@ -2,9 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Optional, List
 from ..resource import Resource
-from .filesystem import Filesystem
-from .metadata import Metadata
-from .database import Database
+from .drivers import Filesystem, Metadata, Database, Artifact
 from .interfaces import IFile, IFileItem
 
 
@@ -19,8 +17,7 @@ class Project:
         # Ensure structure
         public = Path(folder or "")
         private = public / ".frictionless"
-        metadata = private / "datapackage.json"
-        # TODO: rename to datapackage.db
+        # TODO: rename to database.db
         database = private / "project.db"
         public.mkdir(parents=True, exist_ok=True)
         private.mkdir(parents=True, exist_ok=True)
@@ -28,9 +25,11 @@ class Project:
         # Store attributes
         self.public = public
         self.private = private
-        self.filesystem = Filesystem(str(self.public))
-        self.metadata = Metadata(str(metadata))
+        # TODO: pass project instead of paths
+        self.filesystem = Filesystem(self)
+        self.metadata = Metadata(self)
         self.database = Database(f"sqlite:///{database}")
+        self.artifact = Artifact(self)
 
     # File
 

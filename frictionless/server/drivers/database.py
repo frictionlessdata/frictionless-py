@@ -2,16 +2,16 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Optional, List, Dict
 from datetime import datetime
-from ..resource import Resource
-from ..platform import platform
-from .interfaces import IRecord, IRecordItem, IQueryData
-from .. import helpers
-from . import settings
+from ...resource import Resource
+from ...platform import platform
+from ..interfaces import IRecord, IRecordItem, IQueryData
+from ... import helpers
+from .. import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import Table, MetaData
     from sqlalchemy.engine import Engine
-    from ..formats.sql import SqlMapper
+    from ...formats.sql import SqlMapper
 
 
 # TODO: move specific logic to endpoint classes

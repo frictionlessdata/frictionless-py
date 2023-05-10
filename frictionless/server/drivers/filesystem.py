@@ -1,15 +1,18 @@
 from __future__ import annotations
 import os
 from pathlib import Path
-from typing import Optional, Union, Tuple
+from typing import TYPE_CHECKING, Optional, Union, Tuple
+
+if TYPE_CHECKING:
+    from ..project import Project
 
 
 class Filesystem:
     basepath: Path
 
-    def __init__(self, basepath: str):
+    def __init__(self, project: Project):
         # We need to use resolve here to get an absolute path
-        self.basepath = Path(basepath).resolve()
+        self.basepath = Path(project.public).resolve()
 
     def deduplicate_fullpath(self, fullpath: Path, *, suffix: str = "") -> Path:
         if os.path.exists(fullpath):
