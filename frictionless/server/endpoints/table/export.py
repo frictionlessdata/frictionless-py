@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
 from ....resources import TableResource
