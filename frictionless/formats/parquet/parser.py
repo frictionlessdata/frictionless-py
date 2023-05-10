@@ -27,7 +27,7 @@ class ParquetParser(Parser):
         control = ParquetControl.from_dialect(self.resource.dialect)
         handle = self.resource.normpath
         if self.resource.remote:
-            handles = platform.pandas.io.common.get_handle(
+            handles = platform.pandas.io.common.get_handle(  # type: ignore
                 self.resource.normpath, "rb", is_text=False
             )
             handle = handles.handle

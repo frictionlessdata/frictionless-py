@@ -1,7 +1,7 @@
 import pytest
 from frictionless import formats
 from frictionless.resources import TableResource
-
+import datetime
 
 # Read
 
@@ -58,4 +58,20 @@ def test_parquet_parser_write(tmpdir):
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_parquet_parser_write_datetime_field_with_timezone(tmpdir):
+    source = TableResource(data=[["datetimewithtimezone"], ["2025-08-24T15:20:10Z"]])
+    target = TableResource(path=str(tmpdir.join("table.parq")))
+    source.write(target)
+    with target:
+        assert target.format == "parq"
+        assert target.header == ["datetimewithtimezone"]
+        assert target.read_rows() == [
+            {
+                "datetimewithtimezone": datetime.datetime(
+                    2025, 8, 24, 15, 20, 10, tzinfo=datetime.timezone.utc
+                )
+            }
         ]

@@ -1,4 +1,3 @@
-import pytest
 import pytz
 import isodate
 import pandas as pd
@@ -170,7 +169,6 @@ def test_pandas_write_constraints():
         ]
 
 
-@pytest.mark.skip(reason="issue-1482")
 def test_pandas_parser_write_timezone():
     source = TableResource(path="data/timezone.csv")
     target = source.write(format="pandas")

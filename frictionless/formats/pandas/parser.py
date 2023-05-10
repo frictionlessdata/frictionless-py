@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime
 import decimal
+from dateutil.tz import tzoffset
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Parser
@@ -129,6 +130,22 @@ class PandasParser(Parser):
                         value = None
                     if isinstance(value, decimal.Decimal):
                         value = float(value)
+                    # Convert to UTC for timezone aware datetime
+                    # From version 0.24 pandas preserves the dateutil object and doesn't by default
+                    # convert to "UTC" and fastparquet write raises error as it can't handle tzutc()
+                    # object
+                    # https://github.com/pandas-dev/pandas/issues/25423#issuecomment-485784044
+                    if isinstance(value, datetime.datetime) and value.tzinfo:
+                        value = value.astimezone(datetime.timezone.utc)
+                    # For datetime.time having zero offset from UTC, the tzinfo is set to tzutc() which
+                    # causes error while reading.
+                    if isinstance(value, datetime.time) and value.tzinfo:
+                        value = value.replace(
+                            tzinfo=tzoffset(
+                                datetime.timezone.utc,
+                                value.utcoffset().total_seconds(),
+                            )
+                        )
                     # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
                     if value is None and field.type in ("number", "integer"):
                         fixed_types[field.name] = "number"
