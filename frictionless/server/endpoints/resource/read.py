@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ....resources import JsonResource
 from ....resource import Resource
 from ...project import Project
 from ...router import router
@@ -21,14 +20,13 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: implement actual logic
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    metadata = JsonResource(path=str(md.fullpath)).read_data()
-    resource = metadata.get(props.id)
-    if not resource:
+    metadata = md.read()
+    descriptor = metadata.get(props.id, None)
+    if not descriptor:
         return Result(resource=None)
-    resource = Resource.from_descriptor(resource)
 
+    resource = Resource.from_descriptor(descriptor)
     return Result(resource=resource.to_descriptor())

@@ -9,7 +9,7 @@ from ...project import Project
 from ...router import router
 from ... import settings
 from ... import helpers
-from . import list
+from . import map
 
 
 class Props(BaseModel, extra="forbid"):
@@ -36,12 +36,13 @@ def action(project: Project, props: Props) -> Result:
     resource.infer()
 
     # Get resource id
-    ids = []
+    ids: List[str] = []
     found = False
     id = helpers.make_id(resource.name)
     template = f"{id}%s"
-    result = list.action(project)
-    for item in result.items:
+    # TODO: rebase on direct metadata?
+    result = map.action(project)
+    for item in result.items.values():
         ids.append(item["id"])
         if item["path"] == resource.path:
             id = item["id"]

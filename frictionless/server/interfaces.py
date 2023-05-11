@@ -27,8 +27,8 @@ class IRecordItem(TypedDict, total=False):
 
 
 class IRecord(IRecordItem):
-    resource: dict
-    report: dict
+    resource: Dict[str, Any]
+    report: Dict[str, Any]
     # TODO: use after pydantic@2
     #  resource: IResource
     #  report: IReport
@@ -43,7 +43,7 @@ class IFieldItem(TypedDict):
 
 class ITable(TypedDict):
     # TODO: rename to schema after pydantic@2
-    tableSchema: Dict
+    tableSchema: Dict[str, Any]
     header: List[str]
     rows: List[IRow]
     # TODO: use after pydantic@2
@@ -59,6 +59,7 @@ class IView(TypedDict):
     query: str
 
 
-class IResourceItem(TypedDict):
-    id: str
-    path: str
+class IResourceItem(TypedDict, total=False):
+    id: Required[str]
+    path: Required[str]
+    errorCount: int

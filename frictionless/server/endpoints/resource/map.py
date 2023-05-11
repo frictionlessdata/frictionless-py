@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import Dict, Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
@@ -12,18 +12,22 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    items: List[IResourceItem]
+    items: Dict[str, IResourceItem]
 
 
-@router.post("/resource/list")
+@router.post("/resource/map")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: implement actual logic
 def action(project: Project, props: Optional[Props] = None) -> Result:
-    return Result(
-        items=[
-            {"id": "id", "path": "path"},
-        ]
-    )
+    md = project.metadata
+
+    metadata = md.read()
+    result = Result(items={})
+    for resource in metadata.values():
+        id = resource["id"]
+        path = resource["path"]
+        result.items[path] = {"id": id, "path": path}
+
+    return result
