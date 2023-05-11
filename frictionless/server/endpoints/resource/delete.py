@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional
 from pydantic import BaseModel
 from fastapi import Request
+from ....exception import FrictionlessException
 from ....resource import Resource
 from ...project import Project
 from ...router import router
+from ...interfaces import IDescriptor
 
 
 class Props(BaseModel, extra="forbid"):
@@ -12,7 +13,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    resource: Optional[Dict[str, Any]]
+    resource: IDescriptor
 
 
 @router.post("/resource/delete")
@@ -26,7 +27,7 @@ def action(project: Project, props: Props) -> Result:
     metadata = md.read()
     descriptor = metadata.pop(props.id, None)
     if not descriptor:
-        return Result(resource=None)
+        raise FrictionlessException("Resource doesn't exist")
     md.write(metadata)
 
     resource = Resource.from_descriptor(descriptor)

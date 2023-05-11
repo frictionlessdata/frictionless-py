@@ -3,6 +3,7 @@ from typing import List, Dict, Any
 from typing_extensions import Required, TypedDict
 
 
+IDescriptor = Dict[str, Any]
 IData = Dict[str, Any]
 IHeader = List[str]
 IRow = Dict[str, Any]

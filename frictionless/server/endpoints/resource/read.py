@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....resource import Resource
 from ...project import Project
 from ...router import router
+from ...interfaces import IDescriptor
 
 
 class Props(BaseModel, extra="forbid"):
@@ -12,7 +13,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    resource: Optional[Dict[str, Any]]
+    resource: Optional[IDescriptor]
 
 
 @router.post("/resource/read")

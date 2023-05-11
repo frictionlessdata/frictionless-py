@@ -1,15 +1,15 @@
 from __future__ import annotations
 from pydantic import BaseModel
-from typing import Dict, Any
 from fastapi import Request
 from ....resource import Resource
 from ...project import Project
 from ...router import router
+from ...interfaces import IDescriptor
 
 
 class Props(BaseModel):
     id: str
-    resource: Dict[str, Any]
+    resource: IDescriptor
 
 
 class Result(BaseModel):

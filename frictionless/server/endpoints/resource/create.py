@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, List
+from typing import Dict, Any, List, TYPE_CHECKING
 from pydantic import BaseModel
 from fastapi import Request
 from datetime import datetime
@@ -7,9 +7,12 @@ from ....platform import platform
 from ....resource import Resource
 from ...project import Project
 from ...router import router
+from ...interfaces import IDescriptor
 from ... import settings
 from ... import helpers
 from . import map
+from . import write
+from ...interfaces import IDescriptor
 
 
 class Props(BaseModel, extra="forbid"):
@@ -17,7 +20,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    resource: Dict[str, Any]
+    resource: IDescriptor
 
 
 @router.post("/resource/create")
@@ -28,7 +31,6 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: raise if already exist?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
-    md = project.metadata
 
     # Describe resource
     path, basepath = fs.get_path_and_basepath(props.path)
@@ -57,4 +59,7 @@ def action(project: Project, props: Props) -> Result:
     resource.custom["id"] = id
     resource.custom["datatype"] = resource.datatype
 
-    return Result(resource=resource.to_descriptor())
+    # Write metadata
+    descriptor = resource.to_descriptor()
+    write.action(project, write.Props(id=id, resource=descriptor))
+    return Result(resource=descriptor)
