@@ -28,8 +28,7 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: raise if already exist?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
-    db = project.database
-    sa = platform.sqlalchemy
+    md = project.metadata
 
     # Describe resource
     path, basepath = fs.get_path_and_basepath(props.path)

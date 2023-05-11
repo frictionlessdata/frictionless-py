@@ -67,7 +67,7 @@ class Database:
         with self.engine.begin() as conn:
             result = conn.execute(sa.text(query))
             header = list(result.keys())
-            rows = [row._asdict() for row in result]
+            rows = [row.asdict() for row in result]
             return IQueryData(header=header, rows=rows)
 
     # Record

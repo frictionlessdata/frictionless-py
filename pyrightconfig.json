@@ -4,7 +4,8 @@
     "tests"
   ],
   "strict": [
-    "frictionless/formats/csv"
+    "frictionless/formats/csv",
+    "frictionless/server"
   ],
   "ignore": [
     "**/__init__.py"

@@ -33,7 +33,9 @@ class JsonResource(Resource):
     # Write
 
     # TODO: rebase on using loader
-    def write_json(self, target: Optional[Union[JsonResource, Any]] = None, **options):
+    def write_json(
+        self, target: Optional[Union[JsonResource, Any]] = None, **options: Any
+    ):
         """Write json data to the target"""
         res = target
         if not isinstance(res, Resource):

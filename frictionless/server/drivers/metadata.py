@@ -1,19 +1,18 @@
 from __future__ import annotations
+from pathlib import Path
 from typing import TYPE_CHECKING
-from ...package import Package
+from ...resources import JsonResource
 
 if TYPE_CHECKING:
     from ..project import Project
 
 
 class Metadata:
-    package: Package
+    fullpath: Path
 
     def __init__(self, project: Project):
-        # Ensure metadata file
-        fullpath = project.private / "metadata.json"
-        if not fullpath.exists():
-            Package(resources=[]).to_json(str(fullpath))
+        self.fullpath = project.private / "metadata.json"
 
-        # Open data package
-        self.package = Package.from_descriptor(str(fullpath), allow_invalid=True)
+        # Ensure metadata file
+        if not self.fullpath.exists():
+            JsonResource(data={}).write_json(path=self.fullpath)

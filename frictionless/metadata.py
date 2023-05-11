@@ -161,7 +161,10 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def from_descriptor(
-        cls, descriptor: Union[IDescriptor, str], allow_invalid: bool = False, **options
+        cls,
+        descriptor: Union[IDescriptor, str],
+        allow_invalid: bool = False,
+        **options: Any,
     ) -> Self:
         descriptor_path = None
         if isinstance(descriptor, str):
