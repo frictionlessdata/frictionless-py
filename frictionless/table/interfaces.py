@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterator
 from .row import Row
 
-IRowStream = Iterable[Row]
+IRowStream = Iterator[Row]

@@ -2,38 +2,45 @@ from __future__ import annotations
 import attrs
 import subprocess
 from subprocess import PIPE
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 from ..exception import FrictionlessException
 from ..platform import platform
 from .interfaces import IOnProgress, IOnRow
 from . import settings
 
 if TYPE_CHECKING:
+    from sqlalchemy import Engine
     from ..formats.sql import SqlAdapter
     from ..resources import TableResource
+    from ..report import Report
     from ..table import Row
 
 
 @attrs.define(kw_only=True)
 class Indexer:
     resource: TableResource
-    database_url: str
+    database: Union[str, Engine]
     table_name: str
     fast: bool = False
     qsv_path: Optional[str] = None
     use_fallback: bool = False
+    with_metadata: bool = False
     on_row: Optional[IOnRow] = None
     on_progress: Optional[IOnProgress] = None
     adapter: SqlAdapter = attrs.field(init=False)
 
     def __attrs_post_init__(self):
-        self.adapter = platform.frictionless_formats.SqlAdapter(
-            platform.sqlalchemy.create_engine(self.database_url)
-        )
+        sa = platform.sqlalchemy
+        if self.resource.format != "csv":
+            self.fast = False
+        engine = self.database
+        if isinstance(engine, str):
+            engine = sa.create_engine(engine)
+        self.adapter = platform.frictionless_formats.SqlAdapter(engine)
 
     # Index
 
-    def index(self):
+    def index(self) -> Optional[Report]:
         self.prepare_resource()
         with self.resource:
             # Index is resouce-based operation not supporting FKs
@@ -41,8 +48,7 @@ class Indexer:
             self.create_table()
             while True:
                 try:
-                    self.populate_table()
-                    break
+                    return self.populate_table()
                 except Exception:
                     if self.fast and self.use_fallback:
                         self.fast = False
@@ -58,22 +64,35 @@ class Indexer:
 
     def create_table(self):
         self.adapter.write_schema(
-            self.resource.schema, table_name=self.table_name, force=True
+            self.resource.schema,
+            table_name=self.table_name,
+            force=True,
+            with_metadata=self.with_metadata,
         )
 
-    def populate_table(self):
-        if self.fast and self.resource.format == "csv":
-            self.populate_table_fast()
-            return
-        self.populate_table_base()
+    def populate_table(self) -> Optional[Report]:
+        if self.fast:
+            return self.populate_table_fast()
+        if self.with_metadata:
+            return self.populate_table_meta()
+        return self.populate_table_base()
 
-    def populate_table_base(self):
+    def populate_table_base(self) -> None:
         self.adapter.write_row_stream(
-            self.resource.row_stream, table_name=self.table_name, on_row=self.report_row
+            self.resource.row_stream,
+            table_name=self.table_name,
+            on_row=self.report_row,
         )
 
-    def populate_table_fast(self):
-        url = platform.sqlalchemy.engine.make_url(self.database_url)
+    def populate_table_meta(self) -> Report:
+        return self.adapter.write_resource_with_metadata(
+            self.resource,
+            table_name=self.table_name,
+            on_row=self.report_row,
+        )
+
+    def populate_table_fast(self) -> None:
+        url = self.adapter.engine.url
         if url.drivername.startswith("sqlite"):
             return self.populate_table_fast_sqlite()
         elif url.drivername.startswith("postgresql"):
@@ -81,6 +100,7 @@ class Indexer:
         raise FrictionlessException("Fast mode is only supported for Postgres/Sqlite")
 
     def populate_table_fast_sqlite(self):
+        assert self.adapter.engine.url.database
         sql_command = f".import '|cat -' \"{self.table_name}\""
         command = ["sqlite3", "-csv", self.adapter.engine.url.database, sql_command]
         process = subprocess.Popen(command, stdin=PIPE, stdout=PIPE)
@@ -92,7 +112,8 @@ class Indexer:
         process.wait()
 
     def populate_table_fast_postgresql(self):
-        with platform.psycopg.connect(self.database_url) as connection:
+        database_url = self.adapter.engine.url.render_as_string(hide_password=False)
+        with platform.psycopg.connect(database_url) as connection:
             with connection.cursor() as cursor:
                 query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table_name
                 with cursor.copy(query) as copy:  # type: ignore

@@ -539,6 +539,7 @@ class TableResource(Resource):
         *,
         name: Optional[str] = None,
         fast: bool = False,
+        with_metadata: bool = False,
         on_row: Optional[IOnRow] = None,
         on_progress: Optional[IOnProgress] = None,
         use_fallback: bool = False,
@@ -547,9 +548,10 @@ class TableResource(Resource):
         name = name or self.name
         indexer = Indexer(
             resource=self,
-            database_url=database_url,
+            database=database_url,
             table_name=name,
             fast=fast,
+            with_metadata=with_metadata,
             on_row=on_row,
             on_progress=on_progress,
             use_fallback=use_fallback,

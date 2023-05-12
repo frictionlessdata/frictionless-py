@@ -133,7 +133,7 @@ class Row(dict):
         return list(range(1, len(self.__field_info["names"]) + 1))
 
     @cached_property
-    def row_number(self):
+    def row_number(self) -> int:
         """
         Returns:
             int: row number from 1

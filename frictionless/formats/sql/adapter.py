@@ -12,8 +12,10 @@ from . import settings
 if TYPE_CHECKING:
     from sqlalchemy import MetaData
     from sqlalchemy.engine import Engine
+    from ...resources import TableResource
     from ...schema import Schema
-    from ...table import Row
+    from ...table import Row, IRowStream
+    from ...report import Report
 
 
 class SqlAdapter(Adapter):
@@ -96,7 +98,12 @@ class SqlAdapter(Adapter):
         return bool(tables)
 
     def write_schema(
-        self, schema: Schema, *, table_name: str, force: bool = False
+        self,
+        schema: Schema,
+        *,
+        table_name: str,
+        force: bool = False,
+        with_metadata: bool = False,
     ) -> None:
         with self.engine.begin() as conn:
             if force:
@@ -104,20 +111,22 @@ class SqlAdapter(Adapter):
                 if existing_table is not None:
                     self.metadata.drop_all(conn, tables=[existing_table])
                     self.metadata.remove(existing_table)
-            table = self.mapper.write_schema(schema, table_name=table_name)
+            table = self.mapper.write_schema(
+                schema, table_name=table_name, with_metadata=with_metadata
+            )
             table = table.to_metadata(self.metadata)
             self.metadata.create_all(conn, tables=[table])
 
     def write_row_stream(
         self,
-        row_stream,
+        row_stream: IRowStream,
         *,
         table_name: str,
         on_row: Optional[Callable[[Row], None]] = None,
     ) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            buffer: List[Dict] = []
+            buffer: List[Dict[str, Any]] = []
             table = self.metadata.tables[table_name]
             for row in row_stream:
                 buffer.append(self.mapper.write_row(row))
@@ -127,6 +136,32 @@ class SqlAdapter(Adapter):
                 on_row(row) if on_row else None
             if len(buffer):
                 conn.execute(sa.insert(table), buffer)
+
+    def write_resource_with_metadata(
+        self,
+        resource: TableResource,
+        *,
+        table_name: str,
+        on_row: Optional[Callable[[Row], None]] = None,
+    ) -> Report:
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            # Write row
+            def process_row(row: Row):
+                buffer.append(self.mapper.write_row(row, with_metadata=True))
+                if len(buffer) > settings.BUFFER_SIZE:
+                    conn.execute(sa.insert(table), buffer)
+                    buffer.clear()
+                on_row(row) if on_row else None
+
+            # Validate/iterate
+            buffer: List[Dict[str, Any]] = []
+            table = self.metadata.tables[table_name]
+            report = resource.validate(on_row=process_row)
+            if len(buffer):
+                conn.execute(sa.insert(table), buffer)
+
+            return report
 
 
 # Internal

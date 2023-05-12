@@ -5,6 +5,7 @@
   ],
   "strict": [
     "frictionless/formats/csv",
+    "frictionless/indexer",
     "frictionless/server"
   ],
   "ignore": [

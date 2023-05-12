@@ -280,7 +280,7 @@ class SqlMapper(Mapper):
 
         return mapping.get(field_type, sa.Text)
 
-    def write_row(self, row: Row, *, with_metadata: bool = False) -> Dict:
+    def write_row(self, row: Row, *, with_metadata: bool = False) -> Dict[str, Any]:
         """Convert frictionless Row to a sqlalchemy Item for insertion"""
         sa = platform.sqlalchemy
         item = {}

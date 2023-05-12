@@ -25,6 +25,20 @@ def test_resource_index_sqlite(database_url):
     ]
 
 
+# With metadata
+
+
+@pytest.mark.parametrize("database_url", database_urls)
+def test_resource_index_sqlite_with_metadata(database_url):
+    assert control.table
+    resource = TableResource(path="data/table.csv")
+    resource.index(database_url, name=control.table, with_metadata=True)
+    assert TableResource(path=database_url, control=control).read_rows() == [
+        {"_rowNumber": 2, "_rowValid": True, "id": 1, "name": "english"},
+        {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "中国人"},
+    ]
+
+
 # Fast
 
 
