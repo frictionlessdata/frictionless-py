@@ -1,6 +1,7 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
+from ....exception import FrictionlessException
 from ....resource import Resource
 from ...project import Project
 from ...router import router
@@ -21,12 +22,13 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: validata id,datatype,etc
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    metadata = md.read()
-    resource = Resource.from_descriptor(props.resource)
-    metadata[props.id] = resource.to_descriptor()
-    md.write(metadata)
+    report = Resource.validate_descriptor(props.resource)
+    if not report.valid:
+        raise FrictionlessException("resource is not valid,")
+    md.resources.upsert(md.document(props.id, **props.resource))  # type: ignore
 
     return Result(id=props.id)

@@ -1,28 +1,29 @@
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict
-from typing import TYPE_CHECKING
-from ...resources import JsonResource
+from typing import TYPE_CHECKING, Any
+from tinydb import TinyDB
+from tinydb.table import Table, Document
 
 if TYPE_CHECKING:
     from ..project import Project
-    from ..interfaces import IDescriptor
 
 
 class Metadata:
-    fullpath: Path
+    resources: Table
 
     def __init__(self, project: Project):
-        self.fullpath = project.private / "metadata.json"
+        fullpath = project.private / "metadata.json"
+        database = TinyDB(fullpath, indent=2)
+        self.resources = MetadataTable(database.storage, name="resources")
 
-        # Ensure metadata file
-        if not self.fullpath.exists():
-            JsonResource(data={}).write_json(path=str(self.fullpath))
+    def document(self, doc_id: str, **props: Any):
+        return Document(props, doc_id=doc_id)  # type: ignore
 
-    def read(self) -> Dict[str, IDescriptor]:
-        resource = JsonResource(path=str(self.fullpath))
-        return resource.read_json()
 
-    def write(self, metadata: Dict[str, IDescriptor]):
-        resource = JsonResource(data=metadata)
-        resource.write_json(path=str(self.fullpath))
+# Internal
+
+
+class MetadataTable(Table):
+    document_id_class = str
+
+    def _get_next_id(self):
+        raise RuntimeError("id must be provided")

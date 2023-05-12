@@ -24,8 +24,7 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    metadata = md.read()
-    descriptor = metadata.get(props.id, None)
+    descriptor = md.resources.get(doc_id=props.id)  # type: ignore
     if not descriptor:
         return Result(resource=None)
 

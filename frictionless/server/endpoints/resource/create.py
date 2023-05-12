@@ -31,6 +31,7 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: raise if already exist?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
+    md = project.metadata
 
     # Describe resource
     path, basepath = fs.get_path_and_basepath(props.path)
@@ -61,5 +62,5 @@ def action(project: Project, props: Props) -> Result:
 
     # Write metadata
     descriptor = resource.to_descriptor()
-    write.action(project, write.Props(id=id, resource=descriptor))
+    md.resources.insert(md.document(id, **descriptor))  # type: ignore
     return Result(resource=descriptor)

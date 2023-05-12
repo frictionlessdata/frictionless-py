@@ -63,4 +63,5 @@ class IView(TypedDict):
 class IResourceItem(TypedDict, total=False):
     id: Required[str]
     path: Required[str]
+    datatype: Required[str]
     errorCount: int

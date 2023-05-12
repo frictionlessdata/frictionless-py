@@ -10,8 +10,9 @@ class Artifact:
     reports: Path
 
     def __init__(self, project: Project):
-        self.reports = project.private / "reports"
+        basepath = project.private / "artifact"
 
-        # Ensure reports folder
+        # Reports
+        self.reports = basepath / "reports"
         if not self.reports.is_dir():
-            self.reports.mkdir()
+            self.reports.mkdir(parents=True)

@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from sqlalchemy import Table, MetaData
     from sqlalchemy.engine import Engine
     from ...formats.sql import SqlMapper
+    from ..project import Project
 
 
 # TODO: move specific logic to endpoint classes
@@ -23,7 +24,9 @@ class Database:
     project: Table
     records: Table
 
-    def __init__(self, database_url: str):
+    def __init__(self, project: Project):
+        fullpath = project.private / "database.db"
+        database_url = f"sqlite:///{fullpath}"
         sa = platform.sqlalchemy
         sql = platform.frictionless_formats.sql
         self.database_url = database_url
@@ -34,15 +37,15 @@ class Database:
             self.metadata.reflect(conn, views=True)
 
             # Ensure project table
-            project = self.metadata.tables.get(settings.PROJECT_IDENTIFIER)
-            if project is None:
-                project = sa.Table(
+            project_table = self.metadata.tables.get(settings.PROJECT_IDENTIFIER)
+            if project_table is None:
+                project_table = sa.Table(
                     settings.PROJECT_IDENTIFIER,
                     self.metadata,
                     sa.Column("config", sa.Text),
                 )
-                self.metadata.create_all(conn, tables=[project])
-            self.project = project
+                self.metadata.create_all(conn, tables=[project_table])
+            self.project = project_table
 
             # Ensure records table
             records = self.metadata.tables.get(settings.RECORDS_IDENTIFIER)
@@ -152,80 +155,3 @@ class Database:
         record = self.select_record(resource.path)
         assert record
         return record
-
-    def delete_record(self, path: str) -> Optional[IRecord]:
-        sa = platform.sqlalchemy
-        record = self.select_record(path)
-        if record:
-            with self.engine.begin() as conn:
-                if record["tableName"]:
-                    table = self.metadata.tables.get(record["tableName"])
-                    if table is not None:
-                        self.metadata.drop_all(conn, tables=[table])
-                        self.metadata.remove(table)
-                conn.execute(sa.delete(self.records).where(self.records.c.path == path))
-            return record
-
-    def list_records(self) -> List[IRecordItem]:
-        sa = platform.sqlalchemy
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                sa.select(
-                    self.records.c.path,
-                    self.records.c.type,
-                    self.records.c.updated,
-                    self.records.c.tableName,
-                    self.records.c.report,
-                )
-            )
-            items: List[IRecordItem] = []
-            for row in result:
-                item = IRecordItem(
-                    path=row.path,
-                    type=row.type,
-                    updated=row.updated.isoformat(),
-                    tableName=row.tableName,
-                )
-                # https://github.com/frictionlessdata/application/issues/146
-                if row.report:
-                    report = json.loads(row.report)
-                    if report:
-                        item["errorCount"] = report["stats"]["errors"]
-                items.append(item)
-            return items
-
-    def move_record(self, source: str, target: str) -> str:
-        sa = platform.sqlalchemy
-        with self.engine.begin() as conn:
-            conn.execute(
-                sa.update(self.records)
-                .where(self.records.c.path == source)
-                .values(path=target)
-            )
-            return target
-
-    def select_record(self, path: str) -> Optional[IRecord]:
-        sa = platform.sqlalchemy
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                sa.select(self.records).where(self.records.c.path == path)
-            ).first()
-            if row:
-                return IRecord(
-                    # TODO: why it's a type error here but not in other places
-                    path=row.path,  # type: ignore
-                    type=row.type,  # type: ignore
-                    updated=row.updated.isoformat(),  # type: ignore
-                    tableName=row.tableName,  # type: ignore
-                    resource=json.loads(row.resource),  # type: ignore
-                    report=json.loads(row.report),  # type: ignore
-                )
-
-    def update_record(self, path: str, *, resource: dict):
-        sa = platform.sqlalchemy
-        with self.engine.begin() as conn:
-            conn.execute(
-                sa.update(self.records)
-                .where(self.records.c.path == path)
-                .values(resource=helpers.to_json(resource))
-            )

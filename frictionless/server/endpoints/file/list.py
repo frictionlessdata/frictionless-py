@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ...project import Project, IFileItem
+from ...project import Project
 from ...router import router
+from ...interfaces import IFileItem
 
 
 class Props(BaseModel):

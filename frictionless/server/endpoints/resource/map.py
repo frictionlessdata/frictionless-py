@@ -23,11 +23,13 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Optional[Props] = None) -> Result:
     md = project.metadata
 
-    metadata = md.read()
     result = Result(items={})
-    for resource in metadata.values():
-        id = resource["id"]
-        path = resource["path"]
-        result.items[path] = {"id": id, "path": path}
+    for item in md.resources:
+        path: str = item["path"]
+        result.items[path] = {
+            "id": item["id"],
+            "path": path,
+            "datatype": item["datatype"],
+        }
 
     return result

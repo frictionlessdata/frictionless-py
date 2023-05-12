@@ -2,10 +2,8 @@ from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
-from ....resource import Resource
 from ...project import Project
 from ...router import router
-from ...interfaces import IDescriptor
 
 
 class Props(BaseModel, extra="forbid"):
@@ -13,7 +11,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    resource: IDescriptor
+    id: str
 
 
 @router.post("/resource/delete")
@@ -24,11 +22,8 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    metadata = md.read()
-    descriptor = metadata.pop(props.id, None)
-    if not descriptor:
+    ids = md.resources.remove(doc_ids=[props.id])  # type: ignore
+    if not ids:
         raise FrictionlessException("Resource doesn't exist")
-    md.write(metadata)
 
-    resource = Resource.from_descriptor(descriptor)
-    return Result(resource=resource.to_descriptor())
+    return Result(id=props.id)
