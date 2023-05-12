@@ -56,7 +56,7 @@ EXTRAS_REQUIRE = {
     "pandas": ["pandas>=1.0"],
     "parquet": ["fastparquet>=0.8"],
     "postgresql": ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"],
-    "server": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0"],
+    "server": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0", "tinydb>=4.7"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.4"],
     "visidata": ["visidata>=2.10"],
