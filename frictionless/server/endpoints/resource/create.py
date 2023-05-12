@@ -29,15 +29,14 @@ def endpoint(request: Request, props: Props) -> Result:
 
 # TODO: raise if already exist?
 def action(project: Project, props: Props) -> Result:
+    af = project.artifact
     fs = project.filesystem
     db = project.database
     md = project.metadata
 
-    # Check existence
+    # Prepare resource
     if md.resources.get(Query().path == props.path):
         raise FrictionlessException("Resource already exists")
-
-    # Create resource
     path, basepath = fs.get_path_and_basepath(props.path)
     resource = Resource(path=path, basepath=basepath)
     id = make_unique_id(project, resource)
@@ -52,15 +51,17 @@ def action(project: Project, props: Props) -> Result:
             table_name=id,
             with_metadata=True,
         ).index()
-    print(report)
 
-    # Extend resource
-    resource.custom["id"] = id
-    resource.custom["datatype"] = resource.datatype
-
-    # Write resource
+    # Write metadata
     descriptor = resource.to_descriptor()
-    md.resources.insert(md.document(id, **descriptor))  # type: ignore
+    descriptor["id"] = id
+    descriptor["datatype"] = resource.datatype
+    md.resources.upsert(md.document(id, **descriptor))  # type: ignore
+
+    # Write artifact
+    if report:
+        af.facts.upsert(af.document(id, errors=report.stats["errors"]))  # type: ignore
+
     return Result(resource=descriptor)
 
 
