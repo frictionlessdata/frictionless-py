@@ -1,4 +1,5 @@
 # Register modules
+from . import artifact
 from . import chart
 from . import field
 from . import file
