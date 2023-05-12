@@ -1,17 +1,22 @@
 from __future__ import annotations
-from typing import Dict, Any, List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
-from datetime import datetime
-from ....exception import FrictionlessException
 from ....platform import platform
+from ....exception import FrictionlessException
+from ....resources import TableResource
 from ....resource import Resource
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
-from ... import helpers
 from ...interfaces import IDescriptor
+from ... import settings
+from ... import helpers
+
+if TYPE_CHECKING:
+    from ....report import Report
+    from ....table import Row
 
 
 class Props(BaseModel, extra="forbid"):
@@ -36,13 +41,14 @@ def action(project: Project, props: Props) -> Result:
     if md.resources.get(Query().path == props.path):
         raise FrictionlessException("Resource already exists")
 
-    # Infer resource
+    # Index resource
     path, basepath = fs.get_path_and_basepath(props.path)
     resource = Resource(path=path, basepath=basepath)
-    resource.infer()
+    id = make_unique_id(project, resource)
+    report = index_resource(project, resource, id)
+    print(report)
 
     # Extend resource
-    id = make_unique_id(project, resource)
     resource.custom["id"] = id
     resource.custom["datatype"] = resource.datatype
 
@@ -55,12 +61,54 @@ def action(project: Project, props: Props) -> Result:
 # Internal
 
 
+def index_resource(project: Project, resource: Resource, id: str) -> Report:
+    db = project.database
+    sa = platform.sqlalchemy
+
+    # Non-tabular
+    if not isinstance(resource, TableResource):
+        return resource.validate()
+
+    # Tabular
+    with resource, db.engine.begin() as conn:
+        # Remove existing table
+        existing_table = db.metadata.tables.get(id)
+        if existing_table is not None:
+            db.metadata.drop_all(conn, tables=[existing_table])
+
+        # Create new table
+        table = db.mapper.write_schema(
+            resource.schema,
+            table_name=id,
+            with_metadata=True,
+        )
+        table.to_metadata(db.metadata)
+        db.metadata.create_all(conn, tables=[table])
+
+        # Write row
+        def on_row(row: Row):
+            buffer.append(db.mapper.write_row(row, with_metadata=True))
+            if len(buffer) > settings.BUFFER_SIZE:
+                conn.execute(sa.insert(table), buffer)
+                buffer.clear()
+
+        # Validate/iterate
+        buffer: List[Row] = []
+        report = resource.validate(on_row=on_row)
+        if len(buffer):
+            conn.execute(sa.insert(table), buffer)
+
+        return report
+
+
 def make_unique_id(project: Project, resource: Resource) -> str:
+    md = project.metadata
+
     ids: List[str] = []
     found = False
     id = helpers.make_id(resource.name)
     template = f"{id}%s"
-    for item in project.metadata.resources:
+    for item in md.resources:
         item_id: str = item["id"]
         ids.append(item_id)
         if item["path"] == resource.path:
@@ -71,4 +119,5 @@ def make_unique_id(project: Project, resource: Resource) -> str:
         while id in ids:
             id = template % suffix
             suffix += 1
+
     return id
