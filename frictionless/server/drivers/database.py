@@ -1,7 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+import json
+from typing import TYPE_CHECKING, Optional
 from ...platform import platform
-from ..interfaces import IQueryData
+from ..interfaces import IQueryData, IDescriptor
+from ... import helpers
 from .. import settings
 
 if TYPE_CHECKING:
@@ -34,14 +36,12 @@ class Database:
                 artifacts = sa.Table(
                     settings.ARTIFACTS_IDENTIFIER,
                     self.metadata,
-                    sa.Column("id", sa.Text),
-                    sa.Column("stats", sa.Text),
-                    sa.Column("report", sa.Text),
+                    sa.Column("id", sa.Text, primary_key=True),
+                    sa.Column("type", sa.Text, primary_key=True),
+                    sa.Column("descriptor", sa.Text),
                 )
                 self.metadata.create_all(conn, tables=[artifacts])
             self.artifacts = artifacts
-
-    # General
 
     def query(self, query: str) -> IQueryData:
         sa = platform.sqlalchemy
@@ -50,3 +50,37 @@ class Database:
             header = list(result.keys())
             rows = [row.asdict() for row in result]
             return IQueryData(header=header, rows=rows)
+
+    # Artifacts
+
+    def delete_artifact(self, *, id: str, type: Optional[str] = None):
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            query = sa.delete(self.artifacts).where(self.artifacts.c.id == id)
+            if type:
+                query = query.where(self.artifacts.c.type == type)
+            conn.execute(query)
+
+    def read_artifact(self, *, id: str, type: str) -> Optional[IDescriptor]:
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            text = conn.execute(
+                sa.select(self.artifacts.c.descriptor).where(
+                    self.artifacts.c.id == id,
+                    self.artifacts.c.type == type,
+                )
+            ).scalar_one_or_none()
+            if not text:
+                return None
+            descriptor = json.loads(text)
+        return descriptor
+
+    def write_artifact(self, *, id: str, type: str, descriptor: IDescriptor):
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            self.delete_artifact(id=id, type=type)
+            conn.execute(
+                sa.insert(self.artifacts).values(
+                    id=id, type=type, descriptor=helpers.to_json(descriptor)
+                )
+            )

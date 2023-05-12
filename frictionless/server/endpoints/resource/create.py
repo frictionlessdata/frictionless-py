@@ -62,15 +62,9 @@ def action(project: Project, props: Props) -> Result:
 
     # Write artifacts
     if report:
-        with db.engine.begin() as conn:
-            conn.execute(sa.delete(db.artifacts).where(db.artifacts.c.id == id))
-            conn.execute(
-                sa.insert(db.artifacts).values(
-                    id=id,
-                    stats=to_json(dict(errors=report.stats["errors"])),
-                    report=report.to_json(),
-                )
-            )
+        stats = dict(errors=report.stats["errors"])
+        db.write_artifact(id=id, type="stats", descriptor=stats)
+        db.write_artifact(id=id, type="report", descriptor=report.to_descriptor())
 
     return Result(resource=descriptor)
 

@@ -12,15 +12,15 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    report: Optional[IDescriptor]
+    stats: Optional[IDescriptor]
 
 
-@router.post("/report/read")
+@router.post("/stats/read")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
 def action(project: Project, props: Props) -> Result:
     db = project.database
-    report = db.read_artifact(id=props.id, type="report")
-    return Result(report=report)
+    stats = db.read_artifact(id=props.id, type="stats")
+    return Result(stats=stats)
