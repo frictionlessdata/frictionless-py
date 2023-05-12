@@ -3,10 +3,12 @@ from typing import List
 from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
+from ....platform import platform
 from ....exception import FrictionlessException
 from ....resources import TableResource
 from ....resource import Resource
 from ....indexer import Indexer
+from ....helpers import to_json
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
@@ -29,10 +31,10 @@ def endpoint(request: Request, props: Props) -> Result:
 
 # TODO: raise if already exist?
 def action(project: Project, props: Props) -> Result:
-    af = project.artifact
     fs = project.filesystem
-    db = project.database
     md = project.metadata
+    db = project.database
+    sa = platform.sqlalchemy
 
     # Prepare resource
     if md.resources.get(Query().path == props.path):
@@ -58,9 +60,17 @@ def action(project: Project, props: Props) -> Result:
     descriptor["datatype"] = resource.datatype
     md.resources.upsert(md.document(id, **descriptor))  # type: ignore
 
-    # Write artifact
+    # Write artifacts
     if report:
-        af.facts.upsert(af.document(id, errors=report.stats["errors"]))  # type: ignore
+        with db.engine.begin() as conn:
+            conn.execute(sa.delete(db.artifacts).where(db.artifacts.c.id == id))
+            conn.execute(
+                sa.insert(db.artifacts).values(
+                    id=id,
+                    stats=to_json(dict(errors=report.stats["errors"])),
+                    report=report.to_json(),
+                )
+            )
 
     return Result(resource=descriptor)
 
