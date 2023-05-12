@@ -1,5 +1,4 @@
 # General
 
-PROJECT_IDENTIFIER = "_project"
-RECORDS_IDENTIFIER = "_records"
+ARTIFACTS_IDENTIFIER = "_artifacts"
 BUFFER_SIZE = 1000
