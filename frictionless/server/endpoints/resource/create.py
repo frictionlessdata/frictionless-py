@@ -1,17 +1,16 @@
 from __future__ import annotations
 from typing import Dict, Any, List, TYPE_CHECKING
+from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
 from datetime import datetime
+from ....exception import FrictionlessException
 from ....platform import platform
 from ....resource import Resource
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
-from ... import settings
 from ... import helpers
-from . import map
-from . import write
 from ...interfaces import IDescriptor
 
 
@@ -33,34 +32,43 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     md = project.metadata
 
-    # Describe resource
+    # Check existence
+    if md.resources.get(Query().path == props.path):
+        raise FrictionlessException("Resource already exists")
+
+    # Infer resource
     path, basepath = fs.get_path_and_basepath(props.path)
     resource = Resource(path=path, basepath=basepath)
     resource.infer()
 
-    # Get resource id
+    # Extend resource
+    id = make_unique_id(project, resource)
+    resource.custom["id"] = id
+    resource.custom["datatype"] = resource.datatype
+
+    # Write resource
+    descriptor = resource.to_descriptor()
+    md.resources.insert(md.document(id, **descriptor))  # type: ignore
+    return Result(resource=descriptor)
+
+
+# Internal
+
+
+def make_unique_id(project: Project, resource: Resource) -> str:
     ids: List[str] = []
     found = False
     id = helpers.make_id(resource.name)
     template = f"{id}%s"
-    # TODO: rebase on direct metadata?
-    result = map.action(project)
-    for item in result.items.values():
-        ids.append(item["id"])
+    for item in project.metadata.resources:
+        item_id: str = item["id"]
+        ids.append(item_id)
         if item["path"] == resource.path:
-            id = item["id"]
+            id = item_id
             found = True
     if not found:
         suffix = 1
         while id in ids:
             id = template % suffix
             suffix += 1
-
-    # Add custom fields to resource
-    resource.custom["id"] = id
-    resource.custom["datatype"] = resource.datatype
-
-    # Write metadata
-    descriptor = resource.to_descriptor()
-    md.resources.insert(md.document(id, **descriptor))  # type: ignore
-    return Result(resource=descriptor)
+    return id
