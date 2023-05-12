@@ -41,6 +41,7 @@ class Server(platform.fastapi.FastAPI):
         log_level = "debug" if self.config.debug else None
         platform.uvicorn.run(  # type: ignore
             self,
+            workers=1,
             port=self.config.port,
             log_level=log_level,
         )
