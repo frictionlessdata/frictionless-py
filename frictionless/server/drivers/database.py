@@ -18,7 +18,6 @@ class Database:
 
     def __init__(self, project: Project):
         sa = platform.sqlalchemy
-
         fullpath = project.private / "database.db"
         sql = platform.frictionless_formats.sql
         self.database_url = f"sqlite:///{fullpath}"
@@ -29,7 +28,6 @@ class Database:
 
     def query(self, query: str) -> IQueryData:
         sa = platform.sqlalchemy
-
         with self.engine.begin() as conn:
             result = conn.execute(sa.text(query))
             header = list(result.keys())
