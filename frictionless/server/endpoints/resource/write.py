@@ -22,7 +22,7 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: validata id,datatype,etc
+# TODO: validate id,datatype,etc
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 

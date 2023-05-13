@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
 from ...router import router
-from ...interfaces import IResourceItem
+from ... import models
 
 
 class Props(BaseModel, extra="forbid"):
@@ -12,7 +12,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    items: Dict[str, IResourceItem]
+    items: Dict[str, models.ResourceItem]
 
 
 @router.post("/resource/map")
@@ -24,21 +24,20 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
     md = project.metadata
     db = project.database
 
-    # Prepare errors
+    # Map errors
     errors: Dict[str, int] = {}
     for id, descriptor in db.iter_artifacts(type="stats"):
         errors[id] = descriptor["errors"]
 
+    # Map resources
     result = Result(items={})
     for descriptor in md.iter_documents(type="resource"):
-        id: str = descriptor["id"]
-        path: str = descriptor["path"]
-        result.items[path] = {
-            "id": id,
-            "path": path,
-            "datatype": descriptor["datatype"],
-        }
-        if id in errors:
-            result.items[path]["errorCount"] = errors[id]
+        item = models.ResourceItem(
+            id=descriptor["id"],
+            path=descriptor["path"],
+            datatype=descriptor["datatype"],
+        )
+        item.errors = errors.get(item.id, None)
+        result.items[item.path] = item
 
     return result
