@@ -7,7 +7,13 @@
     "frictionless/formats/csv",
     "frictionless/indexer",
     "frictionless/server",
-    "frictionless/validator"
+    "frictionless/validator",
+    "frictionless/exception.py",
+    "frictionless/helpers",
+    "frictionless/interfaces.py",
+    "frictionless/metadata",
+    "frictionless/platform.py",
+    "frictionless/settings.py"
   ],
   "ignore": [
     "**/__init__.py"

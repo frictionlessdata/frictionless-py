@@ -6,7 +6,7 @@ import json
 # Helpers
 
 
-def read(*paths, encoding="utf-8"):
+def read(*paths: str, encoding: str = "utf-8"):
     dirname = os.path.dirname(__file__)
     with open(os.path.join(dirname, *paths), encoding=encoding) as file:
         return file.read().strip()
