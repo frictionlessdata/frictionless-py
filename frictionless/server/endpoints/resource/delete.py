@@ -22,7 +22,7 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    ids = md.resources.remove(doc_ids=[props.id])  # type: ignore
+    ids = md.delete_document(id=props.id, type="resource")
     if not ids:
         raise FrictionlessException("Resource doesn't exist")
 

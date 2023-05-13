@@ -3,12 +3,10 @@ from typing import List
 from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
-from ....platform import platform
 from ....exception import FrictionlessException
 from ....resources import TableResource
 from ....resource import Resource
 from ....indexer import Indexer
-from ....helpers import to_json
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
@@ -29,15 +27,13 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: raise if already exist?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     md = project.metadata
     db = project.database
-    sa = platform.sqlalchemy
 
     # Prepare resource
-    if md.resources.get(Query().path == props.path):
+    if md.find_document(type="resource", query=Query().path == props.path):
         raise FrictionlessException("Resource already exists")
     path, basepath = fs.get_path_and_basepath(props.path)
     resource = Resource(path=path, basepath=basepath)
@@ -58,7 +54,7 @@ def action(project: Project, props: Props) -> Result:
     descriptor = resource.to_descriptor()
     descriptor["id"] = id
     descriptor["datatype"] = resource.datatype
-    md.resources.upsert(md.document(id, **descriptor))  # type: ignore
+    md.write_document(id=id, type="resource", descriptor=descriptor)
 
     # Write artifacts
     if report:
@@ -76,7 +72,7 @@ def make_unique_id(project: Project, resource: Resource) -> str:
     found = False
     id = helpers.make_id(resource.name)
     template = f"{id}%s"
-    for item in md.resources:
+    for item in md.iter_documents(type="resource"):
         item_id: str = item["id"]
         ids.append(item_id)
         if item["path"] == resource.path:

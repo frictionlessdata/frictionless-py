@@ -24,7 +24,7 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
     md = project.metadata
 
     result = Result(items={})
-    for item in md.resources:
+    for item in md.iter_documents(type="resource"):
         path: str = item["path"]
         result.items[path] = {
             "id": item["id"],

@@ -29,6 +29,6 @@ def action(project: Project, props: Props) -> Result:
     report = Resource.validate_descriptor(props.resource)
     if not report.valid:
         raise FrictionlessException("resource is not valid,")
-    md.resources.upsert(md.document(props.id, **props.resource))  # type: ignore
+    md.write_document(id=props.id, type="resource", descriptor=props.resource)
 
     return Result(id=props.id)
