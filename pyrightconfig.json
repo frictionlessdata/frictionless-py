@@ -5,6 +5,7 @@
   ],
   "strict": [
     "frictionless/formats/csv",
+    "frictionless/actions",
     "frictionless/catalog",
     "frictionless/checklist",
     "frictionless/console",

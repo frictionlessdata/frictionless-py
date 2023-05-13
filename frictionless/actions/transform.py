@@ -13,7 +13,7 @@ def transform(
     # Pipeline
     pipeline: Optional[Union[Pipeline, str]] = None,
     steps: Optional[List[Step]] = None,
-    **options,
+    **options: Any,
 ):
     """Transform resource
 

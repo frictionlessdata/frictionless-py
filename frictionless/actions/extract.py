@@ -19,7 +19,7 @@ def extract(
     limit_rows: Optional[int] = None,
     # Deprecated
     resource_name: Optional[str] = None,
-    **options,
+    **options: Any,
 ):
     """Extract rows
 
