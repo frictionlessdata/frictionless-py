@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, Any, List
 from itertools import zip_longest
 from functools import cached_property
 from ..platform import platform
@@ -117,7 +117,7 @@ class Row(dict):
         return self.__field_info["objects"]
 
     @cached_property
-    def field_names(self):
+    def field_names(self) -> List[str]:
         """
         Returns:
             str[]: field names

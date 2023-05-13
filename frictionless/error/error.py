@@ -1,6 +1,7 @@
 from __future__ import annotations
 import attrs
-from typing import List, ClassVar, Optional, Type
+from typing import List, ClassVar, Optional, Type, Any
+from ..interfaces import IDescriptor
 from ..metadata import Metadata
 from ..platform import platform
 from .. import helpers
@@ -54,7 +55,7 @@ class Error(Metadata):
     def list_children(
         cls, *, root: bool = False, exclude: Optional[List[Type[Error]]] = None
     ) -> List[Type[Error]]:
-        children = []
+        children: List[Type[Error]] = []
         for item in vars(platform.frictionless_errors).values():
             if isinstance(item, type) and issubclass(item, cls):
                 if not root and item is cls:
@@ -81,11 +82,11 @@ class Error(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return platform.frictionless.system.select_error_class(type)
 
     @classmethod
-    def metadata_import(cls, descriptor, **options):
+    def metadata_import(cls, descriptor: IDescriptor, **options: Any):  # type: ignore
         # Class props
         descriptor.pop("title", None)
         descriptor.pop("description", None)

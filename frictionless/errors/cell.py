@@ -1,7 +1,11 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING, Any
 from ..exception import FrictionlessException
 from .row import RowError
+
+if TYPE_CHECKING:
+    from ..table import Row
 
 
 @attrs.define(kw_only=True)
@@ -35,7 +39,7 @@ class CellError(RowError):
     # Convert
 
     @classmethod
-    def from_row(cls, row, *, note, field_name):
+    def from_row(cls, row: Row, *, note: str, field_name: str):  # type: ignore
         """Create and error from a cell
 
         Parameters:
@@ -50,11 +54,11 @@ class CellError(RowError):
         # At the same time, this function should not be called very often
         for field_number, name in enumerate(row.field_names, start=1):
             if field_name == name:
-                cell = row[field_name]
-                to_str = lambda v: str(v) if v is not None else ""
+                cell: Any = row[field_name]
+                to_str = lambda v: str(v) if v is not None else ""  # type: ignore
                 return cls(
                     note=note,
-                    cells=list(map(to_str, row.cells)),
+                    cells=list(map(to_str, row.cells)),  # type: ignore
                     row_number=row.row_number,
                     cell=str(cell),
                     field_name=field_name,

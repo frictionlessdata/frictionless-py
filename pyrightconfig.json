@@ -5,6 +5,8 @@
   ],
   "strict": [
     "frictionless/formats/csv",
+    "frictionless/error",
+    "frictionless/errors",
     "frictionless/indexer",
     "frictionless/inquiry",
     "frictionless/pipeline",

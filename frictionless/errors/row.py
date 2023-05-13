@@ -1,7 +1,10 @@
 from __future__ import annotations
 import attrs
-from typing import List, Any
+from typing import TYPE_CHECKING, List, Any
 from .table import TableError
+
+if TYPE_CHECKING:
+    from ..table import Row
 
 
 @attrs.define(kw_only=True)
@@ -32,12 +35,12 @@ class RowError(TableError):
     # Convert
 
     @classmethod
-    def from_row(cls, row, *, note):
+    def from_row(cls, row: Row, *, note: str):
         """Create an error from a row"""
-        to_str = lambda v: str(v) if v is not None else ""
+        to_str = lambda v: str(v) if v is not None else ""  # type: ignore
         return cls(
             note=note,
-            cells=list(map(to_str, row.cells)),
+            cells=list(map(to_str, row.cells)),  # type: ignore
             row_number=row.row_number,
         )
 
@@ -93,24 +96,24 @@ class ForeignKeyError(RowError):
     """
 
     @classmethod
-    def from_row(
+    def from_row(  # type: ignore
         cls,
-        row,
+        row: Row,
         *,
-        note,
-        field_names: List[str],
-        field_values: List[Any],
-        reference_name: str,
-        reference_field_names: List[str],
+        note: str,
+        field_names: List[str],  # type: ignore
+        field_values: List[Any],  # type: ignore
+        reference_name: str,  # type: ignore
+        reference_field_names: List[str],  # type: ignore
     ):
         """Create an foreign-key-error from a row"""
-        to_str = lambda v: str(v) if v is not None else ""
+        to_str = lambda v: str(v) if v is not None else ""  # type: ignore
         return cls(
             note=note,
-            cells=list(map(to_str, row.cells)),
+            cells=list(map(to_str, row.cells)),  # type: ignore
             row_number=row.row_number,
             field_names=field_names,
-            field_cells=list(map(to_str, field_values)),
+            field_cells=list(map(to_str, field_values)),  # type: ignore
             reference_name=reference_name,
             reference_field_names=reference_field_names,
         )

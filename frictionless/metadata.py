@@ -380,7 +380,7 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_import(
-        cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options
+        cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options: Any
     ) -> Self:
         merged_options = {}
         basepath = options.pop("basepath", None)
