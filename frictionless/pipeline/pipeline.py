@@ -2,6 +2,7 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List, ClassVar, Union
+from ..interfaces import IDescriptor
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
@@ -103,12 +104,12 @@ class Pipeline(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "steps":
             return Step
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: IDescriptor):
         super().metadata_transform(descriptor)
 
         # Tasks (framework/v4)

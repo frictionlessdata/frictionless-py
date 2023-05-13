@@ -1,7 +1,8 @@
 from __future__ import annotations
 import attrs
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional, Union, Any
+from ..interfaces import IDescriptor
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
@@ -81,7 +82,11 @@ class Step(Metadata):
     # Convert
 
     @classmethod
-    def from_descriptor(cls, descriptor):
+    def from_descriptor(
+        cls, descriptor: Union[str, IDescriptor], *args: Any, **kwargs: Any
+    ):
+        descriptor = cls.metadata_retrieve(descriptor)
+
         # Type (framework/v4)
         code = descriptor.pop("code", None)
         if code:
@@ -90,7 +95,7 @@ class Step(Metadata):
             note += "(it will be removed in the next major version)"
             warnings.warn(note, UserWarning)
 
-        return super().from_descriptor(descriptor)
+        return super().from_descriptor(descriptor, *args, **kwargs)
 
     # Metadata
 
@@ -108,5 +113,5 @@ class Step(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_step_class(type)
