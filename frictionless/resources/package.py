@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..exception import FrictionlessException
 from ..report import Report
 from ..package import Package
@@ -45,7 +45,7 @@ class PackageResource(MetadataResource[Package]):
 
     # Index
 
-    def index(self, database_url: str, **options) -> List[str]:
+    def index(self, database_url: str, **options: Any) -> List[str]:
         package = self.read_metadata()
         return package.index(database_url, **options)
 

@@ -28,10 +28,10 @@ def create_source(source: Any, *, path: Optional[str] = None) -> Any:
             return sys.stdin.buffer.read()
 
     # Normalize
-    if isinstance(source, list) and len(source) == 1:
-        return source[0]
+    if isinstance(source, list) and len(source) == 1:  # type: ignore
+        return source[0]  # type: ignore
 
-    return source
+    return source  # type: ignore
 
 
 # Dialect
@@ -228,12 +228,12 @@ def index_resource(
             status = progress.add_task(
                 description=f"\\[[bold]{resource.name}[/]] Indexing...", total=None
             )
-            on_progress = lambda name, message: progress.update(
+            on_progress = lambda name, message: progress.update(  # type: ignore
                 status, description=f"\\[[bold]{name}[/]] Indexed {message}"
             )
             names = resource.index(
                 database_url=database,
-                on_progress=on_progress,
+                on_progress=on_progress,  # type: ignore
                 fast=fast,
                 use_fallback=use_fallback,
                 qsv_path=qsv_path,

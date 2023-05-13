@@ -255,7 +255,7 @@ def is_type(object: type, name: str):
     return type(object).__name__ == name
 
 
-def parse_json_string(string: str):
+def parse_json_string(string: Optional[str]):
     if string is None:
         return None
     if string.startswith("{") and string.endswith("}"):
@@ -263,7 +263,7 @@ def parse_json_string(string: str):
     return string
 
 
-def parse_descriptors_string(string: str):
+def parse_descriptors_string(string: Optional[str]):
     if string is None:
         return None
     descriptors: List[Dict[str, Any]] = []

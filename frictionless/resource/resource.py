@@ -576,7 +576,7 @@ class Resource(Metadata):
         name: Optional[str] = None,
         type: Optional[str] = None,
         stats: bool = False,
-        **options,
+        **options: Any,
     ) -> Metadata:
         """Describe the given source as a resource
 

@@ -132,7 +132,7 @@ def console_extract(
             process = lambda row: row.to_dict(csv=True)
 
         # Create limit
-        if limit_rows is None:
+        if limit_rows is None:  # type: ignore
             if not any([yaml, json, csv]):
                 limit_rows = DEFAULT_MAX_ROWS
 

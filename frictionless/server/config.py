@@ -1,5 +1,5 @@
 import attrs
-from typing import Optional
+from typing import Optional, Any
 from typing_extensions import Self
 from .. import settings
 from .. import helpers
@@ -14,5 +14,5 @@ class Config:
     # Convert
 
     @classmethod
-    def from_options(cls, *args, **options) -> Self:
+    def from_options(cls, *args: Any, **options: Any) -> Self:
         return cls(*args, **helpers.remove_non_values(options))

@@ -186,8 +186,8 @@ def console_validate(
         for task in report.tasks:
             status = "VALID" if task.valid else "INVALID"
             style = "green" if task.valid else "bold red"
-            row = [task.name, task.type, task.place, status]
-            view.add_row(*row, style=style)
+            status_row = [task.name, task.type, task.place, status]
+            view.add_row(*status_row, style=style)
         console.print(view)
 
     # Errors
@@ -199,10 +199,10 @@ def console_validate(
                 for label in labels:
                     view.add_column(label)
                 for error in errors:
-                    row = []
+                    error_row: List[str] = []
                     for prop in props:
-                        row.append(str(getattr(error, prop, None)))
-                    view.add_row(*row)
+                        error_row.append(str(getattr(error, prop, None)))
+                    view.add_row(*error_row)
                 console.print(view)
 
     # Proper retcode

@@ -68,6 +68,6 @@ def console_transform(
     table = result.to_petl()  # type: ignore
     schema = result.schema.to_summary()  # type: ignore
     typer.secho("\n## Schema\n")
-    typer.secho(schema)
+    typer.secho(schema)  # type: ignore
     typer.secho("\n## Table\n")
-    typer.secho(table)
+    typer.secho(table)  # type: ignore

@@ -59,7 +59,7 @@ def console_script(
         database = file.name
 
         # Index resources
-        names = []
+        names: List[str] = []
         resources = resource.list(name=name)
         for resource in resources:
             names.extend(
@@ -102,7 +102,7 @@ def generate_startup(database: str, *, names: List[str]) -> str:
     lines.append("import pandas as pd")
     lines.append(f"engine = sa.create_engine('{database}')")
     lines.append("conn = engine.connect()")
-    dfnames = []
+    dfnames: List[str] = []
     for name in names:
         dfname = generate_dfname(name)
         dfnames.append(dfname)

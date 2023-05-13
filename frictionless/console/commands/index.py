@@ -54,7 +54,7 @@ def console_index(
         )
 
         # Index resources
-        names = []
+        names: List[str] = []
         resources = resource.list()
         for resource in resources:
             names.extend(

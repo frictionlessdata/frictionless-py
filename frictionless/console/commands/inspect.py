@@ -58,7 +58,7 @@ def console_inspect(
         database = file.name
 
         # Index resources
-        names = []
+        names: List[str] = []
         resources = resource.list(name=name)
         for resource in resources:
             names.extend(

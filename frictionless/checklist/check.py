@@ -1,7 +1,8 @@
 from __future__ import annotations
 import attrs
 import warnings
-from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type
+from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type, Union
+from ..interfaces import IDescriptor
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
@@ -105,7 +106,9 @@ class Check(Metadata):
     # Convert
 
     @classmethod
-    def from_descriptor(cls, descriptor):
+    def from_descriptor(cls, descriptor: Union[str, IDescriptor]):
+        descriptor = cls.metadata_retrieve(descriptor)
+
         # Type (framework/v4)
         code = descriptor.pop("code", None)
         if code:
