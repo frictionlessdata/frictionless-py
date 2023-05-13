@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
 from ...router import router
-from ...interfaces import IDescriptor
+from ... import models
 
 
 class Props(BaseModel, extra="forbid"):
@@ -12,7 +12,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    stats: Optional[IDescriptor]
+    stats: Optional[models.Stats]
 
 
 @router.post("/stats/read")
@@ -22,5 +22,8 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Props) -> Result:
     db = project.database
-    stats = db.read_artifact(id=props.id, type="stats")
+    data = db.read_artifact(id=props.id, type="stats")
+    if not data:
+        return Result(stats=None)
+    stats = models.Stats(**data)
     return Result(stats=stats)

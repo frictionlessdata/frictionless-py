@@ -21,6 +21,7 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: merge here report/read and stats/read?
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 

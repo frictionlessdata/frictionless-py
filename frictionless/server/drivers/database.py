@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Iterator, Tuple
 from ...platform import platform
 from ..interfaces import IQueryData, IDescriptor
 from ... import helpers
@@ -52,6 +52,15 @@ class Database:
             return IQueryData(header=header, rows=rows)
 
     # Artifacts
+
+    def iter_artifacts(self, *, type: str) -> Iterator[Tuple[str, IDescriptor]]:
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            query = sa.select(self.artifacts.c.id, self.artifacts.c.descriptor).where(
+                self.artifacts.c.type == type,
+            )
+            for item in conn.execute(query).all():
+                yield item.id, json.loads(item.descriptor)
 
     def delete_artifact(self, *, id: str, type: Optional[str] = None):
         sa = platform.sqlalchemy

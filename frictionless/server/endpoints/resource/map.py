@@ -22,14 +22,23 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Optional[Props] = None) -> Result:
     md = project.metadata
+    db = project.database
+
+    # Prepare errors
+    errors: Dict[str, int] = {}
+    for id, descriptor in db.iter_artifacts(type="stats"):
+        errors[id] = descriptor["errors"]
 
     result = Result(items={})
-    for item in md.iter_documents(type="resource"):
-        path: str = item["path"]
+    for descriptor in md.iter_documents(type="resource"):
+        id: str = descriptor["id"]
+        path: str = descriptor["path"]
         result.items[path] = {
-            "id": item["id"],
+            "id": id,
             "path": path,
-            "datatype": item["datatype"],
+            "datatype": descriptor["datatype"],
         }
+        if id in errors:
+            result.items[path]["errorCount"] = errors[id]
 
     return result
