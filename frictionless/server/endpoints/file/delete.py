@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 import shutil
+from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
@@ -24,10 +25,13 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: shall we move db delection to resource.delete?
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
-    db = project.database
+    md = project.metadata
 
-    # Database
-    db.delete_record(props.path)
+    # TODO: add helper method to metadata (delete by match)?
+    # Delete metadata
+    resource = md.find_document(type="resource", query=Query().path == props.path)
+    if resource:
+        md.delete_document(id=resource["id"], type="resource")
 
     # Source
     source = fs.get_fullpath(props.path)

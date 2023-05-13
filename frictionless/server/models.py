@@ -2,8 +2,10 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class Stats(BaseModel):
-    errors: int
+# File
+
+
+# Resource
 
 
 class ResourceItem(BaseModel):
@@ -11,3 +13,10 @@ class ResourceItem(BaseModel):
     path: str
     datatype: str
     errors: Optional[int] = None
+
+
+# Stats
+
+
+class Stats(BaseModel):
+    errors: int

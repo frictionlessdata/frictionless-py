@@ -24,7 +24,7 @@ class Server(platform.fastapi.FastAPI):
             debug=config.debug,
         )
 
-        @server.exception_handler(Exception)
+        @server.exception_handler(Exception)  # type: ignore
         async def exception_handler(request: Request, exception: Exception):  # type: ignore
             return JSONResponse(
                 status_code=400,
@@ -32,7 +32,7 @@ class Server(platform.fastapi.FastAPI):
             )
 
         server.config = config or Config()
-        server.include_router(router)
+        server.include_router(router)  # type: ignore
         return server
 
     # Run

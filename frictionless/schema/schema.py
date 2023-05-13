@@ -171,7 +171,7 @@ class Schema(Metadata):
     # Describe
 
     @staticmethod
-    def describe(source: Optional[Any] = None, **options) -> Schema:
+    def describe(source: Optional[Any] = None, **options: Any) -> Schema:
         """Describe the given source as a schema
 
         Parameters:

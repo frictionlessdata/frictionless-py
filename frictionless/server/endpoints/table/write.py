@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Dict, Any
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
@@ -7,7 +8,7 @@ from ...router import router
 
 class Props(BaseModel):
     path: str
-    tablePatch: dict
+    tablePatch: Dict[str, Any]
 
 
 class Result(BaseModel):

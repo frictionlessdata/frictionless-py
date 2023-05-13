@@ -27,7 +27,7 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
     fullpath = fs.get_fullpath(props.path)
-    package = Package.from_descriptor(fullpath)
+    package = Package.from_descriptor(str(fullpath))
     path = package.publish(control=Control.from_descriptor(props.control))
 
     return Result(path=path)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict, Any
 from fastapi import Request
 from ...project import Project
 from ...router import router
@@ -9,8 +9,7 @@ from .. import json
 
 class Props(BaseModel):
     path: Optional[str]
-    # TODO: Use IPackage
-    package: Optional[dict]
+    package: Optional[Dict[str, Any]]
     deduplicate: Optional[bool] = None
 
 

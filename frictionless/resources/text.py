@@ -41,7 +41,9 @@ class TextResource(Resource):
     # Write
 
     # TODO: rebase on using loader
-    def write_text(self, target: Optional[Union[TextResource, Any]] = None, **options):
+    def write_text(
+        self, target: Optional[Union[TextResource, Any]] = None, **options: Any
+    ):
         """Write text data to the target"""
         res = target
         if not isinstance(res, TextResource):

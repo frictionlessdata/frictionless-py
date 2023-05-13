@@ -1,4 +1,5 @@
 from __future__ import annotations
+from tinydb import Query
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import Request
@@ -22,13 +23,14 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    sa = platform.sqlalchemy
+    md = project.metadata
     db = project.database
+    sa = platform.sqlalchemy
 
-    record = db.select_record(props.path)
-    assert record
-    assert "tableName" in record
-    table = db.metadata.tables[record["tableName"]]
+    descriptor = md.find_document(type="resource", query=Query().path == props.path)
+    assert descriptor
+    id = descriptor["id"]
+    table = db.metadata.tables[id]
     query = sa.select(sa.func.count()).select_from(table)
     if props.valid is not None:
         query = query.where(table.c._rowValid == props.valid)

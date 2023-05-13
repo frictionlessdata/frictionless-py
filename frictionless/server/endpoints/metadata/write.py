@@ -1,4 +1,5 @@
 from __future__ import annotations
+from tinydb import Query
 from typing import Dict, Any
 from pydantic import BaseModel
 from fastapi import Request
@@ -22,9 +23,14 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    db = project.database
+    md = project.metadata
 
-    db.delete_record(props.path)
+    # Delete metadata
+    resource = md.find_document(type="resource", query=Query().path == props.path)
+    if resource:
+        md.delete_document(id=resource["id"], type="resource")
+
+    # Write data
     result = json.write.action(
         project, json.write.Props(path=props.path, data=props.data)
     )
