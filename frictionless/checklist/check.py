@@ -106,7 +106,7 @@ class Check(Metadata):
     # Convert
 
     @classmethod
-    def from_descriptor(cls, descriptor: Union[str, IDescriptor]):
+    def from_descriptor(cls, descriptor: Union[str, IDescriptor]):  # type: ignore
         descriptor = cls.metadata_retrieve(descriptor)
 
         # Type (framework/v4)
@@ -135,5 +135,5 @@ class Check(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_check_class(type)
