@@ -80,7 +80,7 @@ def create_dialect(
     elif keys is not None or keyed is not None:
         dialect.controls.append(
             formats.JsonControl.from_options(
-                keys=helpers.parse_csv_string(keys),
+                keys=helpers.parse_csv_string_typed(keys) if keys else None,
                 keyed=keyed,
             )
         )

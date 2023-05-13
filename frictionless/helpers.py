@@ -7,51 +7,31 @@ import ast
 import json
 import glob
 import shutil
-import inspect
 import tempfile
 import datetime
-import textwrap
-import stringcase
+import stringcase  # type: ignore
 from copy import deepcopy
 from pathlib import Path
+from typing import Union, Any, Optional, Dict
 from typing import List, TypeVar, Type, Tuple, Iterator
 from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
-from typing import Union, Any, Optional
 from .platform import platform
 
 
 # General
 
 
-def compact(text):
-    return " ".join(filter(None, textwrap.dedent(text).splitlines()))
+def create_options(descriptor: Dict[str, Any]):
+    return {stringcase.snakecase(key): value for key, value in descriptor.items()}  # type: ignore
 
 
-def apply_function(function, descriptor):
-    options = create_options(descriptor)
-    return function(**options)
-
-
-def create_options(descriptor):
-    return {stringcase.snakecase(key): value for key, value in descriptor.items()}
-
-
-def create_descriptor(**options):
-    return {stringcase.camelcase(key): value for key, value in options.items()}
-
-
-def remove_default(descriptor, key, default):
-    if descriptor.get(key) == default:
-        descriptor.pop(key)
-
-
-def stringify_label(cells):
+def stringify_label(cells: List[Any]):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
 
-def get_name(value):
+def get_name(value: Any):
     return getattr(value, "__name__", value.__class__.__name__)
 
 
@@ -60,12 +40,12 @@ def pass_through(iterator: Iterator[Any]):
         pass
 
 
-def safe_format(text, data):
+def safe_format(text: str, data: Dict[str, Any]):
     return text.format_map(SafeFormatDict(data))
 
 
-class SafeFormatDict(dict):
-    def __missing__(self, key):
+class SafeFormatDict(Dict[str, Any]):
+    def __missing__(self, key: str):
         return ""
 
 
@@ -87,39 +67,24 @@ def to_yaml(obj: Any) -> str:
     )
 
 
-def cleaned_dict(**options):
+def cleaned_dict(**options: Any) -> Dict[str, Any]:
     return dict(**remove_non_values(options))
 
 
-def remove_non_values(mapping):
+def remove_non_values(mapping: Dict[str, Any]):
     return {key: value for key, value in mapping.items() if value is not None}
-
-
-def rows_to_data(rows):
-    if not rows:
-        return []
-    data = []
-    data.append(list(rows[0].field_names))
-    for row in rows:
-        data.append([cell if cell is not None else "" for cell in row.to_list()])
-    return data
-
-
-def is_class_accept_option(cls, name):
-    sig = inspect.signature(cls.__init__)
-    return name in sig.parameters
 
 
 def normalize_source(source: Any) -> Any:
     if isinstance(source, Path):
         source = str(source)
     if isinstance(source, Mapping):
-        source = {key: value for key, value in source.items()}
+        source = {key: value for key, value in source.items()}  # type: ignore
     return source
 
 
 @contextmanager
-def ensure_open(thing):
+def ensure_open(thing: Any):
     if not thing.closed:
         yield thing
     else:
@@ -130,29 +95,14 @@ def ensure_open(thing):
             thing.close()
 
 
-def read_file(path, mode="r"):
-    with open(path, mode) as file:
-        return file.read()
-
-
-def copy_merge(source, patch={}, **kwargs):
+def copy_merge(source: Dict[str, Any], patch: Dict[str, Any] = {}, **kwargs: Any):
     source = (source or {}).copy()
     source.update(patch)
     source.update(kwargs)
     return source
 
 
-def compile_regex(items):
-    if items is not None:
-        result = []
-        for item in items:
-            if isinstance(item, str) and item.startswith("<regex>"):
-                item = re.compile(item.replace("<regex>", ""))
-            result.append(item)
-        return result
-
-
-def parse_basepath(descriptor):
+def parse_basepath(descriptor: Union[str, Dict[str, Any]]):
     basepath = ""
     if isinstance(descriptor, str):
         basepath = os.path.dirname(descriptor)
@@ -189,7 +139,7 @@ def parse_scheme_and_format(path: str):
     return scheme, format
 
 
-def merge_jsonschema(base, head):
+def merge_jsonschema(base: Dict[str, Any], head: Dict[str, Any]):
     result = deepcopy(base)
     base_required = base.get("required", [])
     head_required = head.get("required", [])
@@ -209,33 +159,9 @@ def ensure_dir(path: str) -> None:
         os.makedirs(path)
 
 
-def copy_file(source: str, target: str) -> str:
-    if isinstance(source, (tuple, list)):
-        source = os.path.join(*source)
-    if isinstance(target, (tuple, list)):
-        target = os.path.join(*target)
-    ensure_dir(target)
-    return shutil.copy(source, target)
-
-
-def copy_folder(source: str, target: str) -> str:
-    ensure_dir(target)
-    return shutil.copytree(source, target)
-
-
 def move_file(source: str, target: str) -> str:
     ensure_dir(target)
     return shutil.move(source, target)
-
-
-def move_folder(source: str, target: str) -> str:
-    ensure_dir(target)
-    return shutil.move(source, target)
-
-
-def create_folder(path: str) -> str:
-    Path(path).mkdir(parents=True)
-    return path
 
 
 def write_file(path: str, body: Any, *, mode: str = "wt"):
@@ -245,13 +171,6 @@ def write_file(path: str, body: Any, *, mode: str = "wt"):
         file.flush()
     move_file(file.name, path)
     os.chmod(path, 0o644)
-
-
-def create_byte_stream(bytes):
-    stream = io.BufferedRandom(io.BytesIO())  # type: ignore
-    stream.write(bytes)
-    stream.seek(0)
-    return stream
 
 
 def is_remote_path(path: str) -> bool:
@@ -277,9 +196,9 @@ def normalize_path(path: str, *, basepath: Optional[str] = None):
 # NOTE:
 # We need to rebase this function on checking actual path
 # being withing a basepath directory (it's a safer approach)
-def is_safe_path(path):
-    contains_windows_var = lambda val: re.match(r"%.+%", val)
-    contains_posix_var = lambda val: re.match(r"\$.+", val)
+def is_safe_path(path: str):
+    contains_windows_var = lambda val: re.match(r"%.+%", val)  # type: ignore
+    contains_posix_var = lambda val: re.match(r"\$.+", val)  # type: ignore
     unsafeness_conditions = [
         os.path.isabs(path),
         ("..%s" % os.path.sep) in path,
@@ -292,8 +211,6 @@ def is_safe_path(path):
 
 
 def is_directory_source(source: str) -> bool:
-    if not isinstance(source, str):
-        return False
     if is_remote_path(source):
         return False
     if not os.path.isdir(source):
@@ -303,7 +220,7 @@ def is_directory_source(source: str) -> bool:
 
 def is_expandable_source(source: Any) -> bool:
     if isinstance(source, list):
-        if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):
+        if len(source) == len(list(filter(lambda path: isinstance(path, str), source))):  # type: ignore
             return True
     if not isinstance(source, str):
         return False
@@ -312,10 +229,10 @@ def is_expandable_source(source: Any) -> bool:
     return glob.has_magic(source) or os.path.isdir(source)
 
 
-def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):
+def expand_source(source: Union[List[Any], str], *, basepath: Optional[str] = None):
     if isinstance(source, list):
         return source
-    paths = []
+    paths: List[str] = []
     if basepath:
         source = os.path.join(basepath, source)
     pattern = f"{source}/*" if os.path.isdir(source) else source
@@ -327,18 +244,18 @@ def expand_source(source: Union[list, str], *, basepath: Optional[str] = None):
     return paths
 
 
-def is_zip_descriptor(descriptor):
+def is_zip_descriptor(descriptor: Union[str, Dict[str, Any]]):
     if isinstance(descriptor, str):
         parsed = urlparse(descriptor)
         format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower()
         return format == "zip"
 
 
-def is_type(object, name):
+def is_type(object: type, name: str):
     return type(object).__name__ == name
 
 
-def parse_json_string(string):
+def parse_json_string(string: str):
     if string is None:
         return None
     if string.startswith("{") and string.endswith("}"):
@@ -346,10 +263,10 @@ def parse_json_string(string):
     return string
 
 
-def parse_descriptors_string(string):
+def parse_descriptors_string(string: str):
     if string is None:
         return None
-    descriptors = []
+    descriptors: List[Dict[str, Any]] = []
     parts = string.split(" ")
     for part in parts:
         type, *props = part.split(":")
@@ -365,32 +282,14 @@ def parse_descriptors_string(string):
     return descriptors
 
 
-# TODO: repalce by the typed version
-def parse_csv_string(string, *, convert: type = str, fallback=False):
-    if string is None:
-        return None
-    reader = csv.reader(io.StringIO(string), delimiter=",")
-    result = []
-    for row in reader:
-        for cell in row:
-            try:
-                cell = convert(cell)
-            except ValueError:
-                if not fallback:
-                    raise
-                pass
-            result.append(cell)
-        return result
-
-
 T = TypeVar("T", int, str)
 
 
 def parse_csv_string_typed(
-    string: str, *, convert: Type[T] = str, fallback=False
+    string: str, *, convert: Type[T] = str, fallback: bool = False
 ) -> List[T]:
     reader = csv.reader(io.StringIO(string), delimiter=",")
-    result = []
+    result: List[T] = []
     for row in reader:
         for cell in row:
             try:
@@ -399,12 +298,12 @@ def parse_csv_string_typed(
                 if not fallback:
                     raise
                 pass
-            result.append(cell)
+            result.append(cell)  # type: ignore
         break
     return result
 
 
-def stringify_csv_string(cells, **options):
+def stringify_csv_string(cells: List[str], **options: Any):
     stream = io.StringIO()
     writer = csv.writer(stream, **options)
     writer.writerow(cells)
@@ -431,7 +330,7 @@ class Timer:
         return round((self.__stop - self.__start).total_seconds(), 3)
 
 
-def slugify(text, **options):
+def slugify(text: str, **options: Any):
     """There is a conflict between python-slugify and awesome-slugify
     So we import from a proper module manually
     """
@@ -444,25 +343,9 @@ def slugify(text, **options):
     return slug
 
 
-def get_current_memory_usage():
-    """Current memory usage of the current process in MB
-    This will only work on systems with a /proc file system (like Linux)
-    https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
-    """
-    try:
-        with open("/proc/self/status") as status:
-            for line in status:
-                parts = line.split()
-                key = parts[0][2:-1].lower()
-                if key == "rss":
-                    return int(parts[1]) / 1000
-    except Exception:
-        pass
-
-
 def create_yaml_dumper():
     class IndentDumper(platform.yaml.SafeDumper):
-        def increase_indent(self, flow=False, indentless=False):
-            return super().increase_indent(flow, False)
+        def increase_indent(self, flow: bool = False, indentless: bool = False) -> Any:
+            return super().increase_indent(flow, False)  # type: ignore
 
     return IndentDumper

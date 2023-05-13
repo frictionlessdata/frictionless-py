@@ -9,9 +9,8 @@
     "frictionless/server",
     "frictionless/validator",
     "frictionless/exception.py",
-    "frictionless/helpers",
+    "frictionless/helpers.py",
     "frictionless/interfaces.py",
-    "frictionless/metadata",
     "frictionless/platform.py",
     "frictionless/settings.py"
   ],
