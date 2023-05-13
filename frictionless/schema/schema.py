@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -71,7 +71,7 @@ class Schema(Metadata):
     Specifies primary key for the schema.
     """
 
-    foreign_keys: List[dict] = attrs.field(factory=list)
+    foreign_keys: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     Specifies the foreign keys for the schema.
     """

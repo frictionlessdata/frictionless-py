@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import Request
 from fastapi import Request, UploadFile, File, Form
 from ....exception import FrictionlessException
 from ...project import Project

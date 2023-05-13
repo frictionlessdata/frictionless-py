@@ -1,8 +1,7 @@
-# type: ignore
 from __future__ import annotations
 import json
 from datetime import datetime, date, timezone
-from typing import TYPE_CHECKING, Dict, Type
+from typing import TYPE_CHECKING, Dict, Type, Any
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Mapper

@@ -6,7 +6,8 @@
   "strict": [
     "frictionless/formats/csv",
     "frictionless/indexer",
-    "frictionless/server"
+    "frictionless/server",
+    "frictionless/validator"
   ],
   "ignore": [
     "**/__init__.py"

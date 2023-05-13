@@ -14,7 +14,7 @@ import textwrap
 import stringcase
 from copy import deepcopy
 from pathlib import Path
-from typing import List, TypeVar, Type
+from typing import List, TypeVar, Type, Tuple, Iterator
 from collections.abc import Mapping
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
@@ -55,7 +55,7 @@ def get_name(value):
     return getattr(value, "__name__", value.__class__.__name__)
 
 
-def pass_through(iterator):
+def pass_through(iterator: Iterator[Any]):
     for _ in iterator:
         pass
 
@@ -412,11 +412,11 @@ def stringify_csv_string(cells, **options):
     return result
 
 
-def parse_resource_hash_v1(hash):
+def parse_resource_hash_v1(hash: str) -> Tuple[str, str]:
     parts = hash.split(":", maxsplit=1)
     if len(parts) == 1:
         return ("md5", parts[0])
-    return parts
+    return parts[0], parts[1]
 
 
 class Timer:

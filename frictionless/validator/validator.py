@@ -1,6 +1,6 @@
 from __future__ import annotations
 from multiprocessing import Pool
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional, List, Dict, Any
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..checklist import Checklist
@@ -55,7 +55,7 @@ class Validator:
         # Validate parallel
         else:
             with Pool() as pool:
-                options_pool: List[dict] = []
+                options_pool: List[Dict[str, Any]] = []
                 for resource in resources:
                     options = {}
                     options["resource"] = {}

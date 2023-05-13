@@ -10,7 +10,6 @@ from ....indexer import Indexer
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
-from ...interfaces import IDescriptor
 from ... import helpers
 
 
