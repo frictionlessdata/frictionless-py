@@ -164,6 +164,11 @@ def move_file(source: str, target: str) -> str:
     return shutil.move(source, target)
 
 
+def read_file(path: str, mode: str = "r"):
+    with open(path, mode) as file:
+        return file.read()
+
+
 def write_file(path: str, body: Any, *, mode: str = "wt"):
     encoding = "utf-8" if mode == "wt" else None
     with tempfile.NamedTemporaryFile(mode, delete=False, encoding=encoding) as file:

@@ -42,7 +42,7 @@ class SqlMapper(Mapper):
         # Primary key
         for constraint in table.constraints:
             if isinstance(constraint, sa.PrimaryKeyConstraint):
-                for column in constraint.columns:
+                for column in constraint.columns:  # type: ignore
                     schema.primary_key.append(str(column.name))
 
         # Foreign keys
@@ -51,7 +51,7 @@ class SqlMapper(Mapper):
                 resource = ""
                 own_fields = []
                 foreign_fields = []
-                for element in constraint.elements:
+                for element in constraint.elements:  # type: ignore
                     own_fields.append(str(element.parent.name))
                     if element.column.table.name != table.name:
                         resource = str(element.column.table.name)
@@ -95,11 +95,11 @@ class SqlMapper(Mapper):
                 type = value
         field = Field.from_descriptor(dict(name=name, type=type))
         if isinstance(column.type, (sa.CHAR, sa.VARCHAR)):
-            field.constraints["maxLength"] = column.type.length
+            field.constraints["maxLength"] = column.type.length  # type: ignore
         if isinstance(column.type, sa.CHAR):
-            field.constraints["minLength"] = column.type.length
+            field.constraints["minLength"] = column.type.length  # type: ignore
         if isinstance(column.type, sa.Enum):
-            field.constraints["enum"] = column.type.enums
+            field.constraints["enum"] = column.type.enums  # type: ignore
         if not column.nullable:
             field.required = True
         if column.comment:
