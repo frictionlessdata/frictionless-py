@@ -47,7 +47,7 @@ class Inquiry(Metadata):
 
     # Validate
 
-    def validate(self, *, parallel=False):
+    def validate(self, *, parallel: bool = False):
         """Validate inquiry
 
         Parameters:
@@ -99,7 +99,7 @@ class Inquiry(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "tasks":
             return InquiryTask
 

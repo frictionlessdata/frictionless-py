@@ -156,7 +156,7 @@ class Metadata(metaclass=Metaclass):
 
     # TODO: remove
     @classmethod
-    def from_options(cls, *args, **options) -> Self:
+    def from_options(cls, *args: Any, **options: Any) -> Self:
         return cls(*args, **helpers.remove_non_values(options))
 
     @classmethod

@@ -6,6 +6,7 @@
   "strict": [
     "frictionless/formats/csv",
     "frictionless/indexer",
+    "frictionless/inquiry",
     "frictionless/pipeline",
     "frictionless/report",
     "frictionless/server",
