@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 import humanize
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from tabulate import tabulate
 from ..metadata import Metadata
 from ..exception import FrictionlessException
@@ -82,7 +82,7 @@ class ReportTask(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["rowNumber", "fieldNumber", "type"]):
+    def flatten(self, spec: List[str] = ["rowNumber", "fieldNumber", "type"]):
         """Flatten the report
 
         Parameters
@@ -91,9 +91,9 @@ class ReportTask(Metadata):
         Returns:
             any[]: flatten task report
         """
-        result = []
+        result: List[Any] = []
         for error in self.errors:
-            context = {}
+            context: Dict[str, Any] = {}
             context.update(error.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         return result
@@ -106,7 +106,7 @@ class ReportTask(Metadata):
         Returns:
             str: validation summary
         """
-        error_list = {}
+        error_list: Dict[str, Any] = {}
         for error in self.errors:
             error_title = f"{error.title}"
             if error_title not in error_list:
@@ -158,11 +158,11 @@ class ReportTask(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return ReportTask
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "errors":
             return Error
 

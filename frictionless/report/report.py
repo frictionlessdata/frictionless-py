@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, List, Optional, ClassVar, Union
+from typing import TYPE_CHECKING, List, Optional, ClassVar, Union, Dict, Any
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
@@ -86,7 +86,9 @@ class Report(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["taskNumber", "rowNumber", "fieldNumber", "type"]):
+    def flatten(
+        self, spec: List[str] = ["taskNumber", "rowNumber", "fieldNumber", "type"]
+    ):
         """Flatten the report
 
         Parameters
@@ -95,9 +97,9 @@ class Report(Metadata):
         Returns:
             any[]: flatten report
         """
-        result = []
+        result: List[Any] = []
         for error in self.errors:
-            context = {}
+            context: Dict[str, Any] = {}
             context.update(error.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         for count, task in enumerate(self.tasks, start=1):
@@ -193,9 +195,9 @@ class Report(Metadata):
         reports: List[Report],
     ):
         """Create a report from a set of validation reports"""
-        tasks = []
-        errors = []
-        warnings = []
+        tasks: List[ReportTask] = []
+        errors: List[Error] = []
+        warnings: List[str] = []
         for report in reports:
             tasks.extend(report.tasks)
             errors.extend(report.errors)
@@ -222,7 +224,7 @@ class Report(Metadata):
             validation_content += f"\n# {'-'*len(prefix)}"
             validation_content += f"\n# {prefix}: {task.place} {suffix}"
             validation_content += f"\n# {'-'*len(prefix)}"
-            error_content = []
+            error_content: List[Any] = []
             if task.errors:
                 for error in task.errors:
                     error_descriptor = error.to_descriptor()
@@ -277,7 +279,7 @@ class Report(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "errors":
             return Error
         elif name == "tasks":

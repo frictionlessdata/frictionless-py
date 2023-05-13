@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TypedDict, List
+from typing import TypedDict, List, Any
 from typing_extensions import Required
 
 
@@ -10,7 +10,7 @@ class IReport(TypedDict, total=False):
     description: str
     valid: Required[bool]
     warnings: List[str]
-    errors: List
+    errors: List[Any]  # TODO: specify
     tasks: List[IReportTask]
 
 
@@ -21,8 +21,8 @@ class IReportTask(TypedDict, total=False):
     description: str
     valid: Required[bool]
     place: str
-    warning: List
-    errors: List
+    warning: List[str]
+    errors: List[Any]  # TODO: specify
 
 
 class IReportStats(TypedDict, total=False):
