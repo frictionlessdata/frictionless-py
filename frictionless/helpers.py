@@ -27,6 +27,10 @@ def create_options(descriptor: Dict[str, Any]):
     return {stringcase.snakecase(key): value for key, value in descriptor.items()}  # type: ignore
 
 
+def create_descriptor(**options: Any):
+    return {stringcase.camelcase(key): value for key, value in options.items()}  # type: ignore
+
+
 def stringify_label(cells: List[Any]):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
@@ -215,7 +219,9 @@ def is_safe_path(path: str):
     return not any(unsafeness_conditions)
 
 
-def is_directory_source(source: str) -> bool:
+def is_directory_source(source: Any) -> bool:
+    if not isinstance(source, str):
+        return False
     if is_remote_path(source):
         return False
     if not os.path.isdir(source):
