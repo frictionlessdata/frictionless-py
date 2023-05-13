@@ -7,6 +7,7 @@
     "frictionless/formats/csv",
     "frictionless/indexer",
     "frictionless/server",
+    "frictionless/transformer",
     "frictionless/validator",
     "frictionless/exception.py",
     "frictionless/helpers.py",
