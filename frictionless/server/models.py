@@ -1,6 +1,15 @@
 from typing import Optional
 from pydantic import BaseModel
 
+# Field
+
+
+class FieldItem(BaseModel):
+    name: str
+    type: str
+    tableName: str
+    tablePath: str
+
 
 # File
 

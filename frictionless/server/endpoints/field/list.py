@@ -1,13 +1,11 @@
 from __future__ import annotations
-import json
 from typing import List
 from pydantic import BaseModel
 from fastapi import Request
 from ....schema import Schema
-from ....platform import platform
 from ...project import Project
-from ...interfaces import IFieldItem
 from ...router import router
+from ... import models
 
 
 class Props(BaseModel):
@@ -15,7 +13,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    items: List[IFieldItem]
+    items: List[models.FieldItem]
 
 
 @router.post("/field/list")
@@ -24,31 +22,19 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    sa = platform.sqlalchemy
-    db = project.database
+    md = project.metadata
 
-    items: List[IFieldItem] = []
-    with db.engine.begin() as conn:
-        result = conn.execute(
-            sa.select(
-                db.records.c.path,
-                db.records.c.tableName,
-                sa.literal_column("json_extract(resource, '$.schema')").label("schema"),
-            )
-            .where(db.records.c.type == "table")
-            .order_by(db.records.c.tableName)
-        )
-        for row in result:
-            schema = Schema.from_descriptor(json.loads(row.schema))
-            for field in schema.fields:
-                items.append(
-                    IFieldItem(
-                        # TODO: review why field.name is not required
-                        name=field.name,  # type: ignore
-                        type=field.type,
-                        tableName=row.tableName,
-                        tablePath=row.path,
-                    )
+    result = Result(items=[])
+    for resource in md.iter_documents(type="resource"):
+        schema = Schema.from_descriptor(resource["schema"])
+        for field in schema.fields:
+            result.items.append(
+                models.FieldItem(
+                    name=field.name,
+                    type=field.type,
+                    tableName=resource["id"],
+                    tablePath=resource["path"],
                 )
+            )
 
-    return Result(items=items)
+    return result
