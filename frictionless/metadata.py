@@ -209,7 +209,7 @@ class Metadata(metaclass=Metaclass):
                 return self.metadata_descriptor_path
         return descriptor
 
-    def to_copy(self, **options) -> Self:
+    def to_copy(self, **options: Any) -> Self:
         """Create a copy of the metadata"""
         return type(self).from_descriptor(self.to_descriptor(), **options)
 

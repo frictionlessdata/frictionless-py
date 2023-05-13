@@ -87,7 +87,7 @@ class Catalog(Metadata):
         *,
         control: Optional[Control] = None,
         basepath: Optional[str] = None,
-        **options,
+        **options: Any,
     ):
         source = helpers.normalize_source(source)
 
@@ -116,7 +116,7 @@ class Catalog(Metadata):
     @property
     def dataset_names(self) -> List[str]:
         """Return names of datasets"""
-        return [dataset.name for dataset in self.datasets if dataset.name is not None]
+        return [dataset.name for dataset in self.datasets]
 
     def add_dataset(self, dataset: Union[Dataset, str]) -> Dataset:
         """Add new dataset to the catalog"""
@@ -164,7 +164,7 @@ class Catalog(Metadata):
 
     def deduplicate_datasets(self):
         if len(self.dataset_names) != len(set(self.dataset_names)):
-            seen_names = []
+            seen_names: List[str] = []
             for index, dataset in enumerate(self.datasets):
                 name = dataset.name
                 count = seen_names.count(name) + 1
@@ -174,7 +174,7 @@ class Catalog(Metadata):
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, stats: bool = False):
         """Infer catalog's metadata
 
         Parameters:
@@ -196,7 +196,7 @@ class Catalog(Metadata):
 
     # Convert
 
-    def to_copy(self, **options):
+    def to_copy(self, **options: Any):
         """Create a copy of the catalog"""
         return super().to_copy(
             basepath=self.basepath,
@@ -223,12 +223,12 @@ class Catalog(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "datasets":
             return Dataset
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
+    def metadata_import(cls, descriptor: IDescriptor, **options: Any):  # type: ignore
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,

@@ -76,7 +76,7 @@ class Dataset(Metadata):
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, stats: bool = False):
         """Infer dataset's metadata
 
         Parameters:
@@ -112,6 +112,6 @@ class Dataset(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "package":
             return Package
