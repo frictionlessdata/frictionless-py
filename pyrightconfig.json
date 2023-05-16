@@ -15,6 +15,7 @@
     "frictionless/inquiry",
     "frictionless/pipeline",
     "frictionless/report",
+    "frictionless/schema",
     "frictionless/server",
     "frictionless/steps",
     "frictionless/table",

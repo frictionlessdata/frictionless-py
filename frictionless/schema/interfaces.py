@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Dict, List, Literal
+from collections.abc import Callable
+from typing import Dict, List, Literal, Any, Tuple, Optional, Protocol
 from typing_extensions import Required, TypedDict
 
 
-# TODO: replace by frictionless-standards
 class ISchema(TypedDict, total=False):
     name: str
     type: str
@@ -31,7 +31,7 @@ class IAnyField(IField, total=False):
 class IArrayField(IField, total=False):
     type: Required[Literal["array"]]
     # support json/csv format
-    arrayItem: Dict
+    arrayItem: Dict[str, Any]
 
 
 class IBooleanField(IField, total=False):
@@ -101,3 +101,18 @@ class IForeignKey(TypedDict, total=False):
 class IForeignKeyReference(TypedDict, total=False):
     fields: Required[List[str]]
     resource: Required[str]
+
+
+INotes = Optional[Dict[str, str]]
+IValueReader = Callable[[Any], Any]
+IValueWriter = Callable[[Any], Any]
+
+
+class ICellReader(Protocol):
+    def __call__(self, cell: Any) -> Tuple[Any, INotes]:
+        ...
+
+
+class ICellWriter(Protocol):
+    def __call__(self, cell: Any, *, ignore_missing: bool = False) -> Tuple[Any, INotes]:
+        ...
