@@ -38,7 +38,7 @@ class table_diff(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         target = resource
         source = self.resource
         if isinstance(source, str):
@@ -47,15 +47,15 @@ class table_diff(Step):
         source.infer()
         view1 = target.to_petl()  # type: ignore
         view2 = source.to_petl()  # type: ignore
-        function = (
-            platform.petl.recordcomplement
+        function = (  # type: ignore
+            platform.petl.recordcomplement  # type: ignore
             if self.ignore_order
-            else platform.petl.complement
+            else platform.petl.complement  # type: ignore
         )
         # NOTE: we might raise an error for ignore/hash
         if self.use_hash and not self.ignore_order:
-            function = platform.petl.hashcomplement
-        resource.data = function(view1, view2)
+            function = platform.petl.hashcomplement  # type: ignore
+        resource.data = function(view1, view2)  # type: ignore
 
     # Metadata
 
@@ -69,6 +69,6 @@ class table_diff(Step):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "resource":
             return Resource

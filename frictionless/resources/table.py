@@ -435,7 +435,7 @@ class TableResource(Resource):
         target: Optional[Union[Resource, Any]] = None,
         *,
         control: Optional[Control] = None,
-        **options,
+        **options: Any,
     ) -> TableResource:
         return self.write(target, control=control, **options)
 

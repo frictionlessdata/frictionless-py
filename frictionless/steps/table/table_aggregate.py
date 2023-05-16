@@ -1,7 +1,11 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING, Dict, Any
 from ...pipeline import Step
 from ... import fields
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -15,7 +19,7 @@ class table_aggregate(Step):
 
     type = "table-aggregate"
 
-    aggregation: dict
+    aggregation: Dict[str, Any]
     """
     A dictionary with aggregation function. The values
     could be max, min, len and sum.
@@ -28,7 +32,7 @@ class table_aggregate(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         field = resource.schema.get_field(self.group_name)
         resource.schema.fields.clear()

@@ -1,7 +1,10 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -22,7 +25,7 @@ class cell_interpolate(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         if not self.field_name:
             resource.data = table.interpolateall(self.template)  # type: ignore

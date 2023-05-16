@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, Any, List, Iterator
-from petl.compat import next, text_type
+from petl.compat import next, text_type  # type: ignore
 from ...pipeline import Step
 from ... import fields
 
@@ -51,7 +51,7 @@ class field_pack(Step):
         if not self.preserve:
             for name in self.from_names:
                 resource.schema.remove_field(name)
-        processor = iterpackdict if self.as_object else iterpack
+        processor = iterpackdict if self.as_object else iterpack  # type: ignore
         resource.data = processor(table, self.name, self.from_names, self.preserve)
 
     # Metadata
@@ -73,16 +73,16 @@ class field_pack(Step):
 def iterpack(
     source: Any,
     name: str,
-    from_names: list,
+    from_names: List[str],
     preserve: bool = False,
-) -> Iterator:
+) -> Iterator[Any]:
     """Combines multiple columns as array
     Code partially referenced from https://github.com/petl-developers/petl/blob/master/petl/transform/unpacks.py#L64
     """
     it = iter(source)
 
     hdr = next(it)
-    field_indexes = list()
+    field_indexes: List[int] = list()
     flds = list(map(text_type, hdr))
 
     # determine output fields
@@ -109,14 +109,14 @@ def iterpack(
 def iterpackdict(
     source: Any,
     name: str,
-    from_names: list,
+    from_names: List[str],
     preserve: bool = False,
-) -> Iterator:
+) -> Iterator[Any]:
     """Combines multiple columns as JSON Object"""
     it = iter(source)
 
     hdr = next(it)
-    field_indexes = list()
+    field_indexes: List[int] = list()
     flds = list(map(text_type, hdr))
 
     # determine output fields

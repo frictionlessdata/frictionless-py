@@ -1,8 +1,11 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from ...platform import platform
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -35,9 +38,9 @@ class row_search(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
-        search = platform.petl.searchcomplement if self.negate else platform.petl.search
+        search = platform.petl.searchcomplement if self.negate else platform.petl.search  # type: ignore
         if self.field_name:
             resource.data = search(table, self.field_name, self.regex)  # type: ignore
         else:

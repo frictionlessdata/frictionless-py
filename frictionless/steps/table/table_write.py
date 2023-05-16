@@ -1,8 +1,12 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING
 from ...resources import TableResource
 from ...pipeline import Step
 from ...dialect import Dialect
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -24,13 +28,13 @@ class table_write(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         assert isinstance(resource, TableResource)
         target = TableResource(path=self.path)
         if "dialect" in self.custom:
             dialect = Dialect.from_descriptor(self.custom["dialect"])
             target.dialect = dialect
-        resource.write(target)
+        resource.write_table(target)
 
     # Metadata
 

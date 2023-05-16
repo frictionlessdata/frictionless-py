@@ -1,7 +1,10 @@
 from __future__ import annotations
 import attrs
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -22,11 +25,11 @@ class table_debug(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         current = resource.to_copy()
 
         # Data
-        def data():
+        def data():  # type: ignore
             with current:
                 for row in current.row_stream:  # type: ignore
                     self.function(row)  # type: ignore
@@ -37,7 +40,7 @@ class table_debug(Step):
 
     # Metadata
 
-    metadata_profile_patch = {
+    metadata_profile_patch = {  # type: ignore
         "required": ["function"],
         "properties": {
             "function": {},

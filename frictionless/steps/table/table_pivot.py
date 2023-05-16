@@ -1,7 +1,10 @@
 from __future__ import annotations
 import attrs
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -38,7 +41,7 @@ class table_pivot(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         resource.data = table.pivot(self.f1, self.f2, self.f3, self.aggfun)  # type: ignore
         resource.infer()

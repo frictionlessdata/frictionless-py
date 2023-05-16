@@ -1,7 +1,10 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, Dict
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -18,7 +21,7 @@ class cell_convert(Step):
     value: Optional[Any] = None
     """Value to set in the field's cells"""
 
-    mapping: Optional[dict] = None
+    mapping: Optional[Dict[str, Any]] = None
     """Mapping to apply to the column"""
 
     function: Optional[Any] = None
@@ -29,12 +32,12 @@ class cell_convert(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         function = self.function
         if not self.field_name:
             if not function:
-                function = lambda _: self.value
+                function = lambda _: self.value  # type: ignore
             resource.data = table.convertall(function)  # type: ignore
         elif self.function:
             resource.data = table.convert(self.field_name, function)  # type: ignore

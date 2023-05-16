@@ -1,7 +1,10 @@
-# type: ignore
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING
 from ...pipeline import Step
+
+if TYPE_CHECKING:
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True)
@@ -26,8 +29,8 @@ class field_move(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
-        table = resource.to_petl()
+    def transform_resource(self, resource: Resource):
+        table = resource.to_petl()  # type: ignore
         field = resource.schema.remove_field(self.name)
         resource.schema.fields.insert(self.position - 1, field)  # type: ignore
         resource.data = table.movefield(self.name, self.position - 1)  # type: ignore

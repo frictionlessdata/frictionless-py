@@ -1,11 +1,12 @@
 from __future__ import annotations
 import attrs
-import simpleeval
+import simpleeval  # type: ignore
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 
 if TYPE_CHECKING:
+    from ...resource import Resource
     from ...interfaces import IDescriptor
 
 
@@ -48,7 +49,7 @@ class field_update(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         function = self.function
         pass_row = False
         table = resource.to_petl()  # type: ignore
@@ -56,7 +57,7 @@ class field_update(Step):
         new_name = descriptor.get("name")
         resource.schema.update_field(self.name, descriptor)
         if self.formula:
-            function = lambda _, row: simpleeval.simple_eval(self.formula, names=row)
+            function = lambda _, row: simpleeval.simple_eval(self.formula, names=row)  # type: ignore
             pass_row = True
         if function:
             resource.data = table.convert(self.name, function, pass_row=pass_row)  # type: ignore

@@ -32,7 +32,7 @@ class table_intersect(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         target = resource
         source = self.resource
         if isinstance(source, str):
@@ -41,12 +41,12 @@ class table_intersect(Step):
         source.infer()
         view1 = target.to_petl()  # type: ignore
         view2 = source.to_petl()  # type: ignore
-        function = (
-            platform.petl.hashintersection
+        function = (  # type: ignore
+            platform.petl.hashintersection  # type: ignore
             if self.use_hash
-            else platform.petl.intersection
+            else platform.petl.intersection  # type: ignore
         )
-        resource.data = function(view1, view2)
+        resource.data = function(view1, view2)  # type: ignore
 
     # Metadata
 
@@ -59,6 +59,6 @@ class table_intersect(Step):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "resource":
             return Resource

@@ -1,12 +1,13 @@
 from __future__ import annotations
 import attrs
-import simpleeval
+import simpleeval  # type: ignore
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 from ...schema import Field
 
 if TYPE_CHECKING:
+    from ...resource import Resource
     from ...interfaces import IDescriptor
 
 
@@ -61,7 +62,7 @@ class field_add(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         value = self.value
         position = self.position
         function = self.function
@@ -80,8 +81,8 @@ class field_add(Step):
             resource.data = table.addrownumbers(field=self.name)  # type: ignore
         else:
             if self.formula:
-                function = lambda row: simpleeval.simple_eval(self.formula, names=row)
-            value = value or function
+                function = lambda row: simpleeval.simple_eval(self.formula, names=row)  # type: ignore
+            value = value or function  # type: ignore
             resource.data = table.addfield(self.name, value=value, index=index)  # type: ignore
 
     # Metadata

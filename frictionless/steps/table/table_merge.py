@@ -40,7 +40,7 @@ class table_merge(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         target = resource
         source = self.resource
         if isinstance(source, str):
@@ -54,7 +54,7 @@ class table_merge(Step):
         if self.ignore_fields:
             for field in source.schema.fields[len(target.schema.fields) :]:
                 target.schema.add_field(field)
-            resource.data = platform.petl.stack(view1, view2)
+            resource.data = platform.petl.stack(view1, view2)  # type: ignore
 
         # Default
         else:
@@ -67,11 +67,11 @@ class table_merge(Step):
                         target.schema.remove_field(field.name)  # type: ignore
             if self.sort_by_field:
                 key = self.sort_by_field
-                resource.data = platform.petl.mergesort(
-                    view1, view2, key=key, header=self.field_names
+                resource.data = platform.petl.mergesort(  # type: ignore
+                    view1, view2, key=key, header=self.field_names  # type: ignore
                 )
             else:
-                resource.data = platform.petl.cat(view1, view2, header=self.field_names)
+                resource.data = platform.petl.cat(view1, view2, header=self.field_names)  # type: ignore
 
     # Metadata
 
@@ -86,6 +86,6 @@ class table_merge(Step):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "resource":
             return Resource

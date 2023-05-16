@@ -1,7 +1,11 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING, Dict, Any
 from ...pipeline import Step
 from ...resource import Resource
+
+if TYPE_CHECKING:
+    from ...package import Package
 
 
 @attrs.define(kw_only=True)
@@ -20,14 +24,14 @@ class resource_add(Step):
     Name of the resource to add.
     """
 
-    descriptor: dict
+    descriptor: Dict[str, Any]
     """
     A descriptor for the resource.
     """
 
     # Transform
 
-    def transform_package(self, package):
+    def transform_package(self, package: Package):
         descriptor = self.descriptor.copy()
         descriptor["name"] = self.name
         resource = Resource.from_descriptor(descriptor, basepath=package.basepath)
