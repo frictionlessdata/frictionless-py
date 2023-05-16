@@ -13,7 +13,7 @@ from .. import errors
 
 
 # TODO: add types
-class Row(dict):
+class Row(Dict[str, Any]):
     """Row representation
 
     > Constructor of this object is not Public API
@@ -34,20 +34,20 @@ class Row(dict):
 
     def __init__(
         self,
-        cells,
+        cells: List[Any],
         *,
-        field_info,
-        row_number,
+        field_info: Dict[str, Any],
+        row_number: int,
     ):
         self.__cells = cells
         self.__field_info = field_info
         self.__row_number = row_number
-        self.__processed = False
-        self.__blank_cells = {}
-        self.__error_cells = {}
+        self.__processed: bool = False
+        self.__blank_cells: Dict[str, Any] = {}
+        self.__error_cells: Dict[str, Any] = {}
         self.__errors: list[errors.RowError] = []
 
-    def __eq__(self, other):
+    def __eq__(self, other: object):
         self.__process()
         return super().__eq__(other)
 
@@ -59,7 +59,7 @@ class Row(dict):
         self.__process()
         return super().__repr__()
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Any):
         try:
             _, field_number, _, _ = self.__field_info["mapping"][key]
         except KeyError:
@@ -69,7 +69,7 @@ class Row(dict):
         self.__cells[field_number - 1] = value
         super().__setitem__(key, value)
 
-    def __missing__(self, key):
+    def __missing__(self, key: str):
         return self.__process(key)
 
     def __iter__(self):
@@ -78,7 +78,7 @@ class Row(dict):
     def __len__(self):
         return len(self.__field_info["names"])
 
-    def __contains__(self, key):
+    def __contains__(self, key: object):
         return key in self.__field_info["mapping"]
 
     def __reversed__(self):
@@ -87,15 +87,15 @@ class Row(dict):
     def keys(self):
         return iter(self.__field_info["names"])
 
-    def values(self):
+    def values(self):  # type: ignore
         for name in self.__field_info["names"]:
             yield self[name]
 
-    def items(self):
+    def items(self):  # type: ignore
         for name in self.__field_info["names"]:
             yield (name, self[name])
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Optional[Any] = None):
         if key not in self.__field_info["names"]:
             return default
         return self[key]
@@ -180,7 +180,7 @@ class Row(dict):
 
     # Convert
 
-    def to_str(self, **options):
+    def to_str(self, **options: Any):
         """
         Returns:
             str: a row as a CSV string
@@ -189,7 +189,7 @@ class Row(dict):
         cells = self.to_list(types=types)
         return helpers.stringify_csv_string(cells, **options)
 
-    def to_list(self, *, json=False, types=None):
+    def to_list(self, *, json: bool = False, types: Optional[List[str]] = None):
         """
         Parameters:
             json (bool): make data types compatible with JSON format
@@ -223,7 +223,7 @@ class Row(dict):
         return result
 
     def to_dict(
-        self, *, csv=False, json=False, types: Optional[List[str]] = None
+        self, *, csv: bool = False, json: bool = False, types: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
         Parameters:
@@ -256,7 +256,7 @@ class Row(dict):
 
     # Process
 
-    def __process(self, key=None):
+    def __process(self, key: Optional[str] = None):
         # NOTE:
         # This algorithm might be improved especially for some
         # scenarios like full processing after random access etc
@@ -267,7 +267,7 @@ class Row(dict):
 
         # Prepare context
         cells = self.__cells
-        to_str = lambda v: str(v) if v is not None else ""
+        to_str = lambda v: str(v) if v is not None else ""  # type: ignore
         fields = self.__field_info["objects"]
         field_mapping = self.__field_info["mapping"]
         iterator = zip_longest(field_mapping.values(), cells)
@@ -303,7 +303,7 @@ class Row(dict):
                 self.__errors.append(
                     errors.TypeError(
                         note=type_note,
-                        cells=list(map(to_str, cells)),
+                        cells=list(map(to_str, cells)),  # type: ignore
                         row_number=self.__row_number,
                         cell=str(source),
                         field_name=field.name,
@@ -317,7 +317,7 @@ class Row(dict):
                     self.__errors.append(
                         errors.ConstraintError(
                             note=note,
-                            cells=list(map(to_str, cells)),
+                            cells=list(map(to_str, cells)),  # type: ignore
                             row_number=self.__row_number,
                             cell=str(source),
                             field_name=field.name,
@@ -338,7 +338,7 @@ class Row(dict):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
-                        cells=list(map(to_str, cells)),
+                        cells=list(map(to_str, cells)),  # type: ignore
                         row_number=self.__row_number,
                         cell=str(cell),
                         field_name="",
@@ -355,7 +355,7 @@ class Row(dict):
                     self.__errors.append(
                         errors.MissingCellError(
                             note="",
-                            cells=list(map(to_str, cells)),
+                            cells=list(map(to_str, cells)),  # type: ignore
                             row_number=self.__row_number,
                             cell="",
                             field_name=field.name,
@@ -368,7 +368,7 @@ class Row(dict):
             self.__errors = [
                 errors.BlankRowError(
                     note="",
-                    cells=list(map(to_str, cells)),
+                    cells=list(map(to_str, cells)),  # type: ignore
                     row_number=self.__row_number,
                 )
             ]

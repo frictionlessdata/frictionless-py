@@ -212,6 +212,8 @@ class TableResource(Resource):
         self.stats.fields = len(self.schema.fields)
 
     def __open_header(self):
+        assert self.__labels is not None
+
         # Create header
         self.__header = Header(
             self.__labels,

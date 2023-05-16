@@ -16,6 +16,7 @@
     "frictionless/pipeline",
     "frictionless/report",
     "frictionless/server",
+    "frictionless/table",
     "frictionless/transformer",
     "frictionless/validator",
     "frictionless/exception.py",
