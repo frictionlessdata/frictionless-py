@@ -3,7 +3,6 @@ from typing import List
 from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
-from ....exception import FrictionlessException
 from ....resources import TableResource
 from ....resource import Resource
 from ....indexer import Indexer
@@ -31,9 +30,12 @@ def action(project: Project, props: Props) -> Result:
     md = project.metadata
     db = project.database
 
+    # Return existent
+    descriptor = md.find_document(type="resource", query=Query().path == props.path)
+    if descriptor:
+        return Result(resource=descriptor)
+
     # Prepare resource
-    if md.find_document(type="resource", query=Query().path == props.path):
-        raise FrictionlessException("Resource already exists")
     path, basepath = fs.get_path_and_basepath(props.path)
     resource = Resource(path=path, basepath=basepath)
     id = make_unique_id(project, resource)
