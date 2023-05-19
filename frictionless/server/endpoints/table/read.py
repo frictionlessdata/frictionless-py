@@ -32,7 +32,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
     sa = platform.sqlalchemy
 
-    descriptor = md.find_document(type="resource", query=Query().path == props.path)
+    descriptor = md.find_document(type="record", query=Query().path == props.path)
     assert descriptor
     id = descriptor["id"]
     table = db.metadata.tables[id]

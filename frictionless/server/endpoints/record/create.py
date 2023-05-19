@@ -8,8 +8,8 @@ from ....resource import Resource
 from ....indexer import Indexer
 from ...project import Project
 from ...router import router
-from ...interfaces import IDescriptor
 from ... import helpers
+from ... import models
 
 
 class Props(BaseModel, extra="forbid"):
@@ -17,10 +17,10 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    resource: IDescriptor
+    record: models.Record
 
 
-@router.post("/resource/create")
+@router.post("/record/create")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
@@ -31,9 +31,10 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     # Return existent
-    descriptor = md.find_document(type="resource", query=Query().path == props.path)
+    descriptor = md.find_document(type="record", query=Query().path == props.path)
     if descriptor:
-        return Result(resource=descriptor)
+        record = models.Record.parse_obj(descriptor)
+        return Result(record=record)
 
     # Prepare resource
     path, basepath = fs.get_path_and_basepath(props.path)
@@ -51,11 +52,14 @@ def action(project: Project, props: Props) -> Result:
             with_metadata=True,
         ).index()
 
-    # Write metadata
-    descriptor = resource.to_descriptor()
-    descriptor["id"] = id
-    descriptor["datatype"] = resource.datatype
-    md.write_document(id=id, type="resource", descriptor=descriptor)
+    # Write record
+    record = models.Record(
+        id=id,
+        path=props.path,
+        type=resource.datatype,
+        resource=resource.to_descriptor(),
+    )
+    md.write_document(id=id, type="record", descriptor=record.dict())
 
     # Write artifacts
     if report:
@@ -63,7 +67,7 @@ def action(project: Project, props: Props) -> Result:
         db.write_artifact(id=id, type="stats", descriptor=stats)
         db.write_artifact(id=id, type="report", descriptor=report.to_descriptor())
 
-    return Result(resource=descriptor)
+    return Result(record=record)
 
 
 def make_unique_id(project: Project, resource: Resource) -> str:
@@ -73,7 +77,7 @@ def make_unique_id(project: Project, resource: Resource) -> str:
     found = False
     id = helpers.make_id(resource.name)
     template = f"{id}%s"
-    for item in md.iter_documents(type="resource"):
+    for item in md.iter_documents(type="record"):
         item_id: str = item["id"]
         ids.append(item_id)
         if item["path"] == resource.path:

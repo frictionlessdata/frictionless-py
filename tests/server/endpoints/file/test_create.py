@@ -1,6 +1,7 @@
 import pytest
 from pathlib import Path
 from frictionless import helpers
+from frictionless.server import models
 from ...fixtures import name1, bytes1, folder1, not_secure
 
 
@@ -11,8 +12,8 @@ def test_server_file_create(client):
     path = client("/file/create", path=name1, bytes=bytes1).path
     assert helpers.read_file(client.project.public / name1, "rb") == bytes1
     assert path == name1
-    assert client("/file/list").items == [
-        {"path": name1, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=name1, type="file"),
     ]
 
 
@@ -21,9 +22,9 @@ def test_server_file_create_in_folder(client):
     path = client("/file/create", path=name1, bytes=bytes1, folder=folder1).path
     assert path == str(Path(folder1) / name1)
     assert helpers.read_file(client.project.public / path, "rb") == bytes1
-    assert client("/file/list").items == [
-        {"path": folder1, "type": "folder"},
-        {"path": path, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder1, type="folder"),
+        models.File(path=path, type="file"),
     ]
 
 

@@ -1,4 +1,5 @@
 import pytest
+from frictionless.server import models
 from ...fixtures import not_secure
 
 
@@ -9,8 +10,8 @@ from ...fixtures import not_secure
 def test_server_chart_create(client):
     client("/chart/create")
     assert client("/json/read", path="chart.json").data == {"encoding": {}}
-    assert client("/file/list").items == [
-        {"path": "chart.json", "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path="chart.json", type="file"),
     ]
 
 
@@ -18,8 +19,8 @@ def test_server_chart_create(client):
 def test_server_chart_create_with_path(client):
     client("/chart/create", path="mychart.json")
     assert client("/json/read", path="mychart.json").data == {"encoding": {}}
-    assert client("/file/list").items == [
-        {"path": "mychart.json", "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path="mychart.json", type="file"),
     ]
 
 

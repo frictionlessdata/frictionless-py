@@ -1,5 +1,6 @@
 import pytest
 from pathlib import Path
+from frictionless.server import models
 from ...fixtures import name1, name2, bytes1, folder1, folder2, not_secure
 
 
@@ -12,9 +13,9 @@ def test_server_file_copy(client):
     assert path == name2
     assert client("/file/read", path=name1).bytes == bytes1
     assert client("/file/read", path=name2).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": name1, "type": "file"},
-        {"path": name2, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=name1, type="file"),
+        models.File(path=name2, type="file"),
     ]
 
 
@@ -25,9 +26,9 @@ def test_server_file_copy_deduplicate(client):
     assert path == name1copy
     assert client("/file/read", path=name1).bytes == bytes1
     assert client("/file/read", path=name1copy).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": name1copy, "type": "file"},
-        {"path": name1, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=name1copy, type="file"),
+        models.File(path=name1, type="file"),
     ]
 
 
@@ -38,10 +39,10 @@ def test_server_file_copy_to_folder(client):
     assert path == str(Path(folder1) / name1)
     assert client("/file/read", path=name1).bytes == bytes1
     assert client("/file/read", path=path).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": folder1, "type": "folder"},
-        {"path": path, "type": "file"},
-        {"path": name1, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder1, type="folder"),
+        models.File(path=path, type="file"),
+        models.File(path=name1, type="file"),
     ]
 
 
@@ -55,12 +56,12 @@ def test_server_file_copy_from_folder_to_folder(client):
     assert path == str(Path(folder2) / folder1)
     assert client("/file/read", path=path1).bytes == bytes1
     assert client("/file/read", path=path2).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": folder1, "type": "folder"},
-        {"path": path1, "type": "file"},
-        {"path": folder2, "type": "folder"},
-        {"path": str(Path(folder2) / folder1), "type": "folder"},
-        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder1, type="folder"),
+        models.File(path=path1, type="file"),
+        models.File(path=folder2, type="folder"),
+        models.File(path=str(Path(folder2) / folder1), type="folder"),
+        models.File(path=str(Path(folder2) / folder1 / name1), type="file"),
     ]
 
 

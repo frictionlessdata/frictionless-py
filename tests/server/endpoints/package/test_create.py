@@ -1,4 +1,5 @@
 import pytest
+from frictionless.server import models
 from ...fixtures import not_secure
 
 
@@ -9,8 +10,8 @@ from ...fixtures import not_secure
 def test_server_package_create(client):
     client("/package/create")
     assert client("/json/read", path="datapackage.json").data == {"resources": []}
-    assert client("/file/list").items == [
-        {"path": "datapackage.json", "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path="datapackage.json", type="file"),
     ]
 
 
@@ -18,8 +19,8 @@ def test_server_package_create(client):
 def test_server_package_create_with_path(client):
     client("/package/create", path="dp.json")
     assert client("/json/read", path="dp.json").data == {"resources": []}
-    assert client("/file/list").items == [
-        {"path": "dp.json", "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path="dp.json", type="file"),
     ]
 
 

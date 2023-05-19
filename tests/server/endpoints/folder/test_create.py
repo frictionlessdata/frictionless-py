@@ -1,4 +1,5 @@
 import pytest
+from frictionless.server import models
 from ...fixtures import folder1, not_secure
 
 
@@ -8,8 +9,8 @@ from ...fixtures import folder1, not_secure
 def test_server_folder_create(client):
     path = client("/folder/create", path=folder1).path
     assert path == folder1
-    assert client("/file/list").items == [
-        {"path": folder1, "type": "folder"},
+    assert client("/file/list").files == [
+        models.File(path=folder1, type="folder"),
     ]
 
 

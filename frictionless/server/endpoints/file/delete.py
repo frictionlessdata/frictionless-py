@@ -29,7 +29,7 @@ def action(project: Project, props: Props) -> Result:
 
     # TODO: add helper method to metadata (delete by match)?
     # Delete metadata
-    resource = md.find_document(type="resource", query=Query().path == props.path)
+    resource = md.find_document(type="record", query=Query().path == props.path)
     if resource:
         md.delete_document(id=resource["id"], type="resource")
 

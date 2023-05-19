@@ -1,10 +1,11 @@
 from typing import Optional
 from pydantic import BaseModel
+from .interfaces import IDescriptor
 
-# Field
+# Column
 
 
-class FieldItem(BaseModel):
+class Column(BaseModel):
     name: str
     type: str
     tableName: str
@@ -14,19 +15,20 @@ class FieldItem(BaseModel):
 # File
 
 
-class FileItem(BaseModel):
-    path: str
+class File(BaseModel):
     type: str
-
-
-# Resource
-
-
-class ResourceItem(BaseModel):
-    id: str
     path: str
-    datatype: str
     errors: Optional[int] = None
+
+
+# Record
+
+
+class Record(BaseModel):
+    id: str
+    type: str
+    path: str
+    resource: IDescriptor
 
 
 # Stats

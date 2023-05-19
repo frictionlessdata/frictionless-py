@@ -1,4 +1,5 @@
 import pytest
+from frictionless.server import models
 from ...fixtures import name1, text1, not_secure
 
 
@@ -8,8 +9,8 @@ from ...fixtures import name1, text1, not_secure
 def test_server_text_read(client):
     client("/text/write", path=name1, text=text1)
     assert client("/text/read", path=name1).text == text1
-    assert client("/file/list").items == [
-        {"path": name1, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=name1, type="file"),
     ]
 
 

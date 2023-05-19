@@ -29,7 +29,7 @@ def action(project: Project, props: Props) -> Result:
     path = chart.get("data", {}).pop("url", None)
     if not path:
         return Result(chart=chart)
-    descriptor = md.find_document(type="resource", query=Query().path == path)
+    descriptor = md.find_document(type="record", query=Query().path == path)
     if not descriptor:
         return Result(chart=chart)
     id = descriptor["id"]

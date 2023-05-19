@@ -1,9 +1,10 @@
 from __future__ import annotations
+from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
+from ... import models
 
 
 class Props(BaseModel, extra="forbid"):
@@ -11,19 +12,21 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    id: str
+    record: Optional[models.Record]
 
 
-@router.post("/resource/delete")
+@router.post("/record/read")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: merge here report/read and stats/read?
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    ids = md.delete_document(id=props.id, type="resource")
-    if not ids:
-        raise FrictionlessException("Resource doesn't exist")
+    descriptor = md.read_document(id=props.id, type="record")
+    if not descriptor:
+        return Result(record=None)
+    record = models.Record.parse_obj(descriptor)
 
-    return Result(id=props.id)
+    return Result(record=record)

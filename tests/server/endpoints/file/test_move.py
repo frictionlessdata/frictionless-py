@@ -1,5 +1,6 @@
 import pytest
 from pathlib import Path
+from frictionless.server import models
 from ...fixtures import name1, name2, bytes1, folder1, folder2, not_secure
 
 
@@ -10,8 +11,8 @@ def test_server_file_move(client):
     client("/file/create", path=name1, bytes=bytes1)
     client("/file/move", source=name1, target=name2)
     assert client("/file/read", path=name2).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": name2, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=name2, type="file"),
     ]
 
 
@@ -20,9 +21,9 @@ def test_server_file_move_to_new_name(client):
     path1 = client("/file/create", path=name1, bytes=bytes1, folder=folder1).path
     path2 = client("/file/move", source=path1, newName=name2).path
     assert client("/file/read", path=path2).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": folder1, "type": "folder"},
-        {"path": str(Path(folder1) / name2), "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder1, type="folder"),
+        models.File(path=str(Path(folder1) / name2), type="file"),
     ]
 
 
@@ -32,9 +33,9 @@ def test_server_file_move_to_folder(client):
     path = client("/file/move", source=name1, target=folder1).path
     assert path == str(Path(folder1) / name1)
     assert client("/file/read", path=path).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": folder1, "type": "folder"},
-        {"path": path, "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder1, type="folder"),
+        models.File(path=path, type="file"),
     ]
 
 
@@ -42,9 +43,9 @@ def test_server_file_move_folder(client):
     client("/folder/create", path=folder1)
     client("/file/create", path=name1, bytes=bytes1, folder=folder1)
     client("/file/move", source=folder1, target=folder2)
-    assert client("/file/list").items == [
-        {"path": folder2, "type": "folder"},
-        {"path": str(Path(folder2) / name1), "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder2, type="folder"),
+        models.File(path=str(Path(folder2) / name1), type="file"),
     ]
 
 
@@ -56,10 +57,10 @@ def test_server_file_move_folder_to_folder(client):
     path = client("/file/move", source=folder1, target=folder2).path
     assert path == str(Path(folder2) / folder1)
     assert client("/file/read", path=path2).bytes == bytes1
-    assert client("/file/list").items == [
-        {"path": folder2, "type": "folder"},
-        {"path": str(Path(folder2) / folder1), "type": "folder"},
-        {"path": str(Path(folder2) / folder1 / name1), "type": "file"},
+    assert client("/file/list").files == [
+        models.File(path=folder2, type="folder"),
+        models.File(path=str(Path(folder2) / folder1), type="folder"),
+        models.File(path=str(Path(folder2) / folder1 / name1), type="file"),
     ]
 
 
