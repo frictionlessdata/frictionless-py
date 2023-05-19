@@ -14,6 +14,11 @@ class FieldItem(BaseModel):
 # File
 
 
+class FileItem(BaseModel):
+    path: str
+    type: str
+
+
 # Resource
 
 

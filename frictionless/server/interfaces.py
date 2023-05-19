@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict, Any
-from typing_extensions import Required, TypedDict
+from typing_extensions import TypedDict
 
 
 IDescriptor = Dict[str, Any]
@@ -8,38 +8,6 @@ IData = Dict[str, Any]
 IHeader = List[str]
 IRow = Dict[str, Any]
 IChart = Dict[str, Any]
-
-
-class IFileItem(TypedDict, total=False):
-    path: Required[str]
-    type: str
-
-
-class IFile(IFileItem, total=False):
-    record: IRecord
-
-
-class IRecordItem(TypedDict, total=False):
-    path: Required[str]
-    type: Required[str]
-    updated: Required[str]
-    tableName: str
-    errorCount: int
-
-
-class IRecord(IRecordItem):
-    resource: Dict[str, Any]
-    report: Dict[str, Any]
-    # TODO: use after pydantic@2
-    #  resource: IResource
-    #  report: IReport
-
-
-class IFieldItem(TypedDict):
-    name: str
-    type: str
-    tableName: str
-    tablePath: str
 
 
 class ITable(TypedDict):
@@ -58,10 +26,3 @@ class IQueryData(TypedDict):
 
 class IView(TypedDict):
     query: str
-
-
-class IResourceItem(TypedDict, total=False):
-    id: Required[str]
-    path: Required[str]
-    datatype: Required[str]
-    errorCount: int
