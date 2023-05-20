@@ -9,7 +9,6 @@ from . import metadata
 from . import package
 from . import record
 from . import report
-from . import stats
 from . import table
 from . import text
 from . import view

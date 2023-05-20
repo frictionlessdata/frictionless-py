@@ -31,6 +31,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     # Return existent
+    # TODO: ensure resource is fully indexed (table/report)
     descriptor = md.find_document(type="record", query=Query().path == props.path)
     if descriptor:
         record = models.Record.parse_obj(descriptor)
@@ -42,30 +43,30 @@ def action(project: Project, props: Props) -> Result:
     id = make_unique_id(project, resource)
 
     # Index resource
-    if not isinstance(resource, TableResource):
-        report = resource.validate()
-    else:
-        report = Indexer(
+    report = None
+    if isinstance(resource, TableResource):
+        indexer = Indexer(
             resource=resource,
             database=db.engine,
             table_name=id,
             with_metadata=True,
-        ).index()
+        )
+        report = indexer.index()
+    if not report:
+        report = resource.validate()
 
-    # Write record
+    # Create record
     record = models.Record(
         id=id,
         path=props.path,
         type=resource.datatype,
+        stats=models.Stats(errors=report.stats["errors"]),
         resource=resource.to_descriptor(),
     )
-    md.write_document(id=id, type="record", descriptor=record.dict())
 
-    # Write artifacts
-    if report:
-        stats = dict(errors=report.stats["errors"])
-        db.write_artifact(id=id, type="stats", descriptor=stats)
-        db.write_artifact(id=id, type="report", descriptor=report.to_descriptor())
+    # Write record/report
+    md.write_document(id=id, type="record", descriptor=record.dict())
+    db.write_artifact(id=id, type="report", descriptor=report.to_descriptor())
 
     return Result(record=record)
 
