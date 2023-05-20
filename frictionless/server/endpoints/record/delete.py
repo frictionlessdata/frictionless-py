@@ -4,6 +4,8 @@ from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
+from ... import models
+from . import read
 
 
 class Props(BaseModel, extra="forbid"):
@@ -11,7 +13,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    id: str
+    record: models.Record
 
 
 @router.post("/record/delete")
@@ -22,8 +24,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    ids = md.delete_document(id=props.id, type="record")
-    if not ids:
+    record = read.action(project, read.Props(id=props.id)).record
+    if not record:
         raise FrictionlessException("record does not exist")
+    md.delete_document(id=record.id, type="record")
 
-    return Result(id=props.id)
+    return Result(record=record)
