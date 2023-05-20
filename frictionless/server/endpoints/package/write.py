@@ -22,14 +22,8 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: delete report
 def action(project: Project, props: Props) -> Result:
-    md = project.metadata
-
-    # Delete metadata
-    resource = md.find_document(type="record", query=Query().path == props.path)
-    if resource:
-        md.delete_document(id=resource["id"], type="resource")
-
     # Write data
     result = json.write.action(
         project, json.write.Props(path=props.path, data=props.data)

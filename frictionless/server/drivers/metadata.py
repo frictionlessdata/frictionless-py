@@ -21,9 +21,9 @@ class Metadata:
 
     # Documents
 
-    def delete_document(self, *, id: str, type: str) -> List[int]:
+    def delete_document(self, *, name: str, type: str) -> List[int]:
         table = self.get_table(type)
-        return table.remove(doc_ids=[id])  # type: ignore
+        return table.remove(doc_ids=[name])  # type: ignore
 
     def iter_documents(self, *, type: str) -> Iterator[IDescriptor]:
         table = self.get_table(type)
@@ -33,13 +33,13 @@ class Metadata:
         table = self.get_table(type)
         return table.get(query)
 
-    def read_document(self, *, id: str, type: str) -> Optional[IDescriptor]:
+    def read_document(self, *, name: str, type: str) -> Optional[IDescriptor]:
         table = self.get_table(type)
-        return table.get(doc_id=id)  # type: ignore
+        return table.get(doc_id=name)  # type: ignore
 
-    def write_document(self, *, id: str, type: str, descriptor: IDescriptor) -> None:
+    def write_document(self, *, name: str, type: str, descriptor: IDescriptor) -> None:
         table = self.get_table(type)
-        table.upsert(Document(descriptor, doc_id=id))  # type: ignore
+        table.upsert(Document(descriptor, doc_id=name))  # type: ignore
 
     # Tables
 

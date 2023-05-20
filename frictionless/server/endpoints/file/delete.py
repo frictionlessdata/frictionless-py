@@ -29,9 +29,9 @@ def action(project: Project, props: Props) -> Result:
 
     # TODO: add helper method to metadata (delete by match)?
     # Delete metadata
-    resource = md.find_document(type="record", query=Query().path == props.path)
-    if resource:
-        md.delete_document(id=resource["id"], type="resource")
+    descriptor = md.find_document(type="record", query=Query().path == props.path)
+    if descriptor:
+        md.delete_document(name=descriptor["name"], type="record")
 
     # Source
     source = fs.get_fullpath(props.path)

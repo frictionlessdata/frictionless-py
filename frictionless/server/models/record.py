@@ -4,7 +4,7 @@ from .stats import Stats
 
 
 class Record(BaseModel):
-    id: str
+    name: str
     type: str
     path: str
     stats: Stats

@@ -32,11 +32,11 @@ def action(project: Project, props: Props) -> Result:
     descriptor = md.find_document(type="record", query=Query().path == path)
     if not descriptor:
         return Result(chart=chart)
-    id = descriptor["id"]
-    if not id:
+    name = descriptor["name"]
+    if not name:
         return Result(chart=chart)
     # TODO: cherry-pick fields based on presense in the chart
-    result = db.query(f'SELECT * from "{id}"')
+    result = db.query(f'SELECT * from "{name}"')
     # TODO: check if some data types need to be stringified
     chart["data"]["values"] = result["rows"]
 

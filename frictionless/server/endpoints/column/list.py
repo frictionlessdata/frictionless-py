@@ -33,7 +33,7 @@ def action(project: Project, props: Props) -> Result:
                     models.Column(
                         name=field.name,
                         type=field.type,
-                        tableName=descriptor["id"],
+                        tableName=descriptor["name"],
                         tablePath=descriptor["path"],
                     )
                 )

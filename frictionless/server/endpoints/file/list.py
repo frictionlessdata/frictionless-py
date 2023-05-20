@@ -26,22 +26,14 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Optional[Props] = None) -> Result:
     fs = project.filesystem
     md = project.metadata
-    db = project.database
-
-    # Map by id
-    errors_by_id: Dict[str, int] = {}
-    for id, descriptor in db.iter_artifacts(type="stats"):
-        errors_by_id[id] = descriptor["errors"]
 
     # Map by path
     type_by_path: Dict[str, str] = {}
-    errors_by_path: Dict[str, Optional[int]] = {}
+    errors_by_path: Dict[str, int] = {}
     for descriptor in md.iter_documents(type="record"):
-        id = descriptor["id"]
         path = descriptor["path"]
-        type = descriptor["type"]
-        type_by_path[path] = type
-        errors_by_path[path] = errors_by_id.get(id, None)
+        type_by_path[path] = descriptor["type"]
+        errors_by_path[path] = descriptor["stats"]["errors"]
 
     # List files
     items: List[models.File] = []

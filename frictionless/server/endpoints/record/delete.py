@@ -9,7 +9,7 @@ from . import read
 
 
 class Props(BaseModel, extra="forbid"):
-    id: str
+    name: str
 
 
 class Result(BaseModel, extra="forbid"):
@@ -24,9 +24,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    record = read.action(project, read.Props(id=props.id)).record
+    record = read.action(project, read.Props(name=props.name)).record
     if not record:
         raise FrictionlessException("record does not exist")
-    md.delete_document(id=record.id, type="record")
+    md.delete_document(name=record.name, type="record")
 
     return Result(record=record)

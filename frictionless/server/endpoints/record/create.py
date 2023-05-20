@@ -1,4 +1,7 @@
 from __future__ import annotations
+import re
+import stringcase  # type: ignore
+from slugify.slugify import slugify
 from typing import List
 from tinydb import Query
 from pydantic import BaseModel
@@ -8,7 +11,6 @@ from ....resource import Resource
 from ....indexer import Indexer
 from ...project import Project
 from ...router import router
-from ... import helpers
 from ... import models
 
 
@@ -40,7 +42,7 @@ def action(project: Project, props: Props) -> Result:
     # Prepare resource
     path, basepath = fs.get_path_and_basepath(props.path)
     resource = Resource(path=path, basepath=basepath)
-    id = make_unique_id(project, resource)
+    name = make_unique_name(project, resource)
 
     # Index resource
     report = None
@@ -48,7 +50,7 @@ def action(project: Project, props: Props) -> Result:
         indexer = Indexer(
             resource=resource,
             database=db.engine,
-            table_name=id,
+            table_name=name,
             with_metadata=True,
         )
         report = indexer.index()
@@ -57,7 +59,7 @@ def action(project: Project, props: Props) -> Result:
 
     # Create record
     record = models.Record(
-        id=id,
+        name=name,
         path=props.path,
         type=resource.datatype,
         stats=models.Stats(errors=report.stats["errors"]),
@@ -65,29 +67,32 @@ def action(project: Project, props: Props) -> Result:
     )
 
     # Write record/report
-    md.write_document(id=id, type="record", descriptor=record.dict())
-    db.write_artifact(id=id, type="report", descriptor=report.to_descriptor())
+    md.write_document(name=name, type="record", descriptor=record.dict())
+    db.write_artifact(name=name, type="report", descriptor=report.to_descriptor())
 
     return Result(record=record)
 
 
-def make_unique_id(project: Project, resource: Resource) -> str:
+def make_unique_name(project: Project, resource: Resource) -> str:
     md = project.metadata
 
-    ids: List[str] = []
+    name = slugify(resource.name)
+    name = re.sub(r"[^a-zA-Z0-9]+", "_", name)
+    name = stringcase.camelcase(name)  # type: ignore
+
+    names: List[str] = []
     found = False
-    id = helpers.make_id(resource.name)
-    template = f"{id}%s"
+    template = f"{name}%s"
     for item in md.iter_documents(type="record"):
-        item_id: str = item["id"]
-        ids.append(item_id)
+        item_name: str = item["name"]
+        names.append(item_name)
         if item["path"] == resource.path:
-            id = item_id
+            name = item_name
             found = True
     if not found:
         suffix = 1
-        while id in ids:
-            id = template % suffix
+        while name in names:
+            name = template % suffix
             suffix += 1
 
-    return id
+    return name

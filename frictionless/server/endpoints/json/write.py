@@ -22,6 +22,7 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: delete report
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 

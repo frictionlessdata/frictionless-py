@@ -8,7 +8,7 @@ from ...interfaces import IDescriptor
 
 
 class Props(BaseModel, extra="forbid"):
-    id: str
+    name: str
 
 
 class Result(BaseModel, extra="forbid"):
@@ -22,5 +22,5 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Props) -> Result:
     db = project.database
-    report = db.read_artifact(id=props.id, type="report")
+    report = db.read_artifact(name=props.name, type="report")
     return Result(report=report)

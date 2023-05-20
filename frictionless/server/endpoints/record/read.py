@@ -8,7 +8,7 @@ from ... import models
 
 
 class Props(BaseModel, extra="forbid"):
-    id: str
+    name: str
 
 
 class Result(BaseModel, extra="forbid"):
@@ -24,7 +24,7 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    descriptor = md.read_document(id=props.id, type="record")
+    descriptor = md.read_document(name=props.name, type="record")
     if not descriptor:
         return Result(record=None)
     record = models.Record.parse_obj(descriptor)

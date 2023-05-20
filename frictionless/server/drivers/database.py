@@ -36,7 +36,7 @@ class Database:
                 artifacts = sa.Table(
                     settings.ARTIFACTS_IDENTIFIER,
                     self.metadata,
-                    sa.Column("id", sa.Text, primary_key=True),
+                    sa.Column("name", sa.Text, primary_key=True),
                     sa.Column("type", sa.Text, primary_key=True),
                     sa.Column("descriptor", sa.Text),
                 )
@@ -56,26 +56,26 @@ class Database:
     def iter_artifacts(self, *, type: str) -> Iterator[Tuple[str, IDescriptor]]:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            query = sa.select(self.artifacts.c.id, self.artifacts.c.descriptor).where(
+            query = sa.select(self.artifacts.c.name, self.artifacts.c.descriptor).where(
                 self.artifacts.c.type == type,
             )
             for item in conn.execute(query).all():
-                yield item.id, json.loads(item.descriptor)
+                yield item.name, json.loads(item.descriptor)
 
-    def delete_artifact(self, *, id: str, type: Optional[str] = None):
+    def delete_artifact(self, *, name: str, type: Optional[str] = None):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            query = sa.delete(self.artifacts).where(self.artifacts.c.id == id)
+            query = sa.delete(self.artifacts).where(self.artifacts.c.name == name)
             if type:
                 query = query.where(self.artifacts.c.type == type)
             conn.execute(query)
 
-    def read_artifact(self, *, id: str, type: str) -> Optional[IDescriptor]:
+    def read_artifact(self, *, name: str, type: str) -> Optional[IDescriptor]:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             text = conn.execute(
                 sa.select(self.artifacts.c.descriptor).where(
-                    self.artifacts.c.id == id,
+                    self.artifacts.c.name == name,
                     self.artifacts.c.type == type,
                 )
             ).scalar_one_or_none()
@@ -84,12 +84,12 @@ class Database:
             descriptor = json.loads(text)
         return descriptor
 
-    def write_artifact(self, *, id: str, type: str, descriptor: IDescriptor):
+    def write_artifact(self, *, name: str, type: str, descriptor: IDescriptor):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            self.delete_artifact(id=id, type=type)
+            self.delete_artifact(name=name, type=type)
             conn.execute(
                 sa.insert(self.artifacts).values(
-                    id=id, type=type, descriptor=helpers.to_json(descriptor)
+                    name=name, type=type, descriptor=helpers.to_json(descriptor)
                 )
             )
