@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from fastapi import Request
 from ....schema import Schema
 from ...project import Project
-from ...interfaces import ITable
 from ...router import router
+from ... import models
 
 
 class Props(BaseModel):
@@ -12,7 +12,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    table: ITable
+    table: models.Table
 
 
 @router.post("/table/query")
@@ -24,11 +24,9 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     result = db.query(props.query)
-    schema = Schema.describe(result["rows"]).to_descriptor()
-    table: ITable = {
-        "tableSchema": schema,
-        "header": result["header"],
-        "rows": result["rows"],
-    }
+    rows = list(dict(item) for item in result.mappings())
+    header = list(result.keys())
+    schema = Schema.describe(rows).to_descriptor()
+    table = models.Table(tableSchema=schema, header=header, rows=rows)
 
     return Result(table=table)

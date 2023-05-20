@@ -1,16 +1,15 @@
 from __future__ import annotations
-from tinydb import Query
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from fastapi import Request
 from ....platform import platform
 from ...project import Project
-from ...interfaces import ITable
 from ...router import router
+from ...interfaces import IRow
 
 
 class Props(BaseModel):
-    path: str
+    name: str
     valid: Optional[bool]
     limit: Optional[int]
     offset: Optional[int]
@@ -19,7 +18,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    table: ITable
+    rows: List[IRow]
 
 
 @router.post("/table/read")
@@ -28,14 +27,10 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    md = project.metadata
     db = project.database
     sa = platform.sqlalchemy
 
-    descriptor = md.find_document(type="record", query=Query().path == props.path)
-    assert descriptor
-    id = descriptor["id"]
-    table = db.metadata.tables[id]
+    table = db.metadata.tables[props.name]
     query = sa.select(table)
     if props.valid is not None:
         query = query.where(table.c._rowValid == props.valid)
@@ -53,12 +48,7 @@ def action(project: Project, props: Props) -> Result:
         query += f" LIMIT {props.limit}"
         if props.offset:
             query += f" OFFSET {props.offset}"
-    data = db.query(str(query))
-    schema = descriptor["schema"]
-    fdtable: ITable = {
-        "tableSchema": schema,
-        "header": data["header"],
-        "rows": data["rows"],
-    }
 
-    return Result(table=fdtable)
+    result = db.query(str(query))
+    rows = list(dict(item) for item in result.mappings())
+    return Result(rows=rows)

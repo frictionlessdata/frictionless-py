@@ -12,7 +12,7 @@ from . import read
 
 
 class Props(BaseModel):
-    id: str
+    name: str
     type: Optional[str] = None
     resource: Optional[IDescriptor] = None
 
@@ -32,7 +32,7 @@ def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
     # Read
-    record = read.action(project, read.Props(id=props.id)).record
+    record = read.action(project, read.Props(name=props.name)).record
     if not record:
         raise FrictionlessException("record does not exist")
 
@@ -47,5 +47,5 @@ def action(project: Project, props: Props) -> Result:
             raise FrictionlessException("resource is not valid")
         record.resource = props.resource
 
-    md.write_document(id=record.id, type="record", descriptor=record.dict())
+    md.write_document(name=record.name, type="record", descriptor=record.dict())
     return Result(record=record)

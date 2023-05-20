@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
@@ -26,9 +25,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    assert fs.is_filename(props.target)
+    assert fs.is_filename(props.target)  # type: ignore
     source = fs.get_fullpath(props.source)
     target = fs.get_fullpath(props.target)
-    TableResource(path=source).write(target)
+    TableResource(path=source).write(target)  # type: ignore
 
-    return Result(path=target)
+    return Result(path=target)  # type: ignore

@@ -2,7 +2,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Optional, Iterator, Tuple
 from ...platform import platform
-from ..interfaces import IQueryData, IDescriptor
+from ..interfaces import IDescriptor
 from ... import helpers
 from .. import settings
 
@@ -43,13 +43,10 @@ class Database:
                 self.metadata.create_all(conn, tables=[artifacts])
             self.artifacts = artifacts
 
-    def query(self, query: str) -> IQueryData:
+    def query(self, query: str):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            result = conn.execute(sa.text(query))
-            header = list(result.keys())
-            rows = [row.asdict() for row in result]
-            return IQueryData(header=header, rows=rows)
+            return conn.execute(sa.text(query))
 
     # Artifacts
 
