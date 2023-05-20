@@ -22,7 +22,7 @@ class Result(BaseModel, extra="forbid"):
     record: models.Record
 
 
-@router.post("/record/create")
+@router.post("/file/index")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 

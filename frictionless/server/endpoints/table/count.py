@@ -5,10 +5,11 @@ from fastapi import Request
 from ....platform import platform
 from ...project import Project
 from ...router import router
+from ..record import read
 
 
 class Props(BaseModel):
-    name: str
+    path: str
     valid: Optional[bool]
 
 
@@ -25,7 +26,8 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
     sa = platform.sqlalchemy
 
-    table = db.metadata.tables[props.name]
+    record = read.action(project, read.Props(path=props.path)).record
+    table = db.metadata.tables[record.name]
     query = sa.select(sa.func.count()).select_from(table)
     if props.valid is not None:
         query = query.where(table.c._rowValid == props.valid)

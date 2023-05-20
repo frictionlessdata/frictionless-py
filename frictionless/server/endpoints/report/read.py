@@ -5,10 +5,11 @@ from fastapi import Request
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
+from ..record import read
 
 
 class Props(BaseModel, extra="forbid"):
-    name: str
+    path: str
 
 
 class Result(BaseModel, extra="forbid"):
@@ -22,5 +23,7 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Props) -> Result:
     db = project.database
-    report = db.read_artifact(name=props.name, type="report")
+
+    record = read.action(project, read.Props(path=props.path)).record
+    report = db.read_artifact(name=record.name, type="report")
     return Result(report=report)

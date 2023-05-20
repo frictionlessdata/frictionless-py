@@ -1,18 +1,19 @@
 from __future__ import annotations
-from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
+from tinydb import Query
+from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
 from ... import models
 
 
 class Props(BaseModel, extra="forbid"):
-    name: str
+    path: str
 
 
 class Result(BaseModel, extra="forbid"):
-    record: Optional[models.Record]
+    record: models.Record
 
 
 @router.post("/record/read")
@@ -24,9 +25,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    descriptor = md.read_document(name=props.name, type="record")
+    descriptor = md.find_document(type="record", query=Query().path == props.path)
     if not descriptor:
-        return Result(record=None)
+        raise FrictionlessException("record does no exist")
     record = models.Record.parse_obj(descriptor)
 
     return Result(record=record)

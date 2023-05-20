@@ -12,7 +12,7 @@ from . import read
 
 
 class Props(BaseModel):
-    name: str
+    path: str
     type: Optional[str] = None
     resource: Optional[IDescriptor] = None
 
@@ -31,16 +31,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    # Read
-    record = read.action(project, read.Props(name=props.name)).record
-    if not record:
-        raise FrictionlessException("record does not exist")
-
-    # Type
+    record = read.action(project, read.Props(path=props.path)).record
     if props.type:
         record.type = props.type
-
-    # Resource
     if props.resource:
         report = Resource.validate_descriptor(props.resource)
         if not report.valid:

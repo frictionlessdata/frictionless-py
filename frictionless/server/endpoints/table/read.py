@@ -6,10 +6,11 @@ from ....platform import platform
 from ...project import Project
 from ...router import router
 from ...interfaces import IRow
+from ..record import read
 
 
 class Props(BaseModel):
-    name: str
+    path: str
     valid: Optional[bool]
     limit: Optional[int]
     offset: Optional[int]
@@ -30,7 +31,8 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
     sa = platform.sqlalchemy
 
-    table = db.metadata.tables[props.name]
+    record = read.action(project, read.Props(path=props.path)).record
+    table = db.metadata.tables[record.name]
     query = sa.select(table)
     if props.valid is not None:
         query = query.where(table.c._rowValid == props.valid)

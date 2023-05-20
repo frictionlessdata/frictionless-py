@@ -1,5 +1,4 @@
 from __future__ import annotations
-from tinydb import Query
 from typing import Dict, Any
 from pydantic import BaseModel
 from fastapi import Request

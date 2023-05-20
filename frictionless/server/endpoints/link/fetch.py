@@ -12,6 +12,7 @@ from .. import file
 
 class Props(BaseModel):
     url: str
+    path: Optional[str] = None
     folder: Optional[str] = None
     deduplicate: Optional[bool] = None
 
@@ -26,15 +27,13 @@ def server_file_read(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    # Path
-    parsed = urlparse(props.url)
-    path = Path(parsed.path).name or "name"
-
-    # Bytes
+    # Load
     resource = FileResource(path=props.url)
     bytes = resource.read_file()
 
-    # Create
+    # Save
+    parsed = urlparse(props.url)
+    path = props.path or Path(parsed.path).name or "link"
     result = file.create.action(
         project,
         file.create.Props(

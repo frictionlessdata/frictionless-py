@@ -9,8 +9,8 @@ from ...router import router
 
 
 class Props(BaseModel, extra="forbid"):
-    source: str
-    target: Optional[str] = None
+    path: str
+    toPath: Optional[str] = None
     newName: Optional[str] = None
     deduplicate: Optional[bool] = None
 
@@ -28,15 +28,15 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
     # Source
-    source = fs.get_fullpath(props.source)
+    source = fs.get_fullpath(props.path)
     print(source)
     if not source.exists():
         raise FrictionlessException("Source doesn't exist")
 
     # Target
     target = source
-    if props.target:
-        target = fs.get_fullpath(props.target)
+    if props.toPath:
+        target = fs.get_fullpath(props.toPath)
     if props.newName:
         target = target.parent / props.newName
     if target.is_file():
