@@ -221,7 +221,7 @@ class Dialect(Metadata):
             return None
 
         # Create filter
-        def comment_filter(row_number, cells):
+        def comment_filter(row_number: int, cells: List[Any]):
             if self.comment_char:
                 if cells and isinstance(cells[0], str):
                     if cells[0].startswith(self.comment_char):

@@ -3,7 +3,7 @@ import os
 import attrs
 import codecs
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, Dict
 from ..exception import FrictionlessException
 from ..schema import Schema, Field
 from ..fields import AnyField
@@ -15,7 +15,7 @@ from .. import helpers
 
 if TYPE_CHECKING:
     from ..resource import Resource
-    from ..interfaces import IBuffer, IEncodingFunction
+    from ..interfaces import IBuffer, IEncodingFunction, ISample, IFragment
 
 
 @attrs.define(kw_only=True)
@@ -115,7 +115,7 @@ class Detector:
     fields or the provided schema can have different order of fields.
     """
 
-    schema_patch: Optional[dict] = None
+    schema_patch: Optional[Dict[str, Any]] = None
     """
     A dictionary to be used as an inferred schema patch.
     The form of this dictionary should follow the Schema descriptor form
@@ -150,7 +150,7 @@ class Detector:
         # Mapping
         if isinstance(source, dict):
             for type, item in settings.METADATA_TRAITS.items():
-                if set(item["props"]).intersection(source.keys()):
+                if set(item["props"]).intersection(source.keys()):  # type: ignore
                     return type
 
     # Resource
@@ -164,7 +164,7 @@ class Detector:
 
         # Detect details
         if resource.path:
-            names = []
+            names: List[str] = []
             for part in [resource.path] + (resource.extrapaths or []):
                 name = os.path.splitext(os.path.basename(part))[0]
                 names.append(name)
@@ -236,7 +236,7 @@ class Detector:
 
     def detect_dialect(
         self,
-        sample: List[list],
+        sample: ISample,
         *,
         dialect: Optional[Dialect] = None,
     ) -> Dialect:
@@ -289,11 +289,11 @@ class Detector:
     # TODO: detect fields without type
     def detect_schema(
         self,
-        fragment: List[list],
+        fragment: IFragment,
         *,
         labels: Optional[List[str]] = None,
         schema: Optional[Schema] = None,
-        field_candidates=settings.DEFAULT_FIELD_CANDIDATES,
+        field_candidates: List[Dict[str, Any]] = settings.DEFAULT_FIELD_CANDIDATES,
     ) -> Schema:
         """Detect schema from fragment
 
@@ -328,7 +328,7 @@ class Detector:
 
             # Deduplicate names
             if len(names) != len(set(names)):
-                seen_names = []
+                seen_names: List[str] = []
                 names = names.copy()
                 for index, name in enumerate(names):
                     count = seen_names.count(name) + 1
@@ -345,8 +345,8 @@ class Detector:
                 return schema
 
             # Prepare runners
-            runners = []
-            runner_fields = []  # we use shared fields
+            runners: List[List[Any]] = []
+            runner_fields: List[Field] = []  # we use shared fields
             for candidate in field_candidates:
                 descriptor = candidate.copy()
                 descriptor["name"] = "shared"
@@ -424,7 +424,7 @@ class Detector:
             descriptor.update(patch)
             for field_descriptor in descriptor.get("fields", []):
                 field_name = field_descriptor.get("name")
-                field_patch = patch_fields.get(field_name, {})
+                field_patch = patch_fields.get(field_name, {})  # type: ignore
                 field_descriptor.update(field_patch)
             schema = Schema.from_descriptor(descriptor)
 

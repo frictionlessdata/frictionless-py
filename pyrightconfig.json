@@ -9,6 +9,7 @@
     "frictionless/catalog",
     "frictionless/checklist",
     "frictionless/console",
+    "frictionless/detector",
     "frictionless/error",
     "frictionless/errors",
     "frictionless/fields",
