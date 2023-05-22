@@ -71,5 +71,5 @@ class Control(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return platform.frictionless.system.select_control_class(type)
