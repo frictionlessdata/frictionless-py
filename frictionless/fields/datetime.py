@@ -1,5 +1,6 @@
 from __future__ import annotations
 import attrs
+from typing import Any
 from datetime import datetime
 from ..platform import platform
 from ..schema import Field
@@ -22,7 +23,7 @@ class DatetimeField(Field):
     # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if not isinstance(cell, datetime):
                 if not isinstance(cell, str):
                     return None
@@ -51,7 +52,7 @@ class DatetimeField(Field):
             format = settings.DEFAULT_DATETIME_PATTERN
 
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             cell = cell.strftime(format)
             cell = cell.replace("+0000", "Z")
             return cell

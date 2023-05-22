@@ -11,6 +11,7 @@
     "frictionless/console",
     "frictionless/error",
     "frictionless/errors",
+    "frictionless/fields",
     "frictionless/indexer",
     "frictionless/inquiry",
     "frictionless/pipeline",

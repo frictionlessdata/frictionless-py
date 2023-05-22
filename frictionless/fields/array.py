@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import attrs
-from typing import Optional
+from typing import Any, Optional, Dict
 from ..schema import Field
 
 
@@ -16,7 +16,7 @@ class ArrayField(Field):
         "enum",
     ]
 
-    array_item: Optional[dict] = attrs.field(factory=dict)
+    array_item: Optional[Dict[str, Any]] = attrs.field(factory=dict)
     """
     A dictionary that specifies the type and other constraints for the
     data that will be read in this data type field.
@@ -38,7 +38,7 @@ class ArrayField(Field):
             field_reader = field.create_cell_reader()
 
         # Create reader
-        def cell_reader(cell):
+        def cell_reader(cell: Any):
             cell, notes = default_reader(cell)
             if cell is not None and not notes and field_reader:
                 for index, item in enumerate(cell):
@@ -54,7 +54,7 @@ class ArrayField(Field):
 
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):  # type: ignore
             if not isinstance(cell, list):
                 if isinstance(cell, str):
                     try:
@@ -64,10 +64,10 @@ class ArrayField(Field):
                     if not isinstance(cell, list):
                         return None
                 elif isinstance(cell, tuple):
-                    cell = list(cell)
+                    cell = list(cell)  # type: ignore
                 else:
                     return None
-            return cell
+            return cell  # type: ignore
 
         return value_reader
 
@@ -75,7 +75,7 @@ class ArrayField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return json.dumps(cell)
 
         return value_writer

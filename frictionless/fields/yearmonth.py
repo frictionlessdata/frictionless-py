@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from collections import namedtuple
+from typing import Any, NamedTuple
 from ..schema import Field
 
 
@@ -19,11 +19,11 @@ class YearmonthField(Field):
 
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if isinstance(cell, (tuple, list)):
-                if len(cell) != 2:
+                if len(cell) != 2:  # type: ignore
                     return None
-                cell = yearmonth(cell[0], cell[1])
+                cell = yearmonth(year=cell[0], month=cell[1])  # type: ignore
             elif isinstance(cell, str):
                 try:
                     year, month = cell.split("-")
@@ -44,7 +44,7 @@ class YearmonthField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return f"{cell.year}-{cell.month:02}"
 
         return value_writer
@@ -52,4 +52,7 @@ class YearmonthField(Field):
 
 # Internal
 
-yearmonth = namedtuple("yearmonth", ["year", "month"])
+
+class yearmonth(NamedTuple):
+    year: int
+    month: int
