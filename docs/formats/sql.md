@@ -2,28 +2,53 @@
 
 Frictionless supports reading and writing SQL databases.
 
+## Supported Databases
+
+Frictionless Framework in-general support many databases that can be used with `sqlalchemy`. Here is a list of the databases with tested support:
+
+### SQLite
+
+> https://www.sqlite.org/index.html
+
+It's a well-tested default database used by Frictionless:
+
 ```bash tabs=CLI
 pip install frictionless[sql]
-pip install 'frictionless[sql]' # for zsh shell
+```
+
+### PostgreSQL
+
+> https://www.postgresql.org/
+
+This database is well-tested and provides the most data types:
+
+```bash tabs=CLI
+pip install frictionless[postgresql]
+```
+
+### MySQL
+
+> https://www.mysql.com/
+
+Another popular databases having been tested with Frictionless:
+
+```bash tabs=CLI
+pip install frictionless[mysql]
+```
+
+### DuckDB
+
+> https://duckdb.org/
+
+DuckDB is a reletively new database and, currently, Frictionless support is experimental:
+
+```bash tabs=CLI
+pip install frictionless[duckdb]
 ```
 
 ## Reading Data
 
 You can read SQL database:
-
-```python tabs=Python
-from pprint import pprint
-from frictionless import Package
-
-package = Package('postgresql://database')
-pprint(package)
-for resource in package.resources:
-  pprint(resource.read_rows())
-```
-
-### SQLite
-
-Here is a example of reading a table from a SQLite database using basepath:
 
 ```python tabs=Python
 from frictionless import Resource, formats

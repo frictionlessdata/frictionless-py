@@ -44,6 +44,7 @@ EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
     "csv": [],
+    "datasette": ["datasette>=0.64.2"],
     "dev": TESTS_REQUIRE,
     "duckdb": ["sqlalchemy>=1.4", "duckdb-engine>=0.7", "duckdb>=0.8"],
     "excel": ["xlrd>=1.2", "xlwt>=1.2", "openpyxl>=3.0", "tableschema-to-template>=0.0"],
@@ -63,7 +64,6 @@ EXTRAS_REQUIRE = {
     "visidata": ["visidata>=2.10"],
     "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
-    "datasette": ["datasette>=0.64.2"],
 }
 EXTRAS_REQUIRE["framework"] = (
     EXTRAS_REQUIRE["ckan"]
