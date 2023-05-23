@@ -16,6 +16,7 @@ SCHEME_PREFIXES = [
     "oracle",
     "mssql",
     "sqlite",
+    "duckdb",
     "firebird",
     "sybase",
     "db2",
