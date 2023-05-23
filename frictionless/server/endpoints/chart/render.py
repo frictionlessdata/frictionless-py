@@ -38,6 +38,7 @@ def action(project: Project, props: Props) -> Result:
     # TODO: cherry-pick fields based on presense in the chart
     result = db.query(f'SELECT * from "{name}"')
     # TODO: check if some data types need to be stringified
-    chart["data"]["values"] = result["rows"]
+    # TODO: fix
+    chart["data"]["values"] = result["rows"]  # type: ignore
 
     return Result(chart=chart)

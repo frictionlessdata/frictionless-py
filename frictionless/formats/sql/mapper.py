@@ -247,6 +247,8 @@ class SqlMapper(Mapper):
 
         # Create column
         column_args = [field.name, column_type] + checks
+        # TODO: shall it use "autoincrement=False"
+        # https://github.com/Mause/duckdb_engine/issues/595#issuecomment-1495408566
         column_kwargs = {"nullable": nullable, "unique": unique}
         if field.description:
             column_kwargs["comment"] = field.description
