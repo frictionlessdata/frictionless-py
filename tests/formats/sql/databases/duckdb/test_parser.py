@@ -12,10 +12,13 @@ def test_sql_parser(duckdb_url_data):
     with TableResource(path=duckdb_url_data, control=control) as resource:
         assert resource.schema.to_descriptor() == {
             "fields": [
-                {"name": "id", "type": "integer"},
+                {"name": "id", "type": "integer", "constraints": {"required": True}},
                 {"name": "name", "type": "string"},
             ],
-            "primaryKey": ["id"],
+            # TODO: add indicies support
+            # DuckDBEngineWarning: duckdb-engine doesn't yet support reflection on indices
+            # https://github.com/Mause/duckdb_engine/blob/71b1ed2f63dc25a848995986401be765711d763d/duckdb_engine/__init__.py#L159
+            #  "primaryKey": ["id"],
         }
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [

@@ -95,11 +95,14 @@ class SqlMapper(Mapper):
                 type = value
         field = Field.from_descriptor(dict(name=name, type=type))
         if isinstance(column.type, (sa.CHAR, sa.VARCHAR)):
-            field.constraints["maxLength"] = column.type.length  # type: ignore
+            if column.type.length:  # type: ignore
+                field.constraints["maxLength"] = column.type.length  # type: ignore
         if isinstance(column.type, sa.CHAR):
-            field.constraints["minLength"] = column.type.length  # type: ignore
+            if column.type.length:  # type: ignore
+                field.constraints["minLength"] = column.type.length  # type: ignore
         if isinstance(column.type, sa.Enum):
-            field.constraints["enum"] = column.type.enums  # type: ignore
+            if column.type.enums:  # type: ignore
+                field.constraints["enum"] = column.type.enums  # type: ignore
         if not column.nullable:
             field.required = True
         if column.comment:
