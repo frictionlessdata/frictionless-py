@@ -192,8 +192,6 @@ class SqlMapper(Mapper):
         checks = []
 
         # General properties
-        # TODO: why it's not required?
-        assert field.name
         quoted_name = quote(field.name)
         column_type = self.write_type(field.type)
         nullable = not field.required
@@ -233,7 +231,7 @@ class SqlMapper(Mapper):
             elif const == "pattern":
                 if self.dialect.name == "postgresql":
                     checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
-                else:
+                elif self.dialect.name != "duckdb":
                     check = Check("%s REGEXP '%s'" % (quoted_name, value))
                     checks.append(check)
             elif const == "enum":
