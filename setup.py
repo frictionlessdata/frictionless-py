@@ -45,6 +45,7 @@ EXTRAS_REQUIRE = {
     "ckan": ["frictionless-ckan-mapper>=1.0"],
     "csv": [],
     "dev": TESTS_REQUIRE,
+    "duckdb": ["sqlalchemy>=1.4", "duckdb-engine>=0.7", "duckdb>=0.8"],
     "excel": ["xlrd>=1.2", "xlwt>=1.2", "openpyxl>=3.0", "tableschema-to-template>=0.0"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "github": ["pygithub>=1.50"],
