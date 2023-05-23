@@ -156,7 +156,12 @@ class SqlMapper(Mapper):
         # Fields
         if with_metadata:
             columns.append(
-                sa.Column(settings.ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True)
+                sa.Column(
+                    settings.ROW_NUMBER_IDENTIFIER,
+                    sa.Integer,
+                    primary_key=True,
+                    autoincrement=False,
+                )
             )
             columns.append(sa.Column(settings.ROW_VALID_IDENTIFIER, sa.Boolean))
         for field in schema.fields:

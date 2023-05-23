@@ -97,8 +97,6 @@ class Indexer:
             return self.populate_table_fast_sqlite()
         elif url.drivername.startswith("postgresql"):
             return self.populate_table_fast_postgresql()
-        elif url.drivername.startswith("duckdb"):
-            return self.populate_table_fast_duckdb()
         raise FrictionlessException("Fast mode is only supported for Postgres/Sqlite")
 
     def populate_table_fast_sqlite(self):
@@ -125,9 +123,6 @@ class Indexer:
                             break
                         copy.write(chunk)
                         self.report_progress(f"{self.resource.stats.bytes} bytes")
-
-    def populate_table_fast_duckdb(self):
-        pass
 
     def delete_table(self):
         self.adapter.delete_resource(self.table_name)
