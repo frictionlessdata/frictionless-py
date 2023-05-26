@@ -16,6 +16,7 @@ from ... import models
 
 class Props(BaseModel, extra="forbid"):
     path: str
+    sync: bool
 
 
 class Result(BaseModel, extra="forbid"):
