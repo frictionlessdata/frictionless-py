@@ -1,4 +1,4 @@
-from typing import Literal, Any, Dict, List, Union
+from typing import Literal, Any, List, Union
 from pydantic import BaseModel
 
 
@@ -18,10 +18,5 @@ class UpdateCell(Change):
     value: Any
 
 
-class UpdateResource(Change):
-    type: Literal["update-resource"]
-    resource: Dict[str, Any]
-
-
 class History(BaseModel):
-    changes: List[Union[DeleteRow, UpdateCell, UpdateResource]]
+    changes: List[Union[DeleteRow, UpdateCell]]
