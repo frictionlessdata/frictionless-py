@@ -43,6 +43,7 @@ class Database:
                 self.metadata.create_all(conn, tables=[artifacts])
             self.artifacts = artifacts
 
+    # TODO: remove this method?
     def query(self, query: str):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:

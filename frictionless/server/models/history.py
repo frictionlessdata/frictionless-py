@@ -6,17 +6,17 @@ class Change(BaseModel):
     type: str
 
 
-class DeleteRow(Change):
-    type: Literal["delete-row"]
+class RowDelete(Change):
+    type: Literal["row-delete"]
     rowNumber: int
 
 
-class UpdateCell(Change):
-    type: Literal["update-cell"]
+class CellUpdate(Change):
+    type: Literal["cell-update"]
     rowNumber: int
     fieldName: str
     value: Any
 
 
 class History(BaseModel):
-    changes: List[Union[DeleteRow, UpdateCell]]
+    changes: List[Union[RowDelete, CellUpdate]]

@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 import stringcase  # type: ignore
 from slugify.slugify import slugify
-from typing import List
+from typing import List, Optional
 from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
@@ -16,14 +16,14 @@ from ... import models
 
 class Props(BaseModel, extra="forbid"):
     path: str
-    sync: bool
+    sync: Optional[bool] = None
 
 
 class Result(BaseModel, extra="forbid"):
     record: models.Record
 
 
-@router.post("/record/create")
+@router.post("/record/index")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
