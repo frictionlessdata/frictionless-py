@@ -6,6 +6,7 @@ from ...project import Project
 from ...router import router
 from ..record import read
 from ... import models
+from . import export
 
 
 class Props(BaseModel):
@@ -23,16 +24,13 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    fs = project.filesystem
     db = project.database
     sa = platform.sqlalchemy
-    print(fs)
-    print(db)
 
     record = read.action(project, read.Props(path=props.path)).record
-    table = db.metadata.tables[record.name]
 
     with db.engine.begin() as conn:
+        table = db.metadata.tables[record.name]
         for change in props.history.changes:
             if change.type == "cell-update":
                 conn.execute(
@@ -40,5 +38,7 @@ def action(project: Project, props: Props) -> Result:
                     .where(table.c._rowNumber == change.rowNumber)
                     .values(**{change.fieldName: change.value})
                 )
+
+    export.action(project, export.Props(path=props.path, toPath=props.path))
 
     return Result(path=props.path)
