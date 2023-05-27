@@ -22,14 +22,14 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: exclude _rowNumber/Valid
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     db = project.database
 
     record = read.action(project, read.Props(path=props.path)).record
     target = fs.get_fullpath(props.toPath)
-    resource = TableResource(path=db.database_url, control=SqlControl(table=record.name))
+    control = SqlControl(table=record.name, with_metadata=True)
+    resource = TableResource(path=db.database_url, control=control)
     resource.write_table(path=str(target))
 
     return Result(path=props.path)

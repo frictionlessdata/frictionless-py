@@ -60,19 +60,31 @@ class SqlAdapter(Adapter):
 
     def read_schema(self, table_name: str) -> Schema:
         table = self.metadata.tables[table_name]
-        return self.mapper.read_schema(table)
+        return self.mapper.read_schema(table, with_metadata=self.control.with_metadata)
 
     def read_cell_stream(self, control) -> Generator[List[Any], None, None]:
         sa = platform.sqlalchemy
         table = self.metadata.tables[control.table]
         with self.engine.begin() as conn:
+            # Prepare columns
+            columns = table.c
+            if self.control.with_metadata:
+                columns = [
+                    column
+                    for column in table.c
+                    if column.name not in settings.METADATA_IDENTIFIERS
+                ]
+
+            # Prepare query
             # Streaming could be not working for some backends:
             # http://docs.sqlalchemy.org/en/latest/core/connections.html
-            query = sa.select(table).execution_options(stream_results=True)
+            query = sa.select(*columns).execution_options(stream_results=True)
             if control.order_by:
                 query = query.order_by(sa.text(control.order_by))
             if control.where:
                 query = query.where(sa.text(control.where))
+
+            # Stream cells
             result = conn.execute(query)
             yield list(result.keys())
             for item in result:

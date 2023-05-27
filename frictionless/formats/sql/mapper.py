@@ -29,13 +29,15 @@ class SqlMapper(Mapper):
 
     # Read
 
-    def read_schema(self, table: Table) -> Schema:
+    def read_schema(self, table: Table, *, with_metadata: bool = False) -> Schema:
         """Convert sqlalchemy table to frictionless schema"""
         sa = platform.sqlalchemy
         schema = Schema()
 
         # Fields
         for column in table.columns:
+            if with_metadata and column.name in settings.METADATA_IDENTIFIERS:
+                continue
             field = self.read_field(column)
             schema.add_field(field)
 
@@ -43,6 +45,8 @@ class SqlMapper(Mapper):
         for constraint in table.constraints:
             if isinstance(constraint, sa.PrimaryKeyConstraint):
                 for column in constraint.columns:  # type: ignore
+                    if with_metadata and column.name in settings.METADATA_IDENTIFIERS:
+                        continue
                     schema.primary_key.append(str(column.name))
 
         # Foreign keys
