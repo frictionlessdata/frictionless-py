@@ -3,7 +3,6 @@ import re
 import stringcase  # type: ignore
 from slugify.slugify import slugify
 from typing import List, Optional
-from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
 from ....resources import TableResource
@@ -12,6 +11,7 @@ from ....indexer import Indexer
 from ...project import Project
 from ...router import router
 from ... import models
+from . import read
 
 
 class Props(BaseModel, extra="forbid"):
@@ -28,48 +28,44 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
+# TODO: ensure resource is fully indexed (table/report)
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     md = project.metadata
     db = project.database
 
-    # Return existent
-    # TODO: ensure resource is fully indexed (table/report)
-    descriptor = md.find_document(type="record", query=Query().path == props.path)
-    if descriptor:
-        record = models.Record.parse_obj(descriptor)
-        return Result(record=record)
+    record = read.action(project, read.Props(path=props.path)).record
+    if not record:
+        # Prepare resource
+        path, basepath = fs.get_path_and_basepath(props.path)
+        resource = Resource(path=path, basepath=basepath)
+        name = make_unique_name(project, resource)
 
-    # Prepare resource
-    path, basepath = fs.get_path_and_basepath(props.path)
-    resource = Resource(path=path, basepath=basepath)
-    name = make_unique_name(project, resource)
+        # Index resource
+        report = None
+        if isinstance(resource, TableResource):
+            indexer = Indexer(
+                resource=resource,
+                database=db.engine,
+                table_name=name,
+                with_metadata=True,
+            )
+            report = indexer.index()
+        if not report:
+            report = resource.validate()
 
-    # Index resource
-    report = None
-    if isinstance(resource, TableResource):
-        indexer = Indexer(
-            resource=resource,
-            database=db.engine,
-            table_name=name,
-            with_metadata=True,
+        # Create record
+        record = models.Record(
+            name=name,
+            path=props.path,
+            type=resource.datatype,
+            stats=models.Stats(errors=report.stats["errors"]),
+            resource=resource.to_descriptor(),
         )
-        report = indexer.index()
-    if not report:
-        report = resource.validate()
 
-    # Create record
-    record = models.Record(
-        name=name,
-        path=props.path,
-        type=resource.datatype,
-        stats=models.Stats(errors=report.stats["errors"]),
-        resource=resource.to_descriptor(),
-    )
-
-    # Write record/report
-    md.write_document(name=name, type="record", descriptor=record.dict())
-    db.write_artifact(name=name, type="report", descriptor=report.to_descriptor())
+        # Write record/report
+        md.write_document(name=name, type="record", descriptor=record.dict())
+        db.write_artifact(name=name, type="report", descriptor=report.to_descriptor())
 
     return Result(record=record)
 
