@@ -6,7 +6,6 @@ from ...project import Project
 from ...router import router
 from ..record import read
 from ... import models
-from . import export
 
 
 class Props(BaseModel):
@@ -28,7 +27,6 @@ def action(project: Project, props: Props) -> Result:
     sa = platform.sqlalchemy
 
     record = read.action(project, read.Props(path=props.path)).record
-
     with db.engine.begin() as conn:
         table = db.metadata.tables[record.name]
         for change in props.history.changes:
@@ -38,7 +36,5 @@ def action(project: Project, props: Props) -> Result:
                     .where(table.c._rowNumber == change.rowNumber)
                     .values(**{change.fieldName: change.value})
                 )
-
-    export.action(project, export.Props(path=props.path, toPath=props.path))
 
     return Result(path=props.path)
