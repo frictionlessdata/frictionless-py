@@ -23,11 +23,11 @@ from .platform import platform
 # General
 
 
-def create_options(descriptor: Dict[str, Any]):
+def create_options(descriptor: Dict[str, Any]) -> Dict[str, Any]:
     return {stringcase.snakecase(key): value for key, value in descriptor.items()}  # type: ignore
 
 
-def create_descriptor(**options: Any):
+def create_descriptor(**options: Any) -> Dict[str, Any]:
     return {stringcase.camelcase(key): value for key, value in options.items()}  # type: ignore
 
 

@@ -33,4 +33,4 @@ def make_record_name(project: Project, *, resource: Resource) -> str:
             name = template % suffix
             suffix += 1
 
-    return name
+    return name  # type: ignore

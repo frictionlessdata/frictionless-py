@@ -38,7 +38,7 @@ class row_filter(Step):
         table = resource.to_petl()  # type: ignore
         if self.formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
-            evalclass = simpleeval.EvalWithCompoundTypes
+            evalclass = simpleeval.EvalWithCompoundTypes  # type: ignore
             function = lambda row: evalclass(names=row).eval(self.formula)  # type: ignore
         resource.data = table.select(function)  # type: ignore
 

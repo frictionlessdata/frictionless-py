@@ -20,7 +20,7 @@ class DurationField(Field):
     def create_value_reader(self):
         # Create reader
         def value_reader(cell: Any):
-            if not isinstance(cell, (platform.isodate.Duration, datetime.timedelta)):
+            if not isinstance(cell, (platform.isodate.Duration, datetime.timedelta)):  # type: ignore
                 if not isinstance(cell, str):
                     return None
                 try:

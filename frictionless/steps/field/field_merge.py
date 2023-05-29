@@ -1,3 +1,4 @@
+# type: ignore
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, List, Any
