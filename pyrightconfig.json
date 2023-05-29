@@ -4,6 +4,7 @@
     "tests"
   ],
   "strict": [
+    "frictionless/actions",
     "frictionless/formats/csv",
     "frictionless/actions",
     "frictionless/catalog",
