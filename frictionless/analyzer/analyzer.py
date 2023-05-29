@@ -2,11 +2,11 @@ from __future__ import annotations
 import attrs
 import statistics
 from math import nan
-from typing import TYPE_CHECKING, Union, List, Dict
+from typing import TYPE_CHECKING, Union, List, Dict, Any
 from collections import Counter
 from decimal import Decimal
-from math import fsum, sqrt
 from .. import helpers
+from . import types
 
 if TYPE_CHECKING:
     from ..resources import TableResource
@@ -15,7 +15,9 @@ if TYPE_CHECKING:
 class Analyzer:
     # Resoure
 
-    def analyze_table_resource(self, resource: TableResource, *, detailed=False) -> Dict:
+    def analyze_table_resource(
+        self, resource: TableResource, *, detailed: bool = False
+    ) -> types.IAnalysisReport:
         # Create state
         timer = helpers.Timer()
 
@@ -27,7 +29,7 @@ class Analyzer:
         analysis_report["fieldStats"] = {}
 
         # Iterate rows
-        columns_data = {}
+        columns_data: Dict[str, List[Any]] = {}
         numeric = ["integer", "numeric", "number"]
         with resource:
             for row in resource.row_stream:
@@ -45,7 +47,7 @@ class Analyzer:
                         cell = float(cell)
                     columns_data[field.name].append(cell)
                 if null_columns > 0:
-                    analysis_report["rowsWithNullValues"] += 1
+                    analysis_report["rowsWithNullValues"] += 1  # type: ignore
 
         # Field/Column Stats
         if columns_data and detailed:
@@ -55,7 +57,7 @@ class Analyzer:
 
                 if field.type not in analysis_report["variableTypes"]:
                     analysis_report["variableTypes"][field.type] = 0
-                analysis_report["variableTypes"][field.type] += 1
+                analysis_report["variableTypes"][field.type] += 1  # type: ignore
 
                 # summary - categorical data
                 if field.type not in [*numeric, "boolean"]:
@@ -75,7 +77,7 @@ class Analyzer:
                     if len(rows_without_nan_values) < 2:
                         continue
 
-                    analysis_report["fieldStats"][field.name].update(
+                    analysis_report["fieldStats"][field.name].update(  # type: ignore
                         _statistics(rows_without_nan_values)  # type: ignore
                     )
                     analysis_report["fieldStats"][field.name]["outliers"] = []
@@ -86,7 +88,8 @@ class Analyzer:
                         if field_y.type in numeric:
                             # filter rows with nan values, correlation return nan if any of the
                             # row has nan value.
-                            var_x, var_y = [], []
+                            var_x: List[Any] = []
+                            var_y: List[Any] = []
                             for cell_x, cell_y in zip(
                                 columns_data[field.name], columns_data[field_y.name]
                             ):
@@ -100,20 +103,20 @@ class Analyzer:
                                     analysis_report["correlations"][field.name] = []
                                 correlation_result = {
                                     "fieldName": field_y.name,
-                                    "corr": _correlation(var_x, var_y),
+                                    "corr": statistics.correlation(var_x, var_y),
                                 }
-                                analysis_report["correlations"][field.name].append(
+                                analysis_report["correlations"][field.name].append(  # type: ignore
                                     correlation_result
                                 )
 
                     # calculate outliers
-                    lower_bound, upper_bound = analysis_report["fieldStats"][field.name][
+                    lower_bound, upper_bound = analysis_report["fieldStats"][field.name][  # type: ignore
                         "bounds"
                     ]
                     for cell in columns_data[field.name]:
                         if cell is not nan:
                             if not lower_bound < cell < upper_bound:
-                                analysis_report["fieldStats"][field.name][
+                                analysis_report["fieldStats"][field.name][  # type: ignore
                                     "outliers"
                                 ].append(cell)
 
@@ -131,48 +134,6 @@ class Analyzer:
 # Internal
 
 
-# TODO:This is a temporary function to use with statistics library as
-# python 3.7 does not support quantiles
-# code: https://github.com/python/cpython/blob/3.8/Lib/statistics.py#L620
-def _quantiles(data, *, n=4, method="exclusive") -> List:
-    """Divide *data* into *n* continuous intervals with equal probability.
-    Returns a list of (n - 1) cut points separating the intervals.
-    Set *n* to 4 for quartiles (the default).  Set *n* to 10 for deciles.
-    Set *n* to 100 for percentiles which gives the 99 cuts points that
-    separate *data* in to 100 equal sized groups.
-    The *data* can be any iterable containing sample.
-    The cut points are linearly interpolated between data points.
-    If *method* is set to *inclusive*, *data* is treated as population
-    data.  The minimum value is treated as the 0th percentile and the
-    maximum value is treated as the 100th percentile.
-    """
-    if n < 1:
-        raise statistics.StatisticsError("n must be at least 1")
-    data = sorted(data)
-    ld = len(data)
-    if ld < 2:
-        raise statistics.StatisticsError("must have at least two data points")
-    if method == "inclusive":
-        m = ld - 1
-        result = []
-        for i in range(1, n):
-            j, delta = divmod(i * m, n)
-            interpolated = (data[j] * (n - delta) + data[j + 1] * delta) / n
-            result.append(interpolated)
-        return result
-    if method == "exclusive":
-        m = ld + 1
-        result = []
-        for i in range(1, n):
-            j = i * m // n  # rescale i to m/n
-            j = 1 if j < 1 else ld - 1 if j > ld - 1 else j  # clamp to 1 .. ld-1
-            delta = i * m - j * n  # exact integer math
-            interpolated = (data[j - 1] * (n - delta) + data[j] * delta) / n
-            result.append(interpolated)
-        return result
-    raise ValueError(f"Unknown method: {method!r}")
-
-
 def _common_values(data: Union[float, int]) -> Union[float, int]:
     """Finds highly common data with frequency
 
@@ -183,13 +144,13 @@ def _common_values(data: Union[float, int]) -> Union[float, int]:
         (float|int): highly common element and its count
     """
     column = Counter(data)  # type: ignore
-    common_value = column.most_common(1)
+    common_value = column.most_common(1)  # type: ignore
     if common_value and common_value[0][1] > 1:
-        return common_value[0][0]
+        return common_value[0][0]  # type: ignore
     return None  # type: ignore
 
 
-def _statistics(data: Union[float, int]) -> dict:
+def _statistics(data: Union[float, int]) -> Dict[str, Any]:
     """Calculate the descriptive statistics of the data
 
     Args:
@@ -198,21 +159,21 @@ def _statistics(data: Union[float, int]) -> dict:
     Returns:
         dict : statistics of the data
     """
-    resource_stats = {}
+    resource_stats: Dict[str, Any] = {}
     resource_stats["mean"] = statistics.mean(data)  # type: ignore
     resource_stats["median"] = statistics.median(data)  # type: ignore
     resource_stats["mode"] = _common_values(data)
     resource_stats["variance"] = statistics.variance(data)  # type: ignore
-    resource_stats["quantiles"] = _quantiles(data)
+    resource_stats["quantiles"] = statistics.quantiles(data)  # type: ignore
     resource_stats["stdev"] = statistics.stdev(data)  # type: ignore
     resource_stats["max"] = max(data)  # type: ignore
     resource_stats["min"] = min(data)  # type: ignore
-    resource_stats["bounds"] = _find_bounds(resource_stats["quantiles"])
+    resource_stats["bounds"] = _find_bounds(resource_stats["quantiles"])  # type: ignore
     resource_stats["uniqueValues"] = len(set(data))  # type: ignore
     return resource_stats
 
 
-def _find_bounds(quartiles: List):
+def _find_bounds(quartiles: List[Any]):
     """Calculate the higher and lower bound of distribution
 
     Args:
@@ -226,32 +187,3 @@ def _find_bounds(quartiles: List):
     upper_bound = round(q3 + (1.5 * inter_quartile_range))
     lower_bound = round(q1 - (1.5 * inter_quartile_range))
     return [lower_bound, upper_bound]
-
-
-# TODO:This is a temporary function to use with statistics library as
-# python 3.7 does not support correlation
-# code: https://github.com/python/cpython/blob/3.10/Lib/statistics.py#L889
-def _correlation(x, y) -> float:
-    """Pearson's correlation coefficient
-    Return the Pearson's correlation coefficient for two inputs. Pearson's
-    correlation coefficient *r* takes values between -1 and +1. It measures the
-    strength and direction of the linear relationship, where +1 means very
-    strong, positive linear relationship, -1 very strong, negative linear
-    relationship, and 0 no linear relationship
-    """
-    n = len(x)
-    if len(y) != n:
-        raise statistics.StatisticsError(
-            "correlation requires that both inputs have same number of data points"
-        )
-    if n < 2:
-        raise statistics.StatisticsError("correlation requires at least two data points")
-    xbar = fsum(x) / n
-    ybar = fsum(y) / n
-    sxy = fsum((xi - xbar) * (yi - ybar) for xi, yi in zip(x, y))
-    sxx = fsum((xi - xbar) ** 2.0 for xi in x)
-    syy = fsum((yi - ybar) ** 2.0 for yi in y)
-    try:
-        return sxy / sqrt(sxx * syy)
-    except ZeroDivisionError:
-        raise statistics.StatisticsError("at least one of the inputs is constant")

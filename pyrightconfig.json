@@ -5,6 +5,7 @@
   ],
   "strict": [
     "frictionless/actions",
+    "frictionless/analyzer",
     "frictionless/formats/csv",
     "frictionless/actions",
     "frictionless/catalog",
