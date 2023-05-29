@@ -9,6 +9,7 @@
     "frictionless/application",
     "frictionless/assets",
     "frictionless/catalog",
+    "frictionless/checklist",
     "frictionless/formats/csv",
     "frictionless/actions",
     "frictionless/catalog",
