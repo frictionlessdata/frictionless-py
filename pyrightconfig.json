@@ -8,6 +8,7 @@
     "frictionless/analyzer",
     "frictionless/application",
     "frictionless/assets",
+    "frictionless/catalog",
     "frictionless/formats/csv",
     "frictionless/actions",
     "frictionless/catalog",
