@@ -1,7 +1,11 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING
 from ...checklist import Check
 from ... import errors
+
+if TYPE_CHECKING:
+    from ...table import Row
 
 
 TRUNCATED_STRING_LENGTHS = [255]
@@ -34,7 +38,7 @@ class truncated_value(Check):
 
     # Validate
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row):
         for field_name, cell in row.items():
             truncated = False
             if cell is None:

@@ -1,8 +1,13 @@
 from __future__ import annotations
 import attrs
 import hashlib
+from typing import TYPE_CHECKING, Dict
 from ...checklist import Check
 from ... import errors
+
+if TYPE_CHECKING:
+    from ...resource import Resource
+    from ...table import Row
 
 
 @attrs.define(kw_only=True)
@@ -19,13 +24,13 @@ class duplicate_row(Check):
 
     # Connect
 
-    def connect(self, resource):
+    def connect(self, resource: Resource):
         super().connect(resource)
-        self.__memory = {}
+        self.__memory: Dict[str, int] = {}
 
     # Validate
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row):
         text = ",".join(map(str, row.values()))
         hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
         match = self.__memory.get(hash)
