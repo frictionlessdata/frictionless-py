@@ -26,7 +26,7 @@ TESTS_REQUIRE = [
     "yattag",
     "pylama",
     "pytest",
-    "pyright",
+    "pyright==1.1.308",
     "ipython",
     "livemark",
     "pytest-cov",

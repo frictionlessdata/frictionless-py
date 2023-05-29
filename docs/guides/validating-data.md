@@ -221,7 +221,7 @@ report = validate('capital-invalid.csv', pick_errors=['duplicate-label'])
 print(report)
 ```
 
-As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../references/api-reference.md#report). Errors are grouped by tasks (i.e. data files); for some validation there can be dozens of tasks. Let's use the `report.flatten` function to simplify the representation of errors. This function helps to represent a report as a list of errors:
+As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../docs/framework/report.html#reference). Errors are grouped by tasks (i.e. data files); for some validation there can be dozens of tasks. Let's use the `report.flatten` function to simplify the representation of errors. This function helps to represent a report as a list of errors:
 
 ```python script tabs=Python output=python
 from pprint import pprint
@@ -331,7 +331,7 @@ pprint(report.flatten(["rowNumber", "fieldNumber", "code", "note"]))
 
 Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read the [API Reference](../references/api-reference.md) for more details.
 
-Learn more about custom checks in the [Check Guide](extension/check-guide.md).
+Learn more about custom checks in the [Check Guide](.../docs/checks/baseline.html#reference).
 
 ## Pick/Skip Errors
 
