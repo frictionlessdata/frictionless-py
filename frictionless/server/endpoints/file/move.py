@@ -6,7 +6,7 @@ from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from ..record import read as read_record
+from ... import helpers
 
 
 class Props(BaseModel, extra="forbid"):
@@ -51,13 +51,8 @@ def action(project: Project, props: Props) -> Result:
     shutil.move(source, target)
     path = fs.get_path(target)
 
-    # Read record
-    try:
-        record = read_record.action(project, read_record.Props(path=props.path)).record
-    except Exception:
-        record = None
-
     # Move record
+    record = helpers.find_record(project, path=props.path)
     if record:
         record.path = path
         record.resource["path"] = path

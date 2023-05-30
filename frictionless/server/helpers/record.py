@@ -1,12 +1,22 @@
 from __future__ import annotations
 import re
 import stringcase  # type: ignore
+from tinydb import Query
 from typing import TYPE_CHECKING, List
 from slugify.slugify import slugify
+from .. import models
 
 if TYPE_CHECKING:
     from ...resource import Resource
     from ..project import Project
+
+
+def find_record(project: Project, *, path: str):
+    md = project.metadata
+
+    descriptor = md.find_document(type="record", query=Query().path == path)
+    if descriptor:
+        return models.Record.parse_obj(descriptor)
 
 
 def make_record_name(project: Project, *, resource: Resource) -> str:

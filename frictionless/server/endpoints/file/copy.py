@@ -3,10 +3,11 @@ import shutil
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
+from ....resource import Resource
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from ..record import read as read_record
+from ... import helpers
 
 
 class Props(BaseModel, extra="forbid"):
@@ -47,15 +48,10 @@ def action(project: Project, props: Props) -> Result:
     copy(source, target)
     path = fs.get_path(target)
 
-    # Read record
-    try:
-        record = read_record.action(project, read_record.Props(path=props.path)).record
-    except Exception:
-        record = None
-
     # Copy record
-    # TODO: fix name; currently it moves
+    record = helpers.find_record(project, path=props.path)
     if record:
+        record.name = helpers.make_record_name(project, resource=Resource(path=path))
         record.path = path
         record.resource["path"] = path
         md.write_document(name=record.name, type="record", descriptor=record.dict())

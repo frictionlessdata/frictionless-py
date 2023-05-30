@@ -1,10 +1,10 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
-from tinydb import Query
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
+from ... import helpers
 from ... import models
 
 
@@ -21,13 +21,9 @@ def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: merge here report/read and stats/read?
 def action(project: Project, props: Props) -> Result:
-    md = project.metadata
-
-    descriptor = md.find_document(type="record", query=Query().path == props.path)
-    if not descriptor:
+    record = helpers.find_record(project, path=props.path)
+    if not record:
         raise FrictionlessException("record does no exist")
-    record = models.Record.parse_obj(descriptor)
 
     return Result(record=record)

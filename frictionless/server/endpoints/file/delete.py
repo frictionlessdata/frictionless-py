@@ -6,7 +6,7 @@ from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from ..record import read as read_record
+from ... import helpers
 
 
 class Props(BaseModel):
@@ -32,19 +32,14 @@ def action(project: Project, props: Props) -> Result:
     if not source.exists():
         raise FrictionlessException("Source doesn't exist")
 
-    # Read record
-    try:
-        record = read_record.action(project, read_record.Props(path=props.path)).record
-    except Exception:
-        record = None
-
     # Delete table/artifacts/record
+    record = helpers.find_record(project, path=props.path)
     if record:
         db.delete_table(name=record.name)
         db.delete_artifact(name=record.name)
         md.delete_document(name=record.name, type="record")
 
-    # Delete source
+    # Delete file
     delete = shutil.rmtree if source.is_dir() else os.remove
     delete(source)
 
