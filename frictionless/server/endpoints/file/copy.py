@@ -26,12 +26,12 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    # Source
+    # Get source
     source = fs.get_fullpath(props.path)
     if not source.exists():
         raise FrictionlessException("Source doesn't exist")
 
-    # Target
+    # Get target
     target = fs.get_fullpath(props.toPath) if props.toPath else fs.basepath
     if target.is_file():
         raise FrictionlessException("Target already exists")
@@ -40,7 +40,7 @@ def action(project: Project, props: Props) -> Result:
         if props.deduplicate:
             target = fs.deduplicate_fullpath(target, suffix="copy")
 
-    # Copy
+    # Copy source
     copy = shutil.copytree if source.is_dir() else shutil.copy
     copy(source, target)
 

@@ -91,3 +91,11 @@ class Database:
                     name=name, type=type, descriptor=helpers.to_json(descriptor)
                 )
             )
+
+    # Tables
+
+    def delete_table(self, *, name: str):
+        with self.engine.begin() as conn:
+            table = self.metadata.tables.get(name, None)
+            if table is not None:
+                table.drop(conn)
