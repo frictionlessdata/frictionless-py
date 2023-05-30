@@ -29,7 +29,6 @@ def action(project: Project, props: Props) -> Result:
 
     # Source
     source = fs.get_fullpath(props.path)
-    print(source)
     if not source.exists():
         raise FrictionlessException("Source doesn't exist")
 
