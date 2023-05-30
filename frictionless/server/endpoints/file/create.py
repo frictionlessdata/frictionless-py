@@ -19,7 +19,6 @@ class Result(BaseModel):
     path: str
 
 
-# TODO: use streaming?
 @router.post("/file/create")
 async def endpoint(
     request: Request,

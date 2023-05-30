@@ -8,7 +8,9 @@ from ...project import Project
 from ...router import router
 from ... import helpers
 from ... import models
-from . import sync
+
+
+# TODO: merger with record/sync
 
 
 class Props(BaseModel, extra="forbid"):
@@ -20,7 +22,7 @@ class Result(BaseModel, extra="forbid"):
     record: models.Record
 
 
-@router.post("/record/index")
+@router.post("/file/index")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 

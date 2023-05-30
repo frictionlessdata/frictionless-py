@@ -27,7 +27,7 @@ def action(project: Project, props: Props) -> Result:
     # Source
     source = fs.get_fullpath(props.path)
     if not source.is_file():
-        raise FrictionlessException("File doesn't exist")
+        raise FrictionlessException("file does not exist")
 
     # Bytes
     resource = FileResource(path=str(source))

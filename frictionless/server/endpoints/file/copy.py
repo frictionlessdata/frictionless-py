@@ -6,6 +6,7 @@ from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
+from ..record import read as read_record
 
 
 class Props(BaseModel, extra="forbid"):
@@ -25,6 +26,7 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
+    md = project.metadata
 
     # Get source
     source = fs.get_fullpath(props.path)
@@ -40,9 +42,23 @@ def action(project: Project, props: Props) -> Result:
         if props.deduplicate:
             target = fs.deduplicate_fullpath(target, suffix="copy")
 
-    # Copy source
+    # Copy file
     copy = shutil.copytree if source.is_dir() else shutil.copy
     copy(source, target)
+    path = fs.get_path(target)
+
+    # Read record
+    try:
+        record = read_record.action(project, read_record.Props(path=props.path)).record
+    except Exception:
+        record = None
+
+    # Copy record
+    # TODO: fix name; currently it moves
+    if record:
+        record.path = path
+        record.resource["path"] = path
+        md.write_document(name=record.name, type="record", descriptor=record.dict())
 
     path = fs.get_path(target)
     return Result(path=path)

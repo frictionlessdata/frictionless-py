@@ -6,7 +6,7 @@ from ....formats.sql import SqlControl
 from ....resources import TableResource
 from ...project import Project
 from ...router import router
-from ..record import read
+from ..record import read as read_record
 
 
 class Props(BaseModel):
@@ -27,7 +27,7 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
     db = project.database
 
-    record = read.action(project, read.Props(path=props.path)).record
+    record = read_record.action(project, read_record.Props(path=props.path)).record
     target = fs.get_fullpath(props.toPath or props.path)
     control = SqlControl(table=record.name, with_metadata=True)
     resource = TableResource(path=db.database_url, control=control)

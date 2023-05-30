@@ -5,7 +5,7 @@ from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
 from ...interfaces import IDescriptor
-from ..record import read
+from ..record import read as read_record
 
 
 class Props(BaseModel, extra="forbid"):
@@ -24,7 +24,7 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     db = project.database
 
-    record = read.action(project, read.Props(path=props.path)).record
+    record = read_record.action(project, read_record.Props(path=props.path)).record
     report = db.read_artifact(name=record.name, type="report")
     if not report:
         raise FrictionlessException("report does no exist")
