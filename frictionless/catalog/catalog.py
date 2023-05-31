@@ -110,6 +110,7 @@ class Catalog(Metadata):
         for dataset in self.datasets:
             dataset.catalog = self
             dataset.package.dataset = dataset
+        super().__attrs_post_init__()
 
     # Datasets
 

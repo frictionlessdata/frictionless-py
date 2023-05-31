@@ -36,7 +36,6 @@ class TableResource(Resource):
     tabular = True
 
     def __attrs_post_init__(self):
-        super().__attrs_post_init__()
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
         self.__buffer: Optional[IBuffer] = None
@@ -46,6 +45,7 @@ class TableResource(Resource):
         self.__header: Optional[Header] = None
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
+        super().__attrs_post_init__()
 
     # Open/Close
 

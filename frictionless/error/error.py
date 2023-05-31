@@ -49,6 +49,8 @@ class Error(Metadata):
         descriptor = self.metadata_export(exclude=["message"])
         self.message = helpers.safe_format(self.template, descriptor)
 
+        super().__attrs_post_init__()
+
     # List
 
     @classmethod

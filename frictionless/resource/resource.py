@@ -318,6 +318,8 @@ class Resource(Metadata):
         self.add_defined("dialect")
         self.add_defined("stats")
 
+        super().__attrs_post_init__()
+
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):

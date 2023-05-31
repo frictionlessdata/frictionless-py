@@ -28,12 +28,17 @@ class Metaclass(type):
             obj = cls.__create__(*args, **kwargs)  # type: ignore
         if obj == None:
             obj = type.__call__(cls, *args, **kwargs)
-        obj.metadata_initiated = True
         return obj
 
 
 class Metadata(metaclass=Metaclass):
-    """Metadata represenation"""
+    """Metadata represenation
+
+    For proper functioning a child class must be decorated by
+    "@attrs.define(kw_only=True, repr=False)" and ensure that
+    "Metadata.__attrs_post_init__" is called
+
+    """
 
     custom: dict[str, Any] = {}
     """
@@ -48,6 +53,9 @@ class Metadata(metaclass=Metaclass):
         obj.metadata_assigned = cls.metadata_assigned.copy()
         obj.metadata_assigned.update(kwargs.keys())
         return obj
+
+    def __attrs_post_init__(self):
+        self.metadata_initiated = True
 
     def __setattr__(self, name, value):
         if not name.startswith(("_", "metadata_")):
@@ -280,7 +288,7 @@ class Metadata(metaclass=Metaclass):
         pass
 
     @classmethod
-    def metadata_prepare_profile(cls):
+    def metadata_ensure_profile(cls):
         if not cls.__dict__.get("metadata_profile_merged", None):
             cls.metadata_profile_merged = cls.metadata_profile
             for subcls in reversed(cls.mro()):
@@ -324,7 +332,7 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
-        profile = cls.metadata_prepare_profile()
+        profile = cls.metadata_ensure_profile()
         for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
@@ -349,7 +357,7 @@ class Metadata(metaclass=Metaclass):
         Error = error_class
         if not Error:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
-        profile = profile or cls.metadata_prepare_profile()
+        profile = profile or cls.metadata_ensure_profile()
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
@@ -379,7 +387,7 @@ class Metadata(metaclass=Metaclass):
         cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options: Any
     ) -> Self:
         merged_options = {}
-        profile = cls.metadata_prepare_profile()
+        profile = cls.metadata_ensure_profile()
         basepath = options.pop("basepath", None)
         is_typed_class = isinstance(getattr(cls, "type", None), str)
         for name in profile.get("properties", {}):
@@ -410,7 +418,7 @@ class Metadata(metaclass=Metaclass):
 
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         descriptor = {}
-        profile = self.metadata_prepare_profile()
+        profile = self.metadata_ensure_profile()
         for name in profile.get("properties", {}):
             if name in exclude:
                 continue

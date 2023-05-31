@@ -199,6 +199,7 @@ class Package(Metadata):
                 resource.dialect = self._dialect
             if self._detector:
                 resource.detector = self._detector
+        super().__attrs_post_init__()
 
     @property
     def basepath(self) -> Optional[str]:

@@ -88,6 +88,7 @@ class Schema(Metadata):
     def __attrs_post_init__(self):
         for field in self.fields:
             field.schema = self
+        super().__attrs_post_init__()
 
     def __bool__(self):
         return bool(self.fields) or bool(self.to_descriptor())
