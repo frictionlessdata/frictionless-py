@@ -14,7 +14,10 @@ class Factory(type):
 
         # Descriptor
         if descriptor is not None:
-            return platform.frictionless.Dialect.from_descriptor(descriptor, **options)
+            return cast(
+                platform.frictionless.Dialect,
+                cls.from_descriptor(descriptor, **options),  # type: ignore
+            )
 
         # Default
         return cast(

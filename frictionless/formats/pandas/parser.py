@@ -143,7 +143,7 @@ class PandasParser(Parser):
                         value = value.replace(
                             tzinfo=tzoffset(
                                 datetime.timezone.utc,
-                                value.utcoffset().total_seconds(),
+                                value.utcoffset().total_seconds(),  # type: ignore
                             )
                         )
                     # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na

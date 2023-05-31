@@ -14,7 +14,10 @@ class Factory(type):
 
         # Descriptor
         if descriptor is not None:
-            return platform.frictionless.Schema.from_descriptor(descriptor, **options)
+            return cast(
+                platform.frictionless.Schema,
+                cls.from_descriptor(descriptor, **options),  # type: ignore
+            )
 
         # Default
         return cast(

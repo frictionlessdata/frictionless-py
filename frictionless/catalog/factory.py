@@ -26,8 +26,9 @@ class Factory(type):
 
         # Descriptor
         if source is not None:
-            return platform.frictionless.Catalog.from_descriptor(
-                source, basepath=basepath, **options  # type: ignore
+            return cast(
+                platform.frictionless.Catalog,
+                cls.from_descriptor(source, basepath=basepath, **options),  # type: ignore
             )
 
         # Default

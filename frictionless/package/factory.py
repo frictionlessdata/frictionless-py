@@ -32,7 +32,10 @@ class Factory(type):
 
         # Descriptor
         if source is not None:
-            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
+            return cast(
+                platform.frictionless.Package,
+                cls.from_descriptor(source, basepath=basepath, **options),  # type: ignore
+            )
 
         # Default
         return cast(
