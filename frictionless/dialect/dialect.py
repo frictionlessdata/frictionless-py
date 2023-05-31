@@ -11,14 +11,14 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, ISample
+    from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
 class Dialect(Metadata):
     """Dialect representation"""
 
-    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+    descriptor: Optional[Union[types.IDescriptor, str]] = attrs.field(
         default=None, kw_only=False
     )
     """
@@ -92,7 +92,7 @@ class Dialect(Metadata):
 
     @classmethod
     def __create__(
-        cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options: Any
+        cls, descriptor: Optional[Union[types.IDescriptor, str]] = None, **options: Any
     ):
         if descriptor is not None:
             return cls.from_descriptor(descriptor, **options)
@@ -155,7 +155,7 @@ class Dialect(Metadata):
 
     # Read
 
-    def read_labels(self, sample: ISample):
+    def read_labels(self, sample: types.ISample):
         first_content_row = self.create_first_content_row()
         comment_filter = self.create_comment_filter()
 
@@ -186,7 +186,7 @@ class Dialect(Metadata):
 
         return labels
 
-    def read_fragment(self, sample: ISample):
+    def read_fragment(self, sample: types.ISample):
         # Collect fragment
         fragment: List[List[Any]] = []
         for _, cells in self.read_enumerated_content_stream(sample):
@@ -275,7 +275,7 @@ class Dialect(Metadata):
             return Control
 
     @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Csv (standards@1)
@@ -286,7 +286,7 @@ class Dialect(Metadata):
                 descriptor["csv"][name] = value
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options: Any):  # type: ignore
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):  # type: ignore
         dialect = super().metadata_import(descriptor, **options)
 
         # Controls

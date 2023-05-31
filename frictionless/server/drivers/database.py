@@ -2,9 +2,9 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Optional, Iterator, Tuple
 from ...platform import platform
-from ..interfaces import IDescriptor
 from ... import helpers
 from .. import settings
+from ... import types
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData, Table
@@ -51,7 +51,7 @@ class Database:
 
     # Artifacts
 
-    def iter_artifacts(self, *, type: str) -> Iterator[Tuple[str, IDescriptor]]:
+    def iter_artifacts(self, *, type: str) -> Iterator[Tuple[str, types.IDescriptor]]:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             query = sa.select(self.artifacts.c.name, self.artifacts.c.descriptor).where(
@@ -68,7 +68,7 @@ class Database:
                 query = query.where(self.artifacts.c.type == type)
             conn.execute(query)
 
-    def read_artifact(self, *, name: str, type: str) -> Optional[IDescriptor]:
+    def read_artifact(self, *, name: str, type: str) -> Optional[types.IDescriptor]:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             text = conn.execute(
@@ -82,7 +82,7 @@ class Database:
             descriptor = json.loads(text)
         return descriptor
 
-    def write_artifact(self, *, name: str, type: str, descriptor: IDescriptor):
+    def write_artifact(self, *, name: str, type: str, descriptor: types.IDescriptor):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             self.delete_artifact(name=name, type=type)

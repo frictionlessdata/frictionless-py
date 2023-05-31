@@ -2,11 +2,11 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type, Union
-from ..interfaces import IDescriptor
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
 from .. import errors
+from .. import types
 
 if TYPE_CHECKING:
     from ..table import Row
@@ -105,7 +105,7 @@ class Check(Metadata):
     # Convert
 
     @classmethod
-    def from_descriptor(cls, descriptor: Union[str, IDescriptor]):  # type: ignore
+    def from_descriptor(cls, descriptor: Union[str, types.IDescriptor]):  # type: ignore
         descriptor = cls.metadata_retrieve(descriptor)
 
         # Type (framework/v4)

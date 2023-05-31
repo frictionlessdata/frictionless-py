@@ -2,7 +2,6 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List
-from ..interfaces import IDescriptor
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..checklist import Checklist
@@ -15,6 +14,7 @@ from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
+from .. import types
 
 
 # TODO: rebase back on using resource?
@@ -202,7 +202,7 @@ class InquiryTask(Metadata):
             return Checklist
 
     @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         # Source (framework/v4)
         source = descriptor.pop("source", None)
         if source:
@@ -214,7 +214,7 @@ class InquiryTask(Metadata):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):  # type: ignore
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors

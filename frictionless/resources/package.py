@@ -10,8 +10,7 @@ from .. import settings
 if TYPE_CHECKING:
     from ..pipeline import Pipeline
     from ..checklist import Checklist
-    from ..interfaces import ICallbackFunction
-    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
+    from .. import types
 
 
 class PackageResource(MetadataResource[Package]):
@@ -34,10 +33,10 @@ class PackageResource(MetadataResource[Package]):
         self,
         *,
         name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
+        filter: Optional[types.IFilterFunction] = None,
+        process: Optional[types.IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> ITabularData:
+    ) -> types.ITabularData:
         package = self.read_metadata()
         return package.extract(
             name=name, filter=filter, process=process, limit_rows=limit_rows
@@ -62,7 +61,7 @@ class PackageResource(MetadataResource[Package]):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,

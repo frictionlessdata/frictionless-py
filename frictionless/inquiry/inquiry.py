@@ -11,7 +11,7 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
+    from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -107,7 +107,7 @@ class Inquiry(Metadata):
 # Internal
 
 
-def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
+def validate_parallel(descriptor: types.IDescriptor) -> types.IDescriptor:
     task = platform.frictionless.InquiryTask.from_descriptor(descriptor)
     report = task.validate()
     return report.to_descriptor()

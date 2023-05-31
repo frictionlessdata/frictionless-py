@@ -2,15 +2,17 @@ from __future__ import annotations
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import Request
-from ...interfaces import IChart
 from ...project import Project
 from ...router import router
+from ... import types
+
+# TODO: replace by helpers
 from .. import json
 
 
 class Props(BaseModel):
     path: Optional[str] = None
-    chart: Optional[IChart] = None
+    chart: Optional[types.IChart] = None
 
 
 class Result(BaseModel):

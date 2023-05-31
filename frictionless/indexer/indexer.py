@@ -5,8 +5,8 @@ from subprocess import PIPE
 from typing import TYPE_CHECKING, Optional, Union
 from ..exception import FrictionlessException
 from ..platform import platform
-from .interfaces import IOnProgress, IOnRow
 from . import settings
+from . import types
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
@@ -25,8 +25,8 @@ class Indexer:
     qsv_path: Optional[str] = None
     use_fallback: bool = False
     with_metadata: bool = False
-    on_row: Optional[IOnRow] = None
-    on_progress: Optional[IOnProgress] = None
+    on_row: Optional[types.IOnRow] = None
+    on_progress: Optional[types.IOnProgress] = None
     adapter: SqlAdapter = attrs.field(init=False)
 
     def __attrs_post_init__(self):

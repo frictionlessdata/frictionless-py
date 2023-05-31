@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Dict, Optional, Iterator, List
 from tinydb import TinyDB
 from tinydb.table import Document
 from tinydb.queries import QueryInstance
-from ..interfaces import IDescriptor
 from .. import helpers
+from ... import types
 
 if TYPE_CHECKING:
     from ..project import Project
@@ -25,19 +25,23 @@ class Metadata:
         table = self.get_table(type)
         return table.remove(doc_ids=[name])  # type: ignore
 
-    def iter_documents(self, *, type: str) -> Iterator[IDescriptor]:
+    def iter_documents(self, *, type: str) -> Iterator[types.IDescriptor]:
         table = self.get_table(type)
         yield from table
 
-    def find_document(self, *, type: str, query: QueryInstance) -> Optional[IDescriptor]:
+    def find_document(
+        self, *, type: str, query: QueryInstance
+    ) -> Optional[types.IDescriptor]:
         table = self.get_table(type)
         return table.get(query)
 
-    def read_document(self, *, name: str, type: str) -> Optional[IDescriptor]:
+    def read_document(self, *, name: str, type: str) -> Optional[types.IDescriptor]:
         table = self.get_table(type)
         return table.get(doc_id=name)  # type: ignore
 
-    def write_document(self, *, name: str, type: str, descriptor: IDescriptor) -> None:
+    def write_document(
+        self, *, name: str, type: str, descriptor: types.IDescriptor
+    ) -> None:
         table = self.get_table(type)
         table.upsert(Document(descriptor, doc_id=name))  # type: ignore
 

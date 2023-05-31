@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, List, Optional, ClassVar, Union, Dict, Any
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .interfaces import IReportStats, IReportTaskStats
 from .task import ReportTask
 from .. import settings
+from . import types
 
 if TYPE_CHECKING:
     from ..resource import Resource
@@ -48,7 +48,7 @@ class Report(Metadata):
     Flag to specify if the data is valid or not.
     """
 
-    stats: IReportStats
+    stats: types.IReportStats
     """
     Additional statistics of the data as defined in Stats class.
     """
@@ -124,7 +124,7 @@ class Report(Metadata):
         errors = errors.copy()
         warnings = warnings.copy()
         error_count = len(errors) + sum(task.stats["errors"] or 0 for task in tasks)
-        stats = IReportStats(
+        stats = types.IReportStats(
             tasks=len(tasks),
             errors=error_count,
             warnings=len(warnings),
@@ -150,7 +150,7 @@ class Report(Metadata):
         """Create a report from a validation task"""
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = IReportTaskStats(
+        task_stats = types.IReportTaskStats(
             errors=len(errors), warnings=len(warnings), seconds=time
         )
         if resource.stats.md5:
@@ -163,7 +163,7 @@ class Report(Metadata):
             task_stats["fields"] = resource.stats.fields
         if resource.stats.rows:
             task_stats["rows"] = resource.stats.rows
-        report_stats = IReportStats(
+        report_stats = types.IReportStats(
             tasks=1,
             errors=len(errors),
             warnings=len(warnings),

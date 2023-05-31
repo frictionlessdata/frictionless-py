@@ -6,15 +6,17 @@ from ....exception import FrictionlessException
 from ....resource import Resource
 from ...project import Project
 from ...router import router
-from ...interfaces import IDescriptor
 from ... import models
+from ... import types
+
+# TODO: replace by helpers
 from . import read
 
 
 class Props(BaseModel):
     path: str
     type: Optional[str] = None
-    resource: Optional[IDescriptor] = None
+    resource: Optional[types.IDescriptor] = None
 
 
 class Result(BaseModel):

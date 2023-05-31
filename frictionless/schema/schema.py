@@ -1,17 +1,14 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar, Dict
+from typing import Optional, List, Any, Union, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
-from .interfaces import INotes
 from .field import Field
 from .. import settings
 from .. import errors
-
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
+from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -27,7 +24,7 @@ class Schema(Metadata):
     ```
     """
 
-    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+    descriptor: Optional[Union[types.IDescriptor, str]] = attrs.field(
         default=None, kw_only=False
     )
     """
@@ -80,7 +77,7 @@ class Schema(Metadata):
 
     @classmethod
     def __create__(
-        cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options: Any
+        cls, descriptor: Optional[Union[types.IDescriptor, str]] = None, **options: Any
     ):
         if descriptor is not None:
             return cls.from_descriptor(descriptor, **options)
@@ -144,7 +141,7 @@ class Schema(Metadata):
         """Set field type"""
         return self.update_field(name, {"type": type})
 
-    def update_field(self, name: str, descriptor: IDescriptor) -> Field:
+    def update_field(self, name: str, descriptor: types.IDescriptor) -> Field:
         """Update field"""
         prev_field = self.get_field(name)
         field_index = self.fields.index(prev_field)
@@ -204,7 +201,7 @@ class Schema(Metadata):
             any[]: list of processed cells
         """
         res_cells: List[Any] = []
-        res_notes: List[INotes] = []
+        res_notes: List[types.INotes] = []
         readers = self.create_cell_readers()
         for index, reader in enumerate(readers.values()):
             cell = cells[index] if len(cells) > index else None
@@ -229,7 +226,7 @@ class Schema(Metadata):
             any[]: list of processed cells
         """
         res_cells: List[Any] = []
-        res_notes: List[INotes] = []
+        res_notes: List[types.INotes] = []
         writers = self.create_cell_writers()
         for index, writer in enumerate(writers.values()):
             cell = cells[index] if len(cells) > index else None
@@ -262,7 +259,7 @@ class Schema(Metadata):
     # Convert
 
     @classmethod
-    def from_jsonschema(cls, profile: Union[IDescriptor, str]) -> Schema:
+    def from_jsonschema(cls, profile: Union[types.IDescriptor, str]) -> Schema:
         """Create a Schema from JSONSchema profile
 
         Parameters:
@@ -334,7 +331,7 @@ class Schema(Metadata):
 
     # TODO: handle invalid structure
     @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Primary Key (standards/v1)
@@ -358,7 +355,7 @@ class Schema(Metadata):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):  # type: ignore
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors

@@ -11,7 +11,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from ..dialect import Control
-    from ..interfaces import IDescriptor
+    from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -229,7 +229,7 @@ class Catalog(Metadata):
             return Dataset
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options: Any):  # type: ignore
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):  # type: ignore
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,

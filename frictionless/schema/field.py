@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING, Callable, ClassVar, Optional, List, Dict, Any,
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
-from ..interfaces import IDescriptor
-from .interfaces import ICellReader, IValueReader, ICellWriter, IValueWriter
 from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
     from .schema import Schema
+    from ..types import IDescriptor
+    from . import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -105,7 +105,7 @@ class Field(Metadata):
         cell_reader = self.create_cell_reader()
         return cell_reader(cell)
 
-    def create_cell_reader(self) -> ICellReader:
+    def create_cell_reader(self) -> types.ICellReader:
         value_reader = self.create_value_reader()
 
         # Create missing values
@@ -147,7 +147,7 @@ class Field(Metadata):
 
         return cell_reader
 
-    def create_value_reader(self) -> IValueReader:
+    def create_value_reader(self) -> types.IValueReader:
         # Create reader
         def value_reader(cell: Any):
             return cell
@@ -160,7 +160,7 @@ class Field(Metadata):
         cell_writer = self.create_cell_writer()
         return cell_writer(cell, ignore_missing=ignore_missing)
 
-    def create_cell_writer(self) -> ICellWriter:
+    def create_cell_writer(self) -> types.ICellWriter:
         value_writer = self.create_value_writer()
 
         # Create missing value
@@ -185,7 +185,7 @@ class Field(Metadata):
 
         return cell_writer
 
-    def create_value_writer(self) -> IValueWriter:
+    def create_value_writer(self) -> types.IValueWriter:
         # Create writer
         def value_writer(cell: Any):
             return str(cell)

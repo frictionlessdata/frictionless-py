@@ -1,10 +1,10 @@
 from __future__ import annotations
 import attrs
 from typing import List, ClassVar, Optional, Type, Any
-from ..interfaces import IDescriptor
 from ..metadata import Metadata
 from ..platform import platform
 from .. import helpers
+from .. import types
 
 
 # NOTE:
@@ -88,7 +88,7 @@ class Error(Metadata):
         return platform.frictionless.system.select_error_class(type)
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options: Any):  # type: ignore
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):  # type: ignore
         # Class props
         descriptor.pop("title", None)
         descriptor.pop("description", None)

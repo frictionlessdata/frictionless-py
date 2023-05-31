@@ -2,11 +2,11 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import TYPE_CHECKING, ClassVar, Optional, Union, Any
-from ..interfaces import IDescriptor
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
 from .. import errors
+from .. import types
 
 if TYPE_CHECKING:
     from ..package import Package
@@ -83,7 +83,7 @@ class Step(Metadata):
 
     @classmethod
     def from_descriptor(
-        cls, descriptor: Union[str, IDescriptor], *args: Any, **kwargs: Any
+        cls, descriptor: Union[str, types.IDescriptor], *args: Any, **kwargs: Any
     ):
         descriptor = cls.metadata_retrieve(descriptor)
 

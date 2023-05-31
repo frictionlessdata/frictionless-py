@@ -4,8 +4,8 @@ from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from ...interfaces import IDescriptor
 from ..record import read as read_record
+from ... import types
 
 
 class Props(BaseModel, extra="forbid"):
@@ -13,7 +13,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    report: IDescriptor
+    report: types.IDescriptor
 
 
 @router.post("/report/read")

@@ -18,7 +18,7 @@ from . import helpers
 if TYPE_CHECKING:
     from .error import Error
     from .report import Report
-    from .interfaces import IDescriptor
+    from . import types
 
 
 class Metaclass(type):
@@ -133,7 +133,7 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def validate_descriptor(
-        cls, descriptor: Union[IDescriptor, str], *, basepath: Optional[str] = None
+        cls, descriptor: Union[types.IDescriptor, str], *, basepath: Optional[str] = None
     ) -> Report:
         errors = []
         timer = helpers.Timer()
@@ -155,7 +155,7 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def from_descriptor(
         cls,
-        descriptor: Union[IDescriptor, str],
+        descriptor: Union[types.IDescriptor, str],
         allow_invalid: bool = False,
         **options: Any,
     ) -> Self:
@@ -184,7 +184,7 @@ class Metadata(metaclass=Metaclass):
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata
 
-    def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
+    def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
         descriptor = self.metadata_export()
         if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
@@ -194,7 +194,7 @@ class Metadata(metaclass=Metaclass):
                 raise FrictionlessException(error, reasons=errors)
         return descriptor
 
-    def to_descriptor_source(self) -> Union[IDescriptor, str]:
+    def to_descriptor_source(self) -> Union[types.IDescriptor, str]:
         """Export metadata as a descriptor or a descriptor path"""
         descriptor = self.to_descriptor()
         if self.metadata_descriptor_path:
@@ -206,7 +206,7 @@ class Metadata(metaclass=Metaclass):
         """Create a copy of the metadata"""
         return type(self).from_descriptor(self.to_descriptor(), **options)
 
-    def to_dict(self) -> IDescriptor:
+    def to_dict(self) -> types.IDescriptor:
         """Export metadata as dictionary (alias for "to_descriptor")"""
         return self.to_descriptor()
 
@@ -273,7 +273,7 @@ class Metadata(metaclass=Metaclass):
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
     metadata_descriptor_path: Optional[str] = None
-    metadata_descriptor_initial: Optional[IDescriptor] = None
+    metadata_descriptor_initial: Optional[types.IDescriptor] = None
 
     @classmethod
     def metadata_select_class(cls, type: Optional[str]) -> Type[Metadata]:
@@ -300,8 +300,8 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_retrieve(
-        cls, descriptor: Union[IDescriptor, str], *, size: Optional[int] = None
-    ) -> IDescriptor:
+        cls, descriptor: Union[types.IDescriptor, str], *, size: Optional[int] = None
+    ) -> types.IDescriptor:
         try:
             if isinstance(descriptor, Mapping):
                 return deepcopy(descriptor)
@@ -331,7 +331,7 @@ class Metadata(metaclass=Metaclass):
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         profile = cls.metadata_ensure_profile()
         for name in profile.get("properties", {}):
             value = descriptor.get(name)
@@ -349,9 +349,9 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def metadata_validate(
         cls,
-        descriptor: IDescriptor,
+        descriptor: types.IDescriptor,
         *,
-        profile: Optional[Union[IDescriptor, str]] = None,
+        profile: Optional[Union[types.IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
     ) -> Generator[Error, None, None]:
         Error = error_class
@@ -384,7 +384,7 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_import(
-        cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options: Any
+        cls, descriptor: types.IDescriptor, *, with_basepath: bool = False, **options: Any
     ) -> Self:
         merged_options = {}
         profile = cls.metadata_ensure_profile()
@@ -416,7 +416,7 @@ class Metadata(metaclass=Metaclass):
         metadata.custom = descriptor
         return metadata
 
-    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
+    def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
         descriptor = {}
         profile = self.metadata_ensure_profile()
         for name in profile.get("properties", {}):

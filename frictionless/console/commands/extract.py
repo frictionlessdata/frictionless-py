@@ -14,7 +14,7 @@ from .. import common
 from .. import utils
 
 if TYPE_CHECKING:
-    from ...interfaces import IFilterFunction, IProcessFunction
+    from ... import types
 
 
 DEFAULT_MAX_FIELDS = 10
@@ -118,14 +118,14 @@ def console_extract(
         )
 
         # Create filter
-        filter: Optional[IFilterFunction] = None
+        filter: Optional[types.IFilterFunction] = None
         if valid:
             filter = lambda row: row.valid
         elif invalid:
             filter = lambda row: not row.valid
 
         # Create processor
-        process: Optional[IProcessFunction] = None
+        process: Optional[types.IProcessFunction] = None
         if yaml or json:
             process = lambda row: row.to_dict(json=True)
         elif csv:

@@ -15,7 +15,7 @@ from .. import helpers
 
 if TYPE_CHECKING:
     from ..resource import Resource
-    from ..interfaces import IBuffer, IEncodingFunction, ISample, IFragment
+    from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -41,7 +41,7 @@ class Detector:
     accuracy.
     """
 
-    encoding_function: Optional[IEncodingFunction] = None
+    encoding_function: Optional[types.IEncodingFunction] = None
     """
     A custom encoding function for the file.
     """
@@ -189,7 +189,9 @@ class Detector:
 
     # Encoding
 
-    def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None) -> str:
+    def detect_encoding(
+        self, buffer: types.IBuffer, *, encoding: Optional[str] = None
+    ) -> str:
         """Detect encoding from buffer
 
         Parameters:
@@ -236,7 +238,7 @@ class Detector:
 
     def detect_dialect(
         self,
-        sample: ISample,
+        sample: types.ISample,
         *,
         dialect: Optional[Dialect] = None,
     ) -> Dialect:
@@ -289,7 +291,7 @@ class Detector:
     # TODO: detect fields without type
     def detect_schema(
         self,
-        fragment: IFragment,
+        fragment: types.IFragment,
         *,
         labels: Optional[List[str]] = None,
         schema: Optional[Schema] = None,

@@ -5,10 +5,10 @@ from typing import List, Optional, Dict, Any
 from tabulate import tabulate
 from ..metadata import Metadata
 from ..exception import FrictionlessException
-from .interfaces import IReportTaskStats
 from ..errors import ReportTaskError
 from ..error import Error
 from .. import settings
+from . import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -52,7 +52,7 @@ class ReportTask(Metadata):
     List of labels of the task resource.
     """
 
-    stats: IReportTaskStats
+    stats: types.IReportTaskStats
     """
     Additional statistics of the data as defined in Stats class.
     """

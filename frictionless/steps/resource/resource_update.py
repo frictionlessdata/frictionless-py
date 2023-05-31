@@ -10,7 +10,7 @@ from ... import errors
 if TYPE_CHECKING:
     from ...package import Package
     from ...resource import Resource
-    from ...interfaces import IDescriptor
+    from ... import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -29,7 +29,7 @@ class resource_update(Step):
     Name of the resource to update.
     """
 
-    descriptor: IDescriptor
+    descriptor: types.IDescriptor
     """
     New descriptor for the resource to update metadata.
     """

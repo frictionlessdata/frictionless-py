@@ -7,7 +7,7 @@ from ...pipeline import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource
-    from ...interfaces import IDescriptor
+    from ... import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -42,7 +42,7 @@ class field_update(Step):
     Python function to set the value for the field.
     """
 
-    descriptor: Optional[IDescriptor] = None
+    descriptor: Optional[types.IDescriptor] = None
     """
     A descriptor for the field to set the metadata.
     """

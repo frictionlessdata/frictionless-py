@@ -20,14 +20,11 @@ from .. import errors
 if TYPE_CHECKING:
     from ..system import Loader, Parser
     from ..indexer import IOnRow, IOnProgress
-    from ..interfaces import IBuffer, ISample, IFragment, ILabels
-    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
-    from ..interfaces import ICellStream
-    from ..interfaces import ICallbackFunction
     from ..checklist import Checklist
     from ..pipeline import Pipeline
     from ..dialect import Control
     from ..table import IRowStream
+    from .. import types
 
 
 class TableResource(Resource):
@@ -38,10 +35,10 @@ class TableResource(Resource):
     def __attrs_post_init__(self):
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
-        self.__buffer: Optional[IBuffer] = None
-        self.__sample: Optional[ISample] = None
-        self.__labels: Optional[ILabels] = None
-        self.__fragment: Optional[IFragment] = None
+        self.__buffer: Optional[types.IBuffer] = None
+        self.__sample: Optional[types.ISample] = None
+        self.__labels: Optional[types.ILabels] = None
+        self.__fragment: Optional[types.IFragment] = None
         self.__header: Optional[Header] = None
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
@@ -50,7 +47,7 @@ class TableResource(Resource):
     # Open/Close
 
     @property
-    def buffer(self) -> IBuffer:
+    def buffer(self) -> types.IBuffer:
         """File's bytes used as a sample
 
         These buffer bytes are used to infer characteristics of the
@@ -61,7 +58,7 @@ class TableResource(Resource):
         return self.__buffer
 
     @property
-    def sample(self) -> ISample:
+    def sample(self) -> types.ISample:
         """Table's lists used as sample.
 
         These sample rows are used to infer characteristics of the
@@ -75,7 +72,7 @@ class TableResource(Resource):
         return self.__sample
 
     @property
-    def labels(self) -> ILabels:
+    def labels(self) -> types.ILabels:
         """
         Returns:
             str[]?: table labels
@@ -85,7 +82,7 @@ class TableResource(Resource):
         return self.__labels
 
     @property
-    def fragment(self) -> IFragment:
+    def fragment(self) -> types.IFragment:
         """Table's lists used as fragment.
 
         These fragment rows are used internally to infer characteristics of the
@@ -119,7 +116,7 @@ class TableResource(Resource):
         return self.__lookup
 
     @property
-    def cell_stream(self) -> ICellStream:
+    def cell_stream(self) -> types.ICellStream:
         """Cell stream in form of a generator
 
         Yields:
@@ -522,10 +519,10 @@ class TableResource(Resource):
         self,
         *,
         name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
+        filter: Optional[types.IFilterFunction] = None,
+        process: Optional[types.IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> ITabularData:
+    ) -> types.ITabularData:
         if not process:
             process = lambda row: row.to_dict()
         data = self.read_rows(size=limit_rows)
@@ -575,7 +572,7 @@ class TableResource(Resource):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,

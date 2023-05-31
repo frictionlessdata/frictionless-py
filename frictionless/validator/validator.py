@@ -9,10 +9,10 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import ICallbackFunction, IDescriptor
     from ..resource import Resource
     from ..package import Package
     from ..error import Error
+    from .. import types
 
 
 class Validator:
@@ -84,7 +84,7 @@ class Validator:
         checklist: Optional[Checklist] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
         limit_rows: Optional[int] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
     ):
         # Create state
         partial = False
@@ -197,7 +197,7 @@ class Validator:
 # Internal
 
 
-def validate_parallel(options: IDescriptor) -> IDescriptor:
+def validate_parallel(options: types.IDescriptor) -> types.IDescriptor:
     resource_options = options["resource"]
     validate_options = options["validate"]
     resource = Resource.from_descriptor(**resource_options)

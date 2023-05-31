@@ -2,17 +2,17 @@ from __future__ import annotations
 from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
-from ...interfaces import IChart
 from ...project import Project
 from ...router import router
+from ... import types
 
 
 class Props(BaseModel):
-    chart: IChart
+    chart: types.IChart
 
 
 class Result(BaseModel):
-    chart: IChart
+    chart: types.IChart
 
 
 @router.post("/chart/render")

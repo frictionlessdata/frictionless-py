@@ -1,2 +1,2 @@
 from .package import Package
-from .interfaces import IPackage
+from .types import *

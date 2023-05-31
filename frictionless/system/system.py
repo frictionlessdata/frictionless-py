@@ -13,7 +13,6 @@ from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IStandards, IOnerror
     from ..package import Package
     from ..resource import Resource
     from ..checklist import Check
@@ -24,6 +23,7 @@ if TYPE_CHECKING:
     from .loader import Loader
     from .parser import Parser
     from .plugin import Plugin
+    from .. import types
 
 
 # NOTE:
@@ -59,12 +59,12 @@ class System:
     A flag that indicates if resource, path or package is trusted.
     """
 
-    onerror: IOnerror = settings.DEFAULT_ONERROR
+    onerror: types.IOnerror = settings.DEFAULT_ONERROR
     """
     Type of action to take on Error such as "warn", "raise" or "ignore".
     """
 
-    standards: IStandards = settings.DEFAULT_STANDARDS
+    standards: types.IStandards = settings.DEFAULT_STANDARDS
     """
     Setting this value user can use feature of the specific version.
     The default value is v2.
@@ -155,8 +155,8 @@ class System:
         self,
         *,
         trusted: Optional[bool] = None,
-        onerror: Optional[IOnerror] = None,
-        standards: Optional[IStandards] = None,
+        onerror: Optional[types.IOnerror] = None,
+        standards: Optional[types.IStandards] = None,
         http_session: Optional[Any] = None,
     ):
         # Current

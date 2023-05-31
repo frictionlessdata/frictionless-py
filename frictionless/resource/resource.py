@@ -24,9 +24,7 @@ if TYPE_CHECKING:
     from ..report import Report
     from ..checklist import Checklist
     from ..package import Package
-    from ..interfaces import IDescriptor, IBuffer
-    from ..interfaces import IByteStream, ITextStream
-    from ..interfaces import ICallbackFunction
+    from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -303,7 +301,7 @@ class Resource(Metadata):
 
         # Internal
         self.__loader: Optional[Loader] = None
-        self.__buffer: Optional[IBuffer] = None
+        self.__buffer: Optional[types.IBuffer] = None
 
         # Detect resource
         system.detect_resource(self)
@@ -420,7 +418,7 @@ class Resource(Metadata):
     # Open/Close
 
     @property
-    def buffer(self) -> IBuffer:
+    def buffer(self) -> types.IBuffer:
         """File's bytes used as a sample
 
         These buffer bytes are used to infer characteristics of the
@@ -431,7 +429,7 @@ class Resource(Metadata):
         return self.__buffer
 
     @property
-    def byte_stream(self) -> IByteStream:
+    def byte_stream(self) -> types.IByteStream:
         """Byte stream in form of a generator
 
         Yields:
@@ -445,7 +443,7 @@ class Resource(Metadata):
         return self.__loader.byte_stream
 
     @property
-    def text_stream(self) -> ITextStream:
+    def text_stream(self) -> types.ITextStream:
         """Text stream in form of a generator
 
         Yields:
@@ -649,7 +647,7 @@ class Resource(Metadata):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
@@ -835,7 +833,7 @@ class Resource(Metadata):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -903,7 +901,7 @@ class Resource(Metadata):
                 yield errors.ResourceError(note=note)
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options):
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,

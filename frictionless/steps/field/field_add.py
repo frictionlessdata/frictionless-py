@@ -8,7 +8,7 @@ from ...schema import Field
 
 if TYPE_CHECKING:
     from ...resource import Resource
-    from ...interfaces import IDescriptor
+    from ... import types
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -48,7 +48,7 @@ class field_add(Step):
     add the field in second position, we need to set it as 'position=2'.
     """
 
-    descriptor: Optional[IDescriptor] = None
+    descriptor: Optional[types.IDescriptor] = None
     """
     A dictionary, which contains metadata for the field which
     describes the properties of the field.

@@ -4,14 +4,14 @@ from pydantic import BaseModel
 from fastapi import Request
 from ....platform import platform
 from ....resources import FileResource, JsonResource
-from ...interfaces import IView
 from ...project import Project
 from ...router import router
+from ... import types
 
 
 class Props(BaseModel):
     path: str
-    view: IView
+    view: types.IView
 
 
 class Result(BaseModel):

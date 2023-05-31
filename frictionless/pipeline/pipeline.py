@@ -2,12 +2,12 @@ from __future__ import annotations
 import attrs
 import warnings
 from typing import Optional, List, ClassVar, Union
-from ..interfaces import IDescriptor
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
 from .. import settings
 from .. import errors
+from .. import types
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
@@ -109,7 +109,7 @@ class Pipeline(Metadata):
             return Step
 
     @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Tasks (framework/v4)

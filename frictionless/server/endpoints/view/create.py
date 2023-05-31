@@ -4,13 +4,13 @@ from typing import Optional
 from fastapi import Request
 from ...project import Project
 from ...router import router
-from ...interfaces import IView
 from .. import json
+from ... import types
 
 
 class Props(BaseModel):
     path: Optional[str] = None
-    view: Optional[IView] = None
+    view: Optional[types.IView] = None
 
 
 class Result(BaseModel):

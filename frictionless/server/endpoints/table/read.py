@@ -5,8 +5,8 @@ from fastapi import Request
 from ....platform import platform
 from ...project import Project
 from ...router import router
-from ...interfaces import IRow
 from ..record import read as read_record
+from ... import types
 
 
 class Props(BaseModel):
@@ -19,7 +19,7 @@ class Props(BaseModel):
 
 
 class Result(BaseModel):
-    rows: List[IRow]
+    rows: List[types.IRow]
 
 
 @router.post("/table/read")

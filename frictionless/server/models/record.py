@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from ..interfaces import IDescriptor
 from .stats import Stats
+from .. import types
 
 
 class Record(BaseModel):
@@ -8,4 +8,4 @@ class Record(BaseModel):
     type: str
     path: str
     stats: Stats
-    resource: IDescriptor
+    resource: types.IDescriptor
