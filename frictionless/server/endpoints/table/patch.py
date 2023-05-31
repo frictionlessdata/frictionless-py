@@ -5,6 +5,7 @@ from ....platform import platform
 from ...project import Project
 from ...router import router
 from ..record import read as record_read
+from . import export as table_export
 from ... import models
 
 
@@ -26,6 +27,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
     sa = platform.sqlalchemy
 
+    # Write table
     record = record_read.action(project, record_read.Props(path=props.path)).record
     with db.engine.begin() as conn:
         table = db.metadata.tables[record.name]
@@ -37,4 +39,7 @@ def action(project: Project, props: Props) -> Result:
                     .values(**{change.fieldName: change.value})
                 )
 
-    return Result(path=props.path)
+    # Export table
+    path = table_export.action(project, table_export.Props(path=props.path)).path
+
+    return Result(path=path)

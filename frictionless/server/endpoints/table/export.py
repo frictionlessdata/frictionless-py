@@ -32,6 +32,6 @@ def action(project: Project, props: Props) -> Result:
     control = SqlControl(table=record.name, with_metadata=True)
     resource = TableResource(path=db.database_url, control=control)
     resource.write_table(path=str(target))
-
     path = fs.get_path(target)
+
     return Result(path=path)

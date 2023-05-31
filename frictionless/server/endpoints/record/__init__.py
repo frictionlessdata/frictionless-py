@@ -1,4 +1,3 @@
 # Register modules
+from . import patch
 from . import read
-from . import sync
-from . import write

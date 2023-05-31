@@ -21,7 +21,7 @@ class Result(BaseModel):
     record: models.Record
 
 
-@router.post("/record/write")
+@router.post("/record/patch")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
