@@ -75,7 +75,7 @@ SAMPLE_SIZE = 100
 
 
 def extract_samle(text_stream: types.ITextStream) -> types.ISample:
-    sample: ISample = []
+    sample: types.ISample = []
     while True:
         try:
             sample.append(next(text_stream))  # type: ignore

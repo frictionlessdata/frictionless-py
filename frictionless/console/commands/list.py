@@ -126,7 +126,7 @@ def console_describe(
 
     # Json mode
     if json:
-        descriptor = helpersto_json(descriptors).strip()
+        descriptor = to_json(descriptors).strip()
         print(descriptor)
         raise typer.Exit()
 

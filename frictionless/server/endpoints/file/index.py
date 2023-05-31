@@ -9,6 +9,9 @@ from ...router import router
 from ... import helpers
 from ... import models
 
+# TODO: remove
+from ..record import sync
+
 
 # TODO: merger with record/sync
 
