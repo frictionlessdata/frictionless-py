@@ -30,9 +30,10 @@
     "frictionless/validator",
     "frictionless/exception.py",
     "frictionless/helpers.py",
-    "frictionless/interfaces.py",
+    "frictionless/metadata.py",
     "frictionless/platform.py",
-    "frictionless/settings.py"
+    "frictionless/settings.py",
+    "frictionless/types.py"
   ],
   "ignore": [
     "**/__init__.py"

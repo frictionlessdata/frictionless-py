@@ -4,7 +4,7 @@ import io
 import json
 import pprint
 import inspect
-import stringcase
+import stringcase  # type: ignore
 from pathlib import Path
 from copy import deepcopy
 from collections.abc import Mapping
@@ -36,7 +36,7 @@ class Metadata:
     to the custom property.
     """
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Any, **kwargs: Any):
         obj = super().__new__(cls)
         obj.custom = obj.custom.copy()
         obj.metadata_defaults = cls.metadata_defaults.copy()
@@ -47,7 +47,7 @@ class Metadata:
     def __attrs_post_init__(self):
         self.metadata_initiated = True
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any):
         if not name.startswith(("_", "metadata_")):
             if self.metadata_initiated:
                 if value is not None:
@@ -81,7 +81,7 @@ class Metadata:
         class HTMLFilter(platform.html_parser.HTMLParser):
             text = ""
 
-            def handle_data(self, data):
+            def handle_data(self, data: str):
                 self.text += data
                 self.text += " "
 
@@ -113,7 +113,7 @@ class Metadata:
         if default is not None:
             return default
 
-    def set_not_defined(self, name: str, value: Any, *, distinct=False) -> None:
+    def set_not_defined(self, name: str, value: Any, *, distinct: bool = False) -> None:
         if not self.has_defined(name) and value is not None:
             if distinct and getattr(self, name, None) == value:
                 return
@@ -261,7 +261,7 @@ class Metadata:
     metadata_profile_merged: ClassVar[Dict[str, Any]] = {}
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
-    metadata_defaults: Dict[str, Union[list, dict]] = {}
+    metadata_defaults: Dict[str, Any] = {}
     metadata_descriptor_path: Optional[str] = None
     metadata_descriptor_initial: Optional[types.IDescriptor] = None
 
@@ -295,7 +295,7 @@ class Metadata:
         try:
             if isinstance(descriptor, Mapping):
                 return deepcopy(descriptor)
-            if isinstance(descriptor, (str, Path)):
+            if isinstance(descriptor, (str, Path)):  # type: ignore
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
@@ -313,7 +313,7 @@ class Metadata:
                 else:
                     metadata = json.loads(content)
                 assert isinstance(metadata, dict)
-                return metadata
+                return metadata  # type: ignore
             raise TypeError("descriptor type is not supported")
         except Exception as exception:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
@@ -328,13 +328,13 @@ class Metadata:
             Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
-                    for item in value:
+                    for item in value:  # type: ignore
                         if isinstance(item, dict):
-                            type = item.get("type")
-                            ItemClass = Class.metadata_select_class(type)
-                            ItemClass.metadata_transform(item)
+                            type = item.get("type")  # type: ignore
+                            ItemClass = Class.metadata_select_class(type)  # type: ignore
+                            ItemClass.metadata_transform(item)  # type: ignore
                 elif isinstance(value, dict):
-                    Class.metadata_transform(value)
+                    Class.metadata_transform(value)  # type: ignore
 
     @classmethod
     def metadata_validate(
@@ -351,10 +351,10 @@ class Metadata:
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
-        validator = validator_class(profile)
-        for error in validator.iter_errors(descriptor):
-            metadata_path = "/".join(map(str, error.path))
-            message = re.sub(r"\s+", " ", error.message)
+        validator = validator_class(profile)  # type: ignore
+        for error in validator.iter_errors(descriptor):  # type: ignore
+            metadata_path = "/".join(map(str, error.path))  # type: ignore
+            message = re.sub(r"\s+", " ", error.message)  # type: ignore
             note = message
             if metadata_path:
                 note = f"{note} at property '{metadata_path}'"
@@ -364,13 +364,13 @@ class Metadata:
             Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
-                    for item in value:
+                    for item in value:  # type: ignore
                         if isinstance(item, dict):
-                            type = item.get("type")
-                            ItemClass = Class.metadata_select_class(type)
-                            yield from ItemClass.metadata_validate(item)
+                            type = item.get("type")  # type: ignore
+                            ItemClass = Class.metadata_select_class(type)  # type: ignore
+                            yield from ItemClass.metadata_validate(item)  # type: ignore
                 elif isinstance(value, dict):
-                    yield from Class.metadata_validate(value)
+                    yield from Class.metadata_validate(value)  # type: ignore
 
     @classmethod
     def metadata_import(
@@ -389,17 +389,17 @@ class Metadata:
             Class = cls.metadata_select_property_class(name)
             if Class:
                 if isinstance(value, list):
-                    for ix, item in enumerate(value):
+                    for ix, item in enumerate(value):  # type: ignore
                         if isinstance(item, dict):
-                            type = item.get("type")
-                            ItemClass = Class.metadata_select_class(type)
-                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)
+                            type = item.get("type")  # type: ignore
+                            ItemClass = Class.metadata_select_class(type)  # type: ignore
+                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)  # type: ignore
                         elif isinstance(item, str):
                             value[ix] = Class.from_descriptor(item, basepath=basepath)
                 elif isinstance(value, dict):
-                    value = Class.metadata_import(value, basepath=basepath)
-            merged_options.setdefault(stringcase.snakecase(name), value)
-        merged_options.update(options)
+                    value = Class.metadata_import(value, basepath=basepath)  # type: ignore
+            merged_options.setdefault(stringcase.snakecase(name), value)  # type: ignore
+        merged_options.update(options)  # type: ignore
         if with_basepath:
             merged_options["basepath"] = basepath
         metadata = cls(**merged_options)
@@ -412,9 +412,9 @@ class Metadata:
         for name in profile.get("properties", {}):
             if name in exclude:
                 continue
-            if name != "type" and not self.has_defined(stringcase.snakecase(name)):
+            if name != "type" and not self.has_defined(stringcase.snakecase(name)):  # type: ignore
                 continue
-            value = getattr(self, stringcase.snakecase(name), None)
+            value = getattr(self, stringcase.snakecase(name), None)  # type: ignore
             Class = self.metadata_select_property_class(name)
             if value is None or (isinstance(value, dict) and value == {}):
                 continue
@@ -426,7 +426,7 @@ class Metadata:
                     if not value:
                         continue
             if isinstance(value, (list, dict)):
-                value = deepcopy(value)
+                value = deepcopy(value)  # type: ignore
             descriptor[name] = value
-        descriptor.update(self.custom)
-        return descriptor
+        descriptor.update(self.custom)  # type: ignore
+        return descriptor  # type: ignore
