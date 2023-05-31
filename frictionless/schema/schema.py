@@ -5,14 +5,16 @@ from typing import Optional, List, Any, Union, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
+from .factory import Factory
 from .field import Field
+from .types import INotes
 from .. import settings
 from .. import errors
 from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)
-class Schema(Metadata):
+class Schema(Metadata, metaclass=Factory):
     """Schema representation
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -74,13 +76,6 @@ class Schema(Metadata):
     """
     Specifies the foreign keys for the schema.
     """
-
-    @classmethod
-    def __create__(
-        cls, descriptor: Optional[Union[types.IDescriptor, str]] = None, **options: Any
-    ):
-        if descriptor is not None:
-            return cls.from_descriptor(descriptor, **options)
 
     def __attrs_post_init__(self):
         for field in self.fields:
@@ -201,7 +196,7 @@ class Schema(Metadata):
             any[]: list of processed cells
         """
         res_cells: List[Any] = []
-        res_notes: List[types.INotes] = []
+        res_notes: List[INotes] = []
         readers = self.create_cell_readers()
         for index, reader in enumerate(readers.values()):
             cell = cells[index] if len(cells) > index else None
@@ -226,7 +221,7 @@ class Schema(Metadata):
             any[]: list of processed cells
         """
         res_cells: List[Any] = []
-        res_notes: List[types.INotes] = []
+        res_notes: List[INotes] = []
         writers = self.create_cell_writers()
         for index, writer in enumerate(writers.values()):
             cell = cells[index] if len(cells) > index else None
