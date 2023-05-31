@@ -1,10 +1,9 @@
 from typing import Any, Optional, Union, cast
-from ..metadata import Metaclass
 from ..platform import platform
 from .. import types
 
 
-class Factory(Metaclass):
+class Factory(type):
     def __call__(
         cls,
         descriptor: Optional[Union[types.IDescriptor, str]] = None,

@@ -1,12 +1,11 @@
 from typing import Any, Optional, cast
-from ..metadata import Metaclass
 from ..platform import platform
 from ..dialect import Control
 from ..system import system
 from .. import helpers
 
 
-class Factory(Metaclass):
+class Factory(type):
     def __call__(
         cls,
         source: Optional[Any] = None,

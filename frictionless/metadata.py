@@ -21,17 +21,7 @@ if TYPE_CHECKING:
     from . import types
 
 
-class Metaclass(type):
-    def __call__(cls, *args, **kwargs):
-        obj = None
-        if hasattr(cls, "__create__"):
-            obj = cls.__create__(*args, **kwargs)  # type: ignore
-        if obj == None:
-            obj = type.__call__(cls, *args, **kwargs)
-        return obj
-
-
-class Metadata(metaclass=Metaclass):
+class Metadata:
     """Metadata represenation
 
     For proper functioning a child class must be decorated by

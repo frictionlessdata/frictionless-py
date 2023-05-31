@@ -11,6 +11,7 @@ from ..validator import Validator
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
+from .factory import Factory
 from ..schema import Schema
 from ..system import system
 from .. import settings
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
 
 
 @attrs.define(kw_only=True, repr=False)
-class Resource(Metadata):
+class Resource(Metadata, metaclass=Factory):
     """Resource representation.
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -224,70 +225,6 @@ class Resource(Metadata):
     """
     Whether the resoruce is tabular
     """
-
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        packagify: bool = False,
-        **options,
-    ):
-        resources = platform.frictionless_resources
-        source = helpers.normalize_source(source)
-
-        # Source
-        if source is not None:
-            if cls is not Resource:
-                note = 'Providing "source" argument is only possible to "Resource" class'
-                raise FrictionlessException(note)
-
-            # Adapter
-            adapter = system.create_adapter(
-                source,
-                control=control,
-                basepath=basepath,
-                packagify=packagify,
-            )
-            if adapter:
-                package = adapter.read_package()
-                if package:
-                    data = package.to_descriptor()
-                    return resources.PackageResource(
-                        data=data, basepath=package.basepath, **options
-                    )
-
-            # Path/data
-            path = source
-            if isinstance(source, str):
-                path = helpers.join_basepath(source, basepath=basepath)
-            type = Detector.detect_metadata_type(path, format=options.get("format"))
-            if type != "resource":
-                options["path" if isinstance(source, str) else "data"] = source
-                return cls(control=control, basepath=basepath, **options)
-
-            # Descriptor
-            options.pop("format", None)
-            return cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
-
-        # Control
-        if control is not None:
-            dialect = options.pop("dialect", None)
-            if dialect is None:
-                dialect = control.to_dialect()
-            elif control not in dialect.controls:
-                dialect.add_control(control)
-            options["dialect"] = dialect
-            return cls(basepath=basepath, **options)
-
-        # Routing
-        if cls is Resource:
-            resource = RoutingResource(basepath=basepath, **options)
-            Class = system.select_resource_class(datatype=resource.datatype)
-            resource = Class(basepath=basepath, **options)
-            return resource
 
     def __attrs_post_init__(self):
         self.name = self._name or ""
@@ -942,10 +879,3 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
-
-
-# Internal
-
-
-class RoutingResource(Resource):
-    pass
