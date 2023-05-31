@@ -6,3 +6,4 @@ from . import index
 from . import list
 from . import move
 from . import read
+from . import sync

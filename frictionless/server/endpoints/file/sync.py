@@ -6,7 +6,7 @@ from ...project import Project
 from ...router import router
 from ... import helpers
 from ... import models
-from . import read
+from ..record import read as record_read
 
 
 class Props(BaseModel, extra="forbid"):
@@ -17,7 +17,7 @@ class Result(BaseModel, extra="forbid"):
     record: models.Record
 
 
-@router.post("/record/sync")
+@router.post("/file/sync")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
@@ -28,7 +28,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     # Read record
-    record = read.action(project, read.Props(path=props.path)).record
+    record = record_read.action(project, record_read.Props(path=props.path)).record
 
     # Index resource
     resource = Resource.from_descriptor(record.resource, basepath=str(fs.basepath))

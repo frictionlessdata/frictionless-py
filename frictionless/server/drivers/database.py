@@ -96,6 +96,9 @@ class Database:
 
     def delete_table(self, *, name: str):
         with self.engine.begin() as conn:
-            table = self.metadata.tables.get(name, None)
+            table = self.get_table(name=name)
             if table is not None:
                 table.drop(conn)
+
+    def get_table(self, *, name: str):
+        return self.metadata.tables.get(name, None)

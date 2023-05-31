@@ -1,6 +1,4 @@
 from __future__ import annotations
-from typing import Optional
-from tinydb import Query
 from pydantic import BaseModel
 from fastapi import Request
 from ....resource import Resource
@@ -8,17 +6,11 @@ from ...project import Project
 from ...router import router
 from ... import helpers
 from ... import models
-
-# TODO: remove
-from ..record import sync
-
-
-# TODO: merger with record/sync
+from . import sync as file_sync
 
 
 class Props(BaseModel, extra="forbid"):
     path: str
-    sync: Optional[bool] = None
 
 
 class Result(BaseModel, extra="forbid"):
@@ -36,12 +28,18 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     # Return existent (we check if report is present; if not we do sync)
-    descriptor = md.find_document(type="record", query=Query().path == props.path)
-    if descriptor:
-        record = models.Record.parse_obj(descriptor)
-        descriptor = db.read_artifact(name=record.name, type="report")
-        if not descriptor:
-            record = sync.action(project, sync.Props(path=props.path)).record
+    record = helpers.find_record(project, path=props.path)
+    if record:
+        dosync = False
+        report = db.read_artifact(name=record.name, type="report")
+        if report is None:
+            dosync = True
+        elif record.type == "table":
+            table = db.get_table(name=record.name)
+            if table is None:
+                dosync = True
+        if dosync:
+            record = file_sync.action(project, file_sync.Props(path=props.path)).record
         return Result(record=record)
 
     # Index resource
