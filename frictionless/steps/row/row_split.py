@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ...resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class row_split(Step):
     """Split rows.
 

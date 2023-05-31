@@ -4,7 +4,7 @@ from typing import Any, NamedTuple
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class YearmonthField(Field):
     type = "yearmonth"
     builtin = True

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ...resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class required_value(Check):
     """Check for required values in a field."""
 

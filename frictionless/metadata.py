@@ -28,7 +28,6 @@ class Metaclass(type):
             obj = cls.__create__(*args, **kwargs)  # type: ignore
         if obj == None:
             obj = type.__call__(cls, *args, **kwargs)
-        cls.__repr__ = Metadata.__repr__  # type: ignore
         obj.metadata_initiated = True
         return obj
 

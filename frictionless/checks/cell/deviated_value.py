@@ -20,7 +20,7 @@ AVERAGE_FUNCTIONS = {
 }
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class deviated_value(Check):
     """Check for deviated values in a field."""
 

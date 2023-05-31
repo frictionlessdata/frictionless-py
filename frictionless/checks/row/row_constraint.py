@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class row_constraint(Check):
     """Check that every row satisfies a provided Python expression."""
 

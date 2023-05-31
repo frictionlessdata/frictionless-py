@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ...error import Error
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class forbidden_value(Check):
     """Check for forbidden values in a field."""
 

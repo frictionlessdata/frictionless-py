@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ...resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class sequential_value(Check):
     """Check that a column having sequential values."""
 

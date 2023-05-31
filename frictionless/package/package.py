@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from ..catalog import Dataset
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Package(Metadata):
     """Package representation
 

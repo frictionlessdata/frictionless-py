@@ -4,7 +4,7 @@ from typing import Any
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class YearField(Field):
     type = "year"
     builtin = True

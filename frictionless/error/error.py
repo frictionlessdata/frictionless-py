@@ -13,7 +13,7 @@ from .. import helpers
 # raw data without rendering an error template to an error messsage.
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Error(Metadata):
     """Error representation.
 

@@ -5,7 +5,7 @@ from typing import Any, cast, Dict
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ObjectField(Field):
     type = "object"
     builtin = True

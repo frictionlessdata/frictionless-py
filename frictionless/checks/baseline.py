@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class baseline(Check):
     """Check a table for basic errors
 

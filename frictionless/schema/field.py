@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from .schema import Schema
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Field(Metadata):
     """Field representation"""
 

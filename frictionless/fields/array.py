@@ -5,7 +5,7 @@ from typing import Any, Optional, Dict
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ArrayField(Field):
     type = "array"
     builtin = True

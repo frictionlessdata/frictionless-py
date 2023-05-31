@@ -11,7 +11,7 @@ from ..error import Error
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ReportTask(Metadata):
     """Report task representation."""
 

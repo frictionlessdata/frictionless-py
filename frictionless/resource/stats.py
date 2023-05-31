@@ -3,7 +3,7 @@ import attrs
 from typing import Optional
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ResourceStats:
     """Stats representation"""
 

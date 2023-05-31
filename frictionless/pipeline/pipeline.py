@@ -11,7 +11,7 @@ from .. import errors
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Pipeline(Metadata):
     """Pipeline representation"""
 

@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 # TODO: support something like "step.transform_resource_row"
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Step(Metadata):
     """Step representation.
 

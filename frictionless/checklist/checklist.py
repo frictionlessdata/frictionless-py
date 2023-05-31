@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 # TODO: raise an exception if we try export a checklist with function based checks?
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Checklist(Metadata):
     """Checklist representation.
 

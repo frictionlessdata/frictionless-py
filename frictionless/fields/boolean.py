@@ -5,7 +5,7 @@ from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class BooleanField(Field):
     type = "boolean"
     builtin = True

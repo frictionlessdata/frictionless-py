@@ -6,7 +6,7 @@ from decimal import Decimal
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class GeopointField(Field):
     type = "geopoint"
     builtin = True

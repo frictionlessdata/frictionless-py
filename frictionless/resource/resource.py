@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from ..interfaces import ICallbackFunction
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Resource(Metadata):
     """Resource representation.
 

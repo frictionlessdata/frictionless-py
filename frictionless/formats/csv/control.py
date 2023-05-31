@@ -6,7 +6,7 @@ from ...dialect import Control
 from . import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class CsvControl(Control):
     """Csv dialect representation.
 

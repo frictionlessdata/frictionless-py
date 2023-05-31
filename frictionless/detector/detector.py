@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..interfaces import IBuffer, IEncodingFunction, ISample, IFragment
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Detector:
     """Detector representation.
 

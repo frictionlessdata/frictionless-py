@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 # TODO: add support for validate_package/etc?
 # TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Check(Metadata):
     """Check representation.
 

@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from ...package import Package
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class resource_add(Step):
     """Add resource.
 

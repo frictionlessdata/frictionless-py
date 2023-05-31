@@ -6,7 +6,7 @@ from ..schema import Field
 from ..platform import platform
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class StringField(Field):
     type = "string"
     builtin = True

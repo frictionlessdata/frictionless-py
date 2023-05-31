@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ...table import Row
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class duplicate_row(Check):
     """Check for duplicate rows
 

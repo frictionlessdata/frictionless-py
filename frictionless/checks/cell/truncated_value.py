@@ -24,7 +24,7 @@ TRUNCATED_INTEGER_VALUES = [
 ]
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class truncated_value(Check):
     """Check for possible truncated values
 

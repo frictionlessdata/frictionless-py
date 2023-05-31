@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .catalog import Catalog
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Dataset(Metadata):
     """Dataset representation."""
 

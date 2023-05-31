@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 DEFAULT_INTERVAL = 3
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class deviated_cell(Check):
     """Check if the cell size is deviated"""
 

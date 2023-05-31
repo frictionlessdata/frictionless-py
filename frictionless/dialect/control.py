@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .dialect import Dialect
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Control(Metadata):
     """Control representation.
 

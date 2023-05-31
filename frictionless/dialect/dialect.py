@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor, ISample
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Dialect(Metadata):
     """Dialect representation"""
 

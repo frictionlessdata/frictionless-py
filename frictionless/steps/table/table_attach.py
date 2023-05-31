@@ -6,7 +6,7 @@ from ...platform import platform
 from ...resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class table_attach(Step):
     """Attach table.
 

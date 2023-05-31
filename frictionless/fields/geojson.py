@@ -7,7 +7,7 @@ from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class GeojsonField(Field):
     type = "geojson"
     builtin = True

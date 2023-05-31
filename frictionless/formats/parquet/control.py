@@ -5,7 +5,7 @@ from ...dialect import Control
 from ... import helpers
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ParquetControl(Control):
     """Parquet control representation.
 

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ...package import Package
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class resource_transform(Step):
     """Transform resource.
 

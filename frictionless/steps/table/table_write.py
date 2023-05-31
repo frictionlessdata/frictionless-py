@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ...resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class table_write(Step):
     """Write table.
 

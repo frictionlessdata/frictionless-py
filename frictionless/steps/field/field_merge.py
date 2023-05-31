@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 DEFAULT_SEPARATOR = "-"
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class field_merge(Step):
     """Merge fields.
 

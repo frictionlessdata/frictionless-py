@@ -18,7 +18,7 @@ from .. import errors
 
 
 # TODO: rebase back on using resource?
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class InquiryTask(Metadata):
     """Inquiry task representation."""
 

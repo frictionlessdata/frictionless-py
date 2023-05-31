@@ -9,7 +9,7 @@ from ...resource import Resource
 DEFAULT_MODE = "inner"
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class table_join(Step):
     """Join tables.
 
