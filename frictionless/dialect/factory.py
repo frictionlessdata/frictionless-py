@@ -12,6 +12,13 @@ class Factory(Metaclass):
         **options: Any
     ):
         assert not params
+
+        # Descriptor
         if descriptor is not None:
             return platform.frictionless.Dialect.from_descriptor(descriptor, **options)
-        return cast(platform.frictionless.Dialect, type.__call__(cls, **options))
+
+        # Default
+        return cast(
+            platform.frictionless.Dialect,
+            type.__call__(cls, **options),
+        )

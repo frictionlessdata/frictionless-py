@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
+from .factory import Factory
 from .dataset import Dataset
 from .. import settings
 from .. import helpers
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @attrs.define(kw_only=True, repr=False)
-class Catalog(Metadata):
+class Catalog(Metadata, metaclass=Factory):
     """Catalog representation"""
 
     source: Optional[Any] = attrs.field(default=None, kw_only=False)
@@ -79,32 +80,6 @@ class Catalog(Metadata):
             if adapter:
                 catalog = adapter.read_catalog()
                 return catalog
-
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        **options: Any,
-    ):
-        source = helpers.normalize_source(source)
-
-        # Source/control
-        if source is not None or control is not None:
-            if cls is not Catalog:
-                note = 'Providing "source" argument is only possible to "Catalog" class'
-                raise FrictionlessException(note)
-
-            # Adapter
-            adapter = system.create_adapter(source, control=control, basepath=basepath)
-            if adapter:
-                catalog = adapter.read_catalog()
-                return catalog
-
-            # Descriptor
-            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
 
     def __attrs_post_init__(self):
         for dataset in self.datasets:
