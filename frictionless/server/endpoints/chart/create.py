@@ -4,10 +4,8 @@ from typing import Optional
 from fastapi import Request
 from ...project import Project
 from ...router import router
+from ..json import write as json_write
 from ... import types
-
-# TODO: replace by helpers
-from .. import json
 
 
 class Props(BaseModel):
@@ -27,8 +25,8 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     path = props.path or "chart.json"
     data = props.chart or {"encoding": {}}
-    result = json.write.action(
-        project, json.write.Props(path=path, data=data, deduplicate=True)
+    result = json_write.action(
+        project, json_write.Props(path=path, data=data, deduplicate=True)
     )
 
     return Result(path=result.path)

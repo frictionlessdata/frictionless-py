@@ -8,9 +8,7 @@ from ...project import Project
 from ...router import router
 from ... import models
 from ... import types
-
-# TODO: replace by helpers
-from . import read
+from . import read as record_read
 
 
 class Props(BaseModel):
@@ -33,7 +31,10 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
-    record = read.action(project, read.Props(path=props.path)).record
+    # Read record
+    record = record_read.action(project, record_read.Props(path=props.path)).record
+
+    # Write record
     if props.type:
         record.type = props.type
     if props.resource:
@@ -41,6 +42,6 @@ def action(project: Project, props: Props) -> Result:
         if not report.valid:
             raise FrictionlessException("resource is not valid")
         record.resource = props.resource
-
     md.write_document(name=record.name, type="record", descriptor=record.dict())
+
     return Result(record=record)

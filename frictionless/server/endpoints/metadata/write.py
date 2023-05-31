@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
 from ...router import router
-from .. import json
+from ..json import write as json_write
 
 
 class Props(BaseModel):
@@ -24,8 +24,8 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: delete report
 def action(project: Project, props: Props) -> Result:
     # Write data
-    result = json.write.action(
-        project, json.write.Props(path=props.path, data=props.data)
+    result = json_write.action(
+        project, json_write.Props(path=props.path, data=props.data)
     )
 
     return Result(path=result.path)
