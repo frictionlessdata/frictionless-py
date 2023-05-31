@@ -64,23 +64,6 @@ class Catalog(Metadata, metaclass=Factory):
     `basepath` and `/path`
     """
 
-    @classmethod
-    def from_source(
-        cls,
-        source: Any,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-    ) -> Optional[Catalog]:
-        source = helpers.normalize_source(source)
-
-        # Adapter
-        if source is not None or control is not None:
-            adapter = system.create_adapter(source, control=control, basepath=basepath)
-            if adapter:
-                catalog = adapter.read_catalog()
-                return catalog
-
     def __attrs_post_init__(self):
         for dataset in self.datasets:
             dataset.catalog = self

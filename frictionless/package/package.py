@@ -8,6 +8,7 @@ from ..validator import Validator
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
+from .factory import Factory
 from ..system import system
 from .. import settings
 from .. import helpers
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
 
 
 @attrs.define(kw_only=True, repr=False)
-class Package(Metadata):
+class Package(Metadata, metaclass=Factory):
     """Package representation
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -158,38 +159,6 @@ class Package(Metadata):
     """
     # TODO: add docs
     """
-
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        packagify: bool = True,
-        **options,
-    ):
-        source = helpers.normalize_source(source)
-
-        # Source/control
-        if source is not None or control is not None:
-            if cls is not Package:
-                note = 'Providing "source" argument is only possible to "Package" class'
-                raise FrictionlessException(note)
-
-            # Adapter
-            adapter = system.create_adapter(
-                source,
-                control=control,
-                basepath=basepath,
-                packagify=packagify,
-            )
-            if adapter:
-                package = adapter.read_package()
-                return package
-
-            # Descriptor
-            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
 
     def __attrs_post_init__(self):
         for resource in self.resources:

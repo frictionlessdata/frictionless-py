@@ -13,7 +13,7 @@ class Factory(Metaclass):
     ):
         assert not params
 
-        # Description
+        # Descriptor
         if descriptor is not None:
             return platform.frictionless.Schema.from_descriptor(descriptor, **options)
 

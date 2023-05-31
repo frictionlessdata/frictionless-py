@@ -13,6 +13,7 @@ class Factory(Metaclass):
         *params: Any,
         control: Optional[Control] = None,
         basepath: Optional[str] = None,
+        packagify: bool = True,
         **options: Any
     ):
         assert not params
@@ -20,19 +21,22 @@ class Factory(Metaclass):
 
         # Adapter
         if source is not None or control is not None:
-            adapter = system.create_adapter(source, control=control, basepath=basepath)
+            adapter = system.create_adapter(
+                source,
+                control=control,
+                basepath=basepath,
+                packagify=packagify,
+            )
             if adapter:
-                catalog = adapter.read_catalog()
-                return catalog
+                package = adapter.read_package()
+                return package
 
         # Descriptor
         if source is not None:
-            return platform.frictionless.Catalog.from_descriptor(
-                source, basepath=basepath, **options  # type: ignore
-            )
+            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
 
         # Default
         return cast(
-            platform.frictionless.Catalog,
+            platform.frictionless.Package,
             type.__call__(cls, basepath=basepath, **options),
         )
