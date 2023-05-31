@@ -21,21 +21,7 @@ if TYPE_CHECKING:
     from .interfaces import IDescriptor
 
 
-# TODO: review how "defined" API logic works
-# NOTE: review and clean this class
-# NOTE: can we generate metadata_profile from dataclasses?
-# NOTE: insert __init__ params docs using instance properties data?
-
-
 class Metaclass(type):
-    # TODO: why it's called twice for every class?
-    def __init__(cls, *args, **kwargs):
-        if cls.metadata_profile_patch:  # type: ignore
-            cls.metadata_profile = helpers.merge_jsonschema(
-                cls.metadata_profile,  # type: ignore
-                cls.metadata_profile_patch,  # type: ignore
-            )
-
     def __call__(cls, *args, **kwargs):
         obj = None
         if hasattr(cls, "__create__"):
@@ -271,12 +257,11 @@ class Metadata(metaclass=Metaclass):
 
     # Metadata
 
-    # TODO: add/improve types
     metadata_type: ClassVar[str]
-    metadata_Error = None
-    metadata_profile = {}
-    metadata_profile_patch = {}
-    metadata_profile_merged = {}
+    metadata_Error: ClassVar[Optional[Type[Error]]] = None
+    metadata_profile: ClassVar[Dict[str, Any]] = {}
+    metadata_profile_patch: ClassVar[Dict[str, Any]] = {}
+    metadata_profile_merged: ClassVar[Dict[str, Any]] = {}
     metadata_initiated: bool = False
     metadata_assigned: Set[str] = set()
     metadata_defaults: Dict[str, Union[list, dict]] = {}
@@ -294,6 +279,17 @@ class Metadata(metaclass=Metaclass):
     @classmethod
     def metadata_select_property_class(cls, name: str) -> Optional[Type[Metadata]]:
         pass
+
+    @classmethod
+    def metadata_prepare_profile(cls):
+        if not cls.__dict__.get("metadata_profile_merged", None):
+            cls.metadata_profile_merged = cls.metadata_profile
+            for subcls in reversed(cls.mro()):
+                cls.metadata_profile_merged = helpers.merge_jsonschema(
+                    cls.metadata_profile_merged,
+                    getattr(subcls, "metadata_profile_patch", {}),
+                )
+        return cls.metadata_profile_merged
 
     @classmethod
     def metadata_retrieve(
@@ -329,7 +325,8 @@ class Metadata(metaclass=Metaclass):
 
     @classmethod
     def metadata_transform(cls, descriptor: IDescriptor):
-        for name in cls.metadata_profile.get("properties", {}):
+        profile = cls.metadata_prepare_profile()
+        for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
             if Class:
@@ -353,7 +350,7 @@ class Metadata(metaclass=Metaclass):
         Error = error_class
         if not Error:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
-        profile = profile or cls.metadata_profile
+        profile = profile or cls.metadata_prepare_profile()
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
@@ -365,7 +362,7 @@ class Metadata(metaclass=Metaclass):
             if metadata_path:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
-        for name in cls.metadata_profile.get("properties", {}):
+        for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
             if Class:
@@ -383,9 +380,10 @@ class Metadata(metaclass=Metaclass):
         cls, descriptor: IDescriptor, *, with_basepath: bool = False, **options: Any
     ) -> Self:
         merged_options = {}
+        profile = cls.metadata_prepare_profile()
         basepath = options.pop("basepath", None)
         is_typed_class = isinstance(getattr(cls, "type", None), str)
-        for name in cls.metadata_profile.get("properties", {}):
+        for name in profile.get("properties", {}):
             value = descriptor.pop(name, None)
             if value is None or value == {}:
                 continue
@@ -413,7 +411,8 @@ class Metadata(metaclass=Metaclass):
 
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         descriptor = {}
-        for name in self.metadata_profile.get("properties", {}):
+        profile = self.metadata_prepare_profile()
+        for name in profile.get("properties", {}):
             if name in exclude:
                 continue
             if name != "type" and not self.has_defined(stringcase.snakecase(name)):
