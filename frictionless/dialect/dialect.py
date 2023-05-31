@@ -5,6 +5,7 @@ from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
 from .control import Control
+from .factory import Factory
 from ..system import system
 from .. import settings
 from .. import helpers
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @attrs.define(kw_only=True, repr=False)
-class Dialect(Metadata):
+class Dialect(Metadata, metaclass=Factory):
     """Dialect representation"""
 
     descriptor: Optional[Union[types.IDescriptor, str]] = attrs.field(
@@ -89,13 +90,6 @@ class Dialect(Metadata):
     """
     A list of controls which defines different aspects of reading data.
     """
-
-    @classmethod
-    def __create__(
-        cls, descriptor: Optional[Union[types.IDescriptor, str]] = None, **options: Any
-    ):
-        if descriptor is not None:
-            return cls.from_descriptor(descriptor, **options)
 
     def __bool__(self):
         return bool(self.controls) or bool(self.to_descriptor())
