@@ -7,8 +7,8 @@ from ...platform import platform
 from ...resource import Resource
 from ...system import system
 from ..console import console
+from .. import helpers
 from .. import common
-from .. import utils
 
 
 @console.command(name="transform", hidden=True)
@@ -38,14 +38,14 @@ def console_transform(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     # Create pipeline
-    pipeline_obj = utils.create_pipeline(
+    pipeline_obj = helpers.create_pipeline(
         descriptor=pipeline,
         steps=steps,
     )
@@ -59,7 +59,7 @@ def console_transform(
         result = resource.transform(pipeline_obj)
     # TODO: we don't catch errors here because it's streaming
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # TODO: support outputing packages

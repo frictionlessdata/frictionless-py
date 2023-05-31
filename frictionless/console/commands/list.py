@@ -6,9 +6,9 @@ from rich.table import Table
 from ...resource import Resource
 from ...system import system
 from ..console import console
-from ... import helpers
+from ...helpers import to_json, to_yaml
 from .. import common
-from .. import utils
+from .. import helpers
 
 
 @console.command(name="list")
@@ -62,14 +62,14 @@ def console_describe(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
     try:
         # Create dialect
-        dialect_obj = utils.create_dialect(
+        dialect_obj = helpers.create_dialect(
             descriptor=dialect,
             header_rows=header_rows,
             header_join=header_join,
@@ -82,7 +82,7 @@ def console_describe(
         )
 
         # Create detector
-        detector_obj = utils.create_detector(
+        detector_obj = helpers.create_detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
@@ -94,7 +94,7 @@ def console_describe(
 
         # Create resource
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             path=path,
             scheme=scheme,
@@ -115,18 +115,18 @@ def console_describe(
         resources = resource.list(name=name)
         descriptors = [resource.to_descriptor() for resource in resources]
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
     if yaml:
-        descriptor = helpers.to_yaml(descriptors).strip()
+        descriptor = to_yaml(descriptors).strip()
         print(descriptor)
         raise typer.Exit()
 
     # Json mode
     if json:
-        descriptor = helpers.to_json(descriptors).strip()
+        descriptor = helpersto_json(descriptors).strip()
         print(descriptor)
         raise typer.Exit()
 

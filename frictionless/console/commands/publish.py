@@ -11,7 +11,7 @@ from ...package import Package
 from ..console import console
 from ...system import system
 from .. import common
-from .. import utils
+from .. import helpers
 
 
 @console.command(name="publish")
@@ -40,16 +40,16 @@ def console_publish(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     try:
         # Get package
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             path=path,
             datatype=type,
@@ -69,7 +69,7 @@ def console_publish(
                 package.publish(target, control=portals.ckan.CkanControl(apikey=apikey))
 
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Print result

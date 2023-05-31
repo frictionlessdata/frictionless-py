@@ -8,8 +8,8 @@ from ...platform import platform
 from ...resource import Resource
 from ...system import system
 from ..console import console
+from .. import helpers
 from .. import common
-from .. import utils
 
 
 @console.command(name="convert")
@@ -58,15 +58,15 @@ def console_convert(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     try:
         # Create dialect
-        dialect_obj = utils.create_dialect(
+        dialect_obj = helpers.create_dialect(
             descriptor=dialect,
             header_rows=header_rows,
             header_join=header_join,
@@ -80,7 +80,7 @@ def console_convert(
 
         # Create resource
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             path=path,
             scheme=scheme,
             format=format,
@@ -97,7 +97,7 @@ def console_convert(
             resource.dialect = dialect_obj
 
         # Create to_dialect
-        to_dialect_obj = utils.create_dialect(
+        to_dialect_obj = helpers.create_dialect(
             descriptor=to_dialect,
             csv_delimiter=to_csv_delimiter,
         )
@@ -122,7 +122,7 @@ def console_convert(
                 )
 
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Print result
