@@ -7,4 +7,3 @@ from . import list
 from . import move
 from . import patch
 from . import read
-from . import sync
