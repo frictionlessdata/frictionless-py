@@ -26,8 +26,6 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    db = project.database
-
     # Forbid overwriting
     if props.toPath and helpers.test_file(project, path=props.toPath):
         raise FrictionlessException("file already exists")
@@ -38,14 +36,11 @@ def action(project: Project, props: Props) -> Result:
         path=props.path,
         toPath=props.toPath,
         resource=props.resource,
+        isDataChanged=props.text is not None,
     )
 
     # Write contents
     if props.text is not None:
         helpers.write_text(project, path=record.path, text=props.text)
-
-    # Delete report
-    if props.text is not None and not props.toPath:
-        db.delete_artifact(name=record.name, type="report")
 
     return Result(path=record.path)

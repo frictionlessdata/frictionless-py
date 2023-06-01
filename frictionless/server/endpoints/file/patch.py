@@ -1,47 +1,56 @@
 from __future__ import annotations
 from typing import Optional
-from fastapi import Request
 from pydantic import BaseModel
+from fastapi import Request, UploadFile, File, Form
 from ....exception import FrictionlessException
-from ....resource import Resource
 from ...project import Project
 from ...router import router
 from ... import helpers
-from ... import models
 from ... import types
 
 
 class Props(BaseModel):
     path: str
-    type: Optional[str] = None
+    bytes: Optional[bytes] = None
+    toPath: Optional[str] = None
     resource: Optional[types.IDescriptor] = None
 
 
 class Result(BaseModel):
-    record: models.Record
+    path: str
 
 
 @router.post("/file/patch")
-def endpoint(request: Request, props: Props) -> Result:
-    return action(request.app.get_project(), props)
+async def endpoint(
+    request: Request,
+    file: UploadFile = File(),
+    path: str = Form(),
+    toPath: Optional[str] = Form(None),
+    resource: Optional[types.IDescriptor] = Form(None),
+) -> Result:
+    bytes = await file.read()
+    return action(
+        request.app.get_project(),
+        Props(path=path, bytes=bytes, toPath=toPath, resource=resource),
+    )
 
 
-# TODO: validate type
-# TODO: run validation again?
 def action(project: Project, props: Props) -> Result:
-    md = project.metadata
+    # Forbid overwriting
+    if props.toPath and helpers.test_file(project, path=props.toPath):
+        raise FrictionlessException("file already exists")
 
-    # Read record
-    record = helpers.read_record_or_raise(project, path=props.path)
+    # Patch record
+    record = helpers.patch_record(
+        project,
+        path=props.path,
+        toPath=props.toPath,
+        resource=props.resource,
+        isDataChanged=props.bytes is not None,
+    )
 
-    # Write record
-    if props.type:
-        record.type = props.type
-    if props.resource:
-        report = Resource.validate_descriptor(props.resource)
-        if not report.valid:
-            raise FrictionlessException("resource is not valid")
-        record.resource = props.resource
-    md.write_document(name=record.name, type="record", descriptor=record.dict())
+    # Write contents
+    if props.bytes is not None:
+        helpers.write_file(project, path=record.path, bytes=props.bytes)
 
-    return Result(record=record)
+    return Result(path=record.path)

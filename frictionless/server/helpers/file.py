@@ -6,6 +6,13 @@ if TYPE_CHECKING:
     from ..project import Project
 
 
+def test_file(project: Project, *, path: str):
+    fs = project.filesystem
+
+    fullpath = fs.get_fullpath(path)
+    return fullpath.exists()
+
+
 def read_file(project: Project, *, path: str):
     fs = project.filesystem
 
@@ -14,13 +21,6 @@ def read_file(project: Project, *, path: str):
     bytes = resource.read_file()
 
     return bytes
-
-
-def test_file(project: Project, *, path: str):
-    fs = project.filesystem
-
-    fullpath = fs.get_fullpath(path)
-    return fullpath.exists()
 
 
 def write_file(project: Project, *, path: str, bytes: bytes):

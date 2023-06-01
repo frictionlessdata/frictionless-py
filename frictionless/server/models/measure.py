@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class Stats(BaseModel):
+class Measure(BaseModel):
     errors: int

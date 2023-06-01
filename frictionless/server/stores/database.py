@@ -43,12 +43,6 @@ class Database:
                 self.metadata.create_all(conn, tables=[artifacts])
             self.artifacts = artifacts
 
-    # TODO: remove this method?
-    def query(self, query: str):
-        sa = platform.sqlalchemy
-        with self.engine.begin() as conn:
-            return conn.execute(sa.text(query))
-
     # Artifacts
 
     def iter_artifacts(self, *, type: str) -> Iterator[Tuple[str, types.IDescriptor]]:
@@ -60,12 +54,13 @@ class Database:
             for item in conn.execute(query).all():
                 yield item.name, json.loads(item.descriptor)
 
-    def delete_artifact(self, *, name: str, type: Optional[str] = None):
+    def delete_artifact(self, *, name: str, type: str):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            query = sa.delete(self.artifacts).where(self.artifacts.c.name == name)
-            if type:
-                query = query.where(self.artifacts.c.type == type)
+            query = sa.delete(self.artifacts).where(
+                self.artifacts.c.name == name,
+                self.artifacts.c.type == type,
+            )
             conn.execute(query)
 
     def read_artifact(self, *, name: str, type: str) -> Optional[types.IDescriptor]:
@@ -95,9 +90,9 @@ class Database:
     # Tables
 
     def delete_table(self, *, name: str):
-        with self.engine.begin() as conn:
-            table = self.get_table(name=name)
-            if table is not None:
+        table = self.get_table(name=name)
+        if table is not None:
+            with self.engine.begin() as conn:
                 table.drop(conn)
 
     def get_table(self, *, name: str):

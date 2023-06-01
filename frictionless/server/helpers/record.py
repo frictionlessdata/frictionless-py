@@ -21,9 +21,12 @@ def patch_record(
     toPath: Optional[str] = None,
     toType: Optional[str] = None,
     resource: Optional[types.IDescriptor] = None,
+    isDataChanged: bool = False,
 ):
     md = project.metadata
+    db = project.database
 
+    # Update record
     record = read_record_or_raise(project, path=path)
     if toPath:
         record.name = name_record(project, path=toPath)
@@ -34,6 +37,13 @@ def patch_record(
     if resource:
         record.resource = resource
     md.write_document(name=record.name, type="record", descriptor=record.dict())
+
+    # Clear database
+    # TODO: use smarter logic to clear only if needed
+    if not toPath:
+        db.delete_table(name=record.name)
+        db.delete_artifact(name=record.name, type="report")
+        db.delete_artifact(name=record.name, type="measure")
 
     return record
 

@@ -44,9 +44,10 @@ def action(project: Project, props: Props) -> Result:
         path=props.path,
         toPath=props.toPath,
         resource=props.resource,
+        isDataChanged=props.history is not None,
     )
 
-    # Write history
+    # Patch table
     if props.history:
         # Patch database table
         with db.engine.begin() as conn:
@@ -64,9 +65,5 @@ def action(project: Project, props: Props) -> Result:
         control = SqlControl(table=record.name, with_metadata=True)
         resource = TableResource(path=db.database_url, control=control)
         resource.write_table(path=str(target))
-
-    # Delete report
-    if props.history is not None and not props.toPath:
-        db.delete_artifact(name=record.name, type="report")
 
     return Result(path=record.path)

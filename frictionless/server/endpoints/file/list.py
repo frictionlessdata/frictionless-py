@@ -25,15 +25,21 @@ def endpoint(request: Request, props: Props) -> Result:
 # TODO: support .gitignore
 def action(project: Project, props: Optional[Props] = None) -> Result:
     fs = project.filesystem
+    db = project.database
     md = project.metadata
 
-    # Map by path
+    # Index by name
+    errors_by_name: Dict[str, int] = {}
+    for name, descriptor in db.iter_artifacts(type="measure"):
+        errors_by_name[name] = descriptor["errors"]
+
+    # Index by path
     type_by_path: Dict[str, str] = {}
     errors_by_path: Dict[str, int] = {}
     for descriptor in md.iter_documents(type="record"):
         path = descriptor["path"]
         type_by_path[path] = descriptor["type"]
-        errors_by_path[path] = descriptor["stats"]["errors"]
+        errors_by_path[path] = errors_by_name.get(descriptor["name"], 0)
 
     # List files
     items: List[models.File] = []

@@ -16,6 +16,7 @@ class Props(BaseModel, extra="forbid"):
 class Result(BaseModel, extra="forbid"):
     record: models.Record
     report: types.IDescriptor
+    measure: models.Measure
 
 
 @router.post("/file/sync")
@@ -35,11 +36,14 @@ def action(project: Project, props: Props) -> Result:
     resource = Resource.from_descriptor(record.resource, basepath=str(fs.basepath))
     report = helpers.index_resource(project, resource=resource, table_name=record.name)
 
-    # Update record
-    record.stats = models.Stats(errors=report.stats["errors"])
+    # Create measure
+    measure = models.Measure(
+        errors=report.stats["errors"],
+    )
 
     # Write record/report
     md.write_document(name=record.name, type="record", descriptor=record.dict())
     db.write_artifact(name=record.name, type="report", descriptor=report.to_descriptor())
+    db.write_artifact(name=record.name, type="measure", descriptor=measure.dict())
 
-    return Result(record=record, report=report.to_descriptor())
+    return Result(record=record, report=report.to_descriptor(), measure=measure)
