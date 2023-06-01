@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 from ....resources import FileResource
 from ...project import Project
 from ...router import router
-from .. import file
 
 
 class Props(BaseModel):
@@ -27,6 +26,8 @@ def server_file_read(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
+    from ... import endpoints
+
     # Load
     resource = FileResource(path=props.url)
     bytes = resource.read_file()
@@ -34,10 +35,13 @@ def action(project: Project, props: Props) -> Result:
     # Save
     parsed = urlparse(props.url)
     path = props.path or Path(parsed.path).name or "link"
-    result = file.create.action(
+    result = endpoints.file.create.action(
         project,
-        file.create.Props(
-            path=path, bytes=bytes, folder=props.folder, deduplicate=props.deduplicate
+        endpoints.file.create.Props(
+            path=path,
+            bytes=bytes,
+            folder=props.folder,
+            deduplicate=props.deduplicate,
         ),
     )
 
