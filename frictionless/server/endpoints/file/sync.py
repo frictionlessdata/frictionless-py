@@ -6,7 +6,7 @@ from ...project import Project
 from ...router import router
 from ... import helpers
 from ... import models
-from ..record import read as record_read
+from ... import types
 
 
 class Props(BaseModel, extra="forbid"):
@@ -15,6 +15,7 @@ class Props(BaseModel, extra="forbid"):
 
 class Result(BaseModel, extra="forbid"):
     record: models.Record
+    report: types.IDescriptor
 
 
 @router.post("/file/sync")
@@ -28,7 +29,7 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
 
     # Read record
-    record = record_read.action(project, record_read.Props(path=props.path)).record
+    record = helpers.read_record_or_raise(project, path=props.path)
 
     # Index resource
     resource = Resource.from_descriptor(record.resource, basepath=str(fs.basepath))
@@ -41,4 +42,4 @@ def action(project: Project, props: Props) -> Result:
     md.write_document(name=record.name, type="record", descriptor=record.dict())
     db.write_artifact(name=record.name, type="report", descriptor=report.to_descriptor())
 
-    return Result(record=record)
+    return Result(record=record, report=report.to_descriptor())

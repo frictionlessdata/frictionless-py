@@ -49,7 +49,7 @@ def action(project: Project, props: Props) -> Result:
     path = fs.get_path(target)
 
     # Copy record
-    record = helpers.find_record(project, path=props.path)
+    record = helpers.read_record(project, path=props.path)
     if record:
         record.name = helpers.make_record_name(project, resource=Resource(path=path))
         record.path = path

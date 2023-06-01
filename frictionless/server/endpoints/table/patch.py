@@ -4,8 +4,8 @@ from fastapi import Request
 from ....platform import platform
 from ...project import Project
 from ...router import router
-from ..record import read as record_read
 from . import export as table_export
+from ... import helpers
 from ... import models
 
 
@@ -28,7 +28,7 @@ def action(project: Project, props: Props) -> Result:
     sa = platform.sqlalchemy
 
     # Write table
-    record = record_read.action(project, record_read.Props(path=props.path)).record
+    record = helpers.read_record_or_raise(project, path=props.path)
     with db.engine.begin() as conn:
         table = db.metadata.tables[record.name]
         for change in props.history.changes:

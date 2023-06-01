@@ -6,9 +6,9 @@ from ....exception import FrictionlessException
 from ....resource import Resource
 from ...project import Project
 from ...router import router
+from ... import helpers
 from ... import models
 from ... import types
-from . import read as record_read
 
 
 class Props(BaseModel):
@@ -21,7 +21,7 @@ class Result(BaseModel):
     record: models.Record
 
 
-@router.post("/record/patch")
+@router.post("/file/patch")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
@@ -32,7 +32,7 @@ def action(project: Project, props: Props) -> Result:
     md = project.metadata
 
     # Read record
-    record = record_read.action(project, record_read.Props(path=props.path)).record
+    record = helpers.read_record_or_raise(project, path=props.path)
 
     # Write record
     if props.type:

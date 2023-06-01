@@ -52,7 +52,7 @@ def action(project: Project, props: Props) -> Result:
     path = fs.get_path(target)
 
     # Move record
-    record = helpers.find_record(project, path=props.path)
+    record = helpers.read_record(project, path=props.path)
     if record:
         record.path = path
         record.resource["path"] = path

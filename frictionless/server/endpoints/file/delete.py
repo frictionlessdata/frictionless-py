@@ -33,7 +33,7 @@ def action(project: Project, props: Props) -> Result:
         raise FrictionlessException("Source doesn't exist")
 
     # Delete table/artifacts/record
-    record = helpers.find_record(project, path=props.path)
+    record = helpers.read_record(project, path=props.path)
     if record:
         db.delete_table(name=record.name)
         db.delete_artifact(name=record.name)
