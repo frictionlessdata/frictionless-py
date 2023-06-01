@@ -24,7 +24,6 @@ def patch_record(
     isDataChanged: bool = False,
 ):
     md = project.metadata
-    db = project.database
 
     # Update record
     record = read_record_or_raise(project, path=path)
@@ -41,11 +40,26 @@ def patch_record(
     # Clear database
     # TODO: use smarter logic to clear only if needed
     if not toPath:
-        db.delete_table(name=record.name)
-        db.delete_artifact(name=record.name, type="report")
-        db.delete_artifact(name=record.name, type="measure")
+        delete_record(project, path=path, onlyFromDatabase=True)
 
     return record
+
+
+def delete_record(project: Project, *, path: str, onlyFromDatabase: bool = False):
+    md = project.metadata
+    db = project.database
+
+    # Read record
+    record = read_record_or_raise(project, path=path)
+
+    # Delete from database
+    db.delete_artifact(name=record.name, type="report")
+    db.delete_artifact(name=record.name, type="measure")
+    db.delete_table(name=record.name)
+
+    # Delete from metadata
+    if not onlyFromDatabase:
+        md.delete_document(name=record.name, type="record")
 
 
 def read_record_or_raise(project: Project, *, path: str):

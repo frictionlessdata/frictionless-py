@@ -3,7 +3,6 @@ import shutil
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
-from ....resource import Resource
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router

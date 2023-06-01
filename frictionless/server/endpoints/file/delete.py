@@ -24,24 +24,16 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
-    md = project.metadata
-    db = project.database
 
-    # Get source
-    source = fs.get_fullpath(props.path)
-    if not source.exists():
-        raise FrictionlessException("Source doesn't exist")
-
-    # Delete table/artifacts/record
-    record = helpers.read_record(project, path=props.path)
-    if record:
-        db.delete_table(name=record.name)
-        db.delete_artifact(name=record.name)
-        md.delete_document(name=record.name, type="record")
+    # Delete record
+    helpers.delete_record(project, path=props.path)
 
     # Delete file
-    delete = shutil.rmtree if source.is_dir() else os.remove
-    delete(source)
+    fullpath = fs.get_fullpath(props.path)
+    if not fullpath.exists():
+        raise FrictionlessException("file doesn't exist")
+    delete = shutil.rmtree if fullpath.is_dir() else os.remove
+    delete(fullpath)
+    path = fs.get_path(fullpath)
 
-    path = fs.get_path(source)
     return Result(path=path)
