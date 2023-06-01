@@ -1,25 +1,25 @@
 from __future__ import annotations
-from typing import Any
 from pydantic import BaseModel
 from fastapi import Request
 from ...project import Project
 from ...router import router
-from ... import helpers
+
+
+# TODO: implement
 
 
 class Props(BaseModel):
-    path: str
+    text: str
 
 
 class Result(BaseModel):
-    data: Any
+    text: str
 
 
-@router.post("/metadata/read")
+@router.post("/script/execute")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
 def action(project: Project, props: Props) -> Result:
-    data = helpers.read_json(project, path=props.path)
-    return Result(data=data)
+    return Result(text=props.text)

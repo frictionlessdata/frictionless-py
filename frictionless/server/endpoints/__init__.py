@@ -1,4 +1,5 @@
 # Register modules
+from . import article
 from . import chart
 from . import column
 from . import file

@@ -42,13 +42,13 @@ def action(project: Project, props: Props) -> Result:
 
     # Index resource
     path, basepath = fs.get_path_and_basepath(props.path)
+    name = helpers.name_record(project, path=path)
     resource = Resource(path=path, basepath=basepath)
-    record_name = helpers.make_record_name(project, resource=resource)
-    report = helpers.index_resource(project, resource=resource, table_name=record_name)
+    report = helpers.index_resource(project, resource=resource, table_name=name)
 
     # Create record
     record = models.Record(
-        name=record_name,
+        name=name,
         path=props.path,
         type=resource.datatype,
         stats=models.Stats(errors=report.stats["errors"]),
@@ -56,7 +56,7 @@ def action(project: Project, props: Props) -> Result:
     )
 
     # Write record/report
-    md.write_document(name=record_name, type="record", descriptor=record.dict())
-    db.write_artifact(name=record_name, type="report", descriptor=report.to_descriptor())
+    md.write_document(name=record.name, type="record", descriptor=record.dict())
+    db.write_artifact(name=record.name, type="report", descriptor=report.to_descriptor())
 
     return Result(record=record, report=report.to_descriptor())

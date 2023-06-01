@@ -1,9 +1,12 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
-from ....resources import TextResource
 from ...project import Project
 from ...router import router
+from ... import helpers
+
+
+# TODO: use detected resource.encoding if indexed
 
 
 class Props(BaseModel):
@@ -19,15 +22,6 @@ def server_text_read(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
-# TODO: use detected resource.encoding if indexed
 def action(project: Project, props: Props) -> Result:
-    fs = project.filesystem
-
-    # Source
-    source = fs.get_fullpath(props.path)
-
-    # Read
-    resource = TextResource(path=str(source))
-    text = resource.read_text()
-
+    text = helpers.read_text(project, path=props.path)
     return Result(text=text)

@@ -51,7 +51,7 @@ def action(project: Project, props: Props) -> Result:
     # Copy record
     record = helpers.read_record(project, path=props.path)
     if record:
-        record.name = helpers.make_record_name(project, resource=Resource(path=path))
+        record.name = helpers.name_record(project, path=path)
         record.path = path
         record.resource["path"] = path
         md.write_document(name=record.name, type="record", descriptor=record.dict())

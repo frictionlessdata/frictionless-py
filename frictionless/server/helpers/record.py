@@ -2,14 +2,40 @@ from __future__ import annotations
 import re
 import stringcase  # type: ignore
 from tinydb import Query
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 from slugify.slugify import slugify
 from ...exception import FrictionlessException
 from .. import models
+from .. import types
 
 if TYPE_CHECKING:
     from ...resource import Resource
     from ..project import Project
+
+
+# TODO: update all the project's packages/resources as well
+def patch_record(
+    project: Project,
+    *,
+    path: str,
+    toPath: Optional[str] = None,
+    toType: Optional[str] = None,
+    resource: Optional[types.IDescriptor] = None,
+):
+    md = project.metadata
+
+    record = read_record_or_raise(project, path=path)
+    if toPath:
+        record.name = name_record(project, path=toPath)
+        record.path = toPath
+        record.resource["path"] = toPath
+    if toType:
+        record.type = toType
+    if resource:
+        record.resource = resource
+    md.write_document(name=record.name, type="record", descriptor=record.dict())
+
+    return record
 
 
 def read_record_or_raise(project: Project, *, path: str):
@@ -27,11 +53,12 @@ def read_record(project: Project, *, path: str):
         return models.Record.parse_obj(descriptor)
 
 
-def make_record_name(project: Project, *, resource: Resource) -> str:
+def name_record(project: Project, *, path: str) -> str:
     md = project.metadata
 
-    # Slugify
-    name = slugify(resource.name)
+    # Make slugified
+    name = Resource(path=path).name
+    name = slugify(name)
     name = re.sub(r"[^a-zA-Z0-9]+", "_", name)
     name = stringcase.camelcase(name)  # type: ignore
 
@@ -42,7 +69,7 @@ def make_record_name(project: Project, *, resource: Resource) -> str:
     for item in md.iter_documents(type="record"):
         item_name: str = item["name"]
         names.append(item_name)
-        if item["path"] == resource.path:
+        if item["path"] == path:
             name = item_name
             found = True
     if not found:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import Optional
-from .drivers import Filesystem, Metadata, Database
+from .stores import Filesystem, Metadata, Database
 
 
 class Project:

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from ..resource import Resource
 from .. import helpers
 
@@ -37,7 +37,9 @@ class FileResource(Resource):
     # Write
 
     # TODO: rebase on using loader
-    def write_file(self, target: Optional[Union[FileResource, str]] = None, **options):
+    def write_file(
+        self, target: Optional[Union[FileResource, str]] = None, **options: Any
+    ):
         """Write bytes to the target"""
         res = target
         if not isinstance(res, FileResource):

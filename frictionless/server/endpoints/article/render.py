@@ -9,21 +9,19 @@ from ...router import router
 
 class Props(BaseModel):
     text: str
-    livemark: Optional[bool] = None
+    rich: Optional[bool] = None
 
 
 class Result(BaseModel):
     text: str
 
 
-@router.post("/text/render")
-def server_text_render(request: Request, props: Props) -> Result:
+@router.post("/article/render")
+def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
 
 def action(project: Project, props: Props) -> Result:
-    # Render
     resource = TextResource(data=props.text)
-    text = resource.render_text(livemark=props.livemark)
-
+    text = resource.render_text(livemark=props.rich)
     return Result(text=text)
