@@ -1,8 +1,7 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
-from typing import Any
-from ....exception import FrictionlessException
+from typing import Any, Optional
 from ...project import Project
 from ...router import router
 from ... import helpers
@@ -11,6 +10,7 @@ from ... import helpers
 class Props(BaseModel):
     path: str
     data: Any
+    deduplicate: Optional[bool] = None
 
 
 class Result(BaseModel):
@@ -23,11 +23,10 @@ def server_text_write(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    # Forbid overwriting
-    if props.path and helpers.test_file(project, path=props.path):
-        raise FrictionlessException("file already exists")
-
-    # Write contents
-    path = helpers.write_json(project, path=props.path, data=props.data)
-
+    path = helpers.write_json(
+        project,
+        path=props.path,
+        data=props.data,
+        deduplicate=props.deduplicate,
+    )
     return Result(path=path)

@@ -1,9 +1,6 @@
-# type: ignore
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
-from ....platform import platform
-from ....resources import FileResource, JsonResource
 from ...project import Project
 from ...router import router
 from ... import types
