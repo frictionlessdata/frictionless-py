@@ -23,21 +23,6 @@ class TextResource(Resource):
         with helpers.ensure_open(self):
             return self.text_stream.read(size)  # type: ignore
 
-    # Render
-
-    def render_text(self, *, livemark: Optional[bool] = None) -> str:
-        if livemark:
-            assert self.normpath
-            assert self.format == "md"
-            document = platform.livemark.Document(source=self.normpath)
-            document.read()
-            document.process()
-            return document.output  # type: ignore
-        markdown = platform.marko.Markdown()
-        markdown.use(platform.marko_ext_gfm.GFM)
-        text = self.read_text()
-        return markdown.convert(text)
-
     # Write
 
     # TODO: rebase on using loader
