@@ -2,7 +2,7 @@ from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
 from typing import Optional
-from ....resources import TextResource
+from ....resources import ArticleResource
 from ...project import Project
 from ...router import router
 
@@ -22,6 +22,6 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    resource = TextResource(data=props.text)
-    text = resource.render_text(livemark=props.rich)
+    resource = ArticleResource(data=props.text)
+    text = resource.render_article(rich=props.rich)
     return Result(text=text)

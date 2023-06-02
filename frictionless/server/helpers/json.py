@@ -19,10 +19,10 @@ def read_json(project: Project, *, path: str):
 def write_json(project: Project, *, path: str, data: Any):
     fs = project.filesystem
 
-    # Write
     fullpath = fs.get_fullpath(path)
-    resource = JsonResource(data=data)
-    resource.write_json(path=str(fullpath))
+    source = JsonResource(data=data)
+    target = JsonResource(path=str(fullpath))
+    source.write_json(target)
     path = fs.get_path(fullpath)
 
     return path

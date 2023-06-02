@@ -6,8 +6,8 @@ from ...fixtures import name1, text1, not_secure
 # Action
 
 
-def test_server_text_read(client):
-    client("/text/write", path=name1, text=text1)
+def test_server_text_create(client):
+    client("/text/create", path=name1, text=text1)
     assert client("/text/read", path=name1).text == text1
     assert client("/file/list").files == [
         models.File(path=name1, type="file"),
@@ -17,4 +17,4 @@ def test_server_text_read(client):
 @pytest.mark.parametrize("path", not_secure)
 def test_server_text_read_security(client, path):
     with pytest.raises(Exception):
-        client("/text/write", path=path, text=text1)
+        client("/text/create", path=path, text=text1)

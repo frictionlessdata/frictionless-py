@@ -27,8 +27,9 @@ def write_file(project: Project, *, path: str, bytes: bytes):
     fs = project.filesystem
 
     fullpath = fs.get_fullpath(path)
-    resource = FileResource(data=bytes)
-    resource.write_file(path=str(fullpath))
+    source = FileResource(data=bytes)
+    target = FileResource(path=str(fullpath))
+    source.write_file(target)
     path = fs.get_path(fullpath)
 
     return path

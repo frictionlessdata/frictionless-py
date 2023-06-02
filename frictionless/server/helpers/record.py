@@ -25,8 +25,12 @@ def patch_record(
 ):
     md = project.metadata
 
+    # Read record
+    record = read_record(project, path=path)
+    if not record:
+        return None
+
     # Update record
-    record = read_record_or_raise(project, path=path)
     if toPath:
         record.name = name_record(project, path=toPath)
         record.path = toPath
@@ -38,7 +42,7 @@ def patch_record(
     md.write_document(name=record.name, type="record", descriptor=record.dict())
 
     # Clear database
-    # TODO: use smarter logic to clear only if needed
+    # TODO: use smarter logic to delete only if needed
     if not toPath:
         delete_record(project, path=path, onlyFromDatabase=True)
 
@@ -50,7 +54,9 @@ def delete_record(project: Project, *, path: str, onlyFromDatabase: bool = False
     db = project.database
 
     # Read record
-    record = read_record_or_raise(project, path=path)
+    record = read_record(project, path=path)
+    if not record:
+        return None
 
     # Delete from database
     db.delete_artifact(name=record.name, type="report")
@@ -73,8 +79,9 @@ def read_record(project: Project, *, path: str):
     md = project.metadata
 
     descriptor = md.find_document(type="record", query=Query().path == path)
-    if descriptor:
-        return models.Record.parse_obj(descriptor)
+    if not descriptor:
+        return None
+    return models.Record.parse_obj(descriptor)
 
 
 def name_record(project: Project, *, path: str) -> str:
