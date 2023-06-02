@@ -5,4 +5,5 @@ from pydantic import BaseModel
 class File(BaseModel):
     type: str
     path: str
-    errors: Optional[int] = None
+    indexed: Optional[bool] = None
+    errorCount: Optional[int] = None

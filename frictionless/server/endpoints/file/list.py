@@ -49,11 +49,11 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
             if file.startswith("."):
                 continue
             path = fs.get_path(root / file)
-            item = models.File(
-                path=path,
-                type=type_by_path.get(path, "file"),
-                errors=errors_by_path.get(path, None),
-            )
+            item = models.File(path=path, type=type_by_path.get(path, "file"))
+            if path in type_by_path:
+                item.indexed = True
+            if path in errors_by_path:
+                item.errorCount = errors_by_path[path]
             items.append(item)
         for folder in list(folders):
             if folder.startswith(".") or folder in IGNORED_FOLDERS:
