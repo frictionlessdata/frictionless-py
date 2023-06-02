@@ -51,6 +51,8 @@ def action(project: Project, props: Props) -> Result:
         if props.offset:
             query += f" OFFSET {props.offset}"
 
-    result = db.query(str(query))
-    rows = list(dict(item) for item in result.mappings())
+    with db.engine.begin() as conn:
+        result = conn.execute(sa.text(query))
+        rows = list(dict(item) for item in result.mappings())
+
     return Result(rows=rows)

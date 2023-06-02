@@ -26,14 +26,12 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    path = props.toPath or props.path
-
     # Forbid overwriting
     if props.toPath and helpers.test_file(project, path=props.toPath):
         raise FrictionlessException("file already exists")
 
     # Patch record
-    helpers.patch_record(
+    record = helpers.patch_record(
         project,
         path=props.path,
         toPath=props.toPath,
@@ -43,6 +41,6 @@ def action(project: Project, props: Props) -> Result:
 
     # Write contents
     if props.text is not None:
-        helpers.write_text(project, path=path, text=props.text)
+        helpers.write_text(project, path=record.path, text=props.text)
 
-    return Result(path=path)
+    return Result(path=record.path)

@@ -1,7 +1,7 @@
 from __future__ import annotations
-from pydantic import BaseModel
+from typing import Any
 from fastapi import Request
-from typing import Any, Optional
+from pydantic import BaseModel
 from ...project import Project
 from ...router import router
 from ... import helpers
@@ -10,7 +10,6 @@ from ... import helpers
 class Props(BaseModel):
     path: str
     data: Any
-    deduplicate: Optional[bool] = None
 
 
 class Result(BaseModel):
@@ -23,10 +22,5 @@ def server_text_write(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    path = helpers.write_json(
-        project,
-        path=props.path,
-        data=props.data,
-        deduplicate=props.deduplicate,
-    )
+    path = helpers.write_json(project, path=props.path, data=props.data)
     return Result(path=path)

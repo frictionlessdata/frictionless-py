@@ -4,12 +4,12 @@ import stringcase  # type: ignore
 from tinydb import Query
 from typing import TYPE_CHECKING, List, Optional
 from slugify.slugify import slugify
+from ...resource import Resource
 from ...exception import FrictionlessException
 from .. import models
 from .. import types
 
 if TYPE_CHECKING:
-    from ...resource import Resource
     from ..project import Project
 
 
@@ -25,12 +25,8 @@ def patch_record(
 ):
     md = project.metadata
 
-    # Read record
-    record = read_record(project, path=path)
-    if not record:
-        return None
-
     # Update record
+    record = read_record_or_raise(project, path=path)
     if toPath:
         record.name = name_record(project, path=toPath)
         record.path = toPath
