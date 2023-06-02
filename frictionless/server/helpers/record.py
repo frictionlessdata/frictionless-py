@@ -88,6 +88,7 @@ def name_record(project: Project, *, path: str) -> str:
     name = slugify(name)
     name = re.sub(r"[^a-zA-Z0-9]+", "_", name)
     name = stringcase.camelcase(name)  # type: ignore
+    name = name.replace("_", "")  # if something not replaced by camelcase
 
     # Make unique
     names: List[str] = []
