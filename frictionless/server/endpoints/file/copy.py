@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
+from ....helpers import ensure_dir
 from ...project import Project
 from ...router import router
 from ... import helpers
@@ -35,14 +36,15 @@ def action(project: Project, props: Props) -> Result:
 
     # Get target
     target = fs.get_fullpath(props.toPath) if props.toPath else fs.basepath
-    if target.is_file():
-        raise FrictionlessException("Target already exists")
     if target.is_dir():
         target = target / source.name
-        if props.deduplicate:
-            target = fs.deduplicate_fullpath(target, suffix="copy")
+    if props.deduplicate:
+        target = fs.deduplicate_fullpath(target, suffix="copy")
+    if target.exists():
+        raise FrictionlessException("Target already exists")
 
     # Copy file
+    ensure_dir(str(target))
     copy = shutil.copytree if source.is_dir() else shutil.copy
     copy(source, target)
     path = fs.get_path(target)
