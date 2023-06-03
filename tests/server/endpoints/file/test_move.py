@@ -16,17 +16,6 @@ def test_server_file_move(client):
     ]
 
 
-def test_server_file_move_to_new_name(client):
-    client("/folder/create", path=folder1)
-    path1 = client("/file/create", path=name1, bytes=bytes1, folder=folder1).path
-    path2 = client("/file/move", path=path1, newName=name2).path
-    assert client("/file/read", path=path2).bytes == bytes1
-    assert client("/file/list").files == [
-        models.File(path=folder1, type="folder"),
-        models.File(path=str(Path(folder1) / name2), type="file"),
-    ]
-
-
 def test_server_file_move_to_folder(client):
     client("/file/create", path=name1, bytes=bytes1)
     client("/folder/create", path=folder1)

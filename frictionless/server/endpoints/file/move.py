@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
+from ....helpers import ensure_dir
 from ...project import Project
 from ...router import router
 from ... import helpers
@@ -12,7 +13,6 @@ from ... import helpers
 class Props(BaseModel, extra="forbid"):
     path: str
     toPath: Optional[str] = None
-    newName: Optional[str] = None
     deduplicate: Optional[bool] = None
 
 
@@ -35,19 +35,16 @@ def action(project: Project, props: Props) -> Result:
         raise FrictionlessException("Source doesn't exist")
 
     # Get target
-    target = source
-    if props.toPath:
-        target = fs.get_fullpath(props.toPath)
-    if props.newName:
-        target = target.parent / props.newName
-    if target.is_file():
-        raise FrictionlessException("Target already exists")
+    target = fs.get_fullpath(props.toPath) if props.toPath else fs.basepath
     if target.is_dir():
         target = target / source.name
-        if props.deduplicate:
-            target = fs.deduplicate_fullpath(target)
+    if props.deduplicate:
+        target = fs.deduplicate_fullpath(target, suffix="copy")
+    if target.exists():
+        raise FrictionlessException("Target already exists")
 
     # Move file
+    ensure_dir(str(target))
     shutil.move(source, target)
     path = fs.get_path(target)
 
