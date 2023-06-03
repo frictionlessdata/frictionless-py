@@ -17,7 +17,7 @@ class Result(BaseModel):
     files: List[models.File]
 
 
-@router.post("/file/list")
+@router.post("/file/list", response_model_exclude_unset=True)
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
