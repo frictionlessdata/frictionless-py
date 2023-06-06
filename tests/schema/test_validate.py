@@ -27,3 +27,15 @@ def test_validate_required_invalid():
             '"required" should be set as "constraints.required"',
         ],
     ]
+
+
+def test_validate_inline_set_default_field_type_if_missing():
+    report = Schema.validate_descriptor(
+        {"fields": [{"name": "name"}, {"name": "id", "type": "integer"}]}
+    )
+    assert report.flatten(["type", "note"]) == []
+
+
+def test_validate_file_set_default_field_type_if_missing():
+    report = Schema.validate_descriptor("data/invalid-schema.json")
+    assert report.flatten(["type", "note"]) == []
