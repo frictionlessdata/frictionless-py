@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import pytest
-from frictionless import formats, Package
+from frictionless import formats, Schema
 from frictionless.resources import TableResource
 
 
@@ -96,24 +96,12 @@ def test_inline_parser_from_ordered_dict():
 
 
 def test_inline_parser_read_inline_data_with_missing_column_values():
-    descriptor = {
-        "resources": [
-            {
-                "name": "resource-name",
-                "data": [{"id": 1}, {"id": 2, "name": "中国人"}],
-                "schema": {
-                    "fields": [
-                        {"name": "id", "type": "integer"},
-                        {"name": "name", "type": "string"},
-                    ]
-                },
-            }
-        ]
+    data = [{"id": 1}, {"id": 2, "name": "中国人"}]
+    schema = {
+        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
-    package = Package(descriptor)
-    resource = package.get_resource("resource-name")
-    with resource as table:
-        assert table.read_rows() == [  # type: ignore
+    with TableResource(data=data, schema=Schema.from_descriptor(schema)) as resource:
+        assert resource.read_rows() == [
             {"id": 1, "name": None},
             {"id": 2, "name": "中国人"},
         ]
