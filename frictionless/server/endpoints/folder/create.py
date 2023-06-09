@@ -10,6 +10,7 @@ from ...router import router
 class Props(BaseModel):
     path: str
     folder: Optional[str] = None
+    deduplicate: Optional[bool] = None
 
 
 class Result(BaseModel):
@@ -30,7 +31,7 @@ def action(project: Project, props: Props) -> Result:
             raise FrictionlessException("Folder doesn't exist")
 
     # Target
-    target = fs.get_fullpath(props.folder, props.path)
+    target = fs.get_fullpath(props.folder, props.path, deduplicate=props.deduplicate)
     if target.exists():
         raise FrictionlessException("Folder already exists")
 
