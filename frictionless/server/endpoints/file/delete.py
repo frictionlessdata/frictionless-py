@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import shutil
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
@@ -25,15 +24,16 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
+    # Check file exists
+    fullpath = fs.get_fullpath(props.path)
+    if not fullpath.exists():
+        raise FrictionlessException("file doesn't exist")
+
     # Delete record
     helpers.delete_record(project, path=props.path)
 
     # Delete file
-    fullpath = fs.get_fullpath(props.path)
-    if not fullpath.exists():
-        raise FrictionlessException("file doesn't exist")
-    delete = shutil.rmtree if fullpath.is_dir() else os.remove
-    delete(fullpath)
-    path = fs.get_path(fullpath)
+    os.remove(fullpath)
 
+    path = fs.get_path(fullpath)
     return Result(path=path)

@@ -4,8 +4,7 @@ from pathlib import Path
 from typing import List, Optional, Dict
 from pydantic import BaseModel
 from fastapi import Request
-
-from frictionless.exception import FrictionlessException
+from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
 from ... import models

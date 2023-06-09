@@ -5,7 +5,6 @@ from fastapi import Request
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from ... import helpers
 
 
 class Props(BaseModel):
@@ -23,15 +22,29 @@ def endpoint(request: Request, props: Props) -> Result:
 
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
+    from ... import endpoints
 
-    # Delete file records
-    helpers.delete_record(project, path=props.path)
-
-    # Delete folder
+    # Check folder exists
     fullpath = fs.get_fullpath(props.path)
     if not fullpath.is_dir():
-        raise FrictionlessException("folder doesn't exist")
-    shutil.rmtree(fullpath)
-    path = fs.get_path(fullpath)
+        raise FrictionlessException("folder not found")
 
+    # List files inside
+    result = endpoints.file.list.action(
+        project,
+        endpoints.file.list.Props(folder=props.path),
+    )
+
+    # Delete files inside
+    for file in result.files:
+        if file.type != "folder":
+            endpoints.file.delete.action(
+                project,
+                endpoints.file.delete.Props(path=file.path),
+            )
+
+    # Delete folder
+    shutil.rmtree(fullpath)
+
+    path = fs.get_path(fullpath)
     return Result(path=path)
