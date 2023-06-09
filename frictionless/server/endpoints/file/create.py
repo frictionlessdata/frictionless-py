@@ -23,15 +23,15 @@ class Result(BaseModel):
 async def endpoint(
     request: Request,
     file: UploadFile = File(),
-    name: Optional[str] = Form(None),
+    path: Optional[str] = Form(None),
     folder: Optional[str] = Form(None),
     deduplicate: Optional[bool] = Form(None),
 ) -> Result:
     bytes = await file.read()
-    name = name or file.filename or "name"
+    path = path or file.filename or "name"
     return action(
         request.app.get_project(),
-        Props(path=name, bytes=bytes, folder=folder, deduplicate=deduplicate),
+        Props(path=path, bytes=bytes, folder=folder, deduplicate=deduplicate),
     )
 
 
