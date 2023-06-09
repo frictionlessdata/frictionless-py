@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
-from ....helpers import ensure_dir
 from ...project import Project
 from ...router import router
 from ... import helpers
@@ -44,18 +43,16 @@ def action(project: Project, props: Props) -> Result:
         raise FrictionlessException("Target already exists")
 
     # Copy file
-    ensure_dir(str(target))
-    copy = shutil.copytree if source.is_dir() else shutil.copy
-    copy(source, target)
-    path = fs.get_path(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(source, target)
 
     # Copy record
+    toPath = fs.get_path(target)
     record = helpers.read_record(project, path=props.path)
     if record:
-        record.name = helpers.name_record(project, path=path)
-        record.path = path
-        record.resource["path"] = path
+        record.name = helpers.name_record(project, path=toPath)
+        record.path = toPath
+        record.resource["path"] = toPath
         md.write_document(name=record.name, type="record", descriptor=record.dict())
 
-    path = fs.get_path(target)
-    return Result(path=path)
+    return Result(path=toPath)

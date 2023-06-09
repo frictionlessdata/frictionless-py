@@ -1,1 +1,65 @@
-# TODO: implement
+from __future__ import annotations
+from pathlib import Path
+from fastapi import Request
+from pydantic import BaseModel
+from typing import Optional
+from ....exception import FrictionlessException
+from ...project import Project
+from ...router import router
+
+
+class Props(BaseModel):
+    path: str
+    toPath: Optional[str] = None
+    deduplicate: Optional[bool] = None
+
+
+class Result(BaseModel):
+    path: str
+
+
+@router.post("/folder/copy")
+def endpoint(request: Request, props: Props) -> Result:
+    return action(request.app.get_project(), props)
+
+
+def action(project: Project, props: Props) -> Result:
+    fs = project.filesystem
+    from ... import endpoints
+
+    # Get source
+    source = fs.get_fullpath(props.path)
+    if not source.exists():
+        raise FrictionlessException("Source doesn't exist")
+
+    # Get target
+    target = fs.get_fullpath(props.toPath) if props.toPath else fs.basepath
+    if target.is_dir():
+        target = target / source.name
+    if props.deduplicate:
+        target = fs.deduplicate_fullpath(target, suffix="copy")
+    if target.exists():
+        raise FrictionlessException("Target already exists")
+
+    # List files inside
+    result = endpoints.file.list.action(
+        project,
+        endpoints.file.list.Props(folder=props.path),
+    )
+
+    # Copy files inside
+    for file in result.files:
+        if file.type != "folder":
+            # Replace source folder by target folder
+            toPath = str(target / Path(file.path).relative_to(props.path))
+            endpoints.file.copy.action(
+                project,
+                endpoints.file.copy.Props(path=file.path, toPath=toPath),
+            )
+
+    # Create folder (if empty)
+    if not result.files:
+        target.mkdir(parents=True)
+
+    path = fs.get_path(target)
+    return Result(path=path)
