@@ -56,6 +56,8 @@ class InlineParser(Parser):
         elif isinstance(item, dict):
             control.keyed = True
             headers = control.keys or list(item.keys())
+            if self.resource.schema:
+                headers = [field.name for field in self.resource.schema.fields]
             yield headers
             yield [item.get(header) for header in headers]
             for item in data:
