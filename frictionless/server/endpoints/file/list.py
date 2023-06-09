@@ -4,13 +4,15 @@ from pathlib import Path
 from typing import List, Optional, Dict
 from pydantic import BaseModel
 from fastapi import Request
+
+from frictionless.exception import FrictionlessException
 from ...project import Project
 from ...router import router
 from ... import models
 
 
 class Props(BaseModel):
-    pass
+    folder: Optional[str]
 
 
 class Result(BaseModel):
@@ -41,9 +43,16 @@ def action(project: Project, props: Optional[Props] = None) -> Result:
         type_by_path[path] = descriptor["type"]
         errors_by_path[path] = errors_by_name.get(descriptor["name"], 0)
 
+    # Get folder
+    folder = fs.basepath
+    if props and props.folder:
+        folder = fs.get_fullpath(props.folder)
+        if not folder.is_dir():
+            raise FrictionlessException("folder not found")
+
     # List files
     items: List[models.File] = []
-    for root, folders, files in os.walk(fs.basepath):
+    for root, folders, files in os.walk(folder):
         root = Path(root)
         for file in files:
             if file.startswith("."):

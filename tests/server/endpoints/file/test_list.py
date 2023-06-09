@@ -21,3 +21,11 @@ def test_server_file_list_with_folders(client):
         models.File(path=folder1, type="folder"),
         models.File(path=name1, type="file"),
     ]
+
+
+def test_server_file_list_inside_folder(client):
+    client("/folder/create", path=folder1)
+    path = client("/file/create", path=name1, folder=folder1, bytes=bytes1).path
+    assert client("/file/list", folder=folder1).files == [
+        models.File(path=path, type="file"),
+    ]
