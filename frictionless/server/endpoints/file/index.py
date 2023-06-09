@@ -1,6 +1,7 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from fastapi import Request
+from ....exception import FrictionlessException
 from ....resource import Resource
 from ...project import Project
 from ...router import router
@@ -42,6 +43,11 @@ def action(project: Project, props: Props) -> Result:
         or not measure
         or (record.type == "table" and table is None)
     ):
+        # Ensure file exists
+        fullpath = fs.get_fullpath(props.path)
+        if not fullpath.is_file():
+            raise FrictionlessException("file doesn't exist")
+
         # Index resource
         path, basepath = fs.get_path_and_basepath(props.path)
         name = helpers.name_record(project, path=path)

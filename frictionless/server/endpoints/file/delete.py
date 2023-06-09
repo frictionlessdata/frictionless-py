@@ -24,9 +24,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    # Check file exists
+    # Ensure file exists
     fullpath = fs.get_fullpath(props.path)
-    if not fullpath.exists():
+    if not fullpath.is_file():
         raise FrictionlessException("file doesn't exist")
 
     # Delete record

@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import BaseModel
 from fastapi import Request
 from ....exception import FrictionlessException
-from ....helpers import ensure_dir
 from ...project import Project
 from ...router import router
 from ... import helpers
@@ -31,7 +30,7 @@ def action(project: Project, props: Props) -> Result:
 
     # Get source
     source = fs.get_fullpath(props.path)
-    if not source.exists():
+    if not source.is_file():
         raise FrictionlessException("Source doesn't exist")
 
     # Get target
@@ -44,15 +43,15 @@ def action(project: Project, props: Props) -> Result:
         raise FrictionlessException("Target already exists")
 
     # Move file
-    ensure_dir(str(target))
+    target.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(source, target)
-    path = fs.get_path(target)
 
     # Move record
+    toPath = fs.get_path(target)
     record = helpers.read_record(project, path=props.path)
     if record:
-        record.path = path
-        record.resource["path"] = path
+        record.path = toPath
+        record.resource["path"] = toPath
         md.write_document(name=record.name, type="record", descriptor=record.dict())
 
-    return Result(path=path)
+    return Result(path=toPath)

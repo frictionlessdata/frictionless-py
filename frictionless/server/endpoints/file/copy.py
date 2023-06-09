@@ -30,7 +30,7 @@ def action(project: Project, props: Props) -> Result:
 
     # Get source
     source = fs.get_fullpath(props.path)
-    if not source.exists():
+    if not source.is_file():
         raise FrictionlessException("Source doesn't exist")
 
     # Get target

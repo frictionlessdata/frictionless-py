@@ -29,7 +29,7 @@ def action(project: Project, props: Props) -> Result:
 
     # Get source
     source = fs.get_fullpath(props.path)
-    if not source.exists():
+    if not source.is_dir():
         raise FrictionlessException("Source doesn't exist")
 
     # Get target
@@ -57,9 +57,9 @@ def action(project: Project, props: Props) -> Result:
                 endpoints.file.copy.Props(path=file.path, toPath=toPath),
             )
 
-    # Create folder (if empty)
+    # Create folder (if no files inside)
     if not result.files:
         target.mkdir(parents=True)
 
-    path = fs.get_path(target)
-    return Result(path=path)
+    toPath = fs.get_path(target)
+    return Result(path=toPath)
