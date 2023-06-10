@@ -26,7 +26,7 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    # Forbid overwriting
+    # Forbid overwriting for export
     if props.toPath and helpers.test_file(project, path=props.toPath):
         raise FrictionlessException("file already exists")
 

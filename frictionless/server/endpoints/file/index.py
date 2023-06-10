@@ -36,17 +36,18 @@ def action(project: Project, props: Props) -> Result:
     measure = helpers.read_measure(project, path=props.path) if record else None
     table = db.get_table(name=record.name) if record else None
 
+    # Identify missing
+    missing_record = not record
+    missing_report = not report
+    missing_measure = not measure
+    missing_table = record and record.type == "table" and table is None
+
     # Ensure indexing
-    if (
-        not record
-        or not report
-        or not measure
-        or (record.type == "table" and table is None)
-    ):
+    if missing_record or missing_report or missing_measure or missing_table:
         # Ensure file exists
         fullpath = fs.get_fullpath(props.path)
         if not fullpath.is_file():
-            raise FrictionlessException("file doesn't exist")
+            raise FrictionlessException("file not found")
 
         # Index resource
         path, basepath = fs.get_path_and_basepath(props.path)
@@ -57,12 +58,13 @@ def action(project: Project, props: Props) -> Result:
         )
 
         # Ensure record
-        record = record or models.Record(
-            name=name,
-            path=props.path,
-            type=resource_obj.datatype,
-            resource=resource_obj.to_descriptor(),
-        )
+        if missing_record:
+            record = models.Record(
+                name=name,
+                path=props.path,
+                type=resource_obj.datatype,
+                resource=resource_obj.to_descriptor(),
+            )
 
         # Create report
         report = report_obj.to_descriptor()
@@ -73,7 +75,8 @@ def action(project: Project, props: Props) -> Result:
         )
 
         # Write document/artifacts
-        md.write_document(name=record.name, type="record", descriptor=record.dict())
+        if missing_record:
+            md.write_document(name=record.name, type="record", descriptor=record.dict())
         db.write_artifact(name=record.name, type="report", descriptor=report)
         db.write_artifact(name=record.name, type="measure", descriptor=measure.dict())
 

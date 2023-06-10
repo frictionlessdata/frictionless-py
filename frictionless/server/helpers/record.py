@@ -26,16 +26,23 @@ def patch_record(
     md = project.metadata
 
     # Update record
+    updated = False
     record = read_record_or_raise(project, path=path)
     if toPath:
+        updated = True
         record.name = name_record(project, path=toPath)
         record.path = toPath
         record.resource["path"] = toPath
     if toType:
+        updated = True
         record.type = toType
     if resource:
+        updated = True
         record.resource = resource
-    md.write_document(name=record.name, type="record", descriptor=record.dict())
+
+    # Write record
+    if updated:
+        md.write_document(name=record.name, type="record", descriptor=record.dict())
 
     # Clear database
     # TODO: use smarter logic to delete only if needed
