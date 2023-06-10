@@ -2,6 +2,7 @@ from .article import ArticleResource
 from .chart import ChartResource
 from .file import FileResource
 from .json import JsonResource
+from .map import MapResource
 from .metadata import *
 from .package import PackageResource
 from .resource import ResourceResource
