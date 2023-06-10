@@ -105,10 +105,11 @@ METADATA_TRAITS = {
     },
     "dialect": {
         "names": ["dialect.json", "dialect.yaml"],
+        # TODO: remove csv/json/excel after #1506
         "props": ["header", "headerRows", "csv", "json", "excel"],
     },
     "jsonschema": {
-        "names": [],
+        "names": ["jsonschema.json", "jsonschema.yaml"],
         "props": ["$schema"],
     },
     "schema": {

@@ -14,4 +14,4 @@ class PythonPlugin(Plugin):
     def detect_resource(self, resource: Resource):
         if resource.format == "py":
             resource.datatype = resource.datatype or "script"
-            resource.mediatype = resource.mediatype or "text/x-python"
+            resource.mediatype = resource.mediatype or f"text/x-python"
