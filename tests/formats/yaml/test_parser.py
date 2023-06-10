@@ -1,3 +1,4 @@
+from frictionless.dialect.dialect import Dialect
 from frictionless.resources import TableResource
 
 
@@ -35,4 +36,16 @@ def test_yaml_parser_write(tmpdir):
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_yaml_parser_write_skip_header(tmpdir):
+    dialect = Dialect.from_descriptor({"header": False})
+    target = TableResource(path=str(tmpdir.join("table.yaml")), dialect=dialect)
+    with TableResource(path="data/table.csv") as resource:
+        assert resource.header == ["id", "name"]
+        resource.write_table(target, dialect=dialect)
+        assert target.read_rows() == [
+            {"field1": 1, "field2": "english"},
+            {"field1": 2, "field2": "中国人"},
         ]

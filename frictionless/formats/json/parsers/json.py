@@ -52,7 +52,7 @@ class JsonParser(Parser):
         data = []
         control = JsonControl.from_dialect(self.resource.dialect)
         with source:
-            if not control.keyed:
+            if self.resource.dialect.header and not control.keyed:
                 data.append(source.schema.field_names)
             for row in source.row_stream:
                 cells = row.to_list(json=True)

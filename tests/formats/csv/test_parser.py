@@ -323,6 +323,18 @@ def test_csv_parser_write_newline_crlf(tmpdir):
         assert file.read().decode("utf-8") == "id,name\r\n1,english\r\n2,中国人\r\n"
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_csv_parser_write_skip_header(tmpdir):
+    data = b"header1,header2\nvalue11,value12\nvalue21,value22"
+    target = str(tmpdir.join("table.csv"))
+    with TableResource(data=data, format="csv") as resource:
+        assert resource.header == ["header1", "header2"]
+        dialect = Dialect.from_descriptor({"header": False})
+        resource.write_table(target, dialect=dialect)
+    with open(target, "rb") as file:
+        assert file.read() == b"value11,value12\r\nvalue21,value22\r\n"
+
+
 # Bugs
 
 

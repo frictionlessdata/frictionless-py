@@ -44,7 +44,7 @@ class JsonlParser(Parser):
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = platform.jsonlines.Writer(file)
             with source:
-                if not control.keyed:
+                if self.resource.dialect.header and not control.keyed:
                     writer.write(source.schema.field_names)
                 for row in source.row_stream:
                     cells = row.to_list(json=True)

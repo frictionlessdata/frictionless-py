@@ -62,7 +62,8 @@ class CsvParser(Parser):
         ) as file:
             writer = csv.writer(file, **options)
             with source:
-                writer.writerow(source.schema.field_names)
+                if self.resource.dialect.header:
+                    writer.writerow(source.schema.field_names)
                 for row in source.row_stream:
                     writer.writerow(row.to_list(types=self.supported_types))  # type: ignore
         loader = system.create_loader(self.resource)

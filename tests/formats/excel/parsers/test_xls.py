@@ -1,5 +1,6 @@
 import pytest
 from frictionless import Dialect, FrictionlessException, formats
+from frictionless.resource.resource import Resource
 from frictionless.resources import TableResource
 
 
@@ -124,6 +125,18 @@ def test_xls_parser_write_sheet_name(tmpdir):
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_xls_parser_write_skip_header(tmpdir):
+    control = formats.ExcelControl(sheet="sheet")
+    dialect = Dialect.from_descriptor({"header": False})
+    data = b"header1,header2\nvalue11,value12\nvalue21,value22"
+    target = str(tmpdir.join("table.xls"))
+    with TableResource(data=data, format="csv") as resource:
+        assert resource.header == ["header1", "header2"]
+        resource.write_table(target, dialect=dialect, control=control)
+    with Resource(target) as resource:
+        assert resource.header == ["value11", "value12"]  # type: ignore
 
 
 # Bugs

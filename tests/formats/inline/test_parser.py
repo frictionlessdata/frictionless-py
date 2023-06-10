@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 import pytest
 from frictionless import formats, Schema
+from frictionless.dialect.dialect import Dialect
 from frictionless.resources import TableResource
 
 
@@ -130,3 +131,11 @@ def test_inline_parser_write_keyed(tmpdir):
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
+
+
+def test_inline_parser_write_skip_header():
+    dialect = Dialect.from_descriptor({"header": False})
+    target = TableResource(format="inline", dialect=dialect)
+    with TableResource(path="data/table.csv") as resource:
+        resource.write(target, dialect=dialect)
+        assert target.data == [[1, "english"], [2, "中国人"]]
