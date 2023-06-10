@@ -16,7 +16,7 @@ class Result(BaseModel):
     path: str
 
 
-@router.post("/text/create")
+@router.post("/json/create")
 def server_text_write(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 

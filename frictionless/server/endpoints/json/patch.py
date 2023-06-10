@@ -20,7 +20,7 @@ class Result(BaseModel):
     path: str
 
 
-@router.post("/metadata/patch")
+@router.post("/json/patch")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 

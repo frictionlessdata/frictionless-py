@@ -15,7 +15,7 @@ class Result(BaseModel):
     data: Any
 
 
-@router.post("/metadata/read")
+@router.post("/json/read")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
