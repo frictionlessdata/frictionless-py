@@ -33,7 +33,7 @@ OUTPUT_OPTIONS_WITH_DP = {
             "name": "first-resource",
             "type": "table",
             "path": "table.xls",
-            "scheme": "file",
+            "scheme": "https",
             "format": "xls",
             "mediatype": "application/vnd.ms-excel",
             "schema": {

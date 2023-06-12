@@ -136,7 +136,7 @@ def test_package_from_path_remote():
                 "name": "name",
                 "type": "table",
                 "path": "table.csv",
-                "scheme": "file",
+                "scheme": "https",
                 "format": "csv",
                 "mediatype": "text/csv",
             }

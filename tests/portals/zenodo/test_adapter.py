@@ -49,7 +49,7 @@ PACKAGE_WITH_DP = {
             "name": "data",
             "type": "table",
             "path": "data.csv",
-            "scheme": "file",
+            "scheme": "https",
             "format": "csv",
             "mediatype": "text/csv",
             "schema": {
@@ -66,7 +66,7 @@ PACKAGE_WITH_DP = {
             "name": "data2",
             "type": "table",
             "path": "data2.csv",
-            "scheme": "file",
+            "scheme": "https",
             "format": "csv",
             "mediatype": "text/csv",
             "schema": {

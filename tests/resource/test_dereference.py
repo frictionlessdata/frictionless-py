@@ -67,7 +67,7 @@ def test_resource_dialect_schema_from_path_remote():
         "name": "name",
         "type": "table",
         "path": "table.csv",
-        "scheme": "file",
+        "scheme": "https",
         "format": "csv",
         "mediatype": "text/csv",
         "dialect": "dialect.json",
