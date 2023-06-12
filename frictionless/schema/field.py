@@ -257,6 +257,8 @@ class Field(Metadata):
             type = descriptor.get("type")
             Class = system.select_field_class(type)
             field = Class(name=descriptor["name"])
+            if type in ["date", "datetime"]:
+                field.format = descriptor["format"]
             _, notes = field.read_cell(example)
             if notes is not None:
                 note = f'example value "{example}" for field "{field.name}" is not valid'
