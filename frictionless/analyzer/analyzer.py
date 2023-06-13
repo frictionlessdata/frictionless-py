@@ -101,9 +101,9 @@ class Analyzer:
                             if len(var_x) > 2:
                                 if field.name not in analysis_report["correlations"]:
                                     analysis_report["correlations"][field.name] = []
-                                correlation_result = {
+                                correlation_result = {  # type: ignore
                                     "fieldName": field_y.name,
-                                    "corr": statistics.correlation(var_x, var_y),
+                                    "corr": statistics.correlation(var_x, var_y),  # type: ignore
                                 }
                                 analysis_report["correlations"][field.name].append(  # type: ignore
                                     correlation_result
