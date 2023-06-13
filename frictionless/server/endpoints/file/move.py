@@ -44,7 +44,7 @@ def action(project: Project, props: Props) -> Result:
 
     # Move file
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.move(source, target)
+    shutil.move(str(source), str(target))  # Convert to strings for Python3.8
 
     # Move record
     toPath = fs.get_path(target)
