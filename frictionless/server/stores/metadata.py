@@ -33,7 +33,7 @@ class Metadata:
         self, *, type: str, query: QueryInstance
     ) -> Optional[types.IDescriptor]:
         table = self.get_table(type)
-        return table.get(query)
+        return table.get(query)  # type: ignore
 
     def read_document(self, *, name: str, type: str) -> Optional[types.IDescriptor]:
         table = self.get_table(type)

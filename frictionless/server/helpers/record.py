@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 import stringcase  # type: ignore
 from tinydb import Query
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, cast
 from slugify.slugify import slugify
 from ...resource import Resource
 from ...exception import FrictionlessException
@@ -94,7 +94,7 @@ def name_record(project: Project, *, path: str) -> str:
     name = Resource(path=path).name
     name = slugify(name)
     name = re.sub(r"[^a-zA-Z0-9]+", "_", name)
-    name = stringcase.camelcase(name)  # type: ignore
+    name = cast(str, stringcase.camelcase(name))  # type: ignore
     name = name.replace("_", "")  # if something not replaced by camelcase
 
     # Make unique
