@@ -47,7 +47,7 @@ class Factory(type, Generic[T]):
             md_type = Detector.detect_metadata_type(path, format=options.get("format"))
             if md_type != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
-                resource = cls(control=control, basepath=basepath, **options)
+                resource = cls(control=control, basepath=basepath, **options)  # type: ignore
                 return cast(T, resource)
 
         # Descriptor
@@ -64,7 +64,7 @@ class Factory(type, Generic[T]):
             elif control not in dialect.controls:
                 dialect.add_control(control)
             options["dialect"] = dialect
-            resource = cls(basepath=basepath, **options)
+            resource = cls(basepath=basepath, **options)  # type: ignore
             return cast(T, resource)
 
         # Routing

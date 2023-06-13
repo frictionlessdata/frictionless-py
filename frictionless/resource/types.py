@@ -32,7 +32,7 @@ class ITextResource(IResource, total=False):
 
 class IJsonResource(IResource, total=False):
     type: Required[Literal["json"]]
-    schema: Dict  # Json Schema
+    schema: Dict[str, Any]  # Json Schema
 
 
 class ITableResource(IResource, total=False):

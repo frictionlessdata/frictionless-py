@@ -643,7 +643,7 @@ class TableResource(Resource):
         resource = self.to_copy()
 
         # Define view
-        class ResourceView(platform.petl.Table):
+        class ResourceView(platform.petl.Table):  # type: ignore
             def __iter__(self):  # type: ignore
                 with resource:
                     if normalize:
