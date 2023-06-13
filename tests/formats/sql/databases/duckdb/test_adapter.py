@@ -1,8 +1,13 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, formats
+from frictionless import Package, formats, platform
 from frictionless.resources import TableResource
+
+pytestmark = pytest.mark.skipif(
+    platform.type == "windows",
+    reason="Duckdb not supported on windows",
+)
 
 
 # General

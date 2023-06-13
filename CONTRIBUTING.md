@@ -40,6 +40,7 @@ python3.8 -m venv .python
 source .python/bin/activate
 pip install wheel
 make install
+make install-duckdb
 alias "frictionless=python -m frictionless"
 ```
 

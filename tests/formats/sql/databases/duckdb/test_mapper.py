@@ -1,5 +1,11 @@
+import pytest
 import sqlalchemy as sa
-from frictionless import Schema, formats
+from frictionless import Schema, formats, platform
+
+pytestmark = pytest.mark.skipif(
+    platform.type == "windows",
+    reason="Duckdb not supported on windows",
+)
 
 
 # Read

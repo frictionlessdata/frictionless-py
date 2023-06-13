@@ -1,7 +1,12 @@
 import pytest
 from datetime import datetime, time
-from frictionless import FrictionlessException, Dialect, formats
+from frictionless import FrictionlessException, Dialect, formats, platform
 from frictionless.resources import TableResource
+
+pytestmark = pytest.mark.skipif(
+    platform.type == "windows",
+    reason="Duckdb not supported on windows",
+)
 
 
 # Read

@@ -9,9 +9,12 @@ fast_database_urls = [
     lazy_fixture("postgresql_url"),
 ]
 database_urls = fast_database_urls + [
-    lazy_fixture("duckdb_url"),
     lazy_fixture("mysql_url"),
 ]
+if platform.type != "windows":
+    database_urls += [
+        lazy_fixture("duckdb_url"),
+    ]
 pytestmark = pytest.mark.skipif(
     platform.type == "darwin" or platform.type == "windows",
     reason="Not supported tests in MacOS and Windows",
