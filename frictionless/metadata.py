@@ -174,8 +174,6 @@ class Metadata(metaclass=Metaclass):
         # TODO: remove in next version
         # Transform with a base class in case the type is not available
         cls.metadata_transform(descriptor)
-        # Set type to string for missing field type
-        descriptor = cls.metadata_schema_default(descriptor)
         Class = cls.metadata_select_class(descriptor.get("type"))
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
         Class.metadata_transform(descriptor)
@@ -336,6 +334,10 @@ class Metadata(metaclass=Metaclass):
                     for item in value:
                         if isinstance(item, dict):
                             type = item.get("type")
+                            if not type and helpers.is_metadata_type(
+                                Class, "frictionless.schema.field"
+                            ):
+                                item.update({"type": type or "string"})
                             ItemClass = Class.metadata_select_class(type)
                             ItemClass.metadata_transform(item)
                 elif isinstance(value, dict):
@@ -376,27 +378,6 @@ class Metadata(metaclass=Metaclass):
                             yield from ItemClass.metadata_validate(item)
                 elif isinstance(value, dict):
                     yield from Class.metadata_validate(value)
-
-    @classmethod
-    def metadata_schema_default(cls, descriptor: IDescriptor):
-        resources = descriptor.get("resources", None)
-        if resources:
-            for resourceIndex, resource in enumerate(resources):
-                schema = resource.get("schema", {})
-                if isinstance(schema, dict):
-                    fields = schema.get("fields", {})
-                    for fieldIndex, field in enumerate(fields):
-                        if not field.get("type"):
-                            resource["schema"]["fields"][fieldIndex]["type"] = "string"
-                    descriptor["resources"][resourceIndex] = resource
-        fields = descriptor.get("fields", None)
-        if fields:
-            for fieldIndex, field in enumerate(fields):
-                if isinstance(field, dict):
-                    if not field.get("type"):
-                        fields[fieldIndex]["type"] = "string"
-                        descriptor["fields"] = fields
-        return descriptor
 
     @classmethod
     def metadata_import(

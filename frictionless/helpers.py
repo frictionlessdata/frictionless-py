@@ -338,6 +338,10 @@ def is_type(object, name):
     return type(object).__name__ == name
 
 
+def is_metadata_type(object, mname):
+    return object.__module__ == mname
+
+
 def parse_json_string(string):
     if string is None:
         return None
