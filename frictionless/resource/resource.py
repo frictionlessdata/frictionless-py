@@ -3,7 +3,7 @@ import json
 import attrs
 import warnings
 from typing_extensions import Self
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict, cast
 from ..exception import FrictionlessException
 from ..dialect import Dialect, Control
 from .stats import ResourceStats
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 
 @attrs.define(kw_only=True, repr=False)
-class Resource(Metadata, metaclass=Factory):
+class Resource(Metadata, metaclass=Factory):  # type: ignore
     """Resource representation.
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -97,13 +97,13 @@ class Resource(Metadata, metaclass=Factory):
     that can be used to validate the descriptor
     """
 
-    licenses: List[dict] = attrs.field(factory=list)
+    licenses: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The license(s) under which the resource is provided.
     If omitted it's considered the same as the package's licenses.
     """
 
-    sources: List[dict] = attrs.field(factory=list)
+    sources: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The raw sources for this data resource.
     It MUST be an array of Source objects.
@@ -262,13 +262,13 @@ class Resource(Metadata, metaclass=Factory):
             self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.close()
 
     @property
     def paths(self) -> List[str]:
         """All paths of the resource"""
-        paths = []
+        paths: List[str] = []
         if self.path is not None:
             paths.append(self.path)
         paths.extend(self.extrapaths)
@@ -277,7 +277,7 @@ class Resource(Metadata, metaclass=Factory):
     @property
     def normpaths(self) -> List[str]:
         """Normalized paths of the resource"""
-        normpaths = []
+        normpaths: List[str] = []
         for path in self.paths:
             normpaths.append(helpers.normalize_path(path, basepath=self.basepath))
         return normpaths
@@ -438,7 +438,7 @@ class Resource(Metadata, metaclass=Factory):
             if not size:
                 buffer = b""
                 while True:
-                    chunk = self.byte_stream.read1()  # type: ignore
+                    chunk = cast(bytes, self.byte_stream.read1())  # type: ignore
                     buffer += chunk
                     if not chunk:
                         break
@@ -608,7 +608,7 @@ class Resource(Metadata, metaclass=Factory):
 
     # Export
 
-    def to_copy(self, **options) -> Self:
+    def to_copy(self, **options: Any) -> Self:
         """Create a copy from the resource"""
         return super().to_copy(
             data=self.data,
@@ -673,18 +673,18 @@ class Resource(Metadata, metaclass=Factory):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_resource_class(type)
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "dialect":
             return Dialect
         elif name == "schema":
             return Schema
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Url (standards/v0)
@@ -735,14 +735,14 @@ class Resource(Metadata, metaclass=Factory):
         # Stats (framework/v5)
         stats = descriptor.pop("stats", None)
         if stats and isinstance(stats, dict):
-            md5 = stats.pop("md5", None)
-            sha256 = stats.pop("sha256", None)
+            md5 = stats.pop("md5", None)  # type: ignore
+            sha256 = stats.pop("sha256", None)  # type: ignore
             if sha256:
                 descriptor["hash"] = f"sha256:{sha256}"
             elif md5:
                 descriptor["hash"] = md5
             for name in ["bytes", "fields", "rows"]:
-                value = stats.get(name)
+                value = stats.get(name)  # type: ignore
                 if value:
                     descriptor[name] = value
 
@@ -770,7 +770,7 @@ class Resource(Metadata, metaclass=Factory):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -781,8 +781,8 @@ class Resource(Metadata, metaclass=Factory):
             keys = ["path", "extrapaths", "profile", "dialect", "schema"]
             for key in keys:
                 value = descriptor.get(key)
-                items = value if isinstance(value, list) else [value]
-                for item in items:
+                items = value if isinstance(value, list) else [value]  # type: ignore
+                for item in items:  # type: ignore
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.ResourceError(note=f'path "{item}" is not safe')
                         return
@@ -838,19 +838,19 @@ class Resource(Metadata, metaclass=Factory):
                 yield errors.ResourceError(note=note)
 
     @classmethod
-    def metadata_import(cls, descriptor: types.IDescriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,
             **options,
         )
 
-    def metadata_export(self):
+    def metadata_export(self):  # type: ignore
         descriptor = super().metadata_export()
 
         # Data
         data = descriptor.get("data")
-        types = (str, bool, int, float, list, dict)
+        types = (str, bool, int, float, list, dict)  # type: ignore
         if data is not None and not isinstance(data, types):
             descriptor["data"] = []
 
@@ -861,8 +861,8 @@ class Resource(Metadata, metaclass=Factory):
             if extrapaths:
                 descriptor["path"] = []
                 if path:
-                    descriptor["path"].append(path)
-                descriptor["path"].extend(extrapaths)
+                    descriptor["path"].append(path)  # type: ignore
+                descriptor["path"].extend(extrapaths)  # type: ignore
 
         # Stats (standards/v1)
         if system.standards == "v1":

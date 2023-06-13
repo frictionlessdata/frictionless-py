@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, cast
 from ..resource import Resource
 from .. import helpers
 
@@ -27,7 +27,7 @@ class FileResource(Resource):
             if not size:
                 buffer = b""
                 while True:
-                    chunk = self.byte_stream.read1()  # type: ignore
+                    chunk = cast(bytes, self.byte_stream.read1())  # type: ignore
                     buffer += chunk
                     if not chunk:
                         break

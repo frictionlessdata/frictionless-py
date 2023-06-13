@@ -6,7 +6,7 @@ from ..resource import Resource
 from .. import helpers
 
 
-# TODO: support schema (jsonschema validation)
+# TODO: support "resource.jsonSchema" (jsonschema validation)
 class JsonResource(Resource):
     type = "json"
     datatype = "json"
