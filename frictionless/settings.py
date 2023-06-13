@@ -53,6 +53,7 @@ DEFAULT_PACKAGE_PROFILE = "data-package"
 DEFAULT_RESOURCE_PROFILE = "data-resource"
 DEFAULT_TABULAR_RESOURCE_PROFILE = "tabular-data-resource"
 DEFAULT_FIELD_TYPE = "any"
+DEFAULT_FIELD_TYPE_SPECS_V1 = "string"
 DEFAULT_FIELD_FORMAT = "default"
 DEFAULT_TRUE_VALUES = ["true", "True", "TRUE", "1"]
 DEFAULT_FALSE_VALUES = ["false", "False", "FALSE", "0"]
