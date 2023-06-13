@@ -1,6 +1,13 @@
+import sys
+import pytest
 from frictionless import Package, platform
 
 IS_UNIX = platform.type != "windows"
+
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 10),
+    reason="Supported on Python3.10+",
+)
 
 
 # General
