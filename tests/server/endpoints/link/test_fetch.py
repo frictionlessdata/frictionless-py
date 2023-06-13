@@ -28,7 +28,6 @@ def test_server_link_fetch_to_folder(client):
     ]
 
 
-@pytest.mark.vcr
 @pytest.mark.parametrize("path", not_secure)
 def test_server_link_fetch_security(client, path):
     with pytest.raises(Exception):
