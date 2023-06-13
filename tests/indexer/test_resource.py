@@ -4,13 +4,13 @@ from frictionless import platform, formats
 from frictionless.resources import TableResource
 
 control = formats.sql.SqlControl(table="table")
-database_urls = [
-    lazy_fixture("duckdb_url"),
-    lazy_fixture("mysql_url"),
-]
-fast_database_urls = database_urls + [
+fast_database_urls = [
     lazy_fixture("sqlite_url"),
     lazy_fixture("postgresql_url"),
+]
+database_urls = fast_database_urls + [
+    lazy_fixture("duckdb_url"),
+    lazy_fixture("mysql_url"),
 ]
 pytestmark = pytest.mark.skipif(
     platform.type == "darwin" or platform.type == "windows",
