@@ -26,6 +26,7 @@
     "frictionless/pipeline",
     "frictionless/report",
     "frictionless/resource",
+    "frictionless/resources",
     "frictionless/schema",
     "frictionless/server",
     "frictionless/steps",
