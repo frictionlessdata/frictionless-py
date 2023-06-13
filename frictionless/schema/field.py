@@ -196,7 +196,7 @@ class Field(Metadata):
     metadata_Error = errors.FieldError
     metadata_profile = {
         "type": "object",
-        "required": ["name", "type"],
+        "required": ["name"],
         "properties": {
             "name": {"type": "string"},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
@@ -227,7 +227,7 @@ class Field(Metadata):
 
     @classmethod
     def metadata_select_class(cls, type):
-        return system.select_field_class(type)
+        return system.select_field_class(type or settings.DEFAULT_FIELD_TYPE_SPECS_V1)
 
     @classmethod
     def metadata_transform(cls, descriptor):

@@ -334,10 +334,6 @@ class Metadata(metaclass=Metaclass):
                     for item in value:
                         if isinstance(item, dict):
                             type = item.get("type")
-                            if not type and helpers.is_metadata_type(
-                                Class, "frictionless.schema.field"
-                            ):
-                                item.update({"type": type or "string"})
                             ItemClass = Class.metadata_select_class(type)
                             ItemClass.metadata_transform(item)
                 elif isinstance(value, dict):
