@@ -5,7 +5,7 @@ import shutil
 import atexit
 import hashlib
 import tempfile
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, cast
 from ..exception import FrictionlessException
 from ..platform import platform
 from .. import settings
@@ -48,7 +48,7 @@ class Loader:
             self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.close()
 
     @property
@@ -233,7 +233,7 @@ class Loader:
         note = f'compression "{self.resource.compression}" is not supported'
         raise FrictionlessException(errors.CompressionError(note=note))
 
-    def read_byte_stream_buffer(self, byte_stream):
+    def read_byte_stream_buffer(self, byte_stream: types.IByteStream):
         """Buffer byte stream
 
         Parameters:
@@ -247,7 +247,7 @@ class Loader:
         byte_stream.seek(0)
         return buffer
 
-    def read_byte_stream_analyze(self, buffer):
+    def read_byte_stream_analyze(self, buffer: bytes):
         """Detect metadta using sample
 
         Parameters:
@@ -270,7 +270,7 @@ class Loader:
 
     # Write
 
-    def write_byte_stream(self, path) -> Any:
+    def write_byte_stream(self, path: str) -> Any:
         """Write from a temporary file
 
         Parameters:
@@ -283,7 +283,7 @@ class Loader:
         result = self.write_byte_stream_save(byte_stream)
         return result
 
-    def write_byte_stream_create(self, path) -> types.IByteStream:
+    def write_byte_stream_create(self, path: str) -> types.IByteStream:
         """Create byte stream for writing
 
         Parameters:
@@ -296,7 +296,7 @@ class Loader:
         file = open(path, "rb")
         return file
 
-    def write_byte_stream_save(self, byte_stream) -> Any:
+    def write_byte_stream_save(self, byte_stream: types.IByteStream) -> Any:
         """Store byte stream"""
         raise NotImplementedError()
 
@@ -318,10 +318,10 @@ class ByteStreamWithStatsHandling:
         self.__sha256 = hashlib.new("sha256")
         self.__bytes = 0
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         return getattr(self.__byte_stream, name)
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         while True:
             bytes = self.read1(settings.DEFAULT_BUFFER_SIZE)
             if not bytes:
@@ -332,9 +332,9 @@ class ByteStreamWithStatsHandling:
     def closed(self):
         return self.__byte_stream.closed
 
-    def read1(self, size=-1):
+    def read1(self, size: Optional[int] = -1):
         size = -1 if size is None else size
-        chunk = self.__byte_stream.read1(size)  # type: ignore
+        chunk = cast(bytes, self.__byte_stream.read1(size))  # type: ignore
 
         # Calculate
         self.__md5.update(chunk)

@@ -1,6 +1,5 @@
 from __future__ import annotations
-from collections.abc import Callable
-from typing import Dict, List, Literal, Any, Tuple, Optional, Protocol
+from typing import Dict, List, Literal, Any, Tuple, Optional, Protocol, Callable
 from typing_extensions import Required, TypedDict
 
 

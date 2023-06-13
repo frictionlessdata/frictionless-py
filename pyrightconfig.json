@@ -28,6 +28,7 @@
     "frictionless/schema",
     "frictionless/server",
     "frictionless/steps",
+    "frictionless/system",
     "frictionless/table",
     "frictionless/transformer",
     "frictionless/validator",

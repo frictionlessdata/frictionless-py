@@ -71,7 +71,7 @@ class System:
     """
 
     def __init__(self):
-        self.__dynamic_plugins = OrderedDict()
+        self.__dynamic_plugins: OrderedDict[str, Plugin] = OrderedDict()
         self.__http_session = None
 
     @property
@@ -92,7 +92,7 @@ class System:
 
     @cached_property
     def methods(self) -> Dict[str, Any]:
-        methods = {}
+        methods: Dict[str, Any] = {}
         for action in self.supported_hooks:
             methods[action] = OrderedDict()
             for name, plugin in self.plugins.items():
@@ -103,7 +103,7 @@ class System:
 
     @cached_property
     def plugins(self) -> OrderedDict[str, Plugin]:
-        modules = OrderedDict()
+        modules: OrderedDict[str, Any] = OrderedDict()
         for item in pkgutil.iter_modules():
             if item.name.startswith("frictionless_"):
                 module = import_module(item.name)
@@ -125,7 +125,7 @@ class System:
 
     # Register/Deregister
 
-    def register(self, name, plugin):
+    def register(self, name: str, plugin: Plugin):
         """Register a plugin
 
         Parameters:
@@ -137,7 +137,7 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
-    def deregister(self, name):
+    def deregister(self, name: str):
         """Deregister a plugin
 
         Parameters:
@@ -256,7 +256,7 @@ class System:
             func(resource)
         resource.datatype = resource.datatype or "file"
 
-    def detect_field_candidates(self) -> List[dict]:
+    def detect_field_candidates(self) -> List[dict[str, Any]]:
         """Create candidates
 
         Returns:

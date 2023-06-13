@@ -1,6 +1,6 @@
 from __future__ import annotations
 from itertools import chain
-from typing import TYPE_CHECKING, ClassVar, Optional, List
+from typing import TYPE_CHECKING, ClassVar, Optional, List, cast, Any
 from ..exception import FrictionlessException
 from ..platform import platform
 from .system import system
@@ -43,7 +43,7 @@ class Parser:
             self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.close()
 
     @property
@@ -192,7 +192,7 @@ class CellStreamWithErrorHandling:
 
     def __next__(self):
         try:
-            return self.cell_stream.__next__()  # type: ignore
+            return cast(List[Any], self.cell_stream.__next__())  # type: ignore
         except StopIteration:
             raise
         except FrictionlessException:
