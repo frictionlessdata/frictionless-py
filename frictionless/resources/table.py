@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 import warnings
 import builtins
-from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List
+from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List, Tuple
 from ..exception import FrictionlessException
 from ..table import Header, Lookup, Row
 from ..transformer import Transformer
@@ -20,14 +20,11 @@ from .. import errors
 if TYPE_CHECKING:
     from ..system import Loader, Parser
     from ..indexer import IOnRow, IOnProgress
-    from ..interfaces import IBuffer, ISample, IFragment, ILabels
-    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
-    from ..interfaces import ICellStream
-    from ..interfaces import ICallbackFunction
     from ..checklist import Checklist
     from ..pipeline import Pipeline
     from ..dialect import Control
     from ..table import IRowStream
+    from .. import types
 
 
 class TableResource(Resource):
@@ -36,21 +33,21 @@ class TableResource(Resource):
     tabular = True
 
     def __attrs_post_init__(self):
-        super().__attrs_post_init__()
         self.__loader: Optional[Loader] = None
         self.__parser: Optional[Parser] = None
-        self.__buffer: Optional[IBuffer] = None
-        self.__sample: Optional[ISample] = None
-        self.__labels: Optional[ILabels] = None
-        self.__fragment: Optional[IFragment] = None
+        self.__buffer: Optional[types.IBuffer] = None
+        self.__sample: Optional[types.ISample] = None
+        self.__labels: Optional[types.ILabels] = None
+        self.__fragment: Optional[types.IFragment] = None
         self.__header: Optional[Header] = None
         self.__lookup: Optional[Lookup] = None
         self.__row_stream: Optional[IRowStream] = None
+        super().__attrs_post_init__()
 
     # Open/Close
 
     @property
-    def buffer(self) -> IBuffer:
+    def buffer(self) -> types.IBuffer:
         """File's bytes used as a sample
 
         These buffer bytes are used to infer characteristics of the
@@ -61,7 +58,7 @@ class TableResource(Resource):
         return self.__buffer
 
     @property
-    def sample(self) -> ISample:
+    def sample(self) -> types.ISample:
         """Table's lists used as sample.
 
         These sample rows are used to infer characteristics of the
@@ -75,7 +72,7 @@ class TableResource(Resource):
         return self.__sample
 
     @property
-    def labels(self) -> ILabels:
+    def labels(self) -> types.ILabels:
         """
         Returns:
             str[]?: table labels
@@ -85,7 +82,7 @@ class TableResource(Resource):
         return self.__labels
 
     @property
-    def fragment(self) -> IFragment:
+    def fragment(self) -> types.IFragment:
         """Table's lists used as fragment.
 
         These fragment rows are used internally to infer characteristics of the
@@ -119,7 +116,7 @@ class TableResource(Resource):
         return self.__lookup
 
     @property
-    def cell_stream(self) -> ICellStream:
+    def cell_stream(self) -> types.ICellStream:
         """Cell stream in form of a generator
 
         Yields:
@@ -212,6 +209,8 @@ class TableResource(Resource):
         self.stats.fields = len(self.schema.fields)
 
     def __open_header(self):
+        assert self.__labels is not None
+
         # Create header
         self.__header = Header(
             self.__labels,
@@ -258,8 +257,8 @@ class TableResource(Resource):
                 continue
             with source_res:
                 for row in source_res.row_stream:  # type: ignore
-                    cells = tuple(row.get(field_name) for field_name in source_key)
-                    if set(cells) == {None}:
+                    cells = tuple(row.get(field_name) for field_name in source_key)  # type: ignore
+                    if set(cells) == {None}:  # type: ignore
                         continue
                     self.__lookup[source_name][source_key].add(cells)
 
@@ -271,7 +270,7 @@ class TableResource(Resource):
 
         # Create field info
         field_number = 0
-        field_info = {"names": [], "objects": [], "mapping": {}}
+        field_info: Dict[str, Any] = {"names": [], "objects": [], "mapping": {}}
         for field in self.schema.fields:
             field_number += 1
             field_info["names"].append(field.name)
@@ -284,9 +283,9 @@ class TableResource(Resource):
             )
 
         # Create state
-        memory_unique = {}
-        memory_primary = {}
-        foreign_groups = []
+        memory_unique: Dict[str, Any] = {}
+        memory_primary: Dict[Tuple[Any], Any] = {}
+        foreign_groups: List[Any] = []
         is_integrity = bool(self.schema.primary_key)
         for field in self.schema.fields:
             if field.constraints.get("unique"):
@@ -401,21 +400,21 @@ class TableResource(Resource):
             any[][]: table lists
         """
         with helpers.ensure_open(self):
-            result = []
+            result: List[Any] = []
             for cells in self.cell_stream:
                 result.append(cells)
                 if size and len(result) >= size:
                     break
             return result
 
-    def read_rows(self, *, size=None) -> List[Row]:
+    def read_rows(self, *, size: Optional[int] = None) -> List[Row]:
         """Read rows into memory
 
         Returns:
             Row[]: table rows
         """
         with helpers.ensure_open(self):
-            rows = []
+            rows: List[Row] = []
             for row in self.row_stream:
                 rows.append(row)
                 if size and len(rows) >= size:
@@ -423,7 +422,7 @@ class TableResource(Resource):
             return rows
 
     # TODO: implement
-    def read_table(self):
+    def read_table(self) -> None:
         raise NotImplementedError()
 
     # Write
@@ -433,7 +432,7 @@ class TableResource(Resource):
         target: Optional[Union[Resource, Any]] = None,
         *,
         control: Optional[Control] = None,
-        **options,
+        **options: Any,
     ) -> TableResource:
         return self.write(target, control=control, **options)
 
@@ -443,7 +442,7 @@ class TableResource(Resource):
         target: Optional[Union[Resource, Any]] = None,
         *,
         control: Optional[Control] = None,
-        **options,
+        **options: Any,
     ) -> TableResource:
         """Write this resource to the target resource
 
@@ -482,7 +481,7 @@ class TableResource(Resource):
 
     # Analyze
 
-    def analyze(self, *, detailed=False) -> Dict:
+    def analyze(self, *, detailed: bool = False):
         """Analyze the resource
 
         This feature is currently experimental, and its API may change
@@ -520,10 +519,10 @@ class TableResource(Resource):
         self,
         *,
         name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
+        filter: Optional[types.IFilterFunction] = None,
+        process: Optional[types.IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> ITabularData:
+    ) -> types.ITabularData:
         if not process:
             process = lambda row: row.to_dict()
         data = self.read_rows(size=limit_rows)
@@ -539,6 +538,7 @@ class TableResource(Resource):
         *,
         name: Optional[str] = None,
         fast: bool = False,
+        with_metadata: bool = False,
         on_row: Optional[IOnRow] = None,
         on_progress: Optional[IOnProgress] = None,
         use_fallback: bool = False,
@@ -547,9 +547,10 @@ class TableResource(Resource):
         name = name or self.name
         indexer = Indexer(
             resource=self,
-            database_url=database_url,
+            database=database_url,
             table_name=name,
             fast=fast,
+            with_metadata=with_metadata,
             on_row=on_row,
             on_progress=on_progress,
             use_fallback=use_fallback,
@@ -571,7 +572,7 @@ class TableResource(Resource):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
@@ -587,7 +588,7 @@ class TableResource(Resource):
 
     # Export
 
-    def to_view(self, type="look", **options):
+    def to_view(self, type: str = "look", **options: Any):
         """Create a view from the resource
 
         See PETL's docs for more information:
@@ -604,19 +605,19 @@ class TableResource(Resource):
         view = str(getattr(self.to_petl(normalize=True), type)(**options))
         return view
 
-    def to_inline(self, *, dialect=None):
+    def to_inline(self, *, dialect: Optional[Dialect] = None):
         """Helper to export resource as an inline data"""
         dialect = dialect or Dialect()
         target = self.write(Resource(format="inline", dialect=dialect))  # type: ignore
         return target.data
 
-    def to_pandas(self, *, dialect=None):
+    def to_pandas(self, *, dialect: Optional[Dialect] = None):
         """Helper to export resource as an Pandas dataframe"""
         dialect = dialect or Dialect()
         target = self.write(Resource(format="pandas", dialect=dialect))  # type: ignore
         return target.data
 
-    def to_snap(self, *, json=False):
+    def to_snap(self, *, json: bool = False):
         """Create a snapshot from the resource
 
         Parameters:
@@ -625,7 +626,7 @@ class TableResource(Resource):
         Returns
             list: resource's data
         """
-        snap = []
+        snap: List[List[Any]] = []
         with helpers.ensure_open(self):
             snap.append(self.header.to_list())
             for row in self.row_stream:
@@ -633,17 +634,17 @@ class TableResource(Resource):
         return snap
 
     @staticmethod
-    def from_petl(view, **options):
+    def from_petl(view: Any, **options: Any):
         """Create a resource from PETL view"""
         return TableResource(data=view, **options)
 
-    def to_petl(self, normalize=False):
+    def to_petl(self, normalize: bool = False):
         """Export resource as a PETL table"""
         resource = self.to_copy()
 
         # Define view
-        class ResourceView(platform.petl.Table):
-            def __iter__(self):
+        class ResourceView(platform.petl.Table):  # type: ignore
+            def __iter__(self):  # type: ignore
                 with resource:
                     if normalize:
                         yield resource.schema.field_names

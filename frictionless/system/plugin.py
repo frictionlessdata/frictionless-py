@@ -72,7 +72,7 @@ class Plugin:
         """
         pass
 
-    def detect_field_candidates(self, candidates: List[dict]) -> None:
+    def detect_field_candidates(self, candidates: List[dict[str, Any]]) -> None:
         """Detect field candidates
 
         Returns:

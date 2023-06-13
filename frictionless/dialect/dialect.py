@@ -1,24 +1,25 @@
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, Optional, List, Any, ClassVar, Union
+from typing import TYPE_CHECKING, Optional, List, Any, ClassVar, Union, Dict, Iterable
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..metadata import Metadata
 from .control import Control
+from .factory import Factory
 from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
+    from .. import types
 
 
-@attrs.define(kw_only=True)
-class Dialect(Metadata):
+@attrs.define(kw_only=True, repr=False)
+class Dialect(Metadata, metaclass=Factory):
     """Dialect representation"""
 
-    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+    descriptor: Optional[Union[types.IDescriptor, str]] = attrs.field(
         default=None, kw_only=False
     )
     """
@@ -90,18 +91,13 @@ class Dialect(Metadata):
     A list of controls which defines different aspects of reading data.
     """
 
-    @classmethod
-    def __create__(cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options):
-        if descriptor is not None:
-            return cls.from_descriptor(descriptor, **options)
-
     def __bool__(self):
         return bool(self.controls) or bool(self.to_descriptor())
 
     # Describe
 
     @staticmethod
-    def describe(source: Optional[Any] = None, **options) -> Dialect:
+    def describe(source: Optional[Any] = None, **options: Any) -> Dialect:
         """Describe the given source as a dialect
 
         Parameters:
@@ -153,12 +149,12 @@ class Dialect(Metadata):
 
     # Read
 
-    def read_labels(self, sample):
+    def read_labels(self, sample: types.ISample):
         first_content_row = self.create_first_content_row()
         comment_filter = self.create_comment_filter()
 
         # Collect lists
-        lists = []
+        lists: List[List[str]] = []
         for row_number, cells in enumerate(sample, start=1):
             if comment_filter:
                 if not comment_filter(row_number, cells):
@@ -170,8 +166,8 @@ class Dialect(Metadata):
                 break
 
         # Get labels
-        labels = []
-        prev_cells = {}
+        labels: List[str] = []
+        prev_cells: Dict[int, Any] = {}
         for cells in lists:
             for index, cell in enumerate(cells):
                 if prev_cells.get(index) == cell:
@@ -184,15 +180,15 @@ class Dialect(Metadata):
 
         return labels
 
-    def read_fragment(self, sample):
+    def read_fragment(self, sample: types.ISample):
         # Collect fragment
-        fragment = []
+        fragment: List[List[Any]] = []
         for _, cells in self.read_enumerated_content_stream(sample):
             fragment.append(cells)
 
         return fragment
 
-    def read_enumerated_content_stream(self, cell_stream):
+    def read_enumerated_content_stream(self, cell_stream: Iterable[List[Any]]):
         first_content_row = self.create_first_content_row()
         comment_filter = self.create_comment_filter()
         blank_filter = self.create_blank_filter()
@@ -221,7 +217,7 @@ class Dialect(Metadata):
             return None
 
         # Create filter
-        def comment_filter(row_number, cells):
+        def comment_filter(row_number: int, cells: List[Any]):
             if self.comment_char:
                 if cells and isinstance(cells[0], str):
                     if cells[0].startswith(self.comment_char):
@@ -238,7 +234,7 @@ class Dialect(Metadata):
             return None
 
         # Create filter
-        def blank_filter(cells):
+        def blank_filter(cells: List[Any]):
             for cell in cells:
                 if cell not in [None, ""]:
                     return True
@@ -268,12 +264,12 @@ class Dialect(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "controls":
             return Control
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Csv (standards@1)
@@ -284,19 +280,19 @@ class Dialect(Metadata):
                 descriptor["csv"][name] = value
 
     @classmethod
-    def metadata_import(cls, descriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):  # type: ignore
         dialect = super().metadata_import(descriptor, **options)
 
         # Controls
         for type, item in dialect.custom.items():
             if isinstance(item, dict):
                 item["type"] = type
-                control = Control.from_descriptor(item)
+                control = Control.from_descriptor(item)  # type: ignore
                 dialect.add_control(control)
 
         return dialect
 
-    def metadata_export(self):
+    def metadata_export(self):  # type: ignore
         descriptor = super().metadata_export()
 
         # Controls

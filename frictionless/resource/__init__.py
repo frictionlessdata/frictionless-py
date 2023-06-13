@@ -1,2 +1,2 @@
-from .interfaces import IResource
 from .resource import Resource
+from .types import *

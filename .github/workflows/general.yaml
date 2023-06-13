@@ -101,7 +101,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
-        run: make install
+        run: make install-windows
       - name: Prepare environment
         run: cp .env.example .env
       - name: Test software

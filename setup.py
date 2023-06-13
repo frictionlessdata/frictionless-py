@@ -26,7 +26,7 @@ TESTS_REQUIRE = [
     "yattag",
     "pylama",
     "pytest",
-    "pyright==1.1.308",
+    "pyright==1.1.305",
     "ipython",
     "livemark",
     "pytest-cov",
@@ -44,7 +44,9 @@ EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["frictionless-ckan-mapper>=1.0"],
     "csv": [],
+    "datasette": ["datasette>=0.64.2"],
     "dev": TESTS_REQUIRE,
+    "duckdb": ["sqlalchemy>=1.4", "duckdb-engine>=0.7", "duckdb>=0.8"],
     "excel": ["xlrd>=1.2", "xlwt>=1.2", "openpyxl>=3.0", "tableschema-to-template>=0.0"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "github": ["pygithub>=1.50"],
@@ -56,13 +58,12 @@ EXTRAS_REQUIRE = {
     "pandas": ["pandas>=1.0"],
     "parquet": ["fastparquet>=0.8"],
     "postgresql": ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"],
-    "server": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0"],
+    "server": ["fastapi>=0.78", "uvicorn>=0.17", "python-multipart>=0.0", "tinydb>=4.7"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.4"],
     "visidata": ["visidata>=2.10"],
     "wkt": ["grako>=3.99"],
     "zenodo": ["pyzenodo3>=1.0"],
-    "datasette": ["datasette>=0.64.2"],
 }
 EXTRAS_REQUIRE["framework"] = (
     EXTRAS_REQUIRE["ckan"]

@@ -1,19 +1,19 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, List, Optional, ClassVar, Union
+from typing import TYPE_CHECKING, List, Optional, ClassVar, Union, Dict, Any
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .interfaces import IReportStats, IReportTaskStats
 from .task import ReportTask
 from .. import settings
+from . import types
 
 if TYPE_CHECKING:
     from ..resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Report(Metadata):
     """Report representation.
 
@@ -48,7 +48,7 @@ class Report(Metadata):
     Flag to specify if the data is valid or not.
     """
 
-    stats: IReportStats
+    stats: types.IReportStats
     """
     Additional statistics of the data as defined in Stats class.
     """
@@ -86,7 +86,9 @@ class Report(Metadata):
 
     # Flatten
 
-    def flatten(self, spec=["taskNumber", "rowNumber", "fieldNumber", "type"]):
+    def flatten(
+        self, spec: List[str] = ["taskNumber", "rowNumber", "fieldNumber", "type"]
+    ):
         """Flatten the report
 
         Parameters
@@ -95,9 +97,9 @@ class Report(Metadata):
         Returns:
             any[]: flatten report
         """
-        result = []
+        result: List[Any] = []
         for error in self.errors:
-            context = {}
+            context: Dict[str, Any] = {}
             context.update(error.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         for count, task in enumerate(self.tasks, start=1):
@@ -122,7 +124,7 @@ class Report(Metadata):
         errors = errors.copy()
         warnings = warnings.copy()
         error_count = len(errors) + sum(task.stats["errors"] or 0 for task in tasks)
-        stats = IReportStats(
+        stats = types.IReportStats(
             tasks=len(tasks),
             errors=error_count,
             warnings=len(warnings),
@@ -148,7 +150,7 @@ class Report(Metadata):
         """Create a report from a validation task"""
         errors = errors.copy()
         warnings = warnings.copy()
-        task_stats = IReportTaskStats(
+        task_stats = types.IReportTaskStats(
             errors=len(errors), warnings=len(warnings), seconds=time
         )
         if resource.stats.md5:
@@ -161,7 +163,7 @@ class Report(Metadata):
             task_stats["fields"] = resource.stats.fields
         if resource.stats.rows:
             task_stats["rows"] = resource.stats.rows
-        report_stats = IReportStats(
+        report_stats = types.IReportStats(
             tasks=1,
             errors=len(errors),
             warnings=len(warnings),
@@ -193,9 +195,9 @@ class Report(Metadata):
         reports: List[Report],
     ):
         """Create a report from a set of validation reports"""
-        tasks = []
-        errors = []
-        warnings = []
+        tasks: List[ReportTask] = []
+        errors: List[Error] = []
+        warnings: List[str] = []
         for report in reports:
             tasks.extend(report.tasks)
             errors.extend(report.errors)
@@ -222,7 +224,7 @@ class Report(Metadata):
             validation_content += f"\n# {'-'*len(prefix)}"
             validation_content += f"\n# {prefix}: {task.place} {suffix}"
             validation_content += f"\n# {'-'*len(prefix)}"
-            error_content = []
+            error_content: List[Any] = []
             if task.errors:
                 for error in task.errors:
                     error_descriptor = error.to_descriptor()
@@ -277,7 +279,7 @@ class Report(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "errors":
             return Error
         elif name == "tasks":

@@ -1,12 +1,12 @@
 from __future__ import annotations
 import json
 import attrs
-from collections import namedtuple
+from typing import Any, NamedTuple
 from decimal import Decimal
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class GeopointField(Field):
     type = "geopoint"
     builtin = True
@@ -19,7 +19,7 @@ class GeopointField(Field):
 
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             # Parse
             if isinstance(cell, str):
                 try:
@@ -30,8 +30,7 @@ class GeopointField(Field):
                     elif self.format == "array":
                         lon, lat = json.loads(cell)
                     elif self.format == "object":
-                        if isinstance(cell, str):
-                            cell = json.loads(cell)
+                        cell = json.loads(cell)
                         if len(cell) != 2:
                             return None
                         lon = cell["lon"]
@@ -58,7 +57,7 @@ class GeopointField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             if self.format == "array":
                 return json.dumps(list(cell))
             elif self.format == "object":
@@ -70,5 +69,10 @@ class GeopointField(Field):
 
 # Internal
 
-geopoint = namedtuple("geopoint", ["lon", "lat"])
-geopoint.__repr__ = lambda self: str([float(self[0]), float(self[1])])  # type: ignore
+
+class geopoint(NamedTuple):
+    lon: int
+    lat: int
+
+    def __repr__(self):
+        return str([float(self[0]), float(self[1])])

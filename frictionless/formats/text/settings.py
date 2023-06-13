@@ -1,2 +1,2 @@
 NAMES = ["license", "makefile"]
-FORMATS = ["txt", "py", "js"]
+FORMATS = ["txt", "js", "ts", "r"]

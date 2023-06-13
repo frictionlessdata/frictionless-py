@@ -1,12 +1,14 @@
 from __future__ import annotations
-from typing import List
+from typing import TYPE_CHECKING, List
 from functools import cached_property
 from .. import helpers
 from .. import errors
 
+if TYPE_CHECKING:
+    from ..schema import Field
 
-# TODO: add types
-class Header(list):
+
+class Header(List[str]):  # type: ignore
     """Header representation
 
     > Constructor of this object is not Public API
@@ -21,11 +23,11 @@ class Header(list):
 
     def __init__(
         self,
-        labels,
+        labels: List[str],
         *,
-        fields,
-        row_numbers,
-        ignore_case=False,
+        fields: List[Field],
+        row_numbers: List[int],
+        ignore_case: bool = False,
     ):
         super().__init__(field.name for field in fields)
         self.__fields = [field.to_copy() for field in fields]
@@ -147,7 +149,7 @@ class Header(list):
             start = len(labels) + 1
             iterator = fields[len(labels) :]
             for field_number, field in enumerate(iterator, start=start):
-                if field is not None:
+                if field is not None:  # type: ignore
                     self.__errors.append(
                         errors.MissingLabelError(
                             note="",
@@ -179,7 +181,7 @@ class Header(list):
 
             # Duplicated label
             if label:
-                duplicate_field_numbers = []
+                duplicate_field_numbers: List[int] = []
                 seen_cells = labels[0 : field_number - 1]
                 for seen_number, seen_cell in enumerate(seen_cells, start=1):
                     if label == seen_cell:

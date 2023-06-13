@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ...error import Error
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ascii_value(Check):
     """Check whether all the string characters in the data are ASCII
 

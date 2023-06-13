@@ -3,7 +3,7 @@ import re
 import attrs
 import decimal
 from functools import partial
-from typing import TYPE_CHECKING, ClassVar, Optional, List
+from typing import TYPE_CHECKING, Callable, ClassVar, Optional, List, Dict, Any, Pattern
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
@@ -12,9 +12,11 @@ from .. import errors
 
 if TYPE_CHECKING:
     from .schema import Schema
+    from ..types import IDescriptor
+    from . import types
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Field(Metadata):
     """Field representation"""
 
@@ -52,7 +54,7 @@ class Field(Metadata):
     is found in the field value then it is set as None.
     """
 
-    constraints: dict = attrs.field(factory=dict)
+    constraints: Dict[str, Any] = attrs.field(factory=dict)
     """
     A dictionary with rules that constraints the data value permitted for a field.
     """
@@ -82,11 +84,11 @@ class Field(Metadata):
     List of supported constraints for a field.
     """
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any):  # type: ignore
         if name == "type":
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
-        return super().__setattr__(name, value)
+        return super().__setattr__(name, value)  # type: ignore
 
     @property
     def required(self):
@@ -99,11 +101,11 @@ class Field(Metadata):
 
     # Read
 
-    def read_cell(self, cell):
+    def read_cell(self, cell: Any):
         cell_reader = self.create_cell_reader()
         return cell_reader(cell)
 
-    def create_cell_reader(self):
+    def create_cell_reader(self) -> types.ICellReader:
         value_reader = self.create_value_reader()
 
         # Create missing values
@@ -113,7 +115,7 @@ class Field(Metadata):
 
         # TODO: review where we need to cast constraints
         # Create checks
-        checks = {}
+        checks: Dict[str, Callable[[Any], bool]] = {}
         for name in self.supported_constraints:
             constraint = self.constraints.get(name)
             if constraint is not None:
@@ -126,8 +128,8 @@ class Field(Metadata):
                 checks[name] = partial(globals().get(f"check_{name}"), constraint)  # type: ignore
 
         # Create reader
-        def cell_reader(cell):
-            notes = None
+        def cell_reader(cell: Any):
+            notes: Optional[Dict[str, str]] = None
             if cell in missing_values:
                 cell = None
             if cell is not None:
@@ -145,20 +147,20 @@ class Field(Metadata):
 
         return cell_reader
 
-    def create_value_reader(self):
+    def create_value_reader(self) -> types.IValueReader:
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             return cell
 
         return value_reader
 
     # Write
 
-    def write_cell(self, cell, *, ignore_missing=False):
+    def write_cell(self, cell: Any, *, ignore_missing: bool = False):
         cell_writer = self.create_cell_writer()
         return cell_writer(cell, ignore_missing=ignore_missing)
 
-    def create_cell_writer(self):
+    def create_cell_writer(self) -> types.ICellWriter:
         value_writer = self.create_value_writer()
 
         # Create missing value
@@ -170,8 +172,8 @@ class Field(Metadata):
             missing_value = settings.DEFAULT_MISSING_VALUES[0]
 
         # Create writer
-        def cell_writer(cell, *, ignore_missing=False):
-            notes = None
+        def cell_writer(cell: Any, *, ignore_missing: bool = False):
+            notes: Optional[Dict[str, str]] = None
             if cell is None:
                 cell = cell if ignore_missing else missing_value
                 return cell, notes
@@ -183,9 +185,9 @@ class Field(Metadata):
 
         return cell_writer
 
-    def create_value_writer(self):
+    def create_value_writer(self) -> types.IValueWriter:
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return str(cell)
 
         return value_writer
@@ -226,11 +228,11 @@ class Field(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_field_class(type or settings.DEFAULT_FIELD_TYPE_SPECS_V1)
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: IDescriptor):
         super().metadata_transform(descriptor)
 
         # Format (standards/v1)
@@ -239,7 +241,7 @@ class Field(Metadata):
             descriptor["format"] = format.replace("fmt:", "")
 
     @classmethod
-    def metadata_validate(cls, descriptor):
+    def metadata_validate(cls, descriptor: IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -272,13 +274,13 @@ class Field(Metadata):
 # Internal
 
 
-def check_required(constraint, cell):
+def check_required(constraint: bool, cell: Any):
     if not (constraint and cell is None):
         return True
     return False
 
 
-def check_minLength(constraint, cell):
+def check_minLength(constraint: Any, cell: Any):
     if cell is None:
         return True
     if len(cell) >= constraint:
@@ -286,7 +288,7 @@ def check_minLength(constraint, cell):
     return False
 
 
-def check_maxLength(constraint, cell):
+def check_maxLength(constraint: Any, cell: Any):
     if cell is None:
         return True
     if len(cell) <= constraint:
@@ -294,7 +296,7 @@ def check_maxLength(constraint, cell):
     return False
 
 
-def check_minimum(constraint, cell):
+def check_minimum(constraint: Any, cell: Any):
     if cell is None:
         return True
     try:
@@ -307,7 +309,7 @@ def check_minimum(constraint, cell):
     return False
 
 
-def check_maximum(constraint, cell):
+def check_maximum(constraint: Any, cell: Any):
     if cell is None:
         return True
     try:
@@ -320,7 +322,7 @@ def check_maximum(constraint, cell):
     return False
 
 
-def check_pattern(constraint, cell):
+def check_pattern(constraint: Pattern[str], cell: Optional[str]):
     if cell is None:
         return True
     match = constraint.match(cell)
@@ -329,7 +331,7 @@ def check_pattern(constraint, cell):
     return False
 
 
-def check_enum(constraint, cell):
+def check_enum(constraint: List[Any], cell: Any):
     if cell is None:
         return True
     if cell in constraint:

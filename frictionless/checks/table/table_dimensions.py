@@ -5,7 +5,7 @@ from ...checklist import Check
 from ... import errors
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class table_dimensions(Check):
     """Check for minimum and maximum table dimensions."""
 

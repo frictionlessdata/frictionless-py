@@ -5,7 +5,7 @@ from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:
-    from ..interfaces import IFilterFunction, IProcessFunction
+    from .. import types
 
 
 def extract(
@@ -14,12 +14,12 @@ def extract(
     name: Optional[str] = None,
     type: Optional[str] = None,
     # Extract
-    filter: Optional[IFilterFunction] = None,
-    process: Optional[IProcessFunction] = None,
+    filter: Optional[types.IFilterFunction] = None,
+    process: Optional[types.IProcessFunction] = None,
     limit_rows: Optional[int] = None,
     # Deprecated
     resource_name: Optional[str] = None,
-    **options,
+    **options: Any,
 ):
     """Extract rows
 

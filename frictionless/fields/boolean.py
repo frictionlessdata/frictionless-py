@@ -1,11 +1,11 @@
 from __future__ import annotations
 import attrs
-from typing import List
+from typing import Any, List, Dict
 from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class BooleanField(Field):
     type = "boolean"
     builtin = True
@@ -30,14 +30,14 @@ class BooleanField(Field):
 
     def create_value_reader(self):
         # Create mapping
-        mapping = {}
+        mapping: Dict[str, bool] = {}
         for value in self.true_values:
             mapping[value] = True
         for value in self.false_values:
             mapping[value] = False
 
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if cell is True or cell is False:
                 return cell
             if isinstance(cell, str):
@@ -49,7 +49,7 @@ class BooleanField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return self.true_values[0] if cell else self.false_values[0]
 
         return value_writer

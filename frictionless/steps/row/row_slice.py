@@ -1,10 +1,13 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class row_slice(Step):
     """Slice rows.
 
@@ -45,7 +48,7 @@ class row_slice(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         if self.head:
             resource.data = table.head(self.head)  # type: ignore
@@ -56,7 +59,7 @@ class row_slice(Step):
 
     # Metadata
 
-    metadata_profile_patch = {
+    metadata_profile_patch = {  # type: ignore
         "properties": {
             "start": {},
             "stop": {},

@@ -4,7 +4,7 @@ from typing import List
 from .table import TableError
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class HeaderError(TableError):
     """Header error representation.
 

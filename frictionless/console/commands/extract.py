@@ -9,12 +9,12 @@ from ...resource import Resource
 from ...platform import platform
 from ...system import system
 from ..console import console
-from ... import helpers
+from ...helpers import stringify_csv_string
+from .. import helpers
 from .. import common
-from .. import utils
 
 if TYPE_CHECKING:
-    from ...interfaces import IFilterFunction, IProcessFunction
+    from ... import types
 
 
 DEFAULT_MAX_FIELDS = 10
@@ -85,15 +85,15 @@ def console_extract(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     try:
         # Create dialect
-        dialect_obj = utils.create_dialect(
+        dialect_obj = helpers.create_dialect(
             descriptor=dialect,
             header_rows=header_rows,
             header_join=header_join,
@@ -106,7 +106,7 @@ def console_extract(
         )
 
         # Create detector
-        detector_obj = utils.create_detector(
+        detector_obj = helpers.create_detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
@@ -118,27 +118,27 @@ def console_extract(
         )
 
         # Create filter
-        filter: Optional[IFilterFunction] = None
+        filter: Optional[types.IFilterFunction] = None
         if valid:
             filter = lambda row: row.valid
         elif invalid:
             filter = lambda row: not row.valid
 
         # Create processor
-        process: Optional[IProcessFunction] = None
+        process: Optional[types.IProcessFunction] = None
         if yaml or json:
             process = lambda row: row.to_dict(json=True)
         elif csv:
             process = lambda row: row.to_dict(csv=True)
 
         # Create limit
-        if limit_rows is None:
+        if limit_rows is None:  # type: ignore
             if not any([yaml, json, csv]):
                 limit_rows = DEFAULT_MAX_ROWS
 
         # Create resource
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             path=path,
             scheme=scheme,
             format=format,
@@ -171,7 +171,7 @@ def console_extract(
         # List resources
         resources = resource.list()
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
@@ -189,7 +189,7 @@ def console_extract(
     # No data
     if not data:
         note = "No tabular data have been found in the source"
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     # TODO: rework
@@ -208,8 +208,8 @@ def console_extract(
                 options.pop("type", None)
             for index, item in enumerate(items):
                 if index == 0:
-                    typer.secho(helpers.stringify_csv_string(labels, **options))  # type: ignore
-                typer.secho(helpers.stringify_csv_string(item.values(), **options))  # type: ignore
+                    typer.secho(stringify_csv_string(labels, **options))  # type: ignore
+                typer.secho(stringify_csv_string(item.values(), **options))  # type: ignore
         raise typer.Exit()
 
     # Default mode
@@ -228,7 +228,7 @@ def console_extract(
     for title, items in data.items():
         # Empty
         if not items:
-            utils.print_error(console, note="No rows found", title="Empty")
+            helpers.print_error(console, note="No rows found", title="Empty")
             continue
 
         # General

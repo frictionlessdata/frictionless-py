@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from ..pipeline import Pipeline
 from ..exception import FrictionlessException
 from ..dialect import Dialect
@@ -8,6 +8,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from ..package import Package
+    from ..pipeline import Step
     from ..resources import TableResource
 
 
@@ -71,14 +72,14 @@ class Transformer:
 
 # TODO: do we need error handling here?
 class DataWithErrorHandling:
-    def __init__(self, data, *, step):
+    def __init__(self, data: Any, *, step: Step):
         self.data = data
         self.step = step
 
     def __repr__(self):
         return "<transformed-data>"
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         try:
             yield from self.data() if callable(self.data) else self.data
         except Exception as exception:

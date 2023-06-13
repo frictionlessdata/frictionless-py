@@ -1,11 +1,15 @@
 from __future__ import annotations
 import attrs
-from typing import List, Any
+from typing import TYPE_CHECKING, Iterable, List, Any
 from ...checklist import Check
 from ... import errors
 
+if TYPE_CHECKING:
+    from ...table import Row
+    from ...error import Error
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class forbidden_value(Check):
     """Check for forbidden values in a field."""
 
@@ -26,12 +30,12 @@ class forbidden_value(Check):
 
     # Validate
 
-    def validate_start(self):
+    def validate_start(self) -> Iterable[Error]:
         if self.field_name not in self.resource.schema.field_names:  # type: ignore
             note = 'forbidden value check requires field "%s"' % self.field_name
             yield errors.CheckError(note=note)
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row):
         cell = row[self.field_name]
         if cell in self.values:
             yield errors.ForbiddenValueError.from_row(

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 # TODO: raise an exception if we try export a checklist with function based checks?
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Checklist(Metadata):
     """Checklist representation.
 
@@ -68,7 +68,7 @@ class Checklist(Metadata):
 
     @property
     def scope(self) -> List[str]:
-        scope = []
+        scope: List[str] = []
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
             for Error in check.Errors:
@@ -128,7 +128,7 @@ class Checklist(Metadata):
     # Connect
 
     def connect(self, resource: Resource) -> List[Check]:
-        checks = []
+        checks: List[Check] = []
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
             check.connect(resource)
@@ -160,6 +160,6 @@ class Checklist(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "checks":
             return Check

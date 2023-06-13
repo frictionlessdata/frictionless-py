@@ -1,2 +1,2 @@
 from .indexer import Indexer
-from .interfaces import *
+from .types import *
