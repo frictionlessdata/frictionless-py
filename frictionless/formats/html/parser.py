@@ -1,8 +1,13 @@
 from __future__ import annotations
 import tempfile
+from typing import TYPE_CHECKING
 from .control import HtmlControl
 from ...platform import platform
 from ...system import system, Parser
+from ... import types
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class HtmlParser(Parser):
@@ -15,7 +20,7 @@ class HtmlParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self) -> types.ICellStream:
         pq = platform.pyquery.PyQuery
 
         # Get table
@@ -48,7 +53,7 @@ class HtmlParser(Parser):
     # NOTE:
     # We can rebase on pyquery for writing this html
     # It will give us an ability to support HtmlDialect
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         html = "<html><body><table>\n"
         with source:
             html += "<tr>"

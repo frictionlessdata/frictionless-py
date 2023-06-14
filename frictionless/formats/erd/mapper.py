@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from ...platform import platform
 from ...system import Mapper
 
@@ -26,8 +26,8 @@ class ErdMapper(Mapper):
         field_template = environ.get_template("field.html")
         primary_key_template = environ.get_template("primary_key_field.html")
         graph = environ.get_template("graph.html")
-        edges = []
-        nodes = []
+        edges: List[str] = []
+        nodes: List[str] = []
         for t_name in package.resource_names:
             resource = package.get_resource(t_name)  # type: ignore
             templates = {k: primary_key_template for k in resource.schema.primary_key}

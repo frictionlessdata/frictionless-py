@@ -1,8 +1,12 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Optional, Any
 from ...system import Plugin
 from ... import helpers
 from .adapter import ZipAdapter
 from .control import ZipControl
+
+if TYPE_CHECKING:
+    from ...dialect import Control
 
 
 class ZipPlugin(Plugin):
@@ -10,7 +14,14 @@ class ZipPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = False,
+    ):
         if packagify:
             if isinstance(source, str):
                 source = helpers.join_basepath(source, basepath=basepath)

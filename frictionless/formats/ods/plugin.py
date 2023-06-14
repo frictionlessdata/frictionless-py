@@ -1,9 +1,13 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Optional, Any
 from ...system import Plugin
 from ...resource import Resource
 from .adapter import OdsAdapter
 from .control import OdsControl
 from .parser import OdsParser
+
+if TYPE_CHECKING:
+    from ...dialect import Control
 
 
 class OdsPlugin(Plugin):
@@ -11,7 +15,14 @@ class OdsPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = False,
+    ):
         if packagify:
             if isinstance(source, str):
                 resource = Resource(path=source, basepath=basepath)
@@ -19,7 +30,7 @@ class OdsPlugin(Plugin):
                     control = control or OdsControl()
                     return OdsAdapter(control, resource=resource)  # type: ignore
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource):
         if resource.format == "ods":
             return OdsParser(resource)
 
@@ -30,6 +41,6 @@ class OdsPlugin(Plugin):
                 resource.mediatype or "application/vnd.oasis.opendocument.spreadsheet"
             )
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "ods":
             return OdsControl

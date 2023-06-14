@@ -3,6 +3,7 @@ import os
 from ...system import Loader
 from ...exception import FrictionlessException
 from ... import errors
+from ... import types
 
 
 class StreamLoader(Loader):
@@ -10,7 +11,7 @@ class StreamLoader(Loader):
 
     # Read
 
-    def read_byte_stream_create(self):
+    def read_byte_stream_create(self):  # type: ignore
         byte_stream = self.resource.data
         if not os.path.isfile(byte_stream.name):  # type: ignore
             note = f"only local streams are supported: {byte_stream}"
@@ -21,12 +22,12 @@ class StreamLoader(Loader):
             except Exception:
                 note = f"cannot open a stream in the byte mode: {byte_stream}"
                 raise FrictionlessException(errors.SchemeError(note=note))
-        byte_stream = ReusableByteStream(byte_stream)
+        byte_stream = ReusableByteStream(byte_stream)  # type: ignore
         return byte_stream
 
     # Write
 
-    def write_byte_stream_save(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream: types.IByteStream):
         self.resource.data = byte_stream
 
 
@@ -34,13 +35,13 @@ class StreamLoader(Loader):
 
 
 class ReusableByteStream:
-    def __init__(self, byte_stream):
+    def __init__(self, byte_stream: types.IByteStream):
         self.__byte_stream = byte_stream
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         return getattr(self.__byte_stream, name)
 
-    def read(self, size=-1):
+    def read(self, size: int = -1):
         if self.__byte_stream.closed:
             try:
                 self.__byte_stream = open(self.__byte_stream.name, "rb")

@@ -166,7 +166,7 @@ class Parser:
 
     # Write
 
-    def write_row_stream(self, source: TableResource) -> None:
+    def write_row_stream(self, source: TableResource) -> Any:
         """Write row stream from the source resource
 
         Parameters:

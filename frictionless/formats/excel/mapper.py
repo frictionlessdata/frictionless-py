@@ -10,6 +10,6 @@ if TYPE_CHECKING:
 class ExcelMapper(Mapper):
     """Excel mapper"""
 
-    def write_schema(self, schema: Schema, *, path: str) -> None:
+    def write_schema(self, schema: Schema, *, path: str) -> None:  # type: ignore
         descriptor = schema.to_descriptor()
         platform.tableschema_to_template.create_xlsx(descriptor, path)

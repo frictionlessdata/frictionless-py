@@ -10,11 +10,11 @@ from .mapper import SqlMapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import MetaData
+    from sqlalchemy import MetaData, Table
     from sqlalchemy.engine import Engine
     from ...resources import TableResource
-    from ...schema import Schema
     from ...table import Row, IRowStream
+    from ...schema import Schema
     from ...report import Report
 
 
@@ -62,9 +62,9 @@ class SqlAdapter(Adapter):
         table = self.metadata.tables[table_name]
         return self.mapper.read_schema(table, with_metadata=self.control.with_metadata)
 
-    def read_cell_stream(self, control) -> Generator[List[Any], None, None]:
+    def read_cell_stream(self, control: SqlControl) -> Generator[List[Any], None, None]:
         sa = platform.sqlalchemy
-        table = self.metadata.tables[control.table]
+        table = self.metadata.tables[control.table]  # type: ignore
         with self.engine.begin() as conn:
             # Prepare columns
             columns = table.c
@@ -95,7 +95,7 @@ class SqlAdapter(Adapter):
 
     def write_package(self, package: Package) -> bool:
         with self.engine.begin() as conn:
-            tables = []
+            tables: List[Table] = []
             for res in package.resources:
                 assert res.name
                 table = self.mapper.write_schema(res.schema, table_name=res.name)
@@ -179,6 +179,6 @@ class SqlAdapter(Adapter):
 # Internal
 
 
-def regexp(expr, item):
+def regexp(expr: str, item: str):
     reg = re.compile(expr)
     return reg.search(item) is not None

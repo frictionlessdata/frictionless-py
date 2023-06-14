@@ -42,5 +42,5 @@ class ParquetParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         platform.fastparquet.write(self.resource.normpath, source.to_pandas())
