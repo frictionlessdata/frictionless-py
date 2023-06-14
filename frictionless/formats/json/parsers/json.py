@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import tempfile
+from typing import TYPE_CHECKING, List, Any
 from ....exception import FrictionlessException
 from ....platform import platform
 from ...inline import InlineControl
@@ -8,6 +9,10 @@ from ..control import JsonControl
 from ....resources import TableResource
 from ....system import system, Parser
 from .... import errors
+from .... import types
+
+if TYPE_CHECKING:
+    from ....resources import TableResource
 
 
 class JsonParser(Parser):
@@ -26,7 +31,7 @@ class JsonParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self) -> types.ICellStream:
         path = "item"
         control = JsonControl.from_dialect(self.resource.dialect)
         if control.property is not None:
@@ -48,8 +53,8 @@ class JsonParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
-        data = []
+    def write_row_stream(self, source: TableResource):
+        data: List[Any] = []
         control = JsonControl.from_dialect(self.resource.dialect)
         with source:
             if not control.keyed:

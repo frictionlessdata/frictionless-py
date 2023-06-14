@@ -1,10 +1,15 @@
 from __future__ import annotations
 import tempfile
+from typing import TYPE_CHECKING
 from ....platform import platform
 from ...inline import InlineControl
 from ....resources import TableResource
 from ..control import JsonControl
 from ....system import system, Parser
+from .... import types
+
+if TYPE_CHECKING:
+    from ....resources import TableResource
 
 
 class JsonlParser(Parser):
@@ -24,7 +29,7 @@ class JsonlParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self) -> types.ICellStream:
         control = JsonControl.from_dialect(self.resource.dialect)
         source = iter(platform.jsonlines.Reader(self.loader.text_stream))
         inline_control = InlineControl(keys=control.keys)
@@ -39,7 +44,7 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         control = JsonControl.from_dialect(self.resource.dialect)
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = platform.jsonlines.Writer(file)
