@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from ...table import Row, IRowStream
     from ...schema import Schema
     from ...report import Report
-    from .control import SqlControl
 
 
 class SqlAdapter(Adapter):

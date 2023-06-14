@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import tempfile
-from typing import TYPE_CHECKING, List, Any
+from typing import List, Any
 from ....exception import FrictionlessException
 from ....platform import platform
 from ...inline import InlineControl
@@ -10,9 +10,6 @@ from ....resources import TableResource
 from ....system import system, Parser
 from .... import errors
 from .... import types
-
-if TYPE_CHECKING:
-    from ....resources import TableResource
 
 
 class JsonParser(Parser):

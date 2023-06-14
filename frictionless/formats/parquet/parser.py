@@ -1,12 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 from ...platform import platform
 from ...resources import TableResource
 from .control import ParquetControl
 from ...system import Parser
-
-if TYPE_CHECKING:
-    from ...resources import TableResource
 
 
 class ParquetParser(Parser):

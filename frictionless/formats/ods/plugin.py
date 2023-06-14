@@ -7,7 +7,6 @@ from .control import OdsControl
 from .parser import OdsParser
 
 if TYPE_CHECKING:
-    from ...resource import Resource
     from ...dialect import Control
 
 

@@ -8,7 +8,7 @@ from ...system import Mapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import Dialect, CheckConstraint, Column, Constraint
+    from sqlalchemy import Dialect, CheckConstraint, Constraint
     from sqlalchemy.schema import Table, Column
     from sqlalchemy.types import TypeEngine
     from ...table import Row

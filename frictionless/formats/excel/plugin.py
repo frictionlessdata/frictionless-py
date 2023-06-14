@@ -7,7 +7,6 @@ from .control import ExcelControl
 from .parsers import XlsxParser, XlsParser
 
 if TYPE_CHECKING:
-    from ...resource import Resource
     from ...dialect import Control
 
 
