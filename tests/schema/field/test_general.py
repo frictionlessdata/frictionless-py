@@ -135,7 +135,7 @@ def test_field_with_example_set_for_datetime(type, example_value, format):
             "name": "name",
             "type": type,
             "example": example_value,
-            "format": format or "string",
+            "format": format,
         }
     )
     assert field.example == example_value
