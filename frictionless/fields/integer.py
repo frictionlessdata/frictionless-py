@@ -1,12 +1,13 @@
 from __future__ import annotations
 import re
 import attrs
+from typing import Any
 from decimal import Decimal
 from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class IntegerField(Field):
     type = "integer"
     builtin = True
@@ -33,7 +34,7 @@ class IntegerField(Field):
             pattern = re.compile(r"((^\D*)|(\D*$))")
 
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if isinstance(cell, str):
                 cell = cell.strip()
 
@@ -63,7 +64,7 @@ class IntegerField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return str(cell)
 
         return value_writer

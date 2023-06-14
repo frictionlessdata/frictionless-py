@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .dialect import Dialect
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Control(Metadata):
     """Control representation.
 
@@ -71,5 +71,5 @@ class Control(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return platform.frictionless.system.select_control_class(type)

@@ -18,49 +18,29 @@ cleanup_on_sigterm()
 
 
 @pytest.fixture
-def database_url(sqlite_url):
+def sqlite_url(tmpdir):
+    path = str(tmpdir.join("database.db"))
+    return "sqlite:///%s" % path
+
+
+@pytest.fixture
+def sqlite_url_data(sqlite_url):
     engine = sa.create_engine(sqlite_url)
-    with engine.begin() as conn:
-        conn.execute(sa.text("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)"))
-        conn.execute(sa.text("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')"))
-        conn.execute(
-            sa.text(
-                "CREATE TABLE 'fruits' (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
-            )
-        )
-        conn.execute(
-            sa.text(
-                "INSERT INTO 'fruits' VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)"
-            )
-        )
+    populate_db(engine)
     yield sqlite_url
 
 
 @pytest.fixture
-def pg_database_url(postgresql_url):
-    engine = sa.create_engine(postgresql_url)
-    with engine.begin() as conn:
-        conn.execute(
-            sa.text("CREATE TABLE languages (id INTEGER PRIMARY KEY, name TEXT)")
-        )
-        conn.execute(sa.text("INSERT INTO languages VALUES (1, 'english'), (2, '中国人')"))
-        conn.execute(
-            sa.text(
-                "CREATE TABLE fruits (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
-            )
-        )
-        conn.execute(
-            sa.text(
-                "INSERT INTO fruits VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)"
-            )
-        )
-    yield postgresql_url
+def duckdb_url(tmpdir):
+    path = str(tmpdir.join("database.db"))
+    return "duckdb:///%s" % path
 
 
 @pytest.fixture
-def sqlite_url(tmpdir):
-    path = str(tmpdir.join("database.db"))
-    return "sqlite:///%s" % path
+def duckdb_url_data(duckdb_url):
+    engine = sa.create_engine(duckdb_url)
+    populate_db(engine)
+    yield duckdb_url
 
 
 # TODO: create fixture to keep connection to speed up tests?
@@ -78,6 +58,13 @@ def postgresql_url():
             conn.execute(sa.text(f'DROP TABLE "{table.name}" CASCADE'))
 
 
+@pytest.fixture
+def postgresql_url_data(postgresql_url):
+    engine = sa.create_engine(postgresql_url)
+    populate_db(engine)
+    yield postgresql_url
+
+
 # TODO: create fixture to keep connection to speed up tests?
 @pytest.fixture
 def mysql_url():
@@ -92,6 +79,13 @@ def mysql_url():
         conn.execute(sa.text("DROP VIEW IF EXISTS `view`"))
         for table in reversed(metadata.sorted_tables):
             conn.execute(sa.text(f"DROP TABLE `{table.name}` CASCADE"))
+
+
+@pytest.fixture
+def mysql_url_data(mysql_url):
+    engine = sa.create_engine(mysql_url)
+    populate_db(engine)
+    yield postgresql_url
 
 
 @pytest.fixture
@@ -126,3 +120,22 @@ def pytest_configure(config):
 @pytest.fixture(scope="module")
 def vcr_cassette_dir(request):
     return os.path.join("data", "cassettes")
+
+
+# Helpers
+
+
+def populate_db(engine):
+    with engine.begin() as conn:
+        conn.execute(sa.text('CREATE TABLE "table" (id INTEGER PRIMARY KEY, name TEXT)'))
+        conn.execute(sa.text("INSERT INTO \"table\" VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(
+            sa.text(
+                "CREATE TABLE fruits (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
+            )
+        )
+        conn.execute(
+            sa.text(
+                "INSERT INTO fruits VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)"
+            )
+        )

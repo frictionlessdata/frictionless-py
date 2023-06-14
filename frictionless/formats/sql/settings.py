@@ -5,6 +5,7 @@ from __future__ import annotations
 BUFFER_SIZE = 1000
 ROW_NUMBER_IDENTIFIER = "_rowNumber"
 ROW_VALID_IDENTIFIER = "_rowValid"
+METADATA_IDENTIFIERS = [ROW_NUMBER_IDENTIFIER, ROW_VALID_IDENTIFIER]
 
 # Prefixes
 
@@ -16,6 +17,7 @@ SCHEME_PREFIXES = [
     "oracle",
     "mssql",
     "sqlite",
+    "duckdb",
     "firebird",
     "sybase",
     "db2",

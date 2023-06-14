@@ -22,7 +22,7 @@ DEFAULT_FORMATS = [
 BASE_URL = "https://zenodo.org/api/"
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ZenodoControl(Control):
     """Zenodo control representation"""
 

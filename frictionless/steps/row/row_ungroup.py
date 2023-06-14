@@ -1,11 +1,14 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from ...platform import platform
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class row_ungroup(Step):
     """Ungroup rows.
 
@@ -34,7 +37,7 @@ class row_ungroup(Step):
     "value_name" field.
     """
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         function = getattr(platform.petl, f"groupselect{self.selection}")
         if self.selection in ["first", "last"]:

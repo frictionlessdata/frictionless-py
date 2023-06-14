@@ -1,10 +1,16 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING, Iterable
 from ...checklist import Check
 from ... import errors
 
+if TYPE_CHECKING:
+    from ...table import Row
+    from ...error import Error
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class sequential_value(Check):
     """Check that a column having sequential values."""
 
@@ -19,19 +25,19 @@ class sequential_value(Check):
 
     # Connect
 
-    def connect(self, resource):
+    def connect(self, resource: Resource):
         super().connect(resource)
         self.__cursor = None
         self.__exited = False
 
     # Validate
 
-    def validate_start(self):
+    def validate_start(self) -> Iterable[Error]:
         if self.field_name not in self.resource.schema.field_names:  # type: ignore
             note = 'sequential value check requires field "%s"' % self.field_name
             yield errors.CheckError(note=note)
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row):
         if not self.__exited:
             cell = row[self.field_name]
             try:

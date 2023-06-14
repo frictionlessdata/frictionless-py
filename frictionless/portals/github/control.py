@@ -9,7 +9,7 @@ DEFAULT_FORMATS = ["csv", "tsv", "xlsx", "xls", "jsonl", "ndjson"]
 DEFAULT_PER_PAGE = 30
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class GithubControl(Control):
     """Github control representation"""
 

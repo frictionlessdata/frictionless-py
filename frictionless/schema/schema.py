@@ -1,20 +1,20 @@
 from __future__ import annotations
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
+from typing import Optional, List, Any, Union, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
+from .factory import Factory
 from .field import Field
+from .types import INotes
 from .. import settings
 from .. import errors
-
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
+from .. import types
 
 
-@attrs.define(kw_only=True)
-class Schema(Metadata):
+@attrs.define(kw_only=True, repr=False)
+class Schema(Metadata, metaclass=Factory):
     """Schema representation
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -26,13 +26,14 @@ class Schema(Metadata):
     ```
     """
 
-    descriptor: Optional[Union[IDescriptor, str]] = attrs.field(
+    descriptor: Optional[Union[types.IDescriptor, str]] = attrs.field(
         default=None, kw_only=False
     )
     """
     # TODO: add docs
     """
 
+    # TODO: why it's optional??
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
@@ -71,19 +72,15 @@ class Schema(Metadata):
     Specifies primary key for the schema.
     """
 
-    foreign_keys: List[dict] = attrs.field(factory=list)
+    foreign_keys: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     Specifies the foreign keys for the schema.
     """
 
-    @classmethod
-    def __create__(cls, descriptor: Optional[Union[IDescriptor, str]] = None, **options):
-        if descriptor is not None:
-            return cls.from_descriptor(descriptor, **options)
-
     def __attrs_post_init__(self):
         for field in self.fields:
             field.schema = self
+        super().__attrs_post_init__()
 
     def __bool__(self):
         return bool(self.fields) or bool(self.to_descriptor())
@@ -93,7 +90,8 @@ class Schema(Metadata):
     @property
     def field_names(self) -> List[str]:
         """List of field names"""
-        return [field.name for field in self.fields if field.name is not None]
+        # TODO: fix file.name is optional
+        return [field.name for field in self.fields if field.name is not None]  # type: ignore
 
     @property
     def field_types(self) -> List[str]:
@@ -138,7 +136,7 @@ class Schema(Metadata):
         """Set field type"""
         return self.update_field(name, {"type": type})
 
-    def update_field(self, name: str, descriptor: IDescriptor) -> Field:
+    def update_field(self, name: str, descriptor: types.IDescriptor) -> Field:
         """Update field"""
         prev_field = self.get_field(name)
         field_index = self.fields.index(prev_field)
@@ -161,7 +159,7 @@ class Schema(Metadata):
 
     def deduplicate_fields(self):
         if len(self.field_names) != len(set(self.field_names)):
-            seen_names = []
+            seen_names: List[str] = []
             for index, name in enumerate(self.field_names):
                 count = seen_names.count(name) + 1
                 if count > 1:
@@ -171,7 +169,7 @@ class Schema(Metadata):
     # Describe
 
     @staticmethod
-    def describe(source: Optional[Any] = None, **options) -> Schema:
+    def describe(source: Optional[Any] = None, **options: Any) -> Schema:
         """Describe the given source as a schema
 
         Parameters:
@@ -188,7 +186,7 @@ class Schema(Metadata):
 
     # Read
 
-    def read_cells(self, cells):
+    def read_cells(self, cells: List[Any]):
         """Read a list of cells (normalize/cast)
 
         Parameters:
@@ -197,12 +195,15 @@ class Schema(Metadata):
         Returns:
             any[]: list of processed cells
         """
-        results = []
+        res_cells: List[Any] = []
+        res_notes: List[INotes] = []
         readers = self.create_cell_readers()
         for index, reader in enumerate(readers.values()):
             cell = cells[index] if len(cells) > index else None
-            results.append(reader(cell))
-        return list(map(list, zip(*results)))
+            cell, notes = reader(cell)
+            res_cells.append(cell)
+            res_notes.append(notes)
+        return res_cells, res_notes
 
     def create_cell_readers(self):
         return {field.name: field.create_cell_reader() for field in self.fields}
@@ -210,7 +211,7 @@ class Schema(Metadata):
     # Write
 
     # TODO: support types?
-    def write_cells(self, cells, *, types=[]):
+    def write_cells(self, cells: List[Any], *, types: List[str] = []):
         """Write a list of cells (normalize/uncast)
 
         Parameters:
@@ -219,19 +220,22 @@ class Schema(Metadata):
         Returns:
             any[]: list of processed cells
         """
-        results = []
+        res_cells: List[Any] = []
+        res_notes: List[INotes] = []
         writers = self.create_cell_writers()
         for index, writer in enumerate(writers.values()):
             cell = cells[index] if len(cells) > index else None
-            results.append(writer(cell))
-        return list(map(list, zip(*results)))
+            cell, notes = writer(cell)
+            res_cells.append(cell)
+            res_notes.append(notes)
+        return res_cells, res_notes
 
     def create_cell_writers(self):
         return {field.name: field.create_cell_reader() for field in self.fields}
 
     # Flatten
 
-    def flatten(self, spec=["name", "type"]):
+    def flatten(self, spec: List[str] = ["name", "type"]):
         """Flatten the schema
 
         Parameters
@@ -240,9 +244,9 @@ class Schema(Metadata):
         Returns:
             any[]: flatten schema
         """
-        result = []
+        result: List[Any] = []
         for field in self.fields:
-            context = {}
+            context: Dict[str, Any] = {}
             context.update(field.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         return result
@@ -250,7 +254,7 @@ class Schema(Metadata):
     # Convert
 
     @classmethod
-    def from_jsonschema(cls, profile: Union[IDescriptor, str]) -> Schema:
+    def from_jsonschema(cls, profile: Union[types.IDescriptor, str]) -> Schema:
         """Create a Schema from JSONSchema profile
 
         Parameters:
@@ -316,13 +320,13 @@ class Schema(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "fields":
             return Field
 
     # TODO: handle invalid structure
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Primary Key (standards/v1)
@@ -336,24 +340,24 @@ class Schema(Metadata):
             for fk in foreign_keys:
                 if not isinstance(fk, dict):
                     continue
-                fk.setdefault("fields", [])
-                fk.setdefault("reference", {})
-                fk["reference"].setdefault("resource", "")
-                fk["reference"].setdefault("fields", [])
+                fk.setdefault("fields", [])  # type: ignore
+                fk.setdefault("reference", {})  # type: ignore
+                fk["reference"].setdefault("resource", "")  # type: ignore
+                fk["reference"].setdefault("fields", [])  # type: ignore
                 if not isinstance(fk["fields"], list):
                     fk["fields"] = [fk["fields"]]
                 if not isinstance(fk["reference"]["fields"], list):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
     @classmethod
-    def metadata_validate(cls, descriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
             return
 
         # Field Names
-        field_names = []
+        field_names: List[str] = []
         for field in descriptor["fields"]:
             if "name" in field:
                 field_names.append(field["name"])

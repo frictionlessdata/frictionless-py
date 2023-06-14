@@ -9,7 +9,7 @@ from . import settings
 
 if TYPE_CHECKING:
     from ...resources import TableResource
-    from ...interfaces import ITextStream, ISample
+    from ... import types
 
 
 class CsvParser(Parser):
@@ -75,8 +75,8 @@ class CsvParser(Parser):
 SAMPLE_SIZE = 100
 
 
-def extract_samle(text_stream: ITextStream) -> ISample:
-    sample: ISample = []
+def extract_samle(text_stream: types.ITextStream) -> types.ISample:
+    sample: types.ISample = []
     while True:
         try:
             sample.append(next(text_stream))  # type: ignore

@@ -5,7 +5,7 @@ import shutil
 import atexit
 import hashlib
 import tempfile
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, cast
 from ..exception import FrictionlessException
 from ..platform import platform
 from .. import settings
@@ -13,7 +13,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from ..resource import Resource
-    from ..interfaces import IBuffer, IByteStream, ITextStream
+    from .. import types
 
 
 # NOTE:
@@ -39,16 +39,16 @@ class Loader:
 
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource
-        self.__buffer: Optional[IBuffer] = None
-        self.__byte_stream: Optional[IByteStream] = None
-        self.__text_stream: Optional[ITextStream] = None
+        self.__buffer: Optional[types.IBuffer] = None
+        self.__byte_stream: Optional[types.IByteStream] = None
+        self.__text_stream: Optional[types.ITextStream] = None
 
     def __enter__(self):
         if self.closed:
             self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.close()
 
     @property
@@ -60,7 +60,7 @@ class Loader:
         return self.__resource
 
     @property
-    def buffer(self) -> IBuffer:
+    def buffer(self) -> types.IBuffer:
         """
         Returns:
             Loader: buffer
@@ -70,7 +70,7 @@ class Loader:
         return self.__buffer
 
     @property
-    def byte_stream(self) -> IByteStream:
+    def byte_stream(self) -> types.IByteStream:
         """Resource byte stream
 
         The stream is available after opening the loader
@@ -83,7 +83,7 @@ class Loader:
         return self.__byte_stream
 
     @property
-    def text_stream(self) -> ITextStream:
+    def text_stream(self) -> types.ITextStream:
         """Resource text stream
 
         The stream is available after opening the loader
@@ -126,7 +126,7 @@ class Loader:
 
     # Read
 
-    def read_byte_stream(self) -> IByteStream:
+    def read_byte_stream(self) -> types.IByteStream:
         """Read bytes stream
 
         Returns:
@@ -150,7 +150,7 @@ class Loader:
             raise FrictionlessException(error)
         return byte_stream
 
-    def read_byte_stream_create(self) -> IByteStream:
+    def read_byte_stream_create(self) -> types.IByteStream:
         """Create bytes stream
 
         Returns:
@@ -160,7 +160,7 @@ class Loader:
 
     def read_byte_stream_process(
         self,
-        byte_stream: IByteStream,
+        byte_stream: types.IByteStream,
     ) -> ByteStreamWithStatsHandling:
         """Process byte stream
 
@@ -172,7 +172,9 @@ class Loader:
         """
         return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 
-    def read_byte_stream_decompress(self, byte_stream: IByteStream) -> IByteStream:
+    def read_byte_stream_decompress(
+        self, byte_stream: types.IByteStream
+    ) -> types.IByteStream:
         """Decompress byte stream
 
         Parameters:
@@ -231,7 +233,7 @@ class Loader:
         note = f'compression "{self.resource.compression}" is not supported'
         raise FrictionlessException(errors.CompressionError(note=note))
 
-    def read_byte_stream_buffer(self, byte_stream):
+    def read_byte_stream_buffer(self, byte_stream: types.IByteStream):
         """Buffer byte stream
 
         Parameters:
@@ -245,7 +247,7 @@ class Loader:
         byte_stream.seek(0)
         return buffer
 
-    def read_byte_stream_analyze(self, buffer):
+    def read_byte_stream_analyze(self, buffer: bytes):
         """Detect metadta using sample
 
         Parameters:
@@ -268,7 +270,7 @@ class Loader:
 
     # Write
 
-    def write_byte_stream(self, path) -> Any:
+    def write_byte_stream(self, path: str) -> Any:
         """Write from a temporary file
 
         Parameters:
@@ -281,7 +283,7 @@ class Loader:
         result = self.write_byte_stream_save(byte_stream)
         return result
 
-    def write_byte_stream_create(self, path) -> IByteStream:
+    def write_byte_stream_create(self, path: str) -> types.IByteStream:
         """Create byte stream for writing
 
         Parameters:
@@ -294,7 +296,7 @@ class Loader:
         file = open(path, "rb")
         return file
 
-    def write_byte_stream_save(self, byte_stream) -> Any:
+    def write_byte_stream_save(self, byte_stream: types.IByteStream) -> Any:
         """Store byte stream"""
         raise NotImplementedError()
 
@@ -309,17 +311,17 @@ class Loader:
 
 
 class ByteStreamWithStatsHandling:
-    def __init__(self, byte_stream: IByteStream, *, resource: Resource):
+    def __init__(self, byte_stream: types.IByteStream, *, resource: Resource):
         self.__byte_stream = byte_stream
         self.__resource = resource
         self.__md5 = hashlib.new("md5")
         self.__sha256 = hashlib.new("sha256")
         self.__bytes = 0
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         return getattr(self.__byte_stream, name)
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         while True:
             bytes = self.read1(settings.DEFAULT_BUFFER_SIZE)
             if not bytes:
@@ -330,9 +332,9 @@ class ByteStreamWithStatsHandling:
     def closed(self):
         return self.__byte_stream.closed
 
-    def read1(self, size=-1):
+    def read1(self, size: Optional[int] = -1):
         size = -1 if size is None else size
-        chunk = self.__byte_stream.read1(size)  # type: ignore
+        chunk = cast(bytes, self.__byte_stream.read1(size))  # type: ignore
 
         # Calculate
         self.__md5.update(chunk)

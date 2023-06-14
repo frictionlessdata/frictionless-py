@@ -21,7 +21,7 @@ class JsonPlugin(Plugin):
             return JsonlParser(resource)
 
     def detect_resource(self, resource: Resource):
-        if resource.format in ["json", "jsonl", "ndjson"]:
+        if resource.format in ["json", "jsonl", "ndjson", "geojson", "topojson"]:
             resource.mediatype = resource.mediatype or f"text/{resource.format}"
             if resource.format == "json":
                 resource.datatype = (
@@ -31,6 +31,8 @@ class JsonPlugin(Plugin):
                 )
             if resource.format in ["jsonl", "ndjson"]:
                 resource.datatype = resource.datatype or "table"
+            if resource.format in ["geojson", "topojson"]:
+                resource.datatype = resource.datatype or "map"
 
     def select_control_class(self, type):
         if type == "json":

@@ -10,8 +10,8 @@ from ...dialect import Dialect
 from ...schema import Schema
 from ...system import system
 from ..console import console
+from .. import helpers
 from .. import common
-from .. import utils
 
 
 DEFAULT_MAX_FIELDS = 10
@@ -72,15 +72,15 @@ def console_describe(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     try:
         # Create dialect
-        dialect_obj = utils.create_dialect(
+        dialect_obj = helpers.create_dialect(
             descriptor=dialect,
             header_rows=header_rows,
             header_join=header_join,
@@ -93,7 +93,7 @@ def console_describe(
         )
 
         # Create detector
-        detector_obj = utils.create_detector(
+        detector_obj = helpers.create_detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
@@ -105,7 +105,7 @@ def console_describe(
 
         # Describe source
         metadata = Resource.describe(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             type=type,
             path=path,
@@ -120,7 +120,7 @@ def console_describe(
             stats=stats,
         )
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Json mode

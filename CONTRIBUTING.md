@@ -39,7 +39,7 @@ Create a virtual environment and install the dependencies by following this code
 python3.8 -m venv .python
 source .python/bin/activate
 pip install wheel
-make install
+make install  # or make install-windows
 alias "frictionless=python -m frictionless"
 ```
 

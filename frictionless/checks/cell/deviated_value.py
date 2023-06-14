@@ -1,8 +1,14 @@
 from __future__ import annotations
 import attrs
 import statistics
+from typing import TYPE_CHECKING, Iterable, List, Any
 from ...checklist import Check
 from ... import errors
+
+if TYPE_CHECKING:
+    from ...resource import Resource
+    from ...table import Row
+    from ...error import Error
 
 
 DEFAULT_INTERVAL = 3
@@ -14,7 +20,7 @@ AVERAGE_FUNCTIONS = {
 }
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class deviated_value(Check):
     """Check for deviated values in a field."""
 
@@ -42,15 +48,15 @@ class deviated_value(Check):
 
     # Connect
 
-    def connect(self, resource):
+    def connect(self, resource: Resource):
         super().connect(resource)
-        self.__cells = []
-        self.__row_numbers = []
+        self.__cells: List[Any] = []
+        self.__row_numbers: List[int] = []
         self.__average_function = AVERAGE_FUNCTIONS.get(self.average)
 
     # Validate
 
-    def validate_start(self):
+    def validate_start(self) -> Iterable[Error]:
         numeric = ["integer", "number"]
         if self.field_name not in self.resource.schema.field_names:  # type: ignore
             note = 'deviated value check requires field "%s" to exist'
@@ -63,14 +69,14 @@ class deviated_value(Check):
             note = note % ", ".join(AVERAGE_FUNCTIONS.keys())
             yield errors.CheckError(note=note)
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row) -> Iterable[Error]:
         cell = row[self.field_name]
         if cell is not None:
             self.__cells.append(cell)
             self.__row_numbers.append(row.row_number)
         yield from []
 
-    def validate_end(self):
+    def validate_end(self) -> Iterable[Error]:
         if len(self.__cells) < 2:
             return
 

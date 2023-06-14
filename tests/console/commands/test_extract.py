@@ -132,9 +132,9 @@ def test_console_extract_dialect_sheet_option():
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-def test_console_extract_dialect_table_option_sql(database_url):
-    actual = runner.invoke(console, f"extract {database_url} --table fruits --json")
-    expect = extract(database_url, control=formats.SqlControl(table="fruits"))
+def test_console_extract_dialect_table_option_sql(sqlite_url_data):
+    actual = runner.invoke(console, f"extract {sqlite_url_data} --table fruits --json")
+    expect = extract(sqlite_url_data, control=formats.SqlControl(table="fruits"))
     assert json.loads(actual.stdout) == expect
 
 

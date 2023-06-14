@@ -1,10 +1,11 @@
 from __future__ import annotations
 import json
 import attrs
+from typing import Any, cast, Dict
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ObjectField(Field):
     type = "object"
     builtin = True
@@ -19,7 +20,7 @@ class ObjectField(Field):
 
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if not isinstance(cell, dict):
                 if not isinstance(cell, str):
                     return None
@@ -29,7 +30,7 @@ class ObjectField(Field):
                     return None
                 if not isinstance(cell, dict):
                     return None
-            return cell
+            return cast(Dict[str, Any], cell)
 
         return value_reader
 
@@ -37,7 +38,7 @@ class ObjectField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return json.dumps(cell)
 
         return value_writer

@@ -1,12 +1,13 @@
 from __future__ import annotations
 import attrs
+from typing import Any
 from datetime import datetime, time
 from ..platform import platform
 from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class TimeField(Field):
     type = "time"
     builtin = True
@@ -22,7 +23,7 @@ class TimeField(Field):
     # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if not isinstance(cell, time):
                 if not isinstance(cell, str):
                     return None
@@ -53,7 +54,7 @@ class TimeField(Field):
             format = settings.DEFAULT_TIME_PATTERN
 
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             cell = cell.strftime(format)
             cell = cell.replace("+0000", "Z")
             return cell

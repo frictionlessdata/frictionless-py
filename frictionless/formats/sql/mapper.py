@@ -1,8 +1,7 @@
-# type: ignore
 from __future__ import annotations
 import json
 from datetime import datetime, date, timezone
-from typing import TYPE_CHECKING, Dict, Type
+from typing import TYPE_CHECKING, Dict, Type, Any
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Mapper
@@ -30,20 +29,24 @@ class SqlMapper(Mapper):
 
     # Read
 
-    def read_schema(self, table: Table) -> Schema:
+    def read_schema(self, table: Table, *, with_metadata: bool = False) -> Schema:
         """Convert sqlalchemy table to frictionless schema"""
         sa = platform.sqlalchemy
         schema = Schema()
 
         # Fields
         for column in table.columns:
+            if with_metadata and column.name in settings.METADATA_IDENTIFIERS:
+                continue
             field = self.read_field(column)
             schema.add_field(field)
 
         # Primary key
         for constraint in table.constraints:
             if isinstance(constraint, sa.PrimaryKeyConstraint):
-                for column in constraint.columns:
+                for column in constraint.columns:  # type: ignore
+                    if with_metadata and column.name in settings.METADATA_IDENTIFIERS:
+                        continue
                     schema.primary_key.append(str(column.name))
 
         # Foreign keys
@@ -52,7 +55,7 @@ class SqlMapper(Mapper):
                 resource = ""
                 own_fields = []
                 foreign_fields = []
-                for element in constraint.elements:
+                for element in constraint.elements:  # type: ignore
                     own_fields.append(str(element.parent.name))
                     if element.column.table.name != table.name:
                         resource = str(element.column.table.name)
@@ -96,11 +99,14 @@ class SqlMapper(Mapper):
                 type = value
         field = Field.from_descriptor(dict(name=name, type=type))
         if isinstance(column.type, (sa.CHAR, sa.VARCHAR)):
-            field.constraints["maxLength"] = column.type.length
+            if column.type.length:  # type: ignore
+                field.constraints["maxLength"] = column.type.length  # type: ignore
         if isinstance(column.type, sa.CHAR):
-            field.constraints["minLength"] = column.type.length
+            if column.type.length:  # type: ignore
+                field.constraints["minLength"] = column.type.length  # type: ignore
         if isinstance(column.type, sa.Enum):
-            field.constraints["enum"] = column.type.enums
+            if column.type.enums:  # type: ignore
+                field.constraints["enum"] = column.type.enums  # type: ignore
         if not column.nullable:
             field.required = True
         if column.comment:
@@ -154,7 +160,12 @@ class SqlMapper(Mapper):
         # Fields
         if with_metadata:
             columns.append(
-                sa.Column(settings.ROW_NUMBER_IDENTIFIER, sa.Integer, primary_key=True)
+                sa.Column(
+                    settings.ROW_NUMBER_IDENTIFIER,
+                    sa.Integer,
+                    primary_key=True,
+                    autoincrement=False,
+                )
             )
             columns.append(sa.Column(settings.ROW_VALID_IDENTIFIER, sa.Boolean))
         for field in schema.fields:
@@ -190,8 +201,6 @@ class SqlMapper(Mapper):
         checks = []
 
         # General properties
-        # TODO: why it's not required?
-        assert field.name
         quoted_name = quote(field.name)
         column_type = self.write_type(field.type)
         nullable = not field.required
@@ -231,7 +240,7 @@ class SqlMapper(Mapper):
             elif const == "pattern":
                 if self.dialect.name == "postgresql":
                     checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
-                else:
+                elif self.dialect.name != "duckdb":
                     check = Check("%s REGEXP '%s'" % (quoted_name, value))
                     checks.append(check)
             elif const == "enum":
@@ -242,6 +251,8 @@ class SqlMapper(Mapper):
 
         # Create column
         column_args = [field.name, column_type] + checks
+        # TODO: shall it use "autoincrement=False"
+        # https://github.com/Mause/duckdb_engine/issues/595#issuecomment-1495408566
         column_kwargs = {"nullable": nullable, "unique": unique}
         if field.description:
             column_kwargs["comment"] = field.description
@@ -280,7 +291,7 @@ class SqlMapper(Mapper):
 
         return mapping.get(field_type, sa.Text)
 
-    def write_row(self, row: Row, *, with_metadata: bool = False) -> Dict:
+    def write_row(self, row: Row, *, with_metadata: bool = False) -> Dict[str, Any]:
         """Convert frictionless Row to a sqlalchemy Item for insertion"""
         sa = platform.sqlalchemy
         item = {}

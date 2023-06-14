@@ -1,12 +1,15 @@
 from __future__ import annotations
 import attrs
-from typing import List
+from typing import TYPE_CHECKING, List
 from ...platform import platform
 from ...pipeline import Step
 from ... import fields
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class field_split(Step):
     """Split field.
 
@@ -39,19 +42,19 @@ class field_split(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         for to_name in self.to_names:
             field = fields.StringField(name=to_name)
             resource.schema.add_field(field)
         if not self.preserve:
             resource.schema.remove_field(self.name)
-        processor = platform.petl.split
+        processor = platform.petl.split  # type: ignore
         # NOTE: this condition needs to be improved
         if "(" in self.pattern:
-            processor = platform.petl.capture
-        resource.data = processor(
-            table,
+            processor = platform.petl.capture  # type: ignore
+        resource.data = processor(  # type: ignore
+            table,  # type: ignore
             self.name,
             self.pattern,
             self.to_names,

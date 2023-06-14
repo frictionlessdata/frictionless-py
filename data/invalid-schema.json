@@ -1,0 +1,11 @@
+{
+    "fields": [
+      {
+        "name": "name"
+      },
+      {
+        "name": "id",
+        "type": "integer"
+      }
+    ]
+  }

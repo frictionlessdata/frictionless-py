@@ -1,16 +1,17 @@
 from __future__ import annotations
 import attrs
-import simpleeval
+import simpleeval  # type: ignore
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 from ...schema import Field
 
 if TYPE_CHECKING:
-    from ...interfaces import IDescriptor
+    from ...resource import Resource
+    from ... import types
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class field_add(Step):
     """Add field.
 
@@ -47,7 +48,7 @@ class field_add(Step):
     add the field in second position, we need to set it as 'position=2'.
     """
 
-    descriptor: Optional[IDescriptor] = None
+    descriptor: Optional[types.IDescriptor] = None
     """
     A dictionary, which contains metadata for the field which
     describes the properties of the field.
@@ -61,7 +62,7 @@ class field_add(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         value = self.value
         position = self.position
         function = self.function
@@ -80,8 +81,8 @@ class field_add(Step):
             resource.data = table.addrownumbers(field=self.name)  # type: ignore
         else:
             if self.formula:
-                function = lambda row: simpleeval.simple_eval(self.formula, names=row)
-            value = value or function
+                function = lambda row: simpleeval.simple_eval(self.formula, names=row)  # type: ignore
+            value = value or function  # type: ignore
             resource.data = table.addfield(self.name, value=value, index=index)  # type: ignore
 
     # Metadata
