@@ -1,8 +1,12 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, List, Any
 from ...exception import FrictionlessException
 from ...system import Parser
-from ... import errors
 from .control import InlineControl
+from ... import errors
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class InlineParser(Parser):
@@ -27,7 +31,7 @@ class InlineParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self):  # type: ignore
         assert self.resource.data
         control = InlineControl.from_dialect(self.resource.dialect)
 
@@ -55,16 +59,16 @@ class InlineParser(Parser):
         # Keyed
         elif isinstance(item, dict):
             control.keyed = True
-            headers = control.keys or list(item.keys())
+            headers = control.keys or list(item.keys())  # type: ignore
             if self.resource.schema:
                 headers = [field.name for field in self.resource.schema.fields]
             yield headers
-            yield [item.get(header) for header in headers]
+            yield [item.get(header) for header in headers]  # type: ignore
             for item in data:
                 if not isinstance(item, dict):
                     error = errors.SourceError(note="unsupported inline data")
                     raise FrictionlessException(error)
-                yield [item.get(header) for header in headers]
+                yield [item.get(header) for header in headers]  # type: ignore
 
         # General
         elif isinstance(item, (list, tuple)):
@@ -82,8 +86,8 @@ class InlineParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
-        data = []
+    def write_row_stream(self, source: TableResource):
+        data: List[Any] = []
         control = InlineControl.from_dialect(self.resource.dialect)
         with source:
             if not control.keyed:
