@@ -30,6 +30,7 @@
     "frictionless/resource",
     "frictionless/resources",
     "frictionless/schema",
+    "frictionless/schemes",
     "frictionless/server",
     "frictionless/steps",
     "frictionless/system",

@@ -1,9 +1,11 @@
 from __future__ import annotations
 import tempfile
+from typing import List, Any
 from .control import MultipartControl
 from ...resources import FileResource
 from ...system import Loader
 from ... import helpers
+from ... import types
 
 
 # NOTE:
@@ -16,7 +18,7 @@ class MultipartLoader(Loader):
 
     # Read
 
-    def read_byte_stream_create(self):
+    def read_byte_stream_create(self):  # type: ignore
         assert self.resource.normpath
         remote = self.resource.remote
         headless = self.resource.dialect.header is False
@@ -29,7 +31,7 @@ class MultipartLoader(Loader):
 
     # Write
 
-    def write_byte_stream_save(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream: types.IByteStream):
         assert self.resource.normpath
         control = MultipartControl.from_dialect(self.resource.dialect)
         number = 0
@@ -48,7 +50,7 @@ class MultipartLoader(Loader):
 
 
 class MultipartByteStream:
-    def __init__(self, paths, *, remote, headless):
+    def __init__(self, paths: List[str], *, remote: bool, headless: bool):
         self.__paths = paths
         self.__remote = remote
         self.__headless = headless
@@ -57,7 +59,7 @@ class MultipartByteStream:
     def __enter__(self):
         return self
 
-    def __exit__(self, *args, **kwargs):
+    def __exit__(self, *args: Any, **kwargs: Any):
         pass
 
     @property
@@ -83,14 +85,14 @@ class MultipartByteStream:
     def flush(self):
         pass
 
-    def read1(self, size):
+    def read1(self, size: int):
         return self.read(size)
 
-    def seek(self, offset):
+    def seek(self, offset: int):
         assert offset == 0
         self.__line_stream = self.read_line_stream()
 
-    def read(self, size):
+    def read(self, size: int):
         res = b""
         while True:
             try:

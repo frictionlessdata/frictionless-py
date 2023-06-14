@@ -1,12 +1,14 @@
 from __future__ import annotations
 import os
 from typing import Any, Optional
+from ...exception import FrictionlessException
+from ...system import Adapter
 from ...resource import Resource
 from ...package import Package
 from ... import helpers
 
 
-class LocalAdapter:
+class LocalAdapter(Adapter):
     def __init__(self, source: Any, *, basepath: Optional[str] = None):
         self.source = source
         self.basepath = basepath
@@ -27,3 +29,6 @@ class LocalAdapter:
             for path in helpers.expand_source(self.source, basepath=self.basepath):  # type: ignore
                 package.add_resource(Resource(path=path))
             return package
+
+        note = "Cannot read package"
+        raise FrictionlessException(note)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import io
 from ...system import Loader
+from ... import types
 
 
 class BufferLoader(Loader):
@@ -16,5 +17,5 @@ class BufferLoader(Loader):
 
     # Write
 
-    def write_byte_stream_save(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream: types.IByteStream):
         self.resource.data = byte_stream.read()
