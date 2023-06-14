@@ -189,7 +189,7 @@ class Package(Metadata, metaclass=Factory):
     @property
     def resource_names(self) -> List[str]:
         """Return names of resources"""
-        return [resource.name for resource in self.resources if resource.name is not None]
+        return [resource.name for resource in self.resources if resource.name is not None]  # type: ignore
 
     @property
     def resource_paths(self) -> List[str]:
@@ -269,7 +269,7 @@ class Package(Metadata, metaclass=Factory):
 
     def deduplicate_resoures(self):
         if len(self.resource_names) != len(set(self.resource_names)):
-            seen_names = []
+            seen_names: List[str] = []
             for index, resource in enumerate(self.resources):
                 name = resource.name
                 count = seen_names.count(name) + 1
@@ -311,7 +311,7 @@ class Package(Metadata, metaclass=Factory):
 
     # Flatten
 
-    def flatten(self, spec=["name", "path"]):
+    def flatten(self, spec: List[str] = ["name", "path"]):
         """Flatten the package
 
         Parameters
@@ -320,9 +320,9 @@ class Package(Metadata, metaclass=Factory):
         Returns:
             any[]: flatten package
         """
-        result = []
+        result: List[List[Any]] = []
         for resource in self.resources:
-            context = {}
+            context: Dict[str, Any] = {}
             context.update(resource.to_descriptor())
             result.append([context.get(prop) for prop in spec])
         return result
@@ -340,7 +340,7 @@ class Package(Metadata, metaclass=Factory):
 
     # Analyze
 
-    def analyze(self, *, detailed=False):
+    def analyze(self, *, detailed: bool = False):
         """Analyze the resources of the package
 
         This feature is currently experimental, and its API may change
@@ -353,7 +353,7 @@ class Package(Metadata, metaclass=Factory):
             dict: dict of resource analysis
 
         """
-        analisis = {}
+        analisis: Dict[str, Any] = {}
         for resource in self.resources:
             if isinstance(resource, platform.frictionless_resources.TableResource):
                 analisis[resource.name] = resource.analyze(detailed=detailed)
@@ -367,7 +367,7 @@ class Package(Metadata, metaclass=Factory):
         source: Optional[Any] = None,
         *,
         stats: bool = False,
-        **options,
+        **options: Any,
     ):
         """Describe the given source as a package
 
@@ -491,7 +491,7 @@ class Package(Metadata, metaclass=Factory):
 
     # Convert
 
-    def to_copy(self, **options) -> Self:
+    def to_copy(self, **options: Any) -> Self:
         """Create a copy of the package"""
         return super().to_copy(
             resources=[resource.to_copy() for resource in self.resources],
@@ -586,11 +586,11 @@ class Package(Metadata, metaclass=Factory):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_package_class(type)
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "resources":
             return Resource
 
@@ -608,7 +608,7 @@ class Package(Metadata, metaclass=Factory):
                 descriptor["profile"] = profiles[0]
 
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -619,17 +619,17 @@ class Package(Metadata, metaclass=Factory):
             keys = ["profile"]
             for key in keys:
                 value = descriptor.get(key)
-                items = value if isinstance(value, list) else [value]
-                for item in items:
+                items = value if isinstance(value, list) else [value]  # type: ignore
+                for item in items:  # type: ignore
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.PackageError(note=f'path "{item}" is not safe')
                         return
 
         # Resoruce Names
-        resource_names = []
+        resource_names: List[str] = []
         for resource in descriptor["resources"]:
             if isinstance(resource, dict) and "name" in resource:
-                resource_names.append(resource["name"])
+                resource_names.append(resource["name"])  # type: ignore
         if len(resource_names) != len(set(resource_names)):
             note = "names of the resources are not unique"
             yield errors.PackageError(note=note)
@@ -687,14 +687,14 @@ class Package(Metadata, metaclass=Factory):
                 yield errors.PackageError(note=note)
 
     @classmethod
-    def metadata_import(cls, descriptor: types.IDescriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,
             **options,
         )
 
-    def metadata_export(self):
+    def metadata_export(self):  # type: ignore
         descriptor = super().metadata_export()
 
         # TODO: recover after standards v2 release?

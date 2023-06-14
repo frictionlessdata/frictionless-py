@@ -23,6 +23,7 @@
     "frictionless/formats/csv",
     "frictionless/indexer",
     "frictionless/inquiry",
+    "frictionless/package",
     "frictionless/pipeline",
     "frictionless/portals",
     "frictionless/report",
