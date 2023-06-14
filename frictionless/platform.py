@@ -240,7 +240,7 @@ class Platform:
     @cached_property
     @extras(name="server")
     def uvicorn(self):
-        import uvicorn
+        import uvicorn  # type: ignore
 
         return uvicorn
 
