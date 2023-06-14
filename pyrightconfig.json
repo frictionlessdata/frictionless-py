@@ -24,6 +24,7 @@
     "frictionless/indexer",
     "frictionless/inquiry",
     "frictionless/pipeline",
+    "frictionless/portals",
     "frictionless/report",
     "frictionless/resource",
     "frictionless/resources",
