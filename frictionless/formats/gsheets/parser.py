@@ -7,6 +7,7 @@ from ...resources import TableResource
 from ...exception import FrictionlessException
 from .control import GsheetsControl
 from ... import errors
+from ... import types
 
 
 class GsheetsParser(Parser):
@@ -18,7 +19,7 @@ class GsheetsParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):  # type: ignore
+    def read_cell_stream_create(self) -> types.ICellStream:
         assert self.resource.normpath
         path = self.resource.normpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)

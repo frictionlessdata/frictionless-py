@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ...system import Plugin
 from .control import PandasControl
 from .parser import PandasParser
@@ -20,7 +20,7 @@ class PandasPlugin(Plugin):
 
     # Hooks
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource):
         if resource.format == "pandas":
             return PandasParser(resource)
 
@@ -34,6 +34,6 @@ class PandasPlugin(Plugin):
             resource.datatype = resource.datatype or "table"
             resource.mediatype = resource.mediatype or "application/pandas"
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "pandas":
             return PandasControl

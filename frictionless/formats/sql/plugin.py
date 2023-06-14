@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Any
 from urllib.parse import urlparse
 from ...platform import platform
 from ...system import Plugin
@@ -10,6 +10,7 @@ from . import settings
 
 if TYPE_CHECKING:
     from ...resource import Resource
+    from ...dialect import Control
 
 
 class SqlPlugin(Plugin):
@@ -17,7 +18,14 @@ class SqlPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = False,
+    ):
         if packagify:
             if isinstance(source, str):
                 parsed = urlparse(source)
@@ -26,7 +34,7 @@ class SqlPlugin(Plugin):
                         engine = platform.sqlalchemy.create_engine(source)
                         return SqlAdapter(engine, control=control)  # type: ignore
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource):
         if resource.format == "sql":
             return SqlParser(resource)
 
@@ -38,6 +46,6 @@ class SqlPlugin(Plugin):
                     resource.datatype = "table"
                     return
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "sql":
             return SqlControl
