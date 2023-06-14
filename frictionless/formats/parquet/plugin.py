@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ...system import Plugin
 from .control import ParquetControl
 from .parser import ParquetParser

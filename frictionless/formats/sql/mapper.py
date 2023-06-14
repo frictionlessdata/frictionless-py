@@ -1,14 +1,14 @@
 from __future__ import annotations
 import json
 from datetime import datetime, date, timezone
-from typing import TYPE_CHECKING, Dict, Type, Any
+from typing import TYPE_CHECKING, Dict, Type, Any, List
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Mapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import Dialect
+    from sqlalchemy import Dialect, CheckConstraint, Column, Constraint
     from sqlalchemy.schema import Table, Column
     from sqlalchemy.types import TypeEngine
     from ...table import Row
@@ -29,7 +29,7 @@ class SqlMapper(Mapper):
 
     # Read
 
-    def read_schema(self, table: Table, *, with_metadata: bool = False) -> Schema:
+    def read_schema(self, table: Table, *, with_metadata: bool = False) -> Schema:  # type: ignore
         """Convert sqlalchemy table to frictionless schema"""
         sa = platform.sqlalchemy
         schema = Schema()
@@ -38,16 +38,16 @@ class SqlMapper(Mapper):
         for column in table.columns:
             if with_metadata and column.name in settings.METADATA_IDENTIFIERS:
                 continue
-            field = self.read_field(column)
+            field = self.read_field(column)  # type: ignore
             schema.add_field(field)
 
         # Primary key
         for constraint in table.constraints:
             if isinstance(constraint, sa.PrimaryKeyConstraint):
                 for column in constraint.columns:  # type: ignore
-                    if with_metadata and column.name in settings.METADATA_IDENTIFIERS:
+                    if with_metadata and column.name in settings.METADATA_IDENTIFIERS:  # type: ignore
                         continue
-                    schema.primary_key.append(str(column.name))
+                    schema.primary_key.append(str(column.name))  # type: ignore
 
         # Foreign keys
         for constraint in table.constraints:
@@ -56,16 +56,16 @@ class SqlMapper(Mapper):
                 own_fields = []
                 foreign_fields = []
                 for element in constraint.elements:  # type: ignore
-                    own_fields.append(str(element.parent.name))
-                    if element.column.table.name != table.name:
-                        resource = str(element.column.table.name)
-                    foreign_fields.append(str(element.column.name))
-                ref = {"resource": resource, "fields": foreign_fields}
+                    own_fields.append(str(element.parent.name))  # type: ignore
+                    if element.column.table.name != table.name:  # type: ignore
+                        resource = str(element.column.table.name)  # type: ignore
+                    foreign_fields.append(str(element.column.name))  # type: ignore
+                ref = {"resource": resource, "fields": foreign_fields}  # type: ignore
                 schema.foreign_keys.append({"fields": own_fields, "reference": ref})
 
         return schema
 
-    def read_field(self, column: Column) -> Field:
+    def read_field(self, column: Column) -> Field:  # type: ignore
         """Convert sqlalchemy Column to frictionless Field"""
         sa = platform.sqlalchemy
         sapg = platform.sqlalchemy_dialects_postgresql
@@ -95,16 +95,16 @@ class SqlMapper(Mapper):
         name = str(column.name)
         type = "string"
         for type_class, value in mapping.items():
-            if isinstance(column.type, type_class):
+            if isinstance(column.type, type_class):  # type: ignore
                 type = value
         field = Field.from_descriptor(dict(name=name, type=type))
-        if isinstance(column.type, (sa.CHAR, sa.VARCHAR)):
+        if isinstance(column.type, (sa.CHAR, sa.VARCHAR)):  # type: ignore
             if column.type.length:  # type: ignore
                 field.constraints["maxLength"] = column.type.length  # type: ignore
-        if isinstance(column.type, sa.CHAR):
+        if isinstance(column.type, sa.CHAR):  # type: ignore
             if column.type.length:  # type: ignore
                 field.constraints["minLength"] = column.type.length  # type: ignore
-        if isinstance(column.type, sa.Enum):
+        if isinstance(column.type, sa.Enum):  # type: ignore
             if column.type.enums:  # type: ignore
                 field.constraints["enum"] = column.type.enums  # type: ignore
         if not column.nullable:
@@ -149,17 +149,17 @@ class SqlMapper(Mapper):
 
     # Write
 
-    def write_schema(
+    def write_schema(  # type: ignore
         self, schema: Schema, *, table_name: str, with_metadata: bool = False
     ) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
         sa = platform.sqlalchemy
-        columns = []
-        constraints = []
+        columns: List[Column] = []  # type: ignore
+        constraints: List[Constraint] = []
 
         # Fields
         if with_metadata:
-            columns.append(
+            columns.append(  # type: ignore
                 sa.Column(
                     settings.ROW_NUMBER_IDENTIFIER,
                     sa.Integer,
@@ -167,10 +167,10 @@ class SqlMapper(Mapper):
                     autoincrement=False,
                 )
             )
-            columns.append(sa.Column(settings.ROW_VALID_IDENTIFIER, sa.Boolean))
+            columns.append(sa.Column(settings.ROW_VALID_IDENTIFIER, sa.Boolean))  # type: ignore
         for field in schema.fields:
-            column = self.write_field(field, table_name=table_name)
-            columns.append(column)
+            column = self.write_field(field, table_name=table_name)  # type: ignore
+            columns.append(column)  # type: ignore
 
         # Primary key
         if schema.primary_key:
@@ -184,8 +184,8 @@ class SqlMapper(Mapper):
             fields = fk["fields"]
             foreign_fields = fk["reference"]["fields"]
             foreign_table_name = fk["reference"]["resource"] or table_name
-            composer = lambda field: ".".join([foreign_table_name, field])
-            foreign_fields = list(map(composer, foreign_fields))
+            composer = lambda field: ".".join([foreign_table_name, field])  # type: ignore
+            foreign_fields = list(map(composer, foreign_fields))  # type: ignore
             constraint = sa.ForeignKeyConstraint(fields, foreign_fields)
             constraints.append(constraint)
 
@@ -193,16 +193,16 @@ class SqlMapper(Mapper):
         table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
         return table
 
-    def write_field(self, field: Field, *, table_name: str) -> Column:
+    def write_field(self, field: Field, *, table_name: str) -> Column:  # type: ignore
         """Convert frictionless Field to sqlalchemy Column"""
         sa = platform.sqlalchemy
         quote = self.dialect.identifier_preparer.quote  # type: ignore
         Check = sa.CheckConstraint
-        checks = []
+        checks: List[CheckConstraint] = []
 
         # General properties
         quoted_name = quote(field.name)
-        column_type = self.write_type(field.type)
+        column_type = self.write_type(field.type)  # type: ignore
         nullable = not field.required
 
         # Length contraints
@@ -250,7 +250,7 @@ class SqlMapper(Mapper):
                     column_type = sa.Enum(*value, name=enum_name)
 
         # Create column
-        column_args = [field.name, column_type] + checks
+        column_args = [field.name, column_type] + checks  # type: ignore
         # TODO: shall it use "autoincrement=False"
         # https://github.com/Mause/duckdb_engine/issues/595#issuecomment-1495408566
         column_kwargs = {"nullable": nullable, "unique": unique}
@@ -260,13 +260,13 @@ class SqlMapper(Mapper):
 
         return column
 
-    def write_type(self, field_type: str) -> Type[TypeEngine]:
+    def write_type(self, field_type: str) -> Type[TypeEngine]:  # type: ignore
         """Convert frictionless type to sqlalchemy type"""
         sa = platform.sqlalchemy
         sapg = platform.sqlalchemy_dialects_postgresql
 
         # General mapping
-        mapping: Dict[str, Type[TypeEngine]] = {
+        mapping: Dict[str, Type[TypeEngine]] = {  # type: ignore
             "any": sa.Text,
             "boolean": sa.Boolean,
             "date": sa.Date,
@@ -280,7 +280,7 @@ class SqlMapper(Mapper):
 
         # Postgres mapping
         if self.dialect.name == "postgresql":
-            mapping.update(
+            mapping.update(  # type: ignore
                 {
                     "array": sapg.JSONB,
                     "geojson": sapg.JSONB,
@@ -289,7 +289,7 @@ class SqlMapper(Mapper):
                 }
             )
 
-        return mapping.get(field_type, sa.Text)
+        return mapping.get(field_type, sa.Text)  # type: ignore
 
     def write_row(self, row: Row, *, with_metadata: bool = False) -> Dict[str, Any]:
         """Convert frictionless Row to a sqlalchemy Item for insertion"""
@@ -301,7 +301,7 @@ class SqlMapper(Mapper):
         for field in row.fields:
             cell = row[field.name]
             if cell is not None:
-                column_type = self.write_type(field.type)
+                column_type = self.write_type(field.type)  # type: ignore
                 if field.type != "string" and column_type is sa.Text:
                     cell, _ = field.write_cell(cell)
                 elif field.type in ["object", "geojson"]:
@@ -316,4 +316,4 @@ class SqlMapper(Mapper):
                         dt = dt.astimezone(timezone.utc)
                         cell = dt.time()
             item[field.name] = cell
-        return item
+        return item  # type: ignore
