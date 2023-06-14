@@ -1,8 +1,12 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from ...platform import platform
 from ...resources import TableResource
 from .control import ParquetControl
 from ...system import Parser
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class ParquetParser(Parser):
@@ -42,5 +46,5 @@ class ParquetParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         platform.fastparquet.write(self.resource.normpath, source.to_pandas())

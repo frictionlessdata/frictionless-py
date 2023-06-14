@@ -1,5 +1,6 @@
 from __future__ import annotations
 import tempfile
+from typing import TYPE_CHECKING, Any, List
 from ...exception import FrictionlessException
 from ...platform import platform
 from ..inline import InlineControl
@@ -7,6 +8,10 @@ from .control import YamlControl
 from ...resources import TableResource
 from ...system import system, Parser
 from ... import errors
+from ... import types
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class YamlParser(Parser):
@@ -25,7 +30,7 @@ class YamlParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self) -> types.ICellStream:
         control = YamlControl.from_dialect(self.resource.dialect)
         source = platform.yaml.safe_load(self.loader.byte_stream)
         if control.property:
@@ -46,8 +51,8 @@ class YamlParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
-        data = []
+    def write_row_stream(self, source: TableResource):
+        data: List[Any] = []
         control = YamlControl.from_dialect(self.resource.dialect)
         with source:
             if not control.keyed:

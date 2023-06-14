@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Dict, Any
 from ...system import Mapper
 from ...schema import Schema, Field
 
@@ -7,7 +7,7 @@ from ...schema import Schema, Field
 class QsvMapper(Mapper):
     # Read
 
-    def read_schema(self, stats: List[dict]) -> Schema:
+    def read_schema(self, stats: List[Dict[str, Any]]) -> Schema:  # type: ignore
         """Convert "qsv stats" output to Table Schema"""
         schema = Schema()
         for item in stats:
