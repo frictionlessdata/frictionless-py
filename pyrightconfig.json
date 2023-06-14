@@ -21,6 +21,7 @@
     "frictionless/errors",
     "frictionless/fields",
     "frictionless/formats/csv",
+    "frictionless/formats/erd",
     "frictionless/indexer",
     "frictionless/inquiry",
     "frictionless/package",
