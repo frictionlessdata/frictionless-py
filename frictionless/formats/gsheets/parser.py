@@ -1,5 +1,6 @@
 from __future__ import annotations
 import re
+from typing import Any, List
 from ...platform import platform
 from ...system import Parser
 from ...resources import TableResource
@@ -17,7 +18,7 @@ class GsheetsParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self):  # type: ignore
         assert self.resource.normpath
         path = self.resource.normpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", path)
@@ -36,7 +37,7 @@ class GsheetsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         assert self.resource.normpath
         path = self.resource.normpath
         control = GsheetsControl.from_dialect(self.resource.dialect)
@@ -49,7 +50,7 @@ class GsheetsParser(Parser):
         gc = platform.pygsheets.authorize(service_account_file=control.credentials)
         sh = gc.open_by_key(key)
         wks = sh.worksheet_by_id(gid) if gid else sh[0]  # type: ignore
-        data = []
+        data: List[Any] = []
         with source:
             data.append(source.schema.field_names)
             for row in source.row_stream:
