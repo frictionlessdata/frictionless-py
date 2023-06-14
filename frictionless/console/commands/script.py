@@ -9,9 +9,9 @@ from rich.console import Console
 from ...resource import Resource
 from ..console import console
 from ...system import system
-from ... import helpers
+from ...helpers import write_file
 from .. import common
-from .. import utils
+from .. import helpers
 
 
 @console.command(name="script")
@@ -36,10 +36,10 @@ def console_script(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     # Index resource
@@ -47,7 +47,7 @@ def console_script(
     try:
         # Create resource
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             path=path,
             datatype=type,
@@ -59,11 +59,11 @@ def console_script(
         database = file.name
 
         # Index resources
-        names = []
+        names: List[str] = []
         resources = resource.list(name=name)
         for resource in resources:
             names.extend(
-                utils.index_resource(
+                helpers.index_resource(
                     console,
                     resource=resource,
                     database=database,
@@ -73,13 +73,13 @@ def console_script(
                 )
             )
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Ensure tables
     if not names:
         note = "Not found any tabular resources"
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(1)
 
     # Enter interpreter
@@ -87,7 +87,7 @@ def console_script(
     file = tempfile.NamedTemporaryFile(delete=False, suffix=".py")
     atexit.register(os.remove, file.name)
     startup = generate_startup(database, names=names)
-    helpers.write_file(file.name, startup)
+    write_file(file.name, startup)
     os.system(f"PYTHONSTARTUP={file.name} python3")
 
 
@@ -102,7 +102,7 @@ def generate_startup(database: str, *, names: List[str]) -> str:
     lines.append("import pandas as pd")
     lines.append(f"engine = sa.create_engine('{database}')")
     lines.append("conn = engine.connect()")
-    dfnames = []
+    dfnames: List[str] = []
     for name in names:
         dfname = generate_dfname(name)
         dfnames.append(dfname)

@@ -6,7 +6,7 @@ from ...resource import Resource
 from ...system import system
 from ..console import console
 from .. import common
-from .. import utils
+from .. import helpers
 
 
 @console.command(name="index")
@@ -36,10 +36,10 @@ def console_index(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     # Index resource
@@ -47,18 +47,18 @@ def console_index(
     try:
         # Create resource
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             path=path,
             datatype=type,
         )
 
         # Index resources
-        names = []
+        names: List[str] = []
         resources = resource.list()
         for resource in resources:
             names.extend(
-                utils.index_resource(
+                helpers.index_resource(
                     console,
                     resource=resource,
                     database=database,
@@ -69,7 +69,7 @@ def console_index(
                 )
             )
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Print result

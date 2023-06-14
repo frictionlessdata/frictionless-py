@@ -1,11 +1,14 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from ...platform import platform
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class cell_replace(Step):
     """Replace cell
 
@@ -25,16 +28,16 @@ class cell_replace(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         if not self.field_name:
             resource.data = table.replaceall(self.pattern, self.replace)  # type: ignore
         else:
             pattern = self.pattern
-            function = platform.petl.replace
+            function = platform.petl.replace  # type: ignore
             if pattern.startswith("<regex>"):  # type: ignore
                 pattern = pattern.replace("<regex>", "")  # type: ignore
-                function = platform.petl.sub
+                function = platform.petl.sub  # type: ignore
             resource.data = function(table, self.field_name, pattern, self.replace)  # type: ignore
 
     # Metadata

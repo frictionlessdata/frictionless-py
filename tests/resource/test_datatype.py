@@ -24,13 +24,43 @@ def test_resource_datatype_file(source):
 @pytest.mark.parametrize(
     "source",
     [
-        "data/article.md",
+        "data/text.txt",
     ],
 )
 def test_resource_datatype_text(source):
     resource = Resource(source)
     assert resource.datatype == "text"
     assert isinstance(resource, resources.TextResource)
+
+
+# Article
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "data/article.md",
+    ],
+)
+def test_resource_datatype_article(source):
+    resource = Resource(source)
+    assert resource.datatype == "article"
+    assert isinstance(resource, resources.ArticleResource)
+
+
+# Script
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "data/script.py",
+    ],
+)
+def test_resource_datatype_script(source):
+    resource = Resource(source)
+    assert resource.datatype == "script"
+    assert isinstance(resource, resources.ScriptResource)
 
 
 # Json

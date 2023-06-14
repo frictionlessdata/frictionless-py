@@ -11,10 +11,10 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
+    from .. import types
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Inquiry(Metadata):
     """Inquiry representation."""
 
@@ -47,7 +47,7 @@ class Inquiry(Metadata):
 
     # Validate
 
-    def validate(self, *, parallel=False):
+    def validate(self, *, parallel: bool = False):
         """Validate inquiry
 
         Parameters:
@@ -99,7 +99,7 @@ class Inquiry(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "tasks":
             return InquiryTask
 
@@ -107,7 +107,7 @@ class Inquiry(Metadata):
 # Internal
 
 
-def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
+def validate_parallel(descriptor: types.IDescriptor) -> types.IDescriptor:
     task = platform.frictionless.InquiryTask.from_descriptor(descriptor)
     report = task.validate()
     return report.to_descriptor()

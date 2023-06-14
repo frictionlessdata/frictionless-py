@@ -8,10 +8,10 @@ if TYPE_CHECKING:
 class Mapper:
     # Read
 
-    def read_schema(self, *args, **kwargs) -> Schema:
+    def read_schema(self, *args: Any, **kwargs: Any) -> Schema:
         raise NotImplementedError()
 
     # Write
 
-    def write_schema(self, schema: Schema, **kwargs) -> Any:
+    def write_schema(self, schema: Schema, **kwargs: Any) -> Any:
         raise NotImplementedError()

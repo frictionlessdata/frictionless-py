@@ -8,6 +8,7 @@ from ..validator import Validator
 from ..platform import platform
 from ..metadata import Metadata
 from ..resource import Resource
+from .factory import Factory
 from ..system import system
 from .. import settings
 from .. import helpers
@@ -18,16 +19,15 @@ if TYPE_CHECKING:
     from ..checklist import Checklist
     from ..pipeline import Pipeline
     from ..resources import TableResource
-    from ..interfaces import IFilterFunction, IProcessFunction
-    from ..interfaces import IDescriptor, ITabularData
     from ..indexer import IOnRow, IOnProgress
     from ..dialect import Dialect, Control
     from ..detector import Detector
     from ..catalog import Dataset
+    from .. import types
 
 
-@attrs.define(kw_only=True)
-class Package(Metadata):
+@attrs.define(kw_only=True, repr=False)
+class Package(Metadata, metaclass=Factory):
     """Package representation
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -160,38 +160,6 @@ class Package(Metadata):
     # TODO: add docs
     """
 
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        packagify: bool = True,
-        **options,
-    ):
-        source = helpers.normalize_source(source)
-
-        # Source/control
-        if source is not None or control is not None:
-            if cls is not Package:
-                note = 'Providing "source" argument is only possible to "Package" class'
-                raise FrictionlessException(note)
-
-            # Adapter
-            adapter = system.create_adapter(
-                source,
-                control=control,
-                basepath=basepath,
-                packagify=packagify,
-            )
-            if adapter:
-                package = adapter.read_package()
-                return package
-
-            # Descriptor
-            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
-
     def __attrs_post_init__(self):
         for resource in self.resources:
             resource.package = self
@@ -199,6 +167,7 @@ class Package(Metadata):
                 resource.dialect = self._dialect
             if self._detector:
                 resource.detector = self._detector
+        super().__attrs_post_init__()
 
     @property
     def basepath(self) -> Optional[str]:
@@ -277,7 +246,7 @@ class Package(Metadata):
             return prev_resource
         self.add_resource(resource)
 
-    def update_resource(self, name: str, descriptor: IDescriptor) -> Resource:
+    def update_resource(self, name: str, descriptor: types.IDescriptor) -> Resource:
         """Update resource"""
         prev_resource = self.get_resource(name)
         resource_index = self.resources.index(prev_resource)
@@ -421,10 +390,10 @@ class Package(Metadata):
         self,
         *,
         name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
+        filter: Optional[types.IFilterFunction] = None,
+        process: Optional[types.IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> ITabularData:
+    ) -> types.ITabularData:
         """Extract rows
 
         Parameters:
@@ -436,7 +405,7 @@ class Package(Metadata):
             extracted rows indexed by resource name
 
         """
-        data: ITabularData = {}
+        data: types.ITabularData = {}
         resources = self.resources if name is None else [self.get_resource(name)]
         for res in resources:
             if isinstance(res, platform.frictionless_resources.TableResource):
@@ -626,7 +595,7 @@ class Package(Metadata):
             return Resource
 
     @classmethod
-    def metadata_transform(cls, descriptor: IDescriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Context
@@ -639,7 +608,7 @@ class Package(Metadata):
                 descriptor["profile"] = profiles[0]
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -718,7 +687,7 @@ class Package(Metadata):
                 yield errors.PackageError(note=note)
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options):
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,

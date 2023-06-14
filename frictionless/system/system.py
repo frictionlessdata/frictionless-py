@@ -13,7 +13,6 @@ from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IStandards, IOnerror
     from ..package import Package
     from ..resource import Resource
     from ..checklist import Check
@@ -24,6 +23,7 @@ if TYPE_CHECKING:
     from .loader import Loader
     from .parser import Parser
     from .plugin import Plugin
+    from .. import types
 
 
 # NOTE:
@@ -59,19 +59,19 @@ class System:
     A flag that indicates if resource, path or package is trusted.
     """
 
-    onerror: IOnerror = settings.DEFAULT_ONERROR
+    onerror: types.IOnerror = settings.DEFAULT_ONERROR
     """
     Type of action to take on Error such as "warn", "raise" or "ignore".
     """
 
-    standards: IStandards = settings.DEFAULT_STANDARDS
+    standards: types.IStandards = settings.DEFAULT_STANDARDS
     """
     Setting this value user can use feature of the specific version.
     The default value is v2.
     """
 
     def __init__(self):
-        self.__dynamic_plugins = OrderedDict()
+        self.__dynamic_plugins: OrderedDict[str, Plugin] = OrderedDict()
         self.__http_session = None
 
     @property
@@ -92,7 +92,7 @@ class System:
 
     @cached_property
     def methods(self) -> Dict[str, Any]:
-        methods = {}
+        methods: Dict[str, Any] = {}
         for action in self.supported_hooks:
             methods[action] = OrderedDict()
             for name, plugin in self.plugins.items():
@@ -103,7 +103,7 @@ class System:
 
     @cached_property
     def plugins(self) -> OrderedDict[str, Plugin]:
-        modules = OrderedDict()
+        modules: OrderedDict[str, Any] = OrderedDict()
         for item in pkgutil.iter_modules():
             if item.name.startswith("frictionless_"):
                 module = import_module(item.name)
@@ -125,7 +125,7 @@ class System:
 
     # Register/Deregister
 
-    def register(self, name, plugin):
+    def register(self, name: str, plugin: Plugin):
         """Register a plugin
 
         Parameters:
@@ -137,7 +137,7 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
-    def deregister(self, name):
+    def deregister(self, name: str):
         """Deregister a plugin
 
         Parameters:
@@ -155,8 +155,8 @@ class System:
         self,
         *,
         trusted: Optional[bool] = None,
-        onerror: Optional[IOnerror] = None,
-        standards: Optional[IStandards] = None,
+        onerror: Optional[types.IOnerror] = None,
+        standards: Optional[types.IStandards] = None,
         http_session: Optional[Any] = None,
     ):
         # Current
@@ -256,7 +256,7 @@ class System:
             func(resource)
         resource.datatype = resource.datatype or "file"
 
-    def detect_field_candidates(self) -> List[dict]:
+    def detect_field_candidates(self) -> List[dict[str, Any]]:
         """Create candidates
 
         Returns:

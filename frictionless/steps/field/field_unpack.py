@@ -6,7 +6,7 @@ from ...pipeline import Step
 from ... import fields
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class field_unpack(Step):
     """Unpack field.
 

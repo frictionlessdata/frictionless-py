@@ -19,8 +19,8 @@ class Application(platform.fastapi.FastAPI):
         application.config = config or Config()
 
         # Mount server/client
-        application.mount("/api", server.Server.create(config))
-        application.mount(
+        application.mount("/api", server.Server.create(config))  # type: ignore
+        application.mount(  # type: ignore
             "/",
             platform.fastapi_staticfiles.StaticFiles(
                 directory=Path(__file__).parent / "client",

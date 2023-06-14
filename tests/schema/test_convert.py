@@ -111,11 +111,14 @@ def test_schema_to_summary_with_type_missing_for_some_fields():
             {"name": "age", "format": "default"},
         ]
     }
-    with pytest.raises(FrictionlessException) as excinfo:
-        Schema.from_descriptor(descriptor)
-    error = excinfo.value.error
-    assert error.type == "schema-error"
-    assert error.description == "Provided schema is not valid."
+    schema = Schema.from_descriptor(descriptor)
+    output = schema.to_summary()
+    assert (
+        output.count("| name   | type   | required   |")
+        and output.count("| id     | string |            |")
+        and output.count("| name   | string |            |")
+        and output.count("| age    | string |            |")
+    )
 
 
 def test_schema_to_summary_with_name_missing_for_some_fields():

@@ -7,7 +7,7 @@ from ...resource import Resource
 from ...system import system
 from ..console import console
 from .. import common
-from .. import utils
+from .. import helpers
 
 
 @console.command(name="validate")
@@ -80,15 +80,15 @@ def console_validate(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     try:
         # Create dialect
-        dialect_obj = utils.create_dialect(
+        dialect_obj = helpers.create_dialect(
             descriptor=dialect,
             header_rows=header_rows,
             header_join=header_join,
@@ -101,7 +101,7 @@ def console_validate(
         )
 
         # Create detector
-        detector_obj = utils.create_detector(
+        detector_obj = helpers.create_detector(
             buffer_size=buffer_size,
             sample_size=sample_size,
             field_type=field_type,
@@ -113,7 +113,7 @@ def console_validate(
         )
 
         # Create checklist
-        checklist_obj = utils.create_checklist(
+        checklist_obj = helpers.create_checklist(
             descriptor=checklist,
             checks=checks,
             pick_errors=pick_errors,
@@ -122,7 +122,7 @@ def console_validate(
 
         # Create resource
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             path=path,
             scheme=scheme,
@@ -154,7 +154,7 @@ def console_validate(
         )
         code = int(not report.valid)
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
@@ -186,8 +186,8 @@ def console_validate(
         for task in report.tasks:
             status = "VALID" if task.valid else "INVALID"
             style = "green" if task.valid else "bold red"
-            row = [task.name, task.type, task.place, status]
-            view.add_row(*row, style=style)
+            status_row = [task.name, task.type, task.place, status]
+            view.add_row(*status_row, style=style)
         console.print(view)
 
     # Errors
@@ -199,10 +199,10 @@ def console_validate(
                 for label in labels:
                     view.add_column(label)
                 for error in errors:
-                    row = []
+                    error_row: List[str] = []
                     for prop in props:
-                        row.append(str(getattr(error, prop, None)))
-                    view.add_row(*row)
+                        error_row.append(str(getattr(error, prop, None)))
+                    view.add_row(*error_row)
                 console.print(view)
 
     # Proper retcode

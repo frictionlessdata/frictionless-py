@@ -1,9 +1,13 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class row_split(Step):
     """Split rows.
 
@@ -26,7 +30,7 @@ class row_split(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         resource.data = table.splitdown(self.field_name, self.pattern)  # type: ignore
 

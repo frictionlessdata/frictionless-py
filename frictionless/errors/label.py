@@ -3,7 +3,7 @@ import attrs
 from .header import HeaderError
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class LabelError(HeaderError):
     """Label error representation.
 

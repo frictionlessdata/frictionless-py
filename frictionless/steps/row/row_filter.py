@@ -1,11 +1,14 @@
 from __future__ import annotations
 import attrs
-import simpleeval
-from typing import Optional, Any
+import simpleeval  # type: ignore
+from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class row_filter(Step):
     """Filter rows.
 
@@ -30,13 +33,13 @@ class row_filter(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         function = self.function
         table = resource.to_petl()  # type: ignore
         if self.formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
-            evalclass = simpleeval.EvalWithCompoundTypes
-            function = lambda row: evalclass(names=row).eval(self.formula)
+            evalclass = simpleeval.EvalWithCompoundTypes  # type: ignore
+            function = lambda row: evalclass(names=row).eval(self.formula)  # type: ignore
         resource.data = table.select(function)  # type: ignore
 
     # Metadata

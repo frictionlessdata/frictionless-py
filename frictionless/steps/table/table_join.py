@@ -9,7 +9,7 @@ from ...resource import Resource
 DEFAULT_MODE = "inner"
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class table_join(Step):
     """Join tables.
 
@@ -45,7 +45,7 @@ class table_join(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         target = resource
         source = self.resource
         if isinstance(source, str):
@@ -59,16 +59,16 @@ class table_join(Step):
                 if field.name != self.field_name:
                     target.schema.fields.append(field.to_copy())
         if self.mode == "inner":
-            join = platform.petl.hashjoin if self.use_hash else platform.petl.join
+            join = platform.petl.hashjoin if self.use_hash else platform.petl.join  # type: ignore
             resource.data = join(view1, view2, self.field_name)  # type: ignore
         elif self.mode == "left":
-            leftjoin = (
-                platform.petl.hashleftjoin if self.use_hash else platform.petl.leftjoin
+            leftjoin = (  # type: ignore
+                platform.petl.hashleftjoin if self.use_hash else platform.petl.leftjoin  # type: ignore
             )
             resource.data = leftjoin(view1, view2, self.field_name)  # type: ignore
         elif self.mode == "right":
-            rightjoin = (
-                platform.petl.hashrightjoin if self.use_hash else platform.petl.rightjoin
+            rightjoin = (  # type: ignore
+                platform.petl.hashrightjoin if self.use_hash else platform.petl.rightjoin  # type: ignore
             )
             resource.data = rightjoin(view1, view2, self.field_name)  # type: ignore
         elif self.mode == "outer":
@@ -76,8 +76,8 @@ class table_join(Step):
         elif self.mode == "cross":
             resource.data = platform.petl.crossjoin(view1, view2)  # type: ignore
         elif self.mode == "negate":
-            antijoin = (
-                platform.petl.hashantijoin if self.use_hash else platform.petl.antijoin
+            antijoin = (  # type: ignore
+                platform.petl.hashantijoin if self.use_hash else platform.petl.antijoin  # type: ignore
             )
             resource.data = antijoin(view1, view2, self.field_name)  # type: ignore
 
@@ -97,6 +97,6 @@ class table_join(Step):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "resource":
             return Resource

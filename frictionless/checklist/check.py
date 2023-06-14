@@ -1,11 +1,12 @@
 from __future__ import annotations
 import attrs
 import warnings
-from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type
+from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type, Union
 from ..metadata import Metadata
 from ..system import system
 from .. import settings
 from .. import errors
+from .. import types
 
 if TYPE_CHECKING:
     from ..table import Row
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 # TODO: add support for validate_package/etc?
 # TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Check(Metadata):
     """Check representation.
 
@@ -74,7 +75,6 @@ class Check(Metadata):
 
     # Validate
 
-    # TODO: fix these types Iterable -> Generator
     def validate_start(self) -> Iterable[Error]:
         """Called to validate the resource after opening
 
@@ -105,7 +105,9 @@ class Check(Metadata):
     # Convert
 
     @classmethod
-    def from_descriptor(cls, descriptor):
+    def from_descriptor(cls, descriptor: Union[str, types.IDescriptor]):  # type: ignore
+        descriptor = cls.metadata_retrieve(descriptor)
+
         # Type (framework/v4)
         code = descriptor.pop("code", None)
         if code:
@@ -132,5 +134,5 @@ class Check(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_check_class(type)

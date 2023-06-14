@@ -1,11 +1,15 @@
 from __future__ import annotations
 import attrs
-import simpleeval
+import simpleeval  # type: ignore
+from typing import TYPE_CHECKING
 from ...checklist import Check
 from ... import errors
 
+if TYPE_CHECKING:
+    from ...table import Row
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class row_constraint(Check):
     """Check that every row satisfies a provided Python expression."""
 
@@ -20,13 +24,13 @@ class row_constraint(Check):
 
     # Validate
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row):
         try:
             # This call should be considered as a safe expression evaluation
             # https://github.com/danthedeckie/simpleeval
             # NOTE: review EvalWithCompoundTypes/sync with steps
-            evalclass = simpleeval.EvalWithCompoundTypes
-            assert evalclass(names=row).eval(self.formula)
+            evalclass = simpleeval.EvalWithCompoundTypes  # type: ignore
+            assert evalclass(names=row).eval(self.formula)  # type: ignore
         except Exception:
             yield errors.RowConstraintError.from_row(
                 row,

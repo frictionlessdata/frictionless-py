@@ -1,12 +1,13 @@
 from __future__ import annotations
 import re
 import attrs
+from typing import Any
 from decimal import Decimal
 from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class NumberField(Field):
     type = "number"
     builtin = True
@@ -53,7 +54,7 @@ class NumberField(Field):
         properties = ["group_char", "decimal_char", "bare_number"]
         if set(properties).intersection(self.list_defined()):
 
-            def processor_function(cell):
+            def processor_function(cell: Any):
                 if pattern:
                     cell = pattern.sub("", cell)
                 cell = cell.replace(self.group_char, "")
@@ -65,7 +66,7 @@ class NumberField(Field):
             processor = processor_function
 
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             Primary = Decimal
             Secondary = float
             if self.float_number:
@@ -103,7 +104,7 @@ class NumberField(Field):
     # TODO: optimize
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             if self.has_defined("group_char"):
                 cell = f"{cell:,}".replace(",", "g")
             else:

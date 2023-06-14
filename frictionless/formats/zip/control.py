@@ -4,11 +4,11 @@ from typing import Optional, Any
 from ...dialect import Control
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class ZipControl(Control):
     """Zip control representation"""
 
-    type = "ckan"
+    type = "zip"
 
     innerpath: Optional[str] = None
     """Where to find a data package. Defaults to 'datapackage.json/yaml'

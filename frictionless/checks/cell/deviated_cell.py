@@ -1,19 +1,20 @@
 from __future__ import annotations
 import attrs
 import statistics
-from typing import TYPE_CHECKING, List, Iterable
+from typing import TYPE_CHECKING, List, Iterable, Dict
 from ...checklist import Check
 from ... import errors
 
 if TYPE_CHECKING:
     from ...table import Row
     from ...error import Error
+    from ...resource import Resource
 
 
 DEFAULT_INTERVAL = 3
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class deviated_cell(Check):
     """Check if the cell size is deviated"""
 
@@ -35,10 +36,10 @@ class deviated_cell(Check):
 
     # Connect
 
-    def connect(self, resource):
+    def connect(self, resource: Resource):
         super().connect(resource)
-        self.__cell_sizes = {}
-        self.__fields = {}
+        self.__cell_sizes: Dict[int, Dict[int, int]] = {}
+        self.__fields: Dict[int, str] = {}
 
     # Validate
 

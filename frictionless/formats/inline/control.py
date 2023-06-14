@@ -4,7 +4,7 @@ from typing import Optional, List
 from ...dialect import Control
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class InlineControl(Control):
     """Inline control representation.
 

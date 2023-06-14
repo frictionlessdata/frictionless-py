@@ -22,7 +22,7 @@ def validate(
     parallel: bool = False,
     # Deprecated
     resource_name: Optional[str] = None,
-    **options,
+    **options: Any,
 ):
     """Validate resource
 

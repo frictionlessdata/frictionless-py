@@ -6,8 +6,8 @@ from rich.console import Console
 from ...resource import Resource
 from ..console import console
 from ...system import system
+from .. import helpers
 from .. import common
-from .. import utils
 
 
 @console.command(name="explore")
@@ -36,16 +36,16 @@ def console_explore(
         system.standards = standards  # type: ignore
 
     # Create source
-    source = utils.create_source(source, path=path)
+    source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        utils.print_error(console, note=note)
+        helpers.print_error(console, note=note)
         raise typer.Exit(code=1)
 
     # Get paths
     try:
         resource = Resource(
-            source=utils.create_source(source),
+            source=helpers.create_source(source),
             name=name,
             path=path,
             datatype=type,
@@ -53,7 +53,7 @@ def console_explore(
         resources = resource.list(name=name)
         paths = [resource.normpath for resource in resources if resource.normpath]
     except Exception as exception:
-        utils.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Enter editor
