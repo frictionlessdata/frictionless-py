@@ -1,49 +1,13 @@
 {
+  "strict": [
+    "frictionless"
+  ],
   "include": [
     "frictionless",
     "tests"
   ],
   "exclude": [
     "frictionless/vendors"
-  ],
-  "strict": [
-    "frictionless/actions",
-    "frictionless/analyzer",
-    "frictionless/application",
-    "frictionless/assets",
-    "frictionless/catalog",
-    "frictionless/checklist",
-    "frictionless/checks",
-    "frictionless/console",
-    "frictionless/detector",
-    "frictionless/dialect",
-    "frictionless/error",
-    "frictionless/errors",
-    "frictionless/fields",
-    "frictionless/formats",
-    "frictionless/indexer",
-    "frictionless/inquiry",
-    "frictionless/package",
-    "frictionless/pipeline",
-    "frictionless/portals",
-    "frictionless/report",
-    "frictionless/resource",
-    "frictionless/resources",
-    "frictionless/schema",
-    "frictionless/schemes",
-    "frictionless/server",
-    "frictionless/steps",
-    "frictionless/system",
-    "frictionless/table",
-    "frictionless/transformer",
-    "frictionless/validator",
-    "frictionless/vendors",
-    "frictionless/exception.py",
-    "frictionless/helpers.py",
-    "frictionless/metadata.py",
-    "frictionless/platform.py",
-    "frictionless/settings.py",
-    "frictionless/types.py"
   ],
   "ignore": [
     "**/__init__.py"
