@@ -9,7 +9,7 @@ class JsonschemaMapper(Mapper):
 
     # Write
 
-    def read_schema(self, profile: Dict[str, Any]) -> Schema:
+    def read_schema(self, profile: Dict[str, Any]) -> Schema:  # type: ignore
         schema = Schema()
         required = profile.get("required", [])
         assert isinstance(required, list)
@@ -29,7 +29,7 @@ class JsonschemaMapper(Mapper):
             schema.add_field(field)
 
             # Description
-            description = prop.get("description")
+            description = prop.get("description")  # type: ignore
             if description:
                 assert isinstance(description, str)
                 field.description = description
