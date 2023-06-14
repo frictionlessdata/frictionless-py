@@ -15,7 +15,7 @@ from ...platform import platform
 from ...resource import Resource
 
 if TYPE_CHECKING:
-    from pyzenodo3 import Record
+    from pyzenodo3 import Record  # type: ignore
 
 
 class ZenodoAdapter(Adapter):
@@ -41,7 +41,7 @@ class ZenodoAdapter(Adapter):
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
-        if isinstance(package, Package) and package.resources:
+        if isinstance(package, Package) and package.resources:  # type: ignore
             return package
         note = "Package/s not found"
         raise FrictionlessException(note)
@@ -86,7 +86,7 @@ class ZenodoAdapter(Adapter):
             )
 
             # Process resources
-            resources = []
+            resources: List[Path] = []
             for key, resource in enumerate(package.resources):
                 if resource.data:
                     resource_file_name = f"{resource.name}.json" or f"resource{key}.json"
@@ -152,7 +152,7 @@ class ZenodoAdapter(Adapter):
             dataset = client.find_record_by_doi(self.control.doi)
             name = self.control.name or dataset.data["metadata"]["title"]
             package = get_package(dataset, name, self.control.formats)
-            if isinstance(package, Package) and package.resources:
+            if isinstance(package, Package) and package.resources:  # type: ignore
                 packages.append(package)
             return Catalog(
                 datasets=[
@@ -183,7 +183,7 @@ class ZenodoAdapter(Adapter):
             for dataset in records:
                 name = self.control.name or dataset.data["metadata"]["title"]
                 package = get_package(dataset, name, self.control.formats)
-                if isinstance(package, Package) and package.resources:
+                if isinstance(package, Package) and package.resources:  # type: ignore
                     packages.append(package)
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
@@ -199,17 +199,17 @@ class ZenodoAdapter(Adapter):
         raise FrictionlessException(note)
 
 
-def get_package(record: Record, title: str, formats: List[str]) -> Package:
+def get_package(record: Record, title: str, formats: List[str]) -> Package:  # type: ignore
     package = Package(title=title)
     package.title = title
-    for file in record.data["files"]:
-        path = file["links"]["self"]
-        is_resource_file = any(path.endswith(ext) for ext in formats)
-        if path.endswith(("datapackage.json")):
-            return Package.from_descriptor(path, title=title)
-        if path.endswith("zip") and not is_resource_file:
+    for file in record.data["files"]:  # type: ignore
+        path = file["links"]["self"]  # type: ignore
+        is_resource_file = any(path.endswith(ext) for ext in formats)  # type: ignore
+        if path.endswith(("datapackage.json")):  # type: ignore
+            return Package.from_descriptor(path, title=title)  # type: ignore
+        if path.endswith("zip") and not is_resource_file:  # type: ignore
             try:
-                package = Package(path)
+                package = Package(path)  # type: ignore
                 package.title = title
                 return package
             except FrictionlessException as exception:
@@ -219,15 +219,15 @@ def get_package(record: Record, title: str, formats: List[str]) -> Package:
                     raise exception
         if is_resource_file:
             package.basepath = f'https://zenodo.org/api/files/{file["bucket"]}'
-            resource = Resource(path=file["key"])
+            resource = Resource(path=file["key"])  # type: ignore
             package.add_resource(resource)
     return package
 
 
 def generate_metadata(
-    package: Optional[Package] = None, *, metadata: Optional[dict] = None
-) -> dict:
-    meta_data: Union[str, dict, None] = {"metadata": {}}
+    package: Optional[Package] = None, *, metadata: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    meta_data: Union[str, Dict[str, Any], None] = {"metadata": {}}
     if not metadata and not package:
         note = "Zenodo API Metadata Creation error: Either metadata or package should be provided to generate metadata."
         raise FrictionlessException(note)
@@ -263,7 +263,7 @@ def generate_metadata(
     if package.licenses:
         meta_data["metadata"]["creators"] = package.licenses[0].get("name")  # type: ignore
 
-    creators = []
+    creators: List[Dict[str, Any]] = []
     for contributor in package.contributors:
         creators.append(
             {

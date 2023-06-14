@@ -1,7 +1,7 @@
 from __future__ import annotations
 import attrs
 from typing_extensions import Self
-from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
+from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar, Dict
 from ..exception import FrictionlessException
 from ..transformer import Transformer
 from ..validator import Validator
@@ -92,12 +92,12 @@ class Package(Metadata, metaclass=Factory):
     that can be used to validate the descriptor
     """
 
-    licenses: List[dict] = attrs.field(factory=list)
+    licenses: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The license(s) under which the package is provided.
     """
 
-    sources: List[dict] = attrs.field(factory=list)
+    sources: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The raw sources for this data package.
     It MUST be an array of Source objects.
@@ -105,7 +105,7 @@ class Package(Metadata, metaclass=Factory):
     MAY have path and/or email properties.
     """
 
-    contributors: List[dict] = attrs.field(factory=list)
+    contributors: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The people or organizations who contributed to this package.
     It MUST be an array. Each entry is a Contributor and MUST be an object.
