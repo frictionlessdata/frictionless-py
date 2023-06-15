@@ -1,10 +1,13 @@
 {
+  "strict": [
+    "frictionless"
+  ],
   "include": [
     "frictionless",
     "tests"
   ],
-  "strict": [
-    "frictionless/formats/csv"
+  "exclude": [
+    "frictionless/vendors"
   ],
   "ignore": [
     "**/__init__.py"

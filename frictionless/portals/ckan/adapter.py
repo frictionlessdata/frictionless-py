@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Union
+from typing import Union, Dict, Any, Optional
 from ...exception import FrictionlessException
 from ...system import system, Adapter
 from ...platform import platform
@@ -188,8 +188,8 @@ class CkanAdapter(Adapter):
         catalog = Catalog()
         params = {}
         endpoint: str = ""
-        response: dict = {}
-        descriptor: dict = {}
+        response: Dict[str, Any] = {}
+        descriptor: Dict[str, Any] = {}
         headers = set_headers(self)
 
         assert self.control.baseurl
@@ -246,8 +246,8 @@ class CkanAdapter(Adapter):
         return catalog
 
 
-def set_headers(adapter: CkanAdapter) -> dict:
-    headers = {}
+def set_headers(adapter: CkanAdapter) -> Dict[str, Any]:
+    headers: Dict[str, Any] = {}
 
     if adapter.control.apikey:
         if adapter.control.apikey.startswith("env:"):
@@ -261,9 +261,14 @@ def set_headers(adapter: CkanAdapter) -> dict:
 
 
 def make_ckan_request(
-    endpoint, *, method="GET", headers=None, apikey=None, **options
-) -> dict:
-    response_json: dict = {}
+    endpoint: str,
+    *,
+    method: str = "GET",
+    headers: Optional[Dict[str, str]] = None,
+    apikey: Optional[str] = None,
+    **options: Any,
+) -> Dict[str, Any]:
+    response_json: Dict[str, Any] = {}
     # Handle headers
     if headers is None:
         headers = {}
@@ -272,7 +277,7 @@ def make_ckan_request(
     if apikey:
         if apikey.startswith("env:"):
             apikey = os.environ.get(apikey[4:])
-        headers.update({"Authorization": apikey})
+        headers.update({"Authorization": apikey})  # type: ignore
 
     # Make request
     response = system.http_session.request(

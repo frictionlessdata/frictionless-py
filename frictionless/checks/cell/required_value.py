@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import TYPE_CHECKING, List, Any, Iterable
+from typing import TYPE_CHECKING, List, Any, Iterable, Set
 from ...checklist import Check
 from ... import errors
 
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ...resource import Resource
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class required_value(Check):
     """Check for required values in a field."""
 
@@ -33,7 +33,7 @@ class required_value(Check):
 
     def connect(self, resource: Resource):
         super().connect(resource)
-        self.__required_values_in_cell = set()
+        self.__required_values_in_cell: Set[Any] = set()
 
     # Validate
 

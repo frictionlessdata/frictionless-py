@@ -1,8 +1,14 @@
+import sys
+import pytest
 from frictionless import platform
 from frictionless.resources import TableResource
 
-
 IS_UNIX = platform.type != "windows"
+
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 10),
+    reason="Supported on Python3.10+",
+)
 
 
 # General

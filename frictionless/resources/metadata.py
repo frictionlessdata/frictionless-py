@@ -15,8 +15,7 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
-    from ..interfaces import ICallbackFunction
+    from .. import types
 
 T = TypeVar("T", bound=Metadata)
 
@@ -25,7 +24,7 @@ class MetadataResource(JsonResource, Generic[T]):
     dataclass: Type[T]
 
     @property
-    def descriptor(self) -> Union[IDescriptor, str]:
+    def descriptor(self) -> Union[types.IDescriptor, str]:
         descriptor = self.data if self.data is not None else self.path
         assert isinstance(descriptor, (str, dict))
         return descriptor
@@ -42,7 +41,7 @@ class MetadataResource(JsonResource, Generic[T]):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,

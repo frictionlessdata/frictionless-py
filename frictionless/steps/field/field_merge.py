@@ -1,7 +1,8 @@
+# type: ignore
 from __future__ import annotations
 import attrs
 from typing import TYPE_CHECKING, List, Any
-from petl.compat import next, text_type
+from petl.compat import next, text_type  # type: ignore
 from ...pipeline import Step
 from ... import fields
 
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
 DEFAULT_SEPARATOR = "-"
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class field_merge(Step):
     """Merge fields.
 
@@ -80,14 +81,14 @@ class field_merge(Step):
 def merge(
     source: Any,
     name: str,
-    from_names: list,
+    from_names: List[str],
     sep: str = "-",
     preserve: bool = True,
 ):
     it = iter(source)
 
     hdr = next(it)
-    field_indexes = list()
+    field_indexes: List[int] = list()
     flds = list(map(text_type, hdr))
 
     # determine output fields

@@ -5,7 +5,7 @@ from typing import List
 from ...pipeline import Step
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class field_remove(Step):
     """Remove field.
 

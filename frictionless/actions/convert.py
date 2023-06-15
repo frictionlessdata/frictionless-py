@@ -17,7 +17,7 @@ def convert(
     to_path: str,
     to_format: Optional[str] = None,
     to_dialect: Optional[Union[Dialect, str]] = None,
-    **options,
+    **options: Any,
 ) -> str:
     """Convert data source"""
 

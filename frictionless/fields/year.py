@@ -1,9 +1,10 @@
 from __future__ import annotations
 import attrs
+from typing import Any
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class YearField(Field):
     type = "year"
     builtin = True
@@ -18,7 +19,7 @@ class YearField(Field):
 
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if not isinstance(cell, int):
                 if not isinstance(cell, str):
                     return None
@@ -38,7 +39,7 @@ class YearField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return str(cell)
 
         return value_writer

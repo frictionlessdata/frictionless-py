@@ -90,13 +90,13 @@ def test_zip_adapter_to_zip_resource_multipart(tmpdir):
     ]
 
 
-def test_zip_adapter_to_zip_resource_sql(tmpdir, database_url):
+def test_zip_adapter_to_zip_resource_sql(tmpdir, sqlite_url_data):
     path = os.path.join(tmpdir, "package.zip")
     control = formats.SqlControl(table="table")
-    source = Package(resources=[Resource(database_url, name="table", control=control)])
+    source = Package(resources=[Resource(sqlite_url_data, name="table", control=control)])
     source.publish(path)
     target = Package(path)
-    assert target.get_table_resource("table").path == database_url
+    assert target.get_table_resource("table").path == sqlite_url_data
     assert target.get_table_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

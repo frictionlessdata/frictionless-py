@@ -9,8 +9,7 @@ from .. import settings
 
 if TYPE_CHECKING:
     from ..checklist import Checklist
-    from ..interfaces import ICallbackFunction
-    from ..interfaces import IFilterFunction, IProcessFunction, ITabularData
+    from .. import types
 
 
 class ResourceResource(MetadataResource[Resource]):
@@ -33,10 +32,10 @@ class ResourceResource(MetadataResource[Resource]):
         self,
         *,
         name: Optional[str] = None,
-        filter: Optional[IFilterFunction] = None,
-        process: Optional[IProcessFunction] = None,
+        filter: Optional[types.IFilterFunction] = None,
+        process: Optional[types.IProcessFunction] = None,
         limit_rows: Optional[int] = None,
-    ) -> ITabularData:
+    ) -> types.ITabularData:
         resource = self.read_metadata()
         if not isinstance(resource, TableResource):
             return {}
@@ -58,7 +57,7 @@ class ResourceResource(MetadataResource[Resource]):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,

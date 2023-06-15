@@ -4,7 +4,7 @@ from ...dialect import Control
 from . import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class MultipartControl(Control):
     """Multipart control representation"""
 

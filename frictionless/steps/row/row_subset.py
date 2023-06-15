@@ -1,10 +1,13 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class row_subset(Step):
     """Subset rows.
 
@@ -28,7 +31,7 @@ class row_subset(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         if self.subset == "conflicts":
             resource.data = table.conflicts(self.field_name)  # type: ignore

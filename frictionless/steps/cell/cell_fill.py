@@ -1,10 +1,13 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, Any
+from typing import TYPE_CHECKING, Optional, Any
 from ...pipeline import Step
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class cell_fill(Step):
     """Fill cell
 
@@ -24,7 +27,7 @@ class cell_fill(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         if self.value:
             resource.data = table.convert(self.field_name, {None: self.value})  # type: ignore

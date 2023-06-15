@@ -14,10 +14,11 @@ from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
+from .. import types
 
 
 # TODO: rebase back on using resource?
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class InquiryTask(Metadata):
     """Inquiry task representation."""
 
@@ -192,7 +193,7 @@ class InquiryTask(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "dialect":
             return Dialect
         elif name == "schema":
@@ -201,7 +202,7 @@ class InquiryTask(Metadata):
             return Checklist
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         # Source (framework/v4)
         source = descriptor.pop("source", None)
         if source:
@@ -213,7 +214,7 @@ class InquiryTask(Metadata):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -224,8 +225,8 @@ class InquiryTask(Metadata):
             keys = ["path", "resource", "package"]
             for key in keys:
                 value = descriptor.get(key)
-                items = value if isinstance(value, list) else [value]
-                for item in items:
+                items = value if isinstance(value, list) else [value]  # type: ignore
+                for item in items:  # type: ignore
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.InquiryTaskError(note=f'path "{item}" is not safe')
                         return

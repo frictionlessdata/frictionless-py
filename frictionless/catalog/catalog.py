@@ -3,19 +3,18 @@ import attrs
 from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..system import system
+from .factory import Factory
 from .dataset import Dataset
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
     from ..dialect import Control
-    from ..interfaces import IDescriptor
+    from .. import types
 
 
-@attrs.define(kw_only=True)
-class Catalog(Metadata):
+@attrs.define(kw_only=True, repr=False)
+class Catalog(Metadata, metaclass=Factory):
     """Catalog representation"""
 
     source: Optional[Any] = attrs.field(default=None, kw_only=False)
@@ -63,60 +62,18 @@ class Catalog(Metadata):
     `basepath` and `/path`
     """
 
-    @classmethod
-    def from_source(
-        cls,
-        source: Any,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-    ) -> Optional[Catalog]:
-        source = helpers.normalize_source(source)
-
-        # Adapter
-        if source is not None or control is not None:
-            adapter = system.create_adapter(source, control=control, basepath=basepath)
-            if adapter:
-                catalog = adapter.read_catalog()
-                return catalog
-
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        **options,
-    ):
-        source = helpers.normalize_source(source)
-
-        # Source/control
-        if source is not None or control is not None:
-            if cls is not Catalog:
-                note = 'Providing "source" argument is only possible to "Catalog" class'
-                raise FrictionlessException(note)
-
-            # Adapter
-            adapter = system.create_adapter(source, control=control, basepath=basepath)
-            if adapter:
-                catalog = adapter.read_catalog()
-                return catalog
-
-            # Descriptor
-            return cls.from_descriptor(source, basepath=basepath, **options)  # type: ignore
-
     def __attrs_post_init__(self):
         for dataset in self.datasets:
             dataset.catalog = self
             dataset.package.dataset = dataset
+        super().__attrs_post_init__()
 
     # Datasets
 
     @property
     def dataset_names(self) -> List[str]:
         """Return names of datasets"""
-        return [dataset.name for dataset in self.datasets if dataset.name is not None]
+        return [dataset.name for dataset in self.datasets]
 
     def add_dataset(self, dataset: Union[Dataset, str]) -> Dataset:
         """Add new dataset to the catalog"""
@@ -164,7 +121,7 @@ class Catalog(Metadata):
 
     def deduplicate_datasets(self):
         if len(self.dataset_names) != len(set(self.dataset_names)):
-            seen_names = []
+            seen_names: List[str] = []
             for index, dataset in enumerate(self.datasets):
                 name = dataset.name
                 count = seen_names.count(name) + 1
@@ -174,7 +131,7 @@ class Catalog(Metadata):
 
     # Infer
 
-    def infer(self, *, stats=False):
+    def infer(self, *, stats: bool = False):
         """Infer catalog's metadata
 
         Parameters:
@@ -196,7 +153,7 @@ class Catalog(Metadata):
 
     # Convert
 
-    def to_copy(self, **options):
+    def to_copy(self, **options: Any):
         """Create a copy of the catalog"""
         return super().to_copy(
             basepath=self.basepath,
@@ -223,12 +180,12 @@ class Catalog(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "datasets":
             return Dataset
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):  # type: ignore
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,

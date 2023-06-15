@@ -10,10 +10,12 @@ from .mapper import SqlMapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import MetaData
+    from sqlalchemy import MetaData, Table
     from sqlalchemy.engine import Engine
+    from ...resources import TableResource
+    from ...table import Row, IRowStream
     from ...schema import Schema
-    from ...table import Row
+    from ...report import Report
 
 
 class SqlAdapter(Adapter):
@@ -58,19 +60,31 @@ class SqlAdapter(Adapter):
 
     def read_schema(self, table_name: str) -> Schema:
         table = self.metadata.tables[table_name]
-        return self.mapper.read_schema(table)
+        return self.mapper.read_schema(table, with_metadata=self.control.with_metadata)
 
-    def read_cell_stream(self, control) -> Generator[List[Any], None, None]:
+    def read_cell_stream(self, control: SqlControl) -> Generator[List[Any], None, None]:
         sa = platform.sqlalchemy
-        table = self.metadata.tables[control.table]
+        table = self.metadata.tables[control.table]  # type: ignore
         with self.engine.begin() as conn:
+            # Prepare columns
+            columns = table.c
+            if self.control.with_metadata:
+                columns = [
+                    column
+                    for column in table.c
+                    if column.name not in settings.METADATA_IDENTIFIERS
+                ]
+
+            # Prepare query
             # Streaming could be not working for some backends:
             # http://docs.sqlalchemy.org/en/latest/core/connections.html
-            query = sa.select(table).execution_options(stream_results=True)
+            query = sa.select(*columns).execution_options(stream_results=True)
             if control.order_by:
                 query = query.order_by(sa.text(control.order_by))
             if control.where:
                 query = query.where(sa.text(control.where))
+
+            # Stream cells
             result = conn.execute(query)
             yield list(result.keys())
             for item in result:
@@ -81,7 +95,7 @@ class SqlAdapter(Adapter):
 
     def write_package(self, package: Package) -> bool:
         with self.engine.begin() as conn:
-            tables = []
+            tables: List[Table] = []
             for res in package.resources:
                 assert res.name
                 table = self.mapper.write_schema(res.schema, table_name=res.name)
@@ -96,7 +110,12 @@ class SqlAdapter(Adapter):
         return bool(tables)
 
     def write_schema(
-        self, schema: Schema, *, table_name: str, force: bool = False
+        self,
+        schema: Schema,
+        *,
+        table_name: str,
+        force: bool = False,
+        with_metadata: bool = False,
     ) -> None:
         with self.engine.begin() as conn:
             if force:
@@ -104,20 +123,22 @@ class SqlAdapter(Adapter):
                 if existing_table is not None:
                     self.metadata.drop_all(conn, tables=[existing_table])
                     self.metadata.remove(existing_table)
-            table = self.mapper.write_schema(schema, table_name=table_name)
+            table = self.mapper.write_schema(
+                schema, table_name=table_name, with_metadata=with_metadata
+            )
             table = table.to_metadata(self.metadata)
             self.metadata.create_all(conn, tables=[table])
 
     def write_row_stream(
         self,
-        row_stream,
+        row_stream: IRowStream,
         *,
         table_name: str,
         on_row: Optional[Callable[[Row], None]] = None,
     ) -> None:
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
-            buffer: List[Dict] = []
+            buffer: List[Dict[str, Any]] = []
             table = self.metadata.tables[table_name]
             for row in row_stream:
                 buffer.append(self.mapper.write_row(row))
@@ -128,10 +149,36 @@ class SqlAdapter(Adapter):
             if len(buffer):
                 conn.execute(sa.insert(table), buffer)
 
+    def write_resource_with_metadata(
+        self,
+        resource: TableResource,
+        *,
+        table_name: str,
+        on_row: Optional[Callable[[Row], None]] = None,
+    ) -> Report:
+        sa = platform.sqlalchemy
+        with self.engine.begin() as conn:
+            # Write row
+            def process_row(row: Row):
+                buffer.append(self.mapper.write_row(row, with_metadata=True))
+                if len(buffer) > settings.BUFFER_SIZE:
+                    conn.execute(sa.insert(table), buffer)
+                    buffer.clear()
+                on_row(row) if on_row else None
+
+            # Validate/iterate
+            buffer: List[Dict[str, Any]] = []
+            table = self.metadata.tables[table_name]
+            report = resource.validate(on_row=process_row)
+            if len(buffer):
+                conn.execute(sa.insert(table), buffer)
+
+            return report
+
 
 # Internal
 
 
-def regexp(expr, item):
+def regexp(expr: str, item: str):
     reg = re.compile(expr)
     return reg.search(item) is not None

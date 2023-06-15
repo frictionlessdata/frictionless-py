@@ -1,12 +1,13 @@
 from __future__ import annotations
 import io
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ...system import Plugin
 from .control import StreamControl
 from .loader import StreamLoader
 
 if TYPE_CHECKING:
     from ...resource import Resource
+    from ...system import Loader
 
 
 class StreamPlugin(Plugin):
@@ -14,7 +15,7 @@ class StreamPlugin(Plugin):
 
     # Hooks
 
-    def create_loader(self, resource):
+    def create_loader(self, resource: Resource) -> Optional[Loader]:
         if resource.scheme == "stream":
             return StreamLoader(resource)
 
@@ -25,6 +26,6 @@ class StreamPlugin(Plugin):
         elif resource.scheme == "stream":
             resource.data = io.BufferedRandom(io.BytesIO())  # type: ignore
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "stream":
             return StreamControl

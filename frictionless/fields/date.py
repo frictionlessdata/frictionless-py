@@ -1,12 +1,13 @@
 from __future__ import annotations
 import attrs
+from typing import Any
 from datetime import datetime, date
 from ..platform import platform
 from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class DateField(Field):
     type = "date"
     builtin = True
@@ -22,7 +23,7 @@ class DateField(Field):
     # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if isinstance(cell, datetime):
                 value_time = cell.time()
                 if (
@@ -59,7 +60,7 @@ class DateField(Field):
             format = settings.DEFAULT_DATE_PATTERN
 
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return cell.strftime(format)
 
         return value_writer

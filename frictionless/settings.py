@@ -6,7 +6,7 @@ import json
 # Helpers
 
 
-def read(*paths, encoding="utf-8"):
+def read(*paths: str, encoding: str = "utf-8"):
     dirname = os.path.dirname(__file__)
     with open(os.path.join(dirname, *paths), encoding=encoding) as file:
         return file.read().strip()
@@ -53,6 +53,7 @@ DEFAULT_PACKAGE_PROFILE = "data-package"
 DEFAULT_RESOURCE_PROFILE = "data-resource"
 DEFAULT_TABULAR_RESOURCE_PROFILE = "tabular-data-resource"
 DEFAULT_FIELD_TYPE = "any"
+DEFAULT_FIELD_TYPE_SPECS_V1 = "string"
 DEFAULT_FIELD_FORMAT = "default"
 DEFAULT_TRUE_VALUES = ["true", "True", "TRUE", "1"]
 DEFAULT_FALSE_VALUES = ["false", "False", "FALSE", "0"]
@@ -105,10 +106,11 @@ METADATA_TRAITS = {
     },
     "dialect": {
         "names": ["dialect.json", "dialect.yaml"],
+        # TODO: remove csv/json/excel after #1506
         "props": ["header", "headerRows", "csv", "json", "excel"],
     },
     "jsonschema": {
-        "names": [],
+        "names": ["jsonschema.json", "jsonschema.yaml"],
         "props": ["$schema"],
     },
     "schema": {

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ...system import Plugin
 from .control import GsheetsControl
 from .parser import GsheetsParser
@@ -13,7 +13,7 @@ class GsheetsPlugin(Plugin):
 
     # Hooks
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource):
         if resource.format == "gsheets":
             return GsheetsParser(resource)
 
@@ -28,6 +28,6 @@ class GsheetsPlugin(Plugin):
                     resource.format = resource.format or "csv"
                     resource.mediatype = resource.mediatype or "text/csv"
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "gsheets":
             return GsheetsControl

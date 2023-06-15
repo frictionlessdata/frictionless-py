@@ -1,9 +1,13 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Optional, Any
 from ...system import Plugin
 from ...resource import Resource
 from .adapter import ExcelAdapter
 from .control import ExcelControl
 from .parsers import XlsxParser, XlsParser
+
+if TYPE_CHECKING:
+    from ...dialect import Control
 
 
 class ExcelPlugin(Plugin):
@@ -11,7 +15,14 @@ class ExcelPlugin(Plugin):
 
     # Hooks
 
-    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = False,
+    ):
         if packagify:
             if isinstance(source, str):
                 resource = Resource(path=source, basepath=basepath)
@@ -19,7 +30,7 @@ class ExcelPlugin(Plugin):
                     control = control or ExcelControl()
                     return ExcelAdapter(control, resource=resource)  # type: ignore
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource):
         if resource.format == "xlsx":
             return XlsxParser(resource)
         elif resource.format == "xls":
@@ -30,6 +41,6 @@ class ExcelPlugin(Plugin):
             resource.datatype = resource.datatype or "table"
             resource.mediatype = resource.mediatype or "application/vnd.ms-excel"
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "excel":
             return ExcelControl

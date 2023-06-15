@@ -1,6 +1,6 @@
 from __future__ import annotations
 from itertools import chain
-from typing import TYPE_CHECKING, ClassVar, Optional, List
+from typing import TYPE_CHECKING, ClassVar, Optional, List, cast, Any
 from ..exception import FrictionlessException
 from ..platform import platform
 from .system import system
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .loader import Loader
     from ..resource import Resource
     from ..resources import TableResource
-    from ..interfaces import ICellStream, ISample
+    from .. import types
 
 
 class Parser:
@@ -35,15 +35,15 @@ class Parser:
     def __init__(self, resource: Resource):
         self.__resource: Resource = resource
         self.__loader: Optional[Loader] = None
-        self.__sample: Optional[ISample] = None
-        self.__cell_stream: Optional[ICellStream] = None
+        self.__sample: Optional[types.ISample] = None
+        self.__cell_stream: Optional[types.ICellStream] = None
 
     def __enter__(self):
         if self.closed:
             self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.close()
 
     @property
@@ -65,7 +65,7 @@ class Parser:
         return self.__loader
 
     @property
-    def sample(self) -> ISample:
+    def sample(self) -> types.ISample:
         """
         Returns:
             Loader: sample
@@ -75,7 +75,7 @@ class Parser:
         return self.__sample
 
     @property
-    def cell_stream(self) -> ICellStream:
+    def cell_stream(self) -> types.ICellStream:
         """
         Yields:
             any[][]: list stream
@@ -123,7 +123,7 @@ class Parser:
             loader = system.create_loader(self.resource)
             return loader.open()
 
-    def read_cell_stream(self) -> ICellStream:
+    def read_cell_stream(self) -> types.ICellStream:
         """Read list stream
 
         Returns:
@@ -139,7 +139,7 @@ class Parser:
         cell_stream = chain(self.__sample, cell_stream)
         return cell_stream
 
-    def read_cell_stream_create(self) -> ICellStream:
+    def read_cell_stream_create(self) -> types.ICellStream:
         """Create list stream from loader
 
         Parameters:
@@ -152,7 +152,7 @@ class Parser:
 
     def read_cell_stream_handle_errors(
         self,
-        cell_stream: ICellStream,
+        cell_stream: types.ICellStream,
     ) -> CellStreamWithErrorHandling:
         """Wrap list stream into error handler
 
@@ -166,7 +166,7 @@ class Parser:
 
     # Write
 
-    def write_row_stream(self, source: TableResource) -> None:
+    def write_row_stream(self, source: TableResource) -> Any:
         """Write row stream from the source resource
 
         Parameters:
@@ -184,7 +184,7 @@ class Parser:
 
 
 class CellStreamWithErrorHandling:
-    def __init__(self, cell_stream: ICellStream):
+    def __init__(self, cell_stream: types.ICellStream):
         self.cell_stream = cell_stream
 
     def __iter__(self):
@@ -192,7 +192,7 @@ class CellStreamWithErrorHandling:
 
     def __next__(self):
         try:
-            return self.cell_stream.__next__()  # type: ignore
+            return cast(List[Any], self.cell_stream.__next__())  # type: ignore
         except StopIteration:
             raise
         except FrictionlessException:

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ...system import Plugin
 from ...detector import Detector
 from .control import YamlControl
@@ -14,7 +14,7 @@ class YamlPlugin(Plugin):
 
     # Hooks
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource):
         if resource.format == "yaml":
             return YamlParser(resource)
 
@@ -27,6 +27,6 @@ class YamlPlugin(Plugin):
             )
             resource.mediatype = resource.mediatype or "text/yaml"
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "yaml":
             return YamlControl

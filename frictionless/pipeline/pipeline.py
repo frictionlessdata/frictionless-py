@@ -7,10 +7,11 @@ from ..metadata import Metadata
 from .step import Step
 from .. import settings
 from .. import errors
+from .. import types
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class Pipeline(Metadata):
     """Pipeline representation"""
 
@@ -103,12 +104,12 @@ class Pipeline(Metadata):
     }
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "steps":
             return Step
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Tasks (framework/v4)

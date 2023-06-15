@@ -1,11 +1,14 @@
 from __future__ import annotations
 import attrs
-from typing import Optional, List
+from typing import TYPE_CHECKING, Optional, List
 from ...pipeline import Step
 from ... import fields
 
+if TYPE_CHECKING:
+    from ...resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class table_melt(Step):
     """Melt tables.
 
@@ -35,7 +38,7 @@ class table_melt(Step):
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         field = resource.schema.get_field(self.field_name)
         resource.schema.fields.clear()

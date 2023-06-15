@@ -7,7 +7,7 @@ def list(
     *,
     name: Optional[str] = None,
     type: Optional[str] = None,
-    **options,
+    **options: Any,
 ) -> List[Resource]:
     """List resources
 

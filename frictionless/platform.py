@@ -1,5 +1,5 @@
 import sys
-from typing import ClassVar
+from typing import ClassVar, Callable, Any
 from functools import cached_property
 from importlib import import_module
 import platform as python_platform
@@ -8,8 +8,8 @@ import platform as python_platform
 def extras(*, name: str):
     """Extra dependency decorator"""
 
-    def outer(func):
-        def inner(*args, **kwargs):
+    def outer(func: Callable[..., Any]):
+        def inner(*args: Any, **kwargs: Any):
             try:
                 return func(*args, **kwargs)
             except Exception:
@@ -133,7 +133,7 @@ class Platform:
 
     @cached_property
     def isodate(self):
-        import isodate
+        import isodate  # type: ignore
 
         return isodate
 
@@ -175,7 +175,7 @@ class Platform:
 
     @cached_property
     def petl(self):
-        import petl
+        import petl  # type: ignore
 
         return petl
 
@@ -199,13 +199,13 @@ class Platform:
 
     @cached_property
     def rfc3986(self):
-        import rfc3986
+        import rfc3986  # type: ignore
 
         return rfc3986
 
     @cached_property
     def validators(self):
-        import validators
+        import validators  # type: ignore
 
         return validators
 
@@ -240,42 +240,42 @@ class Platform:
     @cached_property
     @extras(name="server")
     def uvicorn(self):
-        import uvicorn
+        import uvicorn  # type: ignore
 
         return uvicorn
 
     @cached_property
     @extras(name="aws")
     def boto3(self):
-        import boto3
+        import boto3  # type: ignore
 
         return boto3
 
     @cached_property
     @extras(name="ckan")
     def frictionless_ckan_mapper_ckan_to_frictionless(self):
-        import frictionless_ckan_mapper.ckan_to_frictionless
+        import frictionless_ckan_mapper.ckan_to_frictionless  # type: ignore
 
         return frictionless_ckan_mapper.ckan_to_frictionless
 
     @cached_property
     @extras(name="ckan")
     def frictionless_ckan_mapper_frictionless_to_ckan(self):
-        import frictionless_ckan_mapper.frictionless_to_ckan
+        import frictionless_ckan_mapper.frictionless_to_ckan  # type: ignore
 
         return frictionless_ckan_mapper.frictionless_to_ckan
 
     @cached_property
     @extras(name="excel")
     def xlrd(self):
-        import xlrd
+        import xlrd  # type: ignore
 
         return xlrd
 
     @cached_property
     @extras(name="excel")
     def xlwt(self):
-        import xlwt
+        import xlwt  # type: ignore
 
         return xlwt
 
@@ -289,14 +289,14 @@ class Platform:
     @cached_property
     @extras(name="excel")
     def tableschema_to_template(self):
-        import tableschema_to_template
+        import tableschema_to_template  # type: ignore
 
         return tableschema_to_template
 
     @cached_property
     @extras(name="json")
     def ijson(self):
-        import ijson
+        import ijson  # type: ignore
 
         return ijson
 
@@ -317,21 +317,21 @@ class Platform:
     @cached_property
     @extras(name="gsheets")
     def pygsheets(self):
-        import pygsheets
+        import pygsheets  # type: ignore
 
         return pygsheets
 
     @cached_property
     @extras(name="html")
     def pyquery(self):
-        import pyquery
+        import pyquery  # type: ignore
 
         return pyquery
 
     @cached_property
     @extras(name="ods")
     def ezodf(self):
-        import ezodf
+        import ezodf  # type: ignore
 
         return ezodf
 
@@ -345,14 +345,14 @@ class Platform:
     @cached_property
     @extras(name="pandas")
     def pandas(self):
-        import pandas
+        import pandas  # type: ignore
 
         return pandas
 
     @cached_property
     @extras(name="pandas")
     def pandas_core_dtypes_api(self):
-        import pandas.core.dtypes.api
+        import pandas.core.dtypes.api  # type: ignore
 
         return pandas.core.dtypes.api
 
@@ -366,14 +366,14 @@ class Platform:
     @cached_property
     @extras(name="parquet")
     def fastparquet(self):
-        import fastparquet
+        import fastparquet  # type: ignore
 
         return fastparquet
 
     @cached_property
     @extras(name="spss")
     def sav_reader_writer(self):
-        import savReaderWriter
+        import savReaderWriter  # type: ignore
 
         return savReaderWriter
 
@@ -422,14 +422,14 @@ class Platform:
     @cached_property
     @extras(name="zenodo")
     def pyzenodo3(self):
-        import pyzenodo3
+        import pyzenodo3  # type: ignore
 
         return pyzenodo3
 
     @cached_property
     @extras(name="zenodo")
     def pyzenodo3_upload(self):
-        import pyzenodo3.upload
+        import pyzenodo3.upload  # type: ignore
 
         return pyzenodo3.upload
 

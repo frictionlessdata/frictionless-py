@@ -1,12 +1,13 @@
 from __future__ import annotations
 import json
 import attrs
+from typing import Any, Dict, cast
 from ..platform import platform
 from ..schema import Field
 from .. import settings
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class GeojsonField(Field):
     type = "geojson"
     builtin = True
@@ -19,8 +20,8 @@ class GeojsonField(Field):
 
     # TODO: use different value_readers based on format (see string)
     def create_value_reader(self):
-        validator_for = platform.jsonschema_validators.validator_for
-        validators = {
+        validator_for = platform.jsonschema_validators.validator_for  # type: ignore
+        validators = {  # type: ignore
             "default": validator_for(settings.GEOJSON_PROFILE)(settings.GEOJSON_PROFILE),
             "topojson": validator_for(settings.TOPOJSON_PROFILE)(
                 settings.TOPOJSON_PROFILE
@@ -28,7 +29,7 @@ class GeojsonField(Field):
         }
 
         # Create reader
-        def value_reader(cell):
+        def value_reader(cell: Any):
             if isinstance(cell, str):
                 try:
                     cell = json.loads(cell)
@@ -38,10 +39,10 @@ class GeojsonField(Field):
                 return None
             if self.format in ["default", "topojson"]:
                 try:
-                    validators[self.format].validate(cell)
+                    validators[self.format].validate(cell)  # type: ignore
                 except Exception:
                     return None
-            return cell
+            return cast(Dict[str, Any], cell)
 
         return value_reader
 
@@ -49,7 +50,7 @@ class GeojsonField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return json.dumps(cell)
 
         return value_writer

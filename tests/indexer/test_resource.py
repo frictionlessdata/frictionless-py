@@ -4,7 +4,17 @@ from frictionless import platform, formats
 from frictionless.resources import TableResource
 
 control = formats.sql.SqlControl(table="table")
-database_urls = [lazy_fixture("sqlite_url"), lazy_fixture("postgresql_url")]
+fast_database_urls = [
+    lazy_fixture("sqlite_url"),
+    lazy_fixture("postgresql_url"),
+]
+database_urls = fast_database_urls + [
+    lazy_fixture("mysql_url"),
+]
+if platform.type != "windows":
+    database_urls += [
+        lazy_fixture("duckdb_url"),
+    ]
 pytestmark = pytest.mark.skipif(
     platform.type == "darwin" or platform.type == "windows",
     reason="Not supported tests in MacOS and Windows",
@@ -25,11 +35,25 @@ def test_resource_index_sqlite(database_url):
     ]
 
 
+# With metadata
+
+
+@pytest.mark.parametrize("database_url", database_urls)
+def test_resource_index_sqlite_with_metadata(database_url):
+    assert control.table
+    resource = TableResource(path="data/table.csv")
+    resource.index(database_url, name=control.table, with_metadata=True)
+    assert TableResource(path=database_url, control=control).read_rows() == [
+        {"_rowNumber": 2, "_rowValid": True, "id": 1, "name": "english"},
+        {"_rowNumber": 3, "_rowValid": True, "id": 2, "name": "中国人"},
+    ]
+
+
 # Fast
 
 
 @pytest.mark.ci(reason="requries sqlite3@3.34+")
-@pytest.mark.parametrize("database_url", database_urls)
+@pytest.mark.parametrize("database_url", fast_database_urls)
 def test_resource_index_sqlite_fast(database_url):
     assert control.table
     resource = TableResource(path="data/table.csv")
@@ -44,7 +68,7 @@ def test_resource_index_sqlite_fast(database_url):
 
 
 @pytest.mark.ci(reason="requries sqlite3@3.34+")
-@pytest.mark.parametrize("database_url", database_urls)
+@pytest.mark.parametrize("database_url", fast_database_urls)
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     assert control.table
     resource = TableResource(path="data/table.csv")

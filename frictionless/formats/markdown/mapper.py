@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING, Union, Optional, List
+from typing import TYPE_CHECKING, Union, Optional, List, Dict, Any
 from ...platform import platform
 from ...system import Mapper
 
@@ -22,7 +22,7 @@ class MarkdownMapper(Mapper):
 # Internal
 
 
-def render_markdown(path: str, data: dict) -> str:
+def render_markdown(path: str, data: Dict[str, Any]) -> str:
     """Render any JSON-like object as Markdown, using jinja2 template"""
 
     # Create environ
@@ -34,43 +34,45 @@ def render_markdown(path: str, data: dict) -> str:
     )
 
     # Render data
-    environ.filters["filter_dict"] = filter_dict
-    environ.filters["dict_to_markdown"] = dict_to_markdown
-    environ.filters["tabulate"] = dicts_to_markdown_table
+    environ.filters["filter_dict"] = filter_dict  # type: ignore
+    environ.filters["dict_to_markdown"] = dict_to_markdown  # type: ignore
+    environ.filters["tabulate"] = dicts_to_markdown_table  # type: ignore
     template = environ.get_template(path)
     return template.render(**data)
 
 
 def dict_to_markdown(
-    x: Union[dict, list, int, float, str, bool],
+    x: Union[Dict[str, Any], List[Any], int, float, str, bool],
     level: int = 0,
     tab: int = 2,
     flatten_scalar_lists: bool = True,
 ) -> str:
     """Render any JSON-like object as Markdown, using nested bulleted lists"""
 
-    def _scalar_list(x) -> bool:
-        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
+    def _scalar_list(x: Any) -> bool:
+        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)  # type: ignore
 
-    def _iter(x: Union[dict, list, int, float, str, bool], level: int = 0) -> str:
+    def _iter(
+        x: Union[Dict[str, Any], List[Any], int, float, str, bool], level: int = 0
+    ) -> str:
         if isinstance(x, (dict, list)):
             if isinstance(x, dict):
                 labels = [f"- `{key}`" for key in x]
-            elif isinstance(x, list):
+            elif isinstance(x, list):  # type: ignore
                 labels = [f"- [{i + 1}]" for i in range(len(x))]
             values = x if isinstance(x, list) else list(x.values())
             if isinstance(x, list) and flatten_scalar_lists:
                 scalar = [not isinstance(value, (dict, list)) for value in values]
                 if all(scalar):
                     values = [f"{values}"]
-            lines = []
+            lines: List[str] = []
             for label, value in zip(labels, values):
                 if isinstance(value, (dict, list)) and (
                     not flatten_scalar_lists or not _scalar_list(value)
                 ):
                     lines.append(f"{label}\n{_iter(value, level=level + 1)}")
                 else:
-                    if isinstance(value, str):
+                    if isinstance(value, str):  # type: ignore
                         # Indent to align following lines with '- '
                         value = platform.jinja2_filters.do_indent(
                             value, width=2, first=False
@@ -90,7 +92,7 @@ def dict_to_markdown(
     )
 
 
-def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
+def dicts_to_markdown_table(dicts: List[Dict[str, Any]], **kwargs: Any) -> str:
     """Tabulate dictionaries and render as a Markdown table"""
     if kwargs:
         dicts = [filter_dict(x, **kwargs) for x in dicts]
@@ -99,11 +101,11 @@ def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
 
 
 def filter_dict(
-    x: dict,
-    include: Optional[list] = None,
-    exclude: Optional[list] = None,
-    order: Optional[list] = None,
-) -> dict:
+    x: Dict[str, Any],
+    include: Optional[List[Any]] = None,
+    exclude: Optional[List[Any]] = None,
+    order: Optional[List[Any]] = None,
+) -> Dict[str, Any]:
     """Filter and order dictionary by key names"""
 
     if include:

@@ -3,7 +3,7 @@ import attrs
 from ..schema import Field
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class AnyField(Field):
     type = "any"
     builtin = True

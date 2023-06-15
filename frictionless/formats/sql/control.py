@@ -4,7 +4,7 @@ from typing import Optional
 from ...dialect import Control
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class SqlControl(Control):
     """SQL control representation.
 
@@ -45,15 +45,22 @@ class SqlControl(Control):
     formats.SqlControl(table="test_table", basepath="data")
     """
 
+    with_metadata: bool = False
+    """
+    Indicates if a table contains metadata columns like
+    _rowNumber or _rowValid
+    """
+
     # Metadata
 
     metadata_profile_patch = {
         "properties": {
             "table": {"type": "string"},
             "prefix": {"type": "string"},
-            "order_by": {"type": "string"},
+            "orderBy": {"type": "string"},
             "where": {"type": "string"},
             "namespace": {"type": "string"},
             "basepath": {"type": "string"},
+            "withMetadata": {"type": "boolean"},
         },
     }

@@ -20,7 +20,7 @@ def index(
     on_progress: Optional[IOnProgress] = None,
     use_fallback: bool = False,
     qsv_path: Optional[str] = None,
-    **options,
+    **options: Any,
 ) -> List[str]:
     """Index data into a database"""
 

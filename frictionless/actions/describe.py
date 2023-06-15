@@ -12,7 +12,7 @@ def describe(
     name: Optional[str] = None,
     type: Optional[str] = None,
     stats: bool = False,
-    **options,
+    **options: Any,
 ) -> Metadata:
     """Describe the data source
 

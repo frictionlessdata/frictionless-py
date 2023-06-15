@@ -1,12 +1,18 @@
 from __future__ import annotations
 import attrs
+from typing import TYPE_CHECKING, Iterable
 from ..platform import platform
 from ..checklist import Check
 from .. import errors
 from .. import helpers
 
+if TYPE_CHECKING:
+    from ..error import Error
+    from ..table import Row
+    from ..resource import Resource
 
-@attrs.define(kw_only=True)
+
+@attrs.define(kw_only=True, repr=False)
 class baseline(Check):
     """Check a table for basic errors
 
@@ -44,22 +50,22 @@ class baseline(Check):
 
     # Connect
 
-    def connect(self, resource):
+    def connect(self, resource: Resource):
         super().connect(resource)
 
     # Validate
 
-    def validate_start(self):
+    def validate_start(self) -> Iterable[Error]:
         if isinstance(self.resource, platform.frictionless_resources.TableResource):
             empty = not (self.resource.labels or self.resource.fragment)
             yield from [errors.SourceError(note="the source is empty")] if empty else []
             yield from self.resource.header.errors  # type: ignore
         yield from []
 
-    def validate_row(self, row):
+    def validate_row(self, row: Row) -> Iterable[Error]:
         yield from row.errors  # type: ignore
 
-    def validate_end(self):
+    def validate_end(self) -> Iterable[Error]:
         # Hash
         if self.resource.hash:
             algorithm, expected = helpers.parse_resource_hash_v1(self.resource.hash)

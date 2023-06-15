@@ -1,10 +1,15 @@
 from __future__ import annotations
 import datetime
 import decimal
+from typing import List, Any, Optional, TYPE_CHECKING, Tuple
 from dateutil.tz import tzoffset
 from ...platform import platform
 from ...schema import Schema, Field
 from ...system import Parser
+from ... import types
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class PandasParser(Parser):
@@ -39,11 +44,11 @@ class PandasParser(Parser):
         # Lists
         yield schema.field_names
         for pk, item in dataframe.iterrows():  # type: ignore
-            cells = []
+            cells: List[Any] = []
             for field in schema.fields:
                 if field.name in schema.primary_key:
-                    pk = pk if isinstance(pk, tuple) else [pk]
-                    value = pk[schema.primary_key.index(field.name)]
+                    pk = pk if isinstance(pk, tuple) else [pk]  # type: ignore
+                    value = pk[schema.primary_key.index(field.name)]  # type: ignore
                 else:
                     value = item[field.name]
                 if value is np.nan:
@@ -70,14 +75,14 @@ class PandasParser(Parser):
         # Fields
         for name, dtype in dataframe.dtypes.items():  # type: ignore
             sample = dataframe[name].iloc[0] if len(dataframe) else None  # type: ignore
-            type = self.__read_convert_type(dtype, sample=sample)
+            type = self.__read_convert_type(dtype, sample=sample)  # type: ignore
             field = Field.from_descriptor({"name": name, "type": type})
             schema.add_field(field)
 
         # Return schema
         return schema
 
-    def __read_convert_type(self, dtype, sample=None):
+    def __read_convert_type(self, dtype: Any, sample: Optional[types.ISample] = None):
         pdc = platform.pandas_core_dtypes_api
 
         # Pandas types
@@ -92,13 +97,13 @@ class PandasParser(Parser):
 
         # Python types
         if sample is not None:
-            if isinstance(sample, (list, tuple)):
+            if isinstance(sample, (list, tuple)):  # type: ignore
                 return "array"
             elif isinstance(sample, datetime.datetime):
                 return "datetime"
             elif isinstance(sample, datetime.date):
                 return "date"
-            elif isinstance(sample, platform.isodate.Duration):
+            elif isinstance(sample, platform.isodate.Duration):  # type: ignore
                 return "duration"
             elif isinstance(sample, dict):
                 return "object"
@@ -112,18 +117,18 @@ class PandasParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         np = platform.numpy
         pd = platform.pandas
 
         # Get data/index
-        data_rows = []
-        index_rows = []
+        data_rows: List[Tuple[Any]] = []
+        index_rows: List[Tuple[Any]] = []
         fixed_types = {}
         with source:
             for row in source.row_stream:
-                data_values = []
-                index_values = []
+                data_values: List[Any] = []
+                index_values: List[Any] = []
                 for field in source.schema.fields:
                     value = row[field.name]
                     if isinstance(value, float) and np.isnan(value):
@@ -143,7 +148,7 @@ class PandasParser(Parser):
                         value = value.replace(
                             tzinfo=tzoffset(
                                 datetime.timezone.utc,
-                                value.utcoffset().total_seconds(),
+                                value.utcoffset().total_seconds(),  # type: ignore
                             )
                         )
                     # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
@@ -181,7 +186,7 @@ class PandasParser(Parser):
                 )
 
         # Create dtypes/columns
-        columns = []
+        columns: List[str] = []
         for field in source.schema.fields:
             if field.name not in source.schema.primary_key:
                 columns.append(field.name)
@@ -213,7 +218,7 @@ class PandasParser(Parser):
 
         self.resource.data = dataframe
 
-    def __write_convert_type(self, type=None):
+    def __write_convert_type(self, type: Optional[str] = None):
         np = platform.numpy
         pd = platform.pandas
 

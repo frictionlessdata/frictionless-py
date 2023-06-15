@@ -120,3 +120,22 @@ def test_field_with_example_set(example_value):
         }
     )
     assert field.example == example_value
+
+
+@pytest.mark.parametrize(
+    "type, example_value, format",
+    [
+        ("date", "15/03/2023", "%d/%m/%Y"),
+        ("date", "2001-01-01T12:00:00Z", "%Y-%m-%dT%H:%M:%SZ"),
+    ],
+)
+def test_field_with_example_set_for_datetime(type, example_value, format):
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": type,
+            "example": example_value,
+            "format": format,
+        }
+    )
+    assert field.example == example_value

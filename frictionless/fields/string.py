@@ -1,11 +1,12 @@
 from __future__ import annotations
 import attrs
 import base64
+from typing import Any
 from ..schema import Field
 from ..platform import platform
 
 
-@attrs.define(kw_only=True)
+@attrs.define(kw_only=True, repr=False)
 class StringField(Field):
     type = "string"
     builtin = True
@@ -23,12 +24,12 @@ class StringField(Field):
         # Uri
         if self.format == "uri":
 
-            def value_reader(cell):
+            def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
                 uri_validator = platform.rfc3986.validators.Validator()  # type: ignore
-                uri_validator.require_presence_of("scheme")
-                uri = platform.rfc3986.uri_reference(cell)
+                uri_validator.require_presence_of("scheme")  # type: ignore
+                uri = platform.rfc3986.uri_reference(cell)  # type: ignore
                 try:
                     uri_validator.validate(uri)  # type: ignore
                 except platform.rfc3986.exceptions.ValidationError:  # type: ignore
@@ -38,7 +39,7 @@ class StringField(Field):
         # Email
         elif self.format == "email":
 
-            def value_reader(cell):
+            def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
                 if not platform.validators.email(cell):  # type: ignore
@@ -48,7 +49,7 @@ class StringField(Field):
         # Uuid
         elif self.format == "uuid":
 
-            def value_reader(cell):
+            def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
                 if not platform.validators.uuid(cell):  # type: ignore
@@ -58,7 +59,7 @@ class StringField(Field):
         # Binary
         elif self.format == "binary":
 
-            def value_reader(cell):
+            def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
                 try:
@@ -71,7 +72,7 @@ class StringField(Field):
         elif self.format == "wkt":
             parser = platform.wkt.WktParser()
 
-            def value_reader(cell):
+            def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
                 try:
@@ -83,7 +84,7 @@ class StringField(Field):
         # Default
         else:
 
-            def value_reader(cell):
+            def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
 
@@ -95,7 +96,7 @@ class StringField(Field):
 
     def create_value_writer(self):
         # Create writer
-        def value_writer(cell):
+        def value_writer(cell: Any):
             return str(cell)
 
         return value_writer
@@ -110,6 +111,3 @@ class StringField(Field):
             },
         }
     }
-
-
-# Internal

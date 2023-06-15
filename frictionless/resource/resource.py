@@ -3,7 +3,7 @@ import json
 import attrs
 import warnings
 from typing_extensions import Self
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar
+from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict, cast
 from ..exception import FrictionlessException
 from ..dialect import Dialect, Control
 from .stats import ResourceStats
@@ -11,6 +11,7 @@ from ..validator import Validator
 from ..platform import platform
 from ..detector import Detector
 from ..metadata import Metadata
+from .factory import Factory
 from ..schema import Schema
 from ..system import system
 from .. import settings
@@ -24,13 +25,11 @@ if TYPE_CHECKING:
     from ..report import Report
     from ..checklist import Checklist
     from ..package import Package
-    from ..interfaces import IDescriptor, IBuffer
-    from ..interfaces import IByteStream, ITextStream
-    from ..interfaces import ICallbackFunction
+    from .. import types
 
 
-@attrs.define(kw_only=True)
-class Resource(Metadata):
+@attrs.define(kw_only=True, repr=False)
+class Resource(Metadata, metaclass=Factory):  # type: ignore
     """Resource representation.
 
     This class is one of the cornerstones of of Frictionless framework.
@@ -98,13 +97,13 @@ class Resource(Metadata):
     that can be used to validate the descriptor
     """
 
-    licenses: List[dict] = attrs.field(factory=list)
+    licenses: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The license(s) under which the resource is provided.
     If omitted it's considered the same as the package's licenses.
     """
 
-    sources: List[dict] = attrs.field(factory=list)
+    sources: List[Dict[str, Any]] = attrs.field(factory=list)
     """
     The raw sources for this data resource.
     It MUST be an array of Source objects.
@@ -227,70 +226,6 @@ class Resource(Metadata):
     Whether the resoruce is tabular
     """
 
-    @classmethod
-    def __create__(
-        cls,
-        source: Optional[Any] = None,
-        *,
-        control: Optional[Control] = None,
-        basepath: Optional[str] = None,
-        packagify: bool = False,
-        **options,
-    ):
-        resources = platform.frictionless_resources
-        source = helpers.normalize_source(source)
-
-        # Source
-        if source is not None:
-            if cls is not Resource:
-                note = 'Providing "source" argument is only possible to "Resource" class'
-                raise FrictionlessException(note)
-
-            # Adapter
-            adapter = system.create_adapter(
-                source,
-                control=control,
-                basepath=basepath,
-                packagify=packagify,
-            )
-            if adapter:
-                package = adapter.read_package()
-                if package:
-                    data = package.to_descriptor()
-                    return resources.PackageResource(
-                        data=data, basepath=package.basepath, **options
-                    )
-
-            # Path/data
-            path = source
-            if isinstance(source, str):
-                path = helpers.join_basepath(source, basepath=basepath)
-            type = Detector.detect_metadata_type(path, format=options.get("format"))
-            if type != "resource":
-                options["path" if isinstance(source, str) else "data"] = source
-                return cls(control=control, basepath=basepath, **options)
-
-            # Descriptor
-            options.pop("format", None)
-            return cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
-
-        # Control
-        if control is not None:
-            dialect = options.pop("dialect", None)
-            if dialect is None:
-                dialect = control.to_dialect()
-            elif control not in dialect.controls:
-                dialect.add_control(control)
-            options["dialect"] = dialect
-            return cls(basepath=basepath, **options)
-
-        # Routing
-        if cls is Resource:
-            resource = RoutingResource(basepath=basepath, **options)
-            Class = system.select_resource_class(datatype=resource.datatype)
-            resource = Class(basepath=basepath, **options)
-            return resource
-
     def __attrs_post_init__(self):
         self.name = self._name or ""
         self.datatype = self._datatype or ""
@@ -303,7 +238,7 @@ class Resource(Metadata):
 
         # Internal
         self.__loader: Optional[Loader] = None
-        self.__buffer: Optional[IBuffer] = None
+        self.__buffer: Optional[types.IBuffer] = None
 
         # Detect resource
         system.detect_resource(self)
@@ -318,6 +253,8 @@ class Resource(Metadata):
         self.add_defined("dialect")
         self.add_defined("stats")
 
+        super().__attrs_post_init__()
+
     # TODO: shall we guarantee here that it's at the beggining for the file?
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
@@ -325,13 +262,13 @@ class Resource(Metadata):
             self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.close()
 
     @property
     def paths(self) -> List[str]:
         """All paths of the resource"""
-        paths = []
+        paths: List[str] = []
         if self.path is not None:
             paths.append(self.path)
         paths.extend(self.extrapaths)
@@ -340,7 +277,7 @@ class Resource(Metadata):
     @property
     def normpaths(self) -> List[str]:
         """Normalized paths of the resource"""
-        normpaths = []
+        normpaths: List[str] = []
         for path in self.paths:
             normpaths.append(helpers.normalize_path(path, basepath=self.basepath))
         return normpaths
@@ -418,7 +355,7 @@ class Resource(Metadata):
     # Open/Close
 
     @property
-    def buffer(self) -> IBuffer:
+    def buffer(self) -> types.IBuffer:
         """File's bytes used as a sample
 
         These buffer bytes are used to infer characteristics of the
@@ -429,7 +366,7 @@ class Resource(Metadata):
         return self.__buffer
 
     @property
-    def byte_stream(self) -> IByteStream:
+    def byte_stream(self) -> types.IByteStream:
         """Byte stream in form of a generator
 
         Yields:
@@ -443,7 +380,7 @@ class Resource(Metadata):
         return self.__loader.byte_stream
 
     @property
-    def text_stream(self) -> ITextStream:
+    def text_stream(self) -> types.ITextStream:
         """Text stream in form of a generator
 
         Yields:
@@ -501,7 +438,7 @@ class Resource(Metadata):
             if not size:
                 buffer = b""
                 while True:
-                    chunk = self.byte_stream.read1()  # type: ignore
+                    chunk = cast(bytes, self.byte_stream.read1())  # type: ignore
                     buffer += chunk
                     if not chunk:
                         break
@@ -576,7 +513,7 @@ class Resource(Metadata):
         name: Optional[str] = None,
         type: Optional[str] = None,
         stats: bool = False,
-        **options,
+        **options: Any,
     ) -> Metadata:
         """Describe the given source as a resource
 
@@ -647,7 +584,7 @@ class Resource(Metadata):
         checklist: Optional[Checklist] = None,
         *,
         name: Optional[str] = None,
-        on_row: Optional[ICallbackFunction] = None,
+        on_row: Optional[types.ICallbackFunction] = None,
         parallel: bool = False,
         limit_rows: Optional[int] = None,
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
@@ -671,7 +608,7 @@ class Resource(Metadata):
 
     # Export
 
-    def to_copy(self, **options) -> Self:
+    def to_copy(self, **options: Any) -> Self:
         """Create a copy from the resource"""
         return super().to_copy(
             data=self.data,
@@ -736,18 +673,18 @@ class Resource(Metadata):
     }
 
     @classmethod
-    def metadata_select_class(cls, type):
+    def metadata_select_class(cls, type: Optional[str]):
         return system.select_resource_class(type)
 
     @classmethod
-    def metadata_select_property_class(cls, name):
+    def metadata_select_property_class(cls, name: str):
         if name == "dialect":
             return Dialect
         elif name == "schema":
             return Schema
 
     @classmethod
-    def metadata_transform(cls, descriptor):
+    def metadata_transform(cls, descriptor: types.IDescriptor):
         super().metadata_transform(descriptor)
 
         # Url (standards/v0)
@@ -798,14 +735,14 @@ class Resource(Metadata):
         # Stats (framework/v5)
         stats = descriptor.pop("stats", None)
         if stats and isinstance(stats, dict):
-            md5 = stats.pop("md5", None)
-            sha256 = stats.pop("sha256", None)
+            md5 = stats.pop("md5", None)  # type: ignore
+            sha256 = stats.pop("sha256", None)  # type: ignore
             if sha256:
                 descriptor["hash"] = f"sha256:{sha256}"
             elif md5:
                 descriptor["hash"] = md5
             for name in ["bytes", "fields", "rows"]:
-                value = stats.get(name)
+                value = stats.get(name)  # type: ignore
                 if value:
                     descriptor[name] = value
 
@@ -833,7 +770,7 @@ class Resource(Metadata):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):
+    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
             yield from metadata_errors
@@ -844,8 +781,8 @@ class Resource(Metadata):
             keys = ["path", "extrapaths", "profile", "dialect", "schema"]
             for key in keys:
                 value = descriptor.get(key)
-                items = value if isinstance(value, list) else [value]
-                for item in items:
+                items = value if isinstance(value, list) else [value]  # type: ignore
+                for item in items:  # type: ignore
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.ResourceError(note=f'path "{item}" is not safe')
                         return
@@ -901,19 +838,19 @@ class Resource(Metadata):
                 yield errors.ResourceError(note=note)
 
     @classmethod
-    def metadata_import(cls, descriptor: IDescriptor, **options):
+    def metadata_import(cls, descriptor: types.IDescriptor, **options: Any):
         return super().metadata_import(
             descriptor=descriptor,
             with_basepath=True,
             **options,
         )
 
-    def metadata_export(self):
+    def metadata_export(self):  # type: ignore
         descriptor = super().metadata_export()
 
         # Data
         data = descriptor.get("data")
-        types = (str, bool, int, float, list, dict)
+        types = (str, bool, int, float, list, dict)  # type: ignore
         if data is not None and not isinstance(data, types):
             descriptor["data"] = []
 
@@ -924,8 +861,8 @@ class Resource(Metadata):
             if extrapaths:
                 descriptor["path"] = []
                 if path:
-                    descriptor["path"].append(path)
-                descriptor["path"].extend(extrapaths)
+                    descriptor["path"].append(path)  # type: ignore
+                descriptor["path"].extend(extrapaths)  # type: ignore
 
         # Stats (standards/v1)
         if system.standards == "v1":
@@ -942,10 +879,3 @@ class Resource(Metadata):
                     descriptor["bytes"] = bytes
 
         return descriptor
-
-
-# Internal
-
-
-class RoutingResource(Resource):
-    pass
