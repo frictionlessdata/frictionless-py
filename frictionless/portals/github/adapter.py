@@ -96,7 +96,7 @@ class GithubAdapter(Adapter):
         # Write resource files
         try:
             for resource in package.resources:
-                resource_path = resource.path or ""
+                resource_path: str = resource.path or ""
                 if self.control.basepath:
                     resource_path = os.path.join(self.control.basepath, resource_path)
                 repository.create_file(
@@ -210,13 +210,13 @@ class GithubAdapter(Adapter):
 def get_resources(
     contents: Union[List[ContentFile], ContentFile], repository: Repository
 ) -> List[ContentFile]:
-    paths = []
+    paths: List[ContentFile] = []
     while contents:
         file_content = contents.pop(0)  # type: ignore
-        if file_content.type == "dir":
+        if file_content.type == "dir":  # type: ignore
             contents.extend(repository.get_contents(file_content.path))  # type: ignore
         else:
-            paths.append(file_content)
+            paths.append(file_content)  # type: ignore
     return paths
 
 
@@ -227,8 +227,8 @@ def get_package(
     formats: List[str],
     catalog: bool = False,
 ) -> Union[Package, List[Package]]:
-    def multiple_packages(base_path):
-        packages = []
+    def multiple_packages(base_path: str):
+        packages: List[Package] = []
         for file in paths:
             fullpath = f"{base_path}/{file.path}"
             if any(file.path.endswith(filename) for filename in ["datapackage.json"]):

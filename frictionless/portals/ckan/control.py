@@ -1,6 +1,6 @@
 from __future__ import annotations
 import attrs
-from typing import Optional
+from typing import Optional, Dict, Any
 from ...dialect import Control
 
 
@@ -47,7 +47,7 @@ class CkanControl(Control):
     CKAN Organization name to get datasets in a Catalog
     """
 
-    search: Optional[dict] = None
+    search: Optional[Dict[str, Any]] = None
     """
     CKAN Search parameters as defined on https://docs.ckan.org/en/2.9/api/#ckan.logic.action.get.package_search
     """

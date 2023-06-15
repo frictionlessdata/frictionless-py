@@ -20,6 +20,6 @@ class LocalLoader(Loader):
 
     # Write
 
-    def write_byte_stream(self, path):
+    def write_byte_stream(self, path: str):
         assert self.resource.normpath
         helpers.move_file(path, self.resource.normpath)

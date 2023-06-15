@@ -1,9 +1,11 @@
 from __future__ import annotations
 import io
+from typing import Any
 from urllib.parse import urlparse
 from ..control import AwsControl
 from ....system import Loader
 from ....platform import platform
+from .... import types
 
 
 class S3Loader(Loader):
@@ -13,7 +15,7 @@ class S3Loader(Loader):
 
     # Read
 
-    def read_byte_stream_create(self):
+    def read_byte_stream_create(self):  # type: ignore
         control = AwsControl.from_dialect(self.resource.dialect)
         parts = urlparse(self.resource.normpath, allow_fragments=False)
         client = platform.boto3.resource("s3", endpoint_url=control.s3_endpoint_url)
@@ -23,7 +25,7 @@ class S3Loader(Loader):
 
     # Write
 
-    def write_byte_stream_save(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream: types.IByteStream):
         control = AwsControl.from_dialect(self.resource.dialect)
         parts = urlparse(self.resource.normpath, allow_fragments=False)
         client = platform.boto3.resource("s3", endpoint_url=control.s3_endpoint_url)
@@ -36,7 +38,7 @@ class S3Loader(Loader):
 
 # https://alexwlchan.net/2019/02/working-with-large-s3-objects/
 class S3ByteStream(io.RawIOBase):
-    def __init__(self, object):
+    def __init__(self, object: Any):
         self.object = object
         self.position = 0
 
@@ -56,7 +58,7 @@ class S3ByteStream(io.RawIOBase):
     def tell(self):
         return self.position
 
-    def seek(self, offset, whence=io.SEEK_SET):
+    def seek(self, offset: int, whence: int = io.SEEK_SET):
         if whence == io.SEEK_SET:
             self.position = offset
         elif whence == io.SEEK_CUR:
@@ -71,7 +73,7 @@ class S3ByteStream(io.RawIOBase):
 
         return self.position
 
-    def read(self, size=-1):
+    def read(self, size: int = -1):  # type: ignore
         if size == -1:
             # EOF
             if self.position >= self.size:
@@ -84,10 +86,10 @@ class S3ByteStream(io.RawIOBase):
             # If we're going to read beyond the end of the object, return
             # the entire object.
             if new_position >= self.size:
-                return self.read()
+                return self.read()  # type: ignore
             range_header = "bytes=%d-%d" % (self.position, new_position - 1)
             self.seek(offset=size, whence=io.SEEK_CUR)
         return self.object.get(Range=range_header)["Body"].read()
 
-    def read1(self, size=-1):
-        return self.read(size)
+    def read1(self, size: int = -1):  # type: ignore
+        return self.read(size)  # type: ignore

@@ -1,9 +1,13 @@
 from __future__ import annotations
 import re
 from ...system import Plugin
+from typing import TYPE_CHECKING, Optional, Any
 from urllib.parse import urlparse
 from .control import CkanControl
 from .adapter import CkanAdapter
+
+if TYPE_CHECKING:
+    from ...dialect import Control
 
 
 class CkanPlugin(Plugin):
@@ -11,8 +15,14 @@ class CkanPlugin(Plugin):
 
     # Hooks
 
-    # TODO: improve
-    def create_adapter(self, source, *, control=None, basepath=None, packagify=False):
+    def create_adapter(
+        self,
+        source: Any,
+        *,
+        control: Optional[Control] = None,
+        basepath: Optional[str] = None,
+        packagify: bool = False,
+    ):
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, CkanControl):
@@ -33,6 +43,6 @@ class CkanPlugin(Plugin):
         if source is None and isinstance(control, CkanControl):
             return CkanAdapter(control)
 
-    def select_control_class(self, type):
+    def select_control_class(self, type: Optional[str] = None):
         if type == "ckan":
             return CkanControl

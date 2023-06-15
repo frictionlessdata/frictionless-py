@@ -1,11 +1,15 @@
 from __future__ import annotations
 import sys
 import tempfile
+from typing import Any, List, TYPE_CHECKING
 from ....platform import platform
 from ....exception import FrictionlessException
 from ..control import ExcelControl
 from ....system import system, Parser
 from .... import errors
+
+if TYPE_CHECKING:
+    from ....resources import TableResource
 
 
 # TODO: support ExcelControl.stringified
@@ -61,7 +65,7 @@ class XlsParser(Parser):
             )
             raise FrictionlessException(error)
 
-        def type_value(ctype, value):
+        def type_value(ctype: Any, value: Any):
             """Detects boolean value, int value, datetime"""
 
             # Boolean
@@ -81,7 +85,7 @@ class XlsParser(Parser):
 
         # Stream data
         for x in range(0, sheet.nrows):
-            cells = []
+            cells: List[Any] = []
             for y, value in enumerate(sheet.row_values(x)):
                 value = type_value(sheet.cell(x, y).ctype, value)
                 if control.fill_merged_cells:
@@ -96,7 +100,7 @@ class XlsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         control = ExcelControl.from_dialect(self.resource.dialect)
         book = platform.xlwt.Workbook()
         title = control.sheet

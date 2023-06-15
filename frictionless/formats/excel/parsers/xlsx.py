@@ -7,6 +7,7 @@ import tempfile
 import warnings
 import datetime
 from itertools import chain
+from typing import Any, List, TYPE_CHECKING
 from ....exception import FrictionlessException
 from ....platform import platform
 from ..control import ExcelControl
@@ -14,6 +15,9 @@ from ....resource import Resource
 from ....system import system, Parser
 from .... import errors
 from .. import settings
+
+if TYPE_CHECKING:
+    from ....resources import TableResource
 
 
 class XlsxParser(Parser):
@@ -135,7 +139,7 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         control = ExcelControl.from_dialect(self.resource.dialect)
         book = platform.openpyxl.Workbook(write_only=True)
         title = control.sheet
@@ -159,10 +163,13 @@ class XlsxParser(Parser):
 
 
 def extract_row_values(
-    row, preserve_formatting=False, adjust_floating_point_error=False, stringified=False
+    row: List[Any],
+    preserve_formatting: bool = False,
+    adjust_floating_point_error: bool = False,
+    stringified: bool = False,
 ):
     if preserve_formatting:
-        values = []
+        values: List[Any] = []
         for cell in row:
             number_format = cell.number_format or ""
             value = cell.value
@@ -197,7 +204,7 @@ def extract_row_values(
     return list(cell.value for cell in row)
 
 
-def convert_excel_number_format_string(excel_number, value):
+def convert_excel_number_format_string(excel_number: str, value: Any):
     # A basic attempt to convert excel number_format to a number string
     # The important goal here is to get proper amount of rounding
     percentage = False
@@ -245,7 +252,7 @@ def convert_excel_number_format_string(excel_number, value):
     return new_value
 
 
-def convert_excel_date_format_string(excel_date):
+def convert_excel_date_format_string(excel_date: str):
     # Created using documentation here:
     # https://support.office.com/en-us/article/review-guidelines-for-customizing-a-number-format-c0a1d1fa-d3f4-4018-96b7-9c9354dd99f5
 

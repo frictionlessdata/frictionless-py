@@ -1,12 +1,16 @@
 from __future__ import annotations
 import io
 import tempfile
+from typing import Any, TYPE_CHECKING
 from datetime import datetime
 from ...exception import FrictionlessException
 from ...platform import platform
 from .control import OdsControl
 from ...system import system, Parser
 from ... import errors
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class OdsParser(Parser):
@@ -44,7 +48,7 @@ class OdsParser(Parser):
             raise FrictionlessException(errors.FormatError(note=note))
 
         # Type cells
-        def type_value(cell):
+        def type_value(cell: Any):
             """Detects int value, date and datetime"""
 
             ctype = cell.value_type
@@ -70,7 +74,7 @@ class OdsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         control = OdsControl.from_dialect(self.resource.dialect)
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()

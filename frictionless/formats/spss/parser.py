@@ -1,11 +1,15 @@
 from __future__ import annotations
 import re
 import warnings
+from typing import Optional, TYPE_CHECKING, Dict, Any, List
 from datetime import datetime, date, timezone
 from ...platform import platform
 from ...system import Parser
 from ...schema import Schema, Field
 from . import settings
+
+if TYPE_CHECKING:
+    from ...resources import TableResource
 
 
 class SpssParser(Parser):
@@ -31,7 +35,7 @@ class SpssParser(Parser):
         yield schema.field_names
         with sav.SavReader(self.resource.normpath, ioUtf8=True) as reader:  # type: ignore
             for item in reader:
-                cells = []
+                cells: List[Any] = []
                 for index, field in enumerate(schema.fields):
                     value = item[index]
                     if value is not None:
@@ -43,7 +47,7 @@ class SpssParser(Parser):
                     cells.append(value)
                 yield cells
 
-    def __read_convert_schema(self, spss_schema):
+    def __read_convert_schema(self, spss_schema: Any):
         schema = Schema()
         for name in spss_schema.varNames:
             type = self.__read_convert_type(spss_schema.formats[name])
@@ -54,7 +58,7 @@ class SpssParser(Parser):
             schema.add_field(field)
         return schema
 
-    def __read_convert_type(self, spss_type=None):
+    def __read_convert_type(self, spss_type: Optional[str] = None):
         # Mapping
         mapping = [
             ("string", re.compile(r"\bA\d+")),
@@ -83,7 +87,7 @@ class SpssParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, source: TableResource):
         sav = platform.sav_reader_writer
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)  # type: ignore
 
@@ -95,7 +99,7 @@ class SpssParser(Parser):
         with sav.SavWriter(self.resource.normpath, ioUtf8=True, **spss_schema) as writer:  # type: ignore
             with source:
                 for row in source.row_stream:  # type: ignore
-                    cells = []
+                    cells: List[Any] = []
                     for field in source.schema.fields:  # type: ignore
                         cell = row[field.name]
                         if field.type in ["datetime", "date", "time"]:
@@ -117,11 +121,16 @@ class SpssParser(Parser):
                         cells.append(cell)
                     writer.writerow(cells)
 
-    def __write_convert_schema(self, source):
-        spss_schema = {"varNames": [], "varLabels": {}, "varTypes": {}, "formats": {}}
+    def __write_convert_schema(self, source: TableResource):
+        spss_schema: Dict[str, Any] = {
+            "varNames": [],
+            "varLabels": {},
+            "varTypes": {},
+            "formats": {},
+        }
         with source:
             # Add fields
-            sizes = {}
+            sizes: Dict[str, int] = {}
             mapping = self.__write_convert_type()
             for field in source.schema.fields:
                 spss_schema["varNames"].append(field.name)
@@ -148,7 +157,7 @@ class SpssParser(Parser):
 
         return spss_schema
 
-    def __write_convert_type(self, type=None):
+    def __write_convert_type(self, type: Optional[str] = None):
         # Mapping
         mapping = {
             "integer": [0, "F10"],
