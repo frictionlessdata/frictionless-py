@@ -1,10 +1,14 @@
 from __future__ import annotations
 import io
-
+from typing import TYPE_CHECKING, Optional
 from frictionless import helpers
 from .control import RemoteControl
 from ...platform import platform
 from ...system import system, Loader
+from ... import types
+
+if TYPE_CHECKING:
+    from requests import Session
 
 
 class RemoteLoader(Loader):
@@ -14,7 +18,7 @@ class RemoteLoader(Loader):
 
     # Read
 
-    def read_byte_stream_create(self):
+    def read_byte_stream_create(self):  # type: ignore
         assert self.resource.normpath
         path = platform.requests_utils.requote_uri(self.resource.normpath)
         control = RemoteControl.from_dialect(self.resource.dialect)
@@ -31,7 +35,7 @@ class RemoteLoader(Loader):
 
     # Write
 
-    def write_byte_stream_save(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream: types.IByteStream):
         assert self.resource.normpath
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.normpath.replace(file, "")
@@ -44,12 +48,12 @@ class RemoteLoader(Loader):
 
 
 class RemoteByteStream:
-    def __init__(self, source, *, session, timeout):
+    def __init__(self, source: str, *, session: Session, timeout: int):
         self.__source = source
         self.__session = session
         self.__timeout = timeout
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         while True:
             bytes = self.read(8192)
             if not bytes:
@@ -83,15 +87,15 @@ class RemoteByteStream:
     def flush(self):
         pass
 
-    def read(self, size=-1):
+    def read(self, size: Optional[int] = -1):
         if size == -1:
             size = None
         return self.__response.raw.read(size)
 
-    def read1(self, size=-1):
+    def read1(self, size: int = -1):
         return self.read(size)
 
-    def seek(self, offset, whence=0):
+    def seek(self, offset: int, whence: int = 0):
         assert offset == 0
         assert whence == 0
         self.__response = self.__session.get(
