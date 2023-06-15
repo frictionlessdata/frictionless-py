@@ -1,6 +1,7 @@
 import json
 import pytest
 from frictionless import formats
+from frictionless.dialect.dialect import Dialect
 from frictionless.resources import TableResource
 
 
@@ -124,3 +125,12 @@ def test_json_parser_write_keyed(tmpdir):
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_json_parser_write_skip_header(tmpdir):
+    dialect = Dialect.from_descriptor({"header": False})
+    path = str(tmpdir.join("table.json"))
+    target = TableResource(path=path, dialect=dialect)
+    with TableResource(path="data/table.csv") as resource:
+        target = resource.write(target, dialect=dialect)
+        assert target.read_data() == [[1, "english"], [2, "中国人"]]

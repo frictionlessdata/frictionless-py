@@ -454,6 +454,8 @@ class TableResource(Resource):
         if not isinstance(resource, TableResource):
             resource = Resource(target, control=control, **options)
             assert isinstance(resource, TableResource)
+        if "dialect" in options:
+            resource.dialect = options["dialect"]
         parser = system.create_parser(resource)
         parser.write_row_stream(self)
         return resource

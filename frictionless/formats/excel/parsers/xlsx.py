@@ -147,7 +147,8 @@ class XlsxParser(Parser):
             title = f"Sheet {control.sheet}"
         sheet = book.create_sheet(title)
         with source:
-            sheet.append(source.schema.field_names)
+            if self.resource.dialect.header:
+                sheet.append(source.schema.field_names)
             for row in source.row_stream:
                 cells = row.to_list(types=self.supported_types)
                 sheet.append(cells)

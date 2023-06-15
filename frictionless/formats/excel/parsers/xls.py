@@ -108,12 +108,14 @@ class XlsParser(Parser):
             title = f"Sheet {control.sheet}"
         sheet = book.add_sheet(title)
         with source:
-            for field_index, name in enumerate(source.schema.field_names):
-                sheet.write(0, field_index, name)
-            for row_index, row in enumerate(source.row_stream):
+            if self.resource.dialect.header:
+                for field_index, name in enumerate(source.schema.field_names):
+                    sheet.write(0, field_index, name)
+            for index, row in enumerate(source.row_stream):
+                row_index = index + 1 if self.resource.dialect.header else index
                 cells = row.to_list(types=self.supported_types)
                 for field_index, cell in enumerate(cells):
-                    sheet.write(row_index + 1, field_index, cell)
+                    sheet.write(row_index, field_index, cell)
         file = tempfile.NamedTemporaryFile(delete=False)
         file.close()
         book.save(file.name)

@@ -90,7 +90,7 @@ class InlineParser(Parser):
         data: List[Any] = []
         control = InlineControl.from_dialect(self.resource.dialect)
         with source:
-            if not control.keyed:
+            if self.resource.dialect.header and not control.keyed:
                 data.append(source.schema.field_names)
             for row in source.row_stream:
                 item = row.to_dict() if control.keyed else row.to_list()
