@@ -37,9 +37,10 @@ def test_field_read_cell_number_missingValues():
         {
             "name": "name",
             "type": "number",
-            "missingValues": ["", "NA", "N/A"],
+            "missingValues": ["", "NA", "N/A", "0"],
         }
     )
     assert field.read_cell("") == (None, None)
     assert field.read_cell("NA") == (None, None)
     assert field.read_cell("N/A") == (None, None)
+    assert field.read_cell(0) == (None, None)

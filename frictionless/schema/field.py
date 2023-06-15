@@ -130,7 +130,7 @@ class Field(Metadata):
         # Create reader
         def cell_reader(cell: Any):
             notes: Optional[Dict[str, str]] = None
-            if cell in missing_values:
+            if str(cell) in missing_values:
                 cell = None
             if cell is not None:
                 cell = value_reader(cell)
