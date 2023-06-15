@@ -125,7 +125,7 @@ class XlsxParser(Parser):
         # Calculate stats
         # TODO: remove when the proper implementation is in-place:
         # https://github.com/frictionlessdata/frictionless-py/issues/438
-        if self.resource.normpath and self.resource.scheme == "file":
+        if self.resource.normpath and not self.resource.remote:
             stat = os.stat(self.resource.normpath)
             self.resource.stats.bytes = stat.st_size
             md5 = hashlib.new("md5")
