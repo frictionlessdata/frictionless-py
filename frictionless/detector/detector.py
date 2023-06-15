@@ -171,9 +171,7 @@ class Detector:
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
             name = name or "name"
-            scheme, format = helpers.parse_scheme_and_format(
-                resource.normpath or resource.path
-            )
+            scheme, format = helpers.parse_scheme_and_format(resource.path)
             if format in settings.COMPRESSION_FORMATS:
                 compression = format
                 path = resource.path[: -len(format) - 1]

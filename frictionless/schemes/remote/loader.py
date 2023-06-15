@@ -1,5 +1,7 @@
 from __future__ import annotations
 import io
+
+from frictionless import helpers
 from .control import RemoteControl
 from ...platform import platform
 from ...system import system, Loader
@@ -24,6 +26,7 @@ class RemoteLoader(Loader):
             buffer.write(byte_stream.read())
             buffer.seek(0)
             byte_stream = buffer
+        self.resource.scheme, _ = helpers.parse_scheme_and_format(self.resource.normpath)
         return byte_stream
 
     # Write
