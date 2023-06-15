@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 from typing import Optional, Any, Union
+from ..exception import FrictionlessException
 from ..platform import platform
 from ..resource import Resource
 from .. import helpers
@@ -37,16 +38,17 @@ class JsonResource(Resource):
         self, target: Optional[Union[JsonResource, Any]] = None, **options: Any
     ):
         """Write json data to the target"""
-        res = target
-        if not isinstance(res, Resource):
-            res = Resource(target, **options)
-            assert isinstance(res, JsonResource)
+        resource = target
+        if not isinstance(resource, Resource):
+            resource = Resource(target, **options)
+        if not isinstance(resource, JsonResource):
+            raise FrictionlessException("target must be a json resource")
         data = self.read_json()
-        text = helpers.to_yaml(data) if res.format == "yaml" else helpers.to_json(data)
-        bytes = text.encode("utf-8")
-        assert res.normpath
-        helpers.write_file(res.normpath, bytes, mode="wb")
-        return res
+        dump = helpers.to_yaml if resource.format == "yaml" else helpers.to_json
+        bytes = dump(data).encode("utf-8")
+        assert resource.normpath
+        helpers.write_file(resource.normpath, bytes, mode="wb")
+        return resource
 
 
 class JsonschemaResource(JsonResource):

@@ -4,7 +4,7 @@ import warnings
 import builtins
 from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List, Tuple
 from ..exception import FrictionlessException
-from ..table import Header, Lookup, Row
+from ..table import Table, Header, Lookup, Row
 from ..transformer import Transformer
 from ..validator import Validator
 from ..analyzer import Analyzer
@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from ..indexer import IOnRow, IOnProgress
     from ..checklist import Checklist
     from ..pipeline import Pipeline
-    from ..dialect import Control
     from ..table import IRowStream
     from .. import types
 
@@ -68,7 +67,7 @@ class TableResource(Resource):
             list[]?: table sample
         """
         if self.__sample is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__sample
 
     @property
@@ -78,7 +77,7 @@ class TableResource(Resource):
             str[]?: table labels
         """
         if self.__labels is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__labels
 
     @property
@@ -92,7 +91,7 @@ class TableResource(Resource):
             list[]?: table fragment
         """
         if self.__fragment is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__fragment
 
     @property
@@ -102,7 +101,7 @@ class TableResource(Resource):
             str[]?: table header
         """
         if self.__header is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__header
 
     @property
@@ -112,7 +111,7 @@ class TableResource(Resource):
             str[]?: table lookup
         """
         if self.__lookup is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__lookup
 
     @property
@@ -123,7 +122,7 @@ class TableResource(Resource):
             gen<any[][]>?: cell stream
         """
         if self.__parser is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__parser.cell_stream
 
     @property
@@ -134,7 +133,7 @@ class TableResource(Resource):
             gen<Row[]>?: row stream
         """
         if self.__row_stream is None:
-            raise FrictionlessException("resource is not open or non tabular")
+            raise FrictionlessException("resource is not open")
         return self.__row_stream
 
     @property
@@ -422,40 +421,32 @@ class TableResource(Resource):
             return rows
 
     # TODO: implement
-    def read_table(self) -> None:
-        raise NotImplementedError()
+    def read_table(self) -> Table:
+        rows = self.read_rows()
+        header = self.header
+        schema = self.schema
+        return Table(schema=schema, header=header, rows=rows)
 
     # Write
 
     def write_table(
-        self,
-        target: Optional[Union[Resource, Any]] = None,
-        *,
-        control: Optional[Control] = None,
-        **options: Any,
-    ) -> TableResource:
-        return self.write(target, control=control, **options)
-
-    # TODO: deprecate in favour of write_table
-    def write(
-        self,
-        target: Optional[Union[Resource, Any]] = None,
-        *,
-        control: Optional[Control] = None,
-        **options: Any,
+        self, target: Optional[Union[Resource, Any]] = None, **options: Any
     ) -> TableResource:
         """Write this resource to the target resource
 
+        You can pass:
+        - a target resource instance (no extra options are allowed) OR
+        - path and options to create a new resource.
+
         Parameters:
-            target (Resource|Any): target or target resource instance
-            **options (dict): Resource constructor options
+            target (Resource|Any): target path or target resource instance
+            **options (dict): resource constructor options
         """
         resource = target
+        if not isinstance(resource, Resource):
+            resource = Resource(target, **options)
         if not isinstance(resource, TableResource):
-            resource = Resource(target, control=control, **options)
-            assert isinstance(resource, TableResource)
-        if "dialect" in options:
-            resource.dialect = options["dialect"]
+            raise FrictionlessException("target must be a table resource")
         parser = system.create_parser(resource)
         parser.write_row_stream(self)
         return resource
@@ -657,3 +648,10 @@ class TableResource(Resource):
                     yield from (row.cells for row in resource.row_stream)
 
         return ResourceView()
+
+    # Legacy
+
+    def write(
+        self, target: Optional[Union[Resource, Any]] = None, **options: Any
+    ) -> TableResource:
+        return self.write_table(target, **options)

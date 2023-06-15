@@ -137,5 +137,5 @@ def test_inline_parser_write_skip_header():
     dialect = Dialect.from_descriptor({"header": False})
     target = TableResource(format="inline", dialect=dialect)
     with TableResource(path="data/table.csv") as resource:
-        resource.write(target, dialect=dialect)
+        resource.write(target)
         assert target.data == [[1, "english"], [2, "中国人"]]

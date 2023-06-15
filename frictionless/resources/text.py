@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Union, Any
+from ..exception import FrictionlessException
 from ..resource import Resource
 from .. import helpers
 
@@ -29,13 +30,13 @@ class TextResource(Resource):
         self, target: Optional[Union[TextResource, Any]] = None, **options: Any
     ):
         """Write text data to the target"""
-        res = target
-        if not isinstance(res, TextResource):
-            if res:
-                options["path"] = res
-            res = TextResource(**options)
+        resource = target
+        if not isinstance(resource, Resource):
+            resource = TextResource(**options)
+        if not isinstance(resource, TextResource):  # type: ignore
+            raise FrictionlessException("target must be a text resource")
         text = self.read_text()
-        bytes = text.encode(res.encoding or "utf-8")
-        assert res.normpath
-        helpers.write_file(res.normpath, bytes, mode="wb")
-        return res
+        bytes = text.encode(resource.encoding or "utf-8")
+        assert resource.normpath
+        helpers.write_file(resource.normpath, bytes, mode="wb")
+        return resource
