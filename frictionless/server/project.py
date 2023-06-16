@@ -2,6 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Optional
 from .stores import Filesystem, Metadata, Database
+from .. import helpers
 
 
 class Project:
@@ -17,6 +18,11 @@ class Project:
         self.private = self.public / ".frictionless"
         self.public.mkdir(parents=True, exist_ok=True)
         self.private.mkdir(parents=True, exist_ok=True)
+
+        # Ensure gitignore
+        text = "database.db"
+        path = str(self.private / ".gitignore")
+        helpers.write_file(path, text)
 
         # Create drivers
         self.filesystem = Filesystem(self)
