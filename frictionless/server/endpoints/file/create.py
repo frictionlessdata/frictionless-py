@@ -5,7 +5,7 @@ from fastapi import Request, UploadFile, File, Form
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router
-from .... import helpers
+from ... import helpers
 
 
 class Props(BaseModel):
@@ -39,17 +39,14 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
     # Folder
+    path = props.path
     if props.folder:
-        if not fs.get_fullpath(props.folder).exists():
-            raise FrictionlessException("Folder doesn't exist")
-
-    # Target
-    target = fs.get_fullpath(props.folder, props.path, deduplicate=props.deduplicate)
-    if target.exists():
-        raise FrictionlessException("File already exists")
+        folder = fs.get_fullpath(props.folder)
+        if not folder.exists():
+            raise FrictionlessException("folder does not exist")
+        path = str(folder / path)
 
     # Create
-    helpers.write_file(str(target), props.bytes, mode="wb")
-    path = fs.get_path(target)
+    path = helpers.write_file(project, path=path, bytes=props.bytes)
 
     return Result(path=path)

@@ -51,6 +51,6 @@ def action(project: Project, props: Props) -> Result:
 
     # Write contents
     if props.bytes is not None:
-        helpers.write_file(project, path=record.path, bytes=props.bytes)
+        helpers.write_file(project, path=record.path, bytes=props.bytes, overwrite=True)
 
     return Result(path=record.path)

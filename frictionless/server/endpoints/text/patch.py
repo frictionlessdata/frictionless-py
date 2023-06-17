@@ -41,6 +41,6 @@ def action(project: Project, props: Props) -> Result:
 
     # Write contents
     if props.text is not None:
-        helpers.write_text(project, path=record.path, text=props.text)
+        helpers.write_text(project, path=record.path, text=props.text, overwrite=True)
 
     return Result(path=record.path)
