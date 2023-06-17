@@ -1,0 +1,146 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/framework/main/data/table.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSebJj7dPZe5/s2sUFAAFuQI0eAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '51'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Sat, 17 Jun 2023 09:34:31 GMT
+      ETag:
+      - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
+      Expires:
+      - Sat, 17 Jun 2023 09:39:31 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 71dbeda5c80ce57d6e40d592f619254d66b9f859
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B8F0:4AB0:10D0C8A:11855B2:648D7E26
+      X-Served-By:
+      - cache-lis1490046-LIS
+      X-Timer:
+      - S1686994471.364721,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/framework/main/data/table.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSebJj7dPZe5/s2sUFAAFuQI0eAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '51'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Sat, 17 Jun 2023 09:34:31 GMT
+      ETag:
+      - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
+      Expires:
+      - Sat, 17 Jun 2023 09:39:31 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 88485c23c67362773a2dc64a7a34fe7e934f219e
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B8F0:4AB0:10D0C8A:11855B2:648D7E26
+      X-Served-By:
+      - cache-lis1490051-LIS
+      X-Timer:
+      - S1686994472.649502,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

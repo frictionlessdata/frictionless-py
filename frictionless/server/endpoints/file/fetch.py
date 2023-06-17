@@ -20,7 +20,7 @@ class Result(BaseModel):
     path: str
 
 
-@router.post("/link/fetch")
+@router.post("/file/fetch")
 def server_file_read(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
