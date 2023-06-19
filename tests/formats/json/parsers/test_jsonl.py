@@ -55,7 +55,7 @@ def test_jsonl_parser_write_skip_header(tmpdir):
     path = str(tmpdir.join("table.jsonl"))
     target = TableResource(path=path, dialect=dialect)
     with TableResource(path="data/table.csv") as resource:
-        target = resource.write(target, dialect=dialect)
+        target = resource.write(target)
         assert target.read_rows() == [
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},

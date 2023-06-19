@@ -112,9 +112,10 @@ def test_ods_parser_write_skip_header(tmpdir):
     control = formats.ExcelControl(sheet="sheet")
     dialect = Dialect.from_descriptor({"header": False})
     data = b"header1,header2\nvalue11,value12\nvalue21,value22"
-    target = TableResource(str(tmpdir.join("table.ods")))
+    path = str(tmpdir.join("table.ods"))
+    target = TableResource(path=path, dialect=dialect, control=control)
     with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
-        resource.write_table(target, dialect=dialect, control=control)
-    with target:
-        assert target.header == ["field1", "field2"]
+        resource.write_table(target)
+    table = target.read_table()
+    assert table.header == ["field1", "field2"]

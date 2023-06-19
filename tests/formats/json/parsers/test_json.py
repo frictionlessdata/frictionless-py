@@ -132,5 +132,5 @@ def test_json_parser_write_skip_header(tmpdir):
     path = str(tmpdir.join("table.json"))
     target = TableResource(path=path, dialect=dialect)
     with TableResource(path="data/table.csv") as resource:
-        target = resource.write(target, dialect=dialect)
+        target = resource.write(target)
         assert target.read_data() == [[1, "english"], [2, "中国人"]]

@@ -1,7 +1,8 @@
 import io
 import pytest
 from decimal import Decimal
-from frictionless import FrictionlessException, Dialect, Detector, formats, platform
+from frictionless import Package, Dialect, Detector, formats, platform
+from frictionless import FrictionlessException
 from frictionless.resources import TableResource
 
 
@@ -237,12 +238,13 @@ def test_xlsx_parser_write_skip_header(tmpdir):
     control = formats.ExcelControl(sheet="sheet")
     dialect = Dialect.from_descriptor({"header": False})
     data = b"header1,header2\nvalue11,value12\nvalue21,value22"
-    target = TableResource(str(tmpdir.join("table.xlsx")))
+    path = str(tmpdir.join("table.xlsx"))
+    target = TableResource(path=path, dialect=dialect, control=control)
     with TableResource(data=data, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
-        resource.write_table(target, dialect=dialect, control=control)
-    with target:
-        assert target.header == ["field1", "field2"]
+        resource.write_table(target)
+    table = target.read_table()
+    assert table.header == ["field1", "field2"]
 
 
 # Bugs
@@ -292,3 +294,13 @@ def test_xlsx_parser_cast_int_to_string_1251():
         {"A": "001", "B": "b", "C": "1", "D": "a", "E": 1},
         {"A": "002", "B": "c", "C": "1", "D": "1", "E": 1},
     ]
+
+
+@pytest.mark.vcr
+def test_xlsx_parser_cannot_read_resource_from_remote_package_issue_1504():
+    package = Package(
+        "https://raw.githubusercontent.com/splor-mg/datapackage-reprex/main/20230512T084359/datapackage.json"
+    )
+    resource = package.get_table_resource("excel")
+    table = resource.read_table()
+    assert len(table.rows) == 4

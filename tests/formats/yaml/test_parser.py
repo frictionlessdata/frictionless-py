@@ -44,7 +44,7 @@ def test_yaml_parser_write_skip_header(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.yaml")), dialect=dialect)
     with TableResource(path="data/table.csv") as resource:
         assert resource.header == ["id", "name"]
-        resource.write_table(target, dialect=dialect)
+        resource.write_table(target)
         assert target.read_rows() == [
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},
