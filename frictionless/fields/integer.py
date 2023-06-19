@@ -31,7 +31,7 @@ class IntegerField(Field):
         # Create pattern
         pattern = None
         if not self.bare_number:
-            pattern = re.compile(r"((^\D*)|(\D*$))")
+            pattern = re.compile(r"((^[^-\d]*)|(\D*$))")
 
         # Create reader
         def value_reader(cell: Any):
