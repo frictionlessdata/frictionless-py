@@ -1,4 +1,3 @@
-import pytest
 from frictionless import Pipeline, Step, steps
 from frictionless.resources import TableResource
 
@@ -6,7 +5,6 @@ from frictionless.resources import TableResource
 # General
 
 
-@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge():
     source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -35,7 +33,6 @@ def test_step_table_merge():
     ]
 
 
-@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_from_dict():
     source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -44,7 +41,8 @@ def test_step_table_merge_from_dict():
                 {
                     "type": "table-merge",
                     "resource": dict(
-                        data=[["id", "name", "note"], [4, "malta", "island"]]
+                        name="target-resource",
+                        data=[["id", "name", "note"], [4, "malta", "island"]],
                     ),
                 }
             ),
@@ -67,7 +65,6 @@ def test_step_table_merge_from_dict():
     ]
 
 
-@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_field_names():
     source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -95,7 +92,6 @@ def test_step_table_merge_with_field_names():
     ]
 
 
-@pytest.mark.skip(reason="issue-1221")
 def test_step_merge_ignore_fields():
     source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -122,14 +118,14 @@ def test_step_merge_ignore_fields():
     ]
 
 
-@pytest.mark.skip(reason="issue-1221")
 def test_step_table_merge_with_sort():
     source = TableResource(path="data/transform.csv")
     pipeline = Pipeline(
         steps=[
             steps.table_merge(
                 resource=TableResource(
-                    data=[["id", "name", "population"], [4, "malta", 1]]
+                    name="target-resource",
+                    data=[["id", "name", "population"], [4, "malta", 1]],
                 ),
                 sort_by_field=["population"],  # type: ignore
             ),

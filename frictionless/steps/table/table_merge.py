@@ -65,13 +65,14 @@ class table_merge(Step):
                 for field in list(target.schema.fields):
                     if field.name not in self.field_names:
                         target.schema.remove_field(field.name)  # type: ignore
+            field_names = self.field_names or None
             if self.sort_by_field:
                 key = self.sort_by_field
                 resource.data = platform.petl.mergesort(  # type: ignore
-                    view1, view2, key=key, header=self.field_names  # type: ignore
+                    view1, view2, key=key, header=field_names  # type: ignore
                 )
             else:
-                resource.data = platform.petl.cat(view1, view2, header=self.field_names)  # type: ignore
+                resource.data = platform.petl.cat(view1, view2, header=field_names)  # type: ignore
 
     # Metadata
 
