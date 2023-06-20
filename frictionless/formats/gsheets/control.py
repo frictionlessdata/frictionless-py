@@ -1,6 +1,9 @@
 from __future__ import annotations
-import attrs
+
 from typing import Optional
+
+import attrs
+
 from ...dialect import Control
 
 

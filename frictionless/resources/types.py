@@ -1,7 +1,6 @@
-from .table import TableResource
 from .package import PackageResource
 from .resource import ResourceResource
-
+from .table import TableResource
 
 Convertible = (TableResource,)
 Extractable = (TableResource, PackageResource, ResourceResource)

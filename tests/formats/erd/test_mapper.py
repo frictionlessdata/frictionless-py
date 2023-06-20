@@ -1,6 +1,6 @@
 import os
-from frictionless import Package
 
+from frictionless import Package
 
 # General
 

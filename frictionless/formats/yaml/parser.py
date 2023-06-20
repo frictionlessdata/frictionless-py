@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 import tempfile
 from typing import Any, List
+
+from ... import errors, types
 from ...exception import FrictionlessException
 from ...platform import platform
+from ...resources import TableResource
+from ...system import Parser, system
 from ..inline import InlineControl
 from .control import YamlControl
-from ...resources import TableResource
-from ...system import system, Parser
-from ... import errors
-from ... import types
 
 
 class YamlParser(Parser):

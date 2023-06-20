@@ -1,6 +1,5 @@
 from frictionless import Error
 
-
 # From exception
 
 

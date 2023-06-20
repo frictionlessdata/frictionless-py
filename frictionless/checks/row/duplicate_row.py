@@ -1,9 +1,12 @@
 from __future__ import annotations
-import attrs
+
 import hashlib
 from typing import TYPE_CHECKING, Dict
-from ...checklist import Check
+
+import attrs
+
 from ... import errors
+from ...checklist import Check
 
 if TYPE_CHECKING:
     from ...resource import Resource

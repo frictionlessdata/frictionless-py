@@ -1,13 +1,14 @@
 from __future__ import annotations
-import attrs
+
 import warnings
-from typing import Optional, List, ClassVar, Union
+from typing import ClassVar, List, Optional, Union
+
+import attrs
+
+from .. import errors, settings, types
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from .step import Step
-from .. import settings
-from .. import errors
-from .. import types
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps

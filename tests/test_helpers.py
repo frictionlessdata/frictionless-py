@@ -1,7 +1,8 @@
 import os
-import pytest
-from frictionless import platform, helpers
 
+import pytest
+
+from frictionless import helpers, platform
 
 # General
 

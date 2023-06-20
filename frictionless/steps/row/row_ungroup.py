@@ -1,8 +1,11 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
 import attrs
-from typing import Optional, TYPE_CHECKING
-from ...platform import platform
+
 from ...pipeline import Step
+from ...platform import platform
 
 if TYPE_CHECKING:
     from ...resource import Resource

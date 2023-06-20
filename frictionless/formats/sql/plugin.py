@@ -1,16 +1,18 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+
+from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import urlparse
+
 from ...platform import platform
 from ...system import Plugin
+from . import settings
+from .adapter import SqlAdapter
 from .control import SqlControl
 from .parser import SqlParser
-from .adapter import SqlAdapter
-from . import settings
 
 if TYPE_CHECKING:
-    from ...resource import Resource
     from ...dialect import Control
+    from ...resource import Resource
 
 
 class SqlPlugin(Plugin):

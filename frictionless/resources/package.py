@@ -1,16 +1,18 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
+
+from typing import TYPE_CHECKING, Any, List, Optional
+
+from .. import settings
 from ..exception import FrictionlessException
-from ..report import Report
 from ..package import Package
+from ..report import Report
 from ..resource import Resource
 from .metadata import MetadataResource
-from .. import settings
 
 if TYPE_CHECKING:
-    from ..pipeline import Pipeline
-    from ..checklist import Checklist
     from .. import types
+    from ..checklist import Checklist
+    from ..pipeline import Pipeline
 
 
 class PackageResource(MetadataResource[Package]):

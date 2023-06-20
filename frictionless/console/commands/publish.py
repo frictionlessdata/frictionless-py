@@ -1,17 +1,19 @@
 from __future__ import annotations
-import typer
+
 from typing import List
-from rich.prompt import Prompt
+
+import typer
 from rich.console import Console
 from rich.progress import track
+from rich.prompt import Prompt
+
 from ...exception import FrictionlessException
+from ...package import Package
 from ...platform import platform
 from ...resource import Resource
-from ...package import Package
-from ..console import console
 from ...system import system
-from .. import common
-from .. import helpers
+from .. import common, helpers
+from ..console import console
 
 
 @console.command(name="publish")

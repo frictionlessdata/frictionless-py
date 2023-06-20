@@ -1,11 +1,12 @@
 from __future__ import annotations
+
+from typing import Any, ClassVar, List, Optional, Type
+
 import attrs
-from typing import List, ClassVar, Optional, Type, Any
+
+from .. import helpers, types
 from ..metadata import Metadata
 from ..platform import platform
-from .. import helpers
-from .. import types
-
 
 # NOTE:
 # Consider other approaches for report/errors as dict is not really

@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import tempfile
 from typing import TYPE_CHECKING
-from .control import HtmlControl
-from ...platform import platform
-from ...system import system, Parser
+
 from ... import types
+from ...platform import platform
+from ...system import Parser, system
+from .control import HtmlControl
 
 if TYPE_CHECKING:
     from ...resources import TableResource

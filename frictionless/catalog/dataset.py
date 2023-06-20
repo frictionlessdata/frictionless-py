@@ -1,10 +1,12 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar, Optional, Union
+
 import attrs
-from typing import TYPE_CHECKING, Optional, ClassVar, Union
+
+from .. import errors, settings
 from ..metadata import Metadata
 from ..package import Package
-from .. import settings
-from .. import errors
 
 if TYPE_CHECKING:
     from .catalog import Catalog

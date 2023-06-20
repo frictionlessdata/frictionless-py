@@ -1,24 +1,27 @@
 from __future__ import annotations
-import re
+
+import inspect
 import io
 import json
 import pprint
-import inspect
-import stringcase  # type: ignore
-from pathlib import Path
-from copy import deepcopy
+import re
 from collections.abc import Mapping
-from typing import TYPE_CHECKING
-from typing import Generator, ClassVar, Optional, Union, List, Dict, Any, Set, Type
+from copy import deepcopy
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Generator, List, Optional, Set
+from typing import Type, Union
+
+import stringcase  # type: ignore
 from typing_extensions import Self
+
+from . import helpers
 from .exception import FrictionlessException
 from .platform import platform
-from . import helpers
 
 if TYPE_CHECKING:
+    from . import types
     from .error import Error
     from .report import Report
-    from . import types
 
 
 class Metadata:

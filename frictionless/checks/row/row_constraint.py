@@ -1,9 +1,12 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import attrs
 import simpleeval  # type: ignore
-from typing import TYPE_CHECKING
-from ...checklist import Check
+
 from ... import errors
+from ...checklist import Check
 
 if TYPE_CHECKING:
     from ...table import Row

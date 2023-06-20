@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Resource, platform
 
+from frictionless import Resource, platform
 
 # General
 

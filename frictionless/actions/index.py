@@ -1,11 +1,13 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any, List
+
+from typing import TYPE_CHECKING, Any, List, Optional
+
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..resource import Resource
 
 if TYPE_CHECKING:
-    from ..indexer import IOnRow, IOnProgress
+    from ..indexer import IOnProgress, IOnRow
 
 
 def index(

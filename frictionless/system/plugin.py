@@ -1,14 +1,15 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any, Type
+
+from typing import TYPE_CHECKING, Any, List, Optional, Type
 
 if TYPE_CHECKING:
-    from ..package import Package
-    from ..resource import Resource
     from ..checklist import Check
     from ..dialect import Control
     from ..error import Error
-    from ..schema import Field
+    from ..package import Package
     from ..pipeline import Step
+    from ..resource import Resource
+    from ..schema import Field
     from .adapter import Adapter
     from .loader import Loader
     from .parser import Parser

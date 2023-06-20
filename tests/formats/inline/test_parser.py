@@ -1,10 +1,10 @@
 from collections import OrderedDict
 
 import pytest
-from frictionless import formats, Schema
+
+from frictionless import Schema, formats
 from frictionless.dialect.dialect import Dialect
 from frictionless.resources import TableResource
-
 
 # Read
 

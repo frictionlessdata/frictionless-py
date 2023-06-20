@@ -1,16 +1,19 @@
 from __future__ import annotations
+
 import json
-from datetime import datetime, date, timezone
-from typing import TYPE_CHECKING, Dict, Type, Any, List
+from datetime import date, datetime, timezone
+from typing import TYPE_CHECKING, Any, Dict, List, Type
+
 from ...platform import platform
-from ...schema import Schema, Field
+from ...schema import Field, Schema
 from ...system import Mapper
 from . import settings
 
 if TYPE_CHECKING:
-    from sqlalchemy import Dialect, CheckConstraint, Constraint
-    from sqlalchemy.schema import Table, Column
+    from sqlalchemy import CheckConstraint, Constraint, Dialect
+    from sqlalchemy.schema import Column, Table
     from sqlalchemy.types import TypeEngine
+
     from ...table import Row
 
 

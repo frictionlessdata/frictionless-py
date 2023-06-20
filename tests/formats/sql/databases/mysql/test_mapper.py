@@ -1,6 +1,6 @@
 import sqlalchemy as sa
-from frictionless import Schema, formats
 
+from frictionless import Schema, formats
 
 # Read
 

@@ -1,10 +1,11 @@
 import io
-import pytest
 from decimal import Decimal
-from frictionless import Package, Dialect, Detector, formats, platform
-from frictionless import FrictionlessException
-from frictionless.resources import TableResource
 
+import pytest
+
+from frictionless import Detector, Dialect, FrictionlessException, Package, formats
+from frictionless import platform
+from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

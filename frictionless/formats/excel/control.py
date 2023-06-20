@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+from typing import Any, Optional, Union
+
 import attrs
-from typing import Optional, Union, Any
+
 from ...dialect import Control
 from . import settings
 

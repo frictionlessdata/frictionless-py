@@ -1,11 +1,11 @@
-import pytest
 import textwrap
-from pathlib import Path
-from importlib import import_module
 from collections.abc import Mapping
-from frictionless import Package, Resource, system
-from frictionless import FrictionlessException
+from importlib import import_module
+from pathlib import Path
 
+import pytest
+
+from frictionless import FrictionlessException, Package, Resource, system
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
@@ -198,7 +198,7 @@ def test_package_standard_specs_properties(create_descriptor):
         resources=[],
     )
     package = (
-        Package(**options)
+        Package(**options)  # type: ignore
         if not create_descriptor
         else Package(helpers.create_descriptor(**options))
     )

@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Catalog, Dataset, Package, platform
 
+from frictionless import Catalog, Dataset, Package, platform
 
 # General
 

@@ -1,7 +1,6 @@
 from frictionless import Schema, fields
 from frictionless.resources import TableResource
 
-
 # General
 
 

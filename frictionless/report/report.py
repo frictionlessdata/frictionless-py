@@ -1,13 +1,16 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
+
 import attrs
 from tabulate import tabulate
-from typing import TYPE_CHECKING, List, Optional, ClassVar, Union, Dict, Any
-from ..metadata import Metadata
+
+from .. import settings
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .task import ReportTask
-from .. import settings
+from ..metadata import Metadata
 from . import types
+from .task import ReportTask
 
 if TYPE_CHECKING:
     from ..resource import Resource

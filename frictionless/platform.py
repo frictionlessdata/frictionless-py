@@ -1,8 +1,8 @@
+import platform as python_platform
 import sys
-from typing import ClassVar, Callable, Any
 from functools import cached_property
 from importlib import import_module
-import platform as python_platform
+from typing import Any, Callable, ClassVar
 
 
 def extras(*, name: str):

@@ -1,6 +1,9 @@
 from __future__ import annotations
-import attrs
+
 from typing import List
+
+import attrs
+
 from .table import TableError
 
 

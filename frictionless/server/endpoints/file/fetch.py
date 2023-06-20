@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Optional
+from urllib.parse import urlparse
+
 from fastapi import Request
 from pydantic import BaseModel
-from urllib.parse import urlparse
+
 from ....resources import FileResource
 from ...project import Project
 from ...router import router

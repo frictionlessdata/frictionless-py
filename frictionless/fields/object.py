@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import json
+from typing import Any, Dict, cast
+
 import attrs
-from typing import Any, cast, Dict
+
 from ..schema import Field
 
 

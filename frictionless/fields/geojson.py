@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 import json
-import attrs
 from typing import Any, Dict, cast
+
+import attrs
+
+from .. import settings
 from ..platform import platform
 from ..schema import Field
-from .. import settings
 
 
 @attrs.define(kw_only=True, repr=False)

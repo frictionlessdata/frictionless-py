@@ -1,7 +1,7 @@
-import os
 import io
-from setuptools import setup, find_packages
+import os
 
+from setuptools import find_packages, setup
 
 # Helpers
 
@@ -22,11 +22,12 @@ NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
     "moto",
     "httpx",
+    "isort",
     "black",
     "yattag",
     "pylama",
     "pytest",
-    "pyright==1.1.305",
+    "pyright",
     "ipython",
     "livemark",
     "pytest-cov",

@@ -1,6 +1,8 @@
-import pytest
 from datetime import datetime, time
-from frictionless import FrictionlessException, Dialect, formats, platform
+
+import pytest
+
+from frictionless import Dialect, FrictionlessException, formats, platform
 from frictionless.resources import TableResource
 
 pytestmark = pytest.mark.skipif(

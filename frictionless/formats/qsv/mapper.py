@@ -1,7 +1,9 @@
 from __future__ import annotations
-from typing import List, Dict, Any
+
+from typing import Any, Dict, List
+
+from ...schema import Field, Schema
 from ...system import Mapper
-from ...schema import Schema, Field
 
 
 class QsvMapper(Mapper):

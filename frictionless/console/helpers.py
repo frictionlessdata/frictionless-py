@@ -1,18 +1,21 @@
 from __future__ import annotations
+
 import sys
+from typing import TYPE_CHECKING, Any, List, Optional
+
 import typer
-from typing import TYPE_CHECKING, Optional, Any, List
-from rich.panel import Panel
-from rich.markup import escape
 from rich.console import Console
+from rich.markup import escape
+from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
+
+from .. import helpers
+from ..checklist import Check, Checklist
+from ..detector import Detector
+from ..dialect import Dialect
 from ..exception import FrictionlessException
 from ..pipeline import Pipeline, Step
-from ..checklist import Checklist, Check
-from ..detector import Detector
 from ..platform import platform
-from ..dialect import Dialect
-from .. import helpers
 
 if TYPE_CHECKING:
     from ..resource import Resource

@@ -1,11 +1,12 @@
+import random
+import string
+
 import boto3
 import pytest
-import string
-import random
 from moto import mock_s3
-from frictionless import Package, Dialect, platform
-from frictionless.resources import TableResource
 
+from frictionless import Dialect, Package, platform
+from frictionless.resources import TableResource
 
 # Read
 

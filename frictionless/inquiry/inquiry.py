@@ -1,14 +1,16 @@
 from __future__ import annotations
-import attrs
-from typing import TYPE_CHECKING, Optional, List, ClassVar, Union
+
 from multiprocessing import Pool
-from ..platform import platform
-from ..metadata import Metadata
+from typing import TYPE_CHECKING, ClassVar, List, Optional, Union
+
+import attrs
+
+from .. import helpers, settings
 from ..errors import InquiryError
-from .task import InquiryTask
+from ..metadata import Metadata
+from ..platform import platform
 from ..report import Report
-from .. import settings
-from .. import helpers
+from .task import InquiryTask
 
 if TYPE_CHECKING:
     from .. import types

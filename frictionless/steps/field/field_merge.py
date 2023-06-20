@@ -1,10 +1,13 @@
 # type: ignore
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, List
+
 import attrs
-from typing import TYPE_CHECKING, List, Any
 from petl.compat import next, text_type  # type: ignore
-from ...pipeline import Step
+
 from ... import fields
+from ...pipeline import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource

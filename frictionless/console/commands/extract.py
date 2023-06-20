@@ -1,17 +1,19 @@
 from __future__ import annotations
-import typer
+
 import json as pyjson
-from rich.table import Table
-from rich.console import Console
 from typing import TYPE_CHECKING, List, Optional
+
+import typer
+from rich.console import Console
+from rich.table import Table
+
 from ...exception import FrictionlessException
-from ...resource import Resource
-from ...platform import platform
-from ...system import system
-from ..console import console
 from ...helpers import stringify_csv_string
-from .. import helpers
-from .. import common
+from ...platform import platform
+from ...resource import Resource
+from ...system import system
+from .. import common, helpers
+from ..console import console
 
 if TYPE_CHECKING:
     from ... import types

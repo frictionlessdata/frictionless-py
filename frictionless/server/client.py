@@ -1,6 +1,7 @@
-from typing import Optional, Any
-from .project import Project
+from typing import Any, Optional
+
 from . import endpoints
+from .project import Project
 
 
 class Client:

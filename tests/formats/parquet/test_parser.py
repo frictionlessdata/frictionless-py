@@ -1,7 +1,9 @@
+import datetime
+
 import pytest
+
 from frictionless import formats
 from frictionless.resources import TableResource
-import datetime
 
 # Read
 

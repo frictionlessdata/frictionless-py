@@ -1,18 +1,21 @@
 from __future__ import annotations
-import attrs
+
 import subprocess
 from subprocess import PIPE
 from typing import TYPE_CHECKING, Optional, Union
+
+import attrs
+
 from ..exception import FrictionlessException
 from ..platform import platform
-from . import settings
-from . import types
+from . import settings, types
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
+
     from ..formats.sql import SqlAdapter
-    from ..resources import TableResource
     from ..report import Report
+    from ..resources import TableResource
     from ..table import Row
 
 

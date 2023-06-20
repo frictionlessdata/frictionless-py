@@ -1,7 +1,7 @@
 import pytest
-from frictionless import Pipeline, steps, FrictionlessException
-from frictionless.resources import TableResource
 
+from frictionless import FrictionlessException, Pipeline, steps
+from frictionless.resources import TableResource
 
 # General
 

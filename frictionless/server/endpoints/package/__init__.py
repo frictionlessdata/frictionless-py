@@ -1,3 +1,2 @@
 # Register modules
-from . import patch
-from . import publish
+from . import patch, publish

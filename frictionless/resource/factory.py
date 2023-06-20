@@ -1,9 +1,10 @@
-from typing import Any, Optional, TypeVar, Generic, cast
-from ..detector import Detector
-from ..platform import platform
-from ..dialect import Control
-from ..system import system
+from typing import Any, Generic, Optional, TypeVar, cast
+
 from .. import helpers
+from ..detector import Detector
+from ..dialect import Control
+from ..platform import platform
+from ..system import system
 
 T = TypeVar("T")
 

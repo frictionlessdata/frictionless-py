@@ -1,15 +1,15 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Iterable, List, Optional, Union
+
 import attrs
-from typing import TYPE_CHECKING, Optional, List, Any, ClassVar, Union, Dict, Iterable
+
+from .. import errors, helpers, settings
 from ..exception import FrictionlessException
-from ..platform import platform
 from ..metadata import Metadata
+from ..platform import platform
 from .control import Control
 from .factory import Factory
-from ..system import system
-from .. import settings
-from .. import helpers
-from .. import errors
 
 if TYPE_CHECKING:
     from .. import types
@@ -293,6 +293,8 @@ class Dialect(Metadata, metaclass=Factory):
         return dialect
 
     def metadata_export(self):  # type: ignore
+        from ..system import system
+
         descriptor = super().metadata_export()
 
         # Controls

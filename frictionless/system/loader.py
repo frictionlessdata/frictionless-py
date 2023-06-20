@@ -1,19 +1,20 @@
 from __future__ import annotations
+
+import atexit
+import hashlib
 import io
 import os
 import shutil
-import atexit
-import hashlib
 import tempfile
-from typing import TYPE_CHECKING, Optional, Any, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
+
+from .. import errors, settings
 from ..exception import FrictionlessException
 from ..platform import platform
-from .. import settings
-from .. import errors
 
 if TYPE_CHECKING:
-    from ..resource import Resource
     from .. import types
+    from ..resource import Resource
 
 
 # NOTE:

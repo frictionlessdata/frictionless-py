@@ -1,10 +1,13 @@
 from __future__ import annotations
-import attrs
-from typing import Any
+
 from datetime import datetime, time
+from typing import Any
+
+import attrs
+
+from .. import settings
 from ..platform import platform
 from ..schema import Field
-from .. import settings
 
 
 @attrs.define(kw_only=True, repr=False)

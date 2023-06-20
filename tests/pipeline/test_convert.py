@@ -1,8 +1,9 @@
 import json
+
 import pytest
 import yaml
-from frictionless import Pipeline, steps
 
+from frictionless import Pipeline, steps
 
 # General
 

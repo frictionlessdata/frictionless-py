@@ -1,7 +1,7 @@
-import yaml
 import pytest
-from frictionless import Package, Resource, FrictionlessException, system
+import yaml
 
+from frictionless import FrictionlessException, Package, Resource, system
 
 # General
 

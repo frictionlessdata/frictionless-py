@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import Dict, Any, List, Optional
-from itertools import zip_longest
-from functools import cached_property
-from ..platform import platform
-from .. import helpers
-from .. import errors
 
+from functools import cached_property
+from itertools import zip_longest
+from typing import Any, Dict, List, Optional
+
+from .. import errors, helpers
+from ..platform import platform
 
 # NOTE:
 # Currently dict.update/setdefault/pop/popitem/clear is not disabled (can be confusing)

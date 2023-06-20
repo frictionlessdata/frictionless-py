@@ -1,7 +1,8 @@
 import json
-import pytest
-from frictionless import Package
 
+import pytest
+
+from frictionless import Package
 
 # General
 

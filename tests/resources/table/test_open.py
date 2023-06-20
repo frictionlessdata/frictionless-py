@@ -1,7 +1,7 @@
 import pytest
-from frictionless import Dialect, Detector, FrictionlessException, resources
-from frictionless.resources import TableResource
 
+from frictionless import Detector, Dialect, FrictionlessException, resources
+from frictionless.resources import TableResource
 
 # General
 

@@ -1,13 +1,16 @@
 from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import List, Optional, Dict
-from pydantic import BaseModel
+from typing import Dict, List, Optional
+
 from fastapi import Request
+from pydantic import BaseModel
+
 from ....exception import FrictionlessException
+from ... import models
 from ...project import Project
 from ...router import router
-from ... import models
 
 
 class Props(BaseModel):

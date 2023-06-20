@@ -1,5 +1,6 @@
-import pytest
 import sqlite3
+
+import pytest
 
 
 @pytest.fixture

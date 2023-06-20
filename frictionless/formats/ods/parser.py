@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import io
 import tempfile
-from typing import Any, TYPE_CHECKING
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
+
+from ... import errors
 from ...exception import FrictionlessException
 from ...platform import platform
+from ...system import Parser, system
 from .control import OdsControl
-from ...system import system, Parser
-from ... import errors
 
 if TYPE_CHECKING:
     from ...resources import TableResource

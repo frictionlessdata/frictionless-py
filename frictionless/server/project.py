@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Optional
-from .stores import Filesystem, Metadata, Database
+
 from .. import helpers
+from .stores import Database, Filesystem, Metadata
 
 
 class Project:

@@ -1,15 +1,17 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List
+
+from typing import TYPE_CHECKING, List, Optional
+
+from .. import settings
 from ..exception import FrictionlessException
-from .table import TableResource
 from ..report import Report
 from ..resource import Resource
 from .metadata import MetadataResource
-from .. import settings
+from .table import TableResource
 
 if TYPE_CHECKING:
-    from ..checklist import Checklist
     from .. import types
+    from ..checklist import Checklist
 
 
 class ResourceResource(MetadataResource[Resource]):

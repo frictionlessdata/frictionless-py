@@ -1,7 +1,7 @@
 import pytest
+
 from frictionless import validate
 from frictionless.exception import FrictionlessException
-
 
 # General
 

@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 import re
-import attrs
-from typing import Any
 from decimal import Decimal
-from ..schema import Field
+from typing import Any
+
+import attrs
+
 from .. import settings
+from ..schema import Field
 
 
 @attrs.define(kw_only=True, repr=False)

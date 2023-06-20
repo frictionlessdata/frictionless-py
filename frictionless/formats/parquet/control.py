@@ -1,8 +1,11 @@
 from __future__ import annotations
+
+from typing import Any, List, Optional
+
 import attrs
-from typing import Optional, List, Any
-from ...dialect import Control
+
 from ... import helpers
+from ...dialect import Control
 
 
 @attrs.define(kw_only=True, repr=False)

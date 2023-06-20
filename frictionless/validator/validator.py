@@ -1,18 +1,19 @@
 from __future__ import annotations
+
 from multiprocessing import Pool
-from typing import TYPE_CHECKING, Optional, List, Dict, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+from .. import helpers, settings
+from ..checklist import Checklist
 from ..exception import FrictionlessException
 from ..platform import platform
-from ..checklist import Checklist
 from ..report import Report
-from .. import settings
-from .. import helpers
 
 if TYPE_CHECKING:
-    from ..resource import Resource
-    from ..package import Package
-    from ..error import Error
     from .. import types
+    from ..error import Error
+    from ..package import Package
+    from ..resource import Resource
 
 
 class Validator:

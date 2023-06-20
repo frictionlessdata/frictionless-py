@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import json
-import attrs
-from typing import Any, NamedTuple
 from decimal import Decimal
+from typing import Any, NamedTuple
+
+import attrs
+
 from ..schema import Field
 
 

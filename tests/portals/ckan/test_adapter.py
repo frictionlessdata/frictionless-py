@@ -1,11 +1,12 @@
-from _pytest._code.code import ExceptionInfo
+from datetime import datetime, time
+
 import pytest
 import requests
-from datetime import datetime, time
+from _pytest._code.code import ExceptionInfo
 from dateutil.tz import tzoffset, tzutc
-from frictionless import FrictionlessException, Package, Catalog, portals
-from frictionless.resources import TableResource
 
+from frictionless import Catalog, FrictionlessException, Package, portals
+from frictionless.resources import TableResource
 
 OUTPUT = {
     "name": "dicionario-de-dados",

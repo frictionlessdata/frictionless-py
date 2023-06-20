@@ -1,7 +1,6 @@
 from frictionless import Package, Pipeline, steps
 from frictionless.resources import TableResource
 
-
 # General
 
 

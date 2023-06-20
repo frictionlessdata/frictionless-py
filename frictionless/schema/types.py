@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Dict, List, Literal, Any, Tuple, Optional, Protocol, Callable
+
+from typing import Any, Callable, Dict, List, Literal, Optional, Protocol, Tuple
+
 from typing_extensions import Required, TypedDict
 
 

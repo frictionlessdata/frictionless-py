@@ -1,3 +1,3 @@
 from .control import JsonControl
-from .parsers import JsonParser, JsonlParser
+from .parsers import JsonlParser, JsonParser
 from .plugin import JsonPlugin

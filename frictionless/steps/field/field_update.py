@@ -1,13 +1,16 @@
 from __future__ import annotations
+
+from copy import deepcopy
+from typing import TYPE_CHECKING, Any, Optional
+
 import attrs
 import simpleeval  # type: ignore
-from copy import deepcopy
-from typing import TYPE_CHECKING, Optional, Any
+
 from ...pipeline import Step
 
 if TYPE_CHECKING:
-    from ...resource import Resource
     from ... import types
+    from ...resource import Resource
 
 
 @attrs.define(kw_only=True, repr=False)

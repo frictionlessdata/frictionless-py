@@ -1,15 +1,16 @@
 from __future__ import annotations
+
 import json
 import tempfile
-from typing import List, Any
+from typing import Any, List
+
+from .... import errors, types
 from ....exception import FrictionlessException
 from ....platform import platform
+from ....resources import TableResource
+from ....system import Parser, system
 from ...inline import InlineControl
 from ..control import JsonControl
-from ....resources import TableResource
-from ....system import system, Parser
-from .... import errors
-from .... import types
 
 
 class JsonParser(Parser):

@@ -1,7 +1,7 @@
 import pytest
-from frictionless import system, Plugin, Schema, Field, describe
-from frictionless.resources import TableResource
 
+from frictionless import Field, Plugin, Schema, describe, system
+from frictionless.resources import TableResource
 
 # General
 

@@ -1,24 +1,25 @@
 from __future__ import annotations
-import io
-import re
-import os
-import csv
+
 import ast
-import json
+import csv
+import datetime
 import glob
+import io
+import json
+import os
+import re
 import shutil
 import tempfile
-import datetime
-import stringcase  # type: ignore
-from copy import deepcopy
-from pathlib import Path
-from typing import Union, Any, Optional, Dict
-from typing import List, TypeVar, Type, Tuple, Iterator
 from collections.abc import Mapping
 from contextlib import contextmanager
-from urllib.parse import urlparse, parse_qs
-from .platform import platform
+from copy import deepcopy
+from pathlib import Path
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
+from urllib.parse import parse_qs, urlparse
 
+import stringcase  # type: ignore
+
+from .platform import platform
 
 # General
 
@@ -248,7 +249,7 @@ def expand_source(source: Union[List[Any], str], *, basepath: Optional[str] = No
         source = os.path.join(basepath, source)
     pattern = f"{source}/*" if os.path.isdir(source) else source
     configs = {"recursive": True} if "**" in pattern else {}
-    for path in sorted(glob.glob(pattern, **configs)):
+    for path in sorted(glob.glob(pattern, **configs)):  # type: ignore
         if basepath:
             path = os.path.relpath(path, basepath)
         paths.append(path)

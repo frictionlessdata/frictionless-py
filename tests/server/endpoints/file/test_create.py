@@ -1,9 +1,11 @@
-import pytest
 from pathlib import Path
+
+import pytest
+
 from frictionless import helpers
 from frictionless.server import models
-from ...fixtures import name1, bytes1, folder1, not_secure
 
+from ...fixtures import bytes1, folder1, name1, not_secure
 
 # Action
 

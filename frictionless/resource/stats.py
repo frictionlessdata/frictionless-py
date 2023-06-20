@@ -1,6 +1,8 @@
 from __future__ import annotations
-import attrs
+
 from typing import Optional
+
+import attrs
 
 
 @attrs.define(kw_only=True, repr=False)

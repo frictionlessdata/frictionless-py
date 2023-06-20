@@ -1,9 +1,10 @@
 # type: ignore
 import os
-import pytest
-from frictionless import portals, Catalog, Package, FrictionlessException, platform
-from frictionless.resources import TableResource
 
+import pytest
+
+from frictionless import Catalog, FrictionlessException, Package, platform, portals
+from frictionless.resources import TableResource
 
 OUTPUT_OPTIONS_WITH_DP_YAML = {
     "resources": [

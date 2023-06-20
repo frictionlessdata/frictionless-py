@@ -1,9 +1,12 @@
 # type: ignore
 from __future__ import annotations
-import attrs
+
 from typing import List
-from ...pipeline import Step
+
+import attrs
+
 from ... import fields
+from ...pipeline import Step
 
 
 @attrs.define(kw_only=True, repr=False)

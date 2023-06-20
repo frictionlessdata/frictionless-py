@@ -1,10 +1,12 @@
 from __future__ import annotations
+
+from typing import Optional, Union
+
 import attrs
-from typing import Union, Optional
+
 from ...pipeline import Step
 from ...platform import platform
 from ...resource import Resource
-
 
 DEFAULT_MODE = "inner"
 

@@ -11,12 +11,11 @@
 # the file is generated.
 
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from grako.buffering import Buffer
-from grako.parsing import graken, Parser
-from grako.util import re, RE_FLAGS, generic_main  # noqa
-
+from grako.parsing import Parser, graken
+from grako.util import RE_FLAGS, generic_main, re  # noqa
 
 KEYWORDS = {}
 
@@ -770,6 +769,7 @@ def main(filename, startrule, **kwargs):
 
 if __name__ == "__main__":
     import json
+
     from grako.util import asjson
 
     ast = generic_main(main, WktParser, name="Wkt")

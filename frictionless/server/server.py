@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from ..platform import platform
-from .project import Project
-from .config import Config
-from .router import router
-from .. import settings
 
+from .. import settings
+from ..platform import platform
+from .config import Config
+from .project import Project
+from .router import router
 
 # TODO: handle errors
 # TODO: rebase on async endpoints

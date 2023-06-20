@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
-from ...resources import TableResource
+
 from ...indexer import Indexer
+from ...resources import TableResource
 
 if TYPE_CHECKING:
     from ...resource import Resource

@@ -1,7 +1,7 @@
 import pytest
-from frictionless import Schema, FrictionlessException, system
-from frictionless.resources import TableResource
 
+from frictionless import FrictionlessException, Schema, system
+from frictionless.resources import TableResource
 
 # General
 

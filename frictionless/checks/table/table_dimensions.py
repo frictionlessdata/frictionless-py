@@ -1,8 +1,11 @@
 from __future__ import annotations
-import attrs
+
 from typing import Optional
-from ...checklist import Check
+
+import attrs
+
 from ... import errors
+from ...checklist import Check
 
 
 @attrs.define(kw_only=True, repr=False)

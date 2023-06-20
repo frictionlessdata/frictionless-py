@@ -1,4 +1,5 @@
 from typer.testing import CliRunner
+
 from frictionless import __version__
 from frictionless.console import console
 

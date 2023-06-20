@@ -1,15 +1,17 @@
 from __future__ import annotations
-import os
+
 import atexit
-import typer
+import os
 import tempfile
 from typing import List
+
+import typer
 from rich.console import Console
+
 from ...resource import Resource
-from ..console import console
 from ...system import system
-from .. import common
-from .. import helpers
+from .. import common, helpers
+from ..console import console
 
 
 # TODO: figure out how we can reduce duplication among commands like this: query/etc

@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 import shutil
 from pathlib import Path
+from typing import Optional
+
 from fastapi import Request
 from pydantic import BaseModel
-from typing import Optional
+
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router

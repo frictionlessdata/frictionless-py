@@ -1,13 +1,16 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Iterable, List, Set
+
 import attrs
-from typing import TYPE_CHECKING, List, Any, Iterable, Set
-from ...checklist import Check
+
 from ... import errors
+from ...checklist import Check
 
 if TYPE_CHECKING:
-    from ...table import Row
     from ...error import Error
     from ...resource import Resource
+    from ...table import Row
 
 
 @attrs.define(kw_only=True, repr=False)

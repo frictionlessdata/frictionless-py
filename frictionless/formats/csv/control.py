@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import csv
-import attrs
 from typing import Optional
+
+import attrs
+
 from ...dialect import Control
 from . import settings
 

@@ -1,10 +1,11 @@
 from __future__ import annotations
-from pydantic import BaseModel
+
 from fastapi import Request
+from pydantic import BaseModel
+
+from ... import helpers
 from ...project import Project
 from ...router import router
-from ... import helpers
-
 
 # TODO: use detected resource.encoding if indexed
 

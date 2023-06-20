@@ -1,3 +1,2 @@
-from .pipeline import Pipeline
-from .pipeline import Step
+from .pipeline import Pipeline, Step
 from .types import *

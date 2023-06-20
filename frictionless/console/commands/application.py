@@ -1,10 +1,13 @@
 from __future__ import annotations
-import typer
+
 import threading
 import webbrowser
+
+import typer
+
 from ...platform import platform
-from ..console import console
 from .. import common
+from ..console import console
 
 
 @console.command(name="application")

@@ -1,6 +1,6 @@
 import pytest
-from frictionless import formats, Resource, Dialect, Detector, platform
 
+from frictionless import Detector, Dialect, Resource, formats, platform
 
 # General
 

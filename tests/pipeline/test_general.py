@@ -1,6 +1,6 @@
 import textwrap
-from frictionless import Pipeline, steps
 
+from frictionless import Pipeline, steps
 
 # General
 

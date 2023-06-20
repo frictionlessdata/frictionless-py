@@ -1,6 +1,8 @@
 from __future__ import annotations
-from pydantic import BaseModel
+
 from fastapi import Request, Response
+from pydantic import BaseModel
+
 from ....exception import FrictionlessException
 from ....resources import FileResource
 from ...project import Project

@@ -1,16 +1,17 @@
 import typer
-from ..console import console
+
 from ...checklist import Checklist
+from ...detector import Detector
 from ...dialect import Dialect
 from ...inquiry import Inquiry
 from ...package import Package
 from ...pipeline import Pipeline
-from ...resource import Resource
 from ...report import Report
+from ...resource import Resource
 from ...schema import Schema
-from ...detector import Detector
 from ...system import system
 from .. import common
+from ..console import console
 
 
 @console.command(name="convert", hidden=True)

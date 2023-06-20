@@ -1,7 +1,8 @@
 import json
-import pytest
-from frictionless import Resource, Report
 
+import pytest
+
+from frictionless import Report, Resource
 
 # General
 

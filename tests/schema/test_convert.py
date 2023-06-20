@@ -1,8 +1,9 @@
 import json
-import yaml
-import pytest
-from frictionless import Schema, FrictionlessException
 
+import pytest
+import yaml
+
+from frictionless import FrictionlessException, Schema
 
 UNZIPPED_DIR = "data/fixtures/output-unzipped"
 DESCRIPTOR = {

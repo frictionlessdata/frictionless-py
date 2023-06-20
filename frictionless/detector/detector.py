@@ -1,21 +1,23 @@
 from __future__ import annotations
-import os
-import attrs
+
 import codecs
+import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Optional, List, Any, Dict
-from ..exception import FrictionlessException
-from ..schema import Schema, Field
-from ..fields import AnyField
-from ..platform import platform
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+import attrs
+
+from .. import helpers, settings
 from ..dialect import Dialect
+from ..exception import FrictionlessException
+from ..fields import AnyField
 from ..metadata import Metadata
-from .. import settings
-from .. import helpers
+from ..platform import platform
+from ..schema import Field, Schema
 
 if TYPE_CHECKING:
-    from ..resource import Resource
     from .. import types
+    from ..resource import Resource
 
 
 @attrs.define(kw_only=True, repr=False)

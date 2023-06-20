@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Field
 
+from frictionless import Field
 
 # General
 

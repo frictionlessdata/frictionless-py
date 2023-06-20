@@ -1,5 +1,7 @@
 import sys
+
 import pytest
+
 from frictionless import Package, platform
 
 IS_UNIX = platform.type != "windows"

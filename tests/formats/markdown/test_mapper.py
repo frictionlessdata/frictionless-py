@@ -1,15 +1,7 @@
 import pytest
-from frictionless import (
-    Dialect,
-    Package,
-    Pipeline,
-    Checklist,
-    Inquiry,
-    Schema,
-    Report,
-    Resource,
-)
 
+from frictionless import Checklist, Dialect, Inquiry, Package, Pipeline, Report
+from frictionless import Resource, Schema
 
 SCHEMA = {
     "fields": [

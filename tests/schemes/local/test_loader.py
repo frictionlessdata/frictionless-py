@@ -1,7 +1,7 @@
 from importlib import import_module
+
 from frictionless import Resource
 from frictionless.resources import TableResource
-
 
 # Read
 

@@ -1,9 +1,10 @@
 import json
-import pytest
 import pathlib
-from frictionless import FrictionlessException
-from frictionless import Package, Checklist, Resource, Schema, fields, Detector
 
+import pytest
+
+from frictionless import Checklist, Detector, FrictionlessException, Package, Resource
+from frictionless import Schema, fields
 
 # General
 

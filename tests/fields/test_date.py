@@ -1,7 +1,8 @@
-import pytest
 from datetime import date, datetime
-from frictionless import Field
 
+import pytest
+
+from frictionless import Field
 
 # General
 

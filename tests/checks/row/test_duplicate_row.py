@@ -1,5 +1,4 @@
-from frictionless import Resource, Checklist, checks
-
+from frictionless import Checklist, Resource, checks
 
 # General
 

@@ -1,18 +1,19 @@
 from __future__ import annotations
-import typer
+
 from typing import List
+
+import typer
 from rich.console import Console
 from rich.table import Table
-from ...resources import TableResource
-from ...resource import Resource
-from ...package import Package
+
 from ...dialect import Dialect
+from ...package import Package
+from ...resource import Resource
+from ...resources import TableResource
 from ...schema import Schema
 from ...system import system
+from .. import common, helpers
 from ..console import console
-from .. import helpers
-from .. import common
-
 
 DEFAULT_MAX_FIELDS = 10
 

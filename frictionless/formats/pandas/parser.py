@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import datetime
 import decimal
-from typing import List, Any, Optional, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
+
 from dateutil.tz import tzoffset
-from ...platform import platform
-from ...schema import Schema, Field
-from ...system import Parser
+
 from ... import types
+from ...platform import platform
+from ...schema import Field, Schema
+from ...system import Parser
 
 if TYPE_CHECKING:
     from ...resources import TableResource

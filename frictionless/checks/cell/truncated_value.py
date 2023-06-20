@@ -1,8 +1,11 @@
 from __future__ import annotations
-import attrs
+
 from typing import TYPE_CHECKING
-from ...checklist import Check
+
+import attrs
+
 from ... import errors
+from ...checklist import Check
 
 if TYPE_CHECKING:
     from ...table import Row

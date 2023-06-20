@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Inquiry
 
+from frictionless import Inquiry
 
 # Sequential
 

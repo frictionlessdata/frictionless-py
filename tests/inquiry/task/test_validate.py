@@ -1,6 +1,6 @@
 import pytest
-from frictionless import InquiryTask, system
 
+from frictionless import InquiryTask, system
 
 # General
 

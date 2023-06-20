@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+
+from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import urlparse
+
 from ...system import Plugin
-from .control import ZenodoControl
 from .adapter import ZenodoAdapter
+from .control import ZenodoControl
 
 if TYPE_CHECKING:
     from ...dialect import Control

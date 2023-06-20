@@ -1,8 +1,11 @@
 from __future__ import annotations
-import attrs
+
 from typing import TYPE_CHECKING
-from ...pipeline import Step
+
+import attrs
+
 from ...exception import FrictionlessException
+from ...pipeline import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource

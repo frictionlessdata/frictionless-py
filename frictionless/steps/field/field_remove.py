@@ -1,7 +1,10 @@
 # type: ignore
 from __future__ import annotations
-import attrs
+
 from typing import List
+
+import attrs
+
 from ...pipeline import Step
 
 

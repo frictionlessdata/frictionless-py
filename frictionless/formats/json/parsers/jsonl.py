@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 import tempfile
-from ....platform import platform
-from ...inline import InlineControl
-from ....resources import TableResource
-from ..control import JsonControl
-from ....system import system, Parser
+
 from .... import types
+from ....platform import platform
+from ....resources import TableResource
+from ....system import Parser, system
+from ...inline import InlineControl
+from ..control import JsonControl
 
 
 class JsonlParser(Parser):

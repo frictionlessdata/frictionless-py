@@ -1,13 +1,16 @@
 from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
 import attrs
 import humanize
-from typing import List, Optional, Dict, Any
 from tabulate import tabulate
-from ..metadata import Metadata
-from ..exception import FrictionlessException
-from ..errors import ReportTaskError
-from ..error import Error
+
 from .. import settings
+from ..error import Error
+from ..errors import ReportTaskError
+from ..exception import FrictionlessException
+from ..metadata import Metadata
 from . import types
 
 
