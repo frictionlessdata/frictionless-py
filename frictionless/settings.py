@@ -98,7 +98,7 @@ METADATA_TRAITS = {
     },
     "chart": {
         "names": ["chart.json", "chart.yaml"],
-        "props": ["layers", "encoding", "mark"],
+        "props": ["layers", "mark"],
     },
     "package": {
         "names": ["package.json", "package.yaml"],
