@@ -14,8 +14,8 @@ def test_resource_open():
         assert resource.scheme == "file"
         assert resource.format == "csv"
         assert resource.encoding == "utf-8"
-        assert resource.innerpath == None
-        assert resource.compression == None
+        assert resource.innerpath is None
+        assert resource.compression is None
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]

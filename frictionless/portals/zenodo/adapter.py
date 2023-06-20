@@ -217,7 +217,7 @@ def get_package(record: Record, title: str, formats: List[str]) -> Package:  # t
             except FrictionlessException as exception:
                 # Skips package descriptor not found exception
                 # and continues reading files.
-                if not "[Errno 2] No such file or directory" in str(exception):
+                if "[Errno 2] No such file or directory" not in str(exception):
                     raise exception
         if is_resource_file:
             package.basepath = f'https://zenodo.org/api/files/{file["bucket"]}'

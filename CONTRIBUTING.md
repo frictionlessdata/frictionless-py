@@ -20,11 +20,11 @@ livemark start
 
 Frictionless is a Python3.8+ framework, and it uses some common Python tools for the development process (we recommend enabling support of these tools in your IDE):
 
-- type checking: `pyright`
+- code linting: `ruff`
 - import sorting: `isort`
-- formatting: `black`
-- linting: `pylama`
-- testing: `pytest`
+- code formatting: `black`
+- type checking: `pyright`
+- code testing: `pytest`
 
 You also need `git` to work on the project, and `make` is recommended.
 

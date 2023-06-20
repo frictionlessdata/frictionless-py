@@ -82,7 +82,7 @@ def test_package_infer_empty_file():
     package = Package(["data/empty.csv"])
     package.infer()
     assert len(package.resources) == 1
-    assert package.resources[0].bytes == None
+    assert package.resources[0].bytes is None
 
 
 # Bugs

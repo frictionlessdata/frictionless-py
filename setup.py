@@ -25,7 +25,6 @@ TESTS_REQUIRE = [
     "isort",
     "black",
     "yattag",
-    "pylama",
     "pytest",
     "pyright",
     "ipython",
