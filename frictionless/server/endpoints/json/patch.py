@@ -41,6 +41,6 @@ def action(project: Project, props: Props) -> Result:
 
     # Write contents
     if props.data is not None:
-        helpers.write_json(project, path=record.path, data=props.data)
+        helpers.write_json(project, path=record.path, data=props.data, overwrite=True)
 
     return Result(path=record.path)
