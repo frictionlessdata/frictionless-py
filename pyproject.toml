@@ -25,3 +25,9 @@ filterwarnings = [
     "ignore::DeprecationWarning:savWriter.*",
     "ignore::Warning:duckdb_engine.*",
 ]
+
+[tool.pyright]
+strict = ["frictionless"]
+include = ["frictionless", "tests"]
+exclude = ["frictionless/vendors"]
+ignore = ["**/__init__.py"]

@@ -21,6 +21,7 @@ PACKAGE = "frictionless"
 NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
     "moto",
+    "ruff",
     "httpx",
     "isort",
     "black",
