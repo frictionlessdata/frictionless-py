@@ -96,13 +96,17 @@ METADATA_TRAITS = {
         "names": ["catalog.json", "catalog.yaml"],
         "props": ["packages"],
     },
+    "chart": {
+        "names": ["chart.json", "chart.yaml"],
+        "props": ["layers", "encoding", "mark"],
+    },
     "package": {
         "names": ["package.json", "package.yaml"],
         "props": ["resources"],
     },
     "resource": {
         "names": ["resource.json", "resource.yaml"],
-        "props": ["path"],
+        "props": ["path", "data"],
     },
     "dialect": {
         "names": ["dialect.json", "dialect.yaml"],
@@ -132,10 +136,6 @@ METADATA_TRAITS = {
     "inquiry": {
         "names": ["inquiry.json", "inquiry.yaml"],
         "props": ["tasks"],
-    },
-    "chart": {
-        "names": ["chart.json", "chart.yaml"],
-        "props": ["layers", "encoding", "mark"],
     },
     "view": {
         "names": ["view.json", "view.yaml"],
