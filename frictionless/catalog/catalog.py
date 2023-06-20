@@ -1,16 +1,18 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, ClassVar, List, Optional, Union
+
 import attrs
-from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar
+
+from .. import errors, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from .factory import Factory
 from .dataset import Dataset
-from .. import settings
-from .. import errors
+from .factory import Factory
 
 if TYPE_CHECKING:
-    from ..dialect import Control
     from .. import types
+    from ..dialect import Control
 
 
 @attrs.define(kw_only=True, repr=False)

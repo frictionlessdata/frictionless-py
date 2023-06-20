@@ -1,9 +1,9 @@
-import pytest
 import textwrap
 from importlib import import_module
-from frictionless import Package, Resource, Detector, platform
-from frictionless import FrictionlessException
 
+import pytest
+
+from frictionless import Detector, FrictionlessException, Package, Resource, platform
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

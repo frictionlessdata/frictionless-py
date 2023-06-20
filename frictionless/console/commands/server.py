@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import typer
+
 from ...platform import platform
-from ..console import console
 from .. import common
+from ..console import console
 
 
 @console.command(name="server", hidden=True)

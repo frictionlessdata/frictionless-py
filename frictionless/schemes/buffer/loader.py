@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import io
-from ...system import Loader
+
 from ... import types
+from ...system import Loader
 
 
 class BufferLoader(Loader):

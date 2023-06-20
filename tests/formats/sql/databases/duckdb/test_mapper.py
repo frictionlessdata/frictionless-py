@@ -1,5 +1,6 @@
 import pytest
 import sqlalchemy as sa
+
 from frictionless import Schema, formats, platform
 
 pytestmark = pytest.mark.skipif(

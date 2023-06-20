@@ -1,16 +1,18 @@
 from __future__ import annotations
+
 from itertools import chain
-from typing import TYPE_CHECKING, ClassVar, Optional, List, cast, Any
+from typing import TYPE_CHECKING, Any, ClassVar, List, Optional, cast
+
+from .. import errors
 from ..exception import FrictionlessException
 from ..platform import platform
 from .system import system
-from .. import errors
 
 if TYPE_CHECKING:
-    from .loader import Loader
+    from .. import types
     from ..resource import Resource
     from ..resources import TableResource
-    from .. import types
+    from .loader import Loader
 
 
 class Parser:

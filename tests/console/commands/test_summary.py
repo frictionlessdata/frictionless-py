@@ -1,6 +1,8 @@
 import os
+
 import pytest
 from typer.testing import CliRunner
+
 from frictionless import platform
 from frictionless.console import console
 

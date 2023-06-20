@@ -1,16 +1,17 @@
 from __future__ import annotations
+
+from typing import Any, ClassVar, Dict, List, Optional, Union
+
 import attrs
 from tabulate import tabulate
-from typing import Optional, List, Any, Union, ClassVar, Dict
+
+from .. import errors, settings, types
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
 from .factory import Factory
 from .field import Field
 from .types import INotes
-from .. import settings
-from .. import errors
-from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)

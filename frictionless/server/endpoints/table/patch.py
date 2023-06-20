@@ -1,16 +1,17 @@
 from __future__ import annotations
+
+from typing import Optional
+
 from fastapi import Request
 from pydantic import BaseModel
-from typing import Optional
-from ....formats.sql import SqlControl
-from ....resources import TableResource
+
 from ....exception import FrictionlessException
+from ....formats.sql import SqlControl
 from ....platform import platform
+from ....resources import TableResource
+from ... import helpers, models, types
 from ...project import Project
 from ...router import router
-from ... import helpers
-from ... import models
-from ... import types
 
 
 class Props(BaseModel):

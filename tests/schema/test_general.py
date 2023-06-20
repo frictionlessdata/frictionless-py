@@ -1,13 +1,13 @@
 import io
 import json
-import pytest
 import textwrap
-import requests
 from decimal import Decimal
 from importlib import import_module
-from frictionless import Schema, Field
-from frictionless import FrictionlessException
 
+import pytest
+import requests
+
+from frictionless import Field, FrictionlessException, Schema
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 DESCRIPTOR_MIN = {

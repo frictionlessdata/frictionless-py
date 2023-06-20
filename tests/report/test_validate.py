@@ -1,6 +1,5 @@
 from frictionless import Resource
 
-
 # General
 
 

@@ -1,12 +1,23 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-from typing import Protocol, BinaryIO, TextIO, Iterable, List, Dict, Any, Union, Literal
+
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    BinaryIO,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Protocol,
+    TextIO,
+    Union,
+)
 
 if TYPE_CHECKING:
-    from .table import Row
     from .error import Error
     from .package import Package
     from .resource import Resource
+    from .table import Row
 
 
 # General

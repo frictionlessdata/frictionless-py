@@ -1,9 +1,10 @@
-from typing import Optional, List, Any, Union
-from ..exception import FrictionlessException
-from ..checklist import Checklist, Check
-from ..resource import Resource
-from ..report import Report
+from typing import Any, List, Optional, Union
+
 from .. import settings
+from ..checklist import Check, Checklist
+from ..exception import FrictionlessException
+from ..report import Report
+from ..resource import Resource
 
 
 def validate(

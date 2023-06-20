@@ -1,7 +1,6 @@
 from frictionless import Resource
 from frictionless.resources import TableResource
 
-
 # Bugs
 
 

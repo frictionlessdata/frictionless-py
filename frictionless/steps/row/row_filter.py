@@ -1,7 +1,10 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Optional
+
 import attrs
 import simpleeval  # type: ignore
-from typing import TYPE_CHECKING, Optional, Any
+
 from ...pipeline import Step
 
 if TYPE_CHECKING:

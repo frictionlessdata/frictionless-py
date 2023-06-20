@@ -1,8 +1,11 @@
 from __future__ import annotations
+
+from typing import Any, Dict, List
+
 import attrs
-from typing import Any, List, Dict
-from ..schema import Field
+
 from .. import settings
+from ..schema import Field
 
 
 @attrs.define(kw_only=True, repr=False)

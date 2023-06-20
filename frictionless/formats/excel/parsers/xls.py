@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 import sys
 import tempfile
-from typing import Any, List, TYPE_CHECKING
-from ....platform import platform
-from ....exception import FrictionlessException
-from ..control import ExcelControl
-from ....system import system, Parser
+from typing import TYPE_CHECKING, Any, List
+
 from .... import errors
+from ....exception import FrictionlessException
+from ....platform import platform
+from ....system import Parser, system
+from ..control import ExcelControl
 
 if TYPE_CHECKING:
     from ....resources import TableResource

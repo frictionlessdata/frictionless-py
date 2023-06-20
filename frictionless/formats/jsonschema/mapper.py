@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import Dict, Any
-from ...schema import Schema, Field
+
+from typing import Any, Dict
+
+from ...schema import Field, Schema
 from ...system import Mapper
 
 

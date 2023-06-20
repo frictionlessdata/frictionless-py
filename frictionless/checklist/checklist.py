@@ -1,12 +1,14 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar, List, Optional, Union
+
 import attrs
-from typing import TYPE_CHECKING, List, Optional, ClassVar, Union
+
+from .. import errors, settings
+from ..checks import baseline
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..checks import baseline
 from .check import Check
-from .. import settings
-from .. import errors
 
 if TYPE_CHECKING:
     from ..resource import Resource

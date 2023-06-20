@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 import io
 from typing import Any
 from urllib.parse import urlparse
-from ..control import AwsControl
-from ....system import Loader
-from ....platform import platform
+
 from .... import types
+from ....platform import platform
+from ....system import Loader
+from ..control import AwsControl
 
 
 class S3Loader(Loader):

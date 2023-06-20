@@ -1,7 +1,6 @@
 import pytest
-from frictionless import Package, Resource, Dialect
-from frictionless import FrictionlessException
 
+from frictionless import Dialect, FrictionlessException, Package, Resource
 
 # General
 

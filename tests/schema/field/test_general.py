@@ -1,8 +1,9 @@
-import pytest
 import textwrap
 from importlib import import_module
-from frictionless import Field
 
+import pytest
+
+from frictionless import Field
 
 # General
 

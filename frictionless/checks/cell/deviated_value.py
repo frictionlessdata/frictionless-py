@@ -1,14 +1,17 @@
 from __future__ import annotations
-import attrs
+
 import statistics
-from typing import TYPE_CHECKING, Iterable, List, Any
-from ...checklist import Check
+from typing import TYPE_CHECKING, Any, Iterable, List
+
+import attrs
+
 from ... import errors
+from ...checklist import Check
 
 if TYPE_CHECKING:
+    from ...error import Error
     from ...resource import Resource
     from ...table import Row
-    from ...error import Error
 
 
 DEFAULT_INTERVAL = 3

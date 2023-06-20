@@ -1,20 +1,20 @@
 from __future__ import annotations
-import attrs
+
 import warnings
-from typing import Optional, List
+from typing import List, Optional
+
+import attrs
+
+from .. import errors, helpers, settings, types
+from ..checklist import Checklist
+from ..dialect import Dialect
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..checklist import Checklist
-from ..report import Report
-from ..dialect import Dialect
-from ..schema import Schema
-from ..resource import Resource
 from ..package import Package
+from ..report import Report
+from ..resource import Resource
+from ..schema import Schema
 from ..system import system
-from .. import settings
-from .. import helpers
-from .. import errors
-from .. import types
 
 
 # TODO: rebase back on using resource?

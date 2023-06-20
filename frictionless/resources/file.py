@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import Optional, Union, Any, cast
+
+from typing import Any, Optional, Union, cast
+
+from .. import helpers
 from ..exception import FrictionlessException
 from ..resource import Resource
-from .. import helpers
 
 
 class FileResource(Resource):

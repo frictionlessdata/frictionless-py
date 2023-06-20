@@ -1,13 +1,13 @@
 from __future__ import annotations
-from pydantic import BaseModel
+
 from fastapi import Request
+from pydantic import BaseModel
+
 from ....exception import FrictionlessException
 from ....resource import Resource
+from ... import helpers, models, types
 from ...project import Project
 from ...router import router
-from ... import helpers
-from ... import models
-from ... import types
 
 
 class Props(BaseModel, extra="forbid"):

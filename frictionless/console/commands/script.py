@@ -1,17 +1,19 @@
 from __future__ import annotations
-import re
-import os
+
 import atexit
-import typer
+import os
+import re
 import tempfile
 from typing import List
+
+import typer
 from rich.console import Console
-from ...resource import Resource
-from ..console import console
-from ...system import system
+
 from ...helpers import write_file
-from .. import common
-from .. import helpers
+from ...resource import Resource
+from ...system import system
+from .. import common, helpers
+from ..console import console
 
 
 @console.command(name="script")

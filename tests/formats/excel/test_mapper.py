@@ -1,10 +1,11 @@
 import os
-import yattag
-import pytest
 from pathlib import Path
 from zipfile import ZipFile
-from frictionless import Schema
 
+import pytest
+import yattag
+
+from frictionless import Schema
 
 # Schema
 

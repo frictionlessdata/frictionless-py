@@ -1,11 +1,13 @@
 from __future__ import annotations
-from pydantic import BaseModel
+
 from fastapi import Request
+from pydantic import BaseModel
+
 from ....platform import platform
 from ....schema import Schema
+from ... import models
 from ...project import Project
 from ...router import router
-from ... import models
 
 
 class Props(BaseModel):

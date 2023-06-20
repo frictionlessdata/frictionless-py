@@ -1,31 +1,30 @@
 from __future__ import annotations
+
 import json
-import attrs
 import warnings
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union, cast
+
+import attrs
 from typing_extensions import Self
-from typing import TYPE_CHECKING, Optional, Union, List, Any, ClassVar, Dict, cast
-from ..exception import FrictionlessException
-from ..dialect import Dialect, Control
-from .stats import ResourceStats
-from ..validator import Validator
-from ..platform import platform
+
+from .. import errors, fields, helpers, settings
 from ..detector import Detector
+from ..dialect import Control, Dialect
+from ..exception import FrictionlessException
 from ..metadata import Metadata
-from .factory import Factory
+from ..platform import platform
 from ..schema import Schema
 from ..system import system
-from .. import settings
-from .. import helpers
-from .. import errors
-from .. import fields
-
+from ..validator import Validator
+from .factory import Factory
+from .stats import ResourceStats
 
 if TYPE_CHECKING:
-    from ..system import Loader
-    from ..report import Report
+    from .. import types
     from ..checklist import Checklist
     from ..package import Package
-    from .. import types
+    from ..report import Report
+    from ..system import Loader
 
 
 @attrs.define(kw_only=True, repr=False)

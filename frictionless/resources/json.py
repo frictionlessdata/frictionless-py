@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import json
-from typing import Optional, Any, Union
+from typing import Any, Optional, Union
+
+from .. import helpers
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..resource import Resource
-from .. import helpers
 
 
 # TODO: support "resource.jsonSchema" (jsonschema validation)

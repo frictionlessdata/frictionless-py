@@ -1,5 +1,4 @@
-from frictionless import Schema, Field
-
+from frictionless import Field, Schema
 
 # General
 

@@ -1,9 +1,12 @@
 from __future__ import annotations
-import attrs
+
 import datetime
 from typing import Any
-from ..schema import Field
+
+import attrs
+
 from ..platform import platform
+from ..schema import Field
 
 
 @attrs.define(kw_only=True, repr=False)

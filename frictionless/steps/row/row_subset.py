@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
 import attrs
-from typing import Optional, TYPE_CHECKING
+
 from ...pipeline import Step
 
 if TYPE_CHECKING:

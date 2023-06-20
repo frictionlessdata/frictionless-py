@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
+
+from ... import helpers
+from ...platform import platform
 from ...system import Plugin
 from .control import PandasControl
 from .parser import PandasParser
-from ...platform import platform
-from ... import helpers
 
 if TYPE_CHECKING:
     from ...resource import Resource

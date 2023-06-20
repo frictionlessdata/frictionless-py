@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import typing
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Any, Optional
+
 from ...detector import Detector
 from ...system import Plugin
 from .control import InlineControl

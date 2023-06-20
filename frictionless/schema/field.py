@@ -1,19 +1,21 @@
 from __future__ import annotations
-import re
-import attrs
+
 import decimal
+import re
 from functools import partial
-from typing import TYPE_CHECKING, Callable, ClassVar, Optional, List, Dict, Any, Pattern
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
+
+import attrs
+
+from .. import errors, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
-from .. import settings
-from .. import errors
 
 if TYPE_CHECKING:
-    from .schema import Schema
     from ..types import IDescriptor
     from . import types
+    from .schema import Schema
 
 
 @attrs.define(kw_only=True, repr=False)

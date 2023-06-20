@@ -1,4 +1,5 @@
 from typer.testing import CliRunner
+
 from frictionless.console import console
 
 runner = CliRunner()

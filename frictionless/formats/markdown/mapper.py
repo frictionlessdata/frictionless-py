@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import os
-from typing import TYPE_CHECKING, Union, Optional, List, Dict, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+
 from ...platform import platform
 from ...system import Mapper
 

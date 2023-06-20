@@ -1,18 +1,17 @@
-import os
-import json
-import shutil
 import atexit
+import json
+import os
+import shutil
 import tempfile
 from typing import Optional
-from ...exception import FrictionlessException
-from ...resources import FileResource, TableResource
-from ...platform import platform
-from ...system import Adapter
-from ...package import Package
-from ... import helpers
-from ... import errors
-from .control import ZipControl
 
+from ... import errors, helpers
+from ...exception import FrictionlessException
+from ...package import Package
+from ...platform import platform
+from ...resources import FileResource, TableResource
+from ...system import Adapter
+from .control import ZipControl
 
 # NOTE:
 # We have to move resource's zip logc to this class as well

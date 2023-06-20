@@ -1,7 +1,8 @@
 import json
-import yaml
-from frictionless import Checklist, checks
 
+import yaml
+
+from frictionless import Checklist, checks
 
 # General
 

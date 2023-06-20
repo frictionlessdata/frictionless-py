@@ -1,29 +1,29 @@
 from __future__ import annotations
+
+import builtins
 import os
 import warnings
-import builtins
-from typing import TYPE_CHECKING, Optional, Dict, Union, Any, List, Tuple
-from ..exception import FrictionlessException
-from ..table import Table, Header, Lookup, Row
-from ..transformer import Transformer
-from ..validator import Validator
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+
+from .. import errors, helpers, settings
 from ..analyzer import Analyzer
-from ..indexer import Indexer
 from ..dialect import Dialect
+from ..exception import FrictionlessException
+from ..indexer import Indexer
 from ..platform import platform
 from ..resource import Resource
 from ..system import system
-from .. import settings
-from .. import helpers
-from .. import errors
+from ..table import Header, Lookup, Row, Table
+from ..transformer import Transformer
+from ..validator import Validator
 
 if TYPE_CHECKING:
-    from ..system import Loader, Parser
-    from ..indexer import IOnRow, IOnProgress
-    from ..checklist import Checklist
-    from ..pipeline import Pipeline
-    from ..table import IRowStream
     from .. import types
+    from ..checklist import Checklist
+    from ..indexer import IOnProgress, IOnRow
+    from ..pipeline import Pipeline
+    from ..system import Loader, Parser
+    from ..table import IRowStream
 
 
 class TableResource(Resource):

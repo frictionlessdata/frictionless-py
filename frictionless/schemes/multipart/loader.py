@@ -1,12 +1,12 @@
 from __future__ import annotations
+
 import tempfile
-from typing import List, Any
-from .control import MultipartControl
+from typing import Any, List
+
+from ... import helpers, types
 from ...resources import FileResource
 from ...system import Loader
-from ... import helpers
-from ... import types
-
+from .control import MultipartControl
 
 # NOTE:
 # Curretnly the situation with header/no-header concatenation is complicated

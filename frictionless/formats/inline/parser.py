@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, List, Any
+
+from typing import TYPE_CHECKING, Any, List
+
+from ... import errors
 from ...exception import FrictionlessException
 from ...system import Parser
 from .control import InlineControl
-from ... import errors
 
 if TYPE_CHECKING:
     from ...resources import TableResource

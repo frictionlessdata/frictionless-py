@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Check
 
+from frictionless import Check
 
 # General
 

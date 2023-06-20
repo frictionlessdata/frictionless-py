@@ -1,17 +1,18 @@
 from __future__ import annotations
-import attrs
+
 import warnings
-from typing import TYPE_CHECKING, Optional, ClassVar, Iterable, List, Type, Union
+from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Type, Union
+
+import attrs
+
+from .. import errors, settings, types
 from ..metadata import Metadata
 from ..system import system
-from .. import settings
-from .. import errors
-from .. import types
 
 if TYPE_CHECKING:
-    from ..table import Row
     from ..error import Error
     from ..resource import Resource
+    from ..table import Row
 
 
 # TODO: add support for validate_package/etc?

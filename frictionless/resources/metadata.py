@@ -1,18 +1,19 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Union, Optional, Type, TypeVar, Generic
-from ..exception import FrictionlessException
-from ..platform import platform
-from ..metadata import Metadata
+
+from typing import TYPE_CHECKING, Generic, Optional, Type, TypeVar, Union
+
+from .. import helpers, settings
 from ..catalog import Catalog
 from ..checklist import Checklist
-from ..pipeline import Pipeline
 from ..dialect import Dialect
-from ..schema import Schema
+from ..exception import FrictionlessException
 from ..inquiry import Inquiry
+from ..metadata import Metadata
+from ..pipeline import Pipeline
+from ..platform import platform
 from ..report import Report
+from ..schema import Schema
 from .json import JsonResource
-from .. import settings
-from .. import helpers
 
 if TYPE_CHECKING:
     from .. import types

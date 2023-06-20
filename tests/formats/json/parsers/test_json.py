@@ -1,9 +1,10 @@
 import json
+
 import pytest
+
 from frictionless import formats
 from frictionless.dialect.dialect import Dialect
 from frictionless.resources import TableResource
-
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

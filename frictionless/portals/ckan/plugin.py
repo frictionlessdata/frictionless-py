@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import re
-from ...system import Plugin
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import urlparse
-from .control import CkanControl
+
+from ...system import Plugin
 from .adapter import CkanAdapter
+from .control import CkanControl
 
 if TYPE_CHECKING:
     from ...dialect import Control

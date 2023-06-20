@@ -1,5 +1,4 @@
-from frictionless import Resource, Step, transform, steps
-
+from frictionless import Resource, Step, steps, transform
 
 # General
 

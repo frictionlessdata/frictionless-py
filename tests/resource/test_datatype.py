@@ -1,7 +1,6 @@
 import pytest
-from frictionless import Resource
-from frictionless import resources
 
+from frictionless import Resource, resources
 
 # File
 

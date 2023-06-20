@@ -1,9 +1,10 @@
-import os
 import json
-import yaml
-import pytest
-from frictionless import Resource
+import os
 
+import pytest
+import yaml
+
+from frictionless import Resource
 
 DESCRIPTOR = {
     "name": "main",

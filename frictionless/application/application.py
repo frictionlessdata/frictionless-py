@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 from pathlib import Path
+
+from .. import server, settings
 from ..platform import platform
 from .config import Config
-from .. import settings
-from .. import server
 
 
 class Application(platform.fastapi.FastAPI):

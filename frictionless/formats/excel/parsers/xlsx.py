@@ -1,20 +1,22 @@
 from __future__ import annotations
+
+import atexit
+import datetime
+import hashlib
 import os
 import shutil
-import atexit
-import hashlib
 import tempfile
 import warnings
-import datetime
 from itertools import chain
-from typing import Any, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List
+
+from .... import errors
 from ....exception import FrictionlessException
 from ....platform import platform
-from ..control import ExcelControl
 from ....resource import Resource
-from ....system import system, Parser
-from .... import errors
+from ....system import Parser, system
 from .. import settings
+from ..control import ExcelControl
 
 if TYPE_CHECKING:
     from ....resources import TableResource

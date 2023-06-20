@@ -1,6 +1,6 @@
 from copy import deepcopy
-from frictionless import Package, Resource, Schema, Detector, fields
 
+from frictionless import Detector, Package, Resource, Schema, fields
 
 # General
 

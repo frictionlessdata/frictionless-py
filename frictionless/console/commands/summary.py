@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 import typer
+
 from ...resource import Resource
 from ...system import system
-from ..console import console
 from .. import common
+from ..console import console
 
 
 @console.command(name="summary", hidden=True)

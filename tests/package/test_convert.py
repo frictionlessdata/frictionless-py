@@ -1,8 +1,9 @@
-import os
 import json
-import yaml
-from frictionless import Package
+import os
 
+import yaml
+
+from frictionless import Package
 
 DESCRIPTOR = {
     "name": "package",

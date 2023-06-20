@@ -1,14 +1,16 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+
+from typing import TYPE_CHECKING, Any, Optional
+
+from ... import helpers
 from ...system import Plugin
+from .adapter import LocalAdapter
 from .control import LocalControl
 from .loader import LocalLoader
-from .adapter import LocalAdapter
-from ... import helpers
 
 if TYPE_CHECKING:
-    from ...resource import Resource
     from ...dialect import Control
+    from ...resource import Resource
     from ...system import Loader
 
 

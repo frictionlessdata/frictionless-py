@@ -1,6 +1,6 @@
 import textwrap
-from frictionless import Inquiry, InquiryTask
 
+from frictionless import Inquiry, InquiryTask
 
 # General
 

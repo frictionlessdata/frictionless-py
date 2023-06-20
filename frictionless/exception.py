@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Type, Union, List
+
+from typing import TYPE_CHECKING, List, Type, Union
+
 from .platform import platform
 
 if TYPE_CHECKING:

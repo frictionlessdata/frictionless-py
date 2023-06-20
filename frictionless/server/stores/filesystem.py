@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from ..project import Project

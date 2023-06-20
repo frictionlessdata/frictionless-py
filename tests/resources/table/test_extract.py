@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
-from frictionless import Resource, system, resources
-from frictionless.resources import TableResource
 
+from frictionless import Resource, resources, system
+from frictionless.resources import TableResource
 
 # General
 

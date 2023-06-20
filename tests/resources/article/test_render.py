@@ -1,6 +1,5 @@
 from frictionless.resources import ArticleResource
 
-
 # General
 
 

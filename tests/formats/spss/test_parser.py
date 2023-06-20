@@ -1,8 +1,9 @@
+from datetime import date, datetime, time
+
 import pytest
-from datetime import datetime, date, time
+
 from frictionless import Package, platform
 from frictionless.resources import TableResource
-
 
 pytestmark = pytest.mark.skipif(
     platform.type == "darwin" or platform.python == "3.10",

@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import shutil
-from pydantic import BaseModel
+
 from fastapi import Request
+from pydantic import BaseModel
+
 from ....exception import FrictionlessException
 from ...project import Project
 from ...router import router

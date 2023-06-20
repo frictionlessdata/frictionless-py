@@ -1,8 +1,11 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict
+
 import attrs
-from typing import TYPE_CHECKING, Dict, Any
-from ...pipeline import Step
+
 from ... import fields
+from ...pipeline import Step
 
 if TYPE_CHECKING:
     from ...resource import Resource

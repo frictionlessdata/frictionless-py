@@ -1,21 +1,24 @@
 from __future__ import annotations
+
 import re
-from typing import TYPE_CHECKING, Any, Optional, Generator, List, Dict, Callable
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, Optional
+
+from ...package import Package
 from ...platform import platform
 from ...resource import Resource
-from ...package import Package
 from ...system import Adapter
+from . import settings
 from .control import SqlControl
 from .mapper import SqlMapper
-from . import settings
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData, Table
     from sqlalchemy.engine import Engine
-    from ...resources import TableResource
-    from ...table import Row, IRowStream
-    from ...schema import Schema
+
     from ...report import Report
+    from ...resources import TableResource
+    from ...schema import Schema
+    from ...table import IRowStream, Row
 
 
 class SqlAdapter(Adapter):

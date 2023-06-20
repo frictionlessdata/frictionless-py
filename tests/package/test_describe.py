@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Package, Dialect, platform
 
+from frictionless import Dialect, Package, platform
 
 # General
 

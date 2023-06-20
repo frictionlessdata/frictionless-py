@@ -18,8 +18,10 @@ livemark start
 
 ## Code Contribution
 
-Frictionless is a Python3.8+ framework, and it uses some common Python tools for the development process:
+Frictionless is a Python3.8+ framework, and it uses some common Python tools for the development process (we recommend enabling support of these tools in your IDE):
+
 - type checking: `pyright`
+- import sorting: `isort`
 - formatting: `black`
 - linting: `pylama`
 - testing: `pytest`

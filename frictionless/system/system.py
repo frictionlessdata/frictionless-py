@@ -1,29 +1,30 @@
 from __future__ import annotations
+
 import os
 import pkgutil
 from collections import OrderedDict
-from importlib import import_module
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional, List, Any, Dict, Type, ClassVar
+from importlib import import_module
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Type
+
+from .. import errors, settings
+from ..dialect import Control
 from ..exception import FrictionlessException
 from ..platform import platform
-from ..dialect import Control
-from .. import settings
-from .. import errors
 
 if TYPE_CHECKING:
-    from ..package import Package
-    from ..resource import Resource
+    from .. import types
     from ..checklist import Check
     from ..error import Error
-    from ..schema import Field
+    from ..package import Package
     from ..pipeline import Step
+    from ..resource import Resource
+    from ..schema import Field
     from .adapter import Adapter
     from .loader import Loader
     from .parser import Parser
     from .plugin import Plugin
-    from .. import types
 
 
 # NOTE:

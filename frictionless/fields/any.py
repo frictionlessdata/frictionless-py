@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 import attrs
+
 from ..schema import Field
 
 

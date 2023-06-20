@@ -1,6 +1,9 @@
 from __future__ import annotations
-from tinydb import Query
+
 from typing import TYPE_CHECKING
+
+from tinydb import Query
+
 from .. import models
 
 if TYPE_CHECKING:

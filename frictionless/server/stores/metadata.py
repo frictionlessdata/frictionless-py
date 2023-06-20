@@ -1,10 +1,13 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Dict, Optional, Iterator, List
+
+from typing import TYPE_CHECKING, Dict, Iterator, List, Optional
+
 from tinydb import TinyDB
-from tinydb.table import Document
 from tinydb.queries import QueryInstance
-from .. import helpers
+from tinydb.table import Document
+
 from ... import types
+from .. import helpers
 
 if TYPE_CHECKING:
     from ..project import Project

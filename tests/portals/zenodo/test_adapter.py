@@ -1,8 +1,9 @@
 # type: ignore
-import pytest
 from decimal import Decimal
-from frictionless import portals, Catalog, Package, FrictionlessException
 
+import pytest
+
+from frictionless import Catalog, FrictionlessException, Package, portals
 
 PACKAGE_WITHOUT_DP = {
     "title": "Frictionless Data Test Dataset Without Descriptor",

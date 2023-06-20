@@ -1,9 +1,12 @@
 from __future__ import annotations
-import attrs
+
 from typing import TYPE_CHECKING
-from ...resources import TableResource
-from ...pipeline import Step
+
+import attrs
+
 from ...dialect import Dialect
+from ...pipeline import Step
+from ...resources import TableResource
 
 if TYPE_CHECKING:
     from ...resource import Resource

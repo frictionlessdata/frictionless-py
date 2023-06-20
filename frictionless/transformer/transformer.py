@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
-from ..pipeline import Pipeline
-from ..exception import FrictionlessException
-from ..dialect import Dialect
-from ..helpers import get_name
+
 from .. import errors
+from ..dialect import Dialect
+from ..exception import FrictionlessException
+from ..helpers import get_name
+from ..pipeline import Pipeline
 
 if TYPE_CHECKING:
     from ..package import Package

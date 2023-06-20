@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
+
 from ...system import Plugin
 from .control import HtmlControl
 from .parser import HtmlParser

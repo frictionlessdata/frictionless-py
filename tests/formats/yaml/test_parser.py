@@ -1,7 +1,6 @@
 from frictionless.dialect.dialect import Dialect
 from frictionless.resources import TableResource
 
-
 # Read
 
 

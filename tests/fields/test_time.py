@@ -1,8 +1,9 @@
+from datetime import time
+
 import pytest
 from dateutil import tz
-from datetime import time
-from frictionless import Field
 
+from frictionless import Field
 
 # General
 

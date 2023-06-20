@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
-from ...platform import platform
+
 from ...exception import FrictionlessException
+from ...platform import platform
 from ...system import Parser
-from .control import SqlControl
 from .adapter import SqlAdapter
+from .control import SqlControl
 
 if TYPE_CHECKING:
     from ...resources import TableResource

@@ -1,8 +1,9 @@
+from typing import Any, Optional
+
 import attrs
-from typing import Optional, Any
 from typing_extensions import Self
-from .. import settings
-from .. import helpers
+
+from .. import helpers, settings
 
 
 @attrs.define(kw_only=True, repr=False)

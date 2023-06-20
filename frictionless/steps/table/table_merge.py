@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+from typing import List, Optional, Union
+
 import attrs
-from typing import Union, List, Optional
+
 from ...pipeline import Step
 from ...platform import platform
 from ...resource import Resource

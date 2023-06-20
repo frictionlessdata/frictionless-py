@@ -1,29 +1,29 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
+
 import attrs
 from typing_extensions import Self
-from typing import TYPE_CHECKING, Optional, List, Any, Union, ClassVar, Dict
+
+from .. import errors, fields, helpers, settings
 from ..exception import FrictionlessException
+from ..metadata import Metadata
+from ..platform import platform
+from ..resource import Resource
+from ..system import system
 from ..transformer import Transformer
 from ..validator import Validator
-from ..platform import platform
-from ..metadata import Metadata
-from ..resource import Resource
 from .factory import Factory
-from ..system import system
-from .. import settings
-from .. import helpers
-from .. import errors
-from .. import fields
 
 if TYPE_CHECKING:
+    from .. import types
+    from ..catalog import Dataset
     from ..checklist import Checklist
+    from ..detector import Detector
+    from ..dialect import Control, Dialect
+    from ..indexer import IOnProgress, IOnRow
     from ..pipeline import Pipeline
     from ..resources import TableResource
-    from ..indexer import IOnRow, IOnProgress
-    from ..dialect import Dialect, Control
-    from ..detector import Detector
-    from ..catalog import Dataset
-    from .. import types
 
 
 @attrs.define(kw_only=True, repr=False)

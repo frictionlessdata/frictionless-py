@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from ...platform import platform
 from ...resources import TableResource
-from .control import ParquetControl
 from ...system import Parser
+from .control import ParquetControl
 
 
 class ParquetParser(Parser):

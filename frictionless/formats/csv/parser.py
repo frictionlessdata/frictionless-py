@@ -1,15 +1,17 @@
 from __future__ import annotations
+
 import csv
 import tempfile
 from itertools import chain
 from typing import TYPE_CHECKING
-from .control import CsvControl
-from ...system import system, Parser
+
+from ...system import Parser, system
 from . import settings
+from .control import CsvControl
 
 if TYPE_CHECKING:
-    from ...resources import TableResource
     from ... import types
+    from ...resources import TableResource
 
 
 class CsvParser(Parser):

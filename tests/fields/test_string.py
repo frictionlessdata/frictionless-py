@@ -1,7 +1,8 @@
 import sys
-import pytest
-from frictionless import Field
 
+import pytest
+
+from frictionless import Field
 
 # General
 

@@ -1,9 +1,10 @@
-from typing import Optional, List, Any, Union
+from typing import Any, List, Optional, Union
+
 from ..exception import FrictionlessException
-from ..platform import platform
-from ..pipeline import Pipeline, Step
-from ..resource import Resource
 from ..package import Package
+from ..pipeline import Pipeline, Step
+from ..platform import platform
+from ..resource import Resource
 
 
 def transform(

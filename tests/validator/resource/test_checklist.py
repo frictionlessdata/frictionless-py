@@ -1,7 +1,6 @@
 from frictionless import Checklist
 from frictionless.resources import TableResource
 
-
 # General
 
 

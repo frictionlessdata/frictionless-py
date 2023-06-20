@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import os
-import typer
 from typing import List
+
+import typer
 from rich.console import Console
+
 from ...resource import Resource
-from ..console import console
 from ...system import system
-from .. import helpers
-from .. import common
+from .. import common, helpers
+from ..console import console
 
 
 @console.command(name="explore")

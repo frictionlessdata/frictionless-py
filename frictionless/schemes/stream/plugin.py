@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import io
 from typing import TYPE_CHECKING, Optional
+
 from ...system import Plugin
 from .control import StreamControl
 from .loader import StreamLoader

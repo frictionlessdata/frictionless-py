@@ -1,7 +1,7 @@
 import pytest
+
 from frictionless import Dialect, FrictionlessException, formats
 from frictionless.resources import TableResource
-
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

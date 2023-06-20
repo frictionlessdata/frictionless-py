@@ -1,7 +1,8 @@
-import pytest
 from copy import deepcopy
-from frictionless import Package, platform
 
+import pytest
+
+from frictionless import Package, platform
 
 # General
 

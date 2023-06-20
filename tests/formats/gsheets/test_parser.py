@@ -1,7 +1,7 @@
 import pytest
+
 from frictionless import FrictionlessException, formats
 from frictionless.resources import TableResource
-
 
 # We don't use VCR for this module testing because
 # HTTP requests can contain secrets from Google Credentials. Consider using:

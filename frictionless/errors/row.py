@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, List
+
 import attrs
-from typing import TYPE_CHECKING, List, Any
+
 from .table import TableError
 
 if TYPE_CHECKING:

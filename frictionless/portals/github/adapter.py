@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING, Any, Dict, List, Union
-from .control import GithubControl
-from ...system import Adapter
-from ...exception import FrictionlessException
+
 from ...catalog import Catalog, Dataset
+from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
+from ...system import Adapter
+from .control import GithubControl
 
 if TYPE_CHECKING:
     from github.ContentFile import ContentFile

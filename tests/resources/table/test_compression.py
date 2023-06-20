@@ -1,8 +1,9 @@
 import sys
+
 import pytest
+
 from frictionless import FrictionlessException
 from frictionless.resources import TableResource
-
 
 # General
 

@@ -1,6 +1,6 @@
 import pprint
-from frictionless import Resource, Checklist, platform
 
+from frictionless import Checklist, Resource, platform
 
 # General
 

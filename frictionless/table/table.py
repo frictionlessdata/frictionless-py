@@ -1,5 +1,7 @@
-import attrs
 from typing import List
+
+import attrs
+
 from ..schema import Schema
 from .header import Header
 from .row import Row

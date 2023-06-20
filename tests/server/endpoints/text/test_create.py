@@ -1,7 +1,8 @@
 import pytest
-from frictionless.server import models
-from ...fixtures import name1, text1, not_secure
 
+from frictionless.server import models
+
+from ...fixtures import name1, not_secure, text1
 
 # Action
 

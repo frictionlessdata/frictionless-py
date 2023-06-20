@@ -1,6 +1,7 @@
 from typing import Any, Optional, Union, cast
-from ..platform import platform
+
 from .. import types
+from ..platform import platform
 
 
 class Factory(type):

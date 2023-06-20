@@ -1,8 +1,9 @@
 import sys
-import pytest
-from frictionless import Control, platform, Dialect
-from frictionless.resources import TableResource
 
+import pytest
+
+from frictionless import Control, Dialect, platform
+from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

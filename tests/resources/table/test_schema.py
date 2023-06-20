@@ -1,7 +1,7 @@
 import pytest
-from frictionless import Schema, Detector, FrictionlessException, platform
-from frictionless.resources import TableResource
 
+from frictionless import Detector, FrictionlessException, Schema, platform
+from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

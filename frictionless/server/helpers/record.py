@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import re
-import stringcase  # type: ignore
-from tinydb import Query
 from typing import TYPE_CHECKING, List, Optional, cast
+
+import stringcase  # type: ignore
 from slugify.slugify import slugify
-from ...resource import Resource
+from tinydb import Query
+
 from ...exception import FrictionlessException
-from .. import models
-from .. import types
+from ...resource import Resource
+from .. import models, types
 
 if TYPE_CHECKING:
     from ..project import Project

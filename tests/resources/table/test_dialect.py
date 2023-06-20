@@ -1,6 +1,5 @@
-from frictionless import Dialect, Control, Schema, fields, formats, resources
+from frictionless import Control, Dialect, Schema, fields, formats, resources
 from frictionless.resources import TableResource
-
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

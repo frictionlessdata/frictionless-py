@@ -1,7 +1,8 @@
 import sys
-import pytest
-from frictionless import Resource, platform, resources
 
+import pytest
+
+from frictionless import Resource, platform, resources
 
 # General
 

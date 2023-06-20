@@ -1,6 +1,9 @@
 from __future__ import annotations
-from typing import List, Any, Dict
-from typing_extensions import Required, TypedDict, Literal
+
+from typing import Any, Dict, List
+
+from typing_extensions import Literal, Required, TypedDict
+
 from ..dialect import IDialect
 from ..schema import ISchema
 

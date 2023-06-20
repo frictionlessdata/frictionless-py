@@ -1,7 +1,8 @@
 import json
-import yaml
-from frictionless import Inquiry, InquiryTask
 
+import yaml
+
+from frictionless import Inquiry, InquiryTask
 
 # General
 

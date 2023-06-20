@@ -1,8 +1,9 @@
 import json
-import pytest
-from frictionless import FrictionlessException, schemes, platform
-from frictionless.resources import TableResource
 
+import pytest
+
+from frictionless import FrictionlessException, platform, schemes
+from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 

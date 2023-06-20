@@ -1,5 +1,4 @@
-from frictionless import describe, Resource, Package
-
+from frictionless import Package, Resource, describe
 
 # General
 

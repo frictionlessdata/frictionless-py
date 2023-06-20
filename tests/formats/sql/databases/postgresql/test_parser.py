@@ -1,8 +1,9 @@
-import pytest
 from datetime import datetime, time
-from frictionless import formats, platform, Package
-from frictionless.resources import TableResource
 
+import pytest
+
+from frictionless import Package, formats, platform
+from frictionless.resources import TableResource
 
 # General
 

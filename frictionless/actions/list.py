@@ -1,4 +1,5 @@
-from typing import Optional, List, Any
+from typing import Any, List, Optional
+
 from ..resource import Resource
 
 

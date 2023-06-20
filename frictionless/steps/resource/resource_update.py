@@ -1,16 +1,18 @@
 from __future__ import annotations
-import attrs
+
 from copy import deepcopy
 from typing import TYPE_CHECKING, Optional
+
+import attrs
+
+from ... import errors, helpers
 from ...exception import FrictionlessException
 from ...pipeline import Step
-from ... import helpers
-from ... import errors
 
 if TYPE_CHECKING:
+    from ... import types
     from ...package import Package
     from ...resource import Resource
-    from ... import types
 
 
 @attrs.define(kw_only=True, repr=False)

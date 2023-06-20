@@ -1,6 +1,5 @@
-from frictionless import Schema, Detector
+from frictionless import Detector, Schema
 from frictionless.resources import TableResource
-
 
 # General
 

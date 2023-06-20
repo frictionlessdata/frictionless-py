@@ -1,9 +1,12 @@
 from __future__ import annotations
-import attrs
+
 from typing import TYPE_CHECKING
-from ...pipeline import Step
-from ...exception import FrictionlessException
+
+import attrs
+
 from ... import errors
+from ...exception import FrictionlessException
+from ...pipeline import Step
 
 if TYPE_CHECKING:
     from ...package import Package

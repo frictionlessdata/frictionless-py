@@ -1,10 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
-from ...system import Plugin
+
+from typing import TYPE_CHECKING, Any, Optional
+
 from ...resource import Resource
+from ...system import Plugin
 from .adapter import ExcelAdapter
 from .control import ExcelControl
-from .parsers import XlsxParser, XlsParser
+from .parsers import XlsParser, XlsxParser
 
 if TYPE_CHECKING:
     from ...dialect import Control

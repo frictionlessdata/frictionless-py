@@ -1,6 +1,9 @@
 from __future__ import annotations
-import attrs
+
 from typing import TYPE_CHECKING, Any
+
+import attrs
+
 from ..exception import FrictionlessException
 from .row import RowError
 

@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
-from ...system import Plugin
+
 from ...detector import Detector
+from ...system import Plugin
 from .control import YamlControl
 from .parser import YamlParser
 

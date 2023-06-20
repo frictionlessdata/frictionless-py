@@ -1,6 +1,9 @@
 from __future__ import annotations
-import attrs
+
 from typing import Any
+
+import attrs
+
 from ..schema import Field
 
 

@@ -1,8 +1,10 @@
 import json
-import yaml
+
 import pytest
+import yaml
 from typer.testing import CliRunner
-from frictionless import Detector, Dialect, validate, platform
+
+from frictionless import Detector, Dialect, platform, validate
 from frictionless.console import console
 
 runner = CliRunner()

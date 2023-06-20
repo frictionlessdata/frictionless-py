@@ -1,11 +1,2 @@
 # Register modules
-from . import article
-from . import chart
-from . import column
-from . import file
-from . import folder
-from . import json
-from . import package
-from . import table
-from . import text
-from . import view
+from . import article, chart, column, file, folder, json, package, table, text, view

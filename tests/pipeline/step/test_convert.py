@@ -1,6 +1,6 @@
 import pytest
-from frictionless import Step
 
+from frictionless import Step
 
 # General
 

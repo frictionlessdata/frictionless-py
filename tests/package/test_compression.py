@@ -1,6 +1,5 @@
 from frictionless import Package
 
-
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 

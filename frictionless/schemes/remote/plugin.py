@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
+
+from ... import helpers
 from ...system import Plugin
+from . import settings
 from .control import RemoteControl
 from .loader import RemoteLoader
-from ... import helpers
-from . import settings
 
 if TYPE_CHECKING:
     from ...resource import Resource

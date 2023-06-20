@@ -1,14 +1,16 @@
 from __future__ import annotations
+
 import json
-from typing import TYPE_CHECKING, Optional, Iterator, Tuple
+from typing import TYPE_CHECKING, Iterator, Optional, Tuple
+
+from ... import helpers, types
 from ...platform import platform
-from ... import helpers
 from .. import settings
-from ... import types
 
 if TYPE_CHECKING:
     from sqlalchemy import MetaData, Table
     from sqlalchemy.engine import Engine
+
     from ...formats.sql import SqlMapper
     from ..project import Project
 

@@ -1,10 +1,13 @@
 from __future__ import annotations
-import attrs
+
 import statistics
-from math import nan
-from typing import TYPE_CHECKING, Union, List, Dict, Any
 from collections import Counter
 from decimal import Decimal
+from math import nan
+from typing import TYPE_CHECKING, Any, Dict, List, Union
+
+import attrs
+
 from .. import helpers
 from . import types
 

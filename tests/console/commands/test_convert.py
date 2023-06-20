@@ -1,7 +1,9 @@
 import json
-import yaml
+
 import pytest
+import yaml
 from typer.testing import CliRunner
+
 from frictionless import platform
 from frictionless.console import console
 

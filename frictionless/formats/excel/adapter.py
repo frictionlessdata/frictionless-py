@@ -1,11 +1,11 @@
-from typing import Optional, Any
-from ...system import Adapter
-from ...package import Package
-from ...resource import Resource
-from ...platform import platform
-from ...helpers import slugify
-from .control import ExcelControl
+from typing import Any, Optional
 
+from ...helpers import slugify
+from ...package import Package
+from ...platform import platform
+from ...resource import Resource
+from ...system import Adapter
+from .control import ExcelControl
 
 # TODO: implement properly
 # TODO: move here book-related logic from parser (adapter wraps and keeps a book state)

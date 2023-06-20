@@ -1,7 +1,7 @@
 import pytest
+
 from frictionless import Dialect, FrictionlessException, platform
 from frictionless.resources import TableResource
-
 
 # General
 

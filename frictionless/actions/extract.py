@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+
+from typing import TYPE_CHECKING, Any, Optional
+
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..resource import Resource

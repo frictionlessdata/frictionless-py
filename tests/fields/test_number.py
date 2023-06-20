@@ -1,7 +1,8 @@
-import pytest
 from decimal import Decimal
-from frictionless import Field, fields
 
+import pytest
+
+from frictionless import Field, fields
 
 # General
 

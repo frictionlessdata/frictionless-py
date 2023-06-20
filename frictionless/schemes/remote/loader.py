@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import io
 from typing import TYPE_CHECKING, Optional
-from .control import RemoteControl
-from ...platform import platform
-from ...system import system, Loader
+
 from ... import types
+from ...platform import platform
+from ...system import Loader, system
+from .control import RemoteControl
 
 if TYPE_CHECKING:
     from requests import Session

@@ -1,10 +1,12 @@
 from __future__ import annotations
-import attrs
+
 from typing import TYPE_CHECKING, ClassVar, Optional
-from ..platform import platform
+
+import attrs
+
+from .. import errors, settings
 from ..metadata import Metadata
-from .. import settings
-from .. import errors
+from ..platform import platform
 
 if TYPE_CHECKING:
     from .dialect import Dialect

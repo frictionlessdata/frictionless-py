@@ -22,6 +22,7 @@ NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
     "moto",
     "httpx",
+    "isort",
     "black",
     "yattag",
     "pylama",

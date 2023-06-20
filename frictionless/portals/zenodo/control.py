@@ -1,9 +1,11 @@
 from __future__ import annotations
-import attrs
-import os
-from typing import Optional, List
-from ...dialect import Control
 
+import os
+from typing import List, Optional
+
+import attrs
+
+from ...dialect import Control
 
 DEFAULT_FORMATS = [
     "csv",

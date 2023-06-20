@@ -1,7 +1,7 @@
 import json
 from decimal import Decimal
-from frictionless.resources import TableResource
 
+from frictionless.resources import TableResource
 
 # General
 

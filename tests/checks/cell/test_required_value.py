@@ -1,6 +1,6 @@
-from frictionless import Resource, Checklist, checks
 from datetime import datetime
 
+from frictionless import Checklist, Resource, checks
 
 # General
 

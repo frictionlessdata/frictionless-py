@@ -1,6 +1,6 @@
 import pytest
-from ...fixtures import name1, bytes1, folder1, not_secure
 
+from ...fixtures import bytes1, folder1, name1, not_secure
 
 # Action
 

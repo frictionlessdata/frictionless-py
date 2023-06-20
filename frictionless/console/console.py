@@ -1,9 +1,11 @@
 from __future__ import annotations
-import sys
-import typer
-from typing import Optional, Any
-from .. import settings
 
+import sys
+from typing import Any, Optional
+
+import typer
+
+from .. import settings
 
 # TODO: Rebase on Console.create? (see Server)
 

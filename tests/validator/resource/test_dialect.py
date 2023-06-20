@@ -1,6 +1,5 @@
-from frictionless import Resource, Dialect, formats
+from frictionless import Dialect, Resource, formats
 from frictionless.resources import TableResource
-
 
 # General
 

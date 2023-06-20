@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 import os
-from ...system import Loader
+
+from ... import errors, types
 from ...exception import FrictionlessException
-from ... import errors
-from ... import types
+from ...system import Loader
 
 
 class StreamLoader(Loader):
