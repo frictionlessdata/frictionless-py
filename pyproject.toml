@@ -4,3 +4,30 @@ line-length = 90
 [tool.isort]
 profile = "black"
 multi_line_output = 9
+
+[tool.ruff]
+line-length = 90
+ignore = ["E501", "E731"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+env_files = [".env"]
+markers = [
+    "ci: integrational tests (select with '--ci')",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:boto.*",
+    "ignore::DeprecationWarning:moto.*",
+    "ignore::DeprecationWarning:grako.*",
+    "ignore::DeprecationWarning:savWriter.*",
+    "ignore::Warning:duckdb_engine.*",
+]
+
+[tool.pyright]
+strict = ["frictionless"]
+include = ["frictionless", "tests"]
+exclude = ["frictionless/vendors"]
+ignore = ["**/__init__.py"]

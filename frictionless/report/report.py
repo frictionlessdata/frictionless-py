@@ -107,7 +107,7 @@ class Report(Metadata):
             result.append([context.get(prop) for prop in spec])
         for count, task in enumerate(self.tasks, start=1):
             for error in task.errors:
-                context = {"taskNumber": count, "taskNumber": count}
+                context = {"taskNumber": count}
                 context.update(error.to_descriptor())
                 result.append([context.get(prop) for prop in spec])
         return result

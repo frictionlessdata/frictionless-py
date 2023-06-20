@@ -19,6 +19,7 @@ docs:
 	livemark build
 
 format:
+	ruff $(PACKAGE) tests --fix
 	isort $(PACKAGE) tests
 	black $(PACKAGE) tests
 
@@ -30,9 +31,9 @@ install-windows:
 	pip install --upgrade -e .[aws,bigquery,ckan,csv,dev,excel,json,github,gsheets,html,markdown,mysql,ods,pandas,parquet,postgresql,server,spss,sql,visidata,wkt,zenodo]
 
 lint:
+	ruff $(PACKAGE) tests
 	isort $(PACKAGE) tests --check
 	black $(PACKAGE) tests --check
-	pylama $(PACKAGE) tests
 	pyright $(PACKAGE) tests
 
 release:

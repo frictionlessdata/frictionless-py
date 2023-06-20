@@ -179,7 +179,7 @@ def test_zenodo_adapter_read_record_without_apikey(options_without_dp):
     control = portals.ZenodoControl(apikey=None)
     package = Package(url, control=control)
     package.infer()
-    assert control.apikey == None
+    assert control.apikey is None
     assert package.to_descriptor() == PACKAGE_WITHOUT_DP
 
 

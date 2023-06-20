@@ -10,7 +10,7 @@ def test_dialect():
     dialect = Dialect()
     assert dialect.header_rows == [1]
     assert dialect.header_join == " "
-    assert dialect.header_case == True
+    assert dialect.header_case is True
 
 
 def test_dialect_bad_property():

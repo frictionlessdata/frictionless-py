@@ -1,6 +1,6 @@
 recursive-include frictionless *
 include LICENSE.md
 include Makefile
-include pylama.ini
-include pytest.ini
+include pyproject.toml
+include pyrightconfig.json
 include README.md
