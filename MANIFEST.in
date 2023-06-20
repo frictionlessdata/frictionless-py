@@ -3,5 +3,4 @@ include LICENSE.md
 include Makefile
 include pyproject.toml
 include pyrightconfig.json
-include pytest.ini
 include README.md
