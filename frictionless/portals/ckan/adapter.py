@@ -36,7 +36,7 @@ class CkanAdapter(Adapter):
             args["apikey"] = self.control.apikey
 
         endpoint = f"{self.control.baseurl}/api/3/action/package_show"
-        response = make_ckan_request(endpoint, **args, params=params)
+        response = make_ckan_request(endpoint, **args, params=params)  # type: ignore
         descriptor = self.mapper["ckan_to_fric"].dataset(response["result"])  # type: ignore
         descriptor.pop("type", None)
         descriptor.pop("sources", None)

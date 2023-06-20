@@ -249,7 +249,7 @@ def expand_source(source: Union[List[Any], str], *, basepath: Optional[str] = No
         source = os.path.join(basepath, source)
     pattern = f"{source}/*" if os.path.isdir(source) else source
     configs = {"recursive": True} if "**" in pattern else {}
-    for path in sorted(glob.glob(pattern, **configs)):
+    for path in sorted(glob.glob(pattern, **configs)):  # type: ignore
         if basepath:
             path = os.path.relpath(path, basepath)
         paths.append(path)

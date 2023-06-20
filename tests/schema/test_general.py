@@ -349,7 +349,7 @@ def test_schema_standard_specs_properties(create_descriptor):
         foreign_keys=[],
     )
     schema = (
-        Schema(**options)
+        Schema(**options)  # type: ignore
         if not create_descriptor
         else Schema(helpers.create_descriptor(**options))
     )

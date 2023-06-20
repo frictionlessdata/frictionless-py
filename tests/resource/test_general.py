@@ -114,7 +114,7 @@ def test_resource_standard_specs_properties(create_descriptor):
         sources=[],
     )
     resource = (
-        Resource(**options)
+        Resource(**options)  # type: ignore
         if not create_descriptor
         else Resource(helpers.create_descriptor(**options))
     )

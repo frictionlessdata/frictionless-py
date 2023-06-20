@@ -198,7 +198,7 @@ def test_package_standard_specs_properties(create_descriptor):
         resources=[],
     )
     package = (
-        Package(**options)
+        Package(**options)  # type: ignore
         if not create_descriptor
         else Package(helpers.create_descriptor(**options))
     )
