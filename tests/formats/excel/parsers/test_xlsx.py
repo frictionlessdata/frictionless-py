@@ -3,14 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from frictionless import (
-    Detector,
-    Dialect,
-    FrictionlessException,
-    Package,
-    formats,
-    platform,
-)
+from frictionless import Detector, Dialect, FrictionlessException, Package, formats
+from frictionless import platform
 from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"

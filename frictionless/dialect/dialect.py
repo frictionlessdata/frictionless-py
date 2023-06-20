@@ -8,7 +8,6 @@ from .. import errors, helpers, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
-from ..system import system
 from .control import Control
 from .factory import Factory
 
@@ -294,6 +293,8 @@ class Dialect(Metadata, metaclass=Factory):
         return dialect
 
     def metadata_export(self):  # type: ignore
+        from ..system import system
+
         descriptor = super().metadata_export()
 
         # Controls

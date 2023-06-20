@@ -1,17 +1,7 @@
 from __future__ import annotations
 
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Dict,
-    Iterable,
-    List,
-    Literal,
-    Protocol,
-    TextIO,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Literal
+from typing import Protocol, TextIO, Union
 
 if TYPE_CHECKING:
     from .error import Error

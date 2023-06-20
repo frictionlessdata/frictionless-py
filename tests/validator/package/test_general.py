@@ -3,15 +3,8 @@ import pathlib
 
 import pytest
 
-from frictionless import (
-    Checklist,
-    Detector,
-    FrictionlessException,
-    Package,
-    Resource,
-    Schema,
-    fields,
-)
+from frictionless import Checklist, Detector, FrictionlessException, Package, Resource
+from frictionless import Schema, fields
 
 # General
 
