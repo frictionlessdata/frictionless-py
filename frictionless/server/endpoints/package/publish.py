@@ -18,7 +18,7 @@ class Props(BaseModel, extra="forbid"):
 
 
 class Result(BaseModel, extra="forbid"):
-    path: str
+    url: str
 
 
 @router.post("/package/publish")
@@ -31,6 +31,6 @@ def action(project: Project, props: Props) -> Result:
 
     fullpath = fs.get_fullpath(props.path)
     package = Package.from_descriptor(str(fullpath))
-    path = package.publish(control=Control.from_descriptor(props.control))
+    url = package.publish(control=Control.from_descriptor(props.control))
 
-    return Result(path=path)
+    return Result(url=url)
