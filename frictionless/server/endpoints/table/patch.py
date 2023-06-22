@@ -48,6 +48,14 @@ def action(project: Project, props: Props) -> Result:
         isDataChanged=props.history is not None,
     )
 
+    # Copy table
+    if props.toPath:
+        fromRecord = helpers.read_record_or_raise(project, path=props.path)
+        with db.engine.begin() as conn:
+            query = f'CREATE TABLE "{record.name}" AS SELECT * FROM "{fromRecord.name}"'
+            conn.execute(sa.text(query))
+            db.metadata.reflect(conn, views=True)
+
     # Patch table
     if props.history:
         table = db.metadata.tables[record.name]
