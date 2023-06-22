@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import Request
 from pydantic import BaseModel
 
@@ -12,6 +14,7 @@ from ...router import router
 
 class Props(BaseModel, extra="forbid"):
     path: str
+    size: Optional[int]
 
 
 class Result(BaseModel, extra="forbid"):
@@ -24,5 +27,5 @@ def server_text_read(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    text = helpers.read_text(project, path=props.path)
+    text = helpers.read_text(project, path=props.path, size=props.size)
     return Result(text=text)

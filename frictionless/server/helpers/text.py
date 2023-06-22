@@ -9,12 +9,12 @@ if TYPE_CHECKING:
     from ..project import Project
 
 
-def read_text(project: Project, *, path: str):
+def read_text(project: Project, *, path: str, size: Optional[int] = None):
     fs = project.filesystem
 
     fullpath = fs.get_fullpath(path)
     resource = TextResource(path=str(fullpath))
-    text = resource.read_text()
+    text = resource.read_text(size=size)
 
     return text
 
@@ -29,7 +29,7 @@ def write_text(
 ):
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(path)
+    fullpath = fs.get_fullpath(path, deduplicate=deduplicate)
     if not overwrite and fullpath.exists():
         raise FrictionlessException("text already exists")
     source = TextResource(data=text)
