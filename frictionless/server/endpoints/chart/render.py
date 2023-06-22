@@ -11,11 +11,11 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     chart: types.IChart
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     chart: types.IChart
 
 

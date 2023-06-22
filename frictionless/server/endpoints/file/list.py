@@ -13,11 +13,11 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     folder: Optional[str]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     files: List[models.File]
 
 

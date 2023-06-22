@@ -10,11 +10,11 @@ from ...router import router
 # TODO: use detected resource.encoding if indexed
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     text: str
 
 

@@ -10,14 +10,14 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     rows: List[types.IRow]
     tableSchema: types.IDescriptor  # TODO: rename to schema
     deduplicate: Optional[bool] = None
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     path: str
 
 

@@ -10,11 +10,11 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     query: str
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     table: models.Table
 
 

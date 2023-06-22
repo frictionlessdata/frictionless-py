@@ -9,11 +9,11 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     bytes: bytes
 
 

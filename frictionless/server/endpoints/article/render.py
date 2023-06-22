@@ -10,12 +10,12 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     text: str
     rich: Optional[bool] = None
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     text: str
 
 

@@ -11,14 +11,14 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     bytes: bytes
     folder: Optional[str] = None
     deduplicate: Optional[bool] = None
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     path: str
 
 
