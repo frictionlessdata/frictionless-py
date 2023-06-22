@@ -50,9 +50,10 @@ def action(project: Project, props: Props) -> Result:
 
     # Patch table
     if props.history:
+        table = db.metadata.tables[record.name]
+
         # Patch database table
         with db.engine.begin() as conn:
-            table = db.metadata.tables[record.name]
             for change in props.history.changes:
                 if change.type == "cell-update":
                     conn.execute(
