@@ -8,7 +8,6 @@ def test_checklist():
     assert checklist.check_types == ["ascii-value"]
     assert checklist.pick_errors == []
     assert checklist.skip_errors == []
-    print(checklist.scope)
     assert checklist.scope == [
         "hash-count",
         "byte-count",

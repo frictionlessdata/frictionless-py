@@ -1,6 +1,7 @@
 import pathlib
 
 import pytest
+import simpleeval
 
 from frictionless import Check, Checklist, Detector, FrictionlessException, Resource
 from frictionless import errors
@@ -274,6 +275,56 @@ def test_resource_validate_custom_check_with_arguments():
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
+    ]
+
+
+def test_resource_validate_custom_check_row_constraint():
+    # Create check
+    class custom(Check):
+        def __init__(self, *, functions=None, formula=None):
+            self.functions = functions
+            self.formula = formula
+
+        def validate_row(self, row):
+            try:
+                evalclass = simpleeval.EvalWithCompoundTypes  # type: ignore
+                assert evalclass(names=row, functions=self.functions).eval(self.formula)
+            except Exception:
+                yield errors.RowConstraintError.from_row(
+                    row,
+                    note='the row constraint to conform is "%s"' % self.formula,
+                )
+
+    # Validate resource
+    source = [
+        ["row", "student", "org_name"],
+        [2, True, "Rainbow High"],
+        [3, False, "WHO"],
+        [4, False, "World Vision"],
+    ]
+
+    def validate_orgname(student, org_name):
+        if student:
+            return org_name in ["Rainbow High", "Rainbow High"]
+        else:
+            return org_name in ["WHO", "Oxfam"]
+
+    resource = Resource(source)
+    checklist = Checklist(
+        checks=[
+            custom(
+                formula="validate_orgname(student, org_name)",
+                functions={
+                    "validate_orgname": lambda student, org_name: validate_orgname(
+                        student, org_name
+                    ),
+                },
+            )
+        ]
+    )
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [4, None, "row-constraint"]
     ]
 
 
