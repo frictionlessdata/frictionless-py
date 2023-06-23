@@ -42,6 +42,7 @@ class baseline(Check):
         errors.BlankRowError,
         errors.PrimaryKeyError,
         errors.ForeignKeyError,
+        errors.RowConstraintError,
         # Cell
         errors.ExtraCellError,
         errors.MissingCellError,

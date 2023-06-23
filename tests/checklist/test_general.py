@@ -8,6 +8,7 @@ def test_checklist():
     assert checklist.check_types == ["ascii-value"]
     assert checklist.pick_errors == []
     assert checklist.skip_errors == []
+    print(checklist.scope)
     assert checklist.scope == [
         "hash-count",
         "byte-count",
@@ -22,6 +23,7 @@ def test_checklist():
         "blank-row",
         "primary-key",
         "foreign-key",
+        "row-constraint",
         "extra-cell",
         "missing-cell",
         "type-error",
@@ -62,6 +64,7 @@ def test_checklist_skip_errors():
         "blank-row",
         "primary-key",
         "foreign-key",
+        "row-constraint",
         "extra-cell",
         "missing-cell",
         "type-error",
