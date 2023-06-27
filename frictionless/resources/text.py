@@ -42,3 +42,11 @@ class TextResource(Resource):
         assert resource.normpath
         helpers.write_file(resource.normpath, bytes, mode="wb")
         return resource
+
+
+class ArticleResource(TextResource):
+    datatype = "article"
+
+
+class ScriptResource(TextResource):
+    datatype = "script"

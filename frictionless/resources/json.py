@@ -53,5 +53,17 @@ class JsonResource(Resource):
         return resource
 
 
+class ChartResource(JsonResource):
+    datatype = "chart"
+
+
 class JsonschemaResource(JsonResource):
     datatype = "jsonschema"
+
+
+class MapResource(JsonResource):
+    datatype = "map"
+
+
+class ViewResource(JsonResource):
+    datatype = "view"
