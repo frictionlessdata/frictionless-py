@@ -1,13 +1,10 @@
-import pytest
-
 from frictionless import Pipeline, steps
 from frictionless.resources import TableResource
 
-# General
+# Bugs
 
 
-@pytest.mark.skip(reason="issue-1220")
-def test_step_table_pivot():
+def test_step_table_pivot_issue_1220():
     source = TableResource(path="data/transform-pivot.csv")
     pipeline = Pipeline(
         steps=[
