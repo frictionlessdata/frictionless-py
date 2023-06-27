@@ -173,6 +173,7 @@ class Loader:
         """
         return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 
+    # TODO: move to formats
     def read_byte_stream_decompress(
         self, byte_stream: types.IByteStream
     ) -> types.IByteStream:
@@ -184,6 +185,10 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
+
+        # No compression
+        if self.resource.multipart or not self.resource.compression:
+            return byte_stream
 
         # ZIP compression
         if self.resource.compression == "zip":
@@ -224,10 +229,6 @@ class Loader:
                     bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
                 byte_stream.seek(0)
             byte_stream = platform.gzip.open(byte_stream)  # type: ignore
-            return byte_stream
-
-        # No compression
-        if not self.resource.compression:
             return byte_stream
 
         # Not supported compression

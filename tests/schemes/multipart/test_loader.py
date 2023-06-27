@@ -165,8 +165,8 @@ def test_multipart_loader_with_compressed_parts_issue_1215():
     with TableResource(
         path="data/chunk1.csv.zip", extrapaths=["data/chunk2.csv.zip"]
     ) as resource:
-        assert resource.innerpath == ""
-        assert resource.compression == ""
+        assert resource.innerpath is None
+        assert resource.compression == "zip"
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
