@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import Request
 from pydantic import BaseModel
 
-from ....resources import ArticleResource
+from ... import helpers
 from ...project import Project
 from ...router import router
 
@@ -25,6 +25,5 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    resource = ArticleResource(data=props.text)
-    text = resource.render_article(rich=props.rich)
+    text = helpers.render_article(props.text)
     return Result(text=text)
