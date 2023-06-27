@@ -22,20 +22,6 @@ def test_multipart_loader():
         ]
 
 
-@pytest.mark.skip(reason="issue-1215")
-def test_multipart_loader_with_compressed_parts():
-    with TableResource(
-        path="data/chunk1.csv.zip", extrapaths=["data/chunk2.csv.zip"]
-    ) as resource:
-        assert resource.innerpath == ""
-        assert resource.compression == ""
-        assert resource.header == ["id", "name"]
-        assert resource.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
-
-
 def test_multipart_loader_resource():
     descriptor = {
         "name": "name",
@@ -170,3 +156,19 @@ def test_multipart_loader_resource_write_file(tmpdir):
         with open(path) as file:
             text += file.read()
     assert json.loads(text) == [["id", "name"], [1, "english"], [2, "german"]]
+
+
+# Bugs
+
+
+def test_multipart_loader_with_compressed_parts_issue_1215():
+    with TableResource(
+        path="data/chunk1.csv.zip", extrapaths=["data/chunk2.csv.zip"]
+    ) as resource:
+        assert resource.innerpath is None
+        assert resource.compression == "zip"
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
