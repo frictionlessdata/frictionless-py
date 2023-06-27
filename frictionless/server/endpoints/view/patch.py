@@ -12,14 +12,14 @@ from ...router import router
 # TODO: update view itself
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     data: Optional[Any]
     toPath: Optional[str]
     resource: Optional[types.IDescriptor]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     path: str
 
 

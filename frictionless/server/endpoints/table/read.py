@@ -11,7 +11,7 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     valid: Optional[bool]
     limit: Optional[int]
@@ -20,7 +20,7 @@ class Props(BaseModel):
     desc: Optional[bool]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     rows: List[types.IRow]
 
 
@@ -33,28 +33,25 @@ def action(project: Project, props: Props) -> Result:
     db = project.database
     sa = platform.sqlalchemy
 
+    # Prepare query
     record = helpers.read_record_or_raise(project, path=props.path)
     table = db.metadata.tables[record.name]
     query = sa.select(table)
     if props.valid is not None:
         query = query.where(table.c._rowValid == props.valid)
-    # TODO: recover (parameters have not been added)
-    #  if limit:
-    #  query = query.limit(limit)
-    #  if offset:
-    #  query = query.offset(offset)
-    query = str(query)
-    if props.order:
-        query += f" ORDER BY {props.order}"
-        if props.desc:
-            query += " DESC"
     if props.limit:
-        query += f" LIMIT {props.limit}"
-        if props.offset:
-            query += f" OFFSET {props.offset}"
+        query = query.limit(props.limit)
+    if props.offset:
+        query = query.offset(props.offset)
+    if props.order:
+        column = table.c[props.order]
+        if props.desc:
+            column = sa.desc(column)
+        query = query.order_by(column)
 
+    # Execute query
     with db.engine.begin() as conn:
-        result = conn.execute(sa.text(query))
+        result = conn.execute(query)
         rows = list(dict(item) for item in result.mappings())
 
     return Result(rows=rows)

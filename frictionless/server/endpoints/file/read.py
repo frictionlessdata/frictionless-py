@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import Request, Response
 from pydantic import BaseModel
 
@@ -9,11 +11,12 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
+    size: Optional[int]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     bytes: bytes
 
 
@@ -33,6 +36,6 @@ def action(project: Project, props: Props) -> Result:
 
     # Bytes
     resource = FileResource(path=str(source))
-    bytes = resource.read_file()
+    bytes = resource.read_file(size=props.size)
 
     return Result(bytes=bytes)

@@ -14,14 +14,14 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     toPath: Optional[str]
     history: Optional[models.History]
     resource: Optional[types.IDescriptor]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     path: str
 
 
@@ -48,11 +48,20 @@ def action(project: Project, props: Props) -> Result:
         isDataChanged=props.history is not None,
     )
 
+    # Copy table
+    if props.toPath:
+        fromRecord = helpers.read_record_or_raise(project, path=props.path)
+        with db.engine.begin() as conn:
+            query = f'CREATE TABLE "{record.name}" AS SELECT * FROM "{fromRecord.name}"'
+            conn.execute(sa.text(query))
+            db.metadata.reflect(conn, views=True)
+
     # Patch table
     if props.history:
+        table = db.metadata.tables[record.name]
+
         # Patch database table
         with db.engine.begin() as conn:
-            table = db.metadata.tables[record.name]
             for change in props.history.changes:
                 if change.type == "cell-update":
                     conn.execute(

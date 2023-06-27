@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 from ....dialect import Control
 from ....package import Package
+from ....resource import Resource
+from ... import helpers
 from ...project import Project
 from ...router import router
 
@@ -21,7 +23,7 @@ class Result(BaseModel, extra="forbid"):
     url: str
 
 
-@router.post("/package/publish")
+@router.post("/file/publish")
 def endpoint(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 
@@ -29,8 +31,9 @@ def endpoint(request: Request, props: Props) -> Result:
 def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
-    fullpath = fs.get_fullpath(props.path)
-    package = Package.from_descriptor(str(fullpath))
+    record = helpers.read_record_or_raise(project, path=props.path)
+    resource = Resource.from_descriptor(record.resource)
+    package = Package(resources=[resource], basepath=str(fs.basepath))
     url = package.publish(control=Control.from_descriptor(props.control))
 
     return Result(url=url)

@@ -11,14 +11,14 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     text: Optional[str]
     toPath: Optional[str]
     resource: Optional[types.IDescriptor]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     path: str
 
 

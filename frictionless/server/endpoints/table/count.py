@@ -11,12 +11,12 @@ from ...project import Project
 from ...router import router
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     path: str
     valid: Optional[bool]
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     count: int
 
 

@@ -9,11 +9,11 @@ from ...router import router
 # TODO: implement
 
 
-class Props(BaseModel):
+class Props(BaseModel, extra="forbid"):
     text: str
 
 
-class Result(BaseModel):
+class Result(BaseModel, extra="forbid"):
     text: str
 
 

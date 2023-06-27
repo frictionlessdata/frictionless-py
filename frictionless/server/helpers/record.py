@@ -48,7 +48,7 @@ def patch_record(
 
     # Clear database
     # TODO: use smarter logic to delete only if needed
-    if not toPath:
+    if updated and not toPath:
         delete_record(project, path=path, onlyFromDatabase=True)
 
     return record
