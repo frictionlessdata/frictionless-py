@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Optional
 
 from ... import helpers
+from ...platform import platform
 from ...system import Plugin
 from .adapter import ZipAdapter
 from .control import ZipControl
@@ -24,10 +25,18 @@ class ZipPlugin(Plugin):
         basepath: Optional[str] = None,
         packagify: bool = False,
     ):
-        if packagify:
-            if isinstance(source, str):
-                source = helpers.join_basepath(source, basepath=basepath)
-                if helpers.is_zip_descriptor(source):
-                    control = control if isinstance(control, ZipControl) else ZipControl()
-                    adapter = ZipAdapter(source, control=control)
-                    return adapter
+        if not isinstance(source, str):
+            return
+        fullpath = helpers.join_basepath(source, basepath=basepath)
+        _, format = helpers.parse_scheme_and_format(fullpath)
+        if format != "zip":
+            return
+        if not packagify:
+            if helpers.is_remote_path(fullpath):
+                return
+            with platform.zipfile.ZipFile(fullpath, "r") as zip:
+                if "datapackage.json" not in zip.namelist():
+                    return
+        control = control if isinstance(control, ZipControl) else ZipControl()
+        adapter = ZipAdapter(fullpath, control=control)
+        return adapter
