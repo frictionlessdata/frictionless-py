@@ -4,6 +4,7 @@ import zipfile
 import pytest
 
 from frictionless import FrictionlessException, Package, Resource, formats, platform
+from frictionless.resources import PackageResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
@@ -183,3 +184,13 @@ def test_zip_adapter_actions_validate_package_from_zip_invalid():
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
+
+
+# Bugs
+
+
+def test_zip_adapter_package_detection_issue_1499():
+    resource = Resource("data/package.zip")
+    assert isinstance(resource, PackageResource)
+    package = resource.read_metadata()
+    assert len(package.resources) == 2
