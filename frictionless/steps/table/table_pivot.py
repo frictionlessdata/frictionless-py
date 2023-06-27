@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 import attrs
 
 from ...pipeline import Step
+from ...schema import Schema
 
 if TYPE_CHECKING:
     from ...resource import Resource
@@ -47,6 +48,7 @@ class table_pivot(Step):
     def transform_resource(self, resource: Resource):
         table = resource.to_petl()  # type: ignore
         resource.data = table.pivot(self.f1, self.f2, self.f3, self.aggfun)  # type: ignore
+        resource.schema = Schema()
         resource.infer()
 
     # Metadata
