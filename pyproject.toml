@@ -1,3 +1,10 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = 'frictionless/__init__.py'
+
 [tool.black]
 line-length = 90
 

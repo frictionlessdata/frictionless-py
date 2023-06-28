@@ -18,7 +18,6 @@ def read(*paths: str, encoding: str = "utf-8"):
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z/])+$"
-VERSION = read("__version__")
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]
 GEOJSON_PROFILE = json.loads(read("assets", "profiles", "geojson.json"))
