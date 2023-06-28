@@ -1,6 +1,0 @@
-recursive-include frictionless *
-include LICENSE.md
-include Makefile
-include pyproject.toml
-include pyrightconfig.json
-include README.md
