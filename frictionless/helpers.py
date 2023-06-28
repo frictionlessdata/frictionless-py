@@ -122,6 +122,8 @@ def join_basepath(path: str, basepath: Optional[str] = None):
         return path
     if is_remote_path(path):
         return path
+    if is_remote_path(basepath):
+        return f"{basepath}/{path}"
     return os.path.join(basepath, path)
 
 
