@@ -13,9 +13,6 @@ from .platform import Platform, platform
 from .report import Report, ReportTask
 from .resource import Resource
 from .schema import Field, Schema
+from .settings import VERSION as __version__
 from .system import Adapter, Loader, Mapper, Parser, Plugin, System, system
 from .table import Header, Lookup, Row
-
-# Version
-
-__version__ = "5.13.1"

@@ -3,29 +3,19 @@ from __future__ import annotations
 import json
 import os
 
-# Helpers
+# Version
 
-
-def read(*paths: str, encoding: str = "utf-8"):
-    dirname = os.path.dirname(__file__)
-    with open(os.path.join(dirname, *paths), encoding=encoding) as file:
-        return file.read().strip()
-
+VERSION = "5.13.1"
 
 # General
-
 
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z/])+$"
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]
-GEOJSON_PROFILE = json.loads(read("assets", "profiles", "geojson.json"))
-TOPOJSON_PROFILE = json.loads(read("assets", "profiles", "topojson.json"))
-
 
 # Defaults
-
 
 DEFAULT_STANDARDS = "v2"
 DEFAULT_TYPE = "file"
@@ -141,3 +131,15 @@ METADATA_TRAITS = {
         "props": ["query"],
     },
 }
+
+# Profiles
+
+
+def read(*paths: str, encoding: str = "utf-8"):
+    dirname = os.path.dirname(__file__)
+    with open(os.path.join(dirname, *paths), encoding=encoding) as file:
+        return file.read().strip()
+
+
+GEOJSON_PROFILE = json.loads(read("assets", "profiles", "geojson.json"))
+TOPOJSON_PROFILE = json.loads(read("assets", "profiles", "topojson.json"))
