@@ -9,7 +9,7 @@ class Factory(type):
         cls,
         descriptor: Optional[Union[types.IDescriptor, str]] = None,
         *params: Any,
-        **options: Any
+        **options: Any,
     ):
         assert not params
 
