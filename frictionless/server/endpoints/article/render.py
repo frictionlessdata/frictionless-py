@@ -5,12 +5,13 @@ from typing import Optional
 from fastapi import Request
 from pydantic import BaseModel
 
-from ... import helpers
+from ....platform import platform
 from ...project import Project
 from ...router import router
 
 
 class Props(BaseModel, extra="forbid"):
+    path: str
     text: str
     rich: Optional[bool] = None
 
@@ -25,5 +26,11 @@ def endpoint(request: Request, props: Props) -> Result:
 
 
 def action(project: Project, props: Props) -> Result:
-    text = helpers.render_article(props.text)
+    #  fs = project.filesystem
+
+    #  fullpath = fs.get_fullpath(props.path)
+    markdown = platform.marko.Markdown()
+    markdown.use(platform.marko_ext_gfm.GFM)
+    text = markdown.convert(props.text)
+
     return Result(text=text)
