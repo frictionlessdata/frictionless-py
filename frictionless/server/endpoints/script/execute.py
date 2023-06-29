@@ -28,8 +28,11 @@ def action(project: Project, props: Props) -> Result:
     fs = project.filesystem
 
     fullpath = fs.get_fullpath(props.path)
-    with helpers.capture_stdout(cwd=os.path.dirname(fullpath)) as stdout:
-        exec(props.text, {}, {})
-    text = stdout.getvalue().strip()
+    try:
+        with helpers.capture_stdout(cwd=os.path.dirname(fullpath)) as stdout:
+            exec(props.text, {}, {})
+        text = stdout.getvalue().strip()
+    except Exception as exception:
+        text = str(exception)
 
     return Result(text=text)
