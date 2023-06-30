@@ -53,3 +53,11 @@ class FileResource(Resource):
         assert resource.normpath
         helpers.write_file(resource.normpath, bytes, mode="wb")
         return resource
+
+
+class ImageResource(FileResource):
+    datatype = "image"
+
+
+class DocumentResource(FileResource):
+    datatype = "document"
