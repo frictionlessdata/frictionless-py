@@ -299,11 +299,6 @@ er_diagram = Option(
     help="Return er diagram. It is only available for package",
 )
 
-port = Option(
-    settings.DEFAULT_HTTP_PORT,
-    help="Specify server port",
-)
-
 debug = Option(
     default=False,
     help="Enable debug mode",
