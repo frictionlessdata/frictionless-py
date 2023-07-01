@@ -4,6 +4,7 @@ Here described only the breaking and most significant changes. The full changelo
 
 ## v5.14
 
+- Rebased packaging on PEP 621
 - Extracted experimental application/server from the codebase
 
 ## v5.13
