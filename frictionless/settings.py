@@ -130,6 +130,10 @@ METADATA_TRAITS = {
         "names": ["view.json", "view.yaml"],
         "props": ["query"],
     },
+    "map": {
+        "names": ["map.json", "map.yaml"],
+        "props": ["features", "objects"],
+    },
 }
 
 # Profiles

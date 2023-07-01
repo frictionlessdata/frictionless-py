@@ -52,7 +52,11 @@ def action(project: Project, props: Props) -> Result:
         # Index resource
         path, basepath = fs.get_path_and_basepath(props.path)
         name = helpers.name_record(project, path=path)
-        resource_obj = Resource(path=path, basepath=basepath)
+        resource_obj = (
+            Resource(path=path, basepath=basepath)
+            if missing_record
+            else Resource.from_descriptor(record.resource, basepath=basepath)
+        )
         report_obj = helpers.index_resource(
             project, resource=resource_obj, table_name=name
         )

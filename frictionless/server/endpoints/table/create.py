@@ -21,7 +21,7 @@ class Result(BaseModel, extra="forbid"):
     path: str
 
 
-@router.post("/text/create")
+@router.post("/table/create")
 def server_text_write(request: Request, props: Props) -> Result:
     return action(request.app.get_project(), props)
 

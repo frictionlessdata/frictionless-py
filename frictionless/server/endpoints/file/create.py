@@ -50,6 +50,8 @@ def action(project: Project, props: Props) -> Result:
         path = str(folder / path)
 
     # Create
-    path = helpers.write_file(project, path=path, bytes=props.bytes)
+    path = helpers.write_file(
+        project, path=path, bytes=props.bytes, deduplicate=props.deduplicate
+    )
 
     return Result(path=path)

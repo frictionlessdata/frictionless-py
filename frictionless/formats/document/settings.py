@@ -1,0 +1,1 @@
+FORMATS = ["pdf", "docx", "doc"]
