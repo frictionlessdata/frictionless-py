@@ -53,7 +53,6 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
-DEFAULT_HTTP_PORT = 4040
 DEFAULT_HTTP_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
