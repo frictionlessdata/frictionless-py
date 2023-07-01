@@ -13,7 +13,7 @@ from frictionless import Resource, resources
 )
 def test_resource_datatype_file(source):
     resource = Resource(source)
-    assert resource.datatype == "file"
+    assert resource.datatype == "document"
     assert isinstance(resource, resources.FileResource)
 
 

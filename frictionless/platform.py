@@ -60,12 +60,6 @@ class Platform:
         return frictionless
 
     @cached_property
-    def frictionless_application(self):
-        import frictionless.application
-
-        return frictionless.application
-
-    @cached_property
     def frictionless_checks(self):
         import frictionless.checks
 
@@ -106,12 +100,6 @@ class Platform:
         import frictionless.schemes
 
         return frictionless.schemes
-
-    @cached_property
-    def frictionless_server(self):
-        import frictionless.server
-
-        return frictionless.server
 
     @cached_property
     def frictionless_steps(self):
@@ -222,27 +210,6 @@ class Platform:
         return zipfile
 
     # Extras
-
-    @cached_property
-    @extras(name="server")
-    def fastapi(self):
-        import fastapi
-
-        return fastapi
-
-    @cached_property
-    @extras(name="server")
-    def fastapi_staticfiles(self):
-        import fastapi.staticfiles
-
-        return fastapi.staticfiles
-
-    @cached_property
-    @extras(name="server")
-    def uvicorn(self):
-        import uvicorn  # type: ignore
-
-        return uvicorn
 
     @cached_property
     @extras(name="aws")
