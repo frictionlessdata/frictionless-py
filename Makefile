@@ -2,7 +2,7 @@
 
 
 PACKAGE := $(shell grep '^name =' pyproject.toml | cut -d '"' -f2)
-VERSION := $(shell grep '^__version__ =' ${PACKAGE}/__init__.py | cut -d '"' -f2)
+VERSION := $(shell grep '^VERSION =' ${PACKAGE}/settings.py | cut -d '"' -f2)
 LEAD := $(shell head -n 1 LEAD.md)
 
 
