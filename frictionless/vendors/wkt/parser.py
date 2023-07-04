@@ -30,7 +30,7 @@ class WktBuffer(Buffer):
         eol_comments_re=None,
         ignorecase=None,
         namechars="",
-        **kwargs
+        **kwargs,
     ):
         super(WktBuffer, self).__init__(
             text,
@@ -40,7 +40,7 @@ class WktBuffer(Buffer):
             eol_comments_re=eol_comments_re,
             ignorecase=ignorecase,  # type: ignore
             namechars=namechars,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -57,7 +57,7 @@ class WktParser(Parser):
         keywords=None,
         namechars="",
         buffer_class=WktBuffer,
-        **kwargs
+        **kwargs,
     ):
         if keywords is None:
             keywords = KEYWORDS
@@ -72,7 +72,7 @@ class WktParser(Parser):
             keywords=keywords,
             namechars=namechars,
             buffer_class=buffer_class,
-            **kwargs
+            **kwargs,
         )
 
     @graken()

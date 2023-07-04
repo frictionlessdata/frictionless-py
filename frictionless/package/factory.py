@@ -14,7 +14,7 @@ class Factory(type):
         control: Optional[Control] = None,
         basepath: Optional[str] = None,
         packagify: bool = True,
-        **options: Any
+        **options: Any,
     ):
         assert not params
         source = helpers.normalize_source(source)

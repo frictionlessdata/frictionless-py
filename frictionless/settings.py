@@ -3,30 +3,19 @@ from __future__ import annotations
 import json
 import os
 
-# Helpers
+# Version
 
-
-def read(*paths: str, encoding: str = "utf-8"):
-    dirname = os.path.dirname(__file__)
-    with open(os.path.join(dirname, *paths), encoding=encoding) as file:
-        return file.read().strip()
-
+VERSION = "5.14.5"
 
 # General
-
 
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z/])+$"
-VERSION = read("__version__")
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz"]
-GEOJSON_PROFILE = json.loads(read("assets", "profiles", "geojson.json"))
-TOPOJSON_PROFILE = json.loads(read("assets", "profiles", "topojson.json"))
-
 
 # Defaults
-
 
 DEFAULT_STANDARDS = "v2"
 DEFAULT_TYPE = "file"
@@ -64,7 +53,6 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
-DEFAULT_HTTP_PORT = 4040
 DEFAULT_HTTP_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
@@ -141,4 +129,20 @@ METADATA_TRAITS = {
         "names": ["view.json", "view.yaml"],
         "props": ["query"],
     },
+    "map": {
+        "names": ["map.json", "map.yaml"],
+        "props": ["features", "objects"],
+    },
 }
+
+# Profiles
+
+
+def read(*paths: str, encoding: str = "utf-8"):
+    dirname = os.path.dirname(__file__)
+    with open(os.path.join(dirname, *paths), encoding=encoding) as file:
+        return file.read().strip()
+
+
+GEOJSON_PROFILE = json.loads(read("assets", "profiles", "geojson.json"))
+TOPOJSON_PROFILE = json.loads(read("assets", "profiles", "topojson.json"))

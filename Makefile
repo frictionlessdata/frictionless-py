@@ -1,8 +1,8 @@
 .PHONY: all coverage docker-setup docs install format github lint release test test-ci
 
 
-PACKAGE := $(shell grep '^PACKAGE =' setup.py | cut -d '"' -f2)
-VERSION := $(shell head -n 1 $(PACKAGE)/__version__)
+PACKAGE := $(shell grep '^name =' pyproject.toml | cut -d '"' -f2)
+VERSION := $(shell grep '^VERSION =' ${PACKAGE}/settings.py | cut -d '"' -f2)
 LEAD := $(shell head -n 1 LEAD.md)
 
 
@@ -24,7 +24,7 @@ format:
 	black $(PACKAGE) tests
 
 install:
-	pip install --upgrade -e .[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,markdown,mysql,ods,pandas,parquet,postgresql,server,spss,sql,visidata,wkt,zenodo]
+	pip install --upgrade -e .[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,markdown,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]
 
 # TODO: remove when duckdb is fixed on Windows
 install-windows:
