@@ -1,0 +1,395 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA61UTW/UQAy991eMcmqlTrLcgBtaypEDHNsKORNvMjQZjzyTbWnVX8MBca74BfvH
+        8CTZ3ezSIg4oUr7svPf8bOfhRKnMM61si9lblUUo+xZYVxBBezA3UGN2npIYA/VsMEjapbxQ6mE4
+        S8hBN3yMIUJFYcgfAh5ikwIJrZiiuQnrWcYL1Fu2fWYwDXaQEse7Hd7XQG6fFm0c4S7GsCoZgjBY
+        ngtbEXcQU9qBGnSGKuvqFOjjSr/ehyoMhq2PVsgkuiQXNz87BUEFrHvrIgZl3YC7+bH5JU8eGJQI
+        wD+FXLkrp9Vy81TZmtLtR+owXT/buoVs4Hw8f95kb0vtkbUBbyO84PVh0n+z/Aj20Pl/9nQsT87X
+        w2Dd4Ldb4mo/V0dzlI3GbZ9WWCEnj79TtsNorUEX/jaby+VCv8oXzwyKRNRBZOtkE6MPb4vCMEK0
+        azTUdeRCTlwXvi+Fs6IOrCvukakQiOK4tEba6tMGzdBqG5u+zAWsqFKVuquL5P+0bNIGz3g37twa
+        OUwDt8jT8WaxGIVmRgaQbdlH4meq3hX3gcEZGwypd+0aZxvANCZAHxviY+Fb114SRrcO+YsYMbQ7
+        SaFWimELupbutLoiPXZRm+0PZKfpvYCqCTUoGRv1SaCp6o0tW1QXd9D5dtJ6vHcXIaASJRRs3Dyx
+        JQUydffoQOEdyneyaBWqy2rOcX26NT94NCFfsTUJUEhCSswtFWfjvkotIXI/jNcA1FlnO2jPE+le
+        I04a1enoytmMIgorSedWLd0ObW6w9cWEo+cweoI5y04efwN1GTPriQUAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '613'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 28 Jun 2023 06:27:48 GMT
+      ETag:
+      - W/"48f5be5dffa0abf58676f1637d11d41c458131dda940fc8223713b0c828dde06"
+      Expires:
+      - Wed, 28 Jun 2023 06:32:48 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 345174913546baec1ee86880fff84c0a0939eab2
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - FD54:52B2:EED91:11AC17:649BD1A5
+      X-Served-By:
+      - cache-qpg1227-QPG
+      X-Timer:
+      - S1687933669.663347,VS0,VE294
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/schema/estados.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA61TO24cMQztfQpi6sUeIEWAIF4EQRy7MFJlUzASZ0JAEmWJNLwwfKRUOYIvFmo2
+        G+dXuEgjDL+P75FzfwYwzUwp9ukFfHQL4H593V8wk3un11fn0+bk1ENdnVyUFmpPgVlaRh2hSDNa
+        0qdQpB4aV2Upa7/Hb5EXgUgQhTvEx68Lq3S4MQKOVJRnDphBgLpilH3Zl5dwIY0ycO2WvS5Jg84K
+        PqNuIEjpFJTUGmDkyj1wWYASe7BT9AIgtp4lglKuXswlcORoRcEUEn729kB6bE2QcSkImPjGcAsf
+        FKhw9t6QeXzcuol54yM7gSJdm0WgO2qBFQdRsJQwBzl2HknceSCtLbl6MhD64NlnkiMBh9ItnI+W
+        aOpaNGv0gysXaFQbfaESqTlxd9xKsupw5OM4U1erEwRO6aSQEzKYbWFUKGMgqNjcsLaF3V2gqmRD
+        RtdAQkAKnhesckQdFc6iNlk34ioOpRw0WKo4eIPMviZG32OnNqJZ0hgDh0Acx/KO7C1v9+WXE2JN
+        9NshCOzWRU9rysPm33d4efV+9/chuvS+6mfd4U/gS8n0XNTrt28uXv0f2GtefAV/4vr7aeROtXHG
+        dnhHh9Nfd/bwHRoPxvahAwAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '474'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 28 Jun 2023 06:27:49 GMT
+      ETag:
+      - W/"785df2a40004c180afec8b3e344c578ab96ccf7e7e062568d100a50e5d3094a2"
+      Expires:
+      - Wed, 28 Jun 2023 06:32:49 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 3946b5579dff9b5c18e2be788efbcc48659897b1
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B954:0D66:FA440:1262BC:649BD1A5
+      X-Served-By:
+      - cache-qpg1247-QPG
+      X-Timer:
+      - S1687933669.344288,VS0,VE296
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/schema/pib-per-capita.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA72RPwuDMBDF936KkFlK/2zdrO0gHQylWymS6mkDmshFBxG/e2Oo2qLQqV0O8nv3
+        8g5esyCEJgKyWNMduZoXIY2dhkueg6HUCw7U6WFZFxYKWUIKSC1vnXknC1i4Wa23U7us8rtxDzxF
+        VRXeg2MnLkceQyRynvWK8yXP3/89jx3Poecy/+L+JtrMW7dDCzQy1ieo30uhiUIQqTR4psKh2s8S
+        ERJAkFF3X79rsVYVWkpBlzxWevBMPnvxdrxy0T4B91VT508CAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '209'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 28 Jun 2023 06:27:50 GMT
+      ETag:
+      - W/"13ee2c7d9494ff4630a1c88dc97c9914efbbd788f2f94b21a34442fb9c41b113"
+      Expires:
+      - Wed, 28 Jun 2023 06:32:50 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 6b41d191451399dfe27a4e5c2a641076f1598a07
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - B818:5735:FEA19:12A894:649BD1A6
+      X-Served-By:
+      - cache-qpg1263-QPG
+      X-Timer:
+      - S1687933670.025919,VS0,VE282
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/data/estados.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA12RQW7CMBBF93MKH2AWtZNAuwwhRCBCrJgLDCQCS2AjJ9n0Nqhrdr1BLtYJSFXV
+        pTX//3nznVVL3FVljmZdbFOIEjTjlxeahotHYTTEEjUFcuMdha4hVmjI9SQy6ilYRyzKII6wtl4U
+        rGta0XhhhguK2kDyhiX108R3nf+dlAakxNq7Zvx2ljPqCqTC9BhaFGkGMsL0Sp/eUcfvEmTM4kD2
+        OklrkMnE9CRKQc4m7W16pRrkHPf+yITWsXVfgZJMwFxnPosXp6Dif6w7H3peW+9APXNpfBx4j16A
+        mqFug6PrYTiyWeeg5phe6OSfXFtQ72jacLI39huefuCCztM9C66SF3M/nShaJmd9WUD06on3bsi1
+        NnBovYFE/i2JhXtIFBbejne2FRUkES5t1wfLolXbcB53uFyBUqgtDeOD2dagIszaVy1ZDpHCvLuN
+        j6dp+jIOzg38AGoWavvwAQAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '360'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 28 Jun 2023 06:27:51 GMT
+      ETag:
+      - W/"b67e0d25b954a11e06ec6c439ae8fa1f760541890de81d14dcd4f0302e98d56e"
+      Expires:
+      - Wed, 28 Jun 2023 06:32:51 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 2d47c14e5ca235d9b357452ff181f3cb5572e72e
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 9EF0:5A1B:F9C63:125E96:649BD2E6
+      X-Served-By:
+      - cache-qpg1232-QPG
+      X-Timer:
+      - S1687933671.707155,VS0,VE298
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/data/estados.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA12RQW7CMBBF93MKH2AWtZNAuwwhRCBCrJgLDCQCS2AjJ9n0Nqhrdr1BLtYJSFXV
+        pTX//3nznVVL3FVljmZdbFOIEjTjlxeahotHYTTEEjUFcuMdha4hVmjI9SQy6ilYRyzKII6wtl4U
+        rGta0XhhhguK2kDyhiX108R3nf+dlAakxNq7Zvx2ljPqCqTC9BhaFGkGMsL0Sp/eUcfvEmTM4kD2
+        OklrkMnE9CRKQc4m7W16pRrkHPf+yITWsXVfgZJMwFxnPosXp6Dif6w7H3peW+9APXNpfBx4j16A
+        mqFug6PrYTiyWeeg5phe6OSfXFtQ72jacLI39huefuCCztM9C66SF3M/nShaJmd9WUD06on3bsi1
+        NnBovYFE/i2JhXtIFBbejne2FRUkES5t1wfLolXbcB53uFyBUqgtDeOD2dagIszaVy1ZDpHCvLuN
+        j6dp+jIOzg38AGoWavvwAQAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '360'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 28 Jun 2023 06:27:51 GMT
+      ETag:
+      - W/"b67e0d25b954a11e06ec6c439ae8fa1f760541890de81d14dcd4f0302e98d56e"
+      Expires:
+      - Wed, 28 Jun 2023 06:32:51 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 6fd8e0a43ddb18bdf38eb4444a965f1c4a0dd567
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 9EF0:5A1B:F9C63:125E96:649BD2E6
+      X-Served-By:
+      - cache-qpg1238-QPG
+      X-Timer:
+      - S1687933671.381161,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

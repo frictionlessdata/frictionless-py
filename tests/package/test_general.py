@@ -320,3 +320,11 @@ def test_package_remote_scheme_regression_for_resources_issue_1388():
     )
     rows = package.get_table_resource("countries").read_rows()
     assert len(rows) == 2
+
+
+@pytest.mark.vcr
+def test_package_remote_windows_1505():
+    url = "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+    package = Package(url)
+    assert package.name == "datapackage-reprex"
+    assert len(package.get_table_resource("estados").read_rows()) == 27
