@@ -147,13 +147,19 @@ def console_validate(
             resource.dialect = dialect_obj
 
         # Validate resource
-        report = resource.validate(
-            checklist_obj,
-            name=name,
-            parallel=parallel,
-            limit_rows=limit_rows,
-            limit_errors=limit_errors,
-        )
+        if resource.type != "package":
+            inquiry = resource.dataclass.from_descriptor(resource.path)  # type: ignore
+            report = inquiry.validate(  # type:ignore
+                parallel=parallel,
+            )
+        else:
+            report = resource.validate(
+                checklist_obj,
+                name=name,
+                parallel=parallel,
+                limit_rows=limit_rows,
+                limit_errors=limit_errors,
+            )
         code = int(not report.valid)
     except Exception as exception:
         helpers.print_exception(console, debug=debug, exception=exception)
