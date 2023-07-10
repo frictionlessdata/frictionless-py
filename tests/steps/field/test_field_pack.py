@@ -77,3 +77,15 @@ def test_step_field_pack_object():
         "population": 83,
         "details": {"name": "germany", "population": "83"},
     }
+
+
+def test_step_field_pack_retain_data():
+    source = TableResource(path="data/transform.csv")
+    pipeline = Pipeline(
+        steps=[
+            steps.field_pack(name="details", from_names=["name", "population"]),
+        ],
+    )
+    target = source.transform(pipeline)
+    assert len(target.read_rows()) == 3
+    assert len(target.read_rows()) == 3
