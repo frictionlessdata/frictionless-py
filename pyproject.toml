@@ -102,12 +102,48 @@ zenodo = ["pyzenodo3>=1.0"]
 [project.scripts]
 frictionless = "frictionless.__main__:console"
 
+[tool.hatch.version]
+path = "frictionless/settings.py"
+
+[tool.hatch.envs.default]
+python = "3.8"
+dependencies = [
+    "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,markdown,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
+]
+
+[tool.hatch.envs.default.scripts]
+coverage = [
+  "sensible-browser coverage/index.html",
+]
+docs = [
+  "livemark build",
+]
+format = [
+  "ruff frictionless tests --fix",
+  "isort frictionless tests",
+  "black frictionless tests",
+]
+lint = [
+  "ruff frictionless tests",
+  "isort frictionless tests --check",
+  "black frictionless tests --check",
+  "pyright frictionless tests",
+]
+test = [
+  "hatch run lint",
+  "pytest --cov frictionless --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300",
+]
+test-ci = [
+  "hatch run lint",
+  "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 80 --timeout=300 --ci",
+]
+write = [
+  "livemark serve",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.version]
-path = "frictionless/settings.py"
 
 [tool.black]
 line-length = 90
