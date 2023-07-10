@@ -259,6 +259,13 @@ def test_console_validate_dialect_overrided_issue_1478():
     assert actual.exit_code == 0
 
 
+def test_console_validate_inquiry():
+    actual = runner.invoke(console, "validate data/inquiry.yaml")
+    assert actual.exit_code == 1
+    assert actual.stdout.count("data/capital-valid.csv")
+    assert actual.stdout.count("data/capital-invalid.csv")
+
+
 # Helpers
 
 

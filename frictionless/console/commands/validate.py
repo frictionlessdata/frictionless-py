@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, cast
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
+from ...report import Report
 from ...resource import Resource
 from ...system import system
 from .. import common, helpers
@@ -147,11 +148,12 @@ def console_validate(
             resource.dialect = dialect_obj
 
         # Validate resource
-        if resource.type != "package":
+        if resource.datatype == "inquiry":
             inquiry = resource.dataclass.from_descriptor(resource.path)  # type: ignore
             report = inquiry.validate(  # type:ignore
                 parallel=parallel,
             )
+            report = cast(Report, report)
         else:
             report = resource.validate(
                 checklist_obj,
