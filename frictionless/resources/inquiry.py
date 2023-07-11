@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from ..exception import FrictionlessException
 from ..inquiry import Inquiry
 from ..report import Report
 from .metadata import MetadataResource
-
-if TYPE_CHECKING:
-    pass
 
 
 class InquiryResource(MetadataResource[Inquiry]):

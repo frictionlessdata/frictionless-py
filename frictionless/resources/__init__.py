@@ -1,4 +1,5 @@
 from .file import *
+from .inquiry import *
 from .json import *
 from .metadata import *
 from .package import *
