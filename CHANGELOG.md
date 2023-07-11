@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.15
+
+- Local development has been migrated to using [Hatch](https://hatch.pypa.io/latest/)
+
 ## v5.14
 
 - Rebased packaging on PEP 621
