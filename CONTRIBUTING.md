@@ -29,7 +29,7 @@ hatch config set 'dirs.env.virtual' '.python'
 Now you can setup you IDE to use a proper Python path:
 
 ```bash
-.python/fdapp/bin/python
+.python/frictionless/bin/python
 ```
 
 Enter the virtual environment before starting the work. It will ensure that all the development dependencies are installed into a virtual environment:

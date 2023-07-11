@@ -7,7 +7,6 @@ from ..catalog import Catalog
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..exception import FrictionlessException
-from ..inquiry import Inquiry
 from ..metadata import Metadata
 from ..pipeline import Pipeline
 from ..platform import platform
@@ -81,11 +80,6 @@ class ChecklistResource(MetadataResource[Checklist]):
 class PipelineResource(MetadataResource[Pipeline]):
     datatype = "pipeline"
     dataclass = Pipeline
-
-
-class InquiryResource(MetadataResource[Inquiry]):
-    datatype = "inquiry"
-    dataclass = Inquiry
 
 
 class ReportResource(MetadataResource[Report]):
