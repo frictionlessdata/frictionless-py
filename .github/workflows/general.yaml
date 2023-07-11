@@ -39,7 +39,7 @@ jobs:
         env:
           GOOGLE_CREDENTIALS_DATA: ${{ secrets.GOOGLE_CREDENTIALS_DATA }}
       - name: Test software
-        run: make test-ci
+        run: hatch run test +py=${{ matrix.py || matrix.python-version }}
       - name: Report coverage
         uses: codecov/codecov-action@v2
     services:
@@ -79,7 +79,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.10
       - name: Prepare environment
         run: pip3 install hatch
       - name: Prepare variables
@@ -99,7 +99,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.10
       - name: Prepare environment
         run: pip3 install hatch
       - name: Prepare variables

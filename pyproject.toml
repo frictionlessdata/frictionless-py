@@ -63,6 +63,7 @@ dev = [
     "isort",
     "black",
     "yattag",
+    "neovim",
     "pytest",
     "pyright",
     "ipython",
@@ -106,10 +107,13 @@ frictionless = "frictionless.__main__:console"
 path = "frictionless/settings.py"
 
 [tool.hatch.envs.default]
-python = "3.8"
+python = "3.10"
 dependencies = [
-    "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,markdown,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
+  "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
 ]
+
+[[tool.hatch.envs.test.default]]
+python = ["3.8", "3.9", "3.10"]
 
 [tool.hatch.envs.default.scripts]
 coverage = [
