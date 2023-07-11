@@ -8,7 +8,7 @@ site:
     - style.css
 github:
   user: frictionlessdata
-  repo: framework
+  repo: frictionless-py
 counter:
   type: plausible
   code: framework.frictionlessdata.io
