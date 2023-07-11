@@ -44,7 +44,8 @@ dependencies = [
     "requests>=2.10",
     "humanize>=4.2",
     "tabulate>=0.8.10",
-    "jsonschema>=2.5",
+    # TODO: remove the limit when https://github.com/python-jsonschema/jsonschema/issues/1119 is resolved
+    "jsonschema<4.18",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
     "typer[all]>=0.5",
