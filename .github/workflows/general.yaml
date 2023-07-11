@@ -29,9 +29,9 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: make install
       - name: Prepare environment
+        run: pip3 install hatch
+      - name: Prepare variables
         run: cp .env.example .env
       - name: Prepare secrets
         if: env.GOOGLE_CREDENTIALS_DATA != null
@@ -39,7 +39,7 @@ jobs:
         env:
           GOOGLE_CREDENTIALS_DATA: ${{ secrets.GOOGLE_CREDENTIALS_DATA }}
       - name: Test software
-        run: make test-ci
+        run: hatch run ci:test +py=${{ matrix.py || matrix.python-version }}
       - name: Report coverage
         uses: codecov/codecov-action@v2
     services:
@@ -79,14 +79,14 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
-      - name: Install dependencies
-        # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
-        run: LDFLAGS=`echo $(pg_config --ldflags)` make install
+          python-version: '3.10'
       - name: Prepare environment
+        run: pip3 install hatch
+      - name: Prepare variables
         run: cp .env.example .env
       - name: Test software
-        run: make test
+        # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
+        run: LDFLAGS=`echo $(pg_config --ldflags)` make test
 
   # Test (Windows)
 
@@ -99,10 +99,10 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
-      - name: Install dependencies
-        run: make install-windows
+          python-version: '3.10'
       - name: Prepare environment
+        run: pip3 install hatch
+      - name: Prepare variables
         run: cp .env.example .env
       - name: Test software
         run: make test
@@ -118,12 +118,13 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: '3.10'
+      - name: Prepare environment
+        run: pip3 install hatch
       - name: Install and build site
         run: |
           echo '!**/*.html' >> .gitignore
-          make install
-          livemark build
+          make docs
       - name: Publush to Github Pages
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -143,7 +144,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: '3.10'
       - name: Install dependencies
         run: pip install -U build
       - name: Build distribution
