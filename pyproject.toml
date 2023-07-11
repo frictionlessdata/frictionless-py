@@ -44,7 +44,8 @@ dependencies = [
     "requests>=2.10",
     "humanize>=4.2",
     "tabulate>=0.8.10",
-    "jsonschema>=2.5",
+    # TODO: remove the limit when https://github.com/python-jsonschema/jsonschema/issues/1119 is resolved
+    "jsonschema<4.18",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
     "typer[all]>=0.5",
@@ -63,6 +64,7 @@ dev = [
     "isort",
     "black",
     "yattag",
+    "neovim",
     "pytest",
     "pyright",
     "ipython",
@@ -102,12 +104,53 @@ zenodo = ["pyzenodo3>=1.0"]
 [project.scripts]
 frictionless = "frictionless.__main__:console"
 
+[tool.hatch.version]
+path = "frictionless/settings.py"
+
+[tool.hatch.envs.default]
+python = "3.10"
+dependencies = [
+  "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
+]
+
+[tool.hatch.envs.default.scripts]
+coverage = [
+  "sensible-browser coverage/index.html",
+]
+docs = [
+  "livemark build",
+]
+format = [
+  "ruff frictionless tests --fix",
+  "isort frictionless tests",
+  "black frictionless tests",
+]
+lint = [
+  "ruff frictionless tests",
+  "isort frictionless tests --check",
+  "black frictionless tests --check",
+  "pyright frictionless tests",
+]
+test = [
+  "hatch run lint",
+  "pytest --cov frictionless --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300",
+]
+write = [
+  "livemark serve",
+]
+
+[[tool.hatch.envs.ci.matrix]]
+python = ["3.8", "3.9", "3.10"]
+
+[tool.hatch.envs.ci.scripts]
+test = [
+  "hatch run lint",
+  "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 80 --timeout=300 --ci",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.version]
-path = "frictionless/settings.py"
 
 [tool.black]
 line-length = 90

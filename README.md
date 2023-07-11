@@ -1,10 +1,10 @@
-# Frictionless Framework
+# frictionless-py
 
-[![Build](https://img.shields.io/github/actions/workflow/status/frictionlessdata/framework/general.yaml?branch=main)](https://github.com/frictionlessdata/framework/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/framework/main)](https://codecov.io/gh/frictionlessdata/framework)
+[![Build](https://img.shields.io/github/actions/workflow/status/frictionlessdata/frictionless-py/general.yaml?branch=main)](https://github.com/frictionlessdata/frictionless-py/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)
 [![Release](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
 [![Citation](https://zenodo.org/badge/28409905.svg)](https://zenodo.org/badge/latestdoi/28409905)
-[![Codebase](https://img.shields.io/badge/codebase-github-brightgreen)](https://github.com/frictionlessdata/framework)
+[![Codebase](https://img.shields.io/badge/codebase-github-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
 [![Support](https://img.shields.io/badge/support-slack-brightgreen)](https://join.slack.com/t/frictionlessdata/shared_invite/zt-17kpbffnm-tRfDW_wJgOw8tJVLvZTrBg)
 
 ```markdown remark type=primary
