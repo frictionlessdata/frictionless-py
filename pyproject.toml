@@ -112,9 +112,6 @@ dependencies = [
   "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
 ]
 
-[[tool.hatch.envs.test.default]]
-python = ["3.8", "3.9", "3.10"]
-
 [tool.hatch.envs.default.scripts]
 coverage = [
   "sensible-browser coverage/index.html",
@@ -137,12 +134,17 @@ test = [
   "hatch run lint",
   "pytest --cov frictionless --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300",
 ]
-test-ci = [
-  "hatch run lint",
-  "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 80 --timeout=300 --ci",
-]
 write = [
   "livemark serve",
+]
+
+[[tool.hatch.envs.ci.matrix]]
+python = ["3.8", "3.9", "3.10"]
+
+[tool.hatch.envs.ci.scripts]
+test = [
+  "hatch run lint",
+  "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 80 --timeout=300 --ci",
 ]
 
 [build-system]

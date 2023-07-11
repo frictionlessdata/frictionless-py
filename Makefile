@@ -33,9 +33,6 @@ release:
 test:
 	hatch run test
 
-test-ci:
-	hatch run test-ci
-
 version:
 	@echo $(VERSION)
 
