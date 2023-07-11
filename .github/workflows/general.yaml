@@ -118,7 +118,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: '3.10'
       - name: Prepare environment
         run: pip3 install hatch
       - name: Install and build site
@@ -144,7 +144,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: '3.10'
       - name: Install dependencies
         run: pip install -U build
       - name: Build distribution
