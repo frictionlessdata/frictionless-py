@@ -1,5 +1,6 @@
 from frictionless import Pipeline, steps
 from frictionless.resources import TableResource
+from frictionless.schema.schema import Schema
 
 # General
 
@@ -69,3 +70,25 @@ def test_step_field_update_new_name():
         {"new-name": 2, "name": "france", "population": 66},
         {"new-name": 3, "name": "spain", "population": 47},
     ]
+
+
+def test_step_field_update_field_name_with_primary_key():
+    source = TableResource(path="data/transform.csv")
+    source.schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+                {"name": "population", "type": "integer"},
+            ],
+            "primaryKey": ["id"],
+        }
+    )
+
+    pipeline = Pipeline(
+        steps=[
+            steps.field_update(name="id", descriptor={"name": "pkey"}),
+        ],
+    )
+    target = source.transform(pipeline)
+    assert target.schema.primary_key == ["pkey"]
