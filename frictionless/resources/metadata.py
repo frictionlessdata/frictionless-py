@@ -21,6 +21,7 @@ T = TypeVar("T", bound=Metadata)
 
 
 class MetadataResource(JsonResource, Generic[T]):
+    datatype = "metadata"
     dataclass: Type[T]
 
     @property
