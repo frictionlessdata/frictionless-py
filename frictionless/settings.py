@@ -5,7 +5,7 @@ import os
 
 # Version
 
-VERSION = "5.15.0"
+VERSION = "5.15.1"
 
 # General
 
