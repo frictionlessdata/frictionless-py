@@ -154,7 +154,7 @@ GITHUB_ACCESS_TOKEN=***************************
 
 To release a new version:
 - check that you have push access to the `master` branch
-- update `frictionless/__version__` following the SemVer standard
-- add changes to `CHANGELOG.md` if it's not a patch release (major or micro)
+- update `VERSION` in `frictionless/settings.py` following the SemVer standard
+- add changes to `CHANGELOG.md` if it's not a patch release (major or minor)
 - run `make release` which create a release commit and tag and push it to Github
-- an actual release will happen on the Travis CI platform after running the tests
+- an actual release will happen on the Github CI platform after running the tests
