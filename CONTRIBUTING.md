@@ -154,7 +154,7 @@ GITHUB_ACCESS_TOKEN=***************************
 
 To release a new version:
 - check that you have push access to the `main` branch
-- run `hatch version major|minor|patch` to update the version
+- run `hatch version <major|minor|micro>` to update the version
 - add changes to `CHANGELOG.md` if it's not a patch release (major or minor)
 - run `make release` which create a release commit and tag and push it to Github
 - an actual release will happen on the Github CI platform after running the tests
