@@ -10,7 +10,13 @@ We use Github as a code and issues hosting platform. To report a bug or propose 
 
 To start working on the project:
 
-- Python 3.8+
+- Python 3.10+
+
+Install Python headers if they are missing:
+
+```bash
+sudo apt-get install libpython3.10-dev
+```
 
 ## Enviroment
 
