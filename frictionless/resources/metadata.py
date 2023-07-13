@@ -31,8 +31,9 @@ class MetadataResource(JsonResource, Generic[T]):
 
     # Read
 
-    def read_metadata(self) -> T:
-        return self.dataclass.from_descriptor(self.descriptor, basepath=self.basepath)
+    def read_metadata(self) -> Union[T, None]:
+        if hasattr(self, "dataclass"):
+            return self.dataclass.from_descriptor(self.descriptor, basepath=self.basepath)
 
     # Validate
 
