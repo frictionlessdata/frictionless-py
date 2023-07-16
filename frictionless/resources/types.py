@@ -1,5 +1,4 @@
-from .package import PackageResource
-from .resource import ResourceResource
+from .json import PackageResource, ResourceResource
 from .table import TableResource
 
 Convertible = (TableResource,)
