@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import os
 import pkgutil
 from collections import OrderedDict
@@ -276,8 +277,9 @@ class System:
             if Class is not None:
                 return Class
         for Class in vars(platform.frictionless_checks).values():
-            if getattr(Class, "type", None) == type:
-                return Class
+            if inspect.isclass(Class):
+                if vars(Class).get("type", None) == type:
+                    return Class
         note = f'check type "{type}" is not supported'
         raise FrictionlessException(errors.CheckError(note=note))
 
@@ -299,8 +301,9 @@ class System:
             if Class is not None:
                 return Class
         for Class in vars(platform.frictionless_errors).values():
-            if getattr(Class, "type", None) == type:
-                return Class
+            if inspect.isclass(Class):
+                if vars(Class).get("type", None) == type:
+                    return Class
         note = f'error type "{type}" is not supported'
         raise FrictionlessException(errors.Error(note=note))
 
@@ -312,8 +315,9 @@ class System:
             if Class is not None:
                 return Class
         for Class in vars(platform.frictionless_fields).values():
-            if getattr(Class, "type", None) == type:
-                return Class
+            if inspect.isclass(Class):
+                if vars(Class).get("type", None) == type:
+                    return Class
         note = f'field type "{type}" is not supported'
         raise FrictionlessException(errors.FieldError(note=note))
 
@@ -337,12 +341,13 @@ class System:
             if Class is not None:
                 return Class
         for Class in vars(platform.frictionless_resources).values():
-            if type:
-                if getattr(Class, "type", None) == type:
-                    return Class
-            if datatype:
-                if getattr(Class, "datatype", None) == datatype:
-                    return Class
+            if inspect.isclass(Class):
+                if datatype:
+                    if vars(Class).get("datatype", None) == datatype:
+                        return Class
+                if type:
+                    if vars(Class).get("type", None) == type:
+                        return Class
         note = f'resource type "{type or datatype}" is not supported'
         raise FrictionlessException(errors.ResourceError(note=note))
 
@@ -354,8 +359,9 @@ class System:
             if Class is not None:
                 return Class
         for Class in vars(platform.frictionless_steps).values():
-            if getattr(Class, "type", None) == type:
-                return Class
+            if inspect.isclass(Class):
+                if vars(Class).get("type", None) == type:
+                    return Class
         note = f'step type "{type}" is not supported'
         raise FrictionlessException(errors.StepError(note=note))
 

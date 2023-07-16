@@ -86,7 +86,6 @@ class ViewResource(JsonResource):
 
 
 class MetadataResource(JsonResource, Generic[T]):
-    datatype = "metadata"
     dataclass: Type[T]
 
     @property
