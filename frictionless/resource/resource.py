@@ -419,6 +419,23 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
             raise
         return self
 
+    # Convert
+
+    @classmethod
+    def from_descriptor(  # type: ignore
+        cls,
+        descriptor: Union[types.IDescriptor, str],
+        *,
+        datatype: Optional[str] = None,
+        **options: Any,
+    ) -> Self:
+        if datatype:
+            cls = system.select_resource_class(datatype=datatype)
+            self = cls.from_descriptor(descriptor, **options)
+            self.datatype = datatype
+            return self
+        return super().from_descriptor(descriptor, **options)
+
     # Read
 
     # TODO: deprecate in favour of fileResource.read_file
