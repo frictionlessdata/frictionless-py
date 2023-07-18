@@ -7,15 +7,15 @@ from pydantic import BaseModel
 
 class ZenodoCreator(BaseModel):
     name: str
-    affiliation: str
+    affiliation: Optional[str] = None
     orcid: Optional[str] = None
 
 
 class ZenodoMetadata(BaseModel):
     title: str
     description: str
-    license: str
     publication_date: str
-    upload_type: Literal["dataset"]
-    access_right: Literal["open"]
-    creators: List[ZenodoCreator]
+    license: Optional[str] = None
+    upload_type: Literal["dataset"] = "dataset"
+    access_right: Literal["open"] = "open"
+    creators: List[ZenodoCreator] = []

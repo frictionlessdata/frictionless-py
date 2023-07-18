@@ -41,7 +41,7 @@ class ZenodoControl(Control):
     token has to have deposit:write access.
     """
 
-    base_url: Optional[str] = BASE_URL
+    base_url: str = BASE_URL
     """Endpoint for zenodo. By default it is set to live site (https://zenodo.org/api). For testing upload,
     we can use sandbox for example, https://sandbox.zenodo.org/api. Sandbox doesnot work for
     reading."""
@@ -75,6 +75,7 @@ class ZenodoControl(Control):
     name: Optional[str] = None
     """Custom name for a catalog or a package. Default name is 'catalog' or 'package'"""
 
+    # TODO: remove
     metafn: Optional[str] = None
     """Metadata file path for deposition resource. Deposition resource is used for uploading
     and editing records on Zenodo."""
@@ -119,7 +120,10 @@ class ZenodoControl(Control):
             "all_versions": {"type": "integer"},
             "apikey": {"type": "string"},
             "base_url": {"type": "string"},
-            "bounds": {"type": "string"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "author": {"type": "string"},
+            "company": {"type": "string"},
             "communities": {"type": "string"},
             "deposition_id": {"type": "integer"},
             "doi": {"type": "string"},

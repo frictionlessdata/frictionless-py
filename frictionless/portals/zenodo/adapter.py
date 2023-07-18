@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import datetime
 import json
-import os
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
@@ -53,10 +52,11 @@ class ZenodoAdapter(Adapter):
 
     def write_package(self, package: Package):
         client = platform.pyzenodo3_upload
+        client.BASE_URL = self.control.base_url
 
-        assert self.control.base_url
-        assert self.control.apikey
-        client.BASE_URL = self.control.base_url  # type: ignore
+        # Ensure api key
+        if not self.control.apikey:
+            raise FrictionlessException("Api key is required for zenodo publishing")
 
         try:
             # Ensure deposition
@@ -73,40 +73,40 @@ class ZenodoAdapter(Adapter):
             # Generate metadata
             if self.control.metafn:
                 descriptor = json.loads(Path(self.control.metafn).read_text())
-                metadata = ZenodoMetadata(**descriptor.get("metadata", {}))
+                meta = descriptor.get("metadata", {})
+                meta.setdefault("publication_date", str(datetime.date.today()))
+                meta.setdefault("access_right", "open")
+                metadata = ZenodoMetadata(**meta)
             else:
+                description = self.control.description or package.description or "About"
+                license = "CC-BY-4.0"
+                if package.licenses:
+                    license = package.licenses[0].get("name", license)
                 metadata = ZenodoMetadata(
                     title=self.control.title or package.title or "Title",
-                    description=self.control.description
-                    or package.description
-                    or "About",
-                    license=package.licenses[0].get("name", "CC-BY-4.0")
-                    if package.licenses
-                    else "CC-BY-4.0",
+                    description=description,
+                    license=license,
                     publication_date=str(datetime.date.today()),
-                    upload_type="dataset",
-                    access_right="open",
-                    creators=[],
                 )
                 if self.control.author:
                     metadata.creators.append(
                         ZenodoCreator(
                             name=self.control.author,
-                            affiliation=self.control.company or "Affilation",
+                            affiliation=self.control.company,
                         )
                     )
                 for contributor in package.contributors:
                     metadata.creators.append(
                         ZenodoCreator(
                             name=contributor.get("title", "Title"),
-                            affiliation=contributor.get("organization", "Affilation"),
+                            affiliation=contributor.get("organization"),
                         )
                     )
 
             # Upload metadata
             with tempfile.NamedTemporaryFile("wt") as file:
-                meta = dict(metadata=metadata.model_dump(exclude_unset=True))
-                json.dump(meta, file, indent=2)
+                data = dict(metadata=metadata.model_dump(exclude_none=True))
+                json.dump(data, file, indent=2)
                 file.flush()
                 client.upload_meta(
                     token=self.control.apikey,
@@ -114,45 +114,26 @@ class ZenodoAdapter(Adapter):
                     depid=deposition_id,
                 )
 
-            # Process resources
-            resources: List[Path] = []
-            for key, resource in enumerate(package.resources):
-                if resource.data:
-                    resource_file_name = f"{resource.name}.json" or f"resource{key}.json"
-                    resource_path = os.path.join(
-                        self.control.tmp_path or "", resource_file_name
-                    )
-                    resource.to_json(resource_path)
-                    resources.append(Path(resource_path).expanduser())
-                    continue
-                resource_path = resource.path or ""
-                if resource_path.startswith(("http://", "https://")):
-                    continue
-                if resource.basepath:
-                    resource_path = os.path.join(
-                        str(resource.basepath), str(resource.path)
-                    )
-                resources.append(Path(resource_path).expanduser())
-            package_path = os.path.join(self.control.tmp_path or "", "datapackage.json")
-            package.to_json(package_path)
-
             # Upload package
-            client.upload_data(  # type: ignore
-                token=self.control.apikey,
-                datafn=Path(package_path).expanduser(),
-                depid=deposition_id,  # type: ignore
-                base_url=self.control.base_url,
-            )
-
-            # Upload resource
-            for resource_path in resources:
-                resource_path = Path(resource_path).expanduser()
-                client.upload_data(  # type: ignore
+            with tempfile.TemporaryDirectory() as dir:
+                path = Path(dir) / "datapackage.json"
+                package.to_json(str(path))
+                client.upload_data(
                     token=self.control.apikey,
-                    datafn=resource_path,
-                    depid=deposition_id,  # type: ignore
+                    datafn=path,
+                    depid=deposition_id,
                     base_url=self.control.base_url,
                 )
+
+            # Upload resource
+            for resource in package.resources:
+                if resource.normpath and not resource.remote:
+                    client.upload_data(
+                        token=self.control.apikey,
+                        datafn=Path(resource.normpath),
+                        depid=deposition_id,
+                        base_url=self.control.base_url,
+                    )
 
             # Return result
             return models.PublishResult(

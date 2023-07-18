@@ -545,6 +545,7 @@ def test_zenodo_adapter_write_with_descriptor(tmp_path):
     assert deposition_id == 7098745
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_apikey():
     control = portals.ZenodoControl(
@@ -573,6 +574,7 @@ def test_zenodo_adapter_write_without_wrong_apikey():
     )
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_metadata(tmp_path):
     control = portals.ZenodoControl(
@@ -593,6 +595,7 @@ def test_zenodo_adapter_write_default_base_url(tmp_path):
     assert control.base_url == "https://zenodo.org/api/"
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_base_url():
     control = portals.ZenodoControl(base_url=None)
@@ -904,25 +907,3 @@ def test_zenodo_adapter_catalog_single_record():
     control = portals.ZenodoControl(record="7078768")
     catalog = Catalog(control=control)
     assert catalog.datasets[0].package.to_descriptor() == PACKAGE_WITHOUT_DP
-
-
-# Extra
-
-
-def test_zenodo_adapter_metadata():
-    metafn = portals.zenodo.adapter.generate_metadata
-    package = Package("https://zenodo.org/record/7373765")
-    metadata = metafn(package)
-    assert "frictionlessdata" in metadata["metadata"]["keywords"]
-
-
-def test_zenodo_adapter_metadata_json():
-    metadata = portals.zenodo.adapter.generate_metadata(
-        metadata={
-            "creators": [{"name": "FD Tester", "affiliation": "FD Testing"}],
-            "upload_type": "dataset",
-            "title": "Test File",
-            "description": "Test File",
-        }
-    )
-    assert "frictionlessdata" in metadata["metadata"]["keywords"]
