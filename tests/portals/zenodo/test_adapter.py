@@ -476,7 +476,7 @@ def test_zenodo_adapter_write(tmp_path):
     package = Package("data/datapackage.json")
     result = package.publish(control=control)
     deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/record/7098723"
+    assert result.url == "https://zenodo.org/deposit/7098723"
     assert deposition_id == 7098723
 
 
@@ -490,7 +490,7 @@ def test_zenodo_adapter_write_ods(tmp_path):
     package = Package("data/ods.datapackage.json")
     result = package.publish(control=control)
     deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/record/7098739"
+    assert result.url == "https://zenodo.org/deposit/7098739"
     assert deposition_id == 7098739
 
 
@@ -504,7 +504,7 @@ def test_zenodo_adapter_write_jsonl(tmp_path):
     package = Package("data/jsonl.datapackage.json")
     result = package.publish(control=control)
     deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/record/7098741"
+    assert result.url == "https://zenodo.org/deposit/7098741"
     assert deposition_id == 7098741
 
 
@@ -518,7 +518,7 @@ def test_zenodo_adapter_write_ndjson(tmp_path):
     package = Package("data/ndjson.datapackage.json")
     result = package.publish(control=control)
     deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/record/7098743"
+    assert result.url == "https://zenodo.org/deposit/7098743"
     assert deposition_id == 7098743
 
 
