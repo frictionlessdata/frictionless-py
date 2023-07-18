@@ -19,7 +19,7 @@ def console_index(
     type: str = common.type,
     path: str = common.path,
     # Command
-    database: str = common.database,
+    database: str = common.required_database,
     fast: bool = common.fast,
     fallback: bool = common.fallback,
     qsv: str = common.qsv,
