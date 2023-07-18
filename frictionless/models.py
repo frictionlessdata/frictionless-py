@@ -4,5 +4,5 @@ from pydantic import BaseModel
 
 
 class PublishResult(BaseModel):
-    url: Optional[str]
+    url: Optional[str] = None
     context: Dict[str, Any] = {}

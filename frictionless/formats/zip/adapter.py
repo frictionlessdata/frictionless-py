@@ -5,7 +5,7 @@ import shutil
 import tempfile
 from typing import Optional
 
-from ... import errors, helpers
+from ... import errors, helpers, models
 from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
@@ -112,4 +112,4 @@ class ZipAdapter(Adapter):
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception
 
-        return True
+        return models.PublishResult(context=dict(path=path))
