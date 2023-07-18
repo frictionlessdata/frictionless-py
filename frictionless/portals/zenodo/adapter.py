@@ -7,7 +7,7 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from ... import helpers
+from ... import helpers, models
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
@@ -50,8 +50,7 @@ class ZenodoAdapter(Adapter):
 
     # Write
 
-    # TODO: should return path: str
-    def write_package(self, package: Package) -> int:
+    def write_package(self, package: Package):
         client = platform.pyzenodo3_upload
 
         assert self.control.base_url
@@ -126,7 +125,10 @@ class ZenodoAdapter(Adapter):
                     depid=deposition_id,  # type: ignore
                     base_url=self.control.base_url,
                 )
-            return deposition_id  # type: ignore
+            return models.PublishResult(
+                url=f"https://zenodo.org/record/{deposition_id}",
+                context=dict(deposition_id=deposition_id),
+            )
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)

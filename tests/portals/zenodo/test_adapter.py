@@ -473,7 +473,9 @@ def test_zenodo_adapter_write(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
+    assert result.url == "https://zenodo.org/record/7098723"
     assert deposition_id == 7098723
 
 
@@ -484,7 +486,9 @@ def test_zenodo_adapter_write_ods(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/ods.datapackage.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
+    assert result.url == "https://zenodo.org/record/7098739"
     assert deposition_id == 7098739
 
 
@@ -495,7 +499,9 @@ def test_zenodo_adapter_write_jsonl(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/jsonl.datapackage.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
+    assert result.url == "https://zenodo.org/record/7098741"
     assert deposition_id == 7098741
 
 
@@ -506,7 +512,9 @@ def test_zenodo_adapter_write_ndjson(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/ndjson.datapackage.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
+    assert result.url == "https://zenodo.org/record/7098743"
     assert deposition_id == 7098743
 
 
@@ -532,7 +540,8 @@ def test_zenodo_adapter_write_with_descriptor(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package(descriptor)
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7098745
 
 
@@ -613,7 +622,8 @@ def test_zenodo_adapter_write_resources_with_inline_data(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package(descriptor)
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7098747
 
 
@@ -640,7 +650,8 @@ def test_zenodo_adapter_write_resources_with_remote_url(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package(descriptor)
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7098749
 
 
@@ -652,7 +663,8 @@ def test_zenodo_adapter_write_resources_with_deposition_id(tmp_path):
         deposition_id=7098476,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7098476
 
 
@@ -663,7 +675,8 @@ def test_zenodo_adapter_write_resources_with_deposition_url(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.publish("https://zenodo.org/deposit/7098479", control=control)
+    result = package.publish("https://zenodo.org/deposit/7098479", control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7098479
 
 
@@ -674,7 +687,8 @@ def test_zenodo_adapter_write_resources_to_publish(tmp_path):
         tmp_path=tmp_path,
     )
     package = Package("data/datapackage.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7098751
 
 
@@ -687,7 +701,8 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
         apikey=sandbox_api, base_url="https://sandbox.zenodo.org/api/", tmp_path=tmp_path
     )
     package = Package("data/package/zenodo.packagepartialmeta.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 1132344
 
 
@@ -706,7 +721,8 @@ def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_api, tmp_path
         },
     )
     package = Package("data/package.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 1139855
 
 
@@ -719,7 +735,8 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
         apikey=sandbox_api, base_url="https://sandbox.zenodo.org/api/", tmp_path=tmp_path
     )
     package = Package("data/package/zenodo.packagewithmeta.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 1132346
 
 
@@ -727,7 +744,8 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
 def test_zenodo_adapter_write_resources_without_metafile(tmp_path):
     control = portals.ZenodoControl(tmp_path=tmp_path)
     package = Package("data/package/zenodo.packagewithmeta.json")
-    deposition_id = package.publish(control=control)
+    result = package.publish(control=control)
+    deposition_id = result.context.get("deposition_id")
     assert deposition_id == 7373765
 
 

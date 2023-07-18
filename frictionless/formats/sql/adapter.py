@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, Optional
 
+from ... import models
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
@@ -96,7 +97,7 @@ class SqlAdapter(Adapter):
 
     # Write
 
-    def write_package(self, package: Package) -> bool:
+    def write_package(self, package: Package):
         with self.engine.begin() as conn:
             tables: List[Table] = []
             for res in package.resources:
@@ -110,7 +111,10 @@ class SqlAdapter(Adapter):
                 resource = package.get_table_resource(table.name)
                 with resource:
                     self.write_row_stream(resource.row_stream, table_name=table.name)
-        return bool(tables)
+        return models.PublishResult(
+            url=self.engine.url.render_as_string(hide_password=True),
+            context=dict(engine=self.engine),
+        )
 
     def write_schema(
         self,

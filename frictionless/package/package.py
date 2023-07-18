@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
 import attrs
 from typing_extensions import Self
 
-from .. import errors, fields, helpers, settings
+from .. import errors, fields, helpers, models, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -291,7 +291,9 @@ class Package(Metadata, metaclass=Factory):
 
     # Publish
 
-    def publish(self, target: Any = None, *, control: Optional[Control] = None) -> str:
+    def publish(
+        self, target: Any = None, *, control: Optional[Control] = None
+    ) -> models.PublishResult:
         """Publish package to any supported data portal
 
         Parameters:

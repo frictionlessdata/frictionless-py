@@ -1,5 +1,3 @@
-from typing import Any, Optional
-
 from ...helpers import slugify
 from ...package import Package
 from ...platform import platform
@@ -36,5 +34,5 @@ class ExcelAdapter(Adapter):
     # Write
 
     # TODO: implement
-    def write_package(self, package: Package) -> Optional[Any]:
-        pass
+    #  def write_package(self, package: Package):
+    #  pass
