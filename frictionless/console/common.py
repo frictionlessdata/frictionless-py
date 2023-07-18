@@ -334,6 +334,10 @@ database = Option(
     help="Database url",
 )
 
+required_database = Option(
+    help="Database url",
+)
+
 fast = Option(
     default=None,
     help="Fast database indexing",
