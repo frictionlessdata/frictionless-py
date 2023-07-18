@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from .. import models
+
 if TYPE_CHECKING:
     from ..catalog import Catalog
     from ..package import Package
@@ -21,8 +23,7 @@ class Adapter:
 
     # Write
 
-    # TODO: should return path: str
-    def write_package(self, package: Package) -> Any:
+    def write_package(self, package: Package) -> models.PublishResult:
         raise NotImplementedError()
 
     # Experimental

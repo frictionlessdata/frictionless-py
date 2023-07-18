@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Literal
-from typing import Protocol, TextIO, TypedDict, Union
+from typing import Protocol, TextIO, Union
 
 if TYPE_CHECKING:
     from .error import Error
@@ -25,11 +25,6 @@ IFragment = List[List[Any]]
 ILabels = List[str]
 IOnerror = Literal["ignore", "warn", "raise"]
 ITabularData = Dict[str, List[Dict[str, Any]]]
-
-
-class IPublishResult(TypedDict):
-    url: str
-    context: Dict[str, Any]
 
 
 # Functions

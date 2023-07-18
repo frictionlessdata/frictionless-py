@@ -1,8 +1,10 @@
 import json
 import os
-from typing import Any, Dict, Optional, Union
+from pathlib import PurePosixPath
+from typing import Any, Dict, Optional
+from urllib.parse import urljoin
 
-from ... import helpers
+from ... import helpers, models
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
@@ -67,7 +69,7 @@ class CkanAdapter(Adapter):
 
     # Write
 
-    def write_package(self, package: Package) -> Union[None, str]:
+    def write_package(self, package: Package):
         baseurl = self.control.baseurl
         endpoint = f"{baseurl}/api/action/package_create"
         headers = set_headers(self)
@@ -105,6 +107,7 @@ class CkanAdapter(Adapter):
             if response.status_code == 200:
                 response_dict = json.loads(response.content)
                 dataset_id = response_dict["result"]["id"]
+                dataset_name = response_dict["result"]["name"]
                 package_descriptor = package.to_descriptor(validate=True)
 
                 # upload resources
@@ -138,8 +141,13 @@ class CkanAdapter(Adapter):
                         )
                     },
                 )
-
-                return f"{self.control.baseurl}/dataset/{dataset_id}"
+                return models.PublishResult(
+                    url=urljoin(
+                        self.control.baseurl or "",
+                        str(PurePosixPath("dataset").joinpath(dataset_name)),
+                    ),
+                    context=dict(dataset_id=dataset_id),
+                )
             else:
                 note = response.text
                 raise FrictionlessException(note)
