@@ -5,9 +5,9 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
-from ... import helpers, models
+from ... import models
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
@@ -15,6 +15,7 @@ from ...platform import platform
 from ...resource import Resource
 from ...system import Adapter
 from .control import ZenodoControl
+from .models import ZenodoCreator, ZenodoMetadata
 
 if TYPE_CHECKING:
     from pyzenodo3 import Record  # type: ignore
@@ -56,35 +57,62 @@ class ZenodoAdapter(Adapter):
         assert self.control.base_url
         assert self.control.apikey
         client.BASE_URL = self.control.base_url  # type: ignore
-        metafn = self.control.metafn
-
-        if not metafn:
-            meta_data = generate_metadata(package)
-            with tempfile.NamedTemporaryFile("wt", delete=False) as file:
-                json.dump(meta_data, file, indent=2)
-                metafn = file.name
-
-        if metafn:
-            # Check if metadata is a JSON Object
-            if isinstance(metafn, dict):
-                meta_data = generate_metadata(metadata=metafn)
-                with tempfile.NamedTemporaryFile("wt", delete=False) as file:
-                    json.dump(meta_data, file, indent=2)
-                    metafn = file.name
 
         try:
+            # Ensure deposition
             deposition_id = self.control.deposition_id
             if not deposition_id:
-                # Create a deposition resource
-                deposition_id = client.create(  # type: ignore
-                    token=self.control.apikey, base_url=self.control.base_url
+                deposition_id = cast(
+                    int,
+                    client.create(
+                        token=self.control.apikey,
+                        base_url=self.control.base_url,
+                    ),
                 )
-            metafn = Path(metafn).expanduser()
-            client.upload_meta(  # type: ignore
-                token=self.control.apikey,
-                metafn=metafn,
-                depid=deposition_id,  # type: ignore
-            )
+
+            # Generate metadata
+            if self.control.metafn:
+                descriptor = json.loads(Path(self.control.metafn).read_text())
+                metadata = ZenodoMetadata(**descriptor.get("metadata", {}))
+            else:
+                metadata = ZenodoMetadata(
+                    title=self.control.title or package.title or "Title",
+                    description=self.control.description
+                    or package.description
+                    or "About",
+                    license=package.licenses[0].get("name", "CC-BY-4.0")
+                    if package.licenses
+                    else "CC-BY-4.0",
+                    publication_date=str(datetime.date.today()),
+                    upload_type="dataset",
+                    access_right="open",
+                    creators=[],
+                )
+                if self.control.author:
+                    metadata.creators.append(
+                        ZenodoCreator(
+                            name=self.control.author,
+                            affiliation=self.control.company or "Affilation",
+                        )
+                    )
+                for contributor in package.contributors:
+                    metadata.creators.append(
+                        ZenodoCreator(
+                            name=contributor.get("title", "Title"),
+                            affiliation=contributor.get("organization", "Affilation"),
+                        )
+                    )
+
+            # Upload metadata
+            with tempfile.NamedTemporaryFile("wt") as file:
+                meta = dict(metadata=metadata.model_dump(exclude_unset=True))
+                json.dump(meta, file, indent=2)
+                file.flush()
+                client.upload_meta(
+                    token=self.control.apikey,
+                    metafn=file.name,
+                    depid=deposition_id,
+                )
 
             # Process resources
             resources: List[Path] = []
@@ -97,11 +125,9 @@ class ZenodoAdapter(Adapter):
                     resource.to_json(resource_path)
                     resources.append(Path(resource_path).expanduser())
                     continue
-
                 resource_path = resource.path or ""
                 if resource_path.startswith(("http://", "https://")):
                     continue
-
                 if resource.basepath:
                     resource_path = os.path.join(
                         str(resource.basepath), str(resource.path)
@@ -110,13 +136,15 @@ class ZenodoAdapter(Adapter):
             package_path = os.path.join(self.control.tmp_path or "", "datapackage.json")
             package.to_json(package_path)
 
-            # Upload package and resources
+            # Upload package
             client.upload_data(  # type: ignore
                 token=self.control.apikey,
                 datafn=Path(package_path).expanduser(),
                 depid=deposition_id,  # type: ignore
                 base_url=self.control.base_url,
             )
+
+            # Upload resource
             for resource_path in resources:
                 resource_path = Path(resource_path).expanduser()
                 client.upload_data(  # type: ignore
@@ -125,10 +153,13 @@ class ZenodoAdapter(Adapter):
                     depid=deposition_id,  # type: ignore
                     base_url=self.control.base_url,
                 )
+
+            # Return result
             return models.PublishResult(
                 url=f"https://zenodo.org/record/{deposition_id}",
                 context=dict(deposition_id=deposition_id),
             )
+
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
@@ -226,60 +257,3 @@ def get_package(record: Record, title: str, formats: List[str]) -> Package:  # t
             resource = Resource(path=file["key"])  # type: ignore
             package.add_resource(resource)
     return package
-
-
-def generate_metadata(
-    package: Optional[Package] = None, *, metadata: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    meta_data: Union[str, Dict[str, Any], None] = {"metadata": {}}
-    if not metadata and not package:
-        note = "Zenodo API Metadata Creation error: Either metadata or package should be provided to generate metadata."
-        raise FrictionlessException(note)
-
-    if metadata:
-        if (
-            not metadata.get("title")
-            or not metadata.get("description")
-            or not metadata.get("creators")
-        ):
-            note = "Zenodo API Metadata Creation error: missing title or description or creators."
-            raise FrictionlessException(note)
-
-        meta_data["metadata"] = metadata
-        if "keywords" not in meta_data["metadata"]:
-            meta_data["metadata"]["keywords"] = ["frictionlessdata"]
-
-        return helpers.remove_non_values(meta_data)
-
-    assert package
-
-    if not package.title or not package.description or not package.contributors:
-        note = "Zenodo API Metadata Creation error: Unable to read title or description or contributors from package descriptor."
-        raise FrictionlessException(note)
-
-    meta_data["metadata"] = {
-        "title": package.title,
-        "description": package.description,
-        "publication_date": package.created or str(datetime.datetime.now()),
-        "upload_type": "dataset",
-        "access_right": "open",
-    }
-    if package.licenses:
-        meta_data["metadata"]["creators"] = package.licenses[0].get("name")  # type: ignore
-
-    creators: List[Dict[str, Any]] = []
-    for contributor in package.contributors:
-        creators.append(
-            {
-                "name": contributor.get("title"),
-                "affiliation": contributor.get("organization"),
-            }
-        )
-    keywords = package.keywords or []
-    if "frictionlessdata" not in package.keywords:
-        keywords.append("frictionlessdata")
-
-    if creators:
-        meta_data["metadata"]["creators"] = creators  # type: ignore
-    meta_data["metadata"]["keywords"] = keywords  # type: ignore
-    return helpers.remove_non_values(meta_data)

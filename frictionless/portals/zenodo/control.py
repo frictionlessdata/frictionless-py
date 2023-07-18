@@ -46,6 +46,11 @@ class ZenodoControl(Control):
     we can use sandbox for example, https://sandbox.zenodo.org/api. Sandbox doesnot work for
     reading."""
 
+    title: Optional[str] = None
+    description: Optional[str] = None
+    author: Optional[str] = None
+    company: Optional[str] = None
+
     bounds: Optional[str] = None
     """Return records filtered by a geolocation bounding box.
     For example, (Format bounds=143.37158,-38.99357,146.90918,-37.35269)"""
