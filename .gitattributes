@@ -1,0 +1,2 @@
+# Don't apply EOL normalization for csv files
+*.csv  -text
