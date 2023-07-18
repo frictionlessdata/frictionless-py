@@ -122,11 +122,7 @@ def test_analyze_package_invalid_data():
     }
     package = Package(descriptor)
     analysis = package.analyze()
-    assert (
-        round(analysis["capital-invalid"]["averageRecordSizeInBytes"]) == 12
-        if IS_UNIX
-        else 14
-    )
+    assert round(analysis["capital-invalid"]["averageRecordSizeInBytes"]) == 12
     assert analysis["capital-invalid"]["fields"] == 4
     assert analysis["capital-invalid"]["fieldStats"] == {}
     assert analysis["capital-invalid"]["rows"] == 4
