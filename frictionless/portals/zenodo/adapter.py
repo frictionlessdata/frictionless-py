@@ -137,7 +137,7 @@ class ZenodoAdapter(Adapter):
 
             # Return result
             return models.PublishResult(
-                url=f"https://zenodo.org/record/{deposition_id}",
+                url=f"https://zenodo.org/deposit/{deposition_id}",
                 context=dict(deposition_id=deposition_id),
             )
 
