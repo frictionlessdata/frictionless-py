@@ -77,8 +77,8 @@ class GithubAdapter(Adapter):
         if self.control.basepath:
             package_path = os.path.join(self.control.basepath, package_path)
         repository = user.get_repo(self.control.repo)
-        email = user.email or self.control.email
         username = self.control.name or user.name or self.control.user
+        email = user.email or self.control.email or f"{username}@users.noreply.github.com"
         assert email
         assert username
         author = platform.github.InputGitAuthor(username, email)
