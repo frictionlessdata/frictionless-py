@@ -1,5 +1,4 @@
 import io
-from typing import Any, Optional
 
 from ...helpers import slugify
 from ...package import Package
@@ -38,5 +37,5 @@ class OdsAdapter(Adapter):
     # Write
 
     # TODO: implement
-    def write_package(self, package: Package) -> Optional[Any]:
-        pass
+    #  def write_package(self, package: Package):
+    #  pass

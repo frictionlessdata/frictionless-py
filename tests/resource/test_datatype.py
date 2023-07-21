@@ -128,3 +128,37 @@ def test_resource_datatype_package_with_packagify(source):
     resource = Resource(source, packagify=True)
     assert resource.datatype == "package"
     assert isinstance(resource, resources.PackageResource)
+
+
+# Bugs
+
+DESCRIPTOR = {
+    "type": "json",
+    "name": "data",
+    "path": "data.json",
+    "scheme": "file",
+    "format": "json",
+    "mediatype": "text/json",
+    "encoding": "utf-8",
+}
+
+
+def test_resource_constructor_with_forced_datatype():
+    resource = Resource(path="data.json", datatype="table")
+    assert resource.type == "table"
+    assert resource.datatype == "table"
+    assert isinstance(resource, resources.TableResource)
+
+
+def test_resource_from_descriptor_with_forced_datatype():
+    resource = Resource.from_descriptor(DESCRIPTOR, datatype="table")
+    assert resource.type == "table"
+    assert resource.datatype == "table"
+    assert isinstance(resource, resources.TableResource)
+
+
+def test_resource_from_descriptor_with_class_datatype():
+    resource = resources.TableResource.from_descriptor(DESCRIPTOR)
+    assert resource.type == "table"
+    assert resource.datatype == "table"
+    assert isinstance(resource, resources.TableResource)

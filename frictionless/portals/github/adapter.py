@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Any, Dict, List, Union
 
+from ... import models
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
@@ -53,7 +54,7 @@ class GithubAdapter(Adapter):
     # Write
 
     # TODO: should return path: str
-    def write_package(self, package: Package) -> Repository:
+    def write_package(self, package: Package):
         assert self.control.repo
         assert self.control.apikey
 
@@ -76,8 +77,8 @@ class GithubAdapter(Adapter):
         if self.control.basepath:
             package_path = os.path.join(self.control.basepath, package_path)
         repository = user.get_repo(self.control.repo)
-        email = user.email or self.control.email
         username = self.control.name or user.name or self.control.user
+        email = user.email or self.control.email or f"{username}@users.noreply.github.com"
         assert email
         assert username
         author = platform.github.InputGitAuthor(username, email)
@@ -115,9 +116,12 @@ class GithubAdapter(Adapter):
             note = "Github API error:" + repr(exception)
             raise FrictionlessException(note)
 
-        return repository
+        return models.PublishResult(
+            url=repository.html_url,
+            context=dict(repository=repository),
+        )
 
-    # Catalog
+    # Experimental
 
     def read_catalog(self) -> Catalog:
         packages: List[Union[Package, str]] = []

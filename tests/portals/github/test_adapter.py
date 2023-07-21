@@ -434,10 +434,12 @@ def test_github_adapter_write_package_file_with_descriptor_empty_resources():
         ],
     }
     package = Package(descriptor)
-    response = package.publish(control=portals.GithubControl(user="fdtester", repo=repo))
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    result = package.publish(control=portals.GithubControl(user="fdtester", repo=repo))
+    repository = result.context.get("repository")
+    assert result.url == f"https://github.com/fdtester/{repo}"
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
 
@@ -447,10 +449,12 @@ def test_github_adapter_write_package_file_with_descriptor():
     repo = "test-write-package-with-descriptor"
     descriptor = {"name": "test-tabulator", "resources": []}
     package = Package(descriptor)
-    response = package.publish(control=portals.GithubControl(user="fdtester", repo=repo))
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    result = package.publish(control=portals.GithubControl(user="fdtester", repo=repo))
+    repository = result.context.get("repository")
+    assert result.url == f"https://github.com/fdtester/{repo}"
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
 
@@ -460,10 +464,11 @@ def test_github_adapter_write_package_file(options_write):
     target_url = options_write.pop("url")
     repo = options_write.pop("repo")
     package = Package("data/datapackage.json")
-    response = package.publish(target=target_url)
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    result = package.publish(target=target_url)
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
 
@@ -504,15 +509,17 @@ def test_github_adapter_write_package_file_with_additional_params(
     target_url = options_write_test_params.pop("url")
     repo = options_write_test_params.pop("repo")
     package = Package("data/datapackage.json")
-    response = package.publish(
+    result = package.publish(
         target=target_url,
         control=portals.GithubControl(
             filename="package.json", email="info@okfn.org", name="FD"
         ),
     )
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("package.json")) == 'ContentFile(path="package.json")'
+        repr(repository.get_contents("package.json"))
+        == 'ContentFile(path="package.json")'
     )
 
 
@@ -520,10 +527,11 @@ def test_github_adapter_write_package_file_with_additional_params(
 def test_github_adapter_write_package_file_without_target_url():
     repo = "test-write-without-url"
     package = Package("data/datapackage.json")
-    response = package.publish(control=portals.GithubControl(repo=repo))
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    result = package.publish(control=portals.GithubControl(repo=repo))
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
 
@@ -547,10 +555,11 @@ def test_github_adapter_publish_to_github(options_publish_test_params):
     target_url = options_publish_test_params.pop("url")
     repo = options_publish_test_params.pop("repo")
     package = Package("data/datapackage.json")
-    response = package.publish(target=target_url)
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    result = package.publish(target=target_url)
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
 
@@ -559,22 +568,23 @@ def test_github_adapter_publish_to_github(options_publish_test_params):
 def test_github_adapter_publish_to_github_multiple_folders():
     repo = "test-write-to-multiple-folders"
     package = Package("data/multiple-folders.package.json")
-    response = package.publish(
+    result = package.publish(
         control=portals.GithubControl(
             email="frictionlessdata@okfn.org", user="fdtester", repo=repo
         )
     )
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
     assert (
-        repr(response.get_contents("package/data.csv"))
+        repr(repository.get_contents("package/data.csv"))
         == 'ContentFile(path="package/data.csv")'
     )
     assert (
-        repr(response.get_contents("countries.csv"))
+        repr(repository.get_contents("countries.csv"))
         == 'ContentFile(path="countries.csv")'
     )
 
@@ -585,7 +595,7 @@ def test_github_adapter_publish_to_github_multiple_folders_with_basepath():
     repo = "test-write-to-multiple-folders-with-basepath"
     package_file_path = os.path.join("data", "multiple-folders.package.json")
     package = Package(package_file_path)
-    response = package.publish(
+    result = package.publish(
         control=portals.GithubControl(
             email="frictionlessdata@okfn.org",
             user="fdtester",
@@ -593,17 +603,18 @@ def test_github_adapter_publish_to_github_multiple_folders_with_basepath():
             basepath="fd-data",
         )
     )
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo}"
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo}"
     assert (
-        repr(response.get_contents("fd-data/datapackage.json"))
+        repr(repository.get_contents("fd-data/datapackage.json"))
         == 'ContentFile(path="fd-data/datapackage.json")'
     )
     assert (
-        repr(response.get_contents("fd-data/package/data.csv"))
+        repr(repository.get_contents("fd-data/package/data.csv"))
         == 'ContentFile(path="fd-data/package/data.csv")'
     )
     assert (
-        repr(response.get_contents("fd-data/countries.csv"))
+        repr(repository.get_contents("fd-data/countries.csv"))
         == 'ContentFile(path="fd-data/countries.csv")'
     )
 
@@ -613,13 +624,14 @@ def test_github_adapter_publish_package_read_from_github_repo_with_data_package(
     repo_to_write = "test-write-package-read-from-github"
     package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
     control = portals.GithubControl(repo=repo_to_write)
-    response = package.publish(control=control)
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo_to_write}"
+    result = package.publish(control=control)
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo_to_write}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
-    assert repr(response.get_contents("table.xls")) == 'ContentFile(path="table.xls")'
+    assert repr(repository.get_contents("table.xls")) == 'ContentFile(path="table.xls")'
 
 
 @pytest.mark.ci
@@ -628,22 +640,23 @@ def test_github_adapter_publish_package_read_from_github_repo_without_data_packa
     repo_to_write = "test-write-package-read-from-github-repo-without-datapackage"
     package = Package("https://github.com/fdtester/test-repo-without-datapackage")
     control = portals.GithubControl(repo=repo_to_write)
-    response = package.publish(control=control)
-    assert response.url == f"https://api.github.com/repos/fdtester/{repo_to_write}"
+    result = package.publish(control=control)
+    repository = result.context.get("repository")
+    assert repository.url == f"https://api.github.com/repos/fdtester/{repo_to_write}"
     assert (
-        repr(response.get_contents("datapackage.json"))
+        repr(repository.get_contents("datapackage.json"))
         == 'ContentFile(path="datapackage.json")'
     )
     assert (
-        repr(response.get_contents("data/capitals.csv"))
+        repr(repository.get_contents("data/capitals.csv"))
         == 'ContentFile(path="data/capitals.csv")'
     )
     assert (
-        repr(response.get_contents("data/countries.csv"))
+        repr(repository.get_contents("data/countries.csv"))
         == 'ContentFile(path="data/countries.csv")'
     )
     assert (
-        repr(response.get_contents("data/student.xlsx"))
+        repr(repository.get_contents("data/student.xlsx"))
         == 'ContentFile(path="data/student.xlsx")'
     )
 

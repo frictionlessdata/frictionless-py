@@ -386,8 +386,8 @@ def test_ckan_adapter_publish_minimal_package_info(options_lh):
     )
     package = Package("data/package.json")
     package_name = package.name
-    response = package.publish(control=control)
-    assert "dataset/0696c380-3fe6-4a62-9948-c0f09f17b389" in response
+    result = package.publish(control=control)
+    assert result.url == "http://localhost:5000/dataset/name"
 
     # Read
     control = portals.CkanControl(baseurl=url, dataset="name")
@@ -404,8 +404,11 @@ def test_ckan_adapter_publish_with_detail_info(options_lh):
     )
     package = Package("data/detailed.package.json")
     package_name = package.name
-    response = package.publish(control=control)
-    assert "dataset/e1c26a30-5689-450f-af0a-262afba1e55c" in response
+    result = package.publish(control=control)
+    assert (
+        result.url
+        == "http://localhost:5000/dataset/dataset-test-package-with-organization"
+    )
 
     # Read
     control = portals.CkanControl(
@@ -423,8 +426,11 @@ def test_ckan_adapter_publish_with_detail_info_with_schema(options_lh):
     control = portals.CkanControl(baseurl=url, apikey="env:CKAN_APIKEY")
     package = Package("data/detailed-with-schema.package.json")
     package_name = package.name
-    response = package.publish(control=control)
-    assert "dataset/2a02c167-589f-42da-866b-67fd29895d5b" in response
+    result = package.publish(control=control)
+    assert (
+        result.url
+        == "http://localhost:5000//dataset/2a02c167-589f-42da-866b-67fd29895d5b"
+    )
 
     # Read
     control = portals.CkanControl(baseurl=url, dataset="dataset-test-package-with-schema")
@@ -442,8 +448,8 @@ def test_ckan_adapter_publish_list_published_files(options_lh):
         organization_name="frictionless-data",
     )
     package = Package("data/ckan.package.json")
-    response = package.publish(control=control)
-    assert "dataset/f1228d08-f1bd-4974-bae5-935d4dae331d" in response
+    result = package.publish(control=control)
+    assert result.url == "http://localhost:5000/dataset/dataset-test-package-file-write"
 
     # Read
     dataset_dict = {"id": "dataset-test-package-file-write"}
@@ -466,8 +472,11 @@ def test_ckan_adapter_publish_list_resources(options_lh):
     )
     package = Package("data/ckan.package.yaml")
     package_name = package.name
-    response = package.publish(control=control)
-    assert "dataset/ea8fbe1b-3702-47f1-a958-fa22db4b5a76" in response
+    result = package.publish(control=control)
+    assert (
+        result.url
+        == "http://localhost:5000/dataset/test-package-file-write-with-resources-inside-folder"
+    )
 
     # Read
     control = portals.CkanControl(
@@ -492,8 +501,11 @@ def test_ckan_adapter_publish_list_resources_same_name_in_different_folder(optio
     )
     package = Package("data/ckan.package-sameresourcename.yaml")
     package_name = package.name
-    response = package.publish(control=control)
-    assert "dataset/c979b90a-6662-4b60-b53c-ab5200ca9369" in response
+    result = package.publish(control=control)
+    assert (
+        result.url
+        == "http://localhost:5000/dataset/test-package-file-write-with-same-resource-name-inside-different-folder"
+    )
 
     # Read
     control = portals.CkanControl(
@@ -516,15 +528,18 @@ def test_ckan_adapter_publish_update_info(options_lh):
     url = options_lh.pop("url")
     control = portals.CkanControl(baseurl=url, apikey="env:CKAN_APIKEY")
     package = Package("data/detailed-with-id.package.json")
-    response = package.publish(control=control)
-    assert "dataset/dataset-test-detailed-with-id" in response
+    result = package.publish(control=control)
+    assert result.url == "http://localhost:5000/dataset/dataset-test-detailed-with-id"
 
     # Update
     control = portals.CkanControl(
         baseurl=url, dataset="dataset-test-detailed-with-id", allow_update=True
     )
-    response = package.publish(control=control)
-    assert "dataset/dataset-test-detailed-with-id" in response
+    result = package.publish(control=control)
+    assert (
+        result.url
+        == "http://localhost:5000/dataset/dataset/dataset-test-detailed-with-id"
+    )
 
 
 @pytest.mark.vcr
