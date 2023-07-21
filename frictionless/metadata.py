@@ -163,7 +163,11 @@ class Metadata:
         # TODO: remove in next version
         # Transform with a base class in case the type is not available
         cls.metadata_transform(descriptor)
-        Class = cls.metadata_select_class(descriptor.get("type"))
+        type = descriptor.get("type")
+        class_type = vars(cls).get("type")
+        if isinstance(class_type, str):
+            type = class_type
+        Class = cls.metadata_select_class(type)
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
         Class.metadata_transform(descriptor)
         errors = list(Class.metadata_validate(descriptor))
