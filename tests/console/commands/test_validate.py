@@ -4,7 +4,7 @@ import pytest
 import yaml
 from typer.testing import CliRunner
 
-from frictionless import Detector, Dialect, platform, validate
+from frictionless import Detector, Dialect, validate
 from frictionless.console import console
 
 runner = CliRunner()
@@ -81,7 +81,6 @@ def test_console_validate_field_missing_values():
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_console_validate_chucksum_hash():
     actual = runner.invoke(
         console,
@@ -95,7 +94,6 @@ def test_console_validate_chucksum_hash():
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_console_validate_chucksum_bytes():
     actual = runner.invoke(console, "validate data/table.csv --json --bytes 30")
     expect = validate("data/table.csv", bytes=30)
