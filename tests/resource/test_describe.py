@@ -1,6 +1,4 @@
-import pytest
-
-from frictionless import Detector, Dialect, Resource, formats, platform
+from frictionless import Detector, Dialect, Resource, formats
 
 # General
 
@@ -25,7 +23,6 @@ def test_resource_describe():
     }
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_describe_with_stats():
     resource = Resource.describe("data/table.csv", stats=True)
     assert isinstance(resource, Resource)

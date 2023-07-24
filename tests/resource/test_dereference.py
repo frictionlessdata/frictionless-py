@@ -8,7 +8,6 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_dereference():
     resource = Resource(path="data/table.csv", schema="data/schema.json")
     resource.infer(stats=True)
