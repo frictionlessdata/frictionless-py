@@ -67,7 +67,7 @@ dev = [
     "yattag",
     "neovim",
     "pytest",
-    "pyright",
+    "pyright==1.1.317",
     "ipython",
     "livemark",
     "pytest-cov",
