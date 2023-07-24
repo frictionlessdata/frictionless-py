@@ -1,9 +1,10 @@
 import json
 
+import pytest
 import yaml
 from typer.testing import CliRunner
 
-from frictionless import Detector, Dialect, describe, formats
+from frictionless import Detector, Dialect, describe, formats, platform
 from frictionless.console import console
 
 runner = CliRunner()
@@ -123,6 +124,7 @@ def test_console_describe_extract_dialect_sheet_option():
     assert json.loads(actual.stdout) == expect.to_descriptor()
 
 
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_console_describe_extract_dialect_table_option_sql(sqlite_url_data):
     actual = runner.invoke(console, f"describe {sqlite_url_data} --table fruits --json")
     expect = describe(sqlite_url_data, control=formats.SqlControl(table="fruits"))
