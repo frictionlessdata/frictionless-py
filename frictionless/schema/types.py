@@ -18,7 +18,7 @@ class ISchema(TypedDict, total=False):
 
 class IField(TypedDict, total=False):
     name: Required[str]
-    #  type: required
+    #  type = required
     title: str
     description: str
     format: str

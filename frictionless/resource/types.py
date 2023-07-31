@@ -11,7 +11,7 @@ from ..schema import ISchema
 # TODO: replace by frictionless-standards
 class IResource(TypedDict, total=False):
     name: Required[str]
-    #  type: required
+    #  type = required
     title: str
     description: str
     path: str

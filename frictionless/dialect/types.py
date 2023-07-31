@@ -23,9 +23,9 @@ class IDialect(TypedDict, total=False):
     excel: IExcelControl
 
 
-# implicit type
 class IControl(TypedDict, total=False):
     name: str
+    # implicit = type
     title: str
     description: str
 
