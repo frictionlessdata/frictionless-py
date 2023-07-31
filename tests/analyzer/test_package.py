@@ -2,9 +2,7 @@ import sys
 
 import pytest
 
-from frictionless import Package, platform
-
-IS_UNIX = platform.type != "windows"
+from frictionless import Package
 
 pytestmark = pytest.mark.skipif(
     sys.version_info < (3, 10),
@@ -122,11 +120,7 @@ def test_analyze_package_invalid_data():
     }
     package = Package(descriptor)
     analysis = package.analyze()
-    assert (
-        round(analysis["capital-invalid"]["averageRecordSizeInBytes"]) == 12
-        if IS_UNIX
-        else 14
-    )
+    assert round(analysis["capital-invalid"]["averageRecordSizeInBytes"]) == 12
     assert analysis["capital-invalid"]["fields"] == 4
     assert analysis["capital-invalid"]["fieldStats"] == {}
     assert analysis["capital-invalid"]["rows"] == 4
@@ -241,7 +235,7 @@ def test_analyze_package_detailed_invalid_data():
     package = Package(descriptor)
     analysis = package.analyze(detailed=True)
     name = "capital-invalid"
-    assert round(analysis[name]["averageRecordSizeInBytes"]) == 12 if IS_UNIX else 14
+    assert round(analysis[name]["averageRecordSizeInBytes"]) == 12
     assert analysis[name]["fields"] == 4
     assert list(analysis[name]["fieldStats"].keys()) == [
         "id",

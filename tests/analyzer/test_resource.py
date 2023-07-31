@@ -2,10 +2,7 @@ import sys
 
 import pytest
 
-from frictionless import platform
 from frictionless.resources import TableResource
-
-IS_UNIX = platform.type != "windows"
 
 pytestmark = pytest.mark.skipif(
     sys.version_info < (3, 10),
@@ -32,7 +29,7 @@ def test_analyze_resource():
         "fields",
         "rows",
     ]
-    assert round(analysis["averageRecordSizeInBytes"]) == 85 if IS_UNIX else 86
+    assert round(analysis["averageRecordSizeInBytes"]) == 85
     assert analysis["fields"] == 11
     assert analysis["rows"] == 9
     assert analysis["rowsWithNullValues"] == 2
@@ -57,7 +54,7 @@ def test_analyze_resource_detailed():
         "fields",
         "rows",
     ]
-    assert round(analysis["averageRecordSizeInBytes"]) == 85 if IS_UNIX else 86
+    assert round(analysis["averageRecordSizeInBytes"]) == 85
     assert analysis["fields"] == 11
     assert analysis["rows"] == 9
     assert analysis["rowsWithNullValues"] == 2
@@ -225,7 +222,7 @@ def test_analyze_resource_detailed_with_empty_rows():
 def test_analyze_resource_with_invalid_data():
     resource = TableResource(path="data/invalid.csv")
     analysis = resource.analyze()
-    assert round(analysis["averageRecordSizeInBytes"]) == 12 if IS_UNIX else 14
+    assert round(analysis["averageRecordSizeInBytes"]) == 12
     assert analysis["fields"] == 4
     assert analysis["fieldStats"] == {}
     assert analysis["rows"] == 4
@@ -237,7 +234,7 @@ def test_analyze_resource_with_invalid_data():
 def test_analyze_resource_detailed_with_invalid_data():
     resource = TableResource(path="data/invalid.csv")
     analysis = resource.analyze(detailed=True)
-    assert round(analysis["averageRecordSizeInBytes"]) == 12 if IS_UNIX else 14
+    assert round(analysis["averageRecordSizeInBytes"]) == 12
     assert analysis["fields"] == 4
     assert list(analysis["fieldStats"].keys()) == ["id", "name", "field3", "name2"]
     assert analysis["rows"] == 4

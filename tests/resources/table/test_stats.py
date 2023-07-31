@@ -1,6 +1,6 @@
 import pytest
 
-from frictionless import Dialect, platform
+from frictionless import Dialect
 from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -9,7 +9,6 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 # General
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash():
     with TableResource(path="data/doublequote.csv") as resource:
         resource.read_rows()
@@ -19,7 +18,6 @@ def test_resource_stats_hash():
         )
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_compressed():
     with TableResource(path="data/doublequote.csv.zip") as resource:
         resource.read_rows()
@@ -30,7 +28,6 @@ def test_resource_stats_hash_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_hash_remote():
     with TableResource(path=BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
@@ -40,14 +37,12 @@ def test_resource_stats_hash_remote():
         )
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_bytes():
     with TableResource(path="data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.stats.bytes == 7346
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_bytes_compressed():
     with TableResource(path="data/doublequote.csv.zip") as resource:
         resource.read_rows()
@@ -55,7 +50,6 @@ def test_resource_stats_bytes_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_stats_bytes_remote():
     with TableResource(path=BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()

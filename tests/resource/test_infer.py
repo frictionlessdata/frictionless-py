@@ -1,11 +1,8 @@
-import pytest
-
-from frictionless import Resource, platform
+from frictionless import Resource
 
 # General
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
     resource.infer(stats=True)
@@ -30,7 +27,6 @@ def test_resource_infer():
     }
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
     resource.infer(stats=True)

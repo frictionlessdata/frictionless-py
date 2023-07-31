@@ -13,7 +13,6 @@ runner = CliRunner()
 # General
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_console_describe():
     actual = runner.invoke(console, "describe data/table.csv --stats --yaml")
     assert actual.exit_code == 0

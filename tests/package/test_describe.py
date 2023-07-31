@@ -99,7 +99,6 @@ def test_describe_package_basepath():
     assert package.get_resource("chunk2").basepath == "data"
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_describe_package_hashing():
     package = Package.describe("data/chunk*.csv", stats=True)
     assert (
