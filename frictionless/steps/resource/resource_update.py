@@ -51,6 +51,22 @@ class resource_update(Step):
         options = helpers.create_options(self.descriptor)
         for name, value in options.items():
             setattr(resource, name, value)
+        resources = resource.package.resources if resource.package else []
+        new_name = options.get("name")
+        if new_name and new_name != self.name:
+            for package_resource in resources:
+                for index, fk in enumerate(package_resource.schema.foreign_keys):
+                    if fk["reference"]["resource"] == self.name:
+                        package_resource.schema.foreign_keys[index]["reference"][
+                            "resource"
+                        ] = new_name
+                package_resource.schema.foreign_keys = (
+                    package_resource.schema.foreign_keys
+                )
+            if resource.package:
+                resource.package.metadata_descriptor_initial = (
+                    resource.package.to_descriptor()
+                )
 
     # Metadata
 
