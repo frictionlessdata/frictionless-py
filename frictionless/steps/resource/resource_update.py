@@ -54,6 +54,7 @@ class resource_update(Step):
         resources = resource.package.resources if resource.package else []
         new_name = options.get("name")
         if new_name and new_name != self.name:
+            # update name in all the resources where it is referenced
             for package_resource in resources:
                 for index, fk in enumerate(package_resource.schema.foreign_keys):
                     if fk["reference"]["resource"] == self.name:
