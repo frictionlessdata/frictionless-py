@@ -1,4 +1,5 @@
-from frictionless import Pipeline, steps
+from frictionless import Pipeline, steps, transform
+from frictionless.package.package import Package
 from frictionless.resources import TableResource
 from frictionless.schema.schema import Schema
 
@@ -92,3 +93,54 @@ def test_step_field_update_field_name_with_primary_key():
     )
     target = source.transform(pipeline)
     assert target.schema.primary_key == ["pkey"]
+
+
+def test_step_field_update_referenced_as_foreign_key():
+    resource1 = TableResource(name="resource1", path="data/transform.csv")
+    resource2 = TableResource(name="resource2")
+    resource1.schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+                {"name": "population", "type": "integer"},
+            ],
+            "primaryKey": ["id"],
+        }
+    )
+    resource2.schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "address", "type": "string"},
+                {"name": "country_name", "type": "integer"},
+            ],
+            "primaryKey": ["id"],
+            "foreignKeys": [
+                {
+                    "fields": ["country_name"],
+                    "reference": {"fields": ["id"], "resource": "resource1"},
+                }
+            ],
+        }
+    )
+    package = Package(name="test-package", resources=[resource1, resource2])
+    transform(
+        package,
+        steps=[
+            steps.resource_transform(
+                name="resource1",
+                steps=[steps.field_update(name="id", descriptor={"name": "pkey"})],
+            )
+        ],
+    )
+    assert (
+        package.get_resource("resource1").validate().flatten(["title", "message"]) == []
+    )
+    assert package.get_resource("resource1").schema.primary_key == ["pkey"]
+    assert package.get_resource("resource2").schema.foreign_keys == [
+        {
+            "fields": ["country_name"],
+            "reference": {"fields": ["pkey"], "resource": "resource1"},
+        }
+    ]
