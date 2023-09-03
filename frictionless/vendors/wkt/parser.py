@@ -14,12 +14,9 @@ from __future__ import annotations
 import sys
 
 from tatsu.buffering import Buffer
-from tatsu.parsing import Parser
-from tatsu.parsing import tatsumasu
-from tatsu.parsing import leftrec, nomemo, isname # noqa
 from tatsu.infos import ParserConfig
-from tatsu.util import re, generic_main  # noqa
-
+from tatsu.parsing import Parser, isname, leftrec, nomemo, tatsumasu  # noqa
+from tatsu.util import generic_main, re  # noqa
 
 KEYWORDS = {}  # type: ignore
 
@@ -34,7 +31,7 @@ class Buffer(Buffer):
             comments_re=None,
             eol_comments_re=None,
             ignorecase=False,
-            namechars='',
+            namechars="",
             parseinfo=False,
         )
         config = config.replace(**settings)
@@ -51,10 +48,10 @@ class Parser(Parser):
             comments_re=None,
             eol_comments_re=None,
             ignorecase=False,
-            namechars='',
+            namechars="",
             parseinfo=False,
             keywords=KEYWORDS,
-            start='wkt_representation',
+            start="wkt_representation",
         )
         config = config.replace(**settings)
         super().__init__(config=config)
@@ -71,25 +68,25 @@ class Parser(Parser):
             with self._option():
                 self._collection_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'POINT'"
-                '<circularstring_text_representation>'
-                '<collection_text_representation>'
-                '<compoundcurve_text_representation>'
-                '<curve_text_representation>'
-                '<curvepolygon_text_representation>'
-                '<geometrycollection_text_representation>'
-                '<linestring_text_representation>'
-                '<multicurve_text_representation>'
-                '<multipoint_text_representation>'
-                '<multisurface_text_representation>'
-                '<point_text_representation>'
-                '<surface_text_representation>'
+                "<circularstring_text_representation>"
+                "<collection_text_representation>"
+                "<compoundcurve_text_representation>"
+                "<curve_text_representation>"
+                "<curvepolygon_text_representation>"
+                "<geometrycollection_text_representation>"
+                "<linestring_text_representation>"
+                "<multicurve_text_representation>"
+                "<multipoint_text_representation>"
+                "<multisurface_text_representation>"
+                "<point_text_representation>"
+                "<surface_text_representation>"
             )
 
     @tatsumasu()
     def _point_text_representation_(self):  # noqa
-        self._token('POINT')
+        self._token("POINT")
         with self._optional():
             self._z_m_()
         self._point_text_()
@@ -104,31 +101,31 @@ class Parser(Parser):
             with self._option():
                 self._compoundcurve_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'CIRCULARSTRING' 'COMPOUNDCURVE'"
                 "'LINESTRING'"
-                '<circularstring_text_representation>'
-                '<compoundcurve_text_representation>'
-                '<linestring_text_representation>'
+                "<circularstring_text_representation>"
+                "<compoundcurve_text_representation>"
+                "<linestring_text_representation>"
             )
 
     @tatsumasu()
     def _linestring_text_representation_(self):  # noqa
-        self._token('LINESTRING')
+        self._token("LINESTRING")
         with self._optional():
             self._z_m_()
         self._linestring_text_body_()
 
     @tatsumasu()
     def _circularstring_text_representation_(self):  # noqa
-        self._token('CIRCULARSTRING')
+        self._token("CIRCULARSTRING")
         with self._optional():
             self._z_m_()
         self._circularstring_text_()
 
     @tatsumasu()
     def _compoundcurve_text_representation_(self):  # noqa
-        self._token('COMPOUNDCURVE')
+        self._token("COMPOUNDCURVE")
         with self._optional():
             self._z_m_()
         self._compoundcurve_text_()
@@ -141,7 +138,7 @@ class Parser(Parser):
     def _curvepolygon_text_representation_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('CURVEPOLYGON')
+                self._token("CURVEPOLYGON")
                 with self._optional():
                     self._z_m_()
                 self._curvepolygon_text_body_()
@@ -150,22 +147,22 @@ class Parser(Parser):
             with self._option():
                 self._triangle_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'CURVEPOLYGON' 'POLYGON' 'TRIANGLE'"
-                '<polygon_text_representation>'
-                '<triangle_text_representation>'
+                "<polygon_text_representation>"
+                "<triangle_text_representation>"
             )
 
     @tatsumasu()
     def _polygon_text_representation_(self):  # noqa
-        self._token('POLYGON')
+        self._token("POLYGON")
         with self._optional():
             self._z_m_()
         self._polygon_text_body_()
 
     @tatsumasu()
     def _triangle_text_representation_(self):  # noqa
-        self._token('TRIANGLE')
+        self._token("TRIANGLE")
         with self._optional():
             self._z_m_()
         self._triangle_text_body_()
@@ -182,22 +179,22 @@ class Parser(Parser):
             with self._option():
                 self._geometrycollection_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'GEOMETRYCOLLECTION' 'MULTICURVE'"
                 "'MULTIPOINT' 'MULTISURFACE'"
-                '<geometrycollection_text_representation>'
-                '<multicurve_text_representation>'
-                '<multilinestring_text_representation>'
-                '<multipoint_text_representation>'
-                '<multipolygon_text_representation>'
-                '<multisurface_text_representation>'
-                '<polyhedralsurface_text_representation>'
-                '<tin_text_representation>'
+                "<geometrycollection_text_representation>"
+                "<multicurve_text_representation>"
+                "<multilinestring_text_representation>"
+                "<multipoint_text_representation>"
+                "<multipolygon_text_representation>"
+                "<multisurface_text_representation>"
+                "<polyhedralsurface_text_representation>"
+                "<tin_text_representation>"
             )
 
     @tatsumasu()
     def _multipoint_text_representation_(self):  # noqa
-        self._token('MULTIPOINT')
+        self._token("MULTIPOINT")
         with self._optional():
             self._z_m_()
         self._multipoint_text_()
@@ -206,21 +203,21 @@ class Parser(Parser):
     def _multicurve_text_representation_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('MULTICURVE')
+                self._token("MULTICURVE")
                 with self._optional():
                     self._z_m_()
                 self._multicurve_text_()
             with self._option():
                 self._multilinestring_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'MULTICURVE' 'MULTILINESTRING'"
-                '<multilinestring_text_representation>'
+                "<multilinestring_text_representation>"
             )
 
     @tatsumasu()
     def _multilinestring_text_representation_(self):  # noqa
-        self._token('MULTILINESTRING')
+        self._token("MULTILINESTRING")
         with self._optional():
             self._z_m_()
         self._multilinestring_text_()
@@ -229,7 +226,7 @@ class Parser(Parser):
     def _multisurface_text_representation_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('MULTISURFACE')
+                self._token("MULTISURFACE")
                 with self._optional():
                     self._z_m_()
                 self._multisurface_text_()
@@ -240,38 +237,38 @@ class Parser(Parser):
             with self._option():
                 self._tin_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'MULTIPOLYGON' 'MULTISURFACE'"
                 "'POLYHEDRALSURFACE' 'TIN'"
-                '<multipolygon_text_representation>'
-                '<polyhedralsurface_text_representation>'
-                '<tin_text_representation>'
+                "<multipolygon_text_representation>"
+                "<polyhedralsurface_text_representation>"
+                "<tin_text_representation>"
             )
 
     @tatsumasu()
     def _multipolygon_text_representation_(self):  # noqa
-        self._token('MULTIPOLYGON')
+        self._token("MULTIPOLYGON")
         with self._optional():
             self._z_m_()
         self._multipolygon_text_()
 
     @tatsumasu()
     def _polyhedralsurface_text_representation_(self):  # noqa
-        self._token('POLYHEDRALSURFACE')
+        self._token("POLYHEDRALSURFACE")
         with self._optional():
             self._z_m_()
         self._polyhedralsurface_text_()
 
     @tatsumasu()
     def _tin_text_representation_(self):  # noqa
-        self._token('TIN')
+        self._token("TIN")
         with self._optional():
             self._z_m_()
         self._tin_text_()
 
     @tatsumasu()
     def _geometrycollection_text_representation_(self):  # noqa
-        self._token('GEOMETRYCOLLECTION')
+        self._token("GEOMETRYCOLLECTION")
         with self._optional():
             self._z_m_()
         self._geometrycollection_text_()
@@ -301,10 +298,7 @@ class Parser(Parser):
                 self._left_paren_()
                 self._point_()
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _point_(self):  # noqa
@@ -343,12 +337,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._point_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _circularstring_text_(self):  # noqa
@@ -362,12 +354,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._point_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _compoundcurve_text_(self):  # noqa
@@ -381,12 +371,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._single_curve_text_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _single_curve_text_(self):  # noqa
@@ -396,11 +384,11 @@ class Parser(Parser):
             with self._option():
                 self._circularstring_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'CIRCULARSTRING'"
-                '<circularstring_text_representation>'
-                '<empty_set> <left_paren>'
-                '<linestring_text> <linestring_text_body>'
+                "<circularstring_text_representation>"
+                "<empty_set> <left_paren>"
+                "<linestring_text> <linestring_text_body>"
             )
 
     @tatsumasu()
@@ -413,12 +401,12 @@ class Parser(Parser):
             with self._option():
                 self._compoundcurve_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'CIRCULARSTRING' 'COMPOUNDCURVE'"
-                '<circularstring_text_representation>'
-                '<compoundcurve_text_representation>'
-                '<empty_set> <left_paren>'
-                '<linestring_text> <linestring_text_body>'
+                "<circularstring_text_representation>"
+                "<compoundcurve_text_representation>"
+                "<empty_set> <left_paren>"
+                "<linestring_text> <linestring_text_body>"
             )
 
     @tatsumasu()
@@ -431,26 +419,26 @@ class Parser(Parser):
             with self._option():
                 self._compoundcurve_text_representation_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'CIRCULARSTRING' 'COMPOUNDCURVE'"
-                '<circularstring_text_representation>'
-                '<compoundcurve_text_representation>'
-                '<empty_set> <left_paren>'
-                '<linestring_text> <linestring_text_body>'
+                "<circularstring_text_representation>"
+                "<compoundcurve_text_representation>"
+                "<empty_set> <left_paren>"
+                "<linestring_text> <linestring_text_body>"
             )
 
     @tatsumasu()
     def _surface_text_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('CURVEPOLYGON')
+                self._token("CURVEPOLYGON")
                 self._curvepolygon_text_body_()
             with self._option():
                 self._polygon_text_body_()
             self._error(
-                'expecting one of: '
+                "expecting one of: "
                 "'CURVEPOLYGON' <empty_set> <left_paren>"
-                '<polygon_text> <polygon_text_body>'
+                "<polygon_text> <polygon_text_body>"
             )
 
     @tatsumasu()
@@ -465,12 +453,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._ring_text_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _polygon_text_(self):  # noqa
@@ -484,12 +470,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._linestring_text_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _triangle_text_(self):  # noqa
@@ -500,10 +484,7 @@ class Parser(Parser):
                 self._left_paren_()
                 self._linestring_text_()
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _multipoint_text_(self):  # noqa
@@ -517,12 +498,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._point_text_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _multicurve_text_(self):  # noqa
@@ -536,12 +515,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._curve_text_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _multilinestring_text_(self):  # noqa
@@ -555,12 +532,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._linestring_text_body_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _multisurface_text_(self):  # noqa
@@ -574,12 +549,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._surface_text_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _multipolygon_text_(self):  # noqa
@@ -593,12 +566,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._polygon_text_body_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _polyhedralsurface_text_(self):  # noqa
@@ -612,12 +583,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._polygon_text_body_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _tin_text_(self):  # noqa
@@ -631,12 +600,10 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._triangle_text_body_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _geometrycollection_text_(self):  # noqa
@@ -650,46 +617,41 @@ class Parser(Parser):
                 def block1():
                     self._comma_()
                     self._wkt_representation_()
+
                 self._closure(block1)
                 self._right_paren_()
-            self._error(
-                'expecting one of: '
-                "'(' 'EMPTY' <empty_set> <left_paren>"
-            )
+            self._error("expecting one of: " "'(' 'EMPTY' <empty_set> <left_paren>")
 
     @tatsumasu()
     def _empty_set_(self):  # noqa
-        self._token('EMPTY')
+        self._token("EMPTY")
 
     @tatsumasu()
     def _z_m_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('ZM')
+                self._token("ZM")
             with self._option():
-                self._token('Z')
+                self._token("Z")
             with self._option():
-                self._token('M')
-            self._error(
-                'expecting one of: '
-                "'M' 'Z' 'ZM'"
-            )
+                self._token("M")
+            self._error("expecting one of: " "'M' 'Z' 'ZM'")
 
     @tatsumasu()
     def _left_paren_(self):  # noqa
-        self._token('(')
+        self._token("(")
 
     @tatsumasu()
     def _right_paren_(self):  # noqa
-        self._token(')')
+        self._token(")")
 
     @tatsumasu()
     def _comma_(self):  # noqa
-        self._token(',')
+        self._token(",")
 
     @tatsumasu()
     def _number_(self):  # noqa
-        self._pattern('[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?')
+        self._pattern("[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?")
 
 
 class Semantics:
@@ -854,23 +816,20 @@ class Semantics:
 
 
 def main(filename, **kwargs):
-    if not filename or filename == '-':
+    if not filename or filename == "-":
         text = sys.stdin.read()
     else:
         with open(filename) as f:
             text = f.read()
     parser = Parser()
-    return parser.parse(
-        text,
-        filename=filename,
-        **kwargs
-    )
+    return parser.parse(text, filename=filename, **kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import json
+
     from tatsu.util import asjson
 
-    ast = generic_main(main, Parser, name='')
+    ast = generic_main(main, Parser, name="")
     data = asjson(ast)
     print(json.dumps(data, indent=2))

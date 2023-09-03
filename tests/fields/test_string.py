@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from frictionless import Field
