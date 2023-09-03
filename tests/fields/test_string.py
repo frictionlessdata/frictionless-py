@@ -35,7 +35,6 @@ def test_string_read_cell(format, source, target):
     assert cell == target
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Doesn't work in Python3.10+")
 @pytest.mark.parametrize(
     "format, source, target",
     [
