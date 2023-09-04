@@ -13,7 +13,7 @@ UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z/])+$"
 PACKAGE_PATH = "datapackage.json"
-COMPRESSION_FORMATS = ["zip", "gz"]
+COMPRESSION_FORMATS = ["zip", "gz", "bz2", "xz"]
 
 # Defaults
 

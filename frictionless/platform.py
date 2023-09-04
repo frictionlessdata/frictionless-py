@@ -42,6 +42,12 @@ class Platform:
     # Core
 
     @cached_property
+    def bz2(self):
+        import bz2
+
+        return bz2
+
+    @cached_property
     def chardet(self):
         import chardet
 
@@ -148,6 +154,12 @@ class Platform:
         import jsonschema.validators
 
         return jsonschema.validators
+
+    @cached_property
+    def lzma(self):
+        import lzma
+
+        return lzma
 
     @cached_property
     def marko(self):

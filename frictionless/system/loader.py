@@ -231,6 +231,28 @@ class Loader:
             byte_stream = platform.gzip.open(byte_stream)  # type: ignore
             return byte_stream
 
+        # bzip2 compression
+        if self.resource.compression == "bz2":
+            # Stats
+            if not self.remote:
+                bytes = True
+                while bytes:
+                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
+                byte_stream.seek(0)
+            byte_stream = platform.bz2.open(byte_stream)  # type: ignore
+            return byte_stream
+
+        # XZ compression
+        if self.resource.compression == "xz":
+            # Stats
+            if not self.remote:
+                bytes = True
+                while bytes:
+                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)  # type: ignore
+                byte_stream.seek(0)
+            byte_stream = platform.lzma.open(byte_stream)  # type: ignore
+            return byte_stream
+
         # Not supported compression
         note = f'compression "{self.resource.compression}" is not supported'
         raise FrictionlessException(errors.CompressionError(note=note))
