@@ -679,7 +679,7 @@ class Package(Metadata, metaclass=Factory):
         if profile == "tabular-data-package":
             for resource in resources:
                 if resource.get("profile", None) != "tabular-data-resource":
-                    note = 'profile "tabular-data-package" requries all the resources to be "tabular-data-resource"'
+                    note = 'profile "tabular-data-package" requires all the resources to be "tabular-data-resource"'
                     yield errors.PackageError(note=note)
 
         # Misleading

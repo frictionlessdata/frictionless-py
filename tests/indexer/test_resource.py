@@ -53,7 +53,7 @@ def test_resource_index_sqlite_with_metadata(database_url):
 # Fast
 
 
-@pytest.mark.ci(reason="requries sqlite3@3.34+")
+@pytest.mark.ci(reason="requires sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", fast_database_urls)
 def test_resource_index_sqlite_fast(database_url):
     assert control.table
@@ -68,7 +68,7 @@ def test_resource_index_sqlite_fast(database_url):
 # Fallback
 
 
-@pytest.mark.ci(reason="requries sqlite3@3.34+")
+@pytest.mark.ci(reason="requires sqlite3@3.34+")
 @pytest.mark.parametrize("database_url", fast_database_urls)
 def test_resource_index_sqlite_fast_with_use_fallback(database_url):
     assert control.table

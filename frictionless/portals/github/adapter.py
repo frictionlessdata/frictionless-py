@@ -105,7 +105,7 @@ class GithubAdapter(Adapter):
                 repository.create_file(
                     path=resource_path,
                     message='Create "resource_path"',
-                    # It seeems to be it requries a string by a mistake
+                    # It seems to be it requires a string by a mistake
                     # https://stackoverflow.com/questions/72668275/how-to-upload-an-image-file-to-github-using-pygithub
                     content=resource.read_bytes(),  # type: ignore
                     branch=branch,

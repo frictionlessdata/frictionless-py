@@ -142,7 +142,7 @@ def test_package_profile_tabular_requirements_issue_1484():
     assert report.flatten(["type", "note"]) == [
         [
             "package-error",
-            'profile "tabular-data-package" requries all the resources to be "tabular-data-resource"',
+            'profile "tabular-data-package" requires all the resources to be "tabular-data-resource"',
         ]
     ]
 
@@ -165,6 +165,6 @@ def test_package_profile_tabular_requirements_schema_issue_1484():
     assert report.flatten(["type", "note"]) == [
         [
             "resource-error",
-            'profile "tabular-data-resource" requries "schema" to be present',
+            'profile "tabular-data-resource" requires "schema" to be present',
         ]
     ]
