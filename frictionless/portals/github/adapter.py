@@ -86,7 +86,7 @@ class GithubAdapter(Adapter):
         try:
             repository.create_file(
                 path=package_path,
-                message='Create "package.json"',
+                message='Create "datapackage.json"',
                 content=content,
                 branch=repository.default_branch,
                 committer=author,
