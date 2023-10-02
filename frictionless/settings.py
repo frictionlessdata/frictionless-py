@@ -89,7 +89,12 @@ METADATA_TRAITS = {
         "props": ["layers", "mark"],
     },
     "package": {
-        "names": ["package.json", "package.yaml"],
+        "names": [
+            "datapackage.json",
+            "datapackage.yaml",
+            ".package.json",
+            ".package.yaml",
+        ],
         "props": ["resources"],
     },
     "resource": {
