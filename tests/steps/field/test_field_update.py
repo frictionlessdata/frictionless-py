@@ -141,7 +141,11 @@ def test_step_field_update_referenced_as_foreign_key():
         steps=[
             steps.resource_transform(
                 name="resource2",
-                steps=[steps.field_update(name="country_name", descriptor={"name": "country"})],
+                steps=[
+                    steps.field_update(
+                        name="country_name", descriptor={"name": "country"}
+                    )
+                ],
             )
         ],
     )

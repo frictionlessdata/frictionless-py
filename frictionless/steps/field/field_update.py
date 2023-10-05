@@ -76,7 +76,9 @@ class field_update(Step):
         for package_resource in resources:
             for index, fk in enumerate(package_resource.schema.foreign_keys):
                 if new_name and self.name in fk["fields"]:
-                    package_resource.schema.foreign_keys[index]["fields"].remove(self.name)
+                    package_resource.schema.foreign_keys[index]["fields"].remove(
+                        self.name
+                    )
                     package_resource.schema.foreign_keys[index]["fields"].append(new_name)
                 fields = fk["reference"]["fields"]
                 if isinstance(fields, list):
@@ -92,9 +94,7 @@ class field_update(Step):
                         "fields"
                     ] = new_name
 
-            package_resource.schema.foreign_keys = (
-                package_resource.schema.foreign_keys
-            )
+            package_resource.schema.foreign_keys = package_resource.schema.foreign_keys
         if resource.package:
             resource.package.metadata_descriptor_initial = (
                 resource.package.to_descriptor()
