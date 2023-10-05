@@ -89,6 +89,7 @@ def test_step_field_update_field_name_with_primary_key():
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", descriptor={"name": "pkey"}),
+            steps.field_update(name="population", descriptor={"name": "pop"}),
         ],
     )
     target = source.transform(pipeline)
