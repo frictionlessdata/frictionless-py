@@ -98,7 +98,7 @@ def test_step_field_update_field_name_with_primary_key():
 
 def test_step_field_update_referenced_as_foreign_key():
     resource1 = TableResource(name="resource1", path="data/transform.csv")
-    resource2 = TableResource(name="resource2")
+    resource2 = TableResource(name="resource2", path="data/transform-fk.csv")
     resource1.schema = Schema.from_descriptor(
         {
             "fields": [
@@ -135,13 +135,24 @@ def test_step_field_update_referenced_as_foreign_key():
             )
         ],
     )
+
+    transform(
+        package,
+        steps=[
+            steps.resource_transform(
+                name="resource2",
+                steps=[steps.field_update(name="country_name", descriptor={"name": "country"})],
+            )
+        ],
+    )
+
     assert (
         package.get_resource("resource1").validate().flatten(["title", "message"]) == []
     )
     assert package.get_resource("resource1").schema.primary_key == ["pkey"]
     assert package.get_resource("resource2").schema.foreign_keys == [
         {
-            "fields": ["country_name"],
+            "fields": ["country"],
             "reference": {"fields": ["pkey"], "resource": "resource1"},
         }
     ]
