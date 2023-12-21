@@ -32,6 +32,7 @@ from frictionless import Field
         ("%d/%m/%y", True, None),
         ("%d/%m/%y", "", None),
         ("invalid", "21/11/06 16:30", None),
+        ("", "2023-12-20", date(2023, 12, 20)),
         # Deprecated
         ("fmt:%d/%m/%y", date(2019, 1, 1), date(2019, 1, 1)),
         ("fmt:%d/%m/%y", "21/11/06", date(2006, 11, 21)),
