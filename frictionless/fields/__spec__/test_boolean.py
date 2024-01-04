@@ -32,7 +32,9 @@ from frictionless import Field
         ("default", "3.14", None, {}),
         ("default", "", None, {}),
         ("default", "Yes", None, {"trueValues": ["yes"]}),
+        ("default", "true", True, {"trueValues": ["yes"]}),
         ("default", "No", None, {"falseValues": ["no"]}),
+        ("default", "false", False, {"falseValues": ["no"]}),
     ],
 )
 def test_boolean_read_cell(format, source, target, options):
