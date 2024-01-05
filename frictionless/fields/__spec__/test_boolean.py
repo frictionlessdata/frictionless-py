@@ -45,25 +45,17 @@ def test_boolean_read_cell(format, source, target, options):
     assert cell == target
 
 
-def test_boolean_from_schema_descriptor_read_cell():
-    schema = Schema.from_descriptor(
-        {
-            "fields": [
-                {"name": "IsTrue", "type": "boolean", "trueValues": ["yes"], "falseValues": ["no"]}
-            ]
-        }
-    )
-
-    source = "true"
-    target = True
-
-    fields = schema.fields
-    cell, notes = fields[0].read_cell(source)
-    assert cell == target
-
-    source = "false"
-    target = False
-
+@pytest.mark.parametrize(
+    "source, target, options",
+    [
+        ("true", True, {"trueValues": ["yes"]}),
+        ("no", False, {"falseValues": ["no"]})
+    ],
+)
+def test_boolean_from_schema_descriptor_read_cell(source, target, options):
+    schema_descriptor = {"fields": [{"name": "IsTrue", "type": "boolean"}]}
+    schema_descriptor["fields"][0].update(options)
+    schema = Schema.from_descriptor(schema_descriptor)
     fields = schema.fields
     cell, notes = fields[0].read_cell(source)
     assert cell == target
