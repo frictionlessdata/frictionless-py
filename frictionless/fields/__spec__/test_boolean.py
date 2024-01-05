@@ -1,6 +1,6 @@
 import pytest
 
-from frictionless import Field
+from frictionless import Field, Schema
 
 # General
 
@@ -42,4 +42,28 @@ def test_boolean_read_cell(format, source, target, options):
     descriptor.update(options)
     field = Field.from_descriptor(descriptor)
     cell, notes = field.read_cell(source)
+    assert cell == target
+
+
+def test_boolean_from_schema_descriptor_read_cell():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "IsTrue", "type": "boolean", "trueValues": ["yes"], "falseValues": ["no"]}
+            ]
+        }
+    )
+
+    source = "true"
+    target = True
+
+    fields = schema.fields
+    cell, notes = fields[0].read_cell(source)
+    assert cell == target
+
+    source = "false"
+    target = False
+
+    fields = schema.fields
+    cell, notes = fields[0].read_cell(source)
     assert cell == target
