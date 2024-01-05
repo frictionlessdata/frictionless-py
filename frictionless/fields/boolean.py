@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 import attrs
+from typing_extensions import Self
 
 from .. import settings
 from ..schema import Field
+from ..types import IDescriptor
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -58,6 +60,16 @@ class BooleanField(Field):
         return value_writer
 
     # Metadata
+
+    @classmethod
+    def metadata_import(
+            cls, descriptor: IDescriptor, **options: Any
+    ) -> Self:
+        if "trueValues" in descriptor.keys():
+            descriptor["trueValues"] = descriptor["trueValues"] + settings.DEFAULT_TRUE_VALUES
+        if "falseValues" in descriptor.keys():
+            descriptor["falseValues"] = descriptor["falseValues"] + settings.DEFAULT_FALSE_VALUES
+        return super().metadata_import(descriptor, **options)
 
     metadata_profile_patch = {
         "properties": {
