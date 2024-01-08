@@ -9,11 +9,10 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: "0 3 * * *"
+  # schedule:
+  # - cron: "0 3 * * *"
 
 jobs:
-
   # Test (Linux)
 
   test-linux:
@@ -21,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10']
+        python-version: [3.8, 3.9, "3.10"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -58,10 +57,10 @@ jobs:
       mysql:
         image: mysql:8
         env:
-            MYSQL_DATABASE: test
-            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: test
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
         ports:
-            - 3306:3306
+          - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
@@ -79,7 +78,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Prepare environment
         run: pip3 install hatch
       - name: Prepare variables
@@ -99,7 +98,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Prepare environment
         run: pip3 install hatch
       - name: Prepare variables
@@ -118,7 +117,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Prepare environment
         run: pip3 install hatch
       - name: Install and build site
@@ -130,7 +129,7 @@ jobs:
         with:
           branch: site
           create_branch: true
-          push_options: '--force'
+          push_options: "--force"
 
   # Release
 
@@ -144,7 +143,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Install dependencies
         run: pip install -U build
       - name: Build distribution
