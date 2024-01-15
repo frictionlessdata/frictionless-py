@@ -1,6 +1,7 @@
 import pytest
 
 from frictionless import Checklist, Detector, FrictionlessException, Schema, fields
+import frictionless
 from frictionless.resources import TableResource
 
 # General
@@ -303,4 +304,30 @@ def test_resource_validate_less_actual_fields_with_required_constraint_issue_950
         [2, 3, "missing-cell"],
         [3, 3, "constraint-error"],
         [3, 3, "missing-cell"],
+    ]
+
+
+def test_resource_with_missing_required_header():
+    schema = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [
+            {
+                "name": "A",
+                "title": "Field A",
+                "type": "string",
+                "constraints": {"required": True},
+            },
+            {"name": "B", "title": "Field B", "type": "string"},
+            {"name": "C", "title": "Field C", "type": "string"},
+        ],
+    }
+    source = [["B", "C"], ["b", "c"]]
+    schema = Schema.from_descriptor(schema)
+    resource = TableResource(
+        source, schema=schema, detector=Detector(schema_sync=True)
+    )
+    report = frictionless.validate(resource)
+    print(report.flatten(["rowNumber", "fieldNumber", "type"]))
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, 3, "missing-label"],
     ]
