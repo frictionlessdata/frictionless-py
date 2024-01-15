@@ -331,3 +331,29 @@ def test_resource_with_missing_required_header():
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "missing-label"],
     ]
+    
+    schema = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [
+            {
+                "name": "A",
+                "title": "Field A",
+                "type": "string",
+                "constraints": {"required": True},
+            },
+            {"name": "B", "title": "Field B", "type": "string"},
+            {"name": "C", "title": "Field C", "type": "string", 
+             "constraints": {"required": True}},
+        ],
+    }
+    source = [["B"], ["b"]]
+    schema = Schema.from_descriptor(schema)
+    resource = TableResource(
+        source, schema=schema, detector=Detector(schema_sync=True)
+    )
+    report = frictionless.validate(resource)
+    print(report.flatten(["rowNumber", "fieldNumber", "type"]))
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, 2, "missing-label"],
+        [None, 3, "missing-label"],
+    ]
