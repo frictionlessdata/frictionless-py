@@ -205,10 +205,10 @@ class Field(Metadata):
         if isinstance(descriptor, dict):
             if "trueValues" in descriptor.keys():
                 assert descriptor["type"] == "boolean"
-                descriptor["trueValues"] = descriptor["trueValues"] + settings.DEFAULT_TRUE_VALUES
+                descriptor["trueValues"] = descriptor["trueValues"]
             if "falseValues" in descriptor.keys():
                 assert descriptor["type"] == "boolean"
-                descriptor["falseValues"] = descriptor["falseValues"] + settings.DEFAULT_FALSE_VALUES
+                descriptor["falseValues"] = descriptor["falseValues"]
         return super().from_descriptor(descriptor)
 
     # Metadata

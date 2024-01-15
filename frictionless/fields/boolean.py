@@ -61,16 +61,6 @@ class BooleanField(Field):
 
     # Metadata
 
-    @classmethod
-    def metadata_import(
-            cls, descriptor: IDescriptor, **options: Any
-    ) -> Self:
-        if "trueValues" in descriptor.keys():
-            descriptor["trueValues"] = descriptor["trueValues"] + settings.DEFAULT_TRUE_VALUES
-        if "falseValues" in descriptor.keys():
-            descriptor["falseValues"] = descriptor["falseValues"] + settings.DEFAULT_FALSE_VALUES
-        return super().metadata_import(descriptor, **options)
-
     metadata_profile_patch = {
         "properties": {
             "trueValues": {"type": "array", "items": {"type": "string"}},
