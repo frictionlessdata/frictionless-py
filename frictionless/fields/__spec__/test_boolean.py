@@ -1,6 +1,7 @@
 import pytest
 
 from frictionless import Field, Schema
+from frictionless.resources.table import TableResource
 
 # General
 
@@ -88,3 +89,25 @@ def test_boolean_from_schema_descriptor_read_cell(source, target, options):
     fields = schema.fields
     cell, notes = fields[0].read_cell(source)
     assert cell == target
+
+
+def test_boolean_from_schema_descriptor_with_example_fix_issue_1610():
+    schema_descriptor = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [
+            {
+                "name": "IsTrue",
+                "type": "boolean",
+                "trueValues": ["yes"],
+                "falseValues": ["no"],
+                "example": "no"
+            }
+        ]
+    }
+    
+    schema = Schema.from_descriptor(schema_descriptor)
+    fields = schema.fields
+    source = "yes"
+    cell, notes = fields[0].read_cell(source)
+    assert cell
+ 
