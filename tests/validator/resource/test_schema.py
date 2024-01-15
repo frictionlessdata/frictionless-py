@@ -1,8 +1,9 @@
 from copy import deepcopy
+
 import pytest
 
-from frictionless import Checklist, Detector, FrictionlessException, Schema, fields
 import frictionless
+from frictionless import Checklist, Detector, FrictionlessException, Schema, fields
 from frictionless.resources import TableResource
 
 # General
