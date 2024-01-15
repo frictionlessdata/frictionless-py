@@ -42,14 +42,10 @@ class DateField(Field):
             if not isinstance(cell, str):
                 return None
             try:
-                if self.format == "default":
+                if self.format == "default" or not self.format:
                     cell = datetime.strptime(cell, settings.DEFAULT_DATE_PATTERN).date()
                 elif self.format == "any":
                     cell = platform.dateutil_parser.parse(cell).date()
-                elif not self.format:
-                    # Use default format as mentioned in documentation of TableSchema:
-                    # https://specs.frictionlessdata.io/table-schema/#types-and-formats
-                    cell = datetime.strptime(cell, settings.DEFAULT_DATE_PATTERN).date()
                 else:
                     cell = datetime.strptime(cell, self.format).date()
             except Exception:
