@@ -3,11 +3,9 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 import attrs
-from typing_extensions import Self
 
 from .. import settings
 from ..schema import Field
-from ..types import IDescriptor
 
 
 @attrs.define(kw_only=True, repr=False)
