@@ -1,7 +1,8 @@
 import pytest
 
 from frictionless import Field, Schema
-
+from frictionless.errors.metadata import SchemaError
+from frictionless.exception import FrictionlessException
 # General
 
 
@@ -80,3 +81,15 @@ def test_boolean_from_schema_descriptor_with_valid_example_fix_issue_1610(
     fields = schema.fields
     cell, _ = fields[0].read_cell(source)
     assert cell == target
+
+
+def test_boolean_from_schema_descriptor_with_invalid_example_fix_issue_1610():
+    schema_descriptor = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [{"name": "IsTrue", "type": "boolean",
+                    'falseValues': ["no"], "example": "unvalid"}]
+    }
+    with pytest.raises(FrictionlessException) as excinfo:
+        schema = Schema.from_descriptor(schema_descriptor)
+    err = excinfo.value.error
+    assert isinstance(err, SchemaError)
