@@ -283,10 +283,10 @@ class Field(Metadata):
             )
             if type == "boolean":
                 # 'example' value must be compared to customized 'trueValues' and 'falseValues'
-                if 'trueValues' in descriptor.keys():
-                    field.true_values = descriptor['trueValues']
-                if 'falseValues' in descriptor.keys():
-                    field.false_values = descriptor['falseValues']
+                if "trueValues" in descriptor.keys():
+                    field.true_values = descriptor["trueValues"]
+                if "falseValues" in descriptor.keys():
+                    field.false_values = descriptor["falseValues"]
             _, notes = field.read_cell(example)
             if notes is not None:
                 note = f'example value "{example}" for field "{field.name}" is not valid'
