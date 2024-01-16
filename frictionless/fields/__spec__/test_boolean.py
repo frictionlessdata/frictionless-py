@@ -1,7 +1,6 @@
 import pytest
 
 from frictionless import Field, Schema
-from frictionless.resources.table import TableResource
 
 # General
 
@@ -34,60 +33,28 @@ from frictionless.resources.table import TableResource
         ("default", "", None, {}),
         ("default", "Yes", None, {"trueValues": ["yes"]}),
         ("default", "true", None, {"trueValues": ["yes"]}),
+        ("default", "True", None, {"trueValues": ["yes"]}),
+        ("default", "TRUE", None, {"trueValues": ["yes"]}),
+        ("default", "1", None, {"trueValues": ["yes"]}),
         ("default", "No", None, {"falseValues": ["no"]}),
         ("default", "false", None, {"falseValues": ["no"]}),
+        ("default", "False", None, {"falseValues": ["no"]}),
+        ("default", "FALSE", None, {"falseValues": ["no"]}),
+        ("default", "0", None, {"falseValues": ["no"]}),
     ],
 )
 def test_boolean_read_cell(format, source, target, options):
     descriptor = {"name": "name", "type": "boolean", "format": format}
     descriptor.update(options)
     field = Field.from_descriptor(descriptor)
-    cell, notes = field.read_cell(source)
+    cell, _ = field.read_cell(source)
     assert cell == target
 
-
-@pytest.mark.parametrize(
-    "source, target, options",
-    [
-        (True, True, {}),
-        ("true", True, {}),
-        ("True", True, {}),
-        ("TRUE", True, {}),
-        ("1", True, {}),
-        (True, True, {"trueValues": ["yes"]}),
-        ("yes", True, {"trueValues": ["yes"]}),
-        (False, False, {}),
-        ("false", False, {}),
-        ("False", False, {}),
-        ("FALSE", False, {}),
-        ("0", False, {}),
-        (False, False, {"falseValues": ["no"]}),
-        ("no", False, {"falseValues": ["no"]}),
-        ("yes", None, {}),
-        ("no", None, {}),
-        (0, None, {}),
-        (1, None, {}),
-        ("YES", None, {}),
-        ("NO", None, {}),
-        ("", None, {}),
-        ("Yes", None, {"trueValues": ["yes"]}),
-        ("true", None, {"trueValues": ["yes"]}),
-        ("True", None, {"trueValues": ["yes"]}),
-        ("TRUE", None, {"trueValues": ["yes"]}),
-        ("1", None, {"trueValues": ["yes"]}),
-        ("No", None, {"falseValues": ["no"]}),
-        ("false", None, {"falseValues": ["no"]}),
-        ("False", None, {"falseValues": ["no"]}),
-        ("FALSE", None, {"falseValues": ["no"]}),
-        ("0", None, {"falseValues": ["no"]}),
-    ],
-)
-def test_boolean_from_schema_descriptor_read_cell(source, target, options):
     schema_descriptor = {"fields": [{"name": "IsTrue", "type": "boolean"}]}
     schema_descriptor["fields"][0].update(options)
     schema = Schema.from_descriptor(schema_descriptor)
     fields = schema.fields
-    cell, notes = fields[0].read_cell(source)
+    cell, _ = fields[0].read_cell(source)
     assert cell == target
 
 
@@ -108,6 +75,5 @@ def test_boolean_from_schema_descriptor_with_example_fix_issue_1610():
     schema = Schema.from_descriptor(schema_descriptor)
     fields = schema.fields
     source = "yes"
-    cell, notes = fields[0].read_cell(source)
+    cell, _ = fields[0].read_cell(source)
     assert cell
- 
