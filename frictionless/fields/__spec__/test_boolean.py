@@ -58,22 +58,25 @@ def test_boolean_read_cell(format, source, target, options):
     assert cell == target
 
 
-def test_boolean_from_schema_descriptor_with_example_fix_issue_1610():
+@pytest.mark.parametrize(
+    "source, target, options",
+    [
+        (True, True, {'trueValues': ["yes"], "example": "yes"}),
+        ("yes", True, {'trueValues': ["yes"], "example": "yes"}),
+        ("true", None, {'trueValues': ["yes"], "example": "yes"}),
+        ("no", False, {'falseValues': ["no"], "example": "no"}),
+        ("no", False, {'falseValues': ["no"], "example": "no"}),
+        ("false", None, {'falseValues': ["no"], "example": "no"}),
+    ]
+)
+def test_boolean_from_schema_descriptor_with_valid_example_fix_issue_1610(
+        source, target, options):
     schema_descriptor = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-        "fields": [
-            {
-                "name": "IsTrue",
-                "type": "boolean",
-                "trueValues": ["yes"],
-                "falseValues": ["no"],
-                "example": "no"
-            }
-        ]
+        "fields": [{"name": "IsTrue", "type": "boolean"}]
     }
-    
+    schema_descriptor["fields"][0].update(options)
     schema = Schema.from_descriptor(schema_descriptor)
     fields = schema.fields
-    source = "yes"
     cell, _ = fields[0].read_cell(source)
-    assert cell
+    assert cell == target
