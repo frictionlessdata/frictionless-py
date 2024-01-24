@@ -5,7 +5,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -15,18 +15,25 @@ interactions:
     uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA61UTW/UQAy991eMcmqlTrLcgBtaypEDHNsKORNvMjQZjzyTbWnVX8MBca74BfvH
-        8CTZ3ezSIg4oUr7svPf8bOfhRKnMM61si9lblUUo+xZYVxBBezA3UGN2npIYA/VsMEjapbxQ6mE4
-        S8hBN3yMIUJFYcgfAh5ikwIJrZiiuQnrWcYL1Fu2fWYwDXaQEse7Hd7XQG6fFm0c4S7GsCoZgjBY
-        ngtbEXcQU9qBGnSGKuvqFOjjSr/ehyoMhq2PVsgkuiQXNz87BUEFrHvrIgZl3YC7+bH5JU8eGJQI
-        wD+FXLkrp9Vy81TZmtLtR+owXT/buoVs4Hw8f95kb0vtkbUBbyO84PVh0n+z/Aj20Pl/9nQsT87X
-        w2Dd4Ldb4mo/V0dzlI3GbZ9WWCEnj79TtsNorUEX/jaby+VCv8oXzwyKRNRBZOtkE6MPb4vCMEK0
-        azTUdeRCTlwXvi+Fs6IOrCvukakQiOK4tEba6tMGzdBqG5u+zAWsqFKVuquL5P+0bNIGz3g37twa
-        OUwDt8jT8WaxGIVmRgaQbdlH4meq3hX3gcEZGwypd+0aZxvANCZAHxviY+Fb114SRrcO+YsYMbQ7
-        SaFWimELupbutLoiPXZRm+0PZKfpvYCqCTUoGRv1SaCp6o0tW1QXd9D5dtJ6vHcXIaASJRRs3Dyx
-        JQUydffoQOEdyneyaBWqy2rOcX26NT94NCFfsTUJUEhCSswtFWfjvkotIXI/jNcA1FlnO2jPE+le
-        I04a1enoytmMIgorSedWLd0ObW6w9cWEo+cweoI5y04efwN1GTPriQUAAA==
+      string: "{\n  \"profile\": \"tabular-data-package\",\n  \"resources\": [\n    {\n
+        \     \"name\": \"estados\",\n      \"path\": \"data/estados.csv\",\n      \"profile\":
+        \"tabular-data-resource\",\n      \"schema\": \"schema/estados.json\",\n      \"title\":
+        \"Estados brasileiros\",\n      \"format\": \"csv\",\n      \"encoding\":
+        \"utf-8\",\n      \"description\": \"Cont\xE9m as seguintes informa\xE7\xF5es
+        para os estados brasileiros\\n\\n- C\xF3digo\\n- Nome\\n- Sigla\"\n    },\n
+        \   {\n      \"name\": \"pib-per-capita\",\n      \"path\": \"data/pib-per-capita.csv\",\n
+        \     \"profile\": \"tabular-data-resource\",\n      \"schema\": \"schema/pib-per-capita.json\",\n
+        \     \"format\": \"csv\",\n      \"encoding\": \"utf-8\"\n    }\n  ],\n  \"keywords\":
+        [\n    \"estados\",\n    \"brasil\",\n    \"federa\xE7\xE3o\"\n  ],\n  \"licenses\":
+        [\n    {\n      \"name\": \"CC0-1.0\",\n      \"title\": \"CC0 1.0\",\n      \"path\":
+        \"https://creativecommons.org/publicdomain/zero/1.0/\"\n    }\n  ],\n  \"homepage\":
+        \"https://github.com/dados-mg/datapackage-reprex\",\n  \"version\": \"0.0.0.9000\",\n
+        \ \"contributors\": [\n    {\n      \"title\": \"Francisco Alves\",\n      \"role\":
+        \"author\"\n    }\n  ],\n  \"name\": \"datapackage-reprex\",\n  \"owner_org\":
+        \"controladoria-geral-do-estado-cge\",\n  \"title\": \"Data packages for Reproducible
+        Examples\",\n  \"description\": \"Esse reposit\xF3rio armazena exemplos de
+        [data packages](https://specs.frictionlessdata.io/) para constru\xE7\xE3o
+        de [minimal, reproducible examples (reprex)](https://stackoverflow.com/help/minimal-reproducible-example)\"\n}"
     headers:
       Accept-Ranges:
       - bytes
@@ -47,11 +54,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Wed, 28 Jun 2023 06:27:48 GMT
+      - Wed, 24 Jan 2024 11:48:46 GMT
       ETag:
       - W/"48f5be5dffa0abf58676f1637d11d41c458131dda940fc8223713b0c828dde06"
       Expires:
-      - Wed, 28 Jun 2023 06:32:48 GMT
+      - Wed, 24 Jan 2024 11:53:46 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -61,21 +68,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 345174913546baec1ee86880fff84c0a0939eab2
+      - ef11b19269f8344dbfdefde76acd285b7d46441b
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - FD54:52B2:EED91:11AC17:649BD1A5
+      - 81A2:214C6F:826961:8841F0:65B0F91C
       X-Served-By:
-      - cache-qpg1227-QPG
+      - cache-lis1490058-LIS
       X-Timer:
-      - S1687933669.663347,VS0,VE294
+      - S1706096926.434203,VS0,VE263
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -87,7 +94,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -97,16 +104,20 @@ interactions:
     uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/schema/estados.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA61TO24cMQztfQpi6sUeIEWAIF4EQRy7MFJlUzASZ0JAEmWJNLwwfKRUOYIvFmo2
-        G+dXuEgjDL+P75FzfwYwzUwp9ukFfHQL4H593V8wk3un11fn0+bk1ENdnVyUFmpPgVlaRh2hSDNa
-        0qdQpB4aV2Upa7/Hb5EXgUgQhTvEx68Lq3S4MQKOVJRnDphBgLpilH3Zl5dwIY0ycO2WvS5Jg84K
-        PqNuIEjpFJTUGmDkyj1wWYASe7BT9AIgtp4lglKuXswlcORoRcEUEn729kB6bE2QcSkImPjGcAsf
-        FKhw9t6QeXzcuol54yM7gSJdm0WgO2qBFQdRsJQwBzl2HknceSCtLbl6MhD64NlnkiMBh9ItnI+W
-        aOpaNGv0gysXaFQbfaESqTlxd9xKsupw5OM4U1erEwRO6aSQEzKYbWFUKGMgqNjcsLaF3V2gqmRD
-        RtdAQkAKnhesckQdFc6iNlk34ioOpRw0WKo4eIPMviZG32OnNqJZ0hgDh0Acx/KO7C1v9+WXE2JN
-        9NshCOzWRU9rysPm33d4efV+9/chuvS+6mfd4U/gS8n0XNTrt28uXv0f2GtefAV/4vr7aeROtXHG
-        dnhHh9Nfd/bwHRoPxvahAwAA
+      string: "{\n  \"fields\": [\n    {\n      \"name\": \"COD\",\n      \"type\":
+        \"integer\",\n      \"format\": \"default\",\n      \"description\": \"C\xF3digo
+        de dois d\xEDgitos que identificam o estado\\n\\n> Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+        deserunt mollit anim id est laborum.\\n\",\n      \"title\": \"C\xF3digo do
+        Estado\"\n    },\n    {\n      \"name\": \"NOME\",\n      \"type\": \"string\",\n
+        \     \"format\": \"default\",\n      \"title\": \"Nome do Estado\"\n    },\n
+        \   {\n      \"name\": \"SIGLA\",\n      \"type\": \"string\",\n      \"format\":
+        \"default\",\n      \"title\": \"Sigla do Estado\"\n    }\n  ],\n  \"primaryKey\":
+        \"COD\"\n}"
     headers:
       Accept-Ranges:
       - bytes
@@ -127,11 +138,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Wed, 28 Jun 2023 06:27:49 GMT
+      - Wed, 24 Jan 2024 11:48:47 GMT
       ETag:
       - W/"785df2a40004c180afec8b3e344c578ab96ccf7e7e062568d100a50e5d3094a2"
       Expires:
-      - Wed, 28 Jun 2023 06:32:49 GMT
+      - Wed, 24 Jan 2024 11:53:47 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -141,21 +152,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3946b5579dff9b5c18e2be788efbcc48659897b1
+      - 4a3776871799cae52590b280f7ce1a28426a6346
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - B954:0D66:FA440:1262BC:649BD1A5
+      - BA14:1AE42F:824228:88207D:65B0F91E
       X-Served-By:
-      - cache-qpg1247-QPG
+      - cache-lis1490036-LIS
       X-Timer:
-      - S1687933669.344288,VS0,VE296
+      - S1706096927.923721,VS0,VE238
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -167,7 +178,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -177,11 +188,15 @@ interactions:
     uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/schema/pib-per-capita.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA72RPwuDMBDF936KkFlK/2zdrO0gHQylWymS6mkDmshFBxG/e2Oo2qLQqV0O8nv3
-        8g5esyCEJgKyWNMduZoXIY2dhkueg6HUCw7U6WFZFxYKWUIKSC1vnXknC1i4Wa23U7us8rtxDzxF
-        VRXeg2MnLkceQyRynvWK8yXP3/89jx3Poecy/+L+JtrMW7dDCzQy1ieo30uhiUIQqTR4psKh2s8S
-        ERJAkFF3X79rsVYVWkpBlzxWevBMPnvxdrxy0T4B91VT508CAAA=
+      string: "{\n  \"fields\": [\n    {\n      \"name\": \"COD\",\n      \"type\":
+        \"integer\"\n    },\n    {\n      \"name\": \"POP_2013\",\n      \"type\":
+        \"number\",\n      \"groupChar\": \".\",\n      \"decimalChar\": \",\"\n    },\n
+        \   {\n      \"name\": \"PIB_2013\",\n      \"type\": \"number\",\n      \"groupChar\":
+        \".\",\n      \"decimalChar\": \",\"\n    },\n    {\n      \"name\": \"PIB_PER_CAPITA_2013\",\n
+        \     \"type\": \"number\",\n      \"groupChar\": \".\",\n      \"decimalChar\":
+        \",\"\n    }\n  ],\n  \"primaryKey\": \"COD\",\n  \"foreignKeys\": [\n    {\n
+        \     \"fields\": \"COD\",\n      \"reference\": {\n        \"resource\":
+        \"estados\",\n        \"fields\": \"COD\"\n      }\n    }\n  ]\n}"
     headers:
       Accept-Ranges:
       - bytes
@@ -202,89 +217,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Wed, 28 Jun 2023 06:27:50 GMT
+      - Wed, 24 Jan 2024 11:48:47 GMT
       ETag:
       - W/"13ee2c7d9494ff4630a1c88dc97c9914efbbd788f2f94b21a34442fb9c41b113"
       Expires:
-      - Wed, 28 Jun 2023 06:32:50 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 6b41d191451399dfe27a4e5c2a641076f1598a07
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - B818:5735:FEA19:12A894:649BD1A6
-      X-Served-By:
-      - cache-qpg1263-QPG
-      X-Timer:
-      - S1687933670.025919,VS0,VE282
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/data/estados.csv
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAAA12RQW7CMBBF93MKH2AWtZNAuwwhRCBCrJgLDCQCS2AjJ9n0Nqhrdr1BLtYJSFXV
-        pTX//3nznVVL3FVljmZdbFOIEjTjlxeahotHYTTEEjUFcuMdha4hVmjI9SQy6ilYRyzKII6wtl4U
-        rGta0XhhhguK2kDyhiX108R3nf+dlAakxNq7Zvx2ljPqCqTC9BhaFGkGMsL0Sp/eUcfvEmTM4kD2
-        OklrkMnE9CRKQc4m7W16pRrkHPf+yITWsXVfgZJMwFxnPosXp6Dif6w7H3peW+9APXNpfBx4j16A
-        mqFug6PrYTiyWeeg5phe6OSfXFtQ72jacLI39huefuCCztM9C66SF3M/nShaJmd9WUD06on3bsi1
-        NnBovYFE/i2JhXtIFBbejne2FRUkES5t1wfLolXbcB53uFyBUqgtDeOD2dagIszaVy1ZDpHCvLuN
-        j6dp+jIOzg38AGoWavvwAQAA
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '360'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Wed, 28 Jun 2023 06:27:51 GMT
-      ETag:
-      - W/"b67e0d25b954a11e06ec6c439ae8fa1f760541890de81d14dcd4f0302e98d56e"
-      Expires:
-      - Wed, 28 Jun 2023 06:32:51 GMT
+      - Wed, 24 Jan 2024 11:53:47 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -300,15 +237,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 2d47c14e5ca235d9b357452ff181f3cb5572e72e
+      - dc67ddfa1dce8ca3b2e035d599bf4f1ad5f49119
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 9EF0:5A1B:F9C63:125E96:649BD2E6
+      - 9FDA:223D98:83A3BC:89821E:65B0F91E
       X-Served-By:
-      - cache-qpg1232-QPG
+      - cache-lis1490040-LIS
       X-Timer:
-      - S1687933671.707155,VS0,VE298
+      - S1706096927.473380,VS0,VE226
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -320,7 +257,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -330,14 +267,13 @@ interactions:
     uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/data/estados.csv
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA12RQW7CMBBF93MKH2AWtZNAuwwhRCBCrJgLDCQCS2AjJ9n0Nqhrdr1BLtYJSFXV
-        pTX//3nznVVL3FVljmZdbFOIEjTjlxeahotHYTTEEjUFcuMdha4hVmjI9SQy6ilYRyzKII6wtl4U
-        rGta0XhhhguK2kDyhiX108R3nf+dlAakxNq7Zvx2ljPqCqTC9BhaFGkGMsL0Sp/eUcfvEmTM4kD2
-        OklrkMnE9CRKQc4m7W16pRrkHPf+yITWsXVfgZJMwFxnPosXp6Dif6w7H3peW+9APXNpfBx4j16A
-        mqFug6PrYTiyWeeg5phe6OSfXFtQ72jacLI39huefuCCztM9C66SF3M/nShaJmd9WUD06on3bsi1
-        NnBovYFE/i2JhXtIFBbejne2FRUkES5t1wfLolXbcB53uFyBUqgtDeOD2dagIszaVy1ZDpHCvLuN
-        j6dp+jIOzg38AGoWavvwAQAA
+      string: "COD,NOME,SIGLA\n35,S\xE3o Paulo, SP\n41,Paran\xE1, PR\n42,Santa Catarina,
+        SC\n43,Rio Grande do Sul, RS\n50,Mato Grosso do Sul, MS\n11,Rond\xF4nia, RO\n12,Acre,
+        AC\n13,Amazonas, AM\n14,Roraima, RR\n15,Par\xE1, PA\n16,Amap\xE1, AP\n17,Tocantins,
+        TO\n21,Maranh\xE3o, MA\n24,Rio Grande do Norte, RN\n25,Para\xEDba, PB\n26,Pernambuco,
+        PE\n27,Alagoas, AL\n28,Sergipe, SE\n29,Bahia, BA\n31,Minas Gerais, MG\n33,Rio
+        de Janeiro, RJ\n51,Mato Grosso, MT\n52,Goi\xE1s, GO\n53,Distrito Federal,
+        DF\n22,Piau\xED, PI\n23,Cear\xE1, CE\n32,Esp\xEDrito Santo, ES\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -358,11 +294,88 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Wed, 28 Jun 2023 06:27:51 GMT
+      - Wed, 24 Jan 2024 11:48:48 GMT
       ETag:
       - W/"b67e0d25b954a11e06ec6c439ae8fa1f760541890de81d14dcd4f0302e98d56e"
       Expires:
-      - Wed, 28 Jun 2023 06:32:51 GMT
+      - Wed, 24 Jan 2024 11:53:48 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 519589d1abac6bdf1a3ae7f7082d2687fc0a67f2
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 38D2:3AF103:846459:8A3D15:65B0F91C
+      X-Served-By:
+      - cache-lis1490028-LIS
+      X-Timer:
+      - S1706096928.945699,VS0,VE227
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/data/estados.csv
+  response:
+    body:
+      string: "COD,NOME,SIGLA\n35,S\xE3o Paulo, SP\n41,Paran\xE1, PR\n42,Santa Catarina,
+        SC\n43,Rio Grande do Sul, RS\n50,Mato Grosso do Sul, MS\n11,Rond\xF4nia, RO\n12,Acre,
+        AC\n13,Amazonas, AM\n14,Roraima, RR\n15,Par\xE1, PA\n16,Amap\xE1, AP\n17,Tocantins,
+        TO\n21,Maranh\xE3o, MA\n24,Rio Grande do Norte, RN\n25,Para\xEDba, PB\n26,Pernambuco,
+        PE\n27,Alagoas, AL\n28,Sergipe, SE\n29,Bahia, BA\n31,Minas Gerais, MG\n33,Rio
+        de Janeiro, RJ\n51,Mato Grosso, MT\n52,Goi\xE1s, GO\n53,Distrito Federal,
+        DF\n22,Piau\xED, PI\n23,Cear\xE1, CE\n32,Esp\xEDrito Santo, ES\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '360'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 24 Jan 2024 11:48:48 GMT
+      ETag:
+      - W/"b67e0d25b954a11e06ec6c439ae8fa1f760541890de81d14dcd4f0302e98d56e"
+      Expires:
+      - Wed, 24 Jan 2024 11:53:48 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -378,15 +391,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 6fd8e0a43ddb18bdf38eb4444a965f1c4a0dd567
+      - 495cccd39997e2b0b7833a954ce721868899370e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 9EF0:5A1B:F9C63:125E96:649BD2E6
+      - 38D2:3AF103:846459:8A3D15:65B0F91C
       X-Served-By:
-      - cache-qpg1238-QPG
+      - cache-lis1490028-LIS
       X-Timer:
-      - S1687933671.381161,VS0,VE1
+      - S1706096928.401974,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:

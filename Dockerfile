@@ -9,11 +9,14 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         make \
         python3-pip \
-        python3-psycopg2
+        postgresql-common \
+        libpq-dev \
+        build-essential \
+        libpython3-dev
 
 COPY . /home/frictionless
 
 WORKDIR /home/frictionless
 
-RUN pip install wheel \
+RUN pip install wheel hatch \
     && make install
