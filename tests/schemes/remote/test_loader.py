@@ -30,7 +30,7 @@ def test_remote_loader_latin1():
 @pytest.mark.vcr
 def test_remote_loader_big_file():
     dialect = Dialect(header=False)
-    with TableResource(path=BASEURL % "data/table1.csv", dialect=dialect) as resource:
+    with TableResource(path=BASEURL % "data/table-1MB.csv", dialect=dialect) as resource:
         assert resource.read_rows()
         assert resource.stats.md5 == "78ea269458be04a0e02816c56fc684ef"
         assert (
