@@ -24,6 +24,7 @@ package = Package("https://zenodo.org/record/7078768")
 package.infer()
 print(package)
 ```
+
 ```
 {'title': 'Frictionless Data Test Dataset Without Descriptor',
  'resources': [{'name': 'capitals',
@@ -71,6 +72,7 @@ package = Package("https://zenodo.org/record/7078760")
 package.infer()
 print(package)
 ```
+
 ```
 {'name': 'testing',
  'title': 'Frictionless Data Test Dataset',
@@ -91,6 +93,7 @@ print(package)
                                             'reference': {'resource': 'data',
                                                           'fields': ['id']}}]}}]}
 ```
+
 Once you read the package from the repo, you can then easily access the resources and its data, for example:
 
 ```python tabs=Python
@@ -100,6 +103,7 @@ from frictionless import portals, Package
 package = Package("https://zenodo.org/record/7078760")
 pprint(package.get_resource('data').read_rows())
 ```
+
 ```
 [{'amount': Decimal('10000.5'),
   'description': 'Taxes we collect',
@@ -110,6 +114,7 @@ pprint(package.get_resource('data').read_rows())
   'id': 'A5032',
   'name': 'Parking Fees'}]
 ```
+
 You can apply any functions available in frictionless framework. Here is an example of applying validation to the
 package that was read.
 
@@ -121,6 +126,7 @@ package = Package("https://zenodo.org/record/7078760")
 report = catalog.packages[0].validate()
 pprint(report)
 ```
+
 ```
 {'valid': True,
  'stats': {'tasks': 1, 'warnings': 0, 'errors': 0, 'seconds': 0.655},
@@ -158,6 +164,7 @@ catalog.infer()
 print("Total packages", len(catalog.packages))
 print(catalog.packages)
 ```
+
 ```
 Total packages 2
 [{'title': 'Frictionless Data Test Dataset Without Descriptor',
@@ -208,6 +215,7 @@ catalog.infer()
 print("Total packages", len(catalog.packages))
 print(catalog.packages)
 ```
+
 ```
 Total packages 1
 [{'title': 'Frictionless Data Test Dataset Without Descriptor',
@@ -232,6 +240,7 @@ Total packages 1
                 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                                       {'name': 'name', 'type': 'string'}]}}]}]
 ```
+
 As shown in the first catalog example above, we can use different search queries to filter the repos. The above example searches for all the repos which has 'notes:"TDWD"' text in readme files. Similary we can use many different queries combining many terms, phrases or field
 search. To get full list of different queries you can check the zenodo official document [here](https://help.zenodo.org/guides/search).
 
@@ -243,10 +252,12 @@ title:"open science"
 +description:"frictionless" +title:"Bionomia"
 +publication_date:[2022-10-01 TO 2022-11-01] +title:"frictionless"
 ```
+
 We can search for different terms such as "open science" and also use '+' to specify mandatory. If "+" is not specified, it will be optional and will apply 'OR' logic to the search. We can also use field search. All the search queries supported by Zenodo Rest API can be
 used.
 
 If we want to read the list of repositories which has term "+frictionlessdata +science" then we write search query as follows:
+
 ```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Catalog
@@ -255,13 +266,16 @@ control = portals.ZenodoControl(search='+frictionlessdata +science')
 catalog = Catalog(control=control)
 print("Total Packages", len(catalog.packages))
 ```
+
 ```
 Total Packages 1
 ```
+
 There is only one repository having terms '+frictionlessdata +science', so it returned only one repository.
 
 We can also read repositories in defined order using 'sort' param. Here we are trying to read the repos with 'creators.name:"FD Tester"' in recently updated order, for example:
-```python script tabs=Python
+
+```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Catalog
 
@@ -275,6 +289,7 @@ catalog = Catalog(
    )
 catalog.infer()
 ```
+
 ```
 [{'name': 'test-repo-resources-with-http-data-csv',
  'title': 'Test Write File - Remote',
@@ -288,6 +303,7 @@ catalog.infer()
 ## Publishing Data
 
 To write data to the repository, we use `Package.publish` function as follows:
+
 ```python tabs=Python
 from pprint import pprint
 from frictionless import portals, Package
@@ -300,9 +316,11 @@ package = Package("484/package-to-write/datapackage.json")
 deposition_id = package.publish(control=control)
 print(deposition_id)
 ```
+
 ```
 1123500
 ```
+
 To publish the data, we need to provide metadata for the Zenodo repo which we are sending using "meta.json". In order to be able to publish/write to respository, we need to have the api token with 'repository write' access. If the package is successfully published, the deposition_id will be returned as shown in the example above.
 
 For testing, we can pass sandbox url using base_url param
@@ -348,6 +366,7 @@ control = portals.ZenodoControl(formats=["csv"], record="7078725", apikey=apikey
 package = Package(control=control)
 print(package)
 ```
+
 ```
 {'name': 'test-repo-without-datapackage',
  'resources': [{'name': 'capitals',
@@ -380,6 +399,7 @@ catalog = Catalog(
    )
 print(catalog.packages)
 ```
+
 ```
 [{'name': 'test-repo-resources-with-http-data-csv',
  'title': 'Test Write File - Remote',
@@ -389,10 +409,14 @@ print(catalog.packages)
                                       {'name': 'cid', 'type': 'string'},
                                       {'name': 'name', 'type': 'string'}]}}]}]
 ```
+
 ## Reference
 
 ```yaml reference
 references:
   - frictionless.portals.ZenodoControl
 ```
+
+```
+
 ```
