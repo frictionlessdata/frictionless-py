@@ -86,7 +86,7 @@ class GithubAdapter(Adapter):
         try:
             repository.create_file(
                 path=package_path,
-                message='Create "package.json"',
+                message='Create "datapackage.json"',
                 content=content,
                 branch=repository.default_branch,
                 committer=author,
@@ -116,10 +116,25 @@ class GithubAdapter(Adapter):
             note = "Github API error:" + repr(exception)
             raise FrictionlessException(note)
 
-        return models.PublishResult(
-            url=repository.html_url,
-            context=dict(repository=repository),
-        )
+        # Get url
+        url = repository.html_url
+
+        # Enable pages
+        if self.control.enable_pages:
+            try:
+                # TODO: rebase on public API when it's avaialble
+                # https://github.com/PyGithub/PyGithub/issues/2037
+                repository._requester.requestJsonAndCheck(
+                    "POST",
+                    f"{repository.url}/pages",
+                    input={"source": {"branch": "main"}},
+                )
+                url = f"https://{user.name}.github.io/{repository.name}"
+            except Exception as exception:
+                note = "Github API error:" + repr(exception)
+                raise FrictionlessException(note)
+
+        return models.PublishResult(url=url, context=dict(repository=repository))
 
     # Experimental
 

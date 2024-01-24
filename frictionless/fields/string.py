@@ -73,13 +73,13 @@ class StringField(Field):
 
         # WKT
         elif self.format == "wkt":
-            parser = platform.wkt.WktParser()
+            parser = platform.wkt.Parser()
 
             def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
                 try:
-                    parser.parse(cell, rule_name="wkt_representation")
+                    parser.parse(cell)
                 except Exception:
                     return None
                 return cell
