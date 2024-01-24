@@ -63,6 +63,28 @@ def test_resource_compression_local_csv_gz():
         ]
 
 
+def test_resource_compression_local_csv_xz():
+    with TableResource(path="data/table.csv.xz") as resource:
+        assert resource.compression == "xz"
+        assert resource.innerpath is None
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_resource_compression_local_csv_bz2():
+    with TableResource(path="data/table.csv.bz2") as resource:
+        assert resource.compression == "bz2"
+        assert resource.innerpath is None
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
 def test_resource_compression_stream_csv_zip():
     with open("data/table.csv.zip", "rb") as file:
         with TableResource(data=file, format="csv", compression="zip") as resource:
@@ -76,6 +98,26 @@ def test_resource_compression_stream_csv_zip():
 def test_resource_compression_stream_csv_gz():
     with open("data/table.csv.gz", "rb") as file:
         with TableResource(data=file, format="csv", compression="gz") as resource:
+            assert resource.header == ["id", "name"]
+            assert resource.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]
+
+
+def test_resource_compression_stream_csv_xz():
+    with open("data/table.csv.xz", "rb") as file:
+        with TableResource(data=file, format="csv", compression="xz") as resource:
+            assert resource.header == ["id", "name"]
+            assert resource.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]
+
+
+def test_resource_compression_stream_csv_bz2():
+    with open("data/table.csv.bz2", "rb") as file:
+        with TableResource(data=file, format="csv", compression="bz2") as resource:
             assert resource.header == ["id", "name"]
             assert resource.read_rows() == [
                 {"id": 1, "name": "english"},
