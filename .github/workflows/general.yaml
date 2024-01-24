@@ -28,9 +28,9 @@ jobs:
         python-version: ["3.10", "3.11"]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Prepare environment
@@ -45,7 +45,7 @@ jobs:
       - name: Test software
         run: hatch run +py=${{ matrix.py || matrix.python-version }} ci:test
       - name: Report coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
     services:
       postgres:
         image: postgres:12
@@ -79,9 +79,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Prepare environment
@@ -99,9 +99,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Prepare environment
@@ -118,9 +118,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Prepare environment
@@ -130,7 +130,7 @@ jobs:
           echo '!**/*.html' >> .gitignore
           make docs
       - name: Publush to Github Pages
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: site
           create_branch: true
@@ -144,9 +144,9 @@ jobs:
     needs: [test-linux, test-macos, test-windows]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Install dependencies
