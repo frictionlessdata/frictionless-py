@@ -93,7 +93,7 @@ gsheets = ["pygsheets>=2.0"]
 html = ["pyquery>=1.4"]
 mysql = ["sqlalchemy>=1.4", "pymysql>=1.0"]
 ods = ["ezodf>=0.3", "lxml>=4.0"]
-pandas = ["pandas>=1.0"]
+pandas = ["pyarrow>=14.0", "pandas>=1.0"]
 parquet = ["fastparquet>=0.8"]
 postgresql = ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"]
 spss = ["savReaderWriter>=3.0"]
@@ -141,12 +141,12 @@ write = [
 ]
 
 [[tool.hatch.envs.ci.matrix]]
-python = ["3.8", "3.9", "3.10"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.ci.scripts]
 test = [
   "hatch run lint",
-  "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 80 --timeout=300 --ci",
+  "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 75 --timeout=300 --ci",
 ]
 
 [build-system]

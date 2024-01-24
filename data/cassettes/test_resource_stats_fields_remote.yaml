@@ -5,7 +5,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -15,26 +15,100 @@ interactions:
     uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/doublequote.csv
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA+1Yy47aSBTdz1eU2MzGsjC0DSgrhiYtpARQM1lHhV2giuwqUuVqNfmDWY7mC7LM
-        gsUouyzHPzbn2tg8ml6NNFIkb+hbj1v33HNfDZ3ZfDJbLTpeZ754/9vjtFl+mDZ7pTgu/qTtyeJ+
-        9rAYL5vDUryfriaPs+VktpiX6+rW8nHx8Dh+P27unm2caZztVtYr7RJDIzrxMdYJhJ0R1u2csDlP
-        NK03kj7XsvNLZ+zP/am/9AlukkklbW54LIvvis3xVyueskSwaeLi4/ay+LFOZcwJ83RFn1pZ8Ulf
-        XVuJ2KmEG4mLvW4w8oZeZ3r/YTKezIq/5qVaBmAKWqm2zArzJGHPMkJLQC3jjKcuU5D2DHsukVzl
-        wnpYXqokOhZ08oalnG20yVx6RLFn/Mor2NvptDjkcMEyQYBz+cTxKt+RW80thXdo24ht/RzuuFwb
-        +aV5HbwSClsrES7CYgiVYALMFH9z9YVD1RYHFutME0ipnuCR3B4fqkwnnBwlvi03RqepZuIZ78sM
-        LyIOQgFM7VmsVWmNW6fykqKbfGC15ZYuVKoIKFFbavMX5OzZlmAdnakdqUmC+NkJJrMdNznAiFO0
-        ETRhY51y40GWGcXdA6I6B/CyU/JJGCvz6uxEh4Z5C0ZgOHeEUFR21kZCWZUBbfDFfAc5r9Y+O0si
-        fsycJoAnPrh7lqnkOGbVzRNyr8IACMruNNwi1FtnZMITgEwr7uvop/oTzyR2NBagoLKVFd8ShA/o
-        dKJxlhbft8d1yd9NIIiAeNb23AWeiKz4agEQnNvYCRKQwTEdSMgZlHPS9i7vVDkt4+LAryLU5B8C
-        q4RBEu3rGqkjxw2npKtBIuVypJw2aAlRF0U7U2XYyrCIBAhiWcISn53cHdlAOTOUeej18dHt9r3B
-        XT/sDlH1tTpM4ZKPs7so/M99561ILhvP25NDcPukVfaesO09be9pe8/P1XtCr/N6UZ8fEQCjN8KW
-        TeMmzVLFqdvDT30FgMqE7iWaaLEarQ0v+OwdZ+/Enj0ccV82ovk/P1gw9O/6HsGyjsHf4hA7lIwy
-        2mf9AAobqcSVsYus9VnxBxLG9332a6djBcUkFmtpiq9VVpzRB04AjDL5Io8pPGtuYk46L/zKOBIS
-        GeA1EsuLb7GSMe1VjOkynCe54aN6ZVMcbJVLN0g6ryKoVYV0hNCUEWK7QomLjL/W1Q2NEZAMEvxy
-        goTlBAm9IBj0R9HwLkCwnSp1m1mDMTIY9QftGGnHSDtG2jHSjpF2jLw2RvrDoDsIg+7LLyK9cBC1
-        E6SdIO0EaSdIO0HaCfLqF5EoiIbRKOwNvM4SPpMuTZCgO+r3/u/vIFE7QdoJ0k6Qn2uCRN3gZWuo
-        GDxrCtTlT0mzPBXX70QqxZy6XfNLe92eeuEwjIaD0e2fSYJwiH9y/wUHrVdnshwAAA==
+      string: "\"INCISO\",\"NOMBREINCISO\",\"UE\",\"NOMBREUE\",\"A\xD1O\",\"CODIGOAP\",\"NOMBREAP\",\"DESCRIPCIONAP\",\"CODIGOPROGRAMA\",\"NOMBREPROGRAMA\",\"DESCRIPCIONPROGRAMA\",\"INCISOCODIGO\",\"UECODIGO\",\"ue_cod\",\"presupuestado\",\"pfi\",\"pbi\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CES\",\"Consejo de Educaci\xF3n Secundaria\",2019,8,\"EDUCACI\xD3N\",\"Comprende
+        los servicios prestados a alumnos y estudiantes, y los servicios docentes;
+        la formulaci\xF3n y administraci\xF3n de pol\xEDticas educativas, aplicaci\xF3n
+        de normas, regulaci\xF3n, autorizaci\xF3n y supervisi\xF3n de los centros
+        de ense\xF1anza, as\xED como la investigaci\xF3n aplicada y el desarrollo
+        experimental en relaci\xF3n con los asuntos y servicios docentes; los gastos
+        relacionados con la administraci\xF3n y gesti\xF3n de centros educativos que
+        imparten educaci\xF3n preescolar, primaria, secundaria y universitaria, as\xED
+        como otras instituciones que brindan formaci\xF3n y capacitaci\xF3n. Comprende
+        la prestaci\xF3n de servicios auxiliares de la educaci\xF3n, como transporte,
+        seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n m\xE9dica y odontol\xF3gica
+        y otros servicios auxiliares conexos. Comprende adem\xE1s las escuelas y academias
+        militares, las escuelas de polic\xEDa que imparten ense\xF1anza general y
+        la formaci\xF3n para el servicio exterior.\",608,\"Inversiones edilicias y
+        equipamiento\",\" \",25,3,25003,74350819,\"Inversi\xF3n\",\".003465\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2015,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",5,\"Formaci\xF3n
+        en Educaci\xF3n\",\"Formaci\xF3n de profesionales de la educaci\xF3n, incluyendo
+        la formaci\xF3n de educadores sociales. La Ley General de Educaci\xF3n N\xBA
+        18.43, en su art\xEDculo nro. 31 define la formaci\xF3n en educaci\xF3n. \xC9sta...
+        '\"\"se concebir\xE1 como ense\xF1anza terciaria universitaria y abarcar\xE1
+        la formaci\xF3n de maestros, maestros t\xE9cnicos, profesores, profesores
+        de educaci\xF3n f\xEDsica y educadores sociales, as\xED como de otras formaciones
+        que el Sistema Nacional de Educaci\xF3n requiera'\"\".\",25,5,25005,117396841,\"Funcionamiento\",\".007937\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2015,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",5,\"Formaci\xF3n
+        en Educaci\xF3n\",\"Formaci\xF3n de profesionales de la educaci\xF3n, incluyendo
+        la formaci\xF3n de educadores sociales. La Ley General de Educaci\xF3n N\xBA
+        18.43, en su art\xEDculo nro. 31 define la formaci\xF3n en educaci\xF3n. \xC9sta...
+        '\"\"se concebir\xE1 como ense\xF1anza terciaria universitaria y abarcar\xE1
+        la formaci\xF3n de maestros, maestros t\xE9cnicos, profesores, profesores
+        de educaci\xF3n f\xEDsica y educadores sociales, as\xED como de otras formaciones
+        que el Sistema Nacional de Educaci\xF3n requiera'\"\".\",25,5,25005,38107510,\"Inversi\xF3n\",\".002576\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2015,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",5,\"Formaci\xF3n
+        en Educaci\xF3n\",\"Formaci\xF3n de profesionales de la educaci\xF3n, incluyendo
+        la formaci\xF3n de educadores sociales. La Ley General de Educaci\xF3n N\xBA
+        18.43, en su art\xEDculo nro. 31 define la formaci\xF3n en educaci\xF3n. \xC9sta...
+        '\"\"se concebir\xE1 como ense\xF1anza terciaria universitaria y abarcar\xE1
+        la formaci\xF3n de maestros, maestros t\xE9cnicos, profesores, profesores
+        de educaci\xF3n f\xEDsica y educadores sociales, as\xED como de otras formaciones
+        que el Sistema Nacional de Educaci\xF3n requiera'\"\".\",25,5,25005,1616869527,\"Personal\",\".109327\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2016,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",601,\"Administraci\xF3n
+        de la Educaci\xF3n y Gesti\xF3n de Pol\xEDticas Transversales\",\" \",25,5,25005,25856879,\"Funcionamiento\",\".001586\"\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -52,36 +126,38 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Tue, 09 Feb 2021 08:47:17 GMT
+      - Wed, 24 Jan 2024 11:56:41 GMT
       ETag:
       - W/"066c22a33ca23b13adaee1ecacf91b1a7edab00d39c4d6386d8e705cfe09cf42"
       Expires:
-      - Tue, 09 Feb 2021 08:52:17 GMT
+      - Wed, 24 Jan 2024 12:01:41 GMT
       Source-Age:
-      - '4'
+      - '23'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
       - 1.1 varnish
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 24ac29a10dae50bf32b9b2b58c1a65b6a1c9492a
+      - 6e7f4d5cf202e6a7b0d6f976bfff594ab082e1ae
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 0BDC:E8DF:301D58:3313B3:60224929
+      - 8D42:18049B:841639:89F933:65B0FADE
       X-Served-By:
-      - cache-fra19129-FRA
+      - cache-lis1490058-LIS
       X-Timer:
-      - S1612860438.862315,VS0,VE0
+      - S1706097402.867533,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -93,7 +169,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -103,26 +179,100 @@ interactions:
     uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/doublequote.csv
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA+1Yy47aSBTdz1eU2MzGsjC0DSgrhiYtpARQM1lHhV2giuwqUuVqNfmDWY7mC7LM
-        gsUouyzHPzbn2tg8ml6NNFIkb+hbj1v33HNfDZ3ZfDJbLTpeZ754/9vjtFl+mDZ7pTgu/qTtyeJ+
-        9rAYL5vDUryfriaPs+VktpiX6+rW8nHx8Dh+P27unm2caZztVtYr7RJDIzrxMdYJhJ0R1u2csDlP
-        NK03kj7XsvNLZ+zP/am/9AlukkklbW54LIvvis3xVyueskSwaeLi4/ay+LFOZcwJ83RFn1pZ8Ulf
-        XVuJ2KmEG4mLvW4w8oZeZ3r/YTKezIq/5qVaBmAKWqm2zArzJGHPMkJLQC3jjKcuU5D2DHsukVzl
-        wnpYXqokOhZ08oalnG20yVx6RLFn/Mor2NvptDjkcMEyQYBz+cTxKt+RW80thXdo24ht/RzuuFwb
-        +aV5HbwSClsrES7CYgiVYALMFH9z9YVD1RYHFutME0ipnuCR3B4fqkwnnBwlvi03RqepZuIZ78sM
-        LyIOQgFM7VmsVWmNW6fykqKbfGC15ZYuVKoIKFFbavMX5OzZlmAdnakdqUmC+NkJJrMdNznAiFO0
-        ETRhY51y40GWGcXdA6I6B/CyU/JJGCvz6uxEh4Z5C0ZgOHeEUFR21kZCWZUBbfDFfAc5r9Y+O0si
-        fsycJoAnPrh7lqnkOGbVzRNyr8IACMruNNwi1FtnZMITgEwr7uvop/oTzyR2NBagoLKVFd8ShA/o
-        dKJxlhbft8d1yd9NIIiAeNb23AWeiKz4agEQnNvYCRKQwTEdSMgZlHPS9i7vVDkt4+LAryLU5B8C
-        q4RBEu3rGqkjxw2npKtBIuVypJw2aAlRF0U7U2XYyrCIBAhiWcISn53cHdlAOTOUeej18dHt9r3B
-        XT/sDlH1tTpM4ZKPs7so/M99561ILhvP25NDcPukVfaesO09be9pe8/P1XtCr/N6UZ8fEQCjN8KW
-        TeMmzVLFqdvDT30FgMqE7iWaaLEarQ0v+OwdZ+/Enj0ccV82ovk/P1gw9O/6HsGyjsHf4hA7lIwy
-        2mf9AAobqcSVsYus9VnxBxLG9332a6djBcUkFmtpiq9VVpzRB04AjDL5Io8pPGtuYk46L/zKOBIS
-        GeA1EsuLb7GSMe1VjOkynCe54aN6ZVMcbJVLN0g6ryKoVYV0hNCUEWK7QomLjL/W1Q2NEZAMEvxy
-        goTlBAm9IBj0R9HwLkCwnSp1m1mDMTIY9QftGGnHSDtG2jHSjpF2jLw2RvrDoDsIg+7LLyK9cBC1
-        E6SdIO0EaSdIO0HaCfLqF5EoiIbRKOwNvM4SPpMuTZCgO+r3/u/vIFE7QdoJ0k6Qn2uCRN3gZWuo
-        GDxrCtTlT0mzPBXX70QqxZy6XfNLe92eeuEwjIaD0e2fSYJwiH9y/wUHrVdnshwAAA==
+      string: "\"INCISO\",\"NOMBREINCISO\",\"UE\",\"NOMBREUE\",\"A\xD1O\",\"CODIGOAP\",\"NOMBREAP\",\"DESCRIPCIONAP\",\"CODIGOPROGRAMA\",\"NOMBREPROGRAMA\",\"DESCRIPCIONPROGRAMA\",\"INCISOCODIGO\",\"UECODIGO\",\"ue_cod\",\"presupuestado\",\"pfi\",\"pbi\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CES\",\"Consejo de Educaci\xF3n Secundaria\",2019,8,\"EDUCACI\xD3N\",\"Comprende
+        los servicios prestados a alumnos y estudiantes, y los servicios docentes;
+        la formulaci\xF3n y administraci\xF3n de pol\xEDticas educativas, aplicaci\xF3n
+        de normas, regulaci\xF3n, autorizaci\xF3n y supervisi\xF3n de los centros
+        de ense\xF1anza, as\xED como la investigaci\xF3n aplicada y el desarrollo
+        experimental en relaci\xF3n con los asuntos y servicios docentes; los gastos
+        relacionados con la administraci\xF3n y gesti\xF3n de centros educativos que
+        imparten educaci\xF3n preescolar, primaria, secundaria y universitaria, as\xED
+        como otras instituciones que brindan formaci\xF3n y capacitaci\xF3n. Comprende
+        la prestaci\xF3n de servicios auxiliares de la educaci\xF3n, como transporte,
+        seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n m\xE9dica y odontol\xF3gica
+        y otros servicios auxiliares conexos. Comprende adem\xE1s las escuelas y academias
+        militares, las escuelas de polic\xEDa que imparten ense\xF1anza general y
+        la formaci\xF3n para el servicio exterior.\",608,\"Inversiones edilicias y
+        equipamiento\",\" \",25,3,25003,74350819,\"Inversi\xF3n\",\".003465\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2015,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",5,\"Formaci\xF3n
+        en Educaci\xF3n\",\"Formaci\xF3n de profesionales de la educaci\xF3n, incluyendo
+        la formaci\xF3n de educadores sociales. La Ley General de Educaci\xF3n N\xBA
+        18.43, en su art\xEDculo nro. 31 define la formaci\xF3n en educaci\xF3n. \xC9sta...
+        '\"\"se concebir\xE1 como ense\xF1anza terciaria universitaria y abarcar\xE1
+        la formaci\xF3n de maestros, maestros t\xE9cnicos, profesores, profesores
+        de educaci\xF3n f\xEDsica y educadores sociales, as\xED como de otras formaciones
+        que el Sistema Nacional de Educaci\xF3n requiera'\"\".\",25,5,25005,117396841,\"Funcionamiento\",\".007937\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2015,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",5,\"Formaci\xF3n
+        en Educaci\xF3n\",\"Formaci\xF3n de profesionales de la educaci\xF3n, incluyendo
+        la formaci\xF3n de educadores sociales. La Ley General de Educaci\xF3n N\xBA
+        18.43, en su art\xEDculo nro. 31 define la formaci\xF3n en educaci\xF3n. \xC9sta...
+        '\"\"se concebir\xE1 como ense\xF1anza terciaria universitaria y abarcar\xE1
+        la formaci\xF3n de maestros, maestros t\xE9cnicos, profesores, profesores
+        de educaci\xF3n f\xEDsica y educadores sociales, as\xED como de otras formaciones
+        que el Sistema Nacional de Educaci\xF3n requiera'\"\".\",25,5,25005,38107510,\"Inversi\xF3n\",\".002576\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2015,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",5,\"Formaci\xF3n
+        en Educaci\xF3n\",\"Formaci\xF3n de profesionales de la educaci\xF3n, incluyendo
+        la formaci\xF3n de educadores sociales. La Ley General de Educaci\xF3n N\xBA
+        18.43, en su art\xEDculo nro. 31 define la formaci\xF3n en educaci\xF3n. \xC9sta...
+        '\"\"se concebir\xE1 como ense\xF1anza terciaria universitaria y abarcar\xE1
+        la formaci\xF3n de maestros, maestros t\xE9cnicos, profesores, profesores
+        de educaci\xF3n f\xEDsica y educadores sociales, as\xED como de otras formaciones
+        que el Sistema Nacional de Educaci\xF3n requiera'\"\".\",25,5,25005,1616869527,\"Personal\",\".109327\"\n\"A.N.E.P.\",\"Administraci\xF3n
+        Nacional de Educaci\xF3n P\xFAblica\",\"CFed\",\"Consejo de Formaci\xF3n en
+        Educaci\xF3n\",2016,8,\"EDUCACI\xD3N\",\"Comprende los servicios prestados
+        a alumnos y estudiantes, y los servicios docentes; la formulaci\xF3n y administraci\xF3n
+        de pol\xEDticas educativas, aplicaci\xF3n de normas, regulaci\xF3n, autorizaci\xF3n
+        y supervisi\xF3n de los centros de ense\xF1anza, as\xED como la investigaci\xF3n
+        aplicada y el desarrollo experimental en relaci\xF3n con los asuntos y servicios
+        docentes; los gastos relacionados con la administraci\xF3n y gesti\xF3n de
+        centros educativos que imparten educaci\xF3n preescolar, primaria, secundaria
+        y universitaria, as\xED como otras instituciones que brindan formaci\xF3n
+        y capacitaci\xF3n. Comprende la prestaci\xF3n de servicios auxiliares de la
+        educaci\xF3n, como transporte, seguridad, alimentaci\xF3n, alojamiento, atenci\xF3n
+        m\xE9dica y odontol\xF3gica y otros servicios auxiliares conexos. Comprende
+        adem\xE1s las escuelas y academias militares, las escuelas de polic\xEDa que
+        imparten ense\xF1anza general y la formaci\xF3n para el servicio exterior.\",601,\"Administraci\xF3n
+        de la Educaci\xF3n y Gesti\xF3n de Pol\xEDticas Transversales\",\" \",25,5,25005,25856879,\"Funcionamiento\",\".001586\"\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -140,36 +290,38 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Tue, 09 Feb 2021 08:47:18 GMT
+      - Wed, 24 Jan 2024 11:56:42 GMT
       ETag:
       - W/"066c22a33ca23b13adaee1ecacf91b1a7edab00d39c4d6386d8e705cfe09cf42"
       Expires:
-      - Tue, 09 Feb 2021 08:52:18 GMT
+      - Wed, 24 Jan 2024 12:01:42 GMT
       Source-Age:
-      - '5'
+      - '23'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
       - 1.1 varnish
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - d78fc7ee50f72f298512d48e3f59d8942e5cfe9d
+      - ab0dd3c2dc47081175e97a3bb67e1a312a393ea1
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 0BDC:E8DF:301D58:3313B3:60224929
+      - 8D42:18049B:841639:89F933:65B0FADE
       X-Served-By:
-      - cache-fra19133-FRA
+      - cache-lis1490049-LIS
       X-Timer:
-      - S1612860439.848216,VS0,VE0
+      - S1706097402.148116,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:

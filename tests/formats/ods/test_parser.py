@@ -43,6 +43,15 @@ def test_ods_parser_sheet_by_index():
         ]
 
 
+def test_ods_parser_2nd_sheet_by_index():
+    control = formats.OdsControl(sheet=2)
+    with TableResource(
+        path="data/table-with-two-sheets.ods", control=control
+    ) as resource:
+        assert resource.header == ["a", "b", "c"]
+        assert resource.read_rows() == [{"a": 1, "b": 2, "c": 3}]
+
+
 def test_ods_parser_sheet_by_index_not_existent():
     control = formats.OdsControl(sheet=3)
     resource = TableResource(path="data/table.ods", control=control)
@@ -61,6 +70,15 @@ def test_ods_parser_sheet_by_name():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_ods_parser_2nd_sheet_by_name():
+    control = formats.OdsControl(sheet="Tabelle2")
+    with TableResource(
+        path="data/table-with-two-sheets.ods", control=control
+    ) as resource:
+        assert resource.header == ["a", "b", "c"]
+        assert resource.read_rows() == [{"a": 1, "b": 2, "c": 3}]
 
 
 def test_ods_parser_sheet_by_name_not_existent():

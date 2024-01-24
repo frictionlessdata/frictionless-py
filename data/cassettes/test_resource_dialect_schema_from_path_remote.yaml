@@ -5,7 +5,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -15,9 +15,8 @@ interactions:
     uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/resource-with-dereferencing.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5fBJIqTM1JzE0FSEJZeVnF+
-        HkwyJTMxJzW5BCQLZUKkuWq5AK695VhsAAAA
+      string: "{\n    \"name\": \"name\",\n    \"path\": \"table.csv\",\n    \"schema\":
+        \"schema.json\",\n    \"dialect\": \"dialect.json\"\n}\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -35,14 +34,16 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Thu, 02 Mar 2023 11:28:29 GMT
+      - Wed, 24 Jan 2024 11:54:02 GMT
       ETag:
       - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
       Expires:
-      - Thu, 02 Mar 2023 11:33:29 GMT
+      - Wed, 24 Jan 2024 11:59:02 GMT
       Source-Age:
-      - '41'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -50,21 +51,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 4952072de03d46c418ba1b1a711b89b0b5a274a0
+      - a2347b4491cdabfebe175f39cc4aa0d6669d77c2
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 48CE:0F3A:16793F5:1806D23:64008834
+      - 5764:2C5B2C:856C91:8B52C3:65B0FA5A
       X-Served-By:
       - cache-lis1490052-LIS
       X-Timer:
-      - S1677756510.666838,VS0,VE1
+      - S1706097242.205334,VS0,VE254
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -76,7 +77,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -86,9 +87,8 @@ interactions:
     uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/resource-with-dereferencing.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5fBJIqTM1JzE0FSEJZeVnF+
-        HkwyJTMxJzW5BCQLZUKkuWq5AK695VhsAAAA
+      string: "{\n    \"name\": \"name\",\n    \"path\": \"table.csv\",\n    \"schema\":
+        \"schema.json\",\n    \"dialect\": \"dialect.json\"\n}\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -106,14 +106,16 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Thu, 02 Mar 2023 11:28:29 GMT
+      - Wed, 24 Jan 2024 11:54:02 GMT
       ETag:
       - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
       Expires:
-      - Thu, 02 Mar 2023 11:33:29 GMT
+      - Wed, 24 Jan 2024 11:59:02 GMT
       Source-Age:
-      - '41'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -127,15 +129,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 218f2bf4ac0b5ffb4393bf9a39206c39fee1b736
+      - 393e75c37e4717a7a2951fd259903196a497e258
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 48CE:0F3A:16793F5:1806D23:64008834
+      - 5764:2C5B2C:856C91:8B52C3:65B0FA5A
       X-Served-By:
-      - cache-lis1490020-LIS
+      - cache-lis1490046-LIS
       X-Timer:
-      - S1677756510.936110,VS0,VE2
+      - S1706097243.747289,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -147,149 +149,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/resource-with-dereferencing.json
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5fBJIqTM1JzE0FSEJZeVnF+
-        HkwyJTMxJzW5BCQLZUKkuWq5AK695VhsAAAA
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '84'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Date:
-      - Thu, 02 Mar 2023 11:28:30 GMT
-      ETag:
-      - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
-      Expires:
-      - Thu, 02 Mar 2023 11:33:30 GMT
-      Source-Age:
-      - '42'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 8ec3409918ca5e79cbd949831aee9210ef6da385
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 48CE:0F3A:16793F5:1806D23:64008834
-      X-Served-By:
-      - cache-lis1490023-LIS
-      X-Timer:
-      - S1677756510.207819,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/resource-with-dereferencing.json
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5fBJIqTM1JzE0FSEJZeVnF+
-        HkwyJTMxJzW5BCQLZUKkuWq5AK695VhsAAAA
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '84'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Date:
-      - Thu, 02 Mar 2023 11:28:30 GMT
-      ETag:
-      - W/"0813d0e81b30f7b0f1d2f62f263003e0196bb3e862e3c4292570d330bd9fb42f"
-      Expires:
-      - Thu, 02 Mar 2023 11:33:30 GMT
-      Source-Age:
-      - '42'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - a52af95ec76c7c6d8ebe50c134ef47bd2705c614
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 48CE:0F3A:16793F5:1806D23:64008834
-      X-Served-By:
-      - cache-lis1490051-LIS
-      X-Timer:
-      - S1677756510.486039,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -299,8 +159,7 @@ interactions:
     uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/dialect.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA6vmUlBQSi4uU7JSqAYygZyU1JzM3MyS1CKgkJK1ElCwlquWCwBAsFnVKAAAAA==
+      string: "{\n  \"csv\": {\n    \"delimiter\": \";\"\n  }\n}\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -318,14 +177,16 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Thu, 02 Mar 2023 11:28:30 GMT
+      - Wed, 24 Jan 2024 11:54:03 GMT
       ETag:
       - W/"61a54c669226d68c8a925a2582259fc7f476f186b1c039145312eef497a9d0d4"
       Expires:
-      - Thu, 02 Mar 2023 11:33:30 GMT
+      - Wed, 24 Jan 2024 11:59:03 GMT
       Source-Age:
-      - '42'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -333,21 +194,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 747696fd7f86736130e41baf9f93ee37b6e0029f
+      - e8f8a171f2e40aedeebce98ad66b39efcfe7bad3
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - F07E:0E21:D3F327:ED914C:64008834
+      - 9AB2:2D8538:873E07:8D240C:65B0FA5A
       X-Served-By:
-      - cache-lis1490040-LIS
+      - cache-lis1490052-LIS
       X-Timer:
-      - S1677756511.784892,VS0,VE1
+      - S1706097243.985861,VS0,VE241
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -359,7 +220,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -369,9 +230,9 @@ interactions:
     uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/schema.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbTM1JyUYiUrhWgwHwSq4SywirzE3FSgvFJmipIOqkxJZQFEJq8kNT21
-        SAkuW6tDyDAwjcO44pKizLx0JNPArFiuWi4AXUFXhrQAAAA=
+      string: "{\n    \"fields\": [\n        {\n            \"name\": \"id\",\n            \"type\":
+        \"integer\"\n        },\n        {\n            \"name\": \"name\",\n            \"type\":
+        \"string\"\n        }\n    ]\n}\n"
     headers:
       Accept-Ranges:
       - bytes
@@ -389,14 +250,16 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Thu, 02 Mar 2023 11:28:31 GMT
+      - Wed, 24 Jan 2024 11:54:03 GMT
       ETag:
       - W/"dc46a8e33aaac98524ccf0ac9691a1fa1f0557925dfa873723d9164df436f640"
       Expires:
-      - Thu, 02 Mar 2023 11:33:31 GMT
+      - Wed, 24 Jan 2024 11:59:03 GMT
       Source-Age:
-      - '41'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -404,21 +267,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3ba7ecf03086043b7a09594627e5b541ab84855f
+      - 747b1c009e1140eee8dadac21a4f8e85aecbd556
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6DFA:42BD:6FE766:781FD1:64008835
+      - 1B0E:571A8:831858:88FE4C:65B0FA5A
       X-Served-By:
-      - cache-lis1490025-LIS
+      - cache-lis1490024-LIS
       X-Timer:
-      - S1677756511.076253,VS0,VE1
+      - S1706097244.505009,VS0,VE233
       X-XSS-Protection:
       - 1; mode=block
     status:
