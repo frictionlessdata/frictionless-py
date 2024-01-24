@@ -46,7 +46,8 @@ class JsonlParser(Parser):
         control = JsonControl.from_dialect(self.resource.dialect)
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = platform.jsonlines.Writer(file)
-            with source:
+            # Write from a copy of the source to avoid side effects (see #1622)
+            with source.to_copy() as source:
                 if self.resource.dialect.header and not control.keyed:
                     writer.write(source.schema.field_names)
                 for row in source.row_stream:

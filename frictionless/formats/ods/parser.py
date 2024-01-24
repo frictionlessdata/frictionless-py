@@ -82,15 +82,16 @@ class OdsParser(Parser):
         file.close()
         book = platform.ezodf.newdoc(doctype="ods", filename=file.name)
         title = f"Sheet {control.sheet}"
-        # Get size
-        with source:
+        # Get size. Use a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             row_size = 1
             col_size = len(source.schema.fields)
             for _ in source.row_stream:
                 row_size += 1
         book.sheets += platform.ezodf.Sheet(title, size=(row_size, col_size))
         sheet = book.sheets[title]
-        with source:
+        # Write from a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             if self.resource.dialect.header:
                 for field_index, name in enumerate(source.schema.field_names):
                     sheet[(0, field_index)].set_value(name)

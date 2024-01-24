@@ -254,7 +254,8 @@ class TableResource(Resource):
             self.__lookup[source_name][source_key] = set()
             if not source_res:
                 continue
-            with source_res:
+            # Iterate on a copy to avoid side effects (see #1622)
+            with source_res.to_copy() as source_res:
                 for row in source_res.row_stream:  # type: ignore
                     cells = tuple(row.get(field_name) for field_name in source_key)  # type: ignore
                     if set(cells) == {None}:  # type: ignore
@@ -641,12 +642,15 @@ class TableResource(Resource):
 
     def to_petl(self, normalize: bool = False):
         """Export resource as a PETL table"""
-        resource = self.to_copy()
+        # Store a copy of self to avoid side effects (see #1622)
+        self_copy = self.to_copy()
 
         # Define view
         class ResourceView(platform.petl.Table):  # type: ignore
             def __iter__(self):  # type: ignore
-                with resource:
+                # Iterate over a copy of the resource so that each instance of the iterator is independent  (see #1622)
+                # If we didn't do this, then different iterators on the same table would interfere with each other.
+                with self_copy.to_copy() as resource:
                     if normalize:
                         yield resource.schema.field_names
                         yield from (row.to_list() for row in resource.row_stream)

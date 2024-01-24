@@ -52,7 +52,8 @@ class YamlParser(Parser):
     def write_row_stream(self, source: TableResource):
         data: List[Any] = []
         control = YamlControl.from_dialect(self.resource.dialect)
-        with source:
+        # Write from a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             if self.resource.dialect.header and not control.keyed:
                 data.append(source.schema.field_names)
             for row in source.row_stream:
