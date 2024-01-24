@@ -70,6 +70,8 @@ class GithubControl(Control):
     filename: Optional[str] = None
     """Custom data package file name while publishing the data. By default it will use 'datapackage.json'."""
 
+    enable_pages: Optional[bool] = None
+
     # Metadata
 
     metadata_profile_patch = {
