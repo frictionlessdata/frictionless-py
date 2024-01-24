@@ -5,7 +5,7 @@ import os
 
 # Version
 
-VERSION = "5.15.10"
+VERSION = "5.16.0"
 
 # General
 
@@ -89,7 +89,12 @@ METADATA_TRAITS = {
         "props": ["layers", "mark"],
     },
     "package": {
-        "names": ["package.json", "package.yaml"],
+        "names": [
+            "datapackage.json",
+            "datapackage.yaml",
+            ".package.json",
+            ".package.yaml",
+        ],
         "props": ["resources"],
     },
     "resource": {
