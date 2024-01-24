@@ -1,1 +1,1 @@
-from .parser import WktParser
+from .parser import Parser
