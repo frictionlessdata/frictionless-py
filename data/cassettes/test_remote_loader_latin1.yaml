@@ -5,7 +5,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -16,7 +16,7 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSWckFACVx2SIWAAAA
+        aWQsbmFtZQoxLGVuZ2xpc2gKMiypCg==
     headers:
       Accept-Ranges:
       - bytes
@@ -34,36 +34,38 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Sat, 12 Dec 2020 12:02:38 GMT
+      - Wed, 24 Jan 2024 11:58:33 GMT
       ETag:
       - W/"8b016720e196389395fa5f64c0ebb9e285eb2ccee3e6bcf8b3e7ed472744f22f"
       Expires:
-      - Sat, 12 Dec 2020 12:07:38 GMT
+      - Wed, 24 Jan 2024 12:03:33 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - MISS
       X-Cache-Hits:
-      - 0, 1
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 2609d594788ebd7e3b5f8541c7b4830d0dc7df0f
+      - 568f978af7cf9f12675ac882ba9362e7a50848b6
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 35F0:A59D:2B870E:2DFD31:5FD4AB51
+      - 6F44:571A8:83EE3C:89DA9B:65B0FB68
       X-Served-By:
-      - cache-fra19152-FRA
+      - cache-lis1490025-LIS
       X-Timer:
-      - S1607774558.964904,VS0,VE191
+      - S1706097513.819586,VS0,VE224
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -75,7 +77,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -86,7 +88,7 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSWckFACVx2SIWAAAA
+        aWQsbmFtZQoxLGVuZ2xpc2gKMiypCg==
     headers:
       Accept-Ranges:
       - bytes
@@ -104,36 +106,38 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Sat, 12 Dec 2020 12:02:38 GMT
+      - Wed, 24 Jan 2024 11:58:33 GMT
       ETag:
       - W/"8b016720e196389395fa5f64c0ebb9e285eb2ccee3e6bcf8b3e7ed472744f22f"
       Expires:
-      - Sat, 12 Dec 2020 12:07:38 GMT
+      - Wed, 24 Jan 2024 12:03:33 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding,Origin
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 1
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - f6bddafeefebbdac0d5aaef14bbbc0829a268e95
+      - 709450774f2765e3b9a6e347211f8c74ef5a221d
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 35F0:A59D:2B870E:2DFD31:5FD4AB51
+      - 6F44:571A8:83EE3C:89DA9B:65B0FB68
       X-Served-By:
-      - cache-fra19146-FRA
+      - cache-lis1490058-LIS
       X-Timer:
-      - S1607774558.339546,VS0,VE1
+      - S1706097513.304870,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
