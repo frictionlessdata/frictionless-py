@@ -62,3 +62,17 @@ def test_html_parser_newline_in_cell_construction_file_issue_865(tmpdir):
     target = source.write(str(tmpdir.join("table.csv")))
     target.infer(stats=True)
     assert target.stats.rows == 226
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_html_parser_write_independent_bug_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = TableResource(path=str(tmpdir.join("table.html")))
+        source.write(target)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

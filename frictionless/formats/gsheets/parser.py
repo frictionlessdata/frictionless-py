@@ -53,7 +53,8 @@ class GsheetsParser(Parser):
         sh = gc.open_by_key(key)
         wks = sh.worksheet_by_id(gid) if gid else sh[0]  # type: ignore
         data: List[Any] = []
-        with source:
+        # Use a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             data.append(source.schema.field_names)
             for row in source.row_stream:
                 data.append(row.to_list())

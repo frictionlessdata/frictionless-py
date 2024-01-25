@@ -128,7 +128,8 @@ class PandasParser(Parser):
         data_rows: List[Tuple[Any]] = []
         index_rows: List[Tuple[Any]] = []
         fixed_types = {}
-        with source:
+        # Use a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             for row in source.row_stream:
                 data_values: List[Any] = []
                 index_values: List[Any] = []

@@ -169,3 +169,16 @@ def test_xls_parser_cast_int_to_string_1251():
         {"A": "001", "B": "b", "C": "1", "D": "a", "E": 1},
         {"A": "002", "B": "c", "C": "1", "D": "1", "E": 1},
     ]
+
+
+def test_xls_parser_write_independent_bug_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = TableResource(path=str(tmpdir.join("table.xls")))
+        source.write(target)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

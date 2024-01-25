@@ -34,7 +34,8 @@ class Analyzer:
         # Iterate rows
         columns_data: Dict[str, List[Any]] = {}
         numeric = ["integer", "numeric", "number"]
-        with resource:
+        # Use a copy of the resource to avoid side effects (see #1622)
+        with resource.to_copy() as resource:
             for row in resource.row_stream:
                 null_columns = 0
                 for field_name in row:

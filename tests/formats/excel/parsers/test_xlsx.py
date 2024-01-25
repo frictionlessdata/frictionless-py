@@ -307,3 +307,16 @@ def test_xlsx_parser_cannot_read_resource_from_remote_package_issue_1504():
     resource = package.get_table_resource("excel")
     table = resource.read_table()
     assert len(table.rows) == 4
+
+
+def test_xlsx_parser_write_independent_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = TableResource(path=str(tmpdir.join("table.xlsx")))
+        source.write(target)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

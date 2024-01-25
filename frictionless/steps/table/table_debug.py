@@ -33,8 +33,9 @@ class table_debug(Step):
 
         # Data
         def data():  # type: ignore
-            with current:
-                for row in current.row_stream:  # type: ignore
+            # Use a copy of the source to avoid side effects (see #1622)
+            with current.to_copy() as current_copy:
+                for row in current_copy.row_stream:  # type: ignore
                     self.function(row)  # type: ignore
                     yield row
 

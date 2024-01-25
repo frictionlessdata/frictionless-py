@@ -57,7 +57,8 @@ class HtmlParser(Parser):
     # It will give us an ability to support HtmlDialect
     def write_row_stream(self, source: TableResource):
         html = "<html><body><table>\n"
-        with source:
+        # Use a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             html += "<tr>"
             for name in source.schema.field_names:
                 html += f"<td>{name}</td>"

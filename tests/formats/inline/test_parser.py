@@ -139,3 +139,15 @@ def test_inline_parser_write_skip_header():
     with TableResource(path="data/table.csv") as resource:
         resource.write(target)
         assert target.data == [[1, "english"], [2, "中国人"]]
+
+
+@pytest.mark.skip
+def test_inline_parser_write_keyed_independent_bug_1622(tmpdir):
+    control = formats.InlineControl(keyed=True)
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = source.write(format="inline", control=control)
+        assert target.data == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

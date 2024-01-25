@@ -62,3 +62,32 @@ def test_sql_parser_write_string_pk_issue_777_postgresql(postgresql_url):
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+@pytest.mark.skipif(platform.type == "darwin", reason="Skip SQL test in MacOS")
+@pytest.mark.skipif(platform.type == "windows", reason="Skip SQL test in Windows")
+def test_sql_parser_write_independent_bug_1622(postgresql_url):
+    source = TableResource(path="data/timezone.csv")
+    with source:
+        control = formats.SqlControl(table="timezone")
+        target = source.write(postgresql_url, control=control)
+        with target:
+            assert target.header == ["datetime", "time"]
+            assert target.read_rows() == [
+                {
+                    "datetime": datetime(2020, 1, 1, 15),
+                    "time": time(15),
+                },
+                {
+                    "datetime": datetime(2020, 1, 1, 15),
+                    "time": time(15),
+                },
+                {
+                    "datetime": datetime(2020, 1, 1, 12),
+                    "time": time(12),
+                },
+                {
+                    "datetime": datetime(2020, 1, 1, 18),
+                    "time": time(18),
+                },
+            ]

@@ -52,10 +52,11 @@ def test_gsheets_parser_write(google_credentials_path):
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"
     control = formats.GsheetsControl(credentials=google_credentials_path)
     source = TableResource(path="data/table.csv")
-    target = source.write(path=path, control=control)
-    with target:
-        assert target.header == ["id", "name"]
-        assert target.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
+    with source:
+        target = source.write(path=path, control=control)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

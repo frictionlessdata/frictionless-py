@@ -27,7 +27,8 @@ class QsvAdapter(Adapter):
         command = [self.qsv_path, "stats", "--infer-dates", "--dates-whitelist", "all"]
         process = sp.Popen(command, stdout=sp.PIPE, stdin=sp.PIPE)
         # TODO: Use FileResource here (or future resource.stream_bytes())
-        with resource:
+        # Use a copy of the resource to avoid side effects (see #1622)
+        with resource.to_copy() as resource:
             while True:
                 chunk = resource.read_bytes(size=BLOCK_SIZE)
                 if not chunk:
