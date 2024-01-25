@@ -1,5 +1,6 @@
-from frictionless import Resource, FrictionlessException
 import pytest
+
+from frictionless import FrictionlessException, Resource
 
 # Test that the context manager implementation works correctly
 
@@ -40,25 +41,25 @@ def test_resource_copy_can_use_nested_context():
     with Resource("data/table.csv") as resource:
         copy = resource.to_copy()
         with copy:
-            assert (copy.closed is False)
-            assert (resource.closed is False)
+            assert copy.closed is False
+            assert resource.closed is False
 
         # Check that the original resource is still open
-        assert (copy.closed is True)
-        assert (resource.closed is False)
+        assert copy.closed is True
+        assert resource.closed is False
 
 
 def test_resource_can_use_repeated_non_nested_contexts():
     # Repeat context allowed
     resource = Resource("data/table.csv")
     with resource:
-        assert (resource.closed is False)
+        assert resource.closed is False
 
-    assert (resource.closed is True)
+    assert resource.closed is True
 
     with resource:
-        assert (resource.closed is False)
-    assert (resource.closed is True)
+        assert resource.closed is False
+    assert resource.closed is True
 
 
 def test_resource_copy_can_use_repeated_context():
@@ -66,12 +67,12 @@ def test_resource_copy_can_use_repeated_context():
     resource = Resource("data/table.csv")
     copy = resource.to_copy()
     with resource:
-        assert (resource.closed is False)
-        assert (copy.closed is True)
+        assert resource.closed is False
+        assert copy.closed is True
 
     with copy:
-        assert (resource.closed is True)
-        assert (copy.closed is False)
+        assert resource.closed is True
+        assert copy.closed is False
 
 
 def test_context_manager_on_open_resource_throw_exception():
@@ -81,7 +82,7 @@ def test_context_manager_on_open_resource_throw_exception():
     """
     resource = Resource("data/table.csv")
     resource.open()
-    assert (resource.closed is False)
+    assert resource.closed is False
     with pytest.raises(FrictionlessException):
         with resource:
             pass
@@ -93,10 +94,10 @@ def test_explicit_open_can_be_repeated():
     # using explicit open() calls must be aware of that.
     resource = Resource("data/table.csv")
     resource.open()
-    assert (resource.closed is False)
+    assert resource.closed is False
     resource.open()
-    assert (resource.closed is False)
+    assert resource.closed is False
     resource.close()
-    assert (resource.closed is True)
+    assert resource.closed is True
     resource.close()
-    assert (resource.closed is True)
+    assert resource.closed is True

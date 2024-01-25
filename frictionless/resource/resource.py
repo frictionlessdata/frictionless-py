@@ -273,11 +273,11 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
 
         would result in errors because the second context would close the file
         before the write happened.  While the above code is obvious, similar
-        things can happen when composing steps in pipelines, calling petl code etc. 
+        things can happen when composing steps in pipelines, calling petl code etc.
         where the various functions may have no knowledge of each other.
         See #1622 for more details.
 
-        So we only allow a single context to be open at a time, and raise an 
+        So we only allow a single context to be open at a time, and raise an
         exception if nested context is attempted.  For similar reasons, we
         also raise an exception if a context is attempted on an open resource.
 
@@ -298,7 +298,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         if self.__context_manager_entered:
             note = "Resource has previously entered a context manager (`with` statement) and does not support nested contexts.  To use in a nested context use `to_copy()` then use the copy in the `with`."
             raise FrictionlessException(note)
-        if self.closed == False:
+        if not self.closed:
             note = "Resource is currently open, and cannot be used in a `with` statement (which would reopen the file).  To use `with` on an open Resouece, use to_copy() then use the copy in the `with`."
             raise FrictionlessException(note)
 

@@ -138,7 +138,9 @@ class Validator:
                         errors.append(error)
 
             # Validate file
-            if not isinstance(resource_copy, platform.frictionless_resources.TableResource):
+            if not isinstance(
+                resource_copy, platform.frictionless_resources.TableResource
+            ):
                 if resource_copy.hash is not None or resource_copy.bytes is not None:
                     helpers.pass_through(resource_copy.byte_stream)
 
