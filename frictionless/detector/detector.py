@@ -38,7 +38,7 @@ class Detector:
 
     sample_size: int = settings.DEFAULT_SAMPLE_SIZE
     """
-    The amount of rows to be extracted as a sample for dialect/schema infering.
+    The amount of rows to be extracted as a sample for dialect/schema inferring.
     It defaults to 100. The sample_size can be increased to improve the inference
     accuracy.
     """
@@ -113,7 +113,7 @@ class Detector:
     Whether to sync the schema.
     If it sets to `True` the provided schema will be mapped to
     the inferred schema. It means that, for example, you can
-    provide a subset of fileds to be applied on top of the inferred
+    provide a subset of fields to be applied on top of the inferred
     fields or the provided schema can have different order of fields.
     """
 
@@ -265,7 +265,7 @@ class Detector:
         ):
             # This algorithm tries to find a header row
             # that is close to average sample width or use default one
-            # We use it to eleminate initial rows that are comments/etc
+            # We use it to eliminate initial rows that are comments/etc
 
             # Get header rows
             width = round(sum(widths) / len(widths))

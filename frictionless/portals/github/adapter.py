@@ -105,7 +105,7 @@ class GithubAdapter(Adapter):
                 repository.create_file(
                     path=resource_path,
                     message='Create "resource_path"',
-                    # It seeems to be it requries a string by a mistake
+                    # It seeems to be it requires a string by a mistake
                     # https://stackoverflow.com/questions/72668275/how-to-upload-an-image-file-to-github-using-pygithub
                     content=resource.read_bytes(),  # type: ignore
                     branch=branch,
@@ -122,7 +122,7 @@ class GithubAdapter(Adapter):
         # Enable pages
         if self.control.enable_pages:
             try:
-                # TODO: rebase on public API when it's avaialble
+                # TODO: rebase on public API when it's available
                 # https://github.com/PyGithub/PyGithub/issues/2037
                 repository._requester.requestJsonAndCheck(
                     "POST",

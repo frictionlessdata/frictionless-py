@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class baseline(Check):
     """Check a table for basic errors
 
-    Ths check is enabled by default for any `validate` function run.
+    This check is enabled by default for any `validate` function run.
 
     """
 

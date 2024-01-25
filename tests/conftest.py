@@ -49,7 +49,7 @@ def duckdb_url_data(duckdb_url):
 def postgresql_url():
     url = os.environ.get("POSTGRESQL_URL")
     if not url:
-        pytest.skip('Environment varialbe "POSTGRESQL_URL" is not available')
+        pytest.skip('Environment variable "POSTGRESQL_URL" is not available')
     yield url
     engine = sa.create_engine(url)
     with engine.begin() as conn:
@@ -71,7 +71,7 @@ def postgresql_url_data(postgresql_url):
 def mysql_url():
     url = os.environ.get("MYSQL_URL")
     if not url:
-        pytest.skip('Environment varialbe "MYSQL_URL" is not available')
+        pytest.skip('Environment variable "MYSQL_URL" is not available')
     yield url
     engine = sa.create_engine(url)
     with engine.begin() as conn:

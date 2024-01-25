@@ -9,7 +9,7 @@ from ...system import Loader
 from .control import MultipartControl
 
 # NOTE:
-# Curretnly the situation with header/no-header concatenation is complicated
+# Currently the situation with header/no-header concatenation is complicated
 # We need to review it and add more tests for general/tabular edge cases
 
 

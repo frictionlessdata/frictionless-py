@@ -263,7 +263,7 @@ class TableResource(Resource):
 
     def __open_row_stream(self):
         # TODO: we need to rework this field_info / row code
-        # During row streaming we crate a field info structure
+        # During row streaming we create a field info structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
 
@@ -461,7 +461,7 @@ class TableResource(Resource):
             stats: stream file completely and infer stats
         """
         if not self.closed:
-            note = "Resource.infer canot be used on a open resource"
+            note = "Resource.infer cannot be used on a open resource"
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:

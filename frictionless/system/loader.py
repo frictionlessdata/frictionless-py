@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 # Probably we need to rework the way we calculate stats
 # First of all, it's not really reliable as read/read1(size) can be called many times
 # Secondly, for now, we stream compressed files twice (see loader.read_byte_stream_decompress)
-# Although, we need to reviw how we collect buffer - cab it be less IO operations?
+# Although, we need to review how we collect buffer - cab it be less IO operations?
 
 
 # TODO: migrate to dataclass?
@@ -209,7 +209,7 @@ class Loader:
             with platform.zipfile.ZipFile(byte_stream) as archive:
                 name = self.resource.innerpath or archive.namelist()[0]
                 if not name:
-                    error = errors.Error(note="the arhive is empty")
+                    error = errors.Error(note="the archive is empty")
                     raise FrictionlessException(error)
                 # TODO: enable typing when resource.innerpath is fixed
                 with archive.open(name) as file:  # type: ignore

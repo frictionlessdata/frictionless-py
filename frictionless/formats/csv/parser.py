@@ -34,7 +34,7 @@ class CsvParser(Parser):
             config = csv.Sniffer().sniff("".join(sample), delimiter)  # type: ignore
         except csv.Error:
             config = csv.excel()
-        # We can't rely on this guess as it's can be confused with embeded JSON
+        # We can't rely on this guess as it's can be confused with embedded JSON
         # https://github.com/frictionlessdata/frictionless-py/issues/493
         if config.quotechar == "'":
             config.quotechar = '"'

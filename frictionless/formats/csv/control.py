@@ -67,7 +67,7 @@ class CsvControl(Control):
     # Convert
 
     def to_python(self):
-        """Conver to Python's `csv.Dialect`"""
+        """Convert to Python's `csv.Dialect`"""
         config = csv.excel()
         config.delimiter = self.delimiter
         config.doublequote = self.double_quote if self.escape_char else True

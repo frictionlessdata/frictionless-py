@@ -321,7 +321,7 @@ standards = Option(
 
 descriptor = Option(
     default=None,
-    help="Excplicit path to the descriptor instead of guessing by providing a source",
+    help="Explicit path to the descriptor instead of guessing by providing a source",
 )
 
 keep_delimiter = Option(

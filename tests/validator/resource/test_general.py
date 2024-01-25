@@ -313,7 +313,7 @@ def test_resource_validate_infer_fields_issue_225():
 
 
 def test_resource_validate_fails_with_wrong_encoding_issue_274():
-    # For now, by default encoding is detected incorectly by chardet
+    # For now, by default encoding is detected incorrectly by chardet
     resource = TableResource(path="data/encoding-issue-274.csv", encoding="utf-8")
     report = resource.validate()
     assert report.valid

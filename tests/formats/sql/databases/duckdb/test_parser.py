@@ -22,7 +22,7 @@ def test_sql_parser(duckdb_url_data):
                 {"name": "id", "type": "integer", "constraints": {"required": True}},
                 {"name": "name", "type": "string"},
             ],
-            # TODO: add indicies support
+            # TODO: add indices support
             # DuckDBEngineWarning: duckdb-engine doesn't yet support reflection on indices
             # https://github.com/Mause/duckdb_engine/blob/71b1ed2f63dc25a848995986401be765711d763d/duckdb_engine/__init__.py#L159
             #  "primaryKey": ["id"],

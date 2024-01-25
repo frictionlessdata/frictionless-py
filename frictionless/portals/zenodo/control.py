@@ -43,7 +43,7 @@ class ZenodoControl(Control):
 
     base_url: str = BASE_URL
     """Endpoint for zenodo. By default it is set to live site (https://zenodo.org/api). For testing upload,
-    we can use sandbox for example, https://sandbox.zenodo.org/api. Sandbox doesnot work for
+    we can use sandbox for example, https://sandbox.zenodo.org/api. Sandbox does not work for
     reading."""
 
     title: Optional[str] = None

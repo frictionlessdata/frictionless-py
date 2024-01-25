@@ -16,10 +16,10 @@ if TYPE_CHECKING:
 
 # NOTE:
 # We might consider migrating transform_resource API to emitting
-# data as an ouput instead of setting it to target.data
+# data as an output instead of setting it to target.data
 # It might make custom transform steps more eloquent
 # This change probably not even breaking because it will be a new
-# mode supported by the system (function emiting data instead of returning None)
+# mode supported by the system (function emitting data instead of returning None)
 # We might consider adding `process_schema/row` etc to the Step class
 
 

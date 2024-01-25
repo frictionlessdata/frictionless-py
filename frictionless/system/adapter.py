@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 # NOTE:
 # There should be a way to check the supported functionality of a concrete adapter
-# For example, does it suport `read_catalog`? We can implement it based on what
+# For example, does it support `read_catalog`? We can implement it based on what
 # methods return (or not) or use some kins of `supported_actions` property
 
 

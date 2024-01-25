@@ -241,7 +241,7 @@ class Row(Dict[str, Any]):
         if types is None and csv:
             types = platform.frictionless_formats.CsvParser.supported_types
 
-        # Covert
+        # Convert
         if types is not None:
             for field_mapping in self.__field_info["mapping"].values():
                 field, _, _, cell_writer = field_mapping

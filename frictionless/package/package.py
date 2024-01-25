@@ -355,11 +355,11 @@ class Package(Metadata, metaclass=Factory):
             dict: dict of resource analysis
 
         """
-        analisis: Dict[str, Any] = {}
+        analysis: Dict[str, Any] = {}
         for resource in self.resources:
             if isinstance(resource, platform.frictionless_resources.TableResource):
-                analisis[resource.name] = resource.analyze(detailed=detailed)
-        return analisis
+                analysis[resource.name] = resource.analyze(detailed=detailed)
+        return analysis
 
     # Describe
 
@@ -627,7 +627,7 @@ class Package(Metadata, metaclass=Factory):
                         yield errors.PackageError(note=f'path "{item}" is not safe')
                         return
 
-        # Resoruce Names
+        # Resource Names
         resource_names: List[str] = []
         for resource in descriptor["resources"]:
             if isinstance(resource, dict) and "name" in resource:
@@ -679,7 +679,7 @@ class Package(Metadata, metaclass=Factory):
         if profile == "tabular-data-package":
             for resource in resources:
                 if resource.get("profile", None) != "tabular-data-resource":
-                    note = 'profile "tabular-data-package" requries all the resources to be "tabular-data-resource"'
+                    note = 'profile "tabular-data-package" requires all the resources to be "tabular-data-resource"'
                     yield errors.PackageError(note=note)
 
         # Misleading
