@@ -3,6 +3,7 @@ import pytest
 from frictionless import Field, Schema
 from frictionless.errors.metadata import SchemaError
 from frictionless.exception import FrictionlessException
+
 # General
 
 
@@ -62,19 +63,20 @@ def test_boolean_read_cell(format, source, target, options):
 @pytest.mark.parametrize(
     "source, target, options",
     [
-        (True, True, {'trueValues': ["yes"], "example": "yes"}),
-        ("yes", True, {'trueValues': ["yes"], "example": "yes"}),
-        ("true", None, {'trueValues': ["yes"], "example": "yes"}),
-        ("no", False, {'falseValues': ["no"], "example": "no"}),
-        ("no", False, {'falseValues': ["no"], "example": "no"}),
-        ("false", None, {'falseValues': ["no"], "example": "no"}),
-    ]
+        (True, True, {"trueValues": ["yes"], "example": "yes"}),
+        ("yes", True, {"trueValues": ["yes"], "example": "yes"}),
+        ("true", None, {"trueValues": ["yes"], "example": "yes"}),
+        ("no", False, {"falseValues": ["no"], "example": "no"}),
+        ("no", False, {"falseValues": ["no"], "example": "no"}),
+        ("false", None, {"falseValues": ["no"], "example": "no"}),
+    ],
 )
 def test_boolean_from_schema_descriptor_with_valid_example_fix_issue_1610(
-        source, target, options):
+    source, target, options
+):
     schema_descriptor = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-        "fields": [{"name": "IsTrue", "type": "boolean"}]
+        "fields": [{"name": "IsTrue", "type": "boolean"}],
     }
     schema_descriptor["fields"][0].update(options)
     schema = Schema.from_descriptor(schema_descriptor)
@@ -86,10 +88,16 @@ def test_boolean_from_schema_descriptor_with_valid_example_fix_issue_1610(
 def test_boolean_from_schema_descriptor_with_invalid_example_fix_issue_1610():
     schema_descriptor = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-        "fields": [{"name": "IsTrue", "type": "boolean",
-                    'falseValues': ["no"], "example": "unvalid"}]
+        "fields": [
+            {
+                "name": "IsTrue",
+                "type": "boolean",
+                "falseValues": ["no"],
+                "example": "unvalid",
+            }
+        ],
     }
     with pytest.raises(FrictionlessException) as excinfo:
-        schema = Schema.from_descriptor(schema_descriptor)
+        Schema.from_descriptor(schema_descriptor)
     err = excinfo.value.error
     assert isinstance(err, SchemaError)
