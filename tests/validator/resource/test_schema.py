@@ -323,18 +323,18 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
             {"name": "C", "title": "Field C", "type": "string"},
         ],
     }
-    
+
     schema_descriptor_2 = deepcopy(schema_descriptor_1)
     # Add required constraint on "C" field
     schema_descriptor_2["fields"][2]["constraints"] = {"required": True}
-    
+
     test_cases = [
         {
             "schema": schema_descriptor_1,
             "source": [["B", "C"], ["b", "c"]],
             "expected_flattened_report": [
                 [None, 3, "missing-label"],
-            ]
+            ],
         },
         {
             "schema": schema_descriptor_2,
@@ -343,7 +343,7 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
                 [None, 2, "missing-label"],
                 [None, 3, "missing-label"],
             ],
-        }
+        },
     ]
     for tc in test_cases:
         schema = Schema.from_descriptor(tc["schema"])
@@ -352,4 +352,7 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
         )
         report = frictionless.validate(resource)
         print(report.flatten(["rowNumber", "fieldNumber", "type"]))
-        assert report.flatten(["rowNumber", "fieldNumber", "type"]) == tc["expected_flattened_report"]
+        assert (
+            report.flatten(["rowNumber", "fieldNumber", "type"])
+            == tc["expected_flattened_report"]
+        )

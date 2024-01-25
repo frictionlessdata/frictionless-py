@@ -314,8 +314,10 @@ class TableResource(Resource):
                 # field_info parameter used for row creation
                 if self.detector.schema_sync:
                     for field in self.schema.fields:
-                        if (field.name not in self.labels and
-                                field.name in field_info["names"]):
+                        if (
+                            field.name not in self.labels
+                            and field.name in field_info["names"]
+                        ):
                             field_index = field_info["names"].index(field.name)
                             del field_info["names"][field_index]
                             del field_info["objects"][field_index]
