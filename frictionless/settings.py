@@ -11,6 +11,7 @@ VERSION = "5.16.1"
 
 UNDEFINED = object()
 NAME_PATTERN = "^([-a-z0-9._/])+$"
+INSENTIVE_CASE_NAME_PATTERN = "^([-a-zA-Z0-9._/])+$"
 TYPE_PATTERN = "^([-a-z/])+$"
 PACKAGE_PATH = "datapackage.json"
 COMPRESSION_FORMATS = ["zip", "gz", "bz2", "xz"]

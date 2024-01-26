@@ -287,7 +287,7 @@ class Schema(Metadata, metaclass=Factory):
         "type": "object",
         "required": ["fields"],
         "properties": {
-            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            "name": {"type": "string", "pattern": settings.INSENTIVE_CASE_NAME_PATTERN},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
