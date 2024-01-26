@@ -8,6 +8,11 @@ def test_validate():
     assert report.valid
 
 
+def test_validate_insensitive_case_schema_name_issue_1628():
+    report = Schema.validate_descriptor("data/schema_with_uppercase_name.json")
+    assert report.valid
+
+
 def test_validate_invalid():
     report = Schema.validate_descriptor({"fields": "bad"})
     assert report.flatten(["type", "note"]) == [
