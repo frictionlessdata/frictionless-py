@@ -1,5 +1,8 @@
+from copy import deepcopy
+
 import pytest
 
+import frictionless
 from frictionless import Checklist, Detector, FrictionlessException, Schema, fields
 from frictionless.resources import TableResource
 
@@ -304,3 +307,69 @@ def test_resource_validate_less_actual_fields_with_required_constraint_issue_950
         [3, 3, "constraint-error"],
         [3, 3, "missing-cell"],
     ]
+
+
+def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_1611():
+    schema_descriptor_1 = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [
+            {
+                "name": "A",
+                "title": "Field A",
+                "type": "string",
+                "constraints": {"required": True},
+            },
+            {"name": "B", "title": "Field B", "type": "string"},
+            {"name": "C", "title": "Field C", "type": "string"},
+        ],
+    }
+
+    schema_descriptor_2 = deepcopy(schema_descriptor_1)
+    # Add required constraint on "C" field
+    schema_descriptor_2["fields"][2]["constraints"] = {"required": True}
+
+    test_cases = [
+        {
+            "schema": schema_descriptor_1,
+            "source": [["B", "C"], ["b", "c"]],
+            "expected_flattened_report": [
+                [None, 3, "A", "missing-label"],
+            ],
+        },
+        {
+            "schema": schema_descriptor_2,
+            "source": [["B"], ["b"]],
+            "expected_flattened_report": [
+                [None, 2, "A", "missing-label"],
+                [None, 3, "C", "missing-label"],
+            ],
+        },
+        {
+            "schema": schema_descriptor_2,
+            "source": [
+                ["A", "B"],
+                ["a", "b"],
+                ["a1"],
+                ["a2", "b2"],
+                [],
+                ["a3", "b3", "c3"],
+            ],
+            "expected_flattened_report": [
+                [None, 3, "C", "missing-label"],
+                [3, 2, "B", "missing-cell"],
+                [5, None, None, "blank-row"],
+                [6, 3, "", "extra-cell"],
+            ],
+        },
+    ]
+    for tc in test_cases:
+        schema = Schema.from_descriptor(tc["schema"])
+        resource = TableResource(
+            tc["source"], schema=schema, detector=Detector(schema_sync=True)
+        )
+        report = frictionless.validate(resource)
+        print(report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]))
+        assert (
+            report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])
+            == tc["expected_flattened_report"]
+        )
