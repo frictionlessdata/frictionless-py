@@ -3,11 +3,9 @@ from __future__ import annotations
 import decimal
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional
-from typing import Pattern, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
 
 import attrs
-from typing_extensions import Self
 
 from .. import errors, settings
 from ..exception import FrictionlessException
@@ -195,19 +193,6 @@ class Field(Metadata):
             return str(cell)
 
         return value_writer
-
-    @classmethod
-    def from_descriptor(  # type: ignore
-        cls,
-        descriptor: Union[IDescriptor, str],
-        **options: Any,
-    ) -> Self:
-        if isinstance(descriptor, dict):
-            if "trueValues" in descriptor.keys():
-                descriptor["trueValues"] = descriptor["trueValues"]
-            if "falseValues" in descriptor.keys():
-                descriptor["falseValues"] = descriptor["falseValues"]
-        return super().from_descriptor(descriptor)
 
     # Metadata
 
