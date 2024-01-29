@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class Analyzer:
-    # Resoure
+    # Resource
 
     def analyze_table_resource(
         self, resource: TableResource, *, detailed: bool = False
@@ -100,7 +100,7 @@ class Analyzer:
                                     var_x.append(cell_x)
                                     var_y.append(cell_y)
 
-                            # check for atleast 2 data points for correlation calculation
+                            # check for at least 2 data points for correlation calculation
                             if len(var_x) > 2:
                                 if field.name not in analysis_report["correlations"]:
                                     analysis_report["correlations"][field.name] = []

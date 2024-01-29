@@ -64,7 +64,7 @@ def console_transform(
         helpers.print_exception(console, debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
-    # TODO: support outputing packages
+    # TODO: support outputting packages
 
     # Return default
     table = result.to_petl()  # type: ignore

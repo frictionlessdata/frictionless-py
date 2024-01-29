@@ -103,7 +103,7 @@ class XlsxParser(Parser):
         # Fill merged cells
         if control.fill_merged_cells:
             # NOTE:
-            # We can try using an algorithm similiar to what XlsParser has
+            # We can try using an algorithm similar to what XlsParser has
             # to support mergin cells in the read-only mode (now we need the write mode)
             for merged_cell_range in list(sheet.merged_cells.ranges):  # type: ignore
                 merged_cell_range = str(merged_cell_range)
@@ -306,7 +306,7 @@ def convert_excel_date_format_string(excel_date: str):
         )
         new_excel_code = False
 
-        # Handle a new code without a different characeter in between
+        # Handle a new code without a different character in between
         if (
             ec
             and not is_escape_char

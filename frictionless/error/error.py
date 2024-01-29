@@ -11,7 +11,7 @@ from ..platform import platform
 # NOTE:
 # Consider other approaches for report/errors as dict is not really
 # effective as it can be very memory consumig. As an option we can store
-# raw data without rendering an error template to an error messsage.
+# raw data without rendering an error template to an error message.
 
 
 @attrs.define(kw_only=True, repr=False)

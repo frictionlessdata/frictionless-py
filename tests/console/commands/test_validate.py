@@ -247,7 +247,7 @@ def test_console_validate_enforce_required_fields_only_for_data_using_schema_syn
     output = json.loads(actual.stdout)
     expect = [error for error in output["tasks"][0]["errors"]]
     # using schema-sync to skip type-error due to positional matching of
-    # fields and data, incase any field data is missing
+    # fields and data, in case any field data is missing
     assert "type-error" not in expect
     assert "incorrect-label" not in expect
 

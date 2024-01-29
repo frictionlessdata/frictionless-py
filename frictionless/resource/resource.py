@@ -222,7 +222,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
 
     tabular: ClassVar[bool] = False
     """
-    Whether the resoruce is tabular
+    Whether the resource is tabular
     """
 
     def __attrs_post_init__(self):
@@ -254,7 +254,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
 
         super().__attrs_post_init__()
 
-    # TODO: shall we guarantee here that it's at the beggining for the file?
+    # TODO: shall we guarantee here that it's at the beginning for the file?
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
         if self.closed:
@@ -287,7 +287,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         if self.path:
             return helpers.normalize_path(self.path, basepath=self.basepath)
 
-    # TODO: add asteriks for user/pass in url
+    # TODO: add asterisks for user/pass in url
     @property
     def place(self) -> str:
         """Stringified resource location"""
@@ -497,7 +497,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
             stats: stream file completely and infer stats
         """
         if not self.closed:
-            note = "Resource.infer canot be used on a open resource"
+            note = "Resource.infer cannot be used on a open resource"
             raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
@@ -844,7 +844,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         schema = descriptor.get("schema")
         if profile == "tabular-data-resource":
             if not schema:
-                note = 'profile "tabular-data-resource" requries "schema" to be present'
+                note = 'profile "tabular-data-resource" requires "schema" to be present'
                 yield errors.ResourceError(note=note)
 
         # Misleading

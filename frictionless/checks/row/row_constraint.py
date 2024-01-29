@@ -21,7 +21,7 @@ class row_constraint(Check):
 
     formula: str
     """
-    Python expression to apply to all rows. To evaluate the forumula
+    Python expression to apply to all rows. To evaluate the formula
     simpleeval library is used.
     """
 

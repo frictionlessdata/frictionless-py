@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 class Metadata:
-    """Metadata represenation
+    """Metadata representation
 
     For proper functioning a child class must be decorated by
     "@attrs.define(kw_only=True, repr=False)" and ensure that
@@ -242,7 +242,7 @@ class Metadata:
     def to_markdown(self, path: Optional[str] = None, table: bool = False) -> str:
         """Convert metadata as a markdown
 
-        This feature has been contributed to the framwork by Ethan Welty (@ezwelty):
+        This feature has been contributed to the framework by Ethan Welty (@ezwelty):
         - https://github.com/frictionlessdata/frictionless-py/issues/837
 
         Parameters:

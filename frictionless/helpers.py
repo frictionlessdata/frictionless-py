@@ -207,7 +207,7 @@ def normalize_path(path: str, *, basepath: Optional[str] = None):
 
 # NOTE:
 # We need to rebase this function on checking actual path
-# being withing a basepath directory (it's a safer approach)
+# being within a basepath directory (it's a safer approach)
 def is_safe_path(path: str):
     contains_windows_var = lambda val: re.match(r"%.+%", val)  # type: ignore
     contains_posix_var = lambda val: re.match(r"\$.+", val)  # type: ignore

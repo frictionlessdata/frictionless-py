@@ -28,7 +28,7 @@ class row_split(Step):
 
     field_name: str
     """
-    Field name whose cell value will be splitted.
+    Field name whose cell value will be split.
     """
 
     # Transform

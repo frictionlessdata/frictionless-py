@@ -51,7 +51,7 @@ def test_spss_parser_write_types(tmpdir):
             ],
         }
 
-        # Asssert rows
+        # Assert rows
         assert target.read_rows() == [
             {
                 "any": "中国人",
@@ -91,7 +91,7 @@ def test_spss_storage_constraints(tmpdir):
             ],
         }
 
-        # Asssert rows
+        # Assert rows
         assert target.read_rows() == [
             {
                 "required": "passing",

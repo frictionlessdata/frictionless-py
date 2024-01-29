@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class SqlMapper(Mapper):
     """Metadata mapper Frictionless from/to SQL
 
-    Partialy based on unmerged @ezwelty's work:
+    Partially based on unmerged @ezwelty's work:
     - https://github.com/frictionlessdata/framework/pull/862
 
     """
@@ -208,7 +208,7 @@ class SqlMapper(Mapper):
         column_type = self.write_type(field.type)  # type: ignore
         nullable = not field.required
 
-        # Length contraints
+        # Length constraints
         if field.type == "string":
             min_length = field.constraints.get("minLength", None)
             max_length = field.constraints.get("maxLength", None)
@@ -227,14 +227,14 @@ class SqlMapper(Mapper):
                 if not isinstance(column_type, sa.CHAR) or self.dialect.name == "sqlite":
                     checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, min_length)))
 
-        # Unique contstraint
+        # Unique constraint
         unique = field.constraints.get("unique", False)
         if self.dialect.name == "mysql":
             # MySQL requires keys to have an explicit maximum length
             # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
             unique = unique and column_type is not sa.Text
 
-        # Others contstraints
+        # Others constraints
         for const, value in field.constraints.items():
             if const == "minimum":
                 checks.append(Check("%s >= %s" % (quoted_name, value)))
