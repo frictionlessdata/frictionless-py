@@ -310,18 +310,6 @@ class TableResource(Resource):
             for row_number, cells in enumerated_content_stream:
                 self.stats.rows += 1
 
-                # NB: missing required labels are not included in the
-                # field_info parameter used for row creation
-                if self.detector.schema_sync:
-                    for field in self.schema.fields:
-                        if (
-                            field.name not in self.labels
-                            and field.name in field_info["names"]
-                        ):
-                            field_index = field_info["names"].index(field.name)
-                            del field_info["names"][field_index]
-                            del field_info["objects"][field_index]
-                            del field_info["mapping"][field.name]
                 row = Row(
                     cells,
                     field_info=field_info,
@@ -398,7 +386,16 @@ class TableResource(Resource):
                 # Yield row
                 yield row
 
-        # Create row stream
+        # NB: missing required labels are not included in the
+        # field_info parameter used for row creation
+        if self.detector.schema_sync:
+            for field in self.schema.fields:
+                if field.name not in self.labels and field.name in field_info["names"]:
+                    field_index = field_info["names"].index(field.name)
+                    del field_info["names"][field_index]
+                    del field_info["objects"][field_index]
+                    del field_info["mapping"][field.name]
+        # # Create row stream
         self.__row_stream = row_stream()
 
     # Read
