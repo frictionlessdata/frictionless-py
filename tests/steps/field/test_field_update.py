@@ -89,6 +89,7 @@ def test_step_field_update_field_name_with_primary_key():
     pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", descriptor={"name": "pkey"}),
+            steps.field_update(name="population", descriptor={"name": "pop"}),
         ],
     )
     target = source.transform(pipeline)
@@ -97,7 +98,7 @@ def test_step_field_update_field_name_with_primary_key():
 
 def test_step_field_update_referenced_as_foreign_key():
     resource1 = TableResource(name="resource1", path="data/transform.csv")
-    resource2 = TableResource(name="resource2")
+    resource2 = TableResource(name="resource2", path="data/transform-fk.csv")
     resource1.schema = Schema.from_descriptor(
         {
             "fields": [
@@ -134,13 +135,94 @@ def test_step_field_update_referenced_as_foreign_key():
             )
         ],
     )
+
+    transform(
+        package,
+        steps=[
+            steps.resource_transform(
+                name="resource2",
+                steps=[
+                    steps.field_update(
+                        name="country_name", descriptor={"name": "country"}
+                    )
+                ],
+            )
+        ],
+    )
+
     assert (
         package.get_resource("resource1").validate().flatten(["title", "message"]) == []
     )
     assert package.get_resource("resource1").schema.primary_key == ["pkey"]
     assert package.get_resource("resource2").schema.foreign_keys == [
         {
-            "fields": ["country_name"],
+            "fields": ["country"],
             "reference": {"fields": ["pkey"], "resource": "resource1"},
+        }
+    ]
+
+
+def test_step_field_update_referenced_as_foreign_key_with_same_name():
+    resource1 = TableResource.from_descriptor(
+        {
+            "name": "resource1",
+            "data": [
+                ["id", "name", "population"],
+                [1, "germany", 83],
+                [2, "france", 66],
+                [3, "spain", 47],
+            ],
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                    {"name": "population", "type": "integer"},
+                ],
+                "primaryKey": ["id"],
+                "foreignKeys": [
+                    {
+                        "fields": ["name"],
+                        "reference": {"fields": ["name"], "resource": "resource2"},
+                    }
+                ],
+            },
+        }
+    )
+    resource2 = TableResource.from_descriptor(
+        {
+            "name": "resource2",
+            "data": [
+                ["name", "continent"],
+                ["germany", "europe"],
+                ["france", "europe"],
+                ["spain", "europe"],
+            ],
+            "schema": {
+                "fields": [
+                    {"name": "name", "type": "string"},
+                    {"name": "continent", "type": "string"},
+                ],
+                "primaryKey": ["name"],
+            },
+        }
+    )
+    package = Package(name="test-package", resources=[resource1, resource2])
+
+    transform(
+        package,
+        steps=[
+            steps.resource_transform(
+                name="resource1",
+                steps=[
+                    steps.field_update(name="name", descriptor={"name": "country_name"})
+                ],
+            )
+        ],
+    )
+
+    assert package.get_resource("resource1").schema.foreign_keys == [
+        {
+            "fields": ["country_name"],
+            "reference": {"fields": ["name"], "resource": "resource2"},
         }
     ]

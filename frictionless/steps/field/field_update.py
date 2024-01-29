@@ -68,34 +68,37 @@ class field_update(Step):
             resource.data = table.update(self.name, self.value)  # type: ignore
         elif new_name:
             resource.data = table.rename({self.name: new_name})  # type: ignore
-        if new_name and resource.schema.primary_key:
+        if new_name and self.name in resource.schema.primary_key:
             resource.schema.primary_key.remove(self.name)
             resource.schema.primary_key.append(new_name)
-            resources = resource.package.resources if resource.package else []
-            # update name in all the resources where it is referenced
-            for package_resource in resources:
-                for index, fk in enumerate(package_resource.schema.foreign_keys):
-                    fields = fk["reference"]["fields"]
-                    if isinstance(fields, list):
-                        if self.name in fk["reference"]["fields"]:
-                            package_resource.schema.foreign_keys[index]["reference"][
-                                "fields"
-                            ].remove(self.name)
-                            package_resource.schema.foreign_keys[index]["reference"][
-                                "fields"
-                            ].append(new_name)
-                    else:
+        resources = resource.package.resources if resource.package else []
+        # update name in all the resources where it is referenced
+        for package_resource in resources:
+            for index, fk in enumerate(package_resource.schema.foreign_keys):
+                if new_name and self.name in fk["fields"]:
+                    package_resource.schema.foreign_keys[index]["fields"].remove(
+                        self.name
+                    )
+                    package_resource.schema.foreign_keys[index]["fields"].append(new_name)
+                fields = fk["reference"]["fields"]
+                if isinstance(fields, list):
+                    if self.name in fk["reference"]["fields"]:
                         package_resource.schema.foreign_keys[index]["reference"][
                             "fields"
-                        ] = new_name
+                        ].remove(self.name)
+                        package_resource.schema.foreign_keys[index]["reference"][
+                            "fields"
+                        ].append(new_name)
+                else:
+                    package_resource.schema.foreign_keys[index]["reference"][
+                        "fields"
+                    ] = new_name
 
-                package_resource.schema.foreign_keys = (
-                    package_resource.schema.foreign_keys
-                )
-            if resource.package:
-                resource.package.metadata_descriptor_initial = (
-                    resource.package.to_descriptor()
-                )
+            package_resource.schema.foreign_keys = package_resource.schema.foreign_keys
+        if resource.package:
+            resource.package.metadata_descriptor_initial = (
+                resource.package.to_descriptor()
+            )
 
     # Metadata
 
