@@ -333,15 +333,32 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
             "schema": schema_descriptor_1,
             "source": [["B", "C"], ["b", "c"]],
             "expected_flattened_report": [
-                [None, 3, "missing-label"],
+                [None, 3, "A", "missing-label"],
             ],
         },
         {
             "schema": schema_descriptor_2,
             "source": [["B"], ["b"]],
             "expected_flattened_report": [
-                [None, 2, "missing-label"],
-                [None, 3, "missing-label"],
+                [None, 2, "A", "missing-label"],
+                [None, 3, "C", "missing-label"],
+            ],
+        },
+        {
+            "schema": schema_descriptor_2,
+            "source": [
+                ["A", "B"],
+                ["a", "b"],
+                ["a1"],
+                ["a2", "b2"],
+                [],
+                ["a3", "b3", "c3"],
+            ],
+            "expected_flattened_report": [
+                [None, 3, "C", "missing-label"],
+                [3, 2, "B", "missing-cell"],
+                [5, None, None, "blank-row"],
+                [6, 3, "", "extra-cell"],
             ],
         },
     ]
@@ -351,8 +368,8 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
             tc["source"], schema=schema, detector=Detector(schema_sync=True)
         )
         report = frictionless.validate(resource)
-        print(report.flatten(["rowNumber", "fieldNumber", "type"]))
+        print(report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]))
         assert (
-            report.flatten(["rowNumber", "fieldNumber", "type"])
+            report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])
             == tc["expected_flattened_report"]
         )
