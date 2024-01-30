@@ -344,3 +344,17 @@ def test_csv_parser_proper_quote_issue_493():
     resource.infer()
     assert resource.dialect.to_descriptor() == {}
     assert len(resource.schema.fields) == 126
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_csv_parser_write_independent_issue_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = TableResource(path=str(tmpdir.join("table.csv")))
+        source.write(target)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

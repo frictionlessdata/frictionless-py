@@ -24,11 +24,12 @@ class table_normalize(Step):
     # Transform
 
     def transform_resource(self, resource: Resource):
-        current = resource.to_copy()
+        resource_copy = resource.to_copy()
 
         # Data
         def data():  # type: ignore
-            with current:
+            # Yield from a copy to avoid side effects (see #1622)
+            with resource_copy.to_copy() as current:
                 yield current.header.to_list()  # type: ignore
                 for row in current.row_stream:  # type: ignore
                     yield row.to_list()  # type: ignore

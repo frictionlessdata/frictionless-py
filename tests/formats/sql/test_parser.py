@@ -151,3 +151,16 @@ def test_sql_parser_describe_to_yaml_failing_issue_821(sqlite_url_data):
     resource = TableResource(path=sqlite_url_data, control=control)
     resource.infer()
     assert resource.to_yaml()
+
+
+def test_sql_parser_write_independent_bug_1622(sqlite_url_data):
+    source = TableResource(path="data/table.csv")
+    with source:
+        control = formats.SqlControl(table="name", order_by="id")
+        target = source.write(path=sqlite_url_data, control=control)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

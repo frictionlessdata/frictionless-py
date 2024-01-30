@@ -139,3 +139,19 @@ def test_ods_parser_write_skip_header(tmpdir):
         resource.write_table(target)
     table = target.read_table()
     assert table.header == ["field1", "field2"]
+
+
+# Bugs
+
+
+def test_ods_parser_write_independent_bug_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = TableResource(path=str(tmpdir.join("table.ods")))
+        source.write(target)
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

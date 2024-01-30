@@ -94,10 +94,6 @@ class Validator:
         errors: List[Error] = []
         warnings: List[str] = []
 
-        # Prepare checklist
-        checklist = checklist or Checklist()
-        checks = checklist.connect(resource)
-
         # Validate metadata
         try:
             resource.to_descriptor(validate=True)
@@ -119,13 +115,20 @@ class Validator:
             try:
                 resource.open()
             except FrictionlessException as exception:
-                resource.close()
                 return Report.from_validation_task(
                     resource, time=timer.time, errors=exception.to_errors()
                 )
+            finally:
+                # Always close the resource if we opened it to avoid side effects
+                resource.close()
 
-        # Validate data
-        with resource:
+        # Validate row data
+        # Run the per-row validation against a copy of the resource to avoid side effects  (see #1622)
+        with resource.to_copy() as resource_copy:
+            # Prepare checklist, and connect it to the resource copy
+            checklist = checklist or Checklist()
+            checks = checklist.connect(resource_copy)
+
             # Validate start
             for index, check in enumerate(checks):
                 for error in check.validate_start():
@@ -135,20 +138,22 @@ class Validator:
                         errors.append(error)
 
             # Validate file
-            if not isinstance(resource, platform.frictionless_resources.TableResource):
-                if resource.hash is not None or resource.bytes is not None:
-                    helpers.pass_through(resource.byte_stream)
+            if not isinstance(
+                resource_copy, platform.frictionless_resources.TableResource
+            ):
+                if resource_copy.hash is not None or resource_copy.bytes is not None:
+                    helpers.pass_through(resource_copy.byte_stream)
 
             # Validate table
             else:
                 row_count = 0
-                labels = resource.labels
+                labels = resource_copy.labels
                 while True:
                     row_count += 1
 
                     # Emit row
                     try:
-                        row = next(resource.row_stream)  # type: ignore
+                        row = next(resource_copy.row_stream)  # type: ignore
                     except FrictionlessException as exception:
                         errors.append(exception.error)
                         continue
@@ -188,6 +193,11 @@ class Validator:
                     for error in check.validate_end():
                         if checklist.match(error):
                             errors.append(error)
+
+            # Update the stats in the base resource with those from the copy
+            # Note that this mutation of the base resource is an expected result of the validation,
+            # but depending on what other code does with the resource, they may be overwritten.
+            resource.stats = resource_copy.stats
 
         # Return report
         return Report.from_validation_task(

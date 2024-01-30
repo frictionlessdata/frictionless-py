@@ -109,7 +109,8 @@ class SqlAdapter(Adapter):
         for table in self.metadata.sorted_tables:
             if package.has_table_resource(table.name):
                 resource = package.get_table_resource(table.name)
-                with resource:
+                # Use a copy of the resource to avoid side effects (see #1622)
+                with resource.to_copy() as resource:
                     self.write_row_stream(resource.row_stream, table_name=table.name)
         return models.PublishResult(
             url=self.engine.url.render_as_string(hide_password=True),

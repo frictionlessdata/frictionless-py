@@ -324,3 +324,16 @@ def test_validate_package_with_in_code_resources_1245():
     datapackage.add_resource(resource)
     report = validate(datapackage)
     assert len(report.errors) == 0
+
+
+# Bugs
+
+
+def test_pandas_parser_write_independent_bug_1622():
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = source.write(format="pandas")
+        assert target.data.to_dict("records") == [  # type: ignore
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

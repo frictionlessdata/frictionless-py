@@ -109,7 +109,8 @@ class XlsParser(Parser):
         if isinstance(title, int):
             title = f"Sheet {control.sheet}"
         sheet = book.add_sheet(title)
-        with source:
+        # Write from a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             if self.resource.dialect.header:
                 for field_index, name in enumerate(source.schema.field_names):
                     sheet.write(0, field_index, name)

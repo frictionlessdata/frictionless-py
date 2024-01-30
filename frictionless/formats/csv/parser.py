@@ -63,7 +63,8 @@ class CsvParser(Parser):
             "wt", delete=False, encoding=self.resource.encoding, newline=""
         ) as file:
             writer = csv.writer(file, **options)  # type: ignore
-            with source:
+            # Use a copy of the source to avoid side effects (see #1622)
+            with source.to_copy() as source:
                 if self.resource.dialect.header:
                     writer.writerow(source.schema.field_names)
                 for row in source.row_stream:

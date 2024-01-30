@@ -135,3 +135,20 @@ def test_json_parser_write_skip_header(tmpdir):
     with TableResource(path="data/table.csv") as resource:
         target = resource.write(target)
         assert target.read_data() == [[1, "english"], [2, "中国人"]]
+
+
+# Bugs
+
+
+def test_json_parser_write_independent_bug_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = TableResource(path=str(tmpdir.join("table.json")))
+        target = source.write(target)
+        assert target.normpath
+        with open(target.normpath) as file:
+            assert json.load(file) == [
+                ["id", "name"],
+                [1, "english"],
+                [2, "中国人"],
+            ]

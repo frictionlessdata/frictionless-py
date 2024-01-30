@@ -238,6 +238,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         # Internal
         self.__loader: Optional[Loader] = None
         self.__buffer: Optional[types.IBuffer] = None
+        self.__context_manager_entered: bool = False
 
         # Detect resource
         system.detect_resource(self)
@@ -257,11 +258,58 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     # TODO: shall we guarantee here that it's at the beginning for the file?
     # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
-        if self.closed:
-            self.open()
+        """
+        Enters a context manager for the resource.
+        We need to be careful with contexts because they open and close the Resource
+        (and thus any underlying files) and we don't want to close a file that is
+        being used somewhere higher up the call stack.
+
+        e.g. if nested contexts were allowed then:
+
+            with Resource("in.csv") as resource:
+                with resource:
+                    # use resource
+                resource.write("out.csv")
+
+        would result in errors because the second context would close the file
+        before the write happened.  While the above code is obvious, similar
+        things can happen when composing steps in pipelines, calling petl code etc.
+        where the various functions may have no knowledge of each other.
+        See #1622 for more details.
+
+        So we only allow a single context to be open at a time, and raise an
+        exception if nested context is attempted.  For similar reasons, we
+        also raise an exception if a context is attempted on an open resource.
+
+        The above code can be successfully written as:
+
+            with Resource("in.csv") as resource:
+                with resource.to_copy() as resource2:
+                    use resource2:
+                resource.write("out.csv")
+
+        which keeps resource and resource2 as independent views on the same file.
+
+        Note that if you absolutely need to use a resource in a manner where you
+        don't care if it is "opened" multiple times and closed once then you
+        can directly use `open()` and `close()` but you also become responsible
+        for ensuring the file is closed at the correct time.
+        """
+        if self.__context_manager_entered:
+            note = "Resource has previously entered a context manager (`with` statement) and does not support nested contexts.  To use in a nested context use `to_copy()` then use the copy in the `with`."
+            raise FrictionlessException(note)
+        if not self.closed:
+            note = "Resource is currently open, and cannot be used in a `with` statement (which would reopen the file).  To use `with` on an open Resouece, use to_copy() then use the copy in the `with`."
+            raise FrictionlessException(note)
+
+        self.__context_manager_entered = True
+
+        self.open()
         return self
 
     def __exit__(self, type, value, traceback):  # type: ignore
+        # Mark the context manager as closed so that sequential contexts are allowed.
+        self.__context_manager_entered = False
         self.close()
 
     @property

@@ -29,11 +29,14 @@ class table_validate(Step):
 
         # Data
         def data():  # type: ignore
-            with current:
-                if not current.header.valid:  # type: ignore
-                    raise FrictionlessException(error=current.header.errors[0])  # type: ignore
-                yield current.header  # type: ignore
-                for row in current.row_stream:  # type: ignore
+            # Use a copy of the source to avoid side effects (see #1622)
+            with current.to_copy() as current_copy:  # type: ignore
+                if not current_copy.header.valid:  # type: ignore
+                    raise FrictionlessException(
+                        error=current_copy.header.errors[0]  # type: ignore
+                    )  # type: ignore
+                yield current_copy.header  # type: ignore
+                for row in current_copy.row_stream:  # type: ignore
                     if not row.valid:  # type: ignore
                         raise FrictionlessException(error=row.errors[0])  # type: ignore
                     yield row

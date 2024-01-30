@@ -45,20 +45,24 @@ class Indexer:
 
     def index(self) -> Optional[Report]:
         self.prepare_resource()
-        with self.resource:
-            # Index is resouce-based operation not supporting FKs
-            if self.resource.schema.foreign_keys:
-                self.resource.schema.foreign_keys = []
-            self.create_table()
-            while True:
-                try:
-                    return self.populate_table()
-                except Exception:
-                    if self.fast and self.use_fallback:
-                        self.fast = False
-                        continue
-                    self.delete_table()
-                    raise
+
+        # Infer resource if needed
+        if self.resource.closed:
+            self.resource.infer()
+
+        # Index is resouce-based operation not supporting FKs
+        if self.resource.schema.foreign_keys:
+            self.resource.schema.foreign_keys = []
+        self.create_table()
+        while True:
+            try:
+                return self.populate_table()
+            except Exception:
+                if self.fast and self.use_fallback:
+                    self.fast = False
+                    continue
+                self.delete_table()
+                raise
 
     def prepare_resource(self):
         if self.qsv_path:
@@ -108,10 +112,12 @@ class Indexer:
         sql_command = f".import '|cat -' \"{self.table_name}\""
         command = ["sqlite3", "-csv", self.adapter.engine.url.database, sql_command]
         process = subprocess.Popen(command, stdin=PIPE, stdout=PIPE)
-        for line_number, line in enumerate(self.resource.byte_stream, start=1):
-            if line_number > 1:
-                process.stdin.write(line)  # type: ignore
-            self.report_progress(f"{self.resource.stats.bytes} bytes")
+        # Iterate over a copy of the resouce to avoid side effects (see #1622)
+        with self.resource.to_copy() as resource:
+            for line_number, line in enumerate(resource.byte_stream, start=1):
+                if line_number > 1:
+                    process.stdin.write(line)  # type: ignore
+                self.report_progress(f"{self.resource.stats.bytes} bytes")
         process.stdin.close()  # type: ignore
         process.wait()
 
@@ -119,14 +125,16 @@ class Indexer:
         database_url = self.adapter.engine.url.render_as_string(hide_password=False)
         with platform.psycopg.connect(database_url) as connection:
             with connection.cursor() as cursor:
-                query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table_name
-                with cursor.copy(query) as copy:  # type: ignore
-                    while True:
-                        chunk = self.resource.read_bytes(size=settings.BLOCK_SIZE)
-                        if not chunk:
-                            break
-                        copy.write(chunk)
-                        self.report_progress(f"{self.resource.stats.bytes} bytes")
+                # Iterate over a copy of the resouce to avoid side effects (see #1622)
+                with self.resource.to_copy() as resource:
+                    query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table_name
+                    with cursor.copy(query) as copy:  # type: ignore
+                        while True:
+                            chunk = resource.read_bytes(size=settings.BLOCK_SIZE)
+                            if not chunk:
+                                break
+                            copy.write(chunk)
+                            self.report_progress(f"{self.resource.stats.bytes} bytes")
 
     def delete_table(self):
         self.adapter.delete_resource(self.table_name)

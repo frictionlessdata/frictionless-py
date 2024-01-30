@@ -99,7 +99,8 @@ class SpssParser(Parser):
 
         # Write rows
         with sav.SavWriter(self.resource.normpath, ioUtf8=True, **spss_schema) as writer:  # type: ignore
-            with source:
+            # Use a copy of the source to avoid side effects (see #1622)
+            with source.to_copy() as source:
                 for row in source.row_stream:  # type: ignore
                     cells: List[Any] = []
                     for field in source.schema.fields:  # type: ignore
@@ -130,7 +131,8 @@ class SpssParser(Parser):
             "varTypes": {},
             "formats": {},
         }
-        with source:
+        # Use a copy of the source to avoid side effects (see #1622)
+        with source.to_copy() as source:
             # Add fields
             sizes: Dict[str, int] = {}
             mapping = self.__write_convert_type()

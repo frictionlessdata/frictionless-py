@@ -128,3 +128,18 @@ def test_spss_parser_write_timezone(tmpdir):
                 "time": time(18),
             },
         ]
+
+
+# Bugs
+
+
+def test_spss_parser_write_independent_bug_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = source.write(str(tmpdir.join("table.sav")))
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

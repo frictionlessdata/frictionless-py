@@ -59,3 +59,18 @@ def test_jsonl_parser_write_skip_header(tmpdir):
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},
         ]
+
+
+# Bugs
+
+
+def test_jsonl_parser_write_independent_bug_1622(tmpdir):
+    source = TableResource(path="data/table.csv")
+    with source:
+        target = source.write(path=str(tmpdir.join("table.jsonl")))
+        with target:
+            assert target.header == ["id", "name"]
+            assert target.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]

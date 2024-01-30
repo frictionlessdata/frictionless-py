@@ -241,3 +241,29 @@ def test_analyze_resource_detailed_with_invalid_data():
     assert analysis["rowsWithNullValues"] == 3
     assert analysis["notNullRows"] == 1
     assert analysis["variableTypes"] == {"integer": 3, "string": 1}
+
+
+def test_analyze_resource_is_independent_bug_1622():
+    # Test that we can analyze a resource without side effects
+    resource = TableResource(path="data/analysis-data.csv")
+    with resource:
+        analysis = resource.analyze()
+        assert list(analysis.keys()) == [
+            "variableTypes",
+            "notNullRows",
+            "rowsWithNullValues",
+            "fieldStats",
+            "averageRecordSizeInBytes",
+            "timeTaken",
+            "md5",
+            "sha256",
+            "bytes",
+            "fields",
+            "rows",
+        ]
+        assert round(analysis["averageRecordSizeInBytes"]) == 85
+        assert analysis["fields"] == 11
+        assert analysis["rows"] == 9
+        assert analysis["rowsWithNullValues"] == 2
+        assert analysis["notNullRows"] == 7
+        assert analysis["variableTypes"] == {}

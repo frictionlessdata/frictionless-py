@@ -94,3 +94,18 @@ def test_resource_index_sqlite_on_progress(database_url, mocker):
     assert on_progress.call_count == 2
     on_progress.assert_any_call(control.table, "2 rows")
     on_progress.assert_any_call(control.table, "3 rows")
+
+
+# Bugs
+
+
+@pytest.mark.parametrize("database_url", database_urls)
+def test_resource_index_sqlite_independent_bug_1622(database_url):
+    assert control.table
+    resource = TableResource(path="data/table.csv")
+    with resource:
+        resource.index(database_url, name=control.table)
+        assert TableResource(path=database_url, control=control).read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

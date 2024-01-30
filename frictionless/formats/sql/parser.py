@@ -51,6 +51,7 @@ class SqlParser(Parser):
         adapter = SqlAdapter(engine, control=control)
         if not adapter:
             raise FrictionlessException(f"Not supported source: {self.resource.normpath}")
-        with source:
+        # Write from a copy to prevent side effects (see #1622)
+        with source.to_copy() as source:
             adapter.write_schema(source.schema, table_name=control.table)
             adapter.write_row_stream(source.row_stream, table_name=control.table)
