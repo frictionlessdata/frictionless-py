@@ -58,15 +58,15 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "moto",
+    "moto>=4.2.14,<5.0.0",
     "ruff",
     "httpx",
     "hatch",
     "isort",
-    "black",
+    "black>=23.12.1,<24.0.0",
     "yattag",
     "neovim",
-    "pytest",
+    "pytest>=7.4.4,<8.0.0",
     "pyright==1.1.317",
     "ipython",
     "livemark",
