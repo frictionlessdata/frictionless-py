@@ -298,6 +298,7 @@ class Detector:
         labels: Optional[List[str]] = None,
         schema: Optional[Schema] = None,
         field_candidates: List[Dict[str, Any]] = settings.DEFAULT_FIELD_CANDIDATES,
+        **options: Any
     ) -> Schema:
         """Detect schema from fragment
 
@@ -408,17 +409,28 @@ class Detector:
                 if len(labels) != len(set(labels)):
                     note = '"schema_sync" requires unique labels in the header'
                     raise FrictionlessException(note)
-                mapping = {field.name: field for field in schema.fields}  # type: ignore
+                if options["header_case"]:
+                    mapping = {field.name: field for field in schema.fields}  # type: ignore
+                else:
+                    mapping = {field.name.lower(): field for field in schema.fields} # type: ignore
                 schema.clear_fields()
                 for name in labels:
-                    field = mapping.get(name)
+                    if options["header_case"]:
+                        field = mapping.get(name)
+                    else:
+                        field = mapping.get(name.lower())
                     if not field:
                         field = Field.from_descriptor({"name": name, "type": "any"})
                     schema.add_field(field)
                 # For required fields that are missing
                 for _, field in mapping.items():
-                    if field and field.required and field.name not in labels:
-                        schema.add_field(field)
+                    if options["header_case"]:
+                        if field and field.required and field.name not in labels:
+                            schema.add_field(field)
+                    else:
+                        if field and field.required and field.name.lower() not in [
+                            label.lower() for label in labels]:
+                            schema.add_field(field)
 
         # Patch schema
         if self.schema_patch:
