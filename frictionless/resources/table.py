@@ -204,7 +204,7 @@ class TableResource(Resource):
             labels=self.labels,
             schema=self.schema,
             field_candidates=system.detect_field_candidates(),
-            header_case=self.dialect.header_case
+            header_case=self.dialect.header_case,
         )
         self.stats.fields = len(self.schema.fields)
 
