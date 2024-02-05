@@ -4,6 +4,7 @@ import pytest
 
 import frictionless
 from frictionless import Checklist, Detector, FrictionlessException, Schema, fields
+from frictionless import Dialect
 from frictionless.resources import TableResource
 
 # General
@@ -373,3 +374,36 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
             report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])
             == tc["expected_flattened_report"]
         )
+
+
+def test_validate_resource_ignoring_header_case_issue_1635():
+    schema_descriptor = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [
+            {
+                "name": "AA",
+                "title": "Field A",
+                "type": "string",
+                "constraints": {"required": True},
+            },
+            {"name": "BB", "title": "Field B", "type": "string"},
+            {"name": "CC", "title": "Field C", "type": "string"},
+        ],
+    }
+
+    source = [["aa", "bb", "cc"], ["a", "b", "c"]]
+    report = frictionless.validate(
+        source=source,
+        schema=Schema.from_descriptor(schema_descriptor),
+        detector=Detector(schema_sync=True),
+        dialect=Dialect(header_case=False)
+    )
+    assert report.valid
+
+    report = frictionless.validate(
+        source=source,
+        schema=Schema.from_descriptor(schema_descriptor),
+        detector=Detector(schema_sync=True)
+    )
+    assert not report.valid
+    assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == [[None, 4, "AA", "missing-label"]]
