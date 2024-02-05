@@ -392,18 +392,23 @@ def test_validate_resource_ignoring_header_case_issue_1635():
     }
 
     source = [["aa", "bb", "cc"], ["a", "b", "c"]]
+
+    schema = Schema.from_descriptor(schema_descriptor)
+    
+    detector = Detector(schema_sync=True)
+
     report = frictionless.validate(
-        source=source,
-        schema=Schema.from_descriptor(schema_descriptor),
-        detector=Detector(schema_sync=True),
+        source,
+        schema=schema,
+        detector=detector,
         dialect=Dialect(header_case=False)
     )
     assert report.valid
 
     report = frictionless.validate(
-        source=source,
-        schema=Schema.from_descriptor(schema_descriptor),
-        detector=Detector(schema_sync=True)
+        source,
+        schema=schema,
+        detector=detector,
     )
     assert not report.valid
     assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == [[None, 4, "AA", "missing-label"]]
