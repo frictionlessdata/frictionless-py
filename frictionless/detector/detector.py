@@ -298,7 +298,7 @@ class Detector:
         labels: Optional[List[str]] = None,
         schema: Optional[Schema] = None,
         field_candidates: List[Dict[str, Any]] = settings.DEFAULT_FIELD_CANDIDATES,
-        **options: Any
+        **options: Any,
     ) -> Schema:
         """Detect schema from fragment
 
@@ -412,7 +412,7 @@ class Detector:
                 if options["header_case"]:
                     mapping = {field.name: field for field in schema.fields}  # type: ignore
                 else:
-                    mapping = {field.name.lower(): field for field in schema.fields} # type: ignore
+                    mapping = {field.name.lower(): field for field in schema.fields}  # type: ignore
                 schema.clear_fields()
                 for name in labels:
                     if options["header_case"]:
@@ -428,8 +428,12 @@ class Detector:
                         if field and field.required and field.name not in labels:
                             schema.add_field(field)
                     else:
-                        if field and field.required and field.name.lower() not in [
-                            label.lower() for label in labels]:
+                        if (
+                            field
+                            and field.required
+                            and field.name.lower()
+                            not in [label.lower() for label in labels]
+                        ):
                             schema.add_field(field)
 
         # Patch schema

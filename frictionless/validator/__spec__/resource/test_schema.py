@@ -3,8 +3,8 @@ from copy import deepcopy
 import pytest
 
 import frictionless
-from frictionless import Checklist, Detector, FrictionlessException, Schema, fields
-from frictionless import Dialect
+from frictionless import Checklist, Detector, Dialect, FrictionlessException, Schema
+from frictionless import fields
 from frictionless.resources import TableResource
 
 # General
@@ -394,14 +394,11 @@ def test_validate_resource_ignoring_header_case_issue_1635():
     source = [["aa", "bb", "cc"], ["a", "b", "c"]]
 
     schema = Schema.from_descriptor(schema_descriptor)
-    
+
     detector = Detector(schema_sync=True)
 
     report = frictionless.validate(
-        source,
-        schema=schema,
-        detector=detector,
-        dialect=Dialect(header_case=False)
+        source, schema=schema, detector=detector, dialect=Dialect(header_case=False)
     )
     assert report.valid
 
@@ -411,4 +408,6 @@ def test_validate_resource_ignoring_header_case_issue_1635():
         detector=detector,
     )
     assert not report.valid
-    assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == [[None, 4, "AA", "missing-label"]]
+    assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == [
+        [None, 4, "AA", "missing-label"]
+    ]
