@@ -204,6 +204,7 @@ class TableResource(Resource):
             labels=self.labels,
             schema=self.schema,
             field_candidates=system.detect_field_candidates(),
+            header_case=self.dialect.header_case
         )
         self.stats.fields = len(self.schema.fields)
 
@@ -388,14 +389,15 @@ class TableResource(Resource):
 
         # NB: missing required labels are not included in the
         # field_info parameter used for row creation
-        if self.detector.schema_sync:
+        if self.detector.schema_sync and self.dialect.header_case:
             for field in self.schema.fields:
                 if field.name not in self.labels and field.name in field_info["names"]:
                     field_index = field_info["names"].index(field.name)
                     del field_info["names"][field_index]
                     del field_info["objects"][field_index]
                     del field_info["mapping"][field.name]
-        # # Create row stream
+
+        # Create row stream
         self.__row_stream = row_stream()
 
     # Read
