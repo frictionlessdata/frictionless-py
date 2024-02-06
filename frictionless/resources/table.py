@@ -389,13 +389,21 @@ class TableResource(Resource):
 
         # NB: missing required labels are not included in the
         # field_info parameter used for row creation
-        if self.detector.schema_sync and self.dialect.header_case:
+        if self.detector.schema_sync:
             for field in self.schema.fields:
-                if field.name not in self.labels and field.name in field_info["names"]:
-                    field_index = field_info["names"].index(field.name)
-                    del field_info["names"][field_index]
-                    del field_info["objects"][field_index]
-                    del field_info["mapping"][field.name]
+                if self.dialect.header_case:
+                    if field.name not in self.labels and field.name in field_info["names"]:
+                        field_index = field_info["names"].index(field.name)
+                        del field_info["names"][field_index]
+                        del field_info["objects"][field_index]
+                        del field_info["mapping"][field.name]
+                else:  # Ignore case
+                    if field.name.lower() not in [label.lower() for label in self.labels] \
+                            and field.name.lower() in [field_info_name.lower() for field_info_name in field_info["names"]]:
+                        field_index = field_info["names"].index(field.name)
+                        del field_info["names"][field_index]
+                        del field_info["objects"][field_index]
+                        del field_info["mapping"][field.name]
 
         # Create row stream
         self.__row_stream = row_stream()
