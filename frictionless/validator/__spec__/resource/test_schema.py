@@ -378,10 +378,10 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
     schema_descriptor_3 = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
         "fields": [
-                {"name": "Aa", "constraints": {"required": True}},
-                {"name": "BB", "constraints": {"required": True}},
-                {"name": "cc"}
-            ]
+            {"name": "Aa", "constraints": {"required": True}},
+            {"name": "BB", "constraints": {"required": True}},
+            {"name": "cc"},
+        ],
     }
     schema = Schema.from_descriptor(schema_descriptor_3)
     source = [["bb", "CC"], ["foo", "bar"]]
@@ -389,7 +389,7 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
         source,
         schema=schema,
         detector=Detector(schema_sync=True),
-        dialect=Dialect(header_case=False)
+        dialect=Dialect(header_case=False),
     )
     assert not report.valid
     # Expect one single error misisng-label related to missing column 'Aa'
