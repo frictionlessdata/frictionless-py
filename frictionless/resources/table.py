@@ -392,14 +392,20 @@ class TableResource(Resource):
         if self.detector.schema_sync:
             for field in self.schema.fields:
                 if self.dialect.header_case:
-                    if field.name not in self.labels and field.name in field_info["names"]:
+                    if (
+                        field.name not in self.labels
+                        and field.name in field_info["names"]
+                    ):
                         field_index = field_info["names"].index(field.name)
                         del field_info["names"][field_index]
                         del field_info["objects"][field_index]
                         del field_info["mapping"][field.name]
                 else:  # Ignore case
-                    if field.name.lower() not in [label.lower() for label in self.labels] \
-                            and field.name.lower() in [field_info_name.lower() for field_info_name in field_info["names"]]:
+                    if field.name.lower() not in [
+                        label.lower() for label in self.labels
+                    ] and field.name.lower() in [
+                        field_info_name.lower() for field_info_name in field_info["names"]
+                    ]:
                         field_index = field_info["names"].index(field.name)
                         del field_info["names"][field_index]
                         del field_info["objects"][field_index]
