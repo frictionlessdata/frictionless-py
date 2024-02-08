@@ -332,7 +332,11 @@ class TableResource(Resource):
                 # Primary Key Error
                 if is_integrity and self.schema.primary_key:
                     try:
-                        cells = tuple(row[name] for name in self.schema.primary_key)
+                        if self.dialect.header_case:
+                            cells = tuple(row[name] for name in self.schema.primary_key)
+                        else: # ignore case
+                            primary_key_lowers = [pk.lower() for pk in self.schema.primary_key]
+                            cells = tuple(row[name] for name in primary_key_lowers)
                     except KeyError:
                         # Row does not have primary_key as key
                         # There is a missing label corresponding to the schema
