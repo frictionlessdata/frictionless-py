@@ -57,10 +57,11 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
 
     report = frictionless.validate(resource)
 
-    assert len(report.tasks[0].errors) == 1
-    assert report.tasks[0].errors[0].type == "missing-label"
     assert not report.valid
-
+    assert len(report.tasks[0].errors) == 2
+    assert report.tasks[0].errors[0].type == "missing-label"
+    assert report.tasks[0].errors[1].type == "primary-key"
+    
     schema_descriptor = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
         "fields": [{"name": "A"}],
@@ -76,6 +77,6 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
     )
 
     report = frictionless.validate(resource)
-    print(report)
-    assert report.tasks[0].errors[0].type == "primary-key"
     assert not report.valid
+    assert len(report.tasks[0].errors) == 1
+    assert report.tasks[0].errors[0].type == "primary-key"
