@@ -334,29 +334,28 @@ class TableResource(Resource):
                     try:
                         if self.dialect.header_case:
                             cells = tuple(row[name] for name in self.schema.primary_key)
-                        else:  # ignore case
+                        else:  # Ignore case
                             cells = ()
-                            lower_primary_keys = [pk.lower() for pk in self.schema.primary_key]
+                            lower_primary_keys = [
+                                pk.lower() for pk in self.schema.primary_key
+                            ]
                             # cells = tuple(row[label] if (label.lower() for label in row.field_names) in lower_primary_keys )
                             for label in row.field_names:
                                 if label.lower() in lower_primary_keys:
                                     cells = cells + (row[label],)
                     except KeyError:
                         # Row does not have primary_key as key
-                        # There is a missing label corresponding to the schema
-                        note = (
-                            f"Inexistant label for primary key {self.schema.primary_key}"
-                        )
-                        error = errors.PrimaryKeyError.from_row(row, note=note)
-                        row.errors.append(error)
+                        # There should already be a missing-label error in
+                        # in self.header corresponding to the schema primary key
+                        assert not self.header.valid
                     else:
                         if set(cells) == {None}:
                             note = 'cells composing the primary keys are all "None"'
                             error = errors.PrimaryKeyError.from_row(row, note=note)
                             row.errors.append(error)
                         else:
-                            match = memory_primary.get(cells)
-                            memory_primary[cells] = row.row_number
+                            match = memory_primary.get(cells)  # type: ignore
+                            memory_primary[cells] = row.row_number  # type: ignore
                             if match:
                                 if match:
                                     note = "the same as in the row at position %s" % match
