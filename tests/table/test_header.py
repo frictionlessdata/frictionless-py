@@ -60,3 +60,22 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
     assert len(report.tasks[0].errors) == 1
     assert report.tasks[0].errors[0].type == "missing-label"
     assert not report.valid
+
+    schema_descriptor = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [{"name": "A"}],
+        "primaryKey": ["A"],
+    }
+
+    source = [["B"], ["foo"]]
+
+    resource = TableResource(
+        source,
+        schema=Schema.from_descriptor(schema_descriptor),
+        detector=frictionless.Detector(schema_sync=True),
+    )
+
+    report = frictionless.validate(resource)
+    print(report)
+    assert report.tasks[0].errors[0].type == "primary-key"
+    assert not report.valid
