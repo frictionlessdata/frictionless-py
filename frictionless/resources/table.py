@@ -334,9 +334,13 @@ class TableResource(Resource):
                     try:
                         if self.dialect.header_case:
                             cells = tuple(row[name] for name in self.schema.primary_key)
-                        else: # ignore case
-                            primary_key_lowers = [pk.lower() for pk in self.schema.primary_key]
-                            cells = tuple(row[name] for name in primary_key_lowers)
+                        else:  # ignore case
+                            cells = ()
+                            lower_primary_keys = [pk.lower() for pk in self.schema.primary_key]
+                            # cells = tuple(row[label] if (label.lower() for label in row.field_names) in lower_primary_keys )
+                            for label in row.field_names:
+                                if label.lower() in lower_primary_keys:
+                                    cells = cells + (row[label],)
                     except KeyError:
                         # Row does not have primary_key as key
                         # There is a missing label corresponding to the schema
