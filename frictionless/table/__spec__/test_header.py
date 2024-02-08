@@ -47,11 +47,11 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
             "nb_errors": 1,
             "types_errors_expected": ["missing-label"],
         },
-        # {
-        #     "constraints": {},
-        #     "nb_errors": 1,
-        #     "types_errors_expected": ["missing-label"],
-        # },
+        {
+            "constraints": {},
+            "nb_errors": 1,
+            "types_errors_expected": ["missing-label"],
+        },
     ]
 
     for tc in test_cases:
