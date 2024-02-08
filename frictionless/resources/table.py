@@ -331,19 +331,24 @@ class TableResource(Resource):
 
                 # Primary Key Error
                 if is_integrity and self.schema.primary_key:
-                    cells = tuple(row[name] for name in self.schema.primary_key)
-                    if set(cells) == {None}:
-                        note = 'cells composing the primary keys are all "None"'
-                        error = errors.PrimaryKeyError.from_row(row, note=note)
-                        row.errors.append(error)
+                    try:
+                        cells = tuple(row[name] for name in self.schema.primary_key)
+                    except KeyError:
+                        # Row does not have primary_key as key
+                        pass
                     else:
-                        match = memory_primary.get(cells)
-                        memory_primary[cells] = row.row_number
-                        if match:
+                        if set(cells) == {None}:
+                            note = 'cells composing the primary keys are all "None"'
+                            error = errors.PrimaryKeyError.from_row(row, note=note)
+                            row.errors.append(error)
+                        else:
+                            match = memory_primary.get(cells)
+                            memory_primary[cells] = row.row_number
                             if match:
-                                note = "the same as in the row at position %s" % match
-                                error = errors.PrimaryKeyError.from_row(row, note=note)
-                                row.errors.append(error)
+                                if match:
+                                    note = "the same as in the row at position %s" % match
+                                    error = errors.PrimaryKeyError.from_row(row, note=note)
+                                    row.errors.append(error)
 
                 # Foreign Key Error
                 if is_integrity and foreign_groups:
