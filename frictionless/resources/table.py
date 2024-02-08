@@ -335,7 +335,12 @@ class TableResource(Resource):
                         cells = tuple(row[name] for name in self.schema.primary_key)
                     except KeyError:
                         # Row does not have primary_key as key
-                        pass
+                        # There is a missing label corresponding to the schema
+                        note = (
+                            f"Inexistant label for primary key {self.schema.primary_key}"
+                        )
+                        error = errors.PrimaryKeyError.from_row(row, note=note)
+                        row.errors.append(error)
                     else:
                         if set(cells) == {None}:
                             note = 'cells composing the primary keys are all "None"'
@@ -347,7 +352,9 @@ class TableResource(Resource):
                             if match:
                                 if match:
                                     note = "the same as in the row at position %s" % match
-                                    error = errors.PrimaryKeyError.from_row(row, note=note)
+                                    error = errors.PrimaryKeyError.from_row(
+                                        row, note=note
+                                    )
                                     row.errors.append(error)
 
                 # Foreign Key Error
