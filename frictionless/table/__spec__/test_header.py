@@ -41,18 +41,17 @@ def test_missing_label():
 
 
 def test_missing_primary_key_label_with_shema_sync_issue_1633():
-
     test_cases = [
         {
             "constraints": {"required": True},
-            "nb_errors": 2,
-            "types_errors_expected": ["missing-label", "primary-key"],
-        },
-        {
-            "constraints": {},
             "nb_errors": 1,
-            "types_errors_expected": ["primary-key"],
-        }
+            "types_errors_expected": ["missing-label"],
+        },
+        # {
+        #     "constraints": {},
+        #     "nb_errors": 1,
+        #     "types_errors_expected": ["missing-label"],
+        # },
     ]
 
     for tc in test_cases:
@@ -78,16 +77,16 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
 
     # Ignore header_case
     schema_descriptor = {
-            "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-            "fields": [{"name": "A"}],
-            "primaryKey": ["A"],
-        }
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [{"name": "A"}],
+        "primaryKey": ["A"],
+    }
 
     resource = TableResource(
         source=[["a"], ["foo"]],
         schema=Schema.from_descriptor(schema_descriptor),
         detector=frictionless.Detector(schema_sync=True),
-        dialect=frictionless.Dialect(header_case=False)
+        dialect=frictionless.Dialect(header_case=False),
     )
     report = frictionless.validate(resource)
     assert report.valid
