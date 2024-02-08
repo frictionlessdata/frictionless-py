@@ -41,42 +41,37 @@ def test_missing_label():
 
 
 def test_missing_primary_key_label_with_shema_sync_issue_1633():
-    schema_descriptor = {
-        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-        "fields": [{"name": "A", "constraints": {"required": True}}],
-        "primaryKey": ["A"],
-    }
 
-    source = [["B"], ["foo"]]
+    test_cases = [
+        {
+            "constraints": {"required": True},
+            "nb_errors": 2,
+            "types_errors_expected": ["missing-label", "primary-key"],
+        },
+        {
+            "constraints": {},
+            "nb_errors": 1,
+            "types_errors_expected": ["primary-key"],
+        }
+    ]
 
-    resource = TableResource(
-        source,
-        schema=Schema.from_descriptor(schema_descriptor),
-        detector=frictionless.Detector(schema_sync=True),
-    )
+    for tc in test_cases:
+        schema_descriptor = {
+            "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+            "fields": [{"name": "A", "constraints": tc["constraints"]}],
+            "primaryKey": ["A"],
+        }
 
-    report = frictionless.validate(resource)
+        resource = TableResource(
+            source=[["B"], ["foo"]],
+            schema=Schema.from_descriptor(schema_descriptor),
+            detector=frictionless.Detector(schema_sync=True),
+        )
 
-    assert not report.valid
-    assert len(report.tasks[0].errors) == 2
-    assert report.tasks[0].errors[0].type == "missing-label"
-    assert report.tasks[0].errors[1].type == "primary-key"
-    
-    schema_descriptor = {
-        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-        "fields": [{"name": "A"}],
-        "primaryKey": ["A"],
-    }
+        report = frictionless.validate(resource)
+        errors = report.tasks[0].errors
 
-    source = [["B"], ["foo"]]
-
-    resource = TableResource(
-        source,
-        schema=Schema.from_descriptor(schema_descriptor),
-        detector=frictionless.Detector(schema_sync=True),
-    )
-
-    report = frictionless.validate(resource)
-    assert not report.valid
-    assert len(report.tasks[0].errors) == 1
-    assert report.tasks[0].errors[0].type == "primary-key"
+        assert not report.valid
+        assert len(errors) == tc["nb_errors"]
+        for error, type_expected in zip(errors, tc["types_errors_expected"]):
+            assert error.type == type_expected
