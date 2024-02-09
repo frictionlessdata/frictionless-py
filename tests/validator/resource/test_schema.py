@@ -391,31 +391,30 @@ def test_validate_resource_ignoring_header_case_issue_1635():
                 "type": "string",
                 "constraints": {"required": True},
             },
-            {"name": "CC", "title": "Field C", "type": "string"},
         ],
     }
 
     test_cases = [
         {
-            "source": [["AA", "bb", "cc"], ["a", "b", "c"]],
-            "dialect": Dialect(header_case=False),
+            "source": [["AA", "bb"], ["a", "b"]],
+            "header_case": False,
             "expected_valid_report": True,
             "expected_flattened_report": [],
         },
         {
-            "source": [["AA", "bb", "cc"], ["a", "b", "c"]],
-            "dialect": Dialect(header_case=True),
+            "source": [["AA", "bb"], ["a", "b"]],
+            "header_case": True,
             "expected_valid_report": False,
             "expected_flattened_report": [
-                [None, 4, "aa", "missing-label"],
-                [None, 5, "BB", "missing-label"],
+                [None, 3, "aa", "missing-label"],
+                [None, 4, "BB", "missing-label"],
             ],
         },
         {
-            "source": [["bb", "CC"], ["foo", "bar"]],
-            "dialect": Dialect(header_case=False),
+            "source": [["bb"], ["foo"]],
+            "header_case": False,
             "expected_valid_report": False,
-            "expected_flattened_report": [[None, 3, "aa", "missing-label"]],
+            "expected_flattened_report": [[None, 2, "aa", "missing-label"]],
         },
     ]
 
@@ -424,7 +423,7 @@ def test_validate_resource_ignoring_header_case_issue_1635():
             tc["source"],
             schema=Schema.from_descriptor(schema_descriptor),
             detector=Detector(schema_sync=True),
-            dialect=tc["dialect"],
+            dialect=Dialect(header_case=tc["header_case"]),
         )
         report = frictionless.validate(resource)
         assert report.valid == tc["expected_valid_report"]
