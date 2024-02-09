@@ -483,6 +483,7 @@ class Detector:
         case_sensitive: bool,
     ):
         for _, field in fields_map.items():
+            #TODO use self.field_name_not_in_labels
             if case_sensitive:
                 if field and field.required and field.name not in labels:
                     schema.add_field(field)
@@ -493,3 +494,20 @@ class Detector:
                     and field.name.lower() not in [label.lower() for label in labels]
                 ):
                     schema.add_field(field)
+
+    @staticmethod
+    def field_name_not_in_labels(
+        field: Field,
+        labels: List[str],
+        case_sensitive: bool
+    ) -> bool:
+        if case_sensitive:
+            return field and field.required and field.name not in labels
+        else:
+            return (
+                    field
+                    and field.required
+                    and field.name.lower() not in [
+                        label.lower() for label in labels
+                        ]
+            )
