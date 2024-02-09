@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import attrs
 
@@ -409,32 +409,21 @@ class Detector:
                 if len(labels) != len(set(labels)):
                     note = '"schema_sync" requires unique labels in the header'
                     raise FrictionlessException(note)
-                if options["header_case"]:
-                    mapping = {field.name: field for field in schema.fields}  # type: ignore
-                else:
-                    mapping = {field.name.lower(): field for field in schema.fields}  # type: ignore
-                schema.clear_fields()
-                for name in labels:
-                    if options["header_case"]:
-                        field = mapping.get(name)
-                    else:
-                        field = mapping.get(name.lower())
-                    if not field:
-                        field = Field.from_descriptor({"name": name, "type": "any"})
-                    schema.add_field(field)
+
+                case_sensitive = options["header_case"]
+
+                fields_mapped = self.mapped_schema_fields_names(
+                    schema.fields, case_sensitive
+                )
+
+                self.add_fields_to_schema_among_labels(
+                    fields_mapped, schema, labels, case_sensitive
+                )
+
                 # For required fields that are missing
-                for _, field in mapping.items():
-                    if options["header_case"]:
-                        if field and field.required and field.name not in labels:
-                            schema.add_field(field)
-                    else:
-                        if (
-                            field
-                            and field.required
-                            and field.name.lower()
-                            not in [label.lower() for label in labels]
-                        ):
-                            schema.add_field(field)
+                self.add_missing_required_labels_to_schema_fields(
+                    fields_mapped, schema, labels, options["header_case"]
+                )
 
         # Patch schema
         if self.schema_patch:
@@ -449,3 +438,58 @@ class Detector:
             schema = Schema.from_descriptor(descriptor)
 
         return schema  # type: ignore
+
+    @staticmethod
+    def mapped_schema_fields_names(
+        fields: Union[List[None], List[Field]], case_sensitive: bool
+    ) -> Dict[str, Optional[Field]]:
+        """Create a dictionnary to map fields name with schema fields
+        considering case sensitivity
+
+        Args:
+            fields (Union[List[None], List[Field]]): list of original
+                                                        schema fields
+            case_sensitive (bool)
+
+        Returns:
+            Dict[str, Optional[Field]]
+        """
+        if case_sensitive:
+            return {field.name: field for field in fields}  # type:ignore
+        else:
+            return {field.name.lower(): field for field in fields}  # type: ignore
+
+    @staticmethod
+    def add_fields_to_schema_among_labels(
+        fields_mapped: Dict[str, Optional[Field]],
+        schema: Schema,
+        labels: List[str],
+        case_sensitive: bool,
+    ):
+        schema.clear_fields()
+        for name in labels:
+            default_field = Field.from_descriptor({"name": name, "type": "any"})
+            if case_sensitive:
+                field = fields_mapped.get(name, default_field)
+            else:
+                field = fields_mapped.get(name.lower(), default_field)
+            schema.add_field(field)  # type: ignore
+
+    @staticmethod
+    def add_missing_required_labels_to_schema_fields(
+        fields_map: Dict[str, Optional[Field]],
+        schema: Schema,
+        labels: List[str],
+        case_sensitive: bool,
+    ):
+        for _, field in fields_map.items():
+            if case_sensitive:
+                if field and field.required and field.name not in labels:
+                    schema.add_field(field)
+            else:
+                if (
+                    field
+                    and field.required
+                    and field.name.lower() not in [label.lower() for label in labels]
+                ):
+                    schema.add_field(field)
