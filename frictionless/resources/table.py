@@ -5,6 +5,8 @@ import os
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
+from frictionless.schema.field import Field
+
 from .. import errors, helpers, settings
 from ..analyzer import Analyzer
 from ..dialect import Dialect
@@ -387,32 +389,49 @@ class TableResource(Resource):
                 # Yield row
                 yield row
 
-        # NB: missing required labels are not included in the
-        # field_info parameter used for row creation
         if self.detector.schema_sync:
+            # Missing required labels have  in 'field_info'
+            # parameter used for row creation
             for field in self.schema.fields:
-                if self.dialect.header_case:
-                    if (
-                        field.name not in self.labels
-                        and field.name in field_info["names"]
-                    ):
-                        field_index = field_info["names"].index(field.name)
-                        del field_info["names"][field_index]
-                        del field_info["objects"][field_index]
-                        del field_info["mapping"][field.name]
-                else:  # Ignore case
-                    if field.name.lower() not in [
-                        label.lower() for label in self.labels
-                    ] and field.name.lower() in [
-                        field_info_name.lower() for field_info_name in field_info["names"]
-                    ]:
-                        field_index = field_info["names"].index(field.name)
-                        del field_info["names"][field_index]
-                        del field_info["objects"][field_index]
-                        del field_info["mapping"][field.name]
+                self.remove_missing_required_label_from_field_info(field, field_info)
 
         # Create row stream
         self.__row_stream = row_stream()
+
+    def remove_missing_required_label_from_field_info(
+        self, field: Field, field_info: Dict[str, Any]
+    ):
+        is_case_sensitive = self.dialect.header_case
+        if self.field_is_missing(
+            field.name, field_info["names"], self.labels, is_case_sensitive
+        ):
+            self.remove_field_from_field_info(field.name, field_info)
+
+    @staticmethod
+    def field_is_missing(
+        field_name: str,
+        expected_fields_names: List[str],
+        table_labels: types.ILabels,
+        case_sensitive: bool,
+    ) -> bool:
+        """Check if a schema field name is missing from the TableResource
+        labels.
+        """
+        if not case_sensitive:
+            field_name = field_name.lower()
+            table_labels = [label.lower() for label in table_labels]
+            expected_fields_names = [
+                field_name.lower() for field_name in expected_fields_names
+            ]
+
+        return field_name not in table_labels and field_name in expected_fields_names
+
+    @staticmethod
+    def remove_field_from_field_info(field_name: str, field_info: Dict[str, Any]):
+        field_index = field_info["names"].index(field_name)
+        del field_info["names"][field_index]
+        del field_info["objects"][field_index]
+        del field_info["mapping"][field_name]
 
     # Read
 
