@@ -495,10 +495,9 @@ class Detector:
         field: Field, labels: List[str], case_sensitive: bool
     ) -> bool:
         if case_sensitive:
-            return field and field.required and field.name not in labels
+            return field.required and field.name not in labels
         else:
             return (
-                field
-                and field.required
+                field.required
                 and field.name.lower() not in [label.lower() for label in labels]
             )
