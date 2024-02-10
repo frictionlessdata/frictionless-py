@@ -335,17 +335,8 @@ class TableResource(Resource):
                 # Primary Key Error
                 if is_integrity and self.schema.primary_key:
                     try:
-                        if self.dialect.header_case:
-                            cells = tuple(row[name] for name in self.schema.primary_key)
-                        else:  # Ignore case
-                            cells = ()
-                            lower_primary_keys = [
-                                pk.lower() for pk in self.schema.primary_key
-                            ]
-                            # cells = tuple(row[label] if (label.lower() for label in row.field_names) in lower_primary_keys )
-                            for label in row.field_names:
-                                if label.lower() in lower_primary_keys:
-                                    cells = cells + (row[label],)
+                        cells = self.primary_key_cells(row,
+                                                       self.dialect.header_case)
                     except KeyError:
                         # Row does not have primary_key as key
                         # There should already be a missing-label error in
@@ -453,7 +444,27 @@ class TableResource(Resource):
         del field_info["mapping"][field_name]
 
     # Read
+    def primary_key_cells(
+        self,
+        row: Row,
+        case_sensitive: bool
+    ) -> Tuple[Row, Any]:
+        """Create a tuple containg all cells related to primary_key
+        """
+        if case_sensitive:
+            cells = tuple(row[name] for name in self.schema.primary_key)
+        else:  # Ignore case
+            cells = ()
+            lower_primary_keys = [
+                pk.lower() for pk in self.schema.primary_key
+            ]
+            # cells = tuple(row[label] if (label.lower() for label in row.field_names) in lower_primary_keys )
+            for label in row.field_names:
+                if label.lower() in lower_primary_keys:
+                    cells = cells + (row[label],)
+        return cells
 
+    # Read
     def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
         """Read lists into memory
 
