@@ -204,6 +204,7 @@ class TableResource(Resource):
             labels=self.labels,
             schema=self.schema,
             field_candidates=system.detect_field_candidates(),
+            header_case=self.dialect.header_case,
         )
         self.stats.fields = len(self.schema.fields)
 
@@ -303,7 +304,6 @@ class TableResource(Resource):
         enumerated_content_stream = self.dialect.read_enumerated_content_stream(
             self.cell_stream
         )
-        
 
         # Create row stream
         def row_stream():
@@ -333,8 +333,7 @@ class TableResource(Resource):
                 # Primary Key Error
                 if is_integrity and self.schema.primary_key:
                     try:
-                        cells = self.primary_key_cells(row,
-                                                       self.dialect.header_case)
+                        cells = self.primary_key_cells(row, self.dialect.header_case)
                     except KeyError:
                         # Row does not have primary_key as key
                         # There should already be a missing-label error in
@@ -409,16 +408,13 @@ class TableResource(Resource):
         # # Create row stream
         self.__row_stream = row_stream()
 
-    def primary_key_cells(
-        self,
-        row: Row,
-        case_sensitive: bool
-    ) -> Tuple[str, Any]:
-        """Create a tuple containg all cells related to primary_key
-        """
-        return tuple(row[label] for label in
-                     self.labels_related_to_primary_key(row, case_sensitive))
-    
+    def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[str, Any]:
+        """Create a tuple containg all cells related to primary_key"""
+        return tuple(
+            row[label]
+            for label in self.labels_related_to_primary_key(row, case_sensitive)
+        )
+
     def labels_related_to_primary_key(
         self,
         row: Row,
@@ -430,11 +426,10 @@ class TableResource(Resource):
         if case_sensitive:
             labels_primary_key = self.schema.primary_key
         else:
-            lower_primary_key = [
-                pk.lower() for pk in self.schema.primary_key
+            lower_primary_key = [pk.lower() for pk in self.schema.primary_key]
+            labels_primary_key = [
+                label for label in row.field_names if label.lower() in lower_primary_key
             ]
-            labels_primary_key = [label for label in row.field_names
-                                  if label.lower() in lower_primary_key]
         return labels_primary_key
 
     # Read

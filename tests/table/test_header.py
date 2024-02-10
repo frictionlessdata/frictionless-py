@@ -78,7 +78,7 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
     # Ignore header_case
     schema_descriptor = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-        "fields": [{"name": "A", "constraints": {"required": True}}],
+        "fields": [{"name": "A"}],
         "primaryKey": ["A"],
     }
 

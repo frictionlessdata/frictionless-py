@@ -298,6 +298,7 @@ class Detector:
         labels: Optional[List[str]] = None,
         schema: Optional[Schema] = None,
         field_candidates: List[Dict[str, Any]] = settings.DEFAULT_FIELD_CANDIDATES,
+        **options: Any,
     ) -> Schema:
         """Detect schema from fragment
 
@@ -419,9 +420,10 @@ class Detector:
                 for _, field in mapping.items():
                     if field and field.required and field.name not in labels:
                         schema.add_field(field)
-                    # For primary field that are missing
-                    if field and not field.required and field.name in schema.primary_key and field.name not in labels:
-                        schema.add_field(field)
+                    # For primary key field that are missing
+                    self.add_missing_primary_key_to_schema_fields(
+                        field, schema, labels, options["header_case"]  # type: ignore
+                    )
 
         # Patch schema
         if self.schema_patch:
@@ -436,3 +438,27 @@ class Detector:
             schema = Schema.from_descriptor(descriptor)
 
         return schema  # type: ignore
+
+    @staticmethod
+    def add_missing_primary_key_to_schema_fields(
+        field: Field,
+        schema: Schema,
+        labels: List[str],
+        case_sensitive: bool,
+    ):
+        if case_sensitive:
+            if (
+                not field.required
+                and field.name in schema.primary_key
+                and field.name not in labels
+            ):
+                schema.add_field(field)
+        else:
+            lower_primary_key = [pk.lower() for pk in schema.primary_key]
+            lower_labels = [label.lower() for label in labels]
+            if (
+                not field.required
+                and field.name.lower() in lower_primary_key
+                and field.name.lower() not in lower_labels
+            ):
+                schema.add_field(field)
