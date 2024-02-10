@@ -453,7 +453,7 @@ class Detector:
         Args:
             fields (Union[List[None], List[Field]]): list of original
                                                         schema fields
-            case_sensitive (bool)
+            case_sensitive (bool): True if case sensitive, False else
 
         Returns:
             Dict[str, Optional[Field]]
