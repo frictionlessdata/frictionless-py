@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import attrs
 
@@ -412,17 +412,21 @@ class Detector:
 
                 case_sensitive = options["header_case"]
 
-                fields_mapped = self.mapped_schema_fields_names(
-                    schema.fields, case_sensitive
+                assert schema
+                assert schema.fields
+                assert all(isinstance(field, Field) for field in schema.fields)
+
+                mapped_fields = self.mapped_schema_fields_names(
+                    schema.fields, case_sensitive  # type: ignore
                 )
 
                 self.add_fields_to_schema_among_labels(
-                    fields_mapped, schema, labels, case_sensitive
+                    mapped_fields, schema, labels, case_sensitive  # type: ignore
                 )
 
                 # For required fields that are missing
                 self.add_missing_required_labels_to_schema_fields(
-                    fields_mapped, schema, labels, options["header_case"]
+                    mapped_fields, schema, labels, case_sensitive  # type: ignore
                 )
 
         # Patch schema
@@ -441,7 +445,7 @@ class Detector:
 
     @staticmethod
     def mapped_schema_fields_names(
-        fields: Union[List[None], List[Field]], case_sensitive: bool
+        fields: List[Field], case_sensitive: bool
     ) -> Dict[str, Optional[Field]]:
         """Create a dictionnary to map fields name with schema fields
         considering case sensitivity
@@ -455,13 +459,13 @@ class Detector:
             Dict[str, Optional[Field]]
         """
         if case_sensitive:
-            return {field.name: field for field in fields}  # type:ignore
+            return {field.name: field for field in fields}
         else:
-            return {field.name.lower(): field for field in fields}  # type: ignore
+            return {field.name.lower(): field for field in fields}
 
     @staticmethod
     def add_fields_to_schema_among_labels(
-        fields_mapped: Dict[str, Optional[Field]],
+        fields_mapped: Dict[str, Field],
         schema: Schema,
         labels: List[str],
         case_sensitive: bool,
@@ -473,41 +477,28 @@ class Detector:
                 field = fields_mapped.get(name, default_field)
             else:
                 field = fields_mapped.get(name.lower(), default_field)
-            schema.add_field(field)  # type: ignore
+            schema.add_field(field)
 
-    @staticmethod
     def add_missing_required_labels_to_schema_fields(
-        fields_map: Dict[str, Optional[Field]],
+        self,
+        fields_map: Dict[str, Field],
         schema: Schema,
         labels: List[str],
         case_sensitive: bool,
     ):
         for _, field in fields_map.items():
-            #TODO use self.field_name_not_in_labels
-            if case_sensitive:
-                if field and field.required and field.name not in labels:
-                    schema.add_field(field)
-            else:
-                if (
-                    field
-                    and field.required
-                    and field.name.lower() not in [label.lower() for label in labels]
-                ):
-                    schema.add_field(field)
+            if self.field_name_not_in_labels(field, labels, case_sensitive):
+                schema.add_field(field)
 
     @staticmethod
     def field_name_not_in_labels(
-        field: Field,
-        labels: List[str],
-        case_sensitive: bool
+        field: Field, labels: List[str], case_sensitive: bool
     ) -> bool:
         if case_sensitive:
             return field and field.required and field.name not in labels
         else:
             return (
-                    field
-                    and field.required
-                    and field.name.lower() not in [
-                        label.lower() for label in labels
-                        ]
+                field
+                and field.required
+                and field.name.lower() not in [label.lower() for label in labels]
             )
