@@ -419,6 +419,9 @@ class Detector:
                 for _, field in mapping.items():
                     if field and field.required and field.name not in labels:
                         schema.add_field(field)
+                    # For primary field that are missing
+                    if field and not field.required and field.name in schema.primary_key and field.name not in labels:
+                        schema.add_field(field)
 
         # Patch schema
         if self.schema_patch:
