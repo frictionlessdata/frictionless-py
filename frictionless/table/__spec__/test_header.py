@@ -47,11 +47,11 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
             "nb_errors": 1,
             "types_errors_expected": ["missing-label"],
         },
-        # { # This test case raise the unexpected KeyError we want to fix
-        #     "constraints": {},
-        #     "nb_errors": 1,
-        #     "types_errors_expected": ["missing-label"],
-        # },
+        {
+            "constraints": {},
+            "nb_errors": 1,
+            "types_errors_expected": ["missing-label"],
+        },
     ]
 
     for tc in test_cases:
@@ -74,24 +74,6 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
         assert len(errors) == tc["nb_errors"]
         for error, type_expected in zip(errors, tc["types_errors_expected"]):
             assert error.type == type_expected
-
-    # TODO: fix this isolated test case and refactoring
-    schema_descriptor = {
-            "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
-            "fields": [{"name": "A"}],
-            "primaryKey": ["A"],
-        }
-
-    resource = TableResource(
-            source=[["B"], ["foo"]],
-            schema=Schema.from_descriptor(schema_descriptor),
-            detector=frictionless.Detector(schema_sync=True),
-        )
-
-    report = frictionless.validate(resource)
-    errors = report.tasks[0].errors
-    assert len(errors) == 1
-    assert errors[0].type == "missing-label"
 
     # # Ignore header_case
     # schema_descriptor = {
