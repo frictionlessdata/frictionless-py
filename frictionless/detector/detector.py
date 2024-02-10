@@ -424,7 +424,6 @@ class Detector:
                     mapped_fields, schema, labels, case_sensitive  # type: ignore
                 )
 
-                # For required fields that are missing
                 self.add_missing_required_labels_to_schema_fields(
                     mapped_fields, schema, labels, case_sensitive  # type: ignore
                 )
@@ -487,7 +486,11 @@ class Detector:
         case_sensitive: bool,
     ):
         for _, field in fields_map.items():
+            # For required fields that are missing
             if self.field_name_not_in_labels(field, labels, case_sensitive):
+                schema.add_field(field)
+            # For primary field that are missing
+            if field and not field.required and field.name in schema.primary_key and field.name not in labels:
                 schema.add_field(field)
 
     @staticmethod
