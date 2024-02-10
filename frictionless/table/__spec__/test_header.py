@@ -78,6 +78,22 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633():
     # Ignore header_case
     schema_descriptor = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+        "fields": [{"name": "A"}],
+        "primaryKey": ["A"],
+    }
+
+    resource = TableResource(
+        source=[["a"], ["foo"]],
+        schema=Schema.from_descriptor(schema_descriptor),
+        detector=frictionless.Detector(schema_sync=True),
+        dialect=frictionless.Dialect(header_case=False),
+    )
+    report = frictionless.validate(resource)
+    assert report.valid
+    
+    # TODO to solve this test case needs to merge with working branch Fix-1635-...
+    schema_descriptor = {
+        "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
         "fields": [{"name": "A", "constraints": {"required": True}}],
         "primaryKey": ["A"],
     }
