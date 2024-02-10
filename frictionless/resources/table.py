@@ -454,14 +454,11 @@ class TableResource(Resource):
         if case_sensitive:
             cells = tuple(row[name] for name in self.schema.primary_key)
         else:  # Ignore case
-            cells = ()
             lower_primary_keys = [
                 pk.lower() for pk in self.schema.primary_key
             ]
-            # cells = tuple(row[label] if (label.lower() for label in row.field_names) in lower_primary_keys )
-            for label in row.field_names:
-                if label.lower() in lower_primary_keys:
-                    cells = cells + (row[label],)
+            labels_primary_key = [label for label in row.field_names if label.lower() in lower_primary_keys]
+            cells = tuple(row[label] for label in labels_primary_key)
         return cells
 
     # Read
