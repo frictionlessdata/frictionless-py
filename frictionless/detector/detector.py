@@ -485,12 +485,15 @@ class Detector:
         labels: List[str],
         case_sensitive: bool,
     ):
+        """This method aims to add missing required labels and
+        primary key field not in labels to schema fields
+        """
         for _, field in fields_map.items():
-            # For required fields that are missing
+            # For required fields or primary key that are missing #
             if self.field_name_not_in_labels(
                 field, labels, case_sensitive
             ) or self.primary_key_field_name_not_in_labels(
-                field, schema, labels, case_sensitive  # type: ignore
+                field, schema, labels, case_sensitive
             ):
                 schema.add_field(field)
 
