@@ -47,8 +47,13 @@ def test_missing_label():
     [
         ([["B"], ["foo"]], {"required": True}, False, 1, ["missing-label"], True),
         ([["B"], ["foo"]], {}, False, 1, ["missing-label"], True),
-        ([["a"], ["foo"]], {"required": True}, True, 0, [], False),  # Ignore header_case
-        ([["a"], ["foo"]], {}, True, 0, [], False),  # Ignore header_case
+        ([["a"], ["foo"]], {"required": True}, False, 1, ["missing-label"], True),
+        ([["a"], ["foo"]], {}, False, 1, ["missing-label"], True),
+        # Ignore header_case
+        ([["B"], ["foo"]], {"required": True}, False, 1, ["missing-label"], False),
+        ([["B"], ["foo"]], {}, False, 1, ["missing-label"], False),
+        ([["a"], ["foo"]], {"required": True}, True, 0, [], False),
+        ([["a"], ["foo"]], {}, True, 0, [], False),
     ],
 )
 def test_missing_primary_key_label_with_shema_sync_issue_1633(
