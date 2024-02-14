@@ -469,9 +469,10 @@ class Detector:
         for name in labels:
             default_field = Field.from_descriptor({"name": name, "type": "any"})
             if case_sensitive:
-                field = fields_mapping.get(name, default_field)
+                index_name = name
             else:
-                field = fields_mapping.get(name.lower(), default_field)
+                index_name = name.lower()
+            field = fields_mapping.get(index_name, default_field)
             schema.add_field(field)
 
     def add_missing_required_labels_to_schema_fields(
