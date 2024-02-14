@@ -420,7 +420,7 @@ class Detector:
                     schema.fields, case_sensitive  # type: ignore
                 )
 
-                self.add_fields_to_schema_among_labels(
+                self.rearrange_schema_fields_given_labels(
                     mapped_fields, schema, labels, case_sensitive  # type: ignore
                 )
 
@@ -459,7 +459,7 @@ class Detector:
             return {field.name.lower(): field for field in fields}
 
     @staticmethod
-    def add_fields_to_schema_among_labels(
+    def rearrange_schema_fields_given_labels(
         fields_mapped: Dict[str, Field],
         schema: Schema,
         labels: List[str],
