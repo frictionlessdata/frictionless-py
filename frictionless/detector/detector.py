@@ -487,10 +487,10 @@ class Detector:
         """
         for _, field in fields_mapping.items():
             # For required fields or primary key that are missing #
-            if self.field_name_not_in_labels(
+            if self.field_is_required(
+                field, schema, case_sensitive
+            ) and self.field_name_not_in_labels(
                 field, labels, case_sensitive
-            ) or self.primary_key_field_name_not_in_labels(
-                field, schema, labels, case_sensitive
             ):
                 schema.add_field(field)
 
@@ -499,30 +499,23 @@ class Detector:
         field: Field, labels: List[str], case_sensitive: bool
     ) -> bool:
         if case_sensitive:
-            return field.required and field.name not in labels
+            return field.name not in labels
         else:
-            return field.required and field.name.lower() not in [
+            return field.name.lower() not in [
                 label.lower() for label in labels
             ]
 
     @staticmethod
-    def primary_key_field_name_not_in_labels(
+    def field_is_required(
         field: Field,
         schema: Schema,
-        labels: List[str],
         case_sensitive: bool,
     ) -> bool:
         if case_sensitive:
-            return (
-                not field.required
-                and field.name in schema.primary_key
-                and field.name not in labels
-            )
+            return field.required or field.name in schema.primary_key
         else:
             lower_primary_key = [pk.lower() for pk in schema.primary_key]
-            lower_labels = [label.lower() for label in labels]
             return (
-                not field.required
-                and field.name.lower() in lower_primary_key
-                and field.name.lower() not in lower_labels
+                field.required
+                or field.name.lower() in lower_primary_key
             )
