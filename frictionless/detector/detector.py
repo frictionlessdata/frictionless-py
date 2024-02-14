@@ -421,11 +421,11 @@ class Detector:
                 )
 
                 self.rearrange_schema_fields_given_labels(
-                    mapped_fields, schema, labels, case_sensitive  # type: ignore
+                    mapped_fields, schema, labels, case_sensitive
                 )
 
                 self.add_missing_required_labels_to_schema_fields(
-                    mapped_fields, schema, labels, case_sensitive  # type: ignore
+                    mapped_fields, schema, labels, case_sensitive
                 )
 
         # Patch schema
@@ -445,7 +445,7 @@ class Detector:
     @staticmethod
     def mapped_schema_fields_names(
         fields: List[Field], case_sensitive: bool
-    ) -> Dict[str, Optional[Field]]:
+    ) -> Dict[str, Field]:
         """Create a dictionnary to map fields name with schema fields
         considering case sensitivity
 
