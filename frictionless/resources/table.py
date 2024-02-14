@@ -418,7 +418,7 @@ class TableResource(Resource):
     @staticmethod
     def field_is_missing(
         field_name: str,
-        expected_fields_names: List[str],
+        expected_field_names: List[str],
         table_labels: types.ILabels,
         case_sensitive: bool,
     ) -> bool:
@@ -428,11 +428,11 @@ class TableResource(Resource):
         if not case_sensitive:
             field_name = field_name.lower()
             table_labels = [label.lower() for label in table_labels]
-            expected_fields_names = [
-                field_name.lower() for field_name in expected_fields_names
+            expected_field_names = [
+                field_name.lower() for field_name in expected_field_names
             ]
 
-        return field_name not in table_labels and field_name in expected_fields_names
+        return field_name not in table_labels and field_name in expected_field_names
 
     @staticmethod
     def remove_field_from_field_info(field_name: str, field_info: Dict[str, Any]):
