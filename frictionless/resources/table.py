@@ -350,12 +350,11 @@ class TableResource(Resource):
                             match = memory_primary.get(cells)
                             memory_primary[cells] = row.row_number
                             if match:
-                                if match:
-                                    note = "the same as in the row at position %s" % match
-                                    error = errors.PrimaryKeyError.from_row(
-                                        row, note=note
-                                    )
-                                    row.errors.append(error)
+                                note = "the same as in the row at position %s" % match
+                                error = errors.PrimaryKeyError.from_row(
+                                    row, note=note
+                                )
+                                row.errors.append(error)
 
                 # Foreign Key Error
                 if is_integrity and foreign_groups:
