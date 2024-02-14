@@ -460,7 +460,7 @@ class Detector:
 
     @staticmethod
     def rearrange_schema_fields_given_labels(
-        fields_mapped: Dict[str, Field],
+        fields_mapping: Dict[str, Field],
         schema: Schema,
         labels: List[str],
         case_sensitive: bool,
@@ -469,14 +469,14 @@ class Detector:
         for name in labels:
             default_field = Field.from_descriptor({"name": name, "type": "any"})
             if case_sensitive:
-                field = fields_mapped.get(name, default_field)
+                field = fields_mapping.get(name, default_field)
             else:
-                field = fields_mapped.get(name.lower(), default_field)
+                field = fields_mapping.get(name.lower(), default_field)
             schema.add_field(field)
 
     def add_missing_required_labels_to_schema_fields(
         self,
-        fields_map: Dict[str, Field],
+        fields_mapping: Dict[str, Field],
         schema: Schema,
         labels: List[str],
         case_sensitive: bool,
@@ -484,7 +484,7 @@ class Detector:
         """This method aims to add missing required labels and
         primary key field not in labels to schema fields
         """
-        for _, field in fields_map.items():
+        for _, field in fields_mapping.items():
             # For required fields or primary key that are missing #
             if self.field_name_not_in_labels(
                 field, labels, case_sensitive
