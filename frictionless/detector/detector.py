@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import attrs
 
@@ -450,12 +450,8 @@ class Detector:
         considering case sensitivity
 
         Args:
-            fields (Union[List[None], List[Field]]): list of original
-                                                        schema fields
-            case_sensitive (bool): True if case sensitive, False else
-
-        Returns:
-            Dict[str, Optional[Field]]
+            fields: list of original schema fields
+            case_sensitive: True if case sensitive, False else
         """
         if case_sensitive:
             return {field.name: field for field in fields}
