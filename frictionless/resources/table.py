@@ -398,8 +398,8 @@ class TableResource(Resource):
                 yield row
 
         if self.detector.schema_sync:
-            # Missing required labels have in 'field_info'
-            # parameter used for row creation
+            # Missing required labels are not included in the
+            # field_info parameter used for row creation
             for field in self.schema.fields:
                 self.remove_missing_required_label_from_field_info(field, field_info)
 
