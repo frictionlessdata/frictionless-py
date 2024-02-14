@@ -337,7 +337,7 @@ class TableResource(Resource):
                     try:
                         cells = self.primary_key_cells(row, self.dialect.header_case)
                     except KeyError:
-                        # Row does not have primary_key as key
+                        # Row does not have primary_key as label
                         # There should already be a missing-label error in
                         # in self.header corresponding to the schema primary key
                         assert not self.header.valid
