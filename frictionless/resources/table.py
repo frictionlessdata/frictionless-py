@@ -347,8 +347,8 @@ class TableResource(Resource):
                             error = errors.PrimaryKeyError.from_row(row, note=note)
                             row.errors.append(error)
                         else:
-                            match = memory_primary.get(cells)  # type: ignore
-                            memory_primary[cells] = row.row_number  # type: ignore
+                            match = memory_primary.get(cells)
+                            memory_primary[cells] = row.row_number
                             if match:
                                 if match:
                                     note = "the same as in the row at position %s" % match
@@ -442,7 +442,7 @@ class TableResource(Resource):
         del field_info["objects"][field_index]
         del field_info["mapping"][field_name]
 
-    def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[str, Any]:
+    def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any]:
         """Create a tuple containg all cells related to primary_key"""
         return tuple(
             row[label]
