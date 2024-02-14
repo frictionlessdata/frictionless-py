@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import attrs
 
