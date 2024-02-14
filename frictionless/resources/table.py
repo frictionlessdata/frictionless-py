@@ -351,9 +351,7 @@ class TableResource(Resource):
                             memory_primary[cells] = row.row_number
                             if match:
                                 note = "the same as in the row at position %s" % match
-                                error = errors.PrimaryKeyError.from_row(
-                                    row, note=note
-                                )
+                                error = errors.PrimaryKeyError.from_row(row, note=note)
                                 row.errors.append(error)
 
                 # Foreign Key Error
