@@ -412,10 +412,6 @@ class Detector:
 
                 case_sensitive = options["header_case"]
 
-                assert schema
-                assert schema.fields
-                assert all(isinstance(field, Field) for field in schema.fields)
-
                 mapped_fields = self.mapped_schema_fields_names(
                     schema.fields, case_sensitive  # type: ignore
                 )
@@ -440,7 +436,7 @@ class Detector:
                 field_descriptor.update(field_patch)
             schema = Schema.from_descriptor(descriptor)
 
-        return schema  # type: ignore
+        return schema
 
     @staticmethod
     def mapped_schema_fields_names(
