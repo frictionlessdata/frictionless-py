@@ -122,12 +122,12 @@ docs = [
   "livemark build",
 ]
 format = [
-  "ruff frictionless tests --fix",
+  "ruff check frictionless tests --fix",
   "isort frictionless tests",
   "black frictionless tests",
 ]
 lint = [
-  "ruff frictionless tests",
+  "ruff check frictionless tests",
   "isort frictionless tests --check",
   "black frictionless tests --check",
   "pyright frictionless tests",
@@ -162,9 +162,11 @@ multi_line_output = 9
 
 [tool.ruff]
 line-length = 90
+
+[tool.ruff.lint]
 ignore = ["E501", "E731", "F405"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F403"]
 
 [tool.pytest.ini_options]
