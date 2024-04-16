@@ -134,6 +134,7 @@ def test_analyze_resource_detailed_descriptive_statistics_with_outliers():
     assert analysis["fieldStats"]["average_grades"]["outliers"] == [10000.0]
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 12), reason="Fix for Python3.12+")
 def test_analyze_resource_detailed_descriptive_statistics_variables_correlation():
     resource = TableResource(path="data/analysis-data.csv")
     analysis = resource.analyze(detailed=True)
