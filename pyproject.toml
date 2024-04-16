@@ -182,10 +182,10 @@ extend-select = ["I"]
 "__init__.py" = ["F401", "F403"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["frictionless"]
 env_files = [".env"]
 markers = [
-    "ci: integrational tests (select with '--ci')",
+    "ci: integration tests (select with '--ci')",
 ]
 filterwarnings = [
     "ignore::DeprecationWarning:boto.*",
@@ -197,6 +197,6 @@ filterwarnings = [
 
 [tool.pyright]
 strict = ["frictionless"]
-include = ["frictionless", "tests"]
+include = ["frictionless"]
 exclude = ["frictionless/vendors"]
 ignore = ["**/__init__.py"]

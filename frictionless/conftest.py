@@ -129,7 +129,9 @@ def vcr_cassette_dir(request):
 def populate_db(engine):
     with engine.begin() as conn:
         conn.execute(sa.text('CREATE TABLE "table" (id INTEGER PRIMARY KEY, name TEXT)'))
-        conn.execute(sa.text("INSERT INTO \"table\" VALUES (1, 'english'), (2, '中国人')"))
+        conn.execute(
+            sa.text("INSERT INTO \"table\" VALUES (1, 'english'), (2, '中国人')")
+        )
         conn.execute(
             sa.text(
                 "CREATE TABLE fruits (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
