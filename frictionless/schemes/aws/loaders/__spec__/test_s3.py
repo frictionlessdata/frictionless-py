@@ -3,7 +3,7 @@ import string
 
 import boto3
 import pytest
-from moto import mock_s3
+from moto import mock_aws
 
 from frictionless import Dialect, Package, platform
 from frictionless.resources import TableResource
@@ -11,7 +11,7 @@ from frictionless.resources import TableResource
 # Read
 
 
-@mock_s3
+@mock_aws
 def test_s3_loader(bucket_name):
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -36,7 +36,7 @@ def test_s3_loader(bucket_name):
 # Write
 
 
-@mock_s3
+@mock_aws
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_s3_loader_write(bucket_name):
     client = boto3.resource("s3", region_name="us-east-1")
@@ -55,7 +55,7 @@ def test_s3_loader_write(bucket_name):
         ]
 
 
-@mock_s3
+@mock_aws
 @pytest.mark.ci
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_s3_loader_big_file(bucket_name):
@@ -89,7 +89,7 @@ def test_s3_loader_big_file(bucket_name):
 # Bugs
 
 
-@mock_s3
+@mock_aws
 def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -117,7 +117,7 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
     assert report.stats["tasks"] == 2
 
 
-@mock_s3
+@mock_aws
 def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
