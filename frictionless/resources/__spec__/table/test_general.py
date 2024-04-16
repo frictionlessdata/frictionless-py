@@ -78,6 +78,7 @@ def test_resource_from_path_yaml():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_from_path_remote():
     resource = TableResource.from_descriptor(BASEURL % "data/resource.json")
     assert resource.path == "table.csv"
@@ -90,6 +91,7 @@ def test_resource_from_path_remote():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_from_url_standards_v0():
     resource = TableResource.from_descriptor(
         {"name": "name", "url": BASEURL % "data/table.csv"}
@@ -153,6 +155,7 @@ def test_resource_source_path_and_basepath():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_source_path_and_basepath_remote():
     resource = TableResource(path="table.csv", basepath=BASEURL % "data")
     assert resource.normpath == BASEURL % "data/table.csv"
@@ -163,6 +166,7 @@ def test_resource_source_path_and_basepath_remote():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_source_path_remote_and_basepath_remote():
     resource = TableResource(path=BASEURL % "data/table.csv", basepath=BASEURL % "data")
     assert resource.normpath == BASEURL % "data/table.csv"

@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from frictionless import Dialect, platform, schemes
@@ -10,6 +12,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_remote_loader():
     with TableResource(path=BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
@@ -20,6 +23,7 @@ def test_remote_loader():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`
     with TableResource(path=BASEURL % "data/latin1.csv") as resource:
@@ -28,6 +32,7 @@ def test_remote_loader_latin1():
 
 @pytest.mark.ci
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_remote_loader_big_file():
     dialect = Dialect(header=False)
     with TableResource(path=BASEURL % "data/table-1MB.csv", dialect=dialect) as resource:
@@ -43,6 +48,7 @@ def test_remote_loader_big_file():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_remote_loader_http_preload():
     control = schemes.RemoteControl(http_preload=True)
     with TableResource(path=BASEURL % "data/table.csv", control=control) as resource:
@@ -73,6 +79,7 @@ def test_remote_loader_write(requests_mock):
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_remote_loader_if_remote_basepath_and_file_scheme_issue_1388():
     resource = TableResource(path="table.csv", scheme="file", basepath=BASEURL % "data")
     assert resource.read_rows() == [

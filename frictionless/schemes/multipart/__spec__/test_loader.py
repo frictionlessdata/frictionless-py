@@ -1,4 +1,5 @@
 import json
+import sys
 
 import pytest
 
@@ -40,6 +41,7 @@ def test_multipart_loader_resource():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_multipart_loader_resource_remote():
     descriptor = {
@@ -60,6 +62,7 @@ def test_multipart_loader_resource_remote():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_multipart_loader_resource_remote_both_path_and_basepath():
     descriptor = {

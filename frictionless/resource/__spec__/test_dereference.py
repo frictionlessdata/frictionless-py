@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from frictionless import Resource, platform
@@ -59,6 +61,7 @@ def test_resource_dialect_schema_from_path():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_dialect_schema_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")

@@ -1,4 +1,5 @@
 import json
+import sys
 
 import pytest
 
@@ -66,6 +67,7 @@ def test_json_parser_from_buffer_keyed():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_json_parser_from_remote():
     with TableResource(path=BASEURL % "data/table.json") as resource:
         assert resource.header == ["id", "name"]
@@ -76,6 +78,7 @@ def test_json_parser_from_remote():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_json_parser_from_remote_keyed():
     with TableResource(path=BASEURL % "data/table.keyed.json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}

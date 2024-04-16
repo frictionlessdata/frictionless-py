@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 import requests
 
@@ -11,6 +13,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_system_use_context_http_session():
     session = requests.Session()
     with system.use_context(http_session=session):

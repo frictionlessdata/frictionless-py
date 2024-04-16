@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from frictionless import Detector, FrictionlessException, Schema, platform
@@ -64,6 +66,7 @@ def test_resource_schema_source_data():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_schema_source_remote():
     descriptor = {

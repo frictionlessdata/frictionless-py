@@ -1,5 +1,6 @@
 import io
 import json
+import sys
 import textwrap
 from decimal import Decimal
 from importlib import import_module
@@ -60,6 +61,7 @@ def test_schema_descriptor_path():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_schema_descriptor_url():
     url = BASEURL % "data/schema.json"
     schema = Schema(url)

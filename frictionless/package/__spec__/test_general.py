@@ -1,3 +1,4 @@
+import sys
 import textwrap
 from collections.abc import Mapping
 from importlib import import_module
@@ -126,6 +127,7 @@ def test_package_from_path_error_bad_json_not_dict():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_from_path_remote():
     package = Package.from_descriptor(BASEURL % "data/package.json")
     assert package.basepath == BASEURL % "data"
@@ -323,6 +325,7 @@ def test_package_remote_scheme_regression_for_resources_issue_1388():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_remote_windows_1505():
     url = "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
     package = Package(url)

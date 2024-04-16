@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from frictionless import Detector, Dialect, formats, platform
@@ -106,6 +108,7 @@ def test_csv_parser_buffer():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_csv_parser_remote():
     with TableResource(path=BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]

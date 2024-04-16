@@ -1,4 +1,5 @@
 import os
+import sys
 import zipfile
 
 import pytest
@@ -39,6 +40,7 @@ def test_zip_adapter_to_zip_resource_path(tmpdir):
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_zip_adapter_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
