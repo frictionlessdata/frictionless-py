@@ -22,7 +22,7 @@ jobs:
       matrix:
         # TODO: recover 3.8 and 3.9 when pytest-vcr is fixed
         # https://github.com/ktosiek/pytest-vcr/issues/53
-        # TODO: recover 3.12 when duck is fixed
+        # TODO: recover 3.12 when duckdb is fixed
         # https://github.com/duckdb/duckdb/issues/9563
         # python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
         python-version: ["3.10", "3.11"]
@@ -90,7 +90,7 @@ jobs:
         run: cp .env.example .env
       - name: Test software
         # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
-        run: LDFLAGS=`echo $(pg_config --ldflags)` make test
+        run: LDFLAGS=`echo $(pg_config --ldflags)` hatch run +py=3.10 ci:test
 
   # Test (Windows)
 
@@ -109,7 +109,7 @@ jobs:
       - name: Prepare variables
         run: cp .env.example .env
       - name: Test software
-        run: make test
+        run: hatch run +py=3.10 ci:test
 
   # Deploy
 
