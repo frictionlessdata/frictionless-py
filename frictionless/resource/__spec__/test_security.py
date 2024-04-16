@@ -112,6 +112,7 @@ def test_resource_profiles_error_bad_path_not_safe_absolute():
     assert reasons[0].note.count('camtrap.json" is not safe')
 
 
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_resource_profiles_error_bad_path_not_safe_traversing():
     profile = "data/profiles/../profiles/camtrap.json"

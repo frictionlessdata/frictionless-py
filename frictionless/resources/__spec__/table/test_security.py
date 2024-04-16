@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from frictionless import FrictionlessException, platform, system
@@ -6,6 +8,7 @@ from frictionless.resources import TableResource
 # Bugs
 
 
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     path = (
         "data/../data/table.csv"

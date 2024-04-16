@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from frictionless import FrictionlessException, Resource
@@ -14,6 +16,7 @@ def test_resource_scheme_file():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_scheme_https():
     with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.scheme == "https"

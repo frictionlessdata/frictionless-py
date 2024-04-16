@@ -316,6 +316,7 @@ def test_package_validation_duplicate_resource_names_issue_942():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_remote_scheme_regression_for_resources_issue_1388():
     package = Package.from_descriptor(
         "https://raw.githubusercontent.com/fdtester/test-write-package-with-dialect/main/datapackage.json"
