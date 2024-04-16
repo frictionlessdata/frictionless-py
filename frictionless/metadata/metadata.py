@@ -24,14 +24,14 @@ from typing import (
 import stringcase  # type: ignore
 from typing_extensions import Self
 
-from . import helpers
-from .exception import FrictionlessException
-from .platform import platform
+from .. import helpers
+from ..exception import FrictionlessException
+from ..platform import platform
 
 if TYPE_CHECKING:
-    from . import types
-    from .error import Error
-    from .report import Report
+    from .. import types
+    from ..error import Error
+    from ..report import Report
 
 
 class Metadata:
@@ -189,7 +189,7 @@ class Metadata:
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
-        return metadata
+        return metadata  # type: ignore
 
     def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
         descriptor = self.metadata_export()
@@ -261,7 +261,7 @@ class Metadata:
         """
         Error = self.metadata_Error or platform.frictionless_errors.MetadataError
         mapper = platform.frictionless_formats.markdown.MarkdownMapper()
-        text = mapper.write_metadata(self, table=table)
+        text = mapper.write_metadata(self, table=table)  # type: ignore
         if path:
             try:
                 helpers.write_file(path, text)

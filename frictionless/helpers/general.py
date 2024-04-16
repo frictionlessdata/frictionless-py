@@ -19,8 +19,6 @@ from urllib.parse import parse_qs, urlparse
 
 import stringcase  # type: ignore
 
-from .platform import platform
-
 # General
 
 
@@ -64,6 +62,8 @@ def to_json(obj: Any, *, encoder_class: Optional[Any] = None) -> str:
 
 
 def to_yaml(obj: Any) -> str:
+    from ..platform import platform
+
     return platform.yaml.dump(
         obj,
         sort_keys=False,
@@ -358,6 +358,8 @@ def slugify(text: str, **options: Any):
 
 
 def create_yaml_dumper():
+    from ..platform import platform
+
     class IndentDumper(platform.yaml.SafeDumper):
         def increase_indent(self, flow: bool = False, indentless: bool = False) -> Any:
             return super().increase_indent(flow, False)  # type: ignore
