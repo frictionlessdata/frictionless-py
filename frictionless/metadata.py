@@ -8,8 +8,18 @@ import re
 from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, Generator, List, Optional, Set
-from typing import Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Dict,
+    Generator,
+    List,
+    Optional,
+    Set,
+    Type,
+    Union,
+)
 
 import stringcase  # type: ignore
 from typing_extensions import Self

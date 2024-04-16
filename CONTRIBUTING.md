@@ -49,12 +49,10 @@ hatch shell
 Use the following command to build the container:
 
 ```bash tabs=CLI
-hatch run docker
+hatch run image
 ```
 
-This should take care of setting up everything. If the container is
-built without errors, you can then run commands like `hatch` inside the
-container to accomplish various tasks (see the next section for details).
+This should take care of setting up everything. If the container is built without errors, you can then run commands like `hatch` inside the container to accomplish various tasks (see the next section for details).
 
 To make things easier, we can create an alias:
 

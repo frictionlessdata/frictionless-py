@@ -2,8 +2,14 @@ import pathlib
 
 import pytest
 
-from frictionless import Check, Checklist, Detector, FrictionlessException, Resource
-from frictionless import errors
+from frictionless import (
+    Check,
+    Checklist,
+    Detector,
+    FrictionlessException,
+    Resource,
+    errors,
+)
 from frictionless.resources import TableResource
 
 # General

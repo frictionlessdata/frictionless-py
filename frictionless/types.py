@@ -1,7 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Literal
-from typing import Protocol, TextIO, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    BinaryIO,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Protocol,
+    TextIO,
+    Union,
+)
 
 if TYPE_CHECKING:
     from .error import Error
@@ -31,30 +41,24 @@ ITabularData = Dict[str, List[Dict[str, Any]]]
 
 
 class ICheckFunction(Protocol):
-    def __call__(self, row: Row) -> Iterable[Error]:
-        ...
+    def __call__(self, row: Row) -> Iterable[Error]: ...
 
 
 class IEncodingFunction(Protocol):
-    def __call__(self, buffer: IBuffer) -> str:
-        ...
+    def __call__(self, buffer: IBuffer) -> str: ...
 
 
 class IFilterFunction(Protocol):
-    def __call__(self, row: Row) -> bool:
-        ...
+    def __call__(self, row: Row) -> bool: ...
 
 
 class IProcessFunction(Protocol):
-    def __call__(self, row: Row) -> Dict[str, Any]:
-        ...
+    def __call__(self, row: Row) -> Dict[str, Any]: ...
 
 
 class ICallbackFunction(Protocol):
-    def __call__(self, row: Row) -> None:
-        ...
+    def __call__(self, row: Row) -> None: ...
 
 
 class IStepFunction(Protocol):
-    def __call__(self, source: Union[Resource, Package]) -> None:
-        ...
+    def __call__(self, source: Union[Resource, Package]) -> None: ...

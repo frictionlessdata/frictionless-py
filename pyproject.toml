@@ -116,7 +116,7 @@ dependencies = [
 coverage = [
   "sensible-browser coverage/index.html",
 ]
-docker = [
+image = [
   "docker build --rm -t frictionless-dev .",
 ]
 docs = [
