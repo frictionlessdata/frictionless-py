@@ -22,10 +22,8 @@ jobs:
       matrix:
         # TODO: recover 3.8 and 3.9 when pytest-vcr is fixed
         # https://github.com/ktosiek/pytest-vcr/issues/53
-        # TODO: recover 3.12 when duckdb is fixed
-        # https://github.com/duckdb/duckdb/issues/9563
         # python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
