@@ -143,9 +143,9 @@ spec = [
   "pytest --cov frictionless --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300",
 ]
 test = [
-  "hatch run lint",
-  "hatch run type",
-  "hatch run spec",
+  "lint",
+  "type",
+  "spec",
 ]
 type = [
   "pyright frictionless",
@@ -162,9 +162,9 @@ spec = [
   "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 75 --timeout=300 --ci",
 ]
 test = [
-  "hatch run lint",
-  "hatch run type",
-  "hatch run ci:spec",
+  "lint",
+  "type",
+  "spec",
 ]
 
 [build-system]
