@@ -72,8 +72,8 @@ class table_merge(Step):
             if self.sort_by_field:
                 key = self.sort_by_field
                 resource.data = platform.petl.mergesort(  # type: ignore
-                    view1,
-                    view2,
+                    view1,  # type: ignore
+                    view2,  # type: ignore
                     key=key,
                     header=field_names,  # type: ignore
                 )

@@ -85,8 +85,8 @@ class Analyzer:
                     )
                     analysis_report["fieldStats"][field.name]["outliers"] = []
                     analysis_report["fieldStats"][field.name]["missingValues"] = (
-                        resource.stats.rows - len(rows_without_nan_values)
-                    )  # type: ignore
+                        resource.stats.rows - len(rows_without_nan_values)  # type: ignore
+                    )
 
                     # calculate correlation between variables(columns/fields)
                     for field_y in resource.schema.fields:
@@ -125,9 +125,9 @@ class Analyzer:
                                     "outliers"
                                 ].append(cell)
 
-        analysis_report["notNullRows"] = (
-            resource.stats.rows - analysis_report["rowsWithNullValues"]
-        )  # type: ignore
+        analysis_report["notNullRows"] = (  # type: ignore
+            resource.stats.rows - analysis_report["rowsWithNullValues"]  # type: ignore
+        )
         analysis_report["averageRecordSizeInBytes"] = 0
         if resource.stats.rows and resource.stats.bytes:
             analysis_report["averageRecordSizeInBytes"] = (
