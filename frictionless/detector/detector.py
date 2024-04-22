@@ -413,7 +413,8 @@ class Detector:
                 case_sensitive = options["header_case"]
 
                 mapped_fields = self.mapped_schema_fields_names(
-                    schema.fields, case_sensitive  # type: ignore
+                    schema.fields,  # type: ignore
+                    case_sensitive,
                 )
 
                 self.rearrange_schema_fields_given_labels(
@@ -442,13 +443,7 @@ class Detector:
     def mapped_schema_fields_names(
         fields: List[Field], case_sensitive: bool
     ) -> Dict[str, Field]:
-        """Create a dictionnary to map fields name with schema fields
-        considering case sensitivity
-
-        Args:
-            fields: list of original schema fields
-            case_sensitive: True if case sensitive, False else
-        """
+        """Create a dictionnary to map field names with schema fields"""
         if case_sensitive:
             return {field.name: field for field in fields}
         else:
@@ -461,7 +456,10 @@ class Detector:
         labels: List[str],
         case_sensitive: bool,
     ):
+        """Rearrange fields according to the order of labels. All fields
+        missing from labels are dropped"""
         schema.clear_fields()
+
         for name in labels:
             default_field = Field.from_descriptor({"name": name, "type": "any"})
             if case_sensitive:
