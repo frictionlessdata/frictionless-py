@@ -408,13 +408,13 @@ class TableResource(Resource):
         self, field: Field, field_info: Dict[str, Any]
     ):
         is_case_sensitive = self.dialect.header_case
-        if self.field_is_missing(
+        if self.label_is_missing(
             field.name, field_info["names"], self.labels, is_case_sensitive
         ):
             self.remove_field_from_field_info(field.name, field_info)
 
     @staticmethod
-    def field_is_missing(
+    def label_is_missing(
         field_name: str,
         expected_field_names: List[str],
         table_labels: types.ILabels,
@@ -439,7 +439,7 @@ class TableResource(Resource):
         del field_info["objects"][field_index]
         del field_info["mapping"][field_name]
 
-    def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any]:
+    def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
         """Create a tuple containg all cells related to primary_key"""
         return tuple(
             row[label]
@@ -451,7 +451,7 @@ class TableResource(Resource):
         row: Row,
         case_sensitive: bool,
     ) -> List[str]:
-        """Create a list of TabelResource labels which correspond to the
+        """Create a list of TableResource labels which correspond to the
         primary_key schema considering case-sensitivity
         """
         if case_sensitive:

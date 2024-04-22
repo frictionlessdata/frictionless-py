@@ -406,11 +406,14 @@ class Detector:
         # Sync schema
         if self.schema_sync:
             if labels:
+                case_sensitive = options["header_case"]
+
+                if case_sensitive:
+                    labels = [label.lower() for label in labels]
+
                 if len(labels) != len(set(labels)):
                     note = '"schema_sync" requires unique labels in the header'
                     raise FrictionlessException(note)
-
-                case_sensitive = options["header_case"]
 
                 mapped_fields = self.mapped_schema_fields_names(
                     schema.fields,  # type: ignore
@@ -418,7 +421,9 @@ class Detector:
                 )
 
                 self.rearrange_schema_fields_given_labels(
-                    mapped_fields, schema, labels, case_sensitive
+                    mapped_fields,
+                    schema,
+                    labels,
                 )
 
                 self.add_missing_required_labels_to_schema_fields(
@@ -454,7 +459,6 @@ class Detector:
         fields_mapping: Dict[str, Field],
         schema: Schema,
         labels: List[str],
-        case_sensitive: bool,
     ):
         """Rearrange fields according to the order of labels. All fields
         missing from labels are dropped"""
@@ -462,11 +466,7 @@ class Detector:
 
         for name in labels:
             default_field = Field.from_descriptor({"name": name, "type": "any"})
-            if case_sensitive:
-                index_name = name
-            else:
-                index_name = name.lower()
-            field = fields_mapping.get(index_name, default_field)
+            field = fields_mapping.get(name, default_field)
             schema.add_field(field)
 
     def add_missing_required_labels_to_schema_fields(
@@ -477,23 +477,14 @@ class Detector:
         case_sensitive: bool,
     ):
         """This method aims to add missing required labels and
-        primary key field not in labels to schema fields
+        primary key field not in labels to schema fields.
         """
-        for _, field in fields_mapping.items():
-            # For required fields or primary key that are missing #
-            if self.field_is_required(
-                field, schema, case_sensitive
-            ) and self.field_name_not_in_labels(field, labels, case_sensitive):
+        for name, field in fields_mapping.items():
+            if (
+                self.field_is_required(field, schema, case_sensitive)
+                and name not in labels
+            ):
                 schema.add_field(field)
-
-    @staticmethod
-    def field_name_not_in_labels(
-        field: Field, labels: List[str], case_sensitive: bool
-    ) -> bool:
-        if case_sensitive:
-            return field.name not in labels
-        else:
-            return field.name.lower() not in [label.lower() for label in labels]
 
     @staticmethod
     def field_is_required(
