@@ -1,5 +1,8 @@
 # frictionless-py
 
+Customizations for ontario_theme:
+- TBD
+
 [![Build](https://img.shields.io/github/actions/workflow/status/frictionlessdata/frictionless-py/general.yaml?branch=main)](https://github.com/frictionlessdata/frictionless-py/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)
 [![Release](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
