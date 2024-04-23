@@ -440,20 +440,16 @@ class TableResource(Resource):
         del field_info["mapping"][field_name]
 
     def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
-        """Create a tuple containg all cells related to primary_key"""
-        return tuple(
-            row[label]
-            for label in self.labels_related_to_primary_key(row, case_sensitive)
-        )
+        """Create a tuple containg all cells from a given row associated to primary
+        keys"""
+        return tuple(row[label] for label in self.primary_key_labels(row, case_sensitive))
 
-    def labels_related_to_primary_key(
+    def primary_key_labels(
         self,
         row: Row,
         case_sensitive: bool,
     ) -> List[str]:
-        """Create a list of TableResource labels which correspond to the
-        primary_key schema considering case-sensitivity
-        """
+        """Create a list of TableResource labels that are primary keys"""
         if case_sensitive:
             labels_primary_key = self.schema.primary_key
         else:
