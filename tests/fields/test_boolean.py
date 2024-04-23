@@ -66,7 +66,7 @@ def test_boolean_read_cell(format, source, target, options):
         (True, True, {"trueValues": ["yes"], "example": "yes"}),
         ("yes", True, {"trueValues": ["yes"], "example": "yes"}),
         ("true", None, {"trueValues": ["yes"], "example": "yes"}),
-        ("no", False, {"falseValues": ["no"], "example": "no"}),
+        (False, False, {"falseValues": ["no"], "example": "no"}),
         ("no", False, {"falseValues": ["no"], "example": "no"}),
         ("false", None, {"falseValues": ["no"], "example": "no"}),
     ],
@@ -93,7 +93,7 @@ def test_boolean_from_schema_descriptor_with_invalid_example_fix_issue_1610():
                 "name": "IsTrue",
                 "type": "boolean",
                 "falseValues": ["no"],
-                "example": "unvalid",
+                "example": "invalid",
             }
         ],
     }

@@ -260,9 +260,7 @@ class Field(Metadata):
         if example:
             type = descriptor.get("type")
             Class = system.select_field_class(type)
-            field = Class(
-                name=descriptor.get("name"), format=descriptor.get("format", "default")  # type: ignore
-            )
+            field = Class.from_descriptor(descriptor)
             if type == "boolean":
                 # 'example' value must be compared to customized 'trueValues' and 'falseValues'
                 if "trueValues" in descriptor.keys():
