@@ -3,8 +3,14 @@ from copy import deepcopy
 import pytest
 
 import frictionless
-from frictionless import Checklist, Detector, Dialect, FrictionlessException, Schema
-from frictionless import fields
+from frictionless import (
+    Checklist,
+    Detector,
+    Dialect,
+    FrictionlessException,
+    Schema,
+    fields,
+)
 from frictionless.resources import TableResource
 
 # General
