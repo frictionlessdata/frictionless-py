@@ -1,9 +1,3 @@
-from .control import MultipartControl
-from .loader import MultipartLoader
-from .plugin import MultipartPlugin
-
-__all__ = [
-    "MultipartControl",
-    "MultipartLoader",
-    "MultipartPlugin",
-]
+from .control import MultipartControl as MultipartControl
+from .loader import MultipartLoader as MultipartLoader
+from .plugin import MultipartPlugin as MultipartPlugin

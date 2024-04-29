@@ -1,9 +1,3 @@
-from .control import RemoteControl
-from .loader import RemoteLoader
-from .plugin import RemotePlugin
-
-__all__ = [
-    "RemoteControl",
-    "RemoteLoader",
-    "RemotePlugin",
-]
+from .control import RemoteControl as RemoteControl
+from .loader import RemoteLoader as RemoteLoader
+from .plugin import RemotePlugin as RemotePlugin
