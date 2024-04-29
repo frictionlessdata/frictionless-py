@@ -1,9 +1,3 @@
-from .control import StreamControl
-from .loader import StreamLoader
-from .plugin import StreamPlugin
-
-__all__ = [
-    "StreamControl",
-    "StreamLoader",
-    "StreamPlugin",
-]
+from .control import StreamControl as StreamControl
+from .loader import StreamLoader as StreamLoader
+from .plugin import StreamPlugin as StreamPlugin

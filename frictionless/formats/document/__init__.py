@@ -1,5 +1,1 @@
-from .plugin import DocumentPlugin
-
-__all__ = [
-    "DocumentPlugin",
-]
+from .plugin import DocumentPlugin as DocumentPlugin

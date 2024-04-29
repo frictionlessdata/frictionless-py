@@ -1,9 +1,3 @@
-from .control import ParquetControl
-from .parser import ParquetParser
-from .plugin import ParquetPlugin
-
-__all__ = [
-    "ParquetControl",
-    "ParquetParser",
-    "ParquetPlugin",
-]
+from .control import ParquetControl as ParquetControl
+from .parser import ParquetParser as ParquetParser
+from .plugin import ParquetPlugin as ParquetPlugin

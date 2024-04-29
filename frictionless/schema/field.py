@@ -261,7 +261,8 @@ class Field(Metadata):
             type = descriptor.get("type")
             Class = system.select_field_class(type)
             field = Class(
-                name=descriptor.get("name"), format=descriptor.get("format", "default")  # type: ignore
+                name=descriptor.get("name", "example"),
+                format=descriptor.get("format", "default"),  # type: ignore
             )
             _, notes = field.read_cell(example)
             if notes is not None:
