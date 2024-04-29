@@ -84,8 +84,7 @@ jobs:
       - name: Prepare variables
         run: cp .env.example .env
       - name: Test software
-        # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
-        run: LDFLAGS=`echo $(pg_config --ldflags)` hatch run +py=3.10 ci:test
+        run: hatch run +py=3.10 ci:test
 
   # Test (Windows)
 
