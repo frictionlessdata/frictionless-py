@@ -1,5 +1,1 @@
-from .mapper import JsonschemaMapper
-
-__all__ = [
-    "JsonschemaMapper",
-]
+from .mapper import JsonschemaMapper as JsonschemaMapper

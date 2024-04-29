@@ -1,5 +1,1 @@
-from .plugin import ImagePlugin
-
-__all__ = [
-    "ImagePlugin",
-]
+from .plugin import ImagePlugin as ImagePlugin

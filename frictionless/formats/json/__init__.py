@@ -1,10 +1,3 @@
-from .control import JsonControl
-from .parsers import JsonlParser, JsonParser
-from .plugin import JsonPlugin
-
-__all__ = [
-    "JsonControl",
-    "JsonParser",
-    "JsonPlugin",
-    "JsonlParser",
-]
+from .control import JsonControl as JsonControl
+from .parsers import *
+from .plugin import JsonPlugin as JsonPlugin
