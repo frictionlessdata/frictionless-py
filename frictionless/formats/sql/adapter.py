@@ -3,11 +3,10 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, Optional
 
-from ... import models
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
-from ...system import Adapter
+from ...system import Adapter, PublishResult
 from . import settings
 from .control import SqlControl
 from .mapper import SqlMapper
@@ -111,7 +110,7 @@ class SqlAdapter(Adapter):
                 resource = package.get_table_resource(table.name)
                 with resource:
                     self.write_row_stream(resource.row_stream, table_name=table.name)
-        return models.PublishResult(
+        return PublishResult(
             url=self.engine.url.render_as_string(hide_password=True),
             context=dict(engine=self.engine),
         )

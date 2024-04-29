@@ -109,10 +109,10 @@ IValueWriter = Callable[[Any], Any]
 
 
 class ICellReader(Protocol):
-    def __call__(self, cell: Any) -> Tuple[Any, INotes]:
-        ...
+    def __call__(self, cell: Any) -> Tuple[Any, INotes]: ...
 
 
 class ICellWriter(Protocol):
-    def __call__(self, cell: Any, *, ignore_missing: bool = False) -> Tuple[Any, INotes]:
-        ...
+    def __call__(
+        self, cell: Any, *, ignore_missing: bool = False
+    ) -> Tuple[Any, INotes]: ...

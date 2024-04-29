@@ -30,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
@@ -45,11 +46,10 @@ dependencies = [
     "requests>=2.10",
     "humanize>=4.2",
     "tabulate>=0.8.10",
-    # TODO: remove the limit when https://github.com/python-jsonschema/jsonschema/issues/1119 is resolved
-    "jsonschema<4.18",
+    "jsonschema>=4.20",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
-    "typer[all]>=0.5",
+    "typer>=0.12",
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
@@ -62,8 +62,6 @@ dev = [
     "ruff",
     "httpx",
     "hatch",
-    "isort",
-    "black",
     "yattag",
     "neovim",
     "pytest",
@@ -78,7 +76,7 @@ dev = [
     "requests-mock",
     "pytest-dotenv",
     "pytest-timeout",
-    "pytest-lazy-fixture",
+    "pytest-lazy-fixtures",
 ]
 aws = ["boto3>=1.9"]
 bigquery = ["google-api-python-client>=1.12.1"]
@@ -118,23 +116,39 @@ dependencies = [
 coverage = [
   "sensible-browser coverage/index.html",
 ]
+image = [
+  "docker build --rm -t frictionless-dev .",
+]
 docs = [
   "livemark build",
 ]
 format = [
-  "ruff frictionless tests --fix",
-  "isort frictionless tests",
-  "black frictionless tests",
+  "ruff check --fix",
+  "ruff format frictionless",
 ]
 lint = [
-  "ruff frictionless tests",
-  "isort frictionless tests --check",
-  "black frictionless tests --check",
-  "pyright frictionless tests",
+  "ruff check frictionless",
+]
+release = [
+  """
+  VERSION=$(hatch run version)
+  git checkout main && git pull origin && git fetch -p
+  git log --pretty=format:"%C(yellow)%h%Creset %s%Cgreen%d" --reverse -20
+  echo "\nReleasing v$VERSION in 10 seconds. Press <CTRL+C> to abort\n" && sleep 10
+  hatch run test && git commit -a -m "v$VERSION" && git tag -a "v$VERSION" -m "v$VERSION"
+  git push --follow-tags
+  """
+]
+spec = [
+  "pytest --cov frictionless --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300",
 ]
 test = [
-  "hatch run lint",
-  "pytest --cov frictionless --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300",
+  "lint",
+  "type",
+  "spec",
+]
+type = [
+  "pyright frictionless",
 ]
 write = [
   "livemark serve",
@@ -144,34 +158,34 @@ write = [
 python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.ci.scripts]
-test = [
-  "hatch run lint",
+spec = [
   "pytest --cov frictionless --cov-report term-missing --cov-report xml --cov-fail-under 75 --timeout=300 --ci",
+]
+test = [
+  "lint",
+  "type",
+  "spec",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.black]
-line-length = 90
-
-[tool.isort]
-profile = "black"
-multi_line_output = 9
-
 [tool.ruff]
 line-length = 90
-ignore = ["E501", "E731", "F405"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+ignore = ["E501", "E731", "F405"]
+extend-select = ["I"]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F403"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["frictionless"]
 env_files = [".env"]
 markers = [
-    "ci: integrational tests (select with '--ci')",
+    "ci: integration tests (select with '--ci')",
 ]
 filterwarnings = [
     "ignore::DeprecationWarning:boto.*",
@@ -183,6 +197,6 @@ filterwarnings = [
 
 [tool.pyright]
 strict = ["frictionless"]
-include = ["frictionless", "tests"]
+include = ["frictionless"]
 exclude = ["frictionless/vendors"]
-ignore = ["**/__init__.py"]
+ignore = ["**/__spec__/**", "**/__init__.py", "**/conftest.py"]
