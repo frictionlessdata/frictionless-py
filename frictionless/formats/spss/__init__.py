@@ -1,9 +1,3 @@
-from .control import SpssControl
-from .parser import SpssParser
-from .plugin import SpssPlugin
-
-__all__ = [
-    "SpssControl",
-    "SpssParser",
-    "SpssPlugin",
-]
+from .control import SpssControl as SpssControl
+from .parser import SpssParser as SpssParser
+from .plugin import SpssPlugin as SpssPlugin

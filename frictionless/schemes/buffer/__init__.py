@@ -1,9 +1,3 @@
-from .control import BufferControl
-from .loader import BufferLoader
-from .plugin import BufferPlugin
-
-__all__ = [
-    "BufferControl",
-    "BufferLoader",
-    "BufferPlugin",
-]
+from .control import BufferControl as BufferControl
+from .loader import BufferLoader as BufferLoader
+from .plugin import BufferPlugin as BufferPlugin

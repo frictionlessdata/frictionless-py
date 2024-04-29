@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
 import attrs
 from typing_extensions import Self
 
-from .. import errors, fields, helpers, models, settings
+from .. import errors, fields, helpers, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from ..indexer import IOnProgress, IOnRow
     from ..pipeline import Pipeline
     from ..resources import TableResource
+    from ..system import PublishResult
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -293,7 +294,7 @@ class Package(Metadata, metaclass=Factory):
 
     def publish(
         self, target: Any = None, *, control: Optional[Control] = None
-    ) -> models.PublishResult:
+    ) -> PublishResult:
         """Publish package to any supported data portal
 
         Parameters:

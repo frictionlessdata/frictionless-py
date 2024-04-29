@@ -1,9 +1,3 @@
-from .control import LocalControl
-from .loader import LocalLoader
-from .plugin import LocalPlugin
-
-__all__ = [
-    "LocalControl",
-    "LocalLoader",
-    "LocalPlugin",
-]
+from .control import LocalControl as LocalControl
+from .loader import LocalLoader as LocalLoader
+from .plugin import LocalPlugin as LocalPlugin

@@ -1,5 +1,1 @@
-from .plugin import TextPlugin
-
-__all__ = [
-    "TextPlugin",
-]
+from .plugin import TextPlugin as TextPlugin

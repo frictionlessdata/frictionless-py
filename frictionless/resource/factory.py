@@ -54,7 +54,9 @@ class Factory(type, Generic[T]):
         # Descriptor
         if source is not None:
             options.pop("format", None)
-            resource = cls.from_descriptor(source, control=control, basepath=basepath, **options)  # type: ignore
+            resource = cls.from_descriptor(  # type: ignore
+                source, control=control, basepath=basepath, **options
+            )
             return cast(T, resource)
 
         # Control
