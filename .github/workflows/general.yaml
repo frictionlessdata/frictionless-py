@@ -40,7 +40,7 @@ jobs:
       - name: Test software
         run: hatch run +py=${{ matrix.py || matrix.python-version }} ci:test
       - name: Report coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
     services:
       postgres:
         image: postgres:12
@@ -156,6 +156,6 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_KEY }}
       - name: Release to GitHub
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
