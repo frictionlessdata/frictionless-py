@@ -129,7 +129,7 @@ jobs:
       - name: Install and build site
         run: |
           echo '!**/*.html' >> .gitignore
-          make docs
+          hatch run docs-build
       - name: Publush to Github Pages
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

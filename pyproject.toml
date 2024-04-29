@@ -116,11 +116,14 @@ dependencies = [
 coverage = [
   "sensible-browser coverage/index.html",
 ]
+docs = [
+  "livemark serve",
+]
+docs-build = [
+  "livemark build",
+]
 image = [
   "docker build --rm -t frictionless-dev .",
-]
-docs = [
-  "livemark build",
 ]
 format = [
   "ruff check --fix",
@@ -150,9 +153,10 @@ test = [
 type = [
   "pyright frictionless",
 ]
-write = [
-  "livemark serve",
+version = [
+  "hatch --no-color version"
 ]
+
 
 [[tool.hatch.envs.ci.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
