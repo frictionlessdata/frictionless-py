@@ -31,7 +31,10 @@ def test_xlsx_parser_table():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info >= (3, 12), reason="Fix for Python3.12+")
+@pytest.mark.skipif(
+    sys.version_info >= (3, 12),
+    reason="Fix for Python3.12+ (possible bug to investigate)",
+)
 def test_xlsx_parser_remote():
     path = BASEURL % "data/table.xlsx"
     with TableResource(path=path) as resource:
@@ -174,7 +177,10 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info >= (3, 12), reason="Fix for Python3.12+")
+@pytest.mark.skipif(
+    sys.version_info >= (3, 12),
+    reason="Fix for Python3.12+ (possible bug to investigate)",
+)
 def test_xlsx_parser_workbook_cache():
     path = BASEURL % "data/sheets.xlsx"
     for sheet in ["Sheet1", "Sheet2", "Sheet3"]:
@@ -210,7 +216,10 @@ def test_xlsx_parser_merged_cells_fill_boolean():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info >= (3, 12), reason="Fix for Python3.12+")
+@pytest.mark.skipif(
+    sys.version_info >= (3, 12),
+    reason="Fix for Python3.12+ (possible bug to investigate)",
+)
 def test_xlsx_parser_fix_for_2007_xls():
     path = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
     with TableResource(path=path, format="xlsx") as resource:
