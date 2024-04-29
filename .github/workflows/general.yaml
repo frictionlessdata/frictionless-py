@@ -71,7 +71,10 @@ jobs:
 
   test-macos:
     if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
-    runs-on: macos-latest
+    # TODO: migrate to macos-latest after figuring out how to
+    # make `posgres/pg_config` works in the environment. Currently, it fails
+    # with the following error: "pg_config" not found"
+    runs-on: macos-13
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -84,7 +87,8 @@ jobs:
       - name: Prepare variables
         run: cp .env.example .env
       - name: Test software
-        run: hatch run +py=3.10 ci:test
+        # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
+        run: LDFLAGS=`echo $(pg_config --ldflags)` hatch run +py=3.10 ci:test
 
   # Test (Windows)
 
