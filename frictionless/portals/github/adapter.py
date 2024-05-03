@@ -3,13 +3,12 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Any, Dict, List, Union
 
-from ... import models
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
-from ...system import Adapter
+from ...system import Adapter, PublishResult
 from .control import GithubControl
 
 if TYPE_CHECKING:
@@ -134,7 +133,7 @@ class GithubAdapter(Adapter):
                 note = "Github API error:" + repr(exception)
                 raise FrictionlessException(note)
 
-        return models.PublishResult(url=url, context=dict(repository=repository))
+        return PublishResult(url=url, context=dict(repository=repository))
 
     # Experimental
 

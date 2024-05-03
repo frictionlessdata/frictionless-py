@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from .. import models
+from . import models
 
 if TYPE_CHECKING:
     from ..catalog import Catalog

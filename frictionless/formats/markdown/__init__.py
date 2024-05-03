@@ -1,7 +1,2 @@
-from .mapper import MarkdownMapper
-from .plugin import MarkdownPlugin
-
-__all__ = [
-    "MarkdownMapper",
-    "MarkdownPlugin",
-]
+from .mapper import MarkdownMapper as MarkdownMapper
+from .plugin import MarkdownPlugin as MarkdownPlugin

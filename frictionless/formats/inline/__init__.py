@@ -1,9 +1,3 @@
-from .control import InlineControl
-from .parser import InlineParser
-from .plugin import InlinePlugin
-
-__all__ = [
-    "InlineControl",
-    "InlineParser",
-    "InlinePlugin",
-]
+from .control import InlineControl as InlineControl
+from .parser import InlineParser as InlineParser
+from .plugin import InlinePlugin as InlinePlugin

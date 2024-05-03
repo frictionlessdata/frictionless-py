@@ -1,5 +1,1 @@
-from .plugin import PythonPlugin
-
-__all__ = [
-    "PythonPlugin",
-]
+from .plugin import PythonPlugin as PythonPlugin

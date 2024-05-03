@@ -4,13 +4,13 @@ from pathlib import PurePosixPath
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
-from ... import helpers, models
+from ... import helpers
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
-from ...system import Adapter, system
+from ...system import Adapter, PublishResult, system
 from .control import CkanControl
 
 
@@ -141,7 +141,7 @@ class CkanAdapter(Adapter):
                         )
                     },
                 )
-                return models.PublishResult(
+                return PublishResult(
                     url=urljoin(
                         self.control.baseurl or "",
                         str(PurePosixPath("dataset").joinpath(dataset_name)),

@@ -1,5 +1,1 @@
-from .mapper import ErdMapper
-
-__all__ = [
-    "ErdMapper",
-]
+from .mapper import ErdMapper as ErdMapper

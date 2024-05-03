@@ -6,13 +6,12 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
-from ... import models
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
 from ...package import Package
 from ...platform import platform
 from ...resource import Resource
-from ...system import Adapter
+from ...system import Adapter, PublishResult
 from .control import ZenodoControl
 from .models import ZenodoCreator, ZenodoMetadata
 
@@ -136,7 +135,7 @@ class ZenodoAdapter(Adapter):
                     )
 
             # Return result
-            return models.PublishResult(
+            return PublishResult(
                 url=f"https://zenodo.org/deposit/{deposition_id}",
                 context=dict(deposition_id=deposition_id),
             )
