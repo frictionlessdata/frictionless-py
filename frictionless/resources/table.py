@@ -5,6 +5,8 @@ import os
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
+from frictionless.schema.field import Field
+
 from .. import errors, helpers, settings
 from ..analyzer import Analyzer
 from ..dialect import Dialect
@@ -204,6 +206,7 @@ class TableResource(Resource):
             labels=self.labels,
             schema=self.schema,
             field_candidates=system.detect_field_candidates(),
+            header_case=self.dialect.header_case,
         )
         self.stats.fields = len(self.schema.fields)
 
@@ -331,15 +334,21 @@ class TableResource(Resource):
 
                 # Primary Key Error
                 if is_integrity and self.schema.primary_key:
-                    cells = tuple(row[name] for name in self.schema.primary_key)
-                    if set(cells) == {None}:
-                        note = 'cells composing the primary keys are all "None"'
-                        error = errors.PrimaryKeyError.from_row(row, note=note)
-                        row.errors.append(error)
+                    try:
+                        cells = self.primary_key_cells(row, self.dialect.header_case)
+                    except KeyError:
+                        # Row does not have primary_key as label
+                        # There should already be a missing-label error in
+                        # in self.header corresponding to the schema primary key
+                        assert not self.header.valid
                     else:
-                        match = memory_primary.get(cells)
-                        memory_primary[cells] = row.row_number
-                        if match:
+                        if set(cells) == {None}:
+                            note = 'cells composing the primary keys are all "None"'
+                            error = errors.PrimaryKeyError.from_row(row, note=note)
+                            row.errors.append(error)
+                        else:
+                            match = memory_primary.get(cells)
+                            memory_primary[cells] = row.row_number
                             if match:
                                 note = "the same as in the row at position %s" % match
                                 error = errors.PrimaryKeyError.from_row(row, note=note)
@@ -386,20 +395,71 @@ class TableResource(Resource):
                 # Yield row
                 yield row
 
-        # NB: missing required labels are not included in the
-        # field_info parameter used for row creation
         if self.detector.schema_sync:
+            # Missing required labels are not included in the
+            # field_info parameter used for row creation
             for field in self.schema.fields:
-                if field.name not in self.labels and field.name in field_info["names"]:
-                    field_index = field_info["names"].index(field.name)
-                    del field_info["names"][field_index]
-                    del field_info["objects"][field_index]
-                    del field_info["mapping"][field.name]
-        # # Create row stream
+                self.remove_missing_required_label_from_field_info(field, field_info)
+
+        # Create row stream
         self.__row_stream = row_stream()
 
-    # Read
+    def remove_missing_required_label_from_field_info(
+        self, field: Field, field_info: Dict[str, Any]
+    ):
+        is_case_sensitive = self.dialect.header_case
+        if self.label_is_missing(
+            field.name, field_info["names"], self.labels, is_case_sensitive
+        ):
+            self.remove_field_from_field_info(field.name, field_info)
 
+    @staticmethod
+    def label_is_missing(
+        field_name: str,
+        expected_field_names: List[str],
+        table_labels: types.ILabels,
+        case_sensitive: bool,
+    ) -> bool:
+        """Check if a schema field name is missing from the TableResource
+        labels.
+        """
+        if not case_sensitive:
+            field_name = field_name.lower()
+            table_labels = [label.lower() for label in table_labels]
+            expected_field_names = [
+                field_name.lower() for field_name in expected_field_names
+            ]
+
+        return field_name not in table_labels and field_name in expected_field_names
+
+    @staticmethod
+    def remove_field_from_field_info(field_name: str, field_info: Dict[str, Any]):
+        field_index = field_info["names"].index(field_name)
+        del field_info["names"][field_index]
+        del field_info["objects"][field_index]
+        del field_info["mapping"][field_name]
+
+    def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
+        """Create a tuple containg all cells from a given row associated to primary
+        keys"""
+        return tuple(row[label] for label in self.primary_key_labels(row, case_sensitive))
+
+    def primary_key_labels(
+        self,
+        row: Row,
+        case_sensitive: bool,
+    ) -> List[str]:
+        """Create a list of TableResource labels that are primary keys"""
+        if case_sensitive:
+            labels_primary_key = self.schema.primary_key
+        else:
+            lower_primary_key = [pk.lower() for pk in self.schema.primary_key]
+            labels_primary_key = [
+                label for label in row.field_names if label.lower() in lower_primary_key
+            ]
+        return labels_primary_key
+
+    # Read
     def read_cells(self, *, size: Optional[int] = None) -> List[List[Any]]:
         """Read lists into memory
 

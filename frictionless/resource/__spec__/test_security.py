@@ -27,9 +27,11 @@ def test_resource_source_path_error_bad_path_not_safe_traversing():
         Resource(
             {
                 "name": "name",
-                "path": "data/../data/table.csv"
-                if not platform.type == "windows"
-                else "data\\..\\table.csv",
+                "path": (
+                    "data/../data/table.csv"
+                    if not platform.type == "windows"
+                    else "data\\..\\table.csv"
+                ),
             }
         )
     error = excinfo.value.error
