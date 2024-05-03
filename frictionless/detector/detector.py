@@ -408,7 +408,7 @@ class Detector:
             if labels:
                 case_sensitive = options["header_case"]
 
-                if case_sensitive:
+                if not case_sensitive:
                     labels = [label.lower() for label in labels]
 
                 if len(labels) != len(set(labels)):
