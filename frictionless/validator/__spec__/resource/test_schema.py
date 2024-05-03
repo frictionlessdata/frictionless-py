@@ -317,7 +317,7 @@ def test_resource_validate_less_actual_fields_with_required_constraint_issue_950
 
 
 def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_1611():
-    schema_descriptor_1 = {
+    schema_A_required = {
         "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
         "fields": [
             {
@@ -331,20 +331,20 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
         ],
     }
 
-    schema_descriptor_2 = deepcopy(schema_descriptor_1)
+    schema_AC_required = deepcopy(schema_A_required)
     # Add required constraint on "C" field
-    schema_descriptor_2["fields"][2]["constraints"] = {"required": True}
+    schema_AC_required["fields"][2]["constraints"] = {"required": True}
 
     test_cases = [
         {
-            "schema": schema_descriptor_1,
+            "schema": schema_A_required,
             "source": [["B", "C"], ["b", "c"]],
             "expected_flattened_report": [
                 [None, 3, "A", "missing-label"],
             ],
         },
         {
-            "schema": schema_descriptor_2,
+            "schema": schema_AC_required,
             "source": [["B"], ["b"]],
             "expected_flattened_report": [
                 [None, 2, "A", "missing-label"],
@@ -352,7 +352,7 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
             ],
         },
         {
-            "schema": schema_descriptor_2,
+            "schema": schema_AC_required,
             "source": [
                 ["A", "B"],
                 ["a", "b"],
@@ -369,12 +369,15 @@ def test_resource_with_missing_required_header_with_schema_sync_is_true_issue_16
             ],
         },
     ]
+
     for tc in test_cases:
         schema = Schema.from_descriptor(tc["schema"])
         resource = TableResource(
             tc["source"], schema=schema, detector=Detector(schema_sync=True)
         )
+
         report = frictionless.validate(resource)
+
         assert (
             report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])
             == tc["expected_flattened_report"]
