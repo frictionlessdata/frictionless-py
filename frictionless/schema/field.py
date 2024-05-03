@@ -3,7 +3,8 @@ from __future__ import annotations
 import decimal
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, List,
+                    Optional, Pattern)
 
 import attrs
 
@@ -50,7 +51,9 @@ class Field(Metadata):
     For example: "default","array" etc.
     """
 
-    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
+    missing_values: List[str] = attrs.field(
+        factory=settings.DEFAULT_MISSING_VALUES.copy
+    )
     """
     List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
@@ -260,10 +263,12 @@ class Field(Metadata):
         if example:
             type = descriptor.get("type")
             Class = system.select_field_class(type)
+
             field = Class(
-                name=descriptor.get("name", "example"),
-                format=descriptor.get("format", "default"),  # type: ignore
+                name=descriptor.get("name"),  # type: ignore
+                format=descriptor.get("format", "default"),
             )
+
             if type == "boolean":
                 # 'example' value must be compared to customized 'trueValues' and 'falseValues'
                 if "trueValues" in descriptor.keys():
@@ -272,7 +277,9 @@ class Field(Metadata):
                     field.false_values = descriptor["falseValues"]
             _, notes = field.read_cell(example)
             if notes is not None:
-                note = f'example value "{example}" for field "{field.name}" is not valid'
+                note = (
+                    f'example value "{example}" for field "{field.name}" is not valid'
+                )
                 yield errors.FieldError(note=note)
 
         # Misleading
