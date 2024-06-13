@@ -61,5 +61,6 @@ class ExcelControl(Control):
             "fillMergedCells": {"type": "boolean"},
             "preserveFormatting": {"type": "boolean"},
             "adjustFloatingPointError": {"type": "boolean"},
+            "stringified": {"type": "boolean"},
         },
     }
