@@ -50,6 +50,7 @@ class Validator:
                 report = resource.validate(
                     limit_errors=limit_errors,
                     limit_rows=limit_rows,
+                    checklist=checklist
                 )
                 reports.append(report)
 
