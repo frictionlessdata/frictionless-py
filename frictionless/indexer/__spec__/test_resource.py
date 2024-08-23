@@ -1,20 +1,20 @@
 import pytest
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazy_fixtures import lf
 
 from frictionless import formats, platform
 from frictionless.resources import TableResource
 
 control = formats.sql.SqlControl(table="table")
 fast_database_urls = [
-    lazy_fixture("sqlite_url"),
-    lazy_fixture("postgresql_url"),
+    lf("sqlite_url"),
+    lf("postgresql_url"),
 ]
 database_urls = fast_database_urls + [
-    lazy_fixture("mysql_url"),
+    lf("mysql_url"),
 ]
 if platform.type != "windows":
     database_urls += [
-        lazy_fixture("duckdb_url"),
+        lf("duckdb_url"),
     ]
 pytestmark = pytest.mark.skipif(
     platform.type == "darwin" or platform.type == "windows",
