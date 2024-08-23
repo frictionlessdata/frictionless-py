@@ -1,8 +1,8 @@
 import pytest
+from pytest_lazyfixture import lazy_fixture
 
 from frictionless import formats, platform
 from frictionless.resources import TableResource
-from pytest_lazyfixture import lazy_fixture
 
 control = formats.sql.SqlControl(table="table")
 fast_database_urls = [
