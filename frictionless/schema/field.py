@@ -3,8 +3,7 @@ from __future__ import annotations
 import decimal
 import re
 from functools import partial
-from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Dict, List,
-                    Optional, Pattern)
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
 
 import attrs
 
