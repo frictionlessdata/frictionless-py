@@ -2,6 +2,14 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.17.1
+
+- fix: deprecated dependencies ([PR 1674](https://github.com/frictionlessdata/frictionless-py/pull/1674))
+- fix: unexpected "missing-label" error with option `header_case = False` ([#1635](https://github.com/frictionlessdata/frictionless-py/issues/1635))
+- fix: KeyError when a "primaryKey" is missing ([#1633](https://github.com/frictionlessdata/frictionless-py/issues/1633))
+- fix: unexpected field-error for a boolean "example" with "trueValues" or 
+  "falseValues" properties ([#1610](https://github.com/frictionlessdata/frictionless-py/issues/1610))
+
 ## v5.15
 
 - Local development has been migrated to using [Hatch](https://hatch.pypa.io/latest/)
