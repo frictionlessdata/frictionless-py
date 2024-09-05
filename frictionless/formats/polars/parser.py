@@ -104,7 +104,7 @@ class PolarsParser(Parser):
                 for field in source.schema.fields:
                     value = row[field.name]
                     if isinstance(value, dict):
-                        value = str(value)
+                        value = str(value)  # type: ignore
                     if isinstance(value, decimal.Decimal):
                         value = float(value)
                     if isinstance(value, datetime.datetime) and value.tzinfo:
