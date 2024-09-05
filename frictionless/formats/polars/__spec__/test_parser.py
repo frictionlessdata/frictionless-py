@@ -5,6 +5,7 @@ import isodate
 import polars as pl
 import pytz
 from dateutil.tz import tzoffset, tzutc
+
 from frictionless import Package
 from frictionless.resources import TableResource
 

@@ -9,8 +9,8 @@ from .jsonschema import *
 from .markdown import *
 from .ods import *
 from .pandas import *
-from .polars import *
 from .parquet import *
+from .polars import *
 from .qsv import *
 from .spss import *
 from .sql import *
