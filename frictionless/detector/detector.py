@@ -298,6 +298,7 @@ class Detector:
         labels: Optional[List[str]] = None,
         schema: Optional[Schema] = None,
         field_candidates: List[Dict[str, Any]] = settings.DEFAULT_FIELD_CANDIDATES,
+        **options: Any,
     ) -> Schema:
         """Detect schema from fragment
 
@@ -405,20 +406,29 @@ class Detector:
         # Sync schema
         if self.schema_sync:
             if labels:
+                case_sensitive = options["header_case"]
+
+                if not case_sensitive:
+                    labels = [label.lower() for label in labels]
+
                 if len(labels) != len(set(labels)):
                     note = '"schema_sync" requires unique labels in the header'
                     raise FrictionlessException(note)
-                mapping = {field.name: field for field in schema.fields}  # type: ignore
-                schema.clear_fields()
-                for name in labels:
-                    field = mapping.get(name)
-                    if not field:
-                        field = Field.from_descriptor({"name": name, "type": "any"})
-                    schema.add_field(field)
-                # For required fields that are missing
-                for _, field in mapping.items():
-                    if field and field.required and field.name not in labels:
-                        schema.add_field(field)
+
+                mapped_fields = self.mapped_schema_fields_names(
+                    schema.fields,  # type: ignore
+                    case_sensitive,
+                )
+
+                self.rearrange_schema_fields_given_labels(
+                    mapped_fields,
+                    schema,
+                    labels,
+                )
+
+                self.add_missing_required_labels_to_schema_fields(
+                    mapped_fields, schema, labels, case_sensitive
+                )
 
         # Patch schema
         if self.schema_patch:
@@ -432,4 +442,58 @@ class Detector:
                 field_descriptor.update(field_patch)
             schema = Schema.from_descriptor(descriptor)
 
-        return schema  # type: ignore
+        return schema
+
+    @staticmethod
+    def mapped_schema_fields_names(
+        fields: List[Field], case_sensitive: bool
+    ) -> Dict[str, Field]:
+        """Create a dictionnary to map field names with schema fields"""
+        if case_sensitive:
+            return {field.name: field for field in fields}
+        else:
+            return {field.name.lower(): field for field in fields}
+
+    @staticmethod
+    def rearrange_schema_fields_given_labels(
+        fields_mapping: Dict[str, Field],
+        schema: Schema,
+        labels: List[str],
+    ):
+        """Rearrange fields according to the order of labels. All fields
+        missing from labels are dropped"""
+        schema.clear_fields()
+
+        for name in labels:
+            default_field = Field.from_descriptor({"name": name, "type": "any"})
+            field = fields_mapping.get(name, default_field)
+            schema.add_field(field)
+
+    def add_missing_required_labels_to_schema_fields(
+        self,
+        fields_mapping: Dict[str, Field],
+        schema: Schema,
+        labels: List[str],
+        case_sensitive: bool,
+    ):
+        """This method aims to add missing required labels and
+        primary key field not in labels to schema fields.
+        """
+        for name, field in fields_mapping.items():
+            if (
+                self.field_is_required(field, schema, case_sensitive)
+                and name not in labels
+            ):
+                schema.add_field(field)
+
+    @staticmethod
+    def field_is_required(
+        field: Field,
+        schema: Schema,
+        case_sensitive: bool,
+    ) -> bool:
+        if case_sensitive:
+            return field.required or field.name in schema.primary_key
+        else:
+            lower_primary_key = [pk.lower() for pk in schema.primary_key]
+            return field.required or field.name.lower() in lower_primary_key
