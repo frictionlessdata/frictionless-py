@@ -109,7 +109,7 @@ path = "frictionless/settings.py"
 [tool.hatch.envs.default]
 python = "3.10"
 dependencies = [
-  "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
+  "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,polars,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
 ]
 
 [tool.hatch.envs.default.scripts]
