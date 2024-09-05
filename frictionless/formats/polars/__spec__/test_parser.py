@@ -58,7 +58,7 @@ def test_polars_parser_from_dataframe_with_datetime():
 # Write
 
 
-def test_pandas_parser_write():
+def test_polars_parser_write():
     source = TableResource(path="data/table.csv")
     target = source.write(format="polars")
     assert target.data.to_dicts() == [  # type: ignore
@@ -81,13 +81,13 @@ def test_polars_parser_nan_in_integer_resource_column():
     assert df.dtypes == [pl.Int64, pl.Float64, pl.String]  # type: ignore
 
 
-def test_pandas_parser_nan_in_integer_csv_column():
+def test_polars_parser_nan_in_integer_csv_column():
     res = TableResource(path="data/issue-1109.csv")
     df = res.to_polars()
     assert df.dtypes == [pl.Int64, pl.Float64, pl.String]  # type: ignore
 
 
-def test_pandas_parser_write_types():
+def test_polars_parser_write_types():
     source = Package("data/storage/types.json").get_table_resource("types")
     target = source.write(format="polars")
     with target:
@@ -136,9 +136,9 @@ def test_pandas_parser_write_types():
         ]
 
 
-def test_pandas_write_constraints():
+def test_polars_write_constraints():
     source = Package("data/storage/constraints.json").get_table_resource("constraints")
-    target = source.write(format="pandas")
+    target = source.write(format="polars")
     with target:
         # Assert schema
         assert target.schema.to_descriptor() == {
@@ -167,9 +167,9 @@ def test_pandas_write_constraints():
         ]
 
 
-def test_pandas_parser_write_timezone():
+def test_polars_parser_write_timezone():
     source = TableResource(path="data/timezone.csv")
-    target = source.write(format="pandas")
+    target = source.write(format="polars")
     with target:
         # Assert schema
         assert target.schema.to_descriptor() == {
