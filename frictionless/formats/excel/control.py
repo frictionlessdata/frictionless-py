@@ -51,6 +51,12 @@ class ExcelControl(Control):
     """
     Stringifies all the cell values. Default value
     is False.
+
+    Note that a table resource schema will still be applied and types coerced to match the schema
+    (either provided or inferred) _after_ the rows are read as strings.
+
+    To return all cells as strings then both set `stringified=True` and specify a 
+    schema that defines all fields to be of type string (see #1659).
     """
 
     # Metadata
@@ -61,5 +67,6 @@ class ExcelControl(Control):
             "fillMergedCells": {"type": "boolean"},
             "preserveFormatting": {"type": "boolean"},
             "adjustFloatingPointError": {"type": "boolean"},
+            "stringified": {"type": "boolean"},
         },
     }
