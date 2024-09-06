@@ -65,7 +65,7 @@ class PolarsParser(Parser):
         return schema
 
     def __read_convert_type(self, _: Any, sample: Optional[types.ISample] = None):
-
+        pl = platform.polars
         # Python types
         if sample is not None:
             if isinstance(sample, bool):  # type: ignore
@@ -74,7 +74,7 @@ class PolarsParser(Parser):
                 return "integer"
             elif isinstance(sample, float):  # type: ignore
                 return "number"
-            if isinstance(sample, (list, tuple)):  # type: ignore
+            if isinstance(sample, (list, tuple, pl.Series)):  # type: ignore
                 return "array"
             elif isinstance(sample, datetime.datetime):
                 return "datetime"
