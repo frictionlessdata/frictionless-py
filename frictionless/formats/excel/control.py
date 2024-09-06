@@ -56,7 +56,7 @@ class ExcelControl(Control):
     (either provided or inferred) _after_ the rows are read as strings.
 
     To return all cells as strings then both set `stringified=True` and specify a 
-    schema that defines all fields to be of type string (see #1659)
+    schema that defines all fields to be of type string (see #1659).
     """
 
     # Metadata
