@@ -128,7 +128,7 @@ class PolarsParser(Parser):
                 columns.append(field.name)
 
         # Create/set dataframe
-        dataframe = pl.DataFrame(data_rows)
+        dataframe = pl.DataFrame(data_rows, orient="row")
         dataframe.columns = columns
 
         for field in source.schema.fields:
