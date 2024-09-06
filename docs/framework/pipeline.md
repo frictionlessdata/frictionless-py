@@ -5,7 +5,7 @@ script:
 
 # Pipeline Class
 
-Pipeline is a object containing a list of transformation steps.
+Pipeline is an object containing a list of transformation steps.
 
 ## Creating Pipeline
 
