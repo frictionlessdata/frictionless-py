@@ -2,6 +2,7 @@ from datetime import datetime, time
 from decimal import Decimal
 
 import isodate
+import numpy as np
 import pandas as pd
 import pytz
 from dateutil.tz import tzoffset, tzutc
@@ -43,6 +44,15 @@ def test_pandas_parser():
         with TableResource(data=dataframe) as resource:
             assert resource.header == tc["expected_header"], tc["name"]
             assert resource.read_rows() == tc["expected_rows"], tc["name"]
+
+
+def test_pandas_parser_with_nan():
+    dataframe = pd.DataFrame(data={"x": [np.nan]})
+
+    with TableResource(data=dataframe) as resource:
+        test_name = 'np.nan converted to Decimal("NaN")'
+        row = resource.read_rows()[0]
+        assert row["x"].is_nan(), test_name
 
 
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
