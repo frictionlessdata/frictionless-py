@@ -22,6 +22,16 @@ def test_pandas_parser():
             {"id": 2, "name": "中国人"},
         ]
 
+    dataframe = pd.DataFrame(data={"x": [1]})
+    with TableResource(data=dataframe) as resource:
+        assert resource.header == ["x"]
+        assert resource.read_rows() == [{"x": 1}]
+
+    dataframe = pd.DataFrame(data={"bool": [True]})
+    with TableResource(data=dataframe) as resource:
+        assert resource.header == ["bool"]
+        assert resource.read_rows() == [{"bool": True}]
+
 
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
     df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])  # type: ignore
