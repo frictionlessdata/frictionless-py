@@ -53,7 +53,7 @@ class PandasParser(Parser):
                     pk = pk if isinstance(pk, tuple) else [pk]  # type: ignore
                     value = pk[schema.primary_key.index(field.name)]  # type: ignore
                 else:
-                    value = item[field.name]
+                    value = item.to_dict()[field.name]
                 if value is np.nan:
                     value = None
                 elif isinstance(value, pd.Timestamp):
