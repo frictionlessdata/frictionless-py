@@ -173,7 +173,6 @@ def test_resource_from_descriptor_with_class_datatype():
 )
 def test_schema_resource_with_path_property(source):
     schema = Schema(source)
-    print(source)
     resource = Resource(schema.to_descriptor(), datatype="schema")
     assert resource.type == "json"
     assert resource.datatype == "schema"
