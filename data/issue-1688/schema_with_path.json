@@ -1,0 +1,10 @@
+{
+  "name": "schema",
+  "path": "abc",
+  "fields": [
+    {
+      "name": "id",
+      "type": "integer"
+    }
+  ]
+}
