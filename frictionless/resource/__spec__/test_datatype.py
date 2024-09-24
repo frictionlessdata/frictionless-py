@@ -165,15 +165,14 @@ def test_resource_from_descriptor_with_class_datatype():
     assert isinstance(resource, resources.TableResource)
 
 
-@pytest.mark.parametrize(
-    "source",
-    [
-        "data/issue-1688/schema_with_path.json",
-    ],
-)
 def test_schema_resource_with_path_property(source):
-    schema = Schema(source)
-    resource = Resource(schema.to_descriptor(), datatype="schema")
+    # Non regression test for issue #1688
+    schema_descriptor = {
+        "name": "schema",
+        "path": "abc",
+        "fields": [],
+    }
+    resource = Resource(schema_descriptor, datatype="schema")
     assert resource.type == "json"
     assert resource.datatype == "schema"
     assert isinstance(resource, SchemaResource)
