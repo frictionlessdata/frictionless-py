@@ -165,7 +165,7 @@ def test_resource_from_descriptor_with_class_datatype():
     assert isinstance(resource, resources.TableResource)
 
 
-def test_schema_resource_with_path_property(source):
+def test_schema_resource_with_path_property():
     # Non regression test for issue #1688
     schema_descriptor = {
         "name": "schema",
