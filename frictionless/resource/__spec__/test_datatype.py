@@ -1,6 +1,6 @@
 import pytest
 
-from frictionless import Resource, Schema, resources
+from frictionless import Resource, resources
 from frictionless.resources.json import SchemaResource
 
 # File
