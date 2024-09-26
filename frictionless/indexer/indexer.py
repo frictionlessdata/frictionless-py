@@ -28,6 +28,7 @@ class Indexer:
     qsv_path: Optional[str] = None
     use_fallback: bool = False
     with_metadata: bool = False
+    without_constraints: bool = False
     on_row: Optional[types.IOnRow] = None
     on_progress: Optional[types.IOnProgress] = None
     adapter: SqlAdapter = attrs.field(init=False)
@@ -72,6 +73,7 @@ class Indexer:
             table_name=self.table_name,
             force=True,
             with_metadata=self.with_metadata,
+            without_constraints=self.without_constraints,
         )
 
     def populate_table(self) -> Optional[Report]:
@@ -117,7 +119,7 @@ class Indexer:
 
     def populate_table_fast_postgresql(self):
         database_url = self.adapter.engine.url.render_as_string(hide_password=False)
-        with platform.psycopg.connect(database_url) as connection:
+        with platform.psycopg.connect(database_url) as connection:  # type: ignore
             with connection.cursor() as cursor:
                 query = 'COPY "%s" FROM STDIN CSV HEADER' % self.table_name
                 with cursor.copy(query) as copy:  # type: ignore
