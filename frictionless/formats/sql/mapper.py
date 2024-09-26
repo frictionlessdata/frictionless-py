@@ -178,9 +178,8 @@ class SqlMapper(Mapper):
         # Primary key
         if schema.primary_key:
             Class = sa.UniqueConstraint if with_metadata else sa.PrimaryKeyConstraint
-            if not with_metadata:
-                constraint = Class(*schema.primary_key)
-                constraints.append(constraint)
+            constraint = Class(*schema.primary_key)
+            constraints.append(constraint)
 
         # Foreign keys
         for fk in schema.foreign_keys:
