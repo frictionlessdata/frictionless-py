@@ -2,12 +2,17 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.18
+
+- Support `ignore_constraints` option for the `Indexer` (#1691)
+- Various bug fixes
+
 ## v5.17.1
 
 - fix: deprecated dependencies ([PR 1674](https://github.com/frictionlessdata/frictionless-py/pull/1674))
 - fix: unexpected "missing-label" error with option `header_case = False` ([#1635](https://github.com/frictionlessdata/frictionless-py/issues/1635))
 - fix: KeyError when a "primaryKey" is missing ([#1633](https://github.com/frictionlessdata/frictionless-py/issues/1633))
-- fix: unexpected field-error for a boolean "example" with "trueValues" or 
+- fix: unexpected field-error for a boolean "example" with "trueValues" or
   "falseValues" properties ([#1610](https://github.com/frictionlessdata/frictionless-py/issues/1610))
 
 ## v5.15
@@ -26,17 +31,17 @@ Here described only the breaking and most significant changes. The full changelo
 ## v5.10
 
 - Various architectural and standards-compatibility improvements (minor breaking changes):
-    - Added new Console commands:
-        - list
-        - explore
-        - query
-        - script
-        - convert
-        - publish
-    - Rebased Console commands on Rich (nice output in the Console)
-    - Fixed `extract` returning the results depends on the source type (now it's always a dictionary indexed by the resource name)
-    - Enforced type safety -- many tabular command will be marked as impossible for non-tabular resources if a type checker is used
-    - Improved `frictionless.Resource(source)` guessing abilities; if you just like to open a table resource use `frictionless.resources.TableResource(path=path)`
+  - Added new Console commands:
+    - list
+    - explore
+    - query
+    - script
+    - convert
+    - publish
+  - Rebased Console commands on Rich (nice output in the Console)
+  - Fixed `extract` returning the results depends on the source type (now it's always a dictionary indexed by the resource name)
+  - Enforced type safety -- many tabular command will be marked as impossible for non-tabular resources if a type checker is used
+  - Improved `frictionless.Resource(source)` guessing abilities; if you just like to open a table resource use `frictionless.resources.TableResource(path=path)`
 
 ## v5.8
 
@@ -45,14 +50,14 @@ Here described only the breaking and most significant changes. The full changelo
 ## v5.7
 
 - Various architectural and standards-compatibility improvements (minor breaking changes):
-    - Improved type detection mechanism (including remote descriptors)
-    - Added `resources` module including `File/Text/Json/TableResource`
-    - Deprecated `resource.type` argument -- use the classes above
-    - Changed `catalog.packages[]` to `catalog.datasets[].package`
-    - Made `resource.schema` optional (`resource.has_schema` is removed)
-    - Made `resource.normpath` optional (`resource.normdata` is removed)
-    - Standards-compatability improvements: profile, stats
-    - Renamed `system/plugin.select_Check/etc` to `system/plugin.select_check_class/etc`
+  - Improved type detection mechanism (including remote descriptors)
+  - Added `resources` module including `File/Text/Json/TableResource`
+  - Deprecated `resource.type` argument -- use the classes above
+  - Changed `catalog.packages[]` to `catalog.datasets[].package`
+  - Made `resource.schema` optional (`resource.has_schema` is removed)
+  - Made `resource.normpath` optional (`resource.normdata` is removed)
+  - Standards-compatability improvements: profile, stats
+  - Renamed `system/plugin.select_Check/etc` to `system/plugin.select_check_class/etc`
 
 ## v5.6
 
@@ -104,19 +109,19 @@ Here described only the breaking and most significant changes. The full changelo
 
 ## v4.39
 
-- Fixed processing of incompatible decimal char in table schema and data   (#1089)
+- Fixed processing of incompatible decimal char in table schema and data (#1089)
 - Added support for Time Zone data (#1097)
-- Improved validation messages by adding `summary` and partial validation details   (#1106)
-- Implemented new feature `summary`   (#1127)
-    - `schema.to_summary`
-    - `report.to_summary`
-    - Added CLI command `summary`
-- Fixed file compression `package.to_zip`   (#1104)
-- Implemented feature to validate single resource   (#1112)
-- Improved error message to notify about invalid fields   (#1117)
-- Fixed type conversion of NaN values for data of type Int64   (#1115)
-- Exposed valid/invalid flags in CLI `extract` command   (#1130)
-- Implemented feature `package.to_er_diagram`   (#1135)
+- Improved validation messages by adding `summary` and partial validation details (#1106)
+- Implemented new feature `summary` (#1127)
+  - `schema.to_summary`
+  - `report.to_summary`
+  - Added CLI command `summary`
+- Fixed file compression `package.to_zip` (#1104)
+- Implemented feature to validate single resource (#1112)
+- Improved error message to notify about invalid fields (#1117)
+- Fixed type conversion of NaN values for data of type Int64 (#1115)
+- Exposed valid/invalid flags in CLI `extract` command (#1130)
+- Implemented feature `package.to_er_diagram` (#1135)
 
 ## v4.38
 
@@ -167,15 +172,15 @@ Here described only the breaking and most significant changes. The full changelo
 
 ## v4.32
 
-- Added to_markdown() feature to metadata  (#1052)
+- Added to_markdown() feature to metadata (#1052)
 
 ## v4.31
 
-- Added a feature that allows to export table schema as excel  (#1040)
-- Added nontabular note to validation results to indicate nontabular file  (#1046)
-- Excel stats now shows bytes and hash  (#1045)
-- Added pprint feature which displays metadata in a readable and pretty way  (#1039)
-- Improved error message if resource.data is not a string  (#1036)
+- Added a feature that allows to export table schema as excel (#1040)
+- Added nontabular note to validation results to indicate nontabular file (#1046)
+- Excel stats now shows bytes and hash (#1045)
+- Added pprint feature which displays metadata in a readable and pretty way (#1039)
+- Improved error message if resource.data is not a string (#1036)
 
 ## v4.29
 
@@ -301,42 +306,42 @@ Here described only the breaking and most significant changes. The full changelo
 ## v4.0.0a15
 
 - Updated loaders (#658) (BREAKING)
-    - Renamed `filelike` loader to `stream` loader
-    - Migrated from `text` loader to `buffer` loader
+  - Renamed `filelike` loader to `stream` loader
+  - Migrated from `text` loader to `buffer` loader
 
 ## v4.0.0a14
 
 - Improve transform API (#657) (BREAKING)
-    - Swithed to the `transform_resource(resource)` signature
-    - Swithed to the `transform_package(package)` signature
+  - Swithed to the `transform_resource(resource)` signature
+  - Swithed to the `transform_package(package)` signature
 
 ## v4.0.0a13
 
 - Improved resource/package import/export (#655) (BREAKING)
-    - Reworked `parser.write_row_stream` API
-    - Reworked `resource.from/to` API
-    - Reworked `package.from/to` API
-    - Reworked `Storage` API
-    - Reworked `system.create_storage` API
-    - Merged `PandasStorage` into `PandasParser`
-    - Merged `SpssStorage` into `SpssParser`
+  - Reworked `parser.write_row_stream` API
+  - Reworked `resource.from/to` API
+  - Reworked `package.from/to` API
+  - Reworked `Storage` API
+  - Reworked `system.create_storage` API
+  - Merged `PandasStorage` into `PandasParser`
+  - Merged `SpssStorage` into `SpssParser`
 
 ## v4.0.0a12
 
 - Improved transformation steps (#650) (BREAKING)
-    - Split value/formula/function concepts
-    - Renamed a few minor step arguments
+  - Split value/formula/function concepts
+  - Renamed a few minor step arguments
 
 ## v4.0.0a11
 
 - Improved layout and data streams concepts (#648) (BREAKING)
-    - Renamed `data_stream` to `list_stream`
-    - Renamed `readData` to `readLists`
-    - Renamed `sample` to `fragment` (`sample` now is raw lists)
-    - Implemented loader.buffer
-    - Implemented parser.sample
-    - Added support for function based checks
-    - Added support for function based steps
+  - Renamed `data_stream` to `list_stream`
+  - Renamed `readData` to `readLists`
+  - Renamed `sample` to `fragment` (`sample` now is raw lists)
+  - Implemented loader.buffer
+  - Implemented parser.sample
+  - Added support for function based checks
+  - Added support for function based steps
 
 ## v4.0.0a10
 
@@ -346,85 +351,85 @@ Here described only the breaking and most significant changes. The full changelo
 ## v4.0.0a9
 
 - Rebased on `Detector` class (BREAKING)
-    - Migrated all infer_*, sync/patch_schema and detect_encoding parameters to `Detector`
-    - Made `resource.infer` omit empty objects
-    - Added `resource.read_*(size)` argument
-    - Added `resource.labels` property
+  - Migrated all infer\_\*, sync/patch_schema and detect_encoding parameters to `Detector`
+  - Made `resource.infer` omit empty objects
+  - Added `resource.read_*(size)` argument
+  - Added `resource.labels` property
 
 ## v4.0.0a8
 
 - Improved checks/steps API (#621) (BREAKING)
-    - Updated `validate(extra_checks=[...])` to `validate(checks=[{"code": 'code', ...}])`
+  - Updated `validate(extra_checks=[...])` to `validate(checks=[{"code": 'code', ...}])`
 
 ## v4.0.0a7
 
 - Updated describe/extract/transform/validate APIs (BREAKING)
-    - Removed `validate_table` (use `validate_resource`)
-    - Removed legacy `Table` and `File` classes
-    - Removed `dataflows` plugin
-    - Replaced `nopool` by `parallel` (not parallel by default)
-    - Renamed `report.tables` to `report.tasks`
-    - Rebased on `report.tasks[].resource` (instead of plain path/scheme/format/etc)
-    - Flatten Pipeline steps signature
+  - Removed `validate_table` (use `validate_resource`)
+  - Removed legacy `Table` and `File` classes
+  - Removed `dataflows` plugin
+  - Replaced `nopool` by `parallel` (not parallel by default)
+  - Renamed `report.tables` to `report.tasks`
+  - Rebased on `report.tasks[].resource` (instead of plain path/scheme/format/etc)
+  - Flatten Pipeline steps signature
 
 ## v4.0.0a6
 
 - Introduced Layout class (BREAKING)
-    - Renamed `Query` class and arguments/properties to `Layout`
-    - Moved `header` options from `Dialect` to `Layout`
+  - Renamed `Query` class and arguments/properties to `Layout`
+  - Moved `header` options from `Dialect` to `Layout`
 
 ## v4.0.0a5
 
 - Updated transform API
-    - Added `transform(type)` argument
+  - Added `transform(type)` argument
 
 ## v4.0.0a4
 
 - Updated describe API (BREAKING)
-    - Renamed `describe(source_type)` argument to `type`
+  - Renamed `describe(source_type)` argument to `type`
 
 ## v4.0.0a3
 
 - Updated extract API (BREAKING)
-    - Removed `extract_table` (use `extract_resource` with the same API)
-    - Renamed `extract(source_type)` argument to `type`
+  - Removed `extract_table` (use `extract_resource` with the same API)
+  - Renamed `extract(source_type)` argument to `type`
 
 ## v4.0.0a1
 
 - Initial API/codebase improvements for v4 (BREAKING)
-    - Allow `Package/Resource(source)` notation (guess descriptor/path/etc)
-    - Renamed `schema.infer` -> `Schema.from_sample`
-    - Renamed `resource.inline` -> `resource.memory`
-    - Renamed `compression_path` -> `innerpath`
-    - Renamed `compression: no` -> `compression: ""`
-    - Updated `Package/Resource.infer` not to infer stats (use `stats=True`)
-    - Removed `Package/Resource.infer(only_sample)` argument
-    - Removed `Resouce.from/to_zip` (use `Package.from/to_zip`)
-    - Removed `Resouce.source` (use `Resource.data` or `Resource.fullpath`)
-    - Removed `package/resource.infer(source)` argument (use constructors)
-    - Added some new API (will be covered in the updated docs after the v4 release)
+  - Allow `Package/Resource(source)` notation (guess descriptor/path/etc)
+  - Renamed `schema.infer` -> `Schema.from_sample`
+  - Renamed `resource.inline` -> `resource.memory`
+  - Renamed `compression_path` -> `innerpath`
+  - Renamed `compression: no` -> `compression: ""`
+  - Updated `Package/Resource.infer` not to infer stats (use `stats=True`)
+  - Removed `Package/Resource.infer(only_sample)` argument
+  - Removed `Resouce.from/to_zip` (use `Package.from/to_zip`)
+  - Removed `Resouce.source` (use `Resource.data` or `Resource.fullpath`)
+  - Removed `package/resource.infer(source)` argument (use constructors)
+  - Added some new API (will be covered in the updated docs after the v4 release)
 
 ## v3.48
 
 - Make Resource independent from Table/File (#607) (BREAKING)
-    - Resource can be opened like Table (it's recommended to use Resource instead of Table)
-    - Renamed `resource.read_sample()` to `resource.sample`
-    - Renamed `resource.read_header()` to `resource.header`
-    - Renamed `resource.read_stats()` to `resource.stats`
-    - Removed `resource.to_table()`
-    - Removed `resource.to_file()`
+  - Resource can be opened like Table (it's recommended to use Resource instead of Table)
+  - Renamed `resource.read_sample()` to `resource.sample`
+  - Renamed `resource.read_header()` to `resource.header`
+  - Renamed `resource.read_stats()` to `resource.stats`
+  - Removed `resource.to_table()`
+  - Removed `resource.to_file()`
 
 ## v3.47
 
 - Optimize Row/Header/Table and rename header errors (#601) (BREAKING)
-    - Row object is now lazy; it casts data on-demand preserving the same API
-    - Method `resource/table.read_data(_stream)` now includes a header row if present
-    - Renamed `errors.ExtraHeaderError->ExtraLabelError` (`extra-label-error`)
-    - Renamed `errors.MissingHeaderError->MissingLabelError` (`missing-label-error`)
-    - Renamed `errors.BlankHeaderError->BlankLabelError` (`blank-label-error`)
-    - Renamed `errors.DuplicateHeaderError->DuplicateLabelError` (`duplicate-label-error`)
-    - Renamed `errors.NonMatchingHeaderError->IncorrectLabelError` (`incorrect-label-error`)
-    - Renamed `schema.read/write_data->read/write_cells`
+  - Row object is now lazy; it casts data on-demand preserving the same API
+  - Method `resource/table.read_data(_stream)` now includes a header row if present
+  - Renamed `errors.ExtraHeaderError->ExtraLabelError` (`extra-label-error`)
+  - Renamed `errors.MissingHeaderError->MissingLabelError` (`missing-label-error`)
+  - Renamed `errors.BlankHeaderError->BlankLabelError` (`blank-label-error`)
+  - Renamed `errors.DuplicateHeaderError->DuplicateLabelError` (`duplicate-label-error`)
+  - Renamed `errors.NonMatchingHeaderError->IncorrectLabelError` (`incorrect-label-error`)
+  - Renamed `schema.read/write_data->read/write_cells`
 
 ## v3.46
 
@@ -527,10 +532,10 @@ exception = FrictionlessException()
 ## v3.30
 
 - Various CLI improvements (#532)
-    - Added autocompletion
-    - Added stdin support
-    - Added "extract --csv"
-    - Exposed more options
+  - Added autocompletion
+  - Added stdin support
+  - Added "extract --csv"
+  - Exposed more options
 
 ## v3.29
 
@@ -626,7 +631,7 @@ exception = FrictionlessException()
 
 ## v3.8
 
-- Add support SQL/Pandas import/export  (#31)
+- Add support SQL/Pandas import/export (#31)
 
 ## v3.7
 
