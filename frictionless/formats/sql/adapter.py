@@ -122,7 +122,7 @@ class SqlAdapter(Adapter):
         table_name: str,
         force: bool = False,
         with_metadata: bool = False,
-        without_constraints: bool = False,
+        ignore_constraints: bool = False,
     ) -> None:
         with self.engine.begin() as conn:
             if force:
@@ -134,7 +134,7 @@ class SqlAdapter(Adapter):
                 schema,
                 table_name=table_name,
                 with_metadata=with_metadata,
-                without_constraints=without_constraints,
+                ignore_constraints=ignore_constraints,
             )
             table = table.to_metadata(self.metadata)
             self.metadata.create_all(conn, tables=[table])

@@ -44,13 +44,13 @@ def test_sql_mapper_write_field():
     assert isinstance(column2.type, sa.Text)
 
 
-def test_sql_mapper_write_field_without_constraints():
+def test_sql_mapper_write_field_ignore_constraints():
     mapper = formats.sql.SqlMapper("sqlite")
     schema = Schema.describe("data/table.csv")
     field1, field2 = schema.fields
     field1.constraints = {"required": True}
     field2.constraints = {"required": True}
     column1 = mapper.write_field(field1, table_name="table")
-    column2 = mapper.write_field(field2, table_name="table", without_constraints=True)
+    column2 = mapper.write_field(field2, table_name="table", ignore_constraints=True)
     assert column1.nullable is False
     assert column2.nullable is True

@@ -158,7 +158,7 @@ class SqlMapper(Mapper):
         *,
         table_name: str,
         with_metadata: bool = False,
-        without_constraints: bool = False,
+        ignore_constraints: bool = False,
     ) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
         sa = platform.sqlalchemy
@@ -180,7 +180,7 @@ class SqlMapper(Mapper):
         # Fields
         for field in schema.fields:
             column = self.write_field(  # type: ignore
-                field, table_name=table_name, without_constraints=without_constraints
+                field, table_name=table_name, ignore_constraints=ignore_constraints
             )
             columns.append(column)  # type: ignore
 
@@ -202,7 +202,7 @@ class SqlMapper(Mapper):
 
         # Prepare table
         table_args = [table_name, sa.MetaData(), *columns]  # type: ignore
-        if not without_constraints:
+        if not ignore_constraints:
             table_args += constraints  # type: ignore
 
         # Create table
@@ -210,7 +210,7 @@ class SqlMapper(Mapper):
         return table
 
     def write_field(  # type: ignore
-        self, field: Field, *, table_name: str, without_constraints: bool = False
+        self, field: Field, *, table_name: str, ignore_constraints: bool = False
     ) -> Column:  # type: ignore
         """Convert frictionless Field to sqlalchemy Column"""
         sa = platform.sqlalchemy
@@ -276,7 +276,7 @@ class SqlMapper(Mapper):
         column_kwargs = {}
         if field.description:
             column_kwargs["comment"] = field.description
-        if not without_constraints:
+        if not ignore_constraints:
             column_args += checks  # type: ignore
             column_kwargs["nullable"] = nullable
             column_kwargs["unique"] = unique

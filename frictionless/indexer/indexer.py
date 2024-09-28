@@ -28,7 +28,7 @@ class Indexer:
     qsv_path: Optional[str] = None
     use_fallback: bool = False
     with_metadata: bool = False
-    without_constraints: bool = False
+    ignore_constraints: bool = False
     on_row: Optional[types.IOnRow] = None
     on_progress: Optional[types.IOnProgress] = None
     adapter: SqlAdapter = attrs.field(init=False)
@@ -73,7 +73,7 @@ class Indexer:
             table_name=self.table_name,
             force=True,
             with_metadata=self.with_metadata,
-            without_constraints=self.without_constraints,
+            ignore_constraints=self.ignore_constraints,
         )
 
     def populate_table(self) -> Optional[Report]:
