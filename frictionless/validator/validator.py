@@ -48,6 +48,7 @@ class Validator:
         if not parallel or with_fks:
             for resource in resources:
                 report = resource.validate(
+                    checklist=checklist,
                     limit_errors=limit_errors,
                     limit_rows=limit_rows,
                 )
