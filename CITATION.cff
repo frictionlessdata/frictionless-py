@@ -18,7 +18,7 @@ authors:
   - given-names: Vitor
     family-names: Baptista
     affiliation: Fiquem Sabendo
-  - given-names: 'Georgiana '
+  - given-names: Georgiana
     family-names: Bere
   - given-names: Andrea
     family-names: Borruso
@@ -41,12 +41,12 @@ authors:
   - given-names: Chris
     family-names: Shaw
     affiliation: Democracy Club
-  - given-names: 'Paul '
+  - given-names: Paul
     family-names: Walsh
     affiliation: LinkDigital
   - given-names: Lilly
     family-names: Winfree
-    affiliation: 'Anaconda, Inc.'
+    affiliation: Anaconda, Inc.
     orcid: 'https://orcid.org/0000-0001-7120-8536'
   - given-names: Edgar
     family-names: Zanella Alvarenga
