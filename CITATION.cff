@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: Frictionless Python Framework
+title: 'frictionless: Python library for Data Packages'
 message: >-
   To cite the Frictionless Python Framework in publications
   please use:
@@ -26,7 +26,7 @@ authors:
   - given-names: Peter
     family-names: Desmet
     orcid: 'https://orcid.org/0000-0002-8442-8025'
-    affiliation: INBO
+    affiliation: Research Institute for Nature and Forest (INBO)
   - given-names: Shashi
     family-names: Gharti
     affiliation: Robust IT Concepts
@@ -64,6 +64,7 @@ authors:
 identifiers:
   - type: doi
     value: 10.5281/zenodo.4663759
+repository: 'https://pypi.org/project/frictionless/'
 repository-code: 'https://github.com/frictionlessdata/frictionless-py'
 url: 'https://framework.frictionlessdata.io/'
 abstract: >-
