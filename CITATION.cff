@@ -10,6 +10,7 @@ type: software
 authors:
   - given-names: Evgeny
     family-names: Karev
+    affiliation: Datist
     email: eskarev@gmail.com
   - given-names: Pierre
     family-names: Camilleri
