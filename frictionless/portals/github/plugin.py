@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 from urllib.parse import urlparse
 
 from ...system import Plugin
@@ -18,12 +18,12 @@ class GithubPlugin(Plugin):
 
     def create_adapter(
         self,
-        source: Any,
+        source: Optional[str],
         *,
         control: Optional[Control] = None,
         basepath: Optional[str] = None,
         packagify: bool = False,
-    ):
+    ) -> Optional[GithubAdapter]:
         if isinstance(source, str):
             parsed = urlparse(source)
             if not control or isinstance(control, GithubControl):
@@ -33,6 +33,7 @@ class GithubPlugin(Plugin):
                     control.user, control.repo = self._extract_user_and_repo(parsed.path)
 
                     return GithubAdapter(control)
+
         if source is None and isinstance(control, GithubControl):
             return GithubAdapter(control=control)
 
