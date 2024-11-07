@@ -1,0 +1,79 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: 'frictionless: Python library for Data Packages'
+message: >-
+  To cite the Frictionless Python Framework in publications
+  please use:
+type: software
+authors:
+  - given-names: Evgeny
+    family-names: Karev
+    affiliation: Datist
+    email: eskarev@gmail.com
+  - given-names: Pierre
+    family-names: Camilleri
+    affiliation: multi.coop
+    email: pierre.camilleri@multi.coop
+  - given-names: Vitor
+    family-names: Baptista
+    affiliation: Fiquem Sabendo
+  - given-names: Georgiana
+    family-names: Bere
+  - given-names: Andrea
+    family-names: Borruso
+    affiliation: OnData
+  - given-names: Peter
+    family-names: Desmet
+    orcid: 'https://orcid.org/0000-0002-8442-8025'
+    affiliation: Research Institute for Nature and Forest (INBO)
+  - given-names: Shashi
+    family-names: Gharti
+    affiliation: Robust IT Concepts
+  - given-names: Augusto
+    family-names: Herrmann
+    affiliation: >-
+      Ministry of Management and Innovation in Public
+      Services in Brazil
+  - given-names: Adam
+    family-names: Kariv
+    affiliation: While True Industries
+  - given-names: Chris
+    family-names: Shaw
+    affiliation: Democracy Club
+  - given-names: Paul
+    family-names: Walsh
+    affiliation: LinkDigital
+  - given-names: Lilly
+    family-names: Winfree
+    affiliation: Anaconda, Inc.
+    orcid: 'https://orcid.org/0000-0001-7120-8536'
+  - given-names: Edgar
+    family-names: Zanella Alvarenga
+    affiliation: Digi Sapiens
+  - given-names: Jesper
+    family-names: Zedlitz
+    orcid: 'https://orcid.org/0000-0003-2664-5010'
+  - name: Open Knowledge Foundation
+    city: London
+    country: GB
+  - given-names: Sara
+    family-names: Petti
+    affiliation: Open Knowledge Foundation
+    email: sara.petti@okfn.org
+identifiers:
+  - type: doi
+    value: https://doi.org/10.5281/zenodo.4663759
+repository: 'https://pypi.org/project/frictionless/'
+repository-code: 'https://github.com/frictionlessdata/frictionless-py'
+url: 'https://framework.frictionlessdata.io/'
+abstract: >-
+  Data management framework for Python that provides
+  functionality to describe, extract, validate, and
+  transform tabular data (DEVT Framework). It supports a
+  great deal of data sources and formats, as well as
+  provides popular platforms integrations. The framework is
+  powered by the lightweight yet comprehensive Frictionless
+  Data Package (https://datapackage.org/).
+license: MIT
