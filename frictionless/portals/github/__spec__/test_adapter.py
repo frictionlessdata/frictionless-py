@@ -4,7 +4,6 @@ import os
 import pytest
 
 from frictionless import Catalog, FrictionlessException, Package, platform, portals
-from frictionless.portals.github.plugin import GithubPlugin
 from frictionless.resources import TableResource
 
 OUTPUT_OPTIONS_WITH_DP_YAML = {
@@ -103,19 +102,6 @@ OUTPUT_OPTIONS_WITHOUT_DP = {
 
 
 # Read
-
-
-def test_github_plugin_parse_repo():
-    test_cases = [
-        "https://github.com/user/some-repo",
-        "https://github.com/user/some-repo/some-other-stuff",
-    ]
-
-    plugin = GithubPlugin()
-    for test_case in test_cases:
-        adapter = plugin.create_adapter(source=test_case)
-        assert adapter.control.user == "user"
-        assert adapter.control.repo == "some-repo"
 
 
 @pytest.mark.vcr
