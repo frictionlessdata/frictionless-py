@@ -4,10 +4,8 @@ import os
 import pytest
 
 from frictionless import Catalog, FrictionlessException, Package, platform, portals
+from frictionless.portals.github.plugin import GithubPlugin
 from frictionless.resources import TableResource
-
-# TODO: recover
-pytestmark = pytest.mark.skip(reason="Cassetes for vcr need to be regenerated")
 
 OUTPUT_OPTIONS_WITH_DP_YAML = {
     "resources": [
@@ -30,6 +28,7 @@ OUTPUT_OPTIONS_WITH_DP_YAML = {
         }
     ]
 }
+
 OUTPUT_OPTIONS_WITH_DP = {
     "name": "test-package",
     "resources": [
@@ -71,6 +70,7 @@ OUTPUT_OPTIONS_WITHOUT_DP_CSV = {
         },
     ],
 }
+
 OUTPUT_OPTIONS_WITHOUT_DP = {
     "name": "test-repo-without-datapackage",
     "resources": [
@@ -105,10 +105,25 @@ OUTPUT_OPTIONS_WITHOUT_DP = {
 # Read
 
 
+def test_github_plugin_parse_repo():
+    test_cases = [
+        "https://github.com/user/some-repo",
+        "https://github.com/user/some-repo/some-other-stuff",
+    ]
+
+    plugin = GithubPlugin()
+    for test_case in test_cases:
+        adapter = plugin.create_adapter(source=test_case)
+        assert adapter.control.user == "user"
+        assert adapter.control.repo == "some-repo"
+
+
 @pytest.mark.vcr
 def test_github_adapter_read(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
+    print("here we are")
+    print(package.to_descriptor())
     assert package.to_descriptor() == OUTPUT_OPTIONS_WITHOUT_DP
     assert (
         package.resources[0].basepath
