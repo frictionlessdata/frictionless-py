@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Literal, Optional, Tuple
 from urllib.parse import urlparse
 
 from ...exception import FrictionlessException
@@ -33,18 +33,10 @@ class GithubPlugin(Plugin):
 
                     user, repo = self._extract_user_and_repo(parsed.path)
 
-                    if control.user and control.user != user:
-                        raise FrictionlessException(
-                            'Mismatch between url and provided "user" information'
-                        )
+                    self._assert_no_mismatch(user, control.user, "user")
+                    self._assert_no_mismatch(repo, control.repo, "repo")
 
                     control.user = user
-
-                    if control.repo and control.repo != repo:
-                        raise FrictionlessException(
-                            'Mismatch between url and provided "repo" information'
-                        )
-
                     control.repo = repo
 
                     return GithubAdapter(control)
@@ -64,3 +56,15 @@ class GithubPlugin(Plugin):
         repo = splitted_url[1] if len(splitted_url) >= 2 else None
 
         return (user, repo)
+
+    @staticmethod
+    def _assert_no_mismatch(
+        value: Optional[str],
+        control_value: Optional[str],
+        user_or_repo: Literal["user", "repo"],
+    ):
+        if value and control_value and control_value != value:
+            raise FrictionlessException(
+                f'Mismatch between url and provided "{user_or_repo}"'
+                f"information (in url: {value}), in control: {control_value}"
+            )
