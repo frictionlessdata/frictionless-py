@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Any, Dict, List, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Union
 
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
@@ -12,12 +12,16 @@ from ...system import Adapter, PublishResult
 from .control import GithubControl
 
 if TYPE_CHECKING:
+    from github.AuthenticatedUser import AuthenticatedUser
     from github.ContentFile import ContentFile
+    from github.NamedUser import NamedUser
     from github.Repository import Repository
 
 
 class GithubAdapter(Adapter):
     """Read and write data from/to Github"""
+
+    client: Optional[GithubClient] = None
 
     def __init__(self, control: GithubControl):
         self.control = control
@@ -30,7 +34,12 @@ class GithubAdapter(Adapter):
             raise FrictionlessException(note)
 
         assert self.control.formats
-        client = platform.github.Github(self.control.apikey)
+
+        if GithubAdapter.client:
+            client = GithubAdapter.client
+        else:
+            client = platform.github.Github(self.control.apikey)
+
         location = "/".join([self.control.user, self.control.repo])
         try:
             repository = client.get_repo(location)
@@ -198,7 +207,6 @@ class GithubAdapter(Adapter):
             client = platform.github.Github(
                 self.control.apikey, per_page=self.control.per_page
             )
-            #  user = client.get_user()
             repositories = client.search_repositories(query["q"], **options)
             if self.control.page:
                 repositories = repositories.get_page(self.control.page)
@@ -269,3 +277,13 @@ def get_package(
             resource = Resource(path=file.path)
             package.add_resource(resource)
     return package
+
+
+class GithubClient(Protocol):
+    def get_repo(self, location: str) -> Repository: ...
+
+    def get_user(self, user: str) -> NamedUser | AuthenticatedUser: ...
+
+    def search_repositories(
+        self, query: str, user: str, sort: str, order: str
+    ) -> List[Repository]: ...
