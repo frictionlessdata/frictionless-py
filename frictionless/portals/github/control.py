@@ -54,7 +54,7 @@ class GithubControl(Control):
     """The number of results per page. Default value is 30. Max value is 100."""
 
     repo: Optional[str] = None
-    """Name of the repo to read or write."""
+    """Name of the repository to read or write."""
 
     search: Optional[str] = None
     """Search query containing one or more search keywords and qualifiers to filter the repositories.
@@ -65,7 +65,7 @@ class GithubControl(Control):
     By default the results are sorted by best match in desc order."""
 
     user: Optional[str] = None
-    """username of the github account."""
+    """Owner of the repository (user or organisation)"""
 
     filename: Optional[str] = None
     """Custom data package file name while publishing the data. By default it will use 'datapackage.json'."""

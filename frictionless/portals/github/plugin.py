@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Tuple
 from urllib.parse import urlparse
 
+from ...exception import FrictionlessException
 from ...system import Plugin
 from .adapter import GithubAdapter
 from .control import GithubControl
@@ -30,7 +31,21 @@ class GithubPlugin(Plugin):
                 if parsed.netloc == "github.com":
                     control = control or GithubControl()
 
-                    control.user, control.repo = self._extract_user_and_repo(parsed.path)
+                    user, repo = self._extract_user_and_repo(parsed.path)
+
+                    if control.user and control.user != user:
+                        raise FrictionlessException(
+                            'Mismatch between url and provided "user" information'
+                        )
+
+                    control.user = user
+
+                    if control.repo and control.repo != repo:
+                        raise FrictionlessException(
+                            'Mismatch between url and provided "repo" information'
+                        )
+
+                    control.repo = repo
 
                     return GithubAdapter(control)
 

@@ -25,9 +25,18 @@ def test_github_plugin_parse_repo():
 
 
 def test_github_url_control_mismatch():
-    url = "https://github.com/user/some-repo"
-    control = GithubControl(user="wrong-user")
+    test_cases = [
+        {
+            "url": "https://github.com/user/some-repo",
+            "control": GithubControl(user="wrong-user"),
+        },
+        {
+            "url": "https://github.com/user/some-repo",
+            "control": GithubControl(repo="wrong-repo"),
+        },
+    ]
 
-    plugin = GithubPlugin()
-    with pytest.raises(FrictionlessException):
-        plugin.create_adapter(source=url, control=control)
+    for test_case in test_cases:
+        plugin = GithubPlugin()
+        with pytest.raises(FrictionlessException):
+            plugin.create_adapter(source=test_case["url"], control=test_case["control"])
