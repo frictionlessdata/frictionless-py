@@ -6,6 +6,8 @@ import pytest
 from frictionless import Catalog, FrictionlessException, Package, platform, portals
 from frictionless.resources import TableResource
 
+pytestmark = pytest.mark.skip(reason="Cassetes for vcr need to be regenerated")
+
 OUTPUT_OPTIONS_WITH_DP_YAML = {
     "resources": [
         {
