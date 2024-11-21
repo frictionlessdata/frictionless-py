@@ -24,20 +24,47 @@ class GithubPlugin(Plugin):
         basepath: Optional[str] = None,
         packagify: bool = False,
     ):
-        if isinstance(source, str):
-            parsed = urlparse(source)
-            if not control or isinstance(control, GithubControl):
-                if parsed.netloc == "github.com":
-                    control = control or GithubControl()
-                    splited_url = parsed.path.split("/")[1:]
-                    if len(splited_url) == 1:
-                        control.user = splited_url[0]
-                        return GithubAdapter(control)
-                    if len(splited_url) == 2:
-                        control.user, control.repo = splited_url
-                    return GithubAdapter(control)
+        """Checks if the source is meant to access a Github Data portal, and returns the adapter if applicable
+
+        The source is expected to be in one of the formats :
+
+        - https://github.com/user_or_org
+        - https://github.com/user_or_org/repo
+
+        Alternatively, user and/or repo information can be provided in the
+        GithubControl, with an empty source.
+
+        """
+        if control and not isinstance(control, GithubControl):
+            # Explicit control for other plugin
+            return
+
         if source is None and isinstance(control, GithubControl):
+            # Source informations are inside the control
             return GithubAdapter(control=control)
+
+        if not isinstance(source, str):
+            return
+
+        parsed_url = urlparse(source)
+        splited_url = parsed_url.path.split("/")[1:]
+
+        if (
+            parsed_url.netloc == "github.com"
+            and len(splited_url) < 1
+            and len(splited_url) > 2
+        ):
+            control = control or GithubControl()
+            control.user = splited_url[0]
+
+            if len(splited_url) == 2:
+                control.repo = splited_url[1]
+
+            return GithubAdapter(control)
+
+        else:
+            # Url has not an expected format
+            return
 
     def select_control_class(self, type: Optional[str] = None):
         if type == "github":
