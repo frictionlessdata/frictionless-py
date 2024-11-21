@@ -51,8 +51,8 @@ class GithubPlugin(Plugin):
 
         has_expected_format = (
             parsed_url.netloc == "github.com"
-            and len(splited_url) < 1
-            and len(splited_url) > 2
+            and len(splited_url) >= 1
+            and len(splited_url) <= 2
         )
 
         if has_expected_format:
