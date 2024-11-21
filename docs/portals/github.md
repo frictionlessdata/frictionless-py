@@ -16,7 +16,7 @@ pip install 'frictionless[github]' --pre # for zsh shell
 You can read data from a github repository as follows:
 
 ```python tabs=Python
-from frictionless import portals, Package
+from frictionless import Package
 
 package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
 print(package)
@@ -50,7 +50,7 @@ If the repo has a descriptor it simply returns the descriptor as shown above.
 Once you read the package from the repo, you can then easily access the resources and its data, for example:
 
 ```python tabs=Python
-from frictionless import portals, Package
+from frictionless import Package
 
 package = Package("https://github.com/fdtester/test-repo-with-datapackage-json")
 print(package.get_resource('first-resource').read_rows())
