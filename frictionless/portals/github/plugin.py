@@ -49,11 +49,13 @@ class GithubPlugin(Plugin):
         parsed_url = urlparse(source)
         splited_url = parsed_url.path.split("/")[1:]
 
-        if (
+        has_expected_format = (
             parsed_url.netloc == "github.com"
             and len(splited_url) < 1
             and len(splited_url) > 2
-        ):
+        )
+
+        if has_expected_format:
             control = control or GithubControl()
             control.user = splited_url[0]
 
@@ -61,10 +63,6 @@ class GithubPlugin(Plugin):
                 control.repo = splited_url[1]
 
             return GithubAdapter(control)
-
-        else:
-            # Url has not an expected format
-            return
 
     def select_control_class(self, type: Optional[str] = None):
         if type == "github":
