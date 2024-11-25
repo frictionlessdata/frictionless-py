@@ -678,6 +678,12 @@ class TableResource(Resource):
         target = self.write(Resource(format="pandas", dialect=dialect))  # type: ignore
         return target.data
 
+    def to_polars(self, *, dialect: Optional[Dialect] = None):
+        """Helper to export resource as an Polars dataframe"""
+        dialect = dialect or Dialect()
+        target = self.write(Resource(format="polars", dialect=dialect))  # type: ignore
+        return target.data
+
     def to_snap(self, *, json: bool = False):
         """Create a snapshot from the resource
 
