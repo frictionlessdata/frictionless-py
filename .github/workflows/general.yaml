@@ -75,9 +75,6 @@ jobs:
 
   test-macos:
     if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
-    # TODO: migrate to macos-latest after figuring out how to
-    # make `posgres/pg_config` works in the environment. Currently, it fails
-    # with the following error: "pg_config" not found"
     runs-on: macos-14
     steps:
       - name: Checkout repository
