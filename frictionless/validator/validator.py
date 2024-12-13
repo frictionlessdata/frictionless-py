@@ -200,6 +200,8 @@ class Validator:
 
 
 def validate_parallel(options: types.IDescriptor) -> types.IDescriptor:
+    from ..resource import Resource  # Local import avoids circular import
+
     resource_options = options["resource"]
     validate_options = options["validate"]
     resource = Resource.from_descriptor(**resource_options)
