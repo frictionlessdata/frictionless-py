@@ -21,12 +21,12 @@ from typing import (
     Union,
 )
 
-import stringcase  # type: ignore
 from typing_extensions import Self
 
 from .. import helpers
 from ..exception import FrictionlessException
 from ..platform import platform
+from ..vendors import stringcase  # type: ignore
 
 if TYPE_CHECKING:
     from .. import types
