@@ -272,4 +272,4 @@ def alphanumcase(string):
 
     """
     # return filter(str.isalnum, str(string))
-    return re.sub("\W+", "", string)
+    return re.sub(r"\W+", "", string)
