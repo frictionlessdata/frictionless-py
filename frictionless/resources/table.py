@@ -14,6 +14,7 @@ from ..exception import FrictionlessException
 from ..indexer import Indexer
 from ..platform import platform
 from ..resource import Resource
+from ..schema.fields_info import FieldsInfo
 from ..system import system
 from ..table import Header, Lookup, Row, Table
 from ..transformer import Transformer
@@ -263,24 +264,7 @@ class TableResource(Resource):
                     self.__lookup[source_name][source_key].add(cells)
 
     def __open_row_stream(self):
-        # TODO: we need to rework this field_info / row code
-        # During row streaming we create a field info structure
-        # This structure is optimized and detached version of schema.fields
-        # We create all data structures in-advance to share them between rows
-
-        # Create field info
-        field_number = 0
-        field_info: Dict[str, Any] = {"names": [], "objects": [], "mapping": {}}
-        for field in self.schema.fields:
-            field_number += 1
-            field_info["names"].append(field.name)
-            field_info["objects"].append(field.to_copy())
-            field_info["mapping"][field.name] = (
-                field,
-                field_number,
-                field.create_cell_reader(),
-                field.create_cell_writer(),
-            )
+        field_info = FieldsInfo(self.schema.fields)
 
         # Create state
         memory_unique: Dict[str, Any] = {}
@@ -403,13 +387,13 @@ class TableResource(Resource):
         self.__row_stream = row_stream()
 
     def remove_missing_required_label_from_field_info(
-        self, field: Field, field_info: Dict[str, Any]
+        self, field: Field, fields_info: FieldsInfo
     ):
         is_case_sensitive = self.dialect.header_case
         if self.label_is_missing(
-            field.name, field_info["names"], self.labels, is_case_sensitive
+            field.name, fields_info.ls(), self.labels, is_case_sensitive
         ):
-            self.remove_field_from_field_info(field.name, field_info)
+            fields_info.rm(field.name)
 
     @staticmethod
     def label_is_missing(
@@ -429,13 +413,6 @@ class TableResource(Resource):
             ]
 
         return field_name not in table_labels and field_name in expected_field_names
-
-    @staticmethod
-    def remove_field_from_field_info(field_name: str, field_info: Dict[str, Any]):
-        field_index = field_info["names"].index(field_name)
-        del field_info["names"][field_index]
-        del field_info["objects"][field_index]
-        del field_info["mapping"][field_name]
 
     def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
         """Create a tuple containg all cells from a given row associated to primary

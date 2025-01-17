@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 
 from .. import errors, helpers
 from ..platform import platform
+from ..schema.fields_info import FieldsInfo
 
 # NOTE:
 # Currently dict.update/setdefault/pop/popitem/clear is not disabled (can be confusing)
@@ -36,11 +37,11 @@ class Row(Dict[str, Any]):
         self,
         cells: List[Any],
         *,
-        field_info: Dict[str, Any],
+        field_info: FieldsInfo,
         row_number: int,
     ):
         self.__cells = cells
-        self.__field_info = field_info
+        self.__fields_info = field_info
         self.__row_number = row_number
         self.__processed: bool = False
         self.__blank_cells: Dict[str, Any] = {}
@@ -61,7 +62,7 @@ class Row(Dict[str, Any]):
 
     def __setitem__(self, key: str, value: Any):
         try:
-            _, field_number, _, _ = self.__field_info["mapping"][key]
+            field_number = self.__fields_info.get(key).field_number
         except KeyError:
             raise KeyError(f"Row does not have a field {key}")
         if len(self.__cells) < field_number:
@@ -73,38 +74,38 @@ class Row(Dict[str, Any]):
         return self.__process(key)
 
     def __iter__(self):
-        return iter(self.__field_info["names"])
+        return iter(self.__fields_info.ls())
 
     def __len__(self):
-        return len(self.__field_info["names"])
+        return len(self.__fields_info.ls())
 
     def __contains__(self, key: object):
-        return key in self.__field_info["mapping"]
+        return key in self.__fields_info.ls()
 
     def __reversed__(self):
-        return reversed(self.__field_info["names"])
+        return reversed(self.__fields_info.ls())
 
     def keys(self):
-        return iter(self.__field_info["names"])
+        return iter(self.__fields_info.ls())
 
     def values(self):  # type: ignore
-        for name in self.__field_info["names"]:
+        for name in self.__fields_info.ls():
             yield self[name]
 
     def items(self):  # type: ignore
-        for name in self.__field_info["names"]:
+        for name in self.__fields_info.ls():
             yield (name, self[name])
 
     def get(self, key: str, default: Optional[Any] = None):
-        if key not in self.__field_info["names"]:
+        if key not in self.__fields_info.ls():
             return default
         return self[key]
 
     @cached_property
     def cells(self):
         """
-        Returns:
-            Field[]: table schema fields
+        .ls():
+              Field[]: table schema fields
         """
         return self.__cells
 
@@ -114,7 +115,7 @@ class Row(Dict[str, Any]):
         Returns:
             Field[]: table schema fields
         """
-        return self.__field_info["objects"]
+        return self.__fields_info.get_copies()
 
     @cached_property
     def field_names(self) -> List[str]:
@@ -122,7 +123,7 @@ class Row(Dict[str, Any]):
         Returns:
             str[]: field names
         """
-        return self.__field_info["names"]
+        return self.__fields_info.ls()
 
     @cached_property
     def field_numbers(self):
@@ -130,7 +131,7 @@ class Row(Dict[str, Any]):
         Returns:
             str[]: field numbers
         """
-        return list(range(1, len(self.__field_info["names"]) + 1))
+        return list(range(1, len(self.__fields_info.ls()) + 1))
 
     @cached_property
     def row_number(self) -> int:
@@ -201,14 +202,18 @@ class Row(Dict[str, Any]):
 
         # Prepare
         self.__process()
-        result = [self[name] for name in self.__field_info["names"]]
+        result = [self[name] for name in self.__fields_info.ls()]
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
 
         # Convert
         if types is not None:
-            for index, field_mapping in enumerate(self.__field_info["mapping"].values()):
-                field, _, _, cell_writer = field_mapping
+            field_names = self.__fields_info.ls()
+            for index, field_name in enumerate(field_names):
+                field_info = self.__fields_info.get(field_name)
+                field = field_info.field
+                cell_writer = field_info.cell_writer
+
                 # Here we can optimize performance if we use a types mapping
                 if field.type in types:
                     continue
@@ -223,7 +228,11 @@ class Row(Dict[str, Any]):
         return result
 
     def to_dict(
-        self, *, csv: bool = False, json: bool = False, types: Optional[List[str]] = None
+        self,
+        *,
+        csv: bool = False,
+        json: bool = False,
+        types: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Parameters:
@@ -235,7 +244,7 @@ class Row(Dict[str, Any]):
 
         # Prepare
         self.__process()
-        result = {name: self[name] for name in self.__field_info["names"]}
+        result = {name: self[name] for name in self.__fields_info.ls()}
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
         if types is None and csv:
@@ -243,8 +252,12 @@ class Row(Dict[str, Any]):
 
         # Convert
         if types is not None:
-            for field_mapping in self.__field_info["mapping"].values():
-                field, _, _, cell_writer = field_mapping
+            field_names = self.__fields_info.ls()
+            for field_name in field_names:
+                field_info = self.__fields_info.get(field_name)
+                field = field_info.field
+                cell_writer = field_info.cell_writer
+
                 # Here we can optimize performance if we use a types mapping
                 if field.type not in types:
                     cell = result[field.name]
@@ -268,26 +281,30 @@ class Row(Dict[str, Any]):
         # Prepare context
         cells = self.__cells
         to_str = lambda v: str(v) if v is not None else ""  # type: ignore
-        fields = self.__field_info["objects"]
-        field_mapping = self.__field_info["mapping"]
-        iterator = zip_longest(field_mapping.values(), cells)
+        fields = self.__fields_info.get_copies()
+        names = self.__fields_info.ls()
+        field_infos = [self.__fields_info.get(name) for name in names]
+        iterator = zip_longest(field_infos, cells)
         is_empty = not bool(super().__len__())
+
         if key:
             try:
-                field, field_number, cell_reader, cell_writer = self.__field_info[
-                    "mapping"
-                ][key]
-            except KeyError:
+                field_info = self.__fields_info.get(key)
+                field_number = field_info.field_number
+            except ValueError:
                 raise KeyError(f"Row does not have a field {key}")
             cell = cells[field_number - 1] if len(cells) >= field_number else None
-            iterator = zip([(field, field_number, cell_reader, cell_writer)], [cell])
+            iterator = zip([field_info], [cell])
 
         # Iterate cells
-        for field_mapping, source in iterator:
+        for field_info, source in iterator:
             # Prepare context
-            if field_mapping is None:
+            if field_info is None:
                 break
-            field, field_number, cell_reader, _ = field_mapping
+            field = field_info.field
+            field_number = field_info.field_number
+            cell_reader = field_info.cell_reader
+
             if not is_empty and super().__contains__(field.name):
                 continue
 
