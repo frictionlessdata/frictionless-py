@@ -2,15 +2,17 @@ from __future__ import annotations
 
 from functools import cached_property
 from itertools import zip_longest
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from .. import errors, helpers
 from ..platform import platform
-from ..schema.fields_info import FieldsInfo
 
 # NOTE:
 # Currently dict.update/setdefault/pop/popitem/clear is not disabled (can be confusing)
 # We can consider adding row.header property to provide more comprehensive API
+
+if TYPE_CHECKING:
+    from ..resources.table import FieldsInfo
 
 
 # TODO: add types
