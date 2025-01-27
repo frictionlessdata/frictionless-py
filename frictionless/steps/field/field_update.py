@@ -52,7 +52,8 @@ class field_update(Step):
 
     pass_row: bool = False
     """
-    Pass the entire row as a parameter for the transformation function when True.
+    Pass the entire row as a second parameter for the transformation function if set to True.
+    The first parameter (the value) remains unchanged.
     """
 
     # Transform
