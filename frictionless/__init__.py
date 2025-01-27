@@ -40,4 +40,6 @@ from .table import Header as Header
 from .table import Lookup as Lookup
 from .table import Row as Row
 from .transformer import Transformer as Transformer
+
+# Deprecated
 from .validator import Validator as Validator

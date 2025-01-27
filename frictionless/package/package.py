@@ -1,24 +1,25 @@
 from __future__ import annotations
 
+from multiprocessing import Pool
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
 
 import attrs
 from typing_extensions import Self
 
 from .. import errors, fields, helpers, settings
+from ..checklist import Checklist
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
+from ..report import Report
 from ..resource import Resource
 from ..system import system
 from ..transformer import Transformer
-from ..validator import Validator
 from .factory import Factory
 
 if TYPE_CHECKING:
     from .. import types
     from ..catalog import Dataset
-    from ..checklist import Checklist
     from ..detector import Detector
     from ..dialect import Control, Dialect
     from ..indexer import IOnProgress, IOnRow
@@ -476,20 +477,61 @@ class Package(Metadata, metaclass=Factory):
 
         Parameters:
             checklist? (checklist): a Checklist object
-            parallel? (bool): run in parallel if possible
+            parallel? (bool): run in parallel if possible. Parallel execution
+            is not possible if foreign keys are used in a resource schema.
 
         Returns:
             Report: validation report
 
         """
-        validator = Validator()
-        return validator.validate_package(
-            self,
-            checklist=checklist,
-            name=name,
-            parallel=parallel,
-            limit_rows=limit_rows,
-            limit_errors=limit_errors,
+        # Create state
+        timer = helpers.Timer()
+        reports: List[Report] = []
+        resources = self.resources if name is None else [self.get_resource(name)]
+        with_foreign_keys = any(
+            res.schema and res.schema.foreign_keys for res in resources
+        )
+
+        # Prepare checklist
+        checklist = checklist or Checklist()
+
+        # Validate metadata
+        try:
+            self.to_descriptor(validate=True)
+        except FrictionlessException as exception:
+            return Report.from_validation(time=timer.time, errors=exception.to_errors())
+
+        # Validate sequential
+        if not parallel or with_foreign_keys:
+            for resource in resources:
+                report = resource.validate(
+                    checklist=checklist,
+                    limit_errors=limit_errors,
+                    limit_rows=limit_rows,
+                )
+                reports.append(report)
+
+        # Validate parallel
+        else:
+            with Pool() as pool:
+                options_pool: List[Dict[str, Any]] = []
+                for resource in resources:
+                    options: Any = {}
+                    options["resource"] = {}
+                    options["resource"]["descriptor"] = resource.to_descriptor()
+                    options["resource"]["basepath"] = resource.basepath
+                    options["validate"] = {}
+                    options["validate"]["limit_rows"] = limit_rows
+                    options["validate"]["limit_errors"] = limit_errors
+                    options_pool.append(options)
+                report_descriptors = pool.map(_validate_parallel, options_pool)
+                for report_descriptor in report_descriptors:
+                    reports.append(Report.from_descriptor(report_descriptor))
+
+        # Return report
+        return Report.from_validation_reports(
+            time=timer.time,
+            reports=reports,
         )
 
     # Convert
@@ -706,3 +748,11 @@ class Package(Metadata, metaclass=Factory):
         #  descriptor = {"$frictionless": "package/v2", **descriptor}
 
         return descriptor
+
+
+def _validate_parallel(options: types.IDescriptor) -> types.IDescriptor:
+    resource_options = options["resource"]
+    validate_options = options["validate"]
+    resource = Resource.from_descriptor(**resource_options)
+    report = resource.validate(**validate_options)
+    return report.to_descriptor()

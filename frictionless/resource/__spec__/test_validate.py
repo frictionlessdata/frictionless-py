@@ -6,9 +6,12 @@ from frictionless import (
     Check,
     Checklist,
     Detector,
+    Dialect,
     FrictionlessException,
     Resource,
+    Schema,
     errors,
+    platform,
 )
 from frictionless.resources import TableResource
 
@@ -450,3 +453,308 @@ def test_resource_validate_resource_metadata_errors_with_fields_993():
     assert error.note == "descriptor is not valid"
     assert reasons[0].type == "resource-error"
     assert reasons[0].note == '"fields" should be set as "schema.fields"'
+
+
+# Checklist
+
+
+def test_resource_validate_bound_checklist():
+    checklist = Checklist(pick_errors=["blank-label", "blank-row"])
+    resource = TableResource(path="data/invalid.csv")
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, 3, "blank-label"],
+        [4, None, "blank-row"],
+    ]
+
+
+# Compression
+
+
+def test_resource_validate_compression():
+    resource = TableResource(path="data/table.csv.zip")
+    report = resource.validate()
+    assert report.valid
+
+
+def test_resource_validate_compression_explicit():
+    resource = TableResource(path="data/table.csv.zip", compression="zip")
+    report = resource.validate()
+    assert report.valid
+
+
+def test_resource_validate_compression_invalid():
+    resource = TableResource(path="data/table.csv.zip", compression="bad")
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        ["compression-error", 'compression "bad" is not supported'],
+    ]
+
+
+# Detector
+
+
+def test_resource_validate_detector_sync_schema():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+        }
+    )
+    detector = Detector(schema_sync=True)
+    resource = TableResource(
+        path="data/sync-schema.csv", schema=schema, detector=detector
+    )
+    report = resource.validate()
+    assert report.valid
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "id", "type": "integer"},
+        ],
+    }
+
+
+def test_resource_validate_detector_sync_schema_invalid():
+    source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "string"},
+                {"name": "FirstName", "type": "string"},
+                {"name": "LastName", "type": "string"},
+            ]
+        }
+    )
+    detector = Detector(schema_sync=True)
+    resource = TableResource(data=source, schema=schema, detector=detector)
+    report = resource.validate()
+    assert report.valid
+
+
+def test_resource_validate_detector_headers_errors():
+    source = [
+        ["id", "last_name", "first_name", "language"],
+        [1, "Alex", "John", "English"],
+        [2, "Peters", "John", "Afrikaans"],
+        [3, "Smith", "Paul", None],
+    ]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "number"},
+                {
+                    "name": "language",
+                    "type": "string",
+                    "constraints": {"required": True},
+                },
+                {"name": "country", "type": "string"},
+            ]
+        }
+    )
+    detector = Detector(schema_sync=True)
+    resource = TableResource(data=source, schema=schema, detector=detector)
+    report = resource.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
+        [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
+    ]
+
+
+def test_resource_validate_detector_patch_schema():
+    detector = Detector(schema_patch={"missingValues": ["-"]})
+    resource = TableResource(path="data/table.csv", detector=detector)
+    report = resource.validate()
+    assert report.valid
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "missingValues": ["-"],
+    }
+
+
+def test_resource_validate_detector_patch_schema_fields():
+    detector = Detector(
+        schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
+    )
+    resource = TableResource(path="data/table.csv", detector=detector)
+    report = resource.validate()
+    assert report.valid
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+        ],
+        "missingValues": ["-"],
+    }
+
+
+def test_resource_validate_detector_infer_type_string():
+    detector = Detector(field_type="string")
+    resource = TableResource(path="data/table.csv", detector=detector)
+    report = resource.validate()
+    assert report.valid
+    assert resource.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+        ],
+    }
+
+
+def test_resource_validate_detector_infer_type_any():
+    detector = Detector(field_type="any")
+    resource = TableResource(path="data/table.csv", detector=detector)
+    report = resource.validate()
+    assert report.valid
+    assert resource.schema.to_descriptor() == {
+        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
+    }
+
+
+def test_resource_validate_detector_infer_names():
+    dialect = Dialect(header=False)
+    detector = Detector(field_names=["id", "name"])
+    resource = TableResource(
+        path="data/without-headers.csv", dialect=dialect, detector=detector
+    )
+    report = resource.validate()
+    assert report.valid
+    assert resource.schema.fields[0].name == "id"
+    assert resource.schema.fields[1].name == "name"
+    assert resource.stats.rows == 3
+    assert resource.labels == []
+    assert resource.header == ["id", "name"]
+
+
+# Encoding
+
+
+def test_resource_validate_encoding():
+    resource = TableResource(path="data/table.csv", encoding="utf-8")
+    report = resource.validate()
+    assert report.valid
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_resource_validate_encoding_invalid():
+    resource = TableResource(path="data/latin1.csv", encoding="utf-8")
+    report = resource.validate()
+    assert not report.valid
+    assert report.flatten(["type", "note"]) == [
+        [
+            "encoding-error",
+            "'utf-8' codec can't decode byte 0xa9 in position 20: invalid start byte",
+        ],
+    ]
+
+
+# File
+
+
+def test_resource_validate_format_non_tabular():
+    resource = Resource("data/table.bad")
+    report = resource.validate()
+    assert report.valid
+
+
+def test_resource_validate_invalid_resource_standards_v2_strict():
+    report = Resource.validate_descriptor({"path": "data/table.csv"})
+    assert report.flatten(["type", "note"]) == [
+        ["resource-error", "'name' is a required property"],
+    ]
+
+
+# Format
+
+
+def test_resource_validate_format():
+    resource = TableResource(path="data/table.csv", format="csv")
+    report = resource.validate()
+    assert report.valid
+
+
+# Stats
+
+
+def test_resource_validate_stats_hash():
+    hash = "sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
+    resource = TableResource(path="data/table.csv", hash=hash)
+    report = resource.validate()
+    assert report.task.valid
+
+
+def test_resource_validate_stats_hash_invalid():
+    hash = "6c2c61dd9b0e9c6876139a449ed87933"
+    resource = TableResource(path="data/table.csv", hash="bad")
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "hash-count",
+            'expected is "bad" and actual is "%s"' % hash,
+        ],
+    ]
+
+
+def test_resource_validate_stats_bytes():
+    resource = TableResource(path="data/table.csv", bytes=30)
+    report = resource.validate()
+    assert report.task.valid
+
+
+def test_resource_validate_stats_bytes_invalid():
+    resource = TableResource(path="data/table.csv", bytes=40)
+    report = resource.validate()
+    assert report.task.error.to_descriptor().get("rowNumber") is None
+    assert report.task.error.to_descriptor().get("fieldNumber") is None
+    assert report.flatten(["type", "note"]) == [
+        ["byte-count", 'expected is "40" and actual is "30"'],
+    ]
+
+
+def test_resource_validate_stats_rows():
+    resource = TableResource(path="data/table.csv", rows=2)
+    report = resource.validate()
+    assert report.task.valid
+
+
+def test_resource_validate_stats_rows_invalid():
+    resource = TableResource(path="data/table.csv", rows=3)
+    report = resource.validate()
+    assert report.task.error.to_descriptor().get("rowNumber") is None
+    assert report.task.error.to_descriptor().get("fieldNumber") is None
+    assert report.flatten(["type", "note"]) == [
+        ["row-count", 'expected is "3" and actual is "2"'],
+    ]
+
+
+def test_resource_validate_stats_not_supported_hash_algorithm():
+    resource = TableResource.from_descriptor(
+        {
+            "name": "name",
+            "path": "data/table.csv",
+            "hash": "sha1:db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e",
+        }
+    )
+    report = resource.validate()
+    assert report.task.warnings == ["hash is ignored; supported algorithms: md5/sha256"]
+
+
+# Scheme
+
+
+def test_resource_validate_scheme():
+    resource = TableResource(path="data/table.csv", scheme="file")
+    report = resource.validate()
+    assert report.valid
+
+
+def test_resource_validate_scheme_invalid():
+    resource = TableResource(path="bad://data/table.csv")
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        ["scheme-error", 'scheme "bad" is not supported'],
+    ]
