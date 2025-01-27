@@ -476,7 +476,8 @@ class Package(Metadata, metaclass=Factory):
 
         Parameters:
             checklist? (checklist): a Checklist object
-            parallel? (bool): run in parallel if possible
+            parallel? (bool): run in parallel if possible. Parallel execution
+            is not possible if foreign keys are used in a resource schema.
 
         Returns:
             Report: validation report
