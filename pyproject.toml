@@ -48,7 +48,6 @@ dependencies = [
     "tabulate>=0.8.10",
     "jsonschema>=4.20",
     "simpleeval>=0.9.11",
-    "stringcase>=1.2",
     "typer>=0.12",
     "validators>=0.18",
     "python-slugify>=1.2",
