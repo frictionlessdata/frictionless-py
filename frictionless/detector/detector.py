@@ -404,31 +404,30 @@ class Detector:
             schema.fields = fields  # type: ignore
 
         # Sync schema
-        if self.schema_sync:
-            if labels:
-                case_sensitive = options["header_case"]
+        if self.schema_sync and labels:
+            case_sensitive = options["header_case"]
 
-                if not case_sensitive:
-                    labels = [label.lower() for label in labels]
+            if not case_sensitive:
+                labels = [label.lower() for label in labels]
 
-                if len(labels) != len(set(labels)):
-                    note = '"schema_sync" requires unique labels in the header'
-                    raise FrictionlessException(note)
+            if len(labels) != len(set(labels)):
+                note = '"schema_sync" requires unique labels in the header'
+                raise FrictionlessException(note)
 
-                mapped_fields = self.map_schema_fields_by_name(
-                    schema.fields,
-                    case_sensitive,
-                )
+            mapped_fields = self.map_schema_fields_by_name(
+                schema.fields,
+                case_sensitive,
+            )
 
-                self.rearrange_schema_fields_given_labels(
-                    mapped_fields,
-                    schema,
-                    labels,
-                )
+            self.rearrange_schema_fields_given_labels(
+                mapped_fields,
+                schema,
+                labels,
+            )
 
-                self.add_missing_required_labels_to_schema_fields(
-                    mapped_fields, schema, labels, case_sensitive
-                )
+            self.add_missing_required_labels_to_schema_fields(
+                mapped_fields, schema, labels, case_sensitive
+            )
 
         # Patch schema
         if self.schema_patch:
@@ -460,8 +459,10 @@ class Detector:
         schema: Schema,
         labels: List[str],
     ):
-        """Rearrange fields according to the order of labels. All fields
-        missing from labels are dropped"""
+        """Rearrange fields according to the order of labels.
+        All fields missing from labels are dropped.
+        Any extra-field is filled in with a default `"type": "any"` field.
+        """
         schema.clear_fields()
 
         for name in labels:

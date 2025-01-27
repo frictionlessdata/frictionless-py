@@ -39,11 +39,11 @@ class Row(Dict[str, Any]):
         self,
         cells: List[Any],
         *,
-        field_info: FieldsInfo,
+        fields_info: FieldsInfo,
         row_number: int,
     ):
         self.__cells = cells
-        self.__fields_info = field_info
+        self.__fields_info = fields_info
         self.__row_number = row_number
         self.__processed: bool = False
         self.__blank_cells: Dict[str, Any] = {}
@@ -65,7 +65,7 @@ class Row(Dict[str, Any]):
     def __setitem__(self, key: str, value: Any):
         try:
             field_number = self.__fields_info.get(key).field_number
-        except KeyError:
+        except ValueError:
             raise KeyError(f"Row does not have a field {key}")
         if len(self.__cells) < field_number:
             self.__cells.extend([None] * (field_number - len(self.__cells)))
@@ -87,7 +87,7 @@ class Row(Dict[str, Any]):
     def __reversed__(self):
         return reversed(self.__fields_info.ls())
 
-    def keys(self):
+    def keys(self):  # type: ignore
         return iter(self.__fields_info.ls())
 
     def values(self):  # type: ignore

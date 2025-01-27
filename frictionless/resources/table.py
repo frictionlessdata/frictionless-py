@@ -263,7 +263,9 @@ class TableResource(Resource):
                     self.__lookup[source_name][source_key].add(cells)
 
     def __open_row_stream(self):
-        field_info = FieldsInfo(self.schema.fields)
+        fields_info = FieldsInfo(
+            self.schema.fields, self.labels, self.detector.schema_sync
+        )
 
         # Create state
         memory_unique: Dict[str, Any] = {}
@@ -296,7 +298,7 @@ class TableResource(Resource):
 
                 row = Row(
                     cells,
-                    field_info=field_info,
+                    fields_info=fields_info,
                     row_number=row_number,
                 )
 
@@ -378,9 +380,9 @@ class TableResource(Resource):
 
         if self.detector.schema_sync:
             # Missing required labels are not included in the
-            # field_info parameter used for row creation
+            # fields_info parameter used for row creation
             for field in self.schema.fields:
-                self.remove_missing_required_label_from_field_info(field, field_info)
+                self.remove_missing_required_label_from_field_info(field, fields_info)
 
         self.__row_stream = row_stream()
 
@@ -415,7 +417,9 @@ class TableResource(Resource):
     def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
         """Create a tuple containg all cells from a given row associated to primary
         keys"""
-        return tuple(row[label] for label in self.primary_key_labels(row, case_sensitive))
+        return tuple(
+            row[label] for label in self.primary_key_labels(row, case_sensitive)
+        )
 
     def primary_key_labels(
         self,
@@ -689,39 +693,63 @@ class _FieldInfo:
 
 
 class FieldsInfo:
-    """Helper class to store additional data to a collection of fields
+    """Helper class for linking columns to schema fields.
+
+    It abstracts away the different ways of making this link. In particular, the
+    reference may be the schema (`detector.schema_sync = False`), or the labels
+    (`detector.schema_sync = True`).
 
     This class is not Public API, and should be used only in non-public
     interfaces.
     """
 
-    def __init__(self, fields: List[Field]):
-        self._fields: List[_FieldInfo] = [
-            _FieldInfo(field, i + 1) for i, field in enumerate(fields)
-        ]
+    def __init__(
+        self, fields: List[Field], labels: Optional[List[str]], schema_sync: bool
+    ):
+        if schema_sync and labels:
+            self._expected_fields: List[_FieldInfo] = []
+            if len(labels) != len(set(labels)):
+                note = '"schema_sync" requires unique labels in the header'
+                raise FrictionlessException(note)
+
+            for label_index, label in enumerate(labels):
+                try:
+                    field = next(f for f in fields if f.name == label)
+                except StopIteration:
+                    field = Field.from_descriptor({"name": label, "type": "any"})
+                self._expected_fields.append(_FieldInfo(field, label_index + 1))
+        else:
+            self._expected_fields = [
+                _FieldInfo(field, i + 1) for i, field in enumerate(fields)
+            ]
 
     def ls(self) -> List[str]:
-        """List all field names"""
-        return [fi.field.name for fi in self._fields]
+        """List all column names"""
+        return [fi.field.name for fi in self._expected_fields]
 
     def get(self, field_name: str) -> _FieldInfo:
         """Get a Field by its name
 
+        In case no field with field_name exists, the behavior depends on
+        the `detector.schema_sync` option:
+
         Raises:
-            ValueError: Field with name fieldname does not exist
+            ValueError
         """
         try:
-            return next(fi for fi in self._fields if fi.field.name == field_name)
+            return next(
+                fi for fi in self._expected_fields if fi.field.name == field_name
+            )
         except StopIteration:
-            raise ValueError(f"'{field_name}' is not in fields data")
+            raise ValueError(f"{field_name} is missing from expected fields")
 
     def get_copies(self) -> List[Field]:
         """Return field copies"""
-        return [fi.field.to_copy() for fi in self._fields]
+        return [fi.field.to_copy() for fi in self._expected_fields]
 
     def rm(self, field_name: str):
         try:
             i = self.ls().index(field_name)
-            del self._fields[i]
+            del self._expected_fields[i]
         except ValueError:
             raise ValueError(f"'{field_name}' is not in fields data")
