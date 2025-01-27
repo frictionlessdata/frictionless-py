@@ -33,8 +33,8 @@ SOFTWARE.
 import re
 
 
-def camelcase(string):
-    """ Convert string into camel case.
+def camelcase(string: str):
+    """Convert string into camel case.
 
     Args:
         string: String to convert.
@@ -44,13 +44,15 @@ def camelcase(string):
 
     """
 
-    string = re.sub(r"\w[\s\W]+\w", '', str(string))
+    string = re.sub(r"\w[\s\W]+\w", "", str(string))
     if not string:
         return string
-    return lowercase(string[0]) + re.sub(r"[\-_\.\s]([a-z])", lambda matched: uppercase(matched.group(1)), string[1:])
+    return lowercase(string[0]) + re.sub(
+        r"[\-_\.\s]([a-z])", lambda matched: uppercase(matched.group(1)), string[1:]
+    )
 
 
-def capitalcase(string):
+def capitalcase(string: str):
     """Convert string into capital case.
     First letters will be uppercase.
 
@@ -68,7 +70,7 @@ def capitalcase(string):
     return uppercase(string[0]) + string[1:]
 
 
-def constcase(string):
+def constcase(string: str):
     """Convert string into upper snake case.
     Join punctuation with underscore and convert letters into uppercase.
 
@@ -83,7 +85,7 @@ def constcase(string):
     return uppercase(snakecase(string))
 
 
-def lowercase(string):
+def lowercase(string: str):
     """Convert string into lower case.
 
     Args:
@@ -97,7 +99,7 @@ def lowercase(string):
     return str(string).lower()
 
 
-def pascalcase(string):
+def pascalcase(string: str):
     """Convert string into pascal case.
 
     Args:
@@ -111,7 +113,7 @@ def pascalcase(string):
     return capitalcase(camelcase(string))
 
 
-def pathcase(string):
+def pathcase(string: str):
     """Convert string into path case.
     Join punctuation with slash.
 
@@ -128,7 +130,7 @@ def pathcase(string):
     return re.sub(r"_", "/", string)
 
 
-def backslashcase(string):
+def backslashcase(string: str):
     """Convert string into spinal case.
     Join punctuation with backslash.
 
@@ -145,7 +147,7 @@ def backslashcase(string):
     # return re.sub(r"\\n", "", str1))  # TODO: make regex fot \t ...
 
 
-def sentencecase(string):
+def sentencecase(string: str):
     """Convert string into sentence case.
     First letter capped and each punctuations are joined with space.
 
@@ -156,17 +158,18 @@ def sentencecase(string):
         string: Sentence cased string.
 
     """
-    joiner = ' '
+    joiner = " "
     string = re.sub(r"[\-_\.\s]", joiner, str(string))
     if not string:
         return string
-    return capitalcase(trimcase(
-        re.sub(r"[A-Z]", lambda matched: joiner +
-               lowercase(matched.group(0)), string)
-    ))
+    return capitalcase(
+        trimcase(
+            re.sub(r"[A-Z]", lambda matched: joiner + lowercase(matched.group(0)), string)
+        )
+    )
 
 
-def snakecase(string):
+def snakecase(string: str):
     """Convert string into snake case.
     Join punctuation with underscore
 
@@ -178,13 +181,15 @@ def snakecase(string):
 
     """
 
-    string = re.sub(r"[\-\.\s]", '_', str(string))
+    string = re.sub(r"[\-\.\s]", "_", str(string))
     if not string:
         return string
-    return lowercase(string[0]) + re.sub(r"[A-Z]", lambda matched: '_' + lowercase(matched.group(0)), string[1:])
+    return lowercase(string[0]) + re.sub(
+        r"[A-Z]", lambda matched: "_" + lowercase(matched.group(0)), string[1:]
+    )
 
 
-def spinalcase(string):
+def spinalcase(string: str):
     """Convert string into spinal case.
     Join punctuation with hyphen.
 
@@ -199,8 +204,7 @@ def spinalcase(string):
     return re.sub(r"_", "-", snakecase(string))
 
 
-def dotcase(string):
-
+def dotcase(string: str):
     """Convert string into dot case.
     Join punctuation with dot.
 
@@ -215,7 +219,7 @@ def dotcase(string):
     return re.sub(r"_", ".", snakecase(string))
 
 
-def titlecase(string):
+def titlecase(string: str):
     """Convert string into sentence case.
     First letter capped while each punctuations is capitalsed
     and joined with space.
@@ -228,12 +232,10 @@ def titlecase(string):
 
     """
 
-    return ' '.join(
-        [capitalcase(word) for word in snakecase(string).split("_")]
-    )
+    return " ".join([capitalcase(word) for word in snakecase(string).split("_")])
 
 
-def trimcase(string):
+def trimcase(string: str):
     """Convert string into trimmed string.
 
     Args:
@@ -246,7 +248,7 @@ def trimcase(string):
     return str(string).strip()
 
 
-def uppercase(string):
+def uppercase(string: str):
     """Convert string into upper case.
 
     Args:
@@ -260,7 +262,7 @@ def uppercase(string):
     return str(string).upper()
 
 
-def alphanumcase(string):
+def alphanumcase(string: str):
     """Cuts all non-alphanumeric symbols,
     i.e. cuts all expect except 0-9, a-z and A-Z.
 
