@@ -382,7 +382,6 @@ class TableResource(Resource):
             for field in self.schema.fields:
                 self.remove_missing_required_label_from_field_info(field, field_info)
 
-        # Create row stream
         self.__row_stream = row_stream()
 
     def remove_missing_required_label_from_field_info(

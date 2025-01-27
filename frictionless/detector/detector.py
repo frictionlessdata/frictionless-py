@@ -415,8 +415,8 @@ class Detector:
                     note = '"schema_sync" requires unique labels in the header'
                     raise FrictionlessException(note)
 
-                mapped_fields = self.mapped_schema_fields_names(
-                    schema.fields,  # type: ignore
+                mapped_fields = self.map_schema_fields_by_name(
+                    schema.fields,
                     case_sensitive,
                 )
 
@@ -445,7 +445,7 @@ class Detector:
         return schema
 
     @staticmethod
-    def mapped_schema_fields_names(
+    def map_schema_fields_by_name(
         fields: List[Field], case_sensitive: bool
     ) -> Dict[str, Field]:
         """Create a dictionnary to map field names with schema fields"""
