@@ -33,7 +33,9 @@ class Validator:
         timer = helpers.Timer()
         reports: List[Report] = []
         resources = package.resources if name is None else [package.get_resource(name)]
-        with_fks = any(res.schema and res.schema.foreign_keys for res in resources)
+        with_foreign_keys = any(
+            res.schema and res.schema.foreign_keys for res in resources
+        )
 
         # Prepare checklist
         checklist = checklist or Checklist()
@@ -45,7 +47,7 @@ class Validator:
             return Report.from_validation(time=timer.time, errors=exception.to_errors())
 
         # Validate sequential
-        if not parallel or with_fks:
+        if not parallel or with_foreign_keys:
             for resource in resources:
                 report = resource.validate(
                     checklist=checklist,
