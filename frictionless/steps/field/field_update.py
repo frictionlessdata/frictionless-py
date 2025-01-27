@@ -50,11 +50,17 @@ class field_update(Step):
     A descriptor for the field to set the metadata.
     """
 
+    pass_row: bool = False
+    """
+    Pass the entire row as a second parameter for the transformation function if set to True.
+    The first parameter (the value) remains unchanged.
+    """
+
     # Transform
 
     def transform_resource(self, resource: Resource):
         function = self.function
-        pass_row = False
+        pass_row = self.pass_row
         table = resource.to_petl()  # type: ignore
         descriptor = deepcopy(self.descriptor) or {}
         new_name = descriptor.get("name")
@@ -106,5 +112,6 @@ class field_update(Step):
             "value": {},
             "formula": {"type": "string"},
             "descriptor": {"type": "object"},
+            "pass_row": {"type": "boolean"},
         },
     }

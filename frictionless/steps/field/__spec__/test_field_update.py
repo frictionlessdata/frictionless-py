@@ -144,3 +144,31 @@ def test_step_field_update_referenced_as_foreign_key():
             "reference": {"fields": ["pkey"], "resource": "resource1"},
         }
     ]
+
+
+def test_step_field_update_with_function_and_pass_row_true():
+    source = TableResource(path="data/transform.csv")
+
+    def add_country_to_id(value, row):
+        return str(value) + " " + row["name"]
+
+    pipeline = Pipeline(
+        steps=[
+            steps.field_update(
+                name="id", function=add_country_to_id,
+                descriptor={"type": "string"}, pass_row=True)
+        ],
+    )
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": "1 germany", "name": "germany", "population": 83},
+        {"id": "2 france", "name": "france", "population": 66},
+        {"id": "3 spain", "name": "spain", "population": 47},
+    ]
