@@ -26,7 +26,7 @@ from typing_extensions import Self
 from .. import helpers
 from ..exception import FrictionlessException
 from ..platform import platform
-from ..vendors import stringcase  # type: ignore
+from ..vendors import stringcase
 
 if TYPE_CHECKING:
     from .. import types
@@ -136,7 +136,10 @@ class Metadata:
 
     @classmethod
     def validate_descriptor(
-        cls, descriptor: Union[types.IDescriptor, str], *, basepath: Optional[str] = None
+        cls,
+        descriptor: Union[types.IDescriptor, str],
+        *,
+        basepath: Optional[str] = None,
     ) -> Report:
         errors = []
         timer = helpers.Timer()
@@ -391,7 +394,11 @@ class Metadata:
 
     @classmethod
     def metadata_import(
-        cls, descriptor: types.IDescriptor, *, with_basepath: bool = False, **options: Any
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        with_basepath: bool = False,
+        **options: Any,
     ) -> Self:
         merged_options = {}
         profile = cls.metadata_ensure_profile()
