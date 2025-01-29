@@ -9,7 +9,6 @@ import attrs
 
 from .. import helpers, settings
 from ..dialect import Dialect
-from ..exception import FrictionlessException
 from ..fields import AnyField
 from ..metadata import Metadata
 from ..platform import platform
@@ -403,32 +402,6 @@ class Detector:
                     fields[index] = AnyField(name=name, schema=schema)  # type: ignore
             schema.fields = fields  # type: ignore
 
-        # Sync schema
-        if self.schema_sync and labels:
-            case_sensitive = options["header_case"]
-
-            if not case_sensitive:
-                labels = [label.lower() for label in labels]
-
-            if len(labels) != len(set(labels)):
-                note = '"schema_sync" requires unique labels in the header'
-                raise FrictionlessException(note)
-
-            mapped_fields = self.map_schema_fields_by_name(
-                schema.fields,
-                case_sensitive,
-            )
-
-            self.rearrange_schema_fields_given_labels(
-                mapped_fields,
-                schema,
-                labels,
-            )
-
-            self.add_missing_required_labels_to_schema_fields(
-                mapped_fields, schema, labels, case_sensitive
-            )
-
         # Patch schema
         if self.schema_patch:
             patch = deepcopy(self.schema_patch)
@@ -442,59 +415,3 @@ class Detector:
             schema = Schema.from_descriptor(descriptor)
 
         return schema
-
-    @staticmethod
-    def map_schema_fields_by_name(
-        fields: List[Field], case_sensitive: bool
-    ) -> Dict[str, Field]:
-        """Create a dictionnary to map field names with schema fields"""
-        if case_sensitive:
-            return {field.name: field for field in fields}
-        else:
-            return {field.name.lower(): field for field in fields}
-
-    @staticmethod
-    def rearrange_schema_fields_given_labels(
-        fields_mapping: Dict[str, Field],
-        schema: Schema,
-        labels: List[str],
-    ):
-        """Rearrange fields according to the order of labels.
-        All fields missing from labels are dropped.
-        Any extra-field is filled in with a default `"type": "any"` field.
-        """
-        schema.clear_fields()
-
-        for name in labels:
-            default_field = Field.from_descriptor({"name": name, "type": "any"})
-            field = fields_mapping.get(name, default_field)
-            schema.add_field(field)
-
-    def add_missing_required_labels_to_schema_fields(
-        self,
-        fields_mapping: Dict[str, Field],
-        schema: Schema,
-        labels: List[str],
-        case_sensitive: bool,
-    ):
-        """This method aims to add missing required labels and
-        primary key field not in labels to schema fields.
-        """
-        for name, field in fields_mapping.items():
-            if (
-                self.field_is_required(field, schema, case_sensitive)
-                and name not in labels
-            ):
-                schema.add_field(field)
-
-    @staticmethod
-    def field_is_required(
-        field: Field,
-        schema: Schema,
-        case_sensitive: bool,
-    ) -> bool:
-        if case_sensitive:
-            return field.required or field.name in schema.primary_key
-        else:
-            lower_primary_key = [pk.lower() for pk in schema.primary_key]
-            return field.required or field.name.lower() in lower_primary_key

@@ -217,6 +217,7 @@ class TableResource(Resource):
             fields=self.schema.fields,
             row_numbers=self.dialect.header_rows,
             ignore_case=not self.dialect.header_case,
+            schema_sync=self.detector.schema_sync,
         )
 
         # Handle errors
@@ -378,12 +379,6 @@ class TableResource(Resource):
                 # Yield row
                 yield row
 
-        if self.detector.schema_sync:
-            # Missing required labels are not included in the
-            # fields_info parameter used for row creation
-            for field in self.schema.fields:
-                self.remove_missing_required_label_from_field_info(field, fields_info)
-
         self.__row_stream = row_stream()
 
     def remove_missing_required_label_from_field_info(
@@ -417,9 +412,7 @@ class TableResource(Resource):
     def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
         """Create a tuple containg all cells from a given row associated to primary
         keys"""
-        return tuple(
-            row[label] for label in self.primary_key_labels(row, case_sensitive)
-        )
+        return tuple(row[label] for label in self.primary_key_labels(row, case_sensitive))
 
     def primary_key_labels(
         self,
@@ -703,11 +696,14 @@ class FieldsInfo:
     interfaces.
     """
 
-    def __init__(
-        self, fields: List[Field], labels: Optional[List[str]], schema_sync: bool
-    ):
+    def __init__(self, fields: List[Field], labels: List[str], schema_sync: bool):
+        self._labels = labels
+        """Actual labels as found in data"""
+
+        self._expected_fields: List[_FieldInfo] = []
+        """Fields that are expected, in the order they are expected"""
+
         if schema_sync and labels:
-            self._expected_fields: List[_FieldInfo] = []
             if len(labels) != len(set(labels)):
                 note = '"schema_sync" requires unique labels in the header'
                 raise FrictionlessException(note)
@@ -737,9 +733,7 @@ class FieldsInfo:
             ValueError
         """
         try:
-            return next(
-                fi for fi in self._expected_fields if fi.field.name == field_name
-            )
+            return next(fi for fi in self._expected_fields if fi.field.name == field_name)
         except StopIteration:
             raise ValueError(f"{field_name} is missing from expected fields")
 

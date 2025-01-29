@@ -509,12 +509,6 @@ def test_resource_validate_detector_sync_schema():
     )
     report = resource.validate()
     assert report.valid
-    assert resource.schema.to_descriptor() == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ],
-    }
 
 
 def test_resource_validate_detector_sync_schema_invalid():

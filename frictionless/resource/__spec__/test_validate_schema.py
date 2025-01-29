@@ -435,7 +435,7 @@ def test_validate_resource_ignoring_header_case_issue_1635():
             dialect=Dialect(header_case=tc["header_case"]),
         )
         report = frictionless.validate(resource)
-        assert report.valid == tc["expected_valid_report"]
+        assert report.valid == tc["expected_valid_report"], report.task.errors
         assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == tc[
             "expected_flattened_report"
         ]
