@@ -37,6 +37,16 @@ def test_string_read_cell(format, source, target):
     "format, source, target",
     [
         ("wkt", "POINT (30 10)", "POINT (30 10)"),
+        (
+            "wkt",
+            "POINT (574009.086492192 6028393.69530573)",
+            "POINT (574009.086492192 6028393.69530573)",
+        ),
+        (
+            "wkt",
+            "SRID=25832;POINT (574009.086492192 6028393.69530573)",
+            "SRID=25832;POINT (574009.086492192 6028393.69530573)",
+        ),
         ("wkt", "LINESTRING (30 10, 10 30, 40 40)", "LINESTRING (30 10, 10 30, 40 40)"),
         (
             "wkt",
