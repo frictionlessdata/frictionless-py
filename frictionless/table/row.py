@@ -121,8 +121,8 @@ class Row(Dict[str, Any]):
     @cached_property
     def cells(self):
         """
-        .ls():
-              Field[]: table schema fields
+        Returns:
+            Any[]: Table cell values
         """
         self.__process()
         return self.__cells
