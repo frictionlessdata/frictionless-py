@@ -53,7 +53,7 @@ cat transform.csv
 
 The high-level interface to transform data is a set of `transform` functions:
 - `transform`: detects the source type and transforms data accordingly
-- `reosurce.transform`: transforms a resource
+- `resource.transform`: transforms a resource
 - `package.transform`: transforms a package
 
 We'll see examples of these functions in the next few sections.
