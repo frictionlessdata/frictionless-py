@@ -157,7 +157,7 @@ Frictionless includes more than 40+ built-in transform steps. They are grouped b
 - row
 - cell
 
-See [Transform Steps](../steps/cell.md) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
+See [Transform Steps](../steps/cell.html) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
 
 ## Custom Steps
 
