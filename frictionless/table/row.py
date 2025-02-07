@@ -61,10 +61,16 @@ class Row(Dict[str, Any]):
         return super().__eq__(other)
 
     def __str__(self):
-        return super().__str__()
+        s = ""
+        if not self.__processed:
+            s = "Unprocessed: "
+        return s + super().__str__()
 
     def __repr__(self):
-        return super().__repr__()
+        s = ""
+        if not self.__processed:
+            s = "Unprocessed: "
+        return s + "Row" + super().__repr__()
 
     def __setitem__(self, key: str, value: Any):
         try:
