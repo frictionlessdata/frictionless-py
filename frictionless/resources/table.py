@@ -378,15 +378,6 @@ class TableResource(Resource):
 
         self.__row_stream = row_stream()
 
-    def remove_missing_required_label_from_field_info(
-        self, field: Field, fields_info: FieldsInfo
-    ):
-        is_case_sensitive = self.dialect.header_case
-        if self.label_is_missing(
-            field.name, fields_info.ls(), self.labels, is_case_sensitive
-        ):
-            fields_info.rm(field.name)
-
     @staticmethod
     def label_is_missing(
         field_name: str,
