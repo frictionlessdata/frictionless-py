@@ -5,8 +5,6 @@ import os
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
-from frictionless.schema.field import Field
-
 from .. import errors, helpers
 from ..analyzer import Analyzer
 from ..dialect import Dialect

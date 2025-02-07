@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Iterable, List, Optional
+from typing import List, Optional
 
 from .. import errors, helpers
 from ..exception import FrictionlessException
