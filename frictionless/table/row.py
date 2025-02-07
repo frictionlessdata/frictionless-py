@@ -70,7 +70,7 @@ class Row(Dict[str, Any]):
         s = ""
         if not self.__processed:
             s = "Unprocessed: "
-        return s + "Row" + super().__repr__()
+        return s + super().__repr__()
 
     def __setitem__(self, key: str, value: Any):
         try:
