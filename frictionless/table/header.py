@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, List
+from typing import List, Optional
 
 from .. import errors, helpers
+from ..exception import FrictionlessException
+from ..schema import Field
 
-if TYPE_CHECKING:
-    from ..schema import Field
+Label = str
 
 
 class Header(List[str]):  # type: ignore
@@ -29,9 +30,12 @@ class Header(List[str]):  # type: ignore
         fields: List[Field],
         row_numbers: List[int],
         ignore_case: bool = False,
+        schema_sync: bool,
     ):
         super().__init__(field.name for field in fields)
-        self.__fields = [field.to_copy() for field in fields]
+        self.__fields = fields.copy()
+        self.__expected_fields: Optional[List[Field]] = None
+        self.__schema_sync = schema_sync
         self.__field_names = self.copy()
         self.__row_numbers = row_numbers
         self.__ignore_case = ignore_case
@@ -125,47 +129,41 @@ class Header(List[str]):  # type: ignore
         if self.missing:
             return
 
-        # Prepare context
-        labels = self.__labels
-        fields = self.__fields
+        labels = self.labels
 
         # Extra label
-        if len(fields) < len(labels):
-            start = len(fields) + 1
-            iterator = labels[len(fields) :]
-            for field_number, label in enumerate(iterator, start=start):
+        start = len(self.fields) + 1
+        for field_number, label in enumerate(self._get_extra_labels(), start=start):
+            self.__errors.append(
+                errors.ExtraLabelError(
+                    note="",
+                    labels=list(map(str, labels)),
+                    row_numbers=self.__row_numbers,
+                    label=label,
+                    field_name="",
+                    field_number=field_number,
+                )
+            )
+
+        # Missing label
+        start = len(labels) + 1
+        for field_number, field in enumerate(self._get_missing_fields(), start=start):
+            if field is not None:  # type: ignore
                 self.__errors.append(
-                    errors.ExtraLabelError(
+                    errors.MissingLabelError(
                         note="",
                         labels=list(map(str, labels)),
                         row_numbers=self.__row_numbers,
                         label="",
-                        field_name="",
+                        field_name=field.name,
                         field_number=field_number,
                     )
                 )
 
-        # Missing label
-        if len(fields) > len(labels):
-            start = len(labels) + 1
-            iterator = fields[len(labels) :]
-            for field_number, field in enumerate(iterator, start=start):
-                if field is not None:  # type: ignore
-                    self.__errors.append(
-                        errors.MissingLabelError(
-                            note="",
-                            labels=list(map(str, labels)),
-                            row_numbers=self.__row_numbers,
-                            label="",
-                            field_name=field.name,
-                            field_number=field_number,
-                        )
-                    )
-
         # Iterate items
-        field_number = 0
-        for field, label in zip(fields, labels):
-            field_number += 1
+        for index, (field, label) in enumerate(zip(self.get_expected_fields(), labels)):
+            # field_number is 1-indexed
+            field_number = index + 1
 
             # Blank label
             if not label:
@@ -228,3 +226,100 @@ class Header(List[str]):  # type: ignore
                     row_numbers=self.__row_numbers,
                 )
             ]
+
+    def _get_extra_labels(self) -> List[str]:
+        """Returns unexpected extra labels.
+
+        If `schema_sync=False`, the labels are expected to be in same order
+        and of same number than the schema fields. If the number of labels
+        is longer than the number of fields, the last labels are returned as
+        extra labels.
+
+        If `schema_sync=True`, extra labels are ignored and this method
+        returns an empty list
+        """
+        if not self.__schema_sync:
+            if len(self.fields) < len(self.labels):
+                return self.labels[len(self.fields) :]
+        return []
+
+    def _get_missing_fields(self) -> List[Field]:
+        """Returns unexpected missing fields.
+
+        If `schema_sync=False`, the labels are expected to be in same order
+        and of same number than the schema fields. If the number of fields is
+        longer than the number of labels, the last fields are returned as
+        missing fields.
+
+        If `schema_sync=True`, missing fields are ignored, except if they are
+        marked as `required`.
+        """
+
+        fields = self.fields
+        labels = self.labels
+        if not self.__schema_sync:
+            if len(fields) > len(labels):
+                return fields[len(labels) :]
+        else:
+
+            def required_and_missing(field: Field) -> bool:
+                required: bool = field.required or (
+                    field.schema is not None and field.name in field.schema.primary_key
+                )
+                missing = self._normalize(field.name) not in [
+                    self._normalize(label) for label in labels
+                ]
+                return required and missing
+
+            return [field for field in fields if required_and_missing(field)]
+
+        return []
+
+    def get_expected_fields(self) -> List[Field]:
+        """Returns a list of fields, in the order they are expected to be
+        found in the data.
+
+        The label with same position, and its associated
+        data are expected to comply with the field's expectations.
+
+        If `schema_sync=False`, the schema fields are precisely the expected
+        fields, so they are returned unchanged.
+
+        If `schema_sync=True`, fields are reordered so as the field names to
+        match the labels. If no such field exists, an extra field with `type: any` is
+        created on the fly.
+
+        The result is cached as a property.
+        """
+        if not self.__expected_fields:
+            if not self.__schema_sync:
+                self.__expected_fields = self.fields
+            else:
+                expected_fields: List[Field] = []
+
+                if len(self.labels) != len(set(self.labels)):
+                    note = '"schema_sync" requires unique labels in the header'
+                    raise FrictionlessException(note)
+
+                for label in self.labels:
+                    field = self._find_field_by_name(label)
+
+                    if not field:
+                        # Default value
+                        field = Field.from_descriptor({"name": label, "type": "any"})
+
+                    expected_fields.append(field)
+                self.__expected_fields = expected_fields
+
+        return self.__expected_fields
+
+    def _find_field_by_name(self, name: str) -> Optional[Field]:
+        try:
+            return next(
+                f for f in self.fields if self._normalize(f.name) == self._normalize(name)
+            )
+        except StopIteration:
+            return None
+
+    def _normalize(self, s: str) -> str:
+        return s.lower() if self.__ignore_case else s
