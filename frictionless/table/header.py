@@ -33,7 +33,7 @@ class Header(List[str]):  # type: ignore
         schema_sync: bool,
     ):
         super().__init__(field.name for field in fields)
-        self.__fields = fields.copy()
+        self.__fields = [field.to_copy() for field in fields]
         self.__expected_fields: Optional[List[Field]] = None
         self.__schema_sync = schema_sync
         self.__field_names = self.copy()
