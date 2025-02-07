@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional
 
 from .. import errors, helpers
 from ..exception import FrictionlessException
@@ -34,6 +34,7 @@ class Header(List[str]):  # type: ignore
     ):
         super().__init__(field.name for field in fields)
         self.__fields = fields.copy()
+        self.__expected_fields: Optional[List[Field]] = None
         self.__schema_sync = schema_sync
         self.__field_names = self.copy()
         self.__row_numbers = row_numbers
@@ -132,7 +133,7 @@ class Header(List[str]):  # type: ignore
 
         # Extra label
         start = len(self.fields) + 1
-        for field_number, label in enumerate(self._get_extra_labels(), start):
+        for field_number, label in enumerate(self._get_extra_labels(), start=start):
             self.__errors.append(
                 errors.ExtraLabelError(
                     note="",
@@ -160,7 +161,8 @@ class Header(List[str]):  # type: ignore
                 )
 
         # Iterate items
-        for index, (field, label) in enumerate(self._zip_fields_and_labels()):
+        for index, (field, label) in enumerate(zip(self.get_expected_fields(), labels)):
+            # field_number is 1-indexed
             field_number = index + 1
 
             # Blank label
@@ -226,7 +228,7 @@ class Header(List[str]):  # type: ignore
             ]
 
     def _get_extra_labels(self) -> List[str]:
-        """Returns unauthorized extra labels.
+        """Returns unexpected extra labels.
 
         If `schema_sync=False`, the labels are expected to be in same order
         and of same number than the schema fields. If the number of labels
@@ -242,7 +244,7 @@ class Header(List[str]):  # type: ignore
         return []
 
     def _get_missing_fields(self) -> List[Field]:
-        """Returns unauthorized missing fields.
+        """Returns unexpected missing fields.
 
         If `schema_sync=False`, the labels are expected to be in same order
         and of same number than the schema fields. If the number of fields is
@@ -273,33 +275,43 @@ class Header(List[str]):  # type: ignore
 
         return []
 
-    def _zip_fields_and_labels(self) -> Iterable[Tuple[Field, Label]]:
-        """Returns pairs of (field, label), where the label is expected to
-        comply with the field expectations.
+    def get_expected_fields(self) -> List[Field]:
+        """Returns a list of fields, in the order they are expected to be
+        found in the data.
 
-        If `schema_sync=False`, the labels are expected to be in same order,
-        so we can associate fields and labels on their position.
+        The label with same position, and its associated
+        data are expected to comply with the field's expectations.
 
-        If `schema_sync=True`, label are associated to fields with the same
-        name. If no such field exists, an extra field with `type: any` is
+        If `schema_sync=False`, the schema fields are precisely the expected
+        fields, so they are returned unchanged.
+
+        If `schema_sync=True`, fields are reordered so as the field names to
+        match the labels. If no such field exists, an extra field with `type: any` is
         created on the fly.
+
+        The result is cached as a property.
         """
-        if not self.__schema_sync:
-            return zip(self.fields, self.labels)
-        else:
-            zipped: List[Tuple[Field, Label]] = []
-            for label in self.labels:
+        if not self.__expected_fields:
+            if not self.__schema_sync:
+                self.__expected_fields = self.fields
+            else:
+                expected_fields: List[Field] = []
+
                 if len(self.labels) != len(set(self.labels)):
                     note = '"schema_sync" requires unique labels in the header'
                     raise FrictionlessException(note)
-                field = self._find_field_by_name(label)
 
-                if not field:
-                    # Default value
-                    field = Field.from_descriptor({"name": label, "type": "any"})
+                for label in self.labels:
+                    field = self._find_field_by_name(label)
 
-                zipped.append((field, label))
-            return zipped
+                    if not field:
+                        # Default value
+                        field = Field.from_descriptor({"name": label, "type": "any"})
+
+                    expected_fields.append(field)
+                self.__expected_fields = expected_fields
+
+        return self.__expected_fields
 
     def _find_field_by_name(self, name: str) -> Optional[Field]:
         try:

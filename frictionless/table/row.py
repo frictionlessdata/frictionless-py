@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from functools import cached_property
 from itertools import zip_longest
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
@@ -12,7 +13,7 @@ from ..platform import platform
 # We can consider adding row.header property to provide more comprehensive API
 
 if TYPE_CHECKING:
-    from ..resources.table import FieldsInfo
+    from ..schema.field import Field
 
 
 # TODO: add types
@@ -20,6 +21,9 @@ class Row(Dict[str, Any]):
     """Row representation
 
     > Constructor of this object is not Public API
+
+    It works like a lazy dictionary: dictionary values are only computed (see
+    `__process` method) if needed.
 
     This object is returned by `extract`, `resource.read_rows`, and other functions.
 
@@ -39,11 +43,13 @@ class Row(Dict[str, Any]):
         self,
         cells: List[Any],
         *,
-        fields_info: FieldsInfo,
+        expected_fields: List[Field],
         row_number: int,
     ):
         self.__cells = cells
-        self.__fields_info = fields_info
+        self.__expected_fields: OrderedDict[str, Field] = OrderedDict(
+            (f.name, f) for f in expected_fields
+        )
         self.__row_number = row_number
         self.__processed: bool = False
         self.__blank_cells: Dict[str, Any] = {}
@@ -55,18 +61,18 @@ class Row(Dict[str, Any]):
         return super().__eq__(other)
 
     def __str__(self):
-        self.__process()
         return super().__str__()
 
     def __repr__(self):
-        self.__process()
         return super().__repr__()
 
     def __setitem__(self, key: str, value: Any):
         try:
-            field_number = self.__fields_info.get(key).field_number
+            keys = [k for k in self.__expected_fields.keys()]
+            field_number = keys.index(key) + 1
         except ValueError:
             raise KeyError(f"Row does not have a field {key}")
+
         if len(self.__cells) < field_number:
             self.__cells.extend([None] * (field_number - len(self.__cells)))
         self.__cells[field_number - 1] = value
@@ -76,30 +82,33 @@ class Row(Dict[str, Any]):
         return self.__process(key)
 
     def __iter__(self):
-        return iter(self.__fields_info.ls())
+        return iter(self.__expected_fields)
 
     def __len__(self):
-        return len(self.__fields_info.ls())
+        return len(self.__expected_fields)
 
     def __contains__(self, key: object):
-        return key in self.__fields_info.ls()
+        return key in self.__expected_fields
 
     def __reversed__(self):
-        return reversed(self.__fields_info.ls())
+        return reversed(self.__expected_fields.keys())
 
-    def keys(self):  # type: ignore
-        return iter(self.__fields_info.ls())
+    def keys(self):
+        return self.__expected_fields.keys()
 
     def values(self):  # type: ignore
-        for name in self.__fields_info.ls():
+        self.__process()
+        for name in self.__expected_fields:
             yield self[name]
 
     def items(self):  # type: ignore
-        for name in self.__fields_info.ls():
+        self.__process()
+        for name in self.__expected_fields:
             yield (name, self[name])
 
     def get(self, key: str, default: Optional[Any] = None):
-        if key not in self.__fields_info.ls():
+        self.__process()
+        if key not in self.__expected_fields:
             return default
         return self[key]
 
@@ -109,6 +118,7 @@ class Row(Dict[str, Any]):
         .ls():
               Field[]: table schema fields
         """
+        self.__process()
         return self.__cells
 
     @cached_property
@@ -117,7 +127,7 @@ class Row(Dict[str, Any]):
         Returns:
             Field[]: table schema fields
         """
-        return self.__fields_info.get_copies()
+        return [f.to_copy() for f in self.__expected_fields.values()]
 
     @cached_property
     def field_names(self) -> List[str]:
@@ -125,7 +135,7 @@ class Row(Dict[str, Any]):
         Returns:
             str[]: field names
         """
-        return self.__fields_info.ls()
+        return [k for k in self.__expected_fields]
 
     @cached_property
     def field_numbers(self):
@@ -133,7 +143,7 @@ class Row(Dict[str, Any]):
         Returns:
             str[]: field numbers
         """
-        return list(range(1, len(self.__fields_info.ls()) + 1))
+        return list(range(1, len(self.__expected_fields) + 1))
 
     @cached_property
     def row_number(self) -> int:
@@ -204,17 +214,16 @@ class Row(Dict[str, Any]):
 
         # Prepare
         self.__process()
-        result = [self[name] for name in self.__fields_info.ls()]
+        result = [self[name] for name in self.field_names]
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
 
         # Convert
         if types is not None:
-            field_names = self.__fields_info.ls()
+            field_names = self.field_names
             for index, field_name in enumerate(field_names):
-                field_info = self.__fields_info.get(field_name)
-                field = field_info.field
-                cell_writer = field_info.cell_writer
+                field = self.__expected_fields[field_name]
+                cell_writer = field.create_cell_writer()
 
                 # Here we can optimize performance if we use a types mapping
                 if field.type in types:
@@ -246,7 +255,7 @@ class Row(Dict[str, Any]):
 
         # Prepare
         self.__process()
-        result = {name: self[name] for name in self.__fields_info.ls()}
+        result = {name: self[name] for name in self.__expected_fields}
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
         if types is None and csv:
@@ -254,11 +263,10 @@ class Row(Dict[str, Any]):
 
         # Convert
         if types is not None:
-            field_names = self.__fields_info.ls()
+            field_names = self.field_names
             for field_name in field_names:
-                field_info = self.__fields_info.get(field_name)
-                field = field_info.field
-                cell_writer = field_info.cell_writer
+                field = self.__expected_fields[field_name]
+                cell_writer = field.create_cell_writer()
 
                 # Here we can optimize performance if we use a types mapping
                 if field.type not in types:
@@ -283,50 +291,48 @@ class Row(Dict[str, Any]):
         # Prepare context
         cells = self.__cells
         to_str = lambda v: str(v) if v is not None else ""  # type: ignore
-        fields = self.__fields_info.get_copies()
-        names = self.__fields_info.ls()
-        field_infos = [self.__fields_info.get(name) for name in names]
-        iterator = zip_longest(field_infos, cells)
+        fields = [f.to_copy() for f in self.__expected_fields.values()]
+
+        iterator = zip_longest(range(len(fields)), self.__expected_fields.values(), cells)
         is_empty = not bool(super().__len__())
 
         if key:
             try:
-                field_info = self.__fields_info.get(key)
-                field_number = field_info.field_number
+                field = self.__expected_fields.get(key)
+                field_index = self.field_names.index(key)
             except ValueError:
                 raise KeyError(f"Row does not have a field {key}")
-            cell = cells[field_number - 1] if len(cells) >= field_number else None
-            iterator = zip([field_info], [cell])
+
+            cell = cells[field_index] if len(cells) >= field_index + 1 else None
+            iterator = [(field_index, field, cell)]
 
         # Iterate cells
-        for field_info, source in iterator:
+        for index, field, cell in iterator:
             # Prepare context
-            if field_info is None:
+            if field is None:
                 break
-            field = field_info.field
-            field_number = field_info.field_number
-            cell_reader = field_info.cell_reader
+            cell_reader = field.create_cell_reader()
 
             if not is_empty and super().__contains__(field.name):
                 continue
 
             # Read cell
-            target, notes = cell_reader(source)
+            target, notes = cell_reader(cell)
             type_note = notes.pop("type", None) if notes else None
             if target is None and not type_note:
-                self.__blank_cells[field.name] = source
+                self.__blank_cells[field.name] = cell
 
             # Type error
             if type_note:
-                self.__error_cells[field.name] = source
+                self.__error_cells[field.name] = cell
                 self.__errors.append(
                     errors.TypeError(
                         note=type_note,
                         cells=list(map(to_str, cells)),  # type: ignore
                         row_number=self.__row_number,
-                        cell=str(source),
+                        cell=str(cell),
                         field_name=field.name,
-                        field_number=field_number,
+                        field_number=index + 1,
                     )
                 )
 
@@ -338,9 +344,9 @@ class Row(Dict[str, Any]):
                             note=note,
                             cells=list(map(to_str, cells)),  # type: ignore
                             row_number=self.__row_number,
-                            cell=str(source),
+                            cell=str(cell),
                             field_name=field.name,
-                            field_number=field_number,
+                            field_number=index + 1,
                         )
                     )
 
@@ -353,7 +359,7 @@ class Row(Dict[str, Any]):
         if len(fields) < len(cells):
             start = len(fields) + 1
             iterator = cells[len(fields) :]
-            for field_number, cell in enumerate(iterator, start=start):
+            for field_index, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
@@ -361,7 +367,7 @@ class Row(Dict[str, Any]):
                         row_number=self.__row_number,
                         cell=str(cell),
                         field_name="",
-                        field_number=field_number,
+                        field_number=field_index,
                     )
                 )
 
@@ -369,7 +375,7 @@ class Row(Dict[str, Any]):
         if len(fields) > len(cells):
             start = len(cells) + 1
             iterator = fields[len(cells) :]
-            for field_number, field in enumerate(iterator, start=start):
+            for field_index, field in enumerate(iterator, start=start):
                 if field is not None:
                     self.__errors.append(
                         errors.MissingCellError(
@@ -378,7 +384,7 @@ class Row(Dict[str, Any]):
                             row_number=self.__row_number,
                             cell="",
                             field_name=field.name,
-                            field_number=field_number,
+                            field_number=field_index,
                         )
                     )
 

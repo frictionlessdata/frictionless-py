@@ -99,7 +99,10 @@ def test_inline_parser_from_ordered_dict():
 def test_inline_parser_read_inline_data_with_missing_column_values():
     data = [{"id": 1}, {"id": 2, "name": "中国人"}]
     schema = {
-        "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
     }
     with TableResource(data=data, schema=Schema.from_descriptor(schema)) as resource:
         assert resource.read_rows() == [

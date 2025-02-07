@@ -264,10 +264,6 @@ class TableResource(Resource):
                     self.__lookup[source_name][source_key].add(cells)
 
     def __open_row_stream(self):
-        fields_info = FieldsInfo(
-            self.schema.fields, self.labels, self.detector.schema_sync
-        )
-
         # Create state
         memory_unique: Dict[str, Any] = {}
         memory_primary: Dict[Tuple[Any], Any] = {}
@@ -297,9 +293,10 @@ class TableResource(Resource):
             for row_number, cells in enumerated_content_stream:
                 self.stats.rows += 1
 
+                assert self.__header
                 row = Row(
                     cells,
-                    fields_info=fields_info,
+                    expected_fields=self.__header.get_expected_fields(),
                     row_number=row_number,
                 )
 
