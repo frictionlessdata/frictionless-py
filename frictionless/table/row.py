@@ -365,7 +365,7 @@ class Row(Dict[str, Any]):
         if len(fields) < len(cells):
             start = len(fields) + 1
             iterator = cells[len(fields) :]
-            for field_index, cell in enumerate(iterator, start=start):
+            for field_number, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
@@ -373,7 +373,7 @@ class Row(Dict[str, Any]):
                         row_number=self.__row_number,
                         cell=str(cell),
                         field_name="",
-                        field_number=field_index,
+                        field_number=field_number,
                     )
                 )
 
@@ -381,7 +381,7 @@ class Row(Dict[str, Any]):
         if len(fields) > len(cells):
             start = len(cells) + 1
             iterator = fields[len(cells) :]
-            for field_index, field in enumerate(iterator, start=start):
+            for field_number, field in enumerate(iterator, start=start):
                 if field is not None:
                     self.__errors.append(
                         errors.MissingCellError(
@@ -390,7 +390,7 @@ class Row(Dict[str, Any]):
                             row_number=self.__row_number,
                             cell="",
                             field_name=field.name,
-                            field_number=field_index,
+                            field_number=field_number,
                         )
                     )
 
