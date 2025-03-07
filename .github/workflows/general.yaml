@@ -130,7 +130,7 @@ jobs:
         run: |
           echo '!**/*.html' >> .gitignore
           hatch run docs-build
-      - name: Publush to Github Pages
+      - name: Publish to Github Pages
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: site

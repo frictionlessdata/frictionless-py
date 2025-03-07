@@ -53,7 +53,7 @@ cat transform.csv
 
 The high-level interface to transform data is a set of `transform` functions:
 - `transform`: detects the source type and transforms data accordingly
-- `reosurce.transform`: transforms a resource
+- `resource.transform`: transforms a resource
 - `package.transform`: transforms a package
 
 We'll see examples of these functions in the next few sections.
@@ -157,7 +157,7 @@ Frictionless includes more than 40+ built-in transform steps. They are grouped b
 - row
 - cell
 
-See [Transform Steps](../steps/cell.md) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
+See [Transform Steps](../steps/cell.html) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
 
 ## Custom Steps
 
