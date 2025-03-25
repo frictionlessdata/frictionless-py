@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import (TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union,
-                    cast)
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union, cast
 
 import attrs
 from typing_extensions import Self
