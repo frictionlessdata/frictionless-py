@@ -319,9 +319,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     @property
     def dialect(self) -> Dialect:
         if isinstance(self._dialect, str):
-            self._dialect = Dialect.from_descriptor(
-                self._dialect, basepath=self.basepath
-            )
+            self._dialect = Dialect.from_descriptor(self._dialect, basepath=self.basepath)
         return self._dialect
 
     @dialect.setter
@@ -905,11 +903,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]  # type: ignore
                 for item in items:  # type: ignore
-                    if (
-                        item
-                        and isinstance(item, str)
-                        and not helpers.is_safe_path(item)
-                    ):
+                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.ResourceError(note=f'path "{item}" is not safe')
                         return
 
