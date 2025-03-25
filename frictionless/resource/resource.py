@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union, cast
+from typing import (TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union,
+                    cast)
 
 import attrs
 from typing_extensions import Self
@@ -319,7 +320,9 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     @property
     def dialect(self) -> Dialect:
         if isinstance(self._dialect, str):
-            self._dialect = Dialect.from_descriptor(self._dialect, basepath=self.basepath)
+            self._dialect = Dialect.from_descriptor(
+                self._dialect, basepath=self.basepath
+            )
         return self._dialect
 
     @dialect.setter
@@ -638,7 +641,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
                 self, time=timer.time, errors=exception.to_errors()
             )
 
-        # TODO: remove in next version
+        # TODO: remove in version 6
         # Ignore not-supported hashings
         if self.hash:
             algorithm, _ = helpers.parse_resource_hash_v1(self.hash)
@@ -903,7 +906,11 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
                 value = descriptor.get(key)
                 items = value if isinstance(value, list) else [value]  # type: ignore
                 for item in items:  # type: ignore
-                    if item and isinstance(item, str) and not helpers.is_safe_path(item):
+                    if (
+                        item
+                        and isinstance(item, str)
+                        and not helpers.is_safe_path(item)
+                    ):
                         yield errors.ResourceError(note=f'path "{item}" is not safe')
                         return
 
