@@ -2,6 +2,14 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.18.1
+
+- feat: add pass_row as configurable parameter for field_update 
+  ([#1729](https://github.com/frictionlessdata/frictionless-py/pull/1729))
+- fix: vendor unmaintained stringcase library 
+  ([#1727](https://github.com/frictionlessdata/frictionless-py/pull/1727))
+- Various bug fixes
+
 ## v5.18
 
 - Support `ignore_constraints` option for the `Indexer` (#1691)
