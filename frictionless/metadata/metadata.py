@@ -62,8 +62,8 @@ class Metadata:
     List of custom parameters. Any extra property will be added
     to the custom property.
 
-    A "custom" property is an additional property to the one expected by the
-    classes "profile" (See the "metadata_profile_*" properties)
+    A "custom" property is an additional property to the ones expected by the
+    classe's "profile" (See the "metadata_profile_*" properties)
     """
 
     def __new__(cls, *args: Any, **kwargs: Any):
