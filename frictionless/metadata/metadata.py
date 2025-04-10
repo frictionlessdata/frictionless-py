@@ -61,6 +61,9 @@ class Metadata:
     """
     List of custom parameters. Any extra property will be added
     to the custom property.
+
+    A "custom" property is an additional property to the one expected by the
+    classes "profile" (See the "metadata_profile_*" properties)
     """
 
     def __new__(cls, *args: Any, **kwargs: Any):
@@ -368,6 +371,7 @@ class Metadata:
     """
 
     metadata_initiated: bool = False
+    """Is set to true when the class initialization is finished"""
 
     metadata_assigned: Set[str] = set()
     """Set of all names of properties to which a value (different from None)
@@ -410,6 +414,12 @@ class Metadata:
 
     @classmethod
     def metadata_select_property_class(cls, name: str) -> Optional[Type[Metadata]]:
+        """Defines the class to use with a given property's metadata
+
+        Complex properties are likely to have their own python class,
+        inheriting from Metadata. If this is the case, this method should
+        return this class when called with the property name as "name".
+        """
         pass
 
     @classmethod
@@ -567,7 +577,7 @@ class Metadata:
     ) -> Self:
         """Deserialization of a descriptor to a class instance
 
-        The deserialization and serialization must be lossless
+        The deserialization and serialization must be lossless.
         """
         merged_options = {}
         profile = cls.metadata_ensure_profile()
