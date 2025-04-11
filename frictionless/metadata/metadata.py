@@ -38,7 +38,7 @@ class Metadata:
     """Metadata representation
 
     This class provides functionality for serialization / deserialization of
-    python chlid classes to descriptors.
+    python child classes to descriptors.
 
     A **descriptor** is a JSON serializable `dict`.
     A **profile** is a JSON Schema dict that sets expectations on the format
@@ -190,7 +190,7 @@ class Metadata:
         """Validate a descriptor
 
         To do so, it tries to convert a descriptor into a class instance, and
-        report errors  it has encountered (if any)
+        report errors it has encountered (if any)
         """
         errors = []
         timer = helpers.Timer()
