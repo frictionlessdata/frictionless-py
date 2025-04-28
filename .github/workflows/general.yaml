@@ -41,7 +41,7 @@ jobs:
       - name: Test software
         run: hatch run +py=${{ matrix.py || matrix.python-version }} ci:test
       - name: Report coverage
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v4.5.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: frictionlessdata/frictionless-py
