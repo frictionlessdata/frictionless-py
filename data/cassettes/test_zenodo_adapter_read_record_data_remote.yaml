@@ -5,71 +5,103 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.28.1
+      - python-requests/2.32.3
     method: GET
     uri: https://zenodo.org/api/records/7097299
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA6RVy27bMBD8FYPXWhYlS9EDQS4Jci1QBO2hKAyKXNmsZVEVKadJ4H/vkpJiJ7Hd
-        pL2Ju7Pk7HCWeiJc1RwaI5QkOQnoLA7TwH+EWgk1S2iWhFlKpiOqBS4F4g4SLTADNhbSMPRo5oX0
-        LohzGuV0PguClIbJJ0pzShF85pAM06WsQJP8+xMpOr4Gg1jBRMzDi9Ir4oJ7UVoIL+PzwouDomDB
-        nKYXlFkWK+Br3W2wYiPivCyChM1FmiRFzCOecJpmLMxEUIZBmYgIK9bw4LY3rGF8zZYw+6lVjYlK
-        1msk8UQ0VCVCVsY0OvdHtqpd+qyRvuPqv4ee/+aQ3ZRo+Qgkj6NgSsxDg5+kz/yYEivwoMkBm4KJ
-        JRyn41I+ausfV3amt0ts7FnT/+5o74d/Z5UOrF7Yb9wGV26Pk3b8ANwaa2U21XGWaGjVCn8PrdDN
-        +oxKfYF+U7H4wBnnnfX6BHTLBgyzLrJGYJyD1otWLleWpmrAuvYwuuDIaKlaa3DducQ4qKrt54uV
-        eNuSGYmey8ntzeQOW5D1cvKtlQYQXbMN7DPQOmcK0LyVzVB12VzZXF8yuUX3TLzJF9goA5d+c/X3
-        ca8kh1qDbco9KtfX1Atm1DbcdAVmHb8FNg4vnhcsbcGqLhZSQG1kKWHoa78+95i56r4Jqb9iLX5/
-        Lu3F4Dvi+rbMbccj0o3gtke6g7jqapQfx1fWAn6TnOKXXlTMese0HVhfoCv4SlbCFjdSLIZJ7x/R
-        qQttWdXB84PqLrthLdi931mTkt3ux85S1aprOQwVT8RIU1nYDRpH4+A/vzRiCGDRiDl1kRaj7ute
-        3ojGcRw6VbayVwL714YZJ49AYKWYwAWdoRxdLX91sDgR3kq4H0ODsG+gY/zETq/Sx3Y8GlNVZy+5
-        Dx4C9glsu2vEmR9blkUXWTT82HZ/AAAA//8DAAN4VdZGBwAA
+      string: '{"created": "2022-09-20T15:04:03.118027+00:00", "modified": "2022-09-21T14:26:29.349341+00:00",
+        "id": 7097299, "conceptrecid": "7097298", "doi": "10.5281/zenodo.7097299",
+        "conceptdoi": "10.5281/zenodo.7097298", "doi_url": "https://doi.org/10.5281/zenodo.7097299",
+        "metadata": {"title": "Test Write File - Remote", "doi": "10.5281/zenodo.7097299",
+        "publication_date": "2022-09-20", "description": "<p>Test Write File - Remote</p>",
+        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
+        "FD Testing Write"}], "resource_type": {"title": "Dataset", "type": "dataset"},
+        "license": {"id": "cc-zero"}, "relations": {"version": [{"index": 0, "is_last":
+        true, "parent": {"pid_type": "recid", "pid_value": "7097298"}}]}}, "title":
+        "Test Write File - Remote", "links": {"self": "https://zenodo.org/api/records/7097299",
+        "self_html": "https://zenodo.org/records/7097299", "preview_html": "https://zenodo.org/records/7097299?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7097299", "self_doi": "https://doi.org/10.5281/zenodo.7097299",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7097299", "reserve_doi":
+        "https://zenodo.org/api/records/7097299/draft/pids/doi", "parent": "https://zenodo.org/api/records/7097298",
+        "parent_html": "https://zenodo.org/records/7097298", "parent_doi": "https://doi.org/10.5281/zenodo.7097298",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7097298", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7097299/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7097299/sequence/default", "files": "https://zenodo.org/api/records/7097299/files",
+        "media_files": "https://zenodo.org/api/records/7097299/media-files", "archive":
+        "https://zenodo.org/api/records/7097299/files-archive", "archive_media": "https://zenodo.org/api/records/7097299/media-files-archive",
+        "latest": "https://zenodo.org/api/records/7097299/versions/latest", "latest_html":
+        "https://zenodo.org/records/7097299/latest", "versions": "https://zenodo.org/api/records/7097299/versions",
+        "draft": "https://zenodo.org/api/records/7097299/draft", "access_links": "https://zenodo.org/api/records/7097299/access/links",
+        "access_grants": "https://zenodo.org/api/records/7097299/access/grants", "access_users":
+        "https://zenodo.org/api/records/7097299/access/users", "access_request": "https://zenodo.org/api/records/7097299/access/request",
+        "access": "https://zenodo.org/api/records/7097299/access", "communities":
+        "https://zenodo.org/api/records/7097299/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7097299/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7097299/requests"}, "updated": "2022-09-21T14:26:29.349341+00:00",
+        "recid": "7097299", "revision": 2, "files": [{"id": "0ba59941-9f76-4865-aabe-8bebd572593f",
+        "key": "datapackage.json", "size": 541, "checksum": "md5:fb17a3d877b5c4c7c089a29d1f21f7d4",
+        "links": {"self": "https://zenodo.org/api/records/7097299/files/datapackage.json/content"}}],
+        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        488, "unique_downloads": 435, "views": 40, "unique_views": 39, "version_downloads":
+        479, "version_unique_downloads": 426, "version_unique_views": 39, "version_views":
+        40}, "state": "done", "submitted": true}'
     headers:
-      Access-Control-Allow-Origin:
+      access-control-allow-origin:
       - '*'
-      Access-Control-Expose-Headers:
+      access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Encoding:
+      cache-control:
+      - private
+      content-encoding:
       - gzip
-      Content-Type:
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
       - application/json
-      Date:
-      - Tue, 20 Sep 2022 15:07:06 GMT
-      ETag:
-      - W/"1"
-      Last-Modified:
-      - Tue, 20 Sep 2022 15:04:03 GMT
-      Link:
-      - <https://zenodo.org/api/records/7097299>; rel="self"
-      Referrer-Policy:
+      date:
+      - Fri, 30 May 2025 09:10:23 GMT
+      etag:
+      - W/"2"
+      link:
+      - <https://zenodo.org/api/records/7097299> ; rel="linkset" ; type="application/linkset+json"
+      permissions-policy:
+      - interest-cohort=()
+      referrer-policy:
       - strict-origin-when-cross-origin
-      Retry-After:
-      - '60'
-      Server:
+      retry-after:
+      - '43'
+      server:
       - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      Transfer-Encoding:
+      set-cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=545de0b26a2c17291314e9f199cfc92e; path=/;
+        HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      - max-age=15768000
+      transfer-encoding:
       - chunked
-      Vary:
+      vary:
       - Accept-Encoding
-      X-Content-Type-Options:
+      x-content-type-options:
       - nosniff
-      X-Frame-Options:
+      x-frame-options:
       - sameorigin
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '59'
-      X-RateLimit-Reset:
-      - '1663686487'
-      X-Request-ID:
-      - bd29c531b4623ba3ddb8442050f62981
-      X-XSS-Protection:
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '111'
+      x-ratelimit-reset:
+      - '1748596267'
+      x-request-id:
+      - 00cbb235674934c0a4b9ab4738a5a8fd
+      x-xss-protection:
       - 1; mode=block
     status:
       code: 200
@@ -80,75 +112,73 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
+      Cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://zenodo.org/api/files/dad5c26f-b5bc-48bd-9c3b-51bba130860a/datapackage.json
+    uri: https://zenodo.org/records/7097299/files/datapackage.json
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA5VPzQ7CIAy+7ykIZxl3X8V4qKxuxLER2mmWxXcX0E0uRuVQmn4//bpUQsgBHMq9
-        kIzEKqAfY6FxCgZJ3Sx3qmP2qgEGZegqd0mzMaLwEAdCLLkWdmcbol/WruyszSQP3CVSgmmvdYBb
-        3cZd02kiDGYcGAeuzej0uUm5MOh3vBwq5fFgLtCimsH12kGmpbk24C1DT/UaOC8l06GDuHbNKlJK
-        7Jv3Fc+3FH1xkW02rxfCs38iMW+LQRbofffd0Hx2JA52aP81zP/vjlt/rMpJqsfq/gDEQb+jHQIA
-        AA==
+      string: "{\n  \"name\": \"test-repo-resources-with-http-data-csv\",\n  \"resources\":
+        [\n    {\n      \"name\": \"first-http-resource\",\n      \"path\": \"https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv\",\n
+        \     \"schema\": {\n        \"fields\": [\n          {\n            \"name\":
+        \"id\",\n            \"type\": \"integer\"\n          },\n          {\n            \"name\":
+        \"cid\",\n            \"type\": \"string\"\n          },\n          {\n            \"name\":
+        \"name\",\n            \"type\": \"string\"\n          }\n        ]\n      }\n
+        \   }\n  ]\n}"
     headers:
-      Accept-Ranges:
+      accept-ranges:
       - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Disposition:
+      content-disposition:
       - inline
-      Content-Encoding:
+      content-encoding:
       - gzip
-      Content-MD5:
-      - fb17a3d877b5c4c7c089a29d1f21f7d4
-      Content-Security-Policy:
-      - default-src 'none';
-      Content-Type:
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
-      Date:
-      - Tue, 20 Sep 2022 15:07:07 GMT
-      ETag:
-      - W/"md5:fb17a3d877b5c4c7c089a29d1f21f7d4"
-      Last-Modified:
-      - Tue, 20 Sep 2022 15:04:03 GMT
-      OC-Checksum:
+      date:
+      - Fri, 30 May 2025 09:10:23 GMT
+      oc-checksum:
       - MD5:fb17a3d877b5c4c7c089a29d1f21f7d4
-      Referrer-Policy:
+      referrer-policy:
       - strict-origin-when-cross-origin
-      Retry-After:
-      - '59'
-      Server:
+      retry-after:
+      - '43'
+      server:
       - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      Transfer-Encoding:
+      set-cookie:
+      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
+        04 Jun 2025 09:10:23 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      transfer-encoding:
       - chunked
-      Vary:
+      vary:
       - Accept-Encoding
-      X-Content-Type-Options:
+      x-content-type-options:
       - nosniff
-      X-Download-Options:
+      x-download-options:
       - noopen
-      X-Frame-Options:
+      x-frame-options:
       - sameorigin
-      X-Permitted-Cross-Domain-Policies:
+      x-permitted-cross-domain-policies:
       - none
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '59'
-      X-RateLimit-Reset:
-      - '1663686487'
-      X-XSS-Protection:
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '81'
+      x-ratelimit-reset:
+      - '1748596267'
+      x-xss-protection:
       - 1; mode=block
     status:
       code: 200
@@ -159,7 +189,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
@@ -169,9 +199,19 @@ interactions:
     uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA8tM0VFIzgQSeYm5qVyGOgpA5JOfl5Kfx2WkowBEAYlFmcVcxjoKQOSUWpSTmcdl
-        oqMAREH5QA2mOgpA5JNZnATUAAAxQHv2TAAAAA==
+      string: 'id, cid, name
+
+        1, 1, London
+
+        2, 2, Paris
+
+        3, 3, Berlin
+
+        4, 4, Rome
+
+        5, 5, Lisbon
+
+        '
     headers:
       Accept-Ranges:
       - bytes
@@ -189,18 +229,103 @@ interactions:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
       Date:
-      - Tue, 20 Sep 2022 15:07:07 GMT
+      - Fri, 30 May 2025 09:10:24 GMT
       ETag:
       - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
       Expires:
-      - Tue, 20 Sep 2022 15:12:07 GMT
+      - Fri, 30 May 2025 09:15:24 GMT
       Source-Age:
-      - '197'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding,Origin
+      - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - ff532bea041b8e6c59059c059d0940a29408dc2e
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 26C4:2103C4:2472047:2845E7E:683975FE
+      X-Served-By:
+      - cache-muc13957-MUC
+      X-Timer:
+      - S1748596224.905829,VS0,VE197
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
+  response:
+    body:
+      string: 'id, cid, name
+
+        1, 1, London
+
+        2, 2, Paris
+
+        3, 3, Berlin
+
+        4, 4, Rome
+
+        5, 5, Lisbon
+
+        '
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '85'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Fri, 30 May 2025 09:10:24 GMT
+      ETag:
+      - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
+      Expires:
+      - Fri, 30 May 2025 09:15:24 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -210,228 +335,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3295b2be74e45ddd44b826f9cf36753f5148653d
+      - 60e3f452816a8d89fffe56adc0386983cc81ee7c
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 0848:63A9:7138E:85CAA:6329D656
+      - 26C4:2103C4:2472047:2845E7E:683975FE
       X-Served-By:
-      - cache-ccu830022-CCU
+      - cache-muc13937-MUC
       X-Timer:
-      - S1663686428.896955,VS0,VE0
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAAA8tM0VFIzgQSeYm5qVyGOgpA5JOfl5Kfx2WkowBEAYlFmcVcxjoKQOSUWpSTmcdl
-        oqMAREH5QA2mOgpA5JNZnATUAAAxQHv2TAAAAA==
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '85'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Date:
-      - Tue, 20 Sep 2022 15:07:08 GMT
-      ETag:
-      - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
-      Expires:
-      - Tue, 20 Sep 2022 15:12:08 GMT
-      Source-Age:
-      - '197'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - acef432859aaf3ee704d8afd3eba0ff0b4326a96
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 0848:63A9:7138E:85CAA:6329D656
-      X-Served-By:
-      - cache-ccu830031-CCU
-      X-Timer:
-      - S1663686428.150828,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAAA8tM0VFIzgQSeYm5qVyGOgpA5JOfl5Kfx2WkowBEAYlFmcVcxjoKQOSUWpSTmcdl
-        oqMAREH5QA2mOgpA5JNZnATUAAAxQHv2TAAAAA==
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '85'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Date:
-      - Tue, 20 Sep 2022 15:07:08 GMT
-      ETag:
-      - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
-      Expires:
-      - Tue, 20 Sep 2022 15:12:08 GMT
-      Source-Age:
-      - '197'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '2'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 3e454dfff56deb85bd7112412b5a34169de03f0d
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 0848:63A9:7138E:85CAA:6329D656
-      X-Served-By:
-      - cache-ccu830031-CCU
-      X-Timer:
-      - S1663686428.241835,VS0,VE0
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://raw.githubusercontent.com/fdtester/test-repo-with-datapackage-yaml/master/data/capitals.csv
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAAA8tM0VFIzgQSeYm5qVyGOgpA5JOfl5Kfx2WkowBEAYlFmcVcxjoKQOSUWpSTmcdl
-        oqMAREH5QA2mOgpA5JNZnATUAAAxQHv2TAAAAA==
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '85'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Date:
-      - Tue, 20 Sep 2022 15:07:08 GMT
-      ETag:
-      - W/"4ecb8acca3a70f8cdeb232791a64d0e075caf179c93f850b352db9ac226d6675"
-      Expires:
-      - Tue, 20 Sep 2022 15:12:08 GMT
-      Source-Age:
-      - '197'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - cea6f64105a862e690a8d6acf8c28abe47a93123
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 0848:63A9:7138E:85CAA:6329D656
-      X-Served-By:
-      - cache-ccu830041-CCU
-      X-Timer:
-      - S1663686428.482976,VS0,VE1
+      - S1748596224.240817,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
