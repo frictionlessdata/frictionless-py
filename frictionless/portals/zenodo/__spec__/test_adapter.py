@@ -20,6 +20,8 @@ PACKAGE_WITHOUT_DP = {
             "encoding": "utf-8",
             "mediatype": "text/csv",
             "dialect": {"csv": {"skipInitialSpace": True}},
+            "bytes": 76,
+            "hash": "md5:154d822b8c2aa259867067f01c0efee5",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "integer"},
@@ -36,6 +38,8 @@ PACKAGE_WITHOUT_DP = {
             "format": "xls",
             "encoding": "utf-8",
             "mediatype": "application/vnd.ms-excel",
+            "bytes": 6144,
+            "hash": "md5:3a980d1a559c48978c63c0c1d0d2a8f3",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "integer"},
@@ -159,10 +163,7 @@ def test_zenodo_adapter_read_record_basepath_isset(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert package.resources[0].path == "capitals.csv"
-    assert (
-        package.resources[0].basepath
-        == "https://zenodo.org/api/files/d24cde89-1d38-4713-b6f2-6a3796e458a6"
-    )
+    assert package.resources[0].basepath == "https://zenodo.org/records/7078768/files"
 
 
 @pytest.mark.vcr
@@ -172,7 +173,7 @@ def test_zenodo_adapter_read_record_with_descriptor_basepath_isset(options_with_
     assert package.resources[0].path == "data.csv"
     assert (
         package.resources[0].basepath
-        == "https://zenodo.org/api/files/bc520c46-ee9e-4245-8c57-2a7203062e14"
+        == "https://zenodo.org/records/7078760/files"
     )
 
 
@@ -205,6 +206,8 @@ def test_zenodo_adapter_read_record_only_csv(options_with_dp_multiple_files_with
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
                 "dialect": {"csv": {"skipInitialSpace": True}},
+                "bytes": 76,
+                "hash": "md5:154d822b8c2aa259867067f01c0efee5",
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -554,7 +557,6 @@ def test_zenodo_adapter_write_with_descriptor(tmp_path):
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_apikey():
     control = portals.ZenodoControl(
@@ -562,9 +564,9 @@ def test_zenodo_adapter_write_without_apikey():
         apikey=None,
     )
     package = Package("data/datapackage.json")
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         package.publish(control=control)
-    assert "AssertionError" in str(excinfo)
+    assert "Api key is required for zenodo publishing" in str(excinfo.value.error)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -578,10 +580,7 @@ def test_zenodo_adapter_write_without_wrong_apikey():
     with pytest.raises(FrictionlessException) as excinfo:
         package.publish(control=control)
     error = excinfo.value.error
-    assert (
-        "You either supplied the wrong credentials (e.g. a bad password),"
-        in error.message
-    )
+    assert "Error in creation, status code: 403" in error.message
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -751,7 +750,6 @@ def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_api, tmp_path
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
     sandbox_api, tmp_path
@@ -778,8 +776,6 @@ def test_zenodo_adapter_write_resources_without_metafile(tmp_path):
 # Read - Catalog
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_search():
     control = portals.ZenodoControl(search='notes:"TDWD"')
@@ -923,8 +919,6 @@ def test_zenodo_adapter_catalog_search_by_custom():
     assert error.message == "Package/s not found"
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_single_record():
     control = portals.ZenodoControl(record="7078768")
