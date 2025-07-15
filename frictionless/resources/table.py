@@ -237,7 +237,7 @@ class TableResource(Resource):
                 continue
             if source_name:
                 if not self.package:
-                    note = 'package is required for FK: "{fk}"'
+                    note = 'package is required for foreign keys: "{fk}"'
                     raise FrictionlessException(errors.ResourceError(note=note))
                 if not self.package.has_resource(source_name):
                     note = f'failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
