@@ -233,18 +233,25 @@ class TableResource(Resource):
             # Prepare source
             source_name = fk["reference"]["resource"]
             source_key = tuple(fk["reference"]["fields"])
-            if source_name and source_name != self.name:
+            if source_name == self.name or not source_name:
+                # Self reference
+                # A copy is needed as the resource is closed after the lookup
+                source_res = self.to_copy()
+            else:
                 if not self.package:
                     note = (
                         'package is required for foreign keys to other resources: "{fk}"'
                     )
                     raise FrictionlessException(errors.ResourceError(note=note))
+
                 if not self.package.has_resource(source_name):
                     note = f'failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
                     raise FrictionlessException(errors.ResourceError(note=note))
+
+                # A copy is needed as the resource is closed after the lookup.
+                # Otherwise, this would cause issues in case of circular references.
                 source_res = self.package.get_resource(source_name).to_copy()
-            else:
-                source_res = self.to_copy()
+
             if source_res.schema:
                 source_res.schema.foreign_keys = []
 
