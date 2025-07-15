@@ -229,7 +229,6 @@ def _handle_expected_validity_and_errors(
     expected_errors: List[Optional[str]],
 ):
     rows = resource.read_rows()
-    print(rows)
     for i, (expected_valid, expected_error) in enumerate(
         zip(expected_validity, expected_errors)
     ):
