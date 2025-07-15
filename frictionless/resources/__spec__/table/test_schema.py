@@ -293,6 +293,15 @@ def test_resource_schema_self_referencing_foreign_keys(test_case):
         resource, test_case["expected_validity"], test_case["expected_errors"]
     )
 
+    # Same test but with implicit self-reference
+    descriptor["schema"]["foreignKeys"][0]["reference"].pop("resource", None)
+
+    resource = TableResource.from_descriptor(descriptor)
+
+    _handle_expected_validity_and_errors(
+        resource, test_case["expected_validity"], test_case["expected_errors"]
+    )
+
 
 @pytest.mark.parametrize(
     "test_case",
