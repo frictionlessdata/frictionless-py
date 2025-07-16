@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import copy
 import decimal
 import re
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
 
 import attrs
+import pydantic
 
 from .. import errors, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
+from .field_descriptor import BooleanFieldDescriptor, FieldDescriptor
 
 if TYPE_CHECKING:
     from ..types import IDescriptor
@@ -21,6 +24,8 @@ if TYPE_CHECKING:
 @attrs.define(kw_only=True, repr=False)
 class Field(Metadata):
     """Field representation"""
+
+    _descriptor: Optional[FieldDescriptor] = None
 
     name: str
     """
@@ -50,9 +55,7 @@ class Field(Metadata):
     For example: "default","array" etc.
     """
 
-    missing_values: List[str] = attrs.field(
-        factory=settings.DEFAULT_MISSING_VALUES.copy
-    )
+    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
     List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
@@ -154,6 +157,8 @@ class Field(Metadata):
     def create_value_reader(self) -> types.IValueReader:
         # Create reader
         def value_reader(cell: Any):
+            if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
+                return self._descriptor.read_value(cell)
             return cell
 
         return value_reader
@@ -192,6 +197,8 @@ class Field(Metadata):
     def create_value_writer(self) -> types.IValueWriter:
         # Create writer
         def value_writer(cell: Any):
+            if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
+                return self._descriptor.write_value(cell)
             return str(cell)
 
         return value_writer
@@ -245,6 +252,39 @@ class Field(Metadata):
             descriptor["format"] = format.replace("fmt:", "")
 
     @classmethod
+    def metadata_import(
+        cls,
+        descriptor: IDescriptor,
+        *,
+        with_basepath: bool = False,
+        **options: Any,
+    ) -> "Field":
+        descriptor_copy = copy.deepcopy(descriptor)
+        field = super().metadata_import(
+            descriptor,
+            with_basepath=with_basepath,
+        )
+
+        if field.type == "boolean":
+            try:
+                field._descriptor = BooleanFieldDescriptor.model_validate(descriptor_copy)
+            except pydantic.ValidationError as ve:
+                error = errors.SchemaError(note=str(ve))
+                raise FrictionlessException(error)
+
+        return field
+
+    def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
+        if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
+            descr = self._descriptor.model_dump(exclude_none=True, exclude_unset=True)
+            ## Temporarily, Field properties have priority over
+            ## Field._descriptor properties
+            descr = {**descr, **super().to_descriptor(validate=validate)}
+            return descr
+        else:
+            return super().to_descriptor(validate=validate)
+
+    @classmethod
     def metadata_validate(cls, descriptor: IDescriptor):  # type: ignore
         metadata_errors = list(super().metadata_validate(descriptor))
         if metadata_errors:
@@ -276,9 +316,7 @@ class Field(Metadata):
                     field.false_values = descriptor["falseValues"]
             _, notes = field.read_cell(example)
             if notes is not None:
-                note = (
-                    f'example value "{example}" for field "{field.name}" is not valid'
-                )
+                note = f'example value "{example}" for field "{field.name}" is not valid'
                 yield errors.FieldError(note=note)
 
         # Misleading

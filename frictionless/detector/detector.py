@@ -367,10 +367,11 @@ class Detector:
                     field.float_number = True  # type: ignore
                 elif field.type == "boolean":
                     if self.field_true_values != settings.DEFAULT_TRUE_VALUES:
-                        field.true_values = self.field_true_values  # type: ignore
+                        field._descriptor.true_values = self.field_true_values  # type: ignore
                     if self.field_false_values != settings.DEFAULT_FALSE_VALUES:
-                        field.false_values = self.field_false_values  # type: ignore
+                        field._descriptor.false_values = self.field_false_values  # type: ignore
                 runner_fields.append(field)
+
             for index, name in enumerate(names):
                 runners.append([])
                 for field in runner_fields:
