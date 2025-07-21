@@ -154,7 +154,6 @@ def test_console_summary_without_command(tmpdir):
 
 def test_console_summary_without_filepath():
     result = runner.invoke(console, "summary")
-    print(result.output)
     assert result.exit_code == 1
     assert result.output.strip() == 'Providing "source" is required'
 
