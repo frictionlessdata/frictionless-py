@@ -13,16 +13,16 @@ def test_console_summary_error_not_found():
     result = runner.invoke(console, "summary data/countriess.csv")
     assert result.exit_code == 1
     assert (
-        result.stdout.count("[scheme-error]")
-        and result.stdout.count("[Errno 2]")
-        and result.stdout.count("data/countriess.csv")
+        result.output.count("[scheme-error]")
+        and result.output.count("[Errno 2]")
+        and result.output.count("data/countriess.csv")
     )
 
 
 def test_console_summary_invalid():
     result = runner.invoke(console, "summary data/countries-invalid.yaml")
     assert result.exit_code == 1
-    assert result.stdout.count(
+    assert result.output.count(
         'Field is not valid: "required" should be set as "constraints.required"'
     )
 
@@ -154,8 +154,9 @@ def test_console_summary_without_command(tmpdir):
 
 def test_console_summary_without_filepath():
     result = runner.invoke(console, "summary")
+    print(result.output)
     assert result.exit_code == 1
-    assert result.stdout.strip() == 'Providing "source" is required'
+    assert result.output.strip() == 'Providing "source" is required'
 
 
 def test_console_summary_zipped_innerpath():
