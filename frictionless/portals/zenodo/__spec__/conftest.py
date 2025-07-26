@@ -78,6 +78,12 @@ def options_with_zipped_resource_file():
 
 
 @pytest.fixture
-def sandbox_api():
-    sandbox_api = os.environ.get("ZENODO_SANDBOX_ACCESS_TOKEN")
-    return sandbox_api
+def sandbox_control(tmp_path):
+    sandbox_token = os.environ.get("ZENODO_SANDBOX_ACCESS_TOKEN")
+    if sandbox_token is None:
+        pytest.skip("ZENODO_SANDBOX_ACCESS_TOKEN environment variable not set")
+    return {
+        "apikey": sandbox_token,
+        "base_url": "https://sandbox.zenodo.org/api/",
+        "tmp_path": tmp_path,
+    }
