@@ -4,7 +4,7 @@ import datetime
 import json
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
@@ -37,8 +37,10 @@ class ZenodoAdapter(Adapter):
         try:
             dataset = client.get_record(self.control.record)
             if dataset:
-                name = self.control.name or dataset.data["metadata"]["title"]
-                package = get_package(dataset, name, self.control.formats)
+                title = dataset.data["metadata"]["title"]
+                package = get_package(
+                    dataset, title, self.control.formats, name=self.control.name
+                )
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
@@ -214,7 +216,12 @@ class ZenodoAdapter(Adapter):
         raise FrictionlessException(note)
 
 
-def get_package(record: Record, title: str, formats: List[str]) -> Package:  # type: ignore
+def get_package(
+    record: Record,  # type: ignore
+    title: str,
+    formats: List[str],
+    name: Optional[str] = None,
+) -> Package:
     """
     Create a package from a zenodo record
 
@@ -228,7 +235,7 @@ def get_package(record: Record, title: str, formats: List[str]) -> Package:  # t
     https://zenodo.org/records/7078768/files/table.xls
     """
     basepath = cast(str, record.data["links"]["self_html"] + "/files")  # type: ignore
-    package = Package(title=title, basepath=basepath)  # type: ignore
+    package = Package(title=title, basepath=basepath, name=name)  # type: ignore
     for file in record.data["files"]:  # type: ignore
         path = cast(str, file["key"])
         is_resource_file = any(path.endswith(ext) for ext in formats)
