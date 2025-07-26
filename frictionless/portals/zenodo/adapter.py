@@ -138,7 +138,7 @@ class ZenodoAdapter(Adapter):
 
             # Return result
             return PublishResult(
-                url=f"https://zenodo.org/deposit/{deposition_id}",
+                url=f"https://zenodo.org/upload/{deposition_id}",
                 context=dict(deposition_id=deposition_id),
             )
 

@@ -16,7 +16,7 @@ def vcr_config():
 @pytest.fixture
 def options_with_dp():
     return {
-        "url": "https://zenodo.org/record/7078760",
+        "url": "https://zenodo.org/records/7078760",
         "record": "7078760",
     }
 
@@ -24,7 +24,7 @@ def options_with_dp():
 @pytest.fixture
 def options_without_dp():
     return {
-        "url": "https://zenodo.org/record/7078768",
+        "url": "https://zenodo.org/records/7078768",
         "record": "7078768",
     }
 
@@ -32,7 +32,7 @@ def options_without_dp():
 @pytest.fixture
 def options_with_dp_multiple_files_with_dp():
     return {
-        "url": "https://zenodo.org/record/7078710",
+        "url": "https://zenodo.org/records/7078710",
         "record": "7078710",
     }
 
@@ -40,7 +40,7 @@ def options_with_dp_multiple_files_with_dp():
 @pytest.fixture
 def options_with_dp_multiple_files_without_dp():
     return {
-        "url": "https://zenodo.org/record/7078725",
+        "url": "https://zenodo.org/records/7078725",
         "record": "7078725",
     }
 
@@ -48,7 +48,7 @@ def options_with_dp_multiple_files_without_dp():
 @pytest.fixture
 def options_with_dp_multiple_files_with_zipped_files():
     return {
-        "url": "https://zenodo.org/record/7077932",
+        "url": "https://zenodo.org/records/7077932",
         "record": "7077932",
     }
 
@@ -56,7 +56,7 @@ def options_with_dp_multiple_files_with_zipped_files():
 @pytest.fixture
 def options_without_dp_with_zipped_files():
     return {
-        "url": "https://zenodo.org/record/7247979",
+        "url": "https://zenodo.org/records/7247979",
         "record": "7077932",
     }
 
@@ -64,7 +64,7 @@ def options_without_dp_with_zipped_files():
 @pytest.fixture
 def options_with_dp_with_remote_resources():
     return {
-        "url": "https://zenodo.org/record/7097299",
+        "url": "https://zenodo.org/records/7097299",
         "record": "7097299",
     }
 
@@ -72,7 +72,7 @@ def options_with_dp_with_remote_resources():
 @pytest.fixture
 def options_with_zipped_resource_file():
     return {
-        "url": "https://zenodo.org/record/7248153",
+        "url": "https://zenodo.org/records/7248153",
         "record": "7248153",
     }
 

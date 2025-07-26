@@ -250,7 +250,7 @@ def test_zenodo_adapter_read_record_without_datapackage_descriptor_zipped_files(
 @pytest.mark.vcr
 def test_zenodo_adapter_read_record_data_with_wrong_record():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("https://zenodo.org/record/68358988")
+        Package("https://zenodo.org/records/68358988")
     error = excinfo.value.error
     assert error.message == "Zenodo API errorKeyError('metadata')"
 
@@ -604,7 +604,7 @@ def test_zenodo_adapter_write_without_base_url(sandbox_control):
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_read_package_published_to_zenodo():
-    package = Package("https://zenodo.org/record/7096849")
+    package = Package("https://zenodo.org/records/7096849")
     assert package.resources[1].read_rows() == [
         {"id": 1, "name": "中国人"},
         {"id": 2, "name": "english"},
