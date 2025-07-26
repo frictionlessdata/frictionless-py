@@ -2,6 +2,8 @@ import os
 
 import pytest
 
+from frictionless import platform
+
 # Fixtures
 
 
@@ -87,3 +89,16 @@ def sandbox_control(tmp_path):
         "base_url": "https://sandbox.zenodo.org/api/",
         "tmp_path": tmp_path,
     }
+
+
+@pytest.fixture(scope="session")
+def shared_deposition_id():
+    # unfortunately we cannot use the `sandbox_control` fixture here,
+    # since it is not session scoped (and cannot be due to `tmp_path`)
+    token = os.environ.get("ZENODO_SANDBOX_ACCESS_TOKEN")
+    if token is None:
+        pytest.skip("ZENODO_SANDBOX_ACCESS_TOKEN environment variable not set")
+
+    return platform.pyzenodo3_upload.create(
+        token=token, base_url="https://sandbox.zenodo.org/api/"
+    )

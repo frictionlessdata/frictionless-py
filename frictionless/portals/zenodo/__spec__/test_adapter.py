@@ -642,20 +642,25 @@ def test_zenodo_adapter_write_resources_with_remote_url(sandbox_control):
 
 
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_deposition_id(sandbox_control):
+def test_zenodo_adapter_write_resources_with_deposition_id(
+    shared_deposition_id, sandbox_control
+):
     control = portals.ZenodoControl(
         metafn="data/zenodo/deposition.metadata.json",
-        deposition_id=7098476,
+        deposition_id=shared_deposition_id,
         **sandbox_control,
     )
     package = Package("data/datapackage.json")
     result = package.publish(control=control)
     deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098476
+    assert isinstance(result, PublishResult)
+    assert deposition_id == shared_deposition_id
 
 
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_deposition_url(sandbox_control):
+def test_zenodo_adapter_write_resources_with_deposition_url(
+    shared_deposition_id, sandbox_control
+):
     control = portals.ZenodoControl(
         metafn="data/zenodo/depositionurl.metadata.json",
         **sandbox_control,
