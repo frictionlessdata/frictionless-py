@@ -103,7 +103,7 @@ class ZenodoAdapter(Adapter):
                     )
 
             # Upload metadata
-            with tempfile.NamedTemporaryFile("wt") as file:
+            with tempfile.NamedTemporaryFile("wt", dir=self.control.tmp_path) as file:
                 data = dict(metadata=metadata.model_dump(exclude_none=True))  # type: ignore
                 json.dump(data, file, indent=2)
                 file.flush()
@@ -114,7 +114,7 @@ class ZenodoAdapter(Adapter):
                 )
 
             # Upload package
-            with tempfile.TemporaryDirectory() as dir:
+            with tempfile.TemporaryDirectory(dir=self.control.tmp_path) as dir:
                 path = Path(dir) / "datapackage.json"
                 package.to_json(str(path))
                 client.upload_data(
