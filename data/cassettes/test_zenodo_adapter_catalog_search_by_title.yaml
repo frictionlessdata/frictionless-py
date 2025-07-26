@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records?q=title%3A%22Frictionless+Data+Test+Dataset+Without+Descriptor%22
   response:
@@ -51,9 +51,9 @@ interactions:
         6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
         "https://zenodo.org/api/records/7078768/files/table.xls/content"}}], "swh":
         {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        428, "unique_downloads": 84, "views": 185, "unique_views": 177, "version_downloads":
-        428, "version_unique_downloads": 84, "version_unique_views": 176, "version_views":
-        184}, "state": "done", "submitted": true}, {"created": "2022-10-24T09:24:46.102599+00:00",
+        444, "unique_downloads": 92, "views": 187, "unique_views": 179, "version_downloads":
+        444, "version_unique_downloads": 92, "version_unique_views": 178, "version_views":
+        186}, "state": "done", "submitted": true}, {"created": "2022-10-24T09:24:46.102599+00:00",
         "modified": "2022-10-24T14:26:33.701979+00:00", "id": 7243982, "conceptrecid":
         "7243981", "doi": "10.5281/zenodo.7243982", "conceptdoi": "10.5281/zenodo.7243981",
         "doi_url": "https://doi.org/10.5281/zenodo.7243982", "metadata": {"title":
@@ -87,9 +87,9 @@ interactions:
         "key": "countries.csv", "size": 143, "checksum": "md5:3ace7bc0a1404ce0b0b3f909dc7bf692",
         "links": {"self": "https://zenodo.org/api/records/7243982/files/countries.csv/content"}}],
         "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        39, "unique_downloads": 20, "views": 50, "unique_views": 48, "version_downloads":
-        39, "version_unique_downloads": 20, "version_unique_views": 48, "version_views":
-        50}, "state": "done", "submitted": true}], "total": 2}, "aggregations": {"access_status":
+        41, "unique_downloads": 22, "views": 52, "unique_views": 50, "version_downloads":
+        41, "version_unique_downloads": 22, "version_unique_views": 50, "version_views":
+        52}, "state": "done", "submitted": true}], "total": 2}, "aggregations": {"access_status":
         {"buckets": [{"key": "open", "doc_count": 2, "label": "Open", "is_selected":
         false}], "label": "Access status"}, "resource_type": {"buckets": [{"key":
         "dataset", "doc_count": 2, "label": "Dataset", "is_selected": false, "inner":
@@ -112,17 +112,17 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:41 GMT
+      - Sat, 26 Jul 2025 12:01:29 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '25'
+      - '23'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=8744e51872eabf6cc8db27f0ab820c1d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -138,11 +138,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '91'
+      - '107'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - a96149ab01ab75eaf3a345d244275b4e
+      - 1201b44db2452678fdda8ae656c9c9c2
       x-xss-protection:
       - 1; mode=block
     status:

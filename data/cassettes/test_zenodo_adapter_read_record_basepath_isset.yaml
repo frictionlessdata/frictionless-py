@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/7078768
   response:
@@ -51,9 +51,9 @@ interactions:
         6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
         "https://zenodo.org/api/records/7078768/files/table.xls/content"}}], "swh":
         {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        428, "unique_downloads": 84, "views": 185, "unique_views": 177, "version_downloads":
-        428, "version_unique_downloads": 84, "version_unique_views": 176, "version_views":
-        184}, "state": "done", "submitted": true}'
+        444, "unique_downloads": 92, "views": 187, "unique_views": 179, "version_downloads":
+        444, "version_unique_downloads": 92, "version_unique_views": 178, "version_views":
+        186}, "state": "done", "submitted": true}'
     headers:
       access-control-allow-origin:
       - '*'
@@ -70,7 +70,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:07 GMT
+      - Sat, 26 Jul 2025 12:00:56 GMT
       etag:
       - W/"8"
       link:
@@ -80,11 +80,11 @@ interactions:
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '59'
+      - '56'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=6d9eb0df64e8a007ae8479d760e489ff; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -100,11 +100,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '131'
+      - '130'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - 99cf390f25947def76b7ab155d2a1524
+      - 4a9d21b6cf859af5b0a419d44b9f42b7
       x-xss-protection:
       - 1; mode=block
     status:

@@ -13,9 +13,9 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: POST
-    uri: https://zenodo.org/api//deposit/depositions
+    uri: https://sandbox.zenodo.org/api//deposit/depositions
   response:
     body:
       string: '{"status": 403, "message": "Permission denied."}'
@@ -33,19 +33,19 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:32 GMT
+      - Sat, 26 Jul 2025 12:01:18 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '34'
+      - '60'
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIzMiwiZXhwIjoxNzQ4NjgyNjMyfQ.IkRXQzBmQWM2TGFSZ25BTkwxV0NtSXdZSDkwQnRoYlFlIg.fhfczUS-Y8HvzB9iozxCcXcRxRmy6OIPd1UJhwIx7Rn2YloSh9adBdP3hPfUQZ1tbgc5tEa-k7QBq2PfLoWhXg;
-        Expires=Fri, 06 Jun 2025 09:10:32 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=1150a9296538db69f8d2c95afd8c3910; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI3OCwiZXhwIjoxNzUzNjE3Njc4fQ.InMxS255YWJGZnVpOFFkOE9Lb1UwSVVZcVBaVHpKV09wIg.U89vHpEUT3yd9eh8BY8V-m7T-5aLPvXDdvx78zEVGXlJhIahQSUR-EnqjXe0z7VrzHmNLI6ky0A5AuwqxaVpaQ;
+        Expires=Sat, 02 Aug 2025 12:01:18 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=49f6e1f731e59ba2571d6cc21ea961bc; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -56,9 +56,9 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '101'
+      - '132'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531339'
       x-xss-protection:
       - 1; mode=block
     status:

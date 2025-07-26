@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/7248153
   response:
@@ -48,9 +48,9 @@ interactions:
         "key": "address3.csv.zip", "size": 274, "checksum": "md5:c49bdd558d7874ee0135ee9a49584032",
         "links": {"self": "https://zenodo.org/api/records/7248153/files/address3.csv.zip/content"}}],
         "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        66, "unique_downloads": 25, "views": 296, "unique_views": 285, "version_downloads":
-        41, "version_unique_downloads": 15, "version_unique_views": 76, "version_views":
-        80}, "state": "done", "submitted": true}'
+        67, "unique_downloads": 26, "views": 299, "unique_views": 288, "version_downloads":
+        42, "version_unique_downloads": 16, "version_unique_views": 77, "version_views":
+        81}, "state": "done", "submitted": true}'
     headers:
       access-control-allow-origin:
       - '*'
@@ -67,7 +67,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:20 GMT
+      - Sat, 26 Jul 2025 12:01:08 GMT
       etag:
       - W/"2"
       link:
@@ -77,11 +77,11 @@ interactions:
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '46'
+      - '44'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=aadb4b75189d336794d49cd6bc272fae; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=6698031c53d44857cc1c54adf5a63c75; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -97,11 +97,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '116'
+      - '115'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - c750a43c363a835aca9be97bd7f9f114
+      - a09ba379f81c8e898c7c1f6cca2afd0c
       x-xss-protection:
       - 1; mode=block
     status:

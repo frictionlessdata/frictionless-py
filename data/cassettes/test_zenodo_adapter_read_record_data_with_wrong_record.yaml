@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/68358988
   response:
@@ -29,17 +29,17 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:12 GMT
+      - Sat, 26 Jul 2025 12:01:00 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '54'
+      - '52'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=1150a9296538db69f8d2c95afd8c3910; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=e26c51e5d1379a16d287881670fdf19c; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -50,9 +50,9 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '124'
+      - '123'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-xss-protection:
       - 1; mode=block
     status:

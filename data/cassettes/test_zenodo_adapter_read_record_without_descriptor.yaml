@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/7078768
   response:
@@ -51,9 +51,9 @@ interactions:
         6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
         "https://zenodo.org/api/records/7078768/files/table.xls/content"}}], "swh":
         {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        428, "unique_downloads": 84, "views": 185, "unique_views": 177, "version_downloads":
-        428, "version_unique_downloads": 84, "version_unique_views": 176, "version_views":
-        184}, "state": "done", "submitted": true}'
+        444, "unique_downloads": 92, "views": 187, "unique_views": 179, "version_downloads":
+        444, "version_unique_downloads": 92, "version_unique_views": 178, "version_views":
+        186}, "state": "done", "submitted": true}'
     headers:
       access-control-allow-origin:
       - '*'
@@ -70,7 +70,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:08:13 GMT
+      - Sat, 26 Jul 2025 12:00:52 GMT
       etag:
       - W/"8"
       link:
@@ -80,11 +80,11 @@ interactions:
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '59'
+      - '60'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=0acb936b975d164e9af26483a08df23e; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -102,9 +102,9 @@ interactions:
       x-ratelimit-remaining:
       - '132'
       x-ratelimit-reset:
-      - '1748596153'
+      - '1753531313'
       x-request-id:
-      - f1c219dbf498732c4049523992cfbeae
+      - c338a89a9a4558392f14e04dc8ea2842
       x-xss-protection:
       - 1; mode=block
     status:
@@ -154,7 +154,7 @@ interactions:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
       date:
-      - Fri, 30 May 2025 09:08:13 GMT
+      - Sat, 26 Jul 2025 12:00:53 GMT
       oc-checksum:
       - MD5:154d822b8c2aa259867067f01c0efee5
       referrer-policy:
@@ -164,9 +164,9 @@ interactions:
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:08:13 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:00:53 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -183,7 +183,7 @@ interactions:
       x-ratelimit-remaining:
       - '132'
       x-ratelimit-reset:
-      - '1748596154'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:
@@ -199,7 +199,7 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -235,7 +235,7 @@ interactions:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
       date:
-      - Fri, 30 May 2025 09:08:13 GMT
+      - Sat, 26 Jul 2025 12:00:53 GMT
       oc-checksum:
       - MD5:154d822b8c2aa259867067f01c0efee5
       referrer-policy:
@@ -245,8 +245,8 @@ interactions:
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:08:13 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:00:53 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       x-content-type-options:
@@ -262,7 +262,7 @@ interactions:
       x-ratelimit-remaining:
       - '131'
       x-ratelimit-reset:
-      - '1748596154'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:
@@ -278,7 +278,7 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -410,18 +410,18 @@ interactions:
       - application/octet-stream
       - application/octet-stream
       date:
-      - Fri, 30 May 2025 09:08:14 GMT
+      - Sat, 26 Jul 2025 12:00:53 GMT
       oc-checksum:
       - MD5:3a980d1a559c48978c63c0c1d0d2a8f3
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '59'
+      - '60'
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:08:14 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:00:53 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       x-content-type-options:
@@ -437,7 +437,7 @@ interactions:
       x-ratelimit-remaining:
       - '130'
       x-ratelimit-reset:
-      - '1748596154'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:
@@ -453,7 +453,7 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -585,18 +585,18 @@ interactions:
       - application/octet-stream
       - application/octet-stream
       date:
-      - Fri, 30 May 2025 09:08:14 GMT
+      - Sat, 26 Jul 2025 12:00:53 GMT
       oc-checksum:
       - MD5:3a980d1a559c48978c63c0c1d0d2a8f3
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '59'
+      - '60'
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:08:14 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:00:53 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       x-content-type-options:
@@ -612,7 +612,7 @@ interactions:
       x-ratelimit-remaining:
       - '129'
       x-ratelimit-reset:
-      - '1748596154'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:

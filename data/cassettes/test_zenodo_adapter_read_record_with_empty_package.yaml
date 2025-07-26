@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/7078725
   response:
@@ -63,9 +63,9 @@ interactions:
         "3d110fb6-2bbb-4664-a48d-43435169b0b7", "key": "capitals.csv", "size": 76,
         "checksum": "md5:154d822b8c2aa259867067f01c0efee5", "links": {"self": "https://zenodo.org/api/records/7078725/files/capitals.csv/content"}}],
         "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        137, "unique_downloads": 61, "views": 109, "unique_views": 109, "version_downloads":
-        137, "version_unique_downloads": 61, "version_unique_views": 109, "version_views":
-        109}, "state": "done", "submitted": true}'
+        155, "unique_downloads": 78, "views": 110, "unique_views": 110, "version_downloads":
+        155, "version_unique_downloads": 78, "version_unique_views": 110, "version_views":
+        110}, "state": "done", "submitted": true}'
     headers:
       access-control-allow-origin:
       - '*'
@@ -82,7 +82,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:14 GMT
+      - Sat, 26 Jul 2025 12:01:02 GMT
       etag:
       - W/"2"
       link:
@@ -92,11 +92,11 @@ interactions:
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '52'
+      - '50'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=aadb4b75189d336794d49cd6bc272fae; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -112,11 +112,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '122'
+      - '121'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - 9249fe4c202f9b1faa9bac3d724e246d
+      - be46d4cccb376d69cec3123925934611
       x-xss-protection:
       - 1; mode=block
     status:

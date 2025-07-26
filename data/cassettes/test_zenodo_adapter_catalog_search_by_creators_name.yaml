@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records?q=creators.name%3A%22FD+Tester+Creator%22
   response:
@@ -54,9 +54,9 @@ interactions:
         114, "checksum": "md5:c028f525f314c49ea48ed09e82292ed2", "links": {"self":
         "https://zenodo.org/api/records/7078760/files/data.csv/content"}}], "swh":
         {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        616, "unique_downloads": 114, "views": 104, "unique_views": 87, "version_downloads":
-        616, "version_unique_downloads": 114, "version_unique_views": 86, "version_views":
-        103}, "state": "done", "submitted": true}], "total": 1}, "aggregations": {"access_status":
+        629, "unique_downloads": 121, "views": 106, "unique_views": 89, "version_downloads":
+        629, "version_unique_downloads": 121, "version_unique_views": 88, "version_views":
+        105}, "state": "done", "submitted": true}], "total": 1}, "aggregations": {"access_status":
         {"buckets": [{"key": "open", "doc_count": 1, "label": "Open", "is_selected":
         false}], "label": "Access status"}, "resource_type": {"buckets": [{"key":
         "dataset", "doc_count": 1, "label": "Dataset", "is_selected": false, "inner":
@@ -80,17 +80,17 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:41 GMT
+      - Sat, 26 Jul 2025 12:01:30 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '25'
+      - '22'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=8744e51872eabf6cc8db27f0ab820c1d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -106,11 +106,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '90'
+      - '106'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - d40be38105c7676d24589efe0e52712c
+      - 2bba60d32c7dbc12796948cc9303f99e
       x-xss-protection:
       - 1; mode=block
     status:
@@ -126,7 +126,7 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -170,18 +170,18 @@ interactions:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
       date:
-      - Fri, 30 May 2025 09:10:41 GMT
+      - Sat, 26 Jul 2025 12:01:30 GMT
       oc-checksum:
       - MD5:127f3943c9a2fa7fe892c7159b6fbded
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '25'
+      - '23'
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:10:41 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:30 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       transfer-encoding:
@@ -199,9 +199,9 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '76'
+      - '75'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:

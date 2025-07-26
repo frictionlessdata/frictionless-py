@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records?q=conceptdoi%3A10.5281%2Azenodo.7078768
   response:
@@ -32,17 +32,17 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:41 GMT
+      - Sat, 26 Jul 2025 12:01:30 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '25'
+      - '22'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=aadb4b75189d336794d49cd6bc272fae; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=6698031c53d44857cc1c54adf5a63c75; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -58,11 +58,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '89'
+      - '105'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - 93eaf9fc6ff1e3d8efa3bc8832309c99
+      - e8c4c72e9f950716287e7d07ce5f4d2b
       x-xss-protection:
       - 1; mode=block
     status:
@@ -78,7 +78,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records?q=doi%3A10.5281%2Azenodo.7078768
   response:
@@ -120,9 +120,9 @@ interactions:
         6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
         "https://zenodo.org/api/records/7078768/files/table.xls/content"}}], "swh":
         {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        428, "unique_downloads": 84, "views": 185, "unique_views": 177, "version_downloads":
-        428, "version_unique_downloads": 84, "version_unique_views": 176, "version_views":
-        184}, "state": "done", "submitted": true}], "total": 1}, "aggregations": {"access_status":
+        444, "unique_downloads": 92, "views": 187, "unique_views": 179, "version_downloads":
+        444, "version_unique_downloads": 92, "version_unique_views": 178, "version_views":
+        186}, "state": "done", "submitted": true}], "total": 1}, "aggregations": {"access_status":
         {"buckets": [{"key": "open", "doc_count": 1, "label": "Open", "is_selected":
         false}], "label": "Access status"}, "resource_type": {"buckets": [{"key":
         "dataset", "doc_count": 1, "label": "Dataset", "is_selected": false, "inner":
@@ -145,17 +145,17 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:42 GMT
+      - Sat, 26 Jul 2025 12:01:30 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '24'
+      - '22'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=aadb4b75189d336794d49cd6bc272fae; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -171,11 +171,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '88'
+      - '104'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - 75640eb995cff637ded95f2d041e6d2e
+      - 27d0785a77c557478ecb3b71ab149da2
       x-xss-protection:
       - 1; mode=block
     status:

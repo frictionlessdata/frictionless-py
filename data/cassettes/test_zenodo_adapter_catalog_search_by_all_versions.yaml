@@ -9,12 +9,85 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records?all_versions=True&q=creators.name%3A%22FD+Tester%22
   response:
     body:
-      string: '{"hits": {"hits": [{"created": "2022-09-18T06:22:20.797375+00:00",
+      string: '{"hits": {"hits": [{"created": "2022-09-17T16:25:09.618510+00:00",
+        "modified": "2022-09-18T02:26:39.710746+00:00", "id": 7089059, "conceptrecid":
+        "7089057", "doi": "10.5281/zenodo.7089059", "conceptdoi": "10.5281/zenodo.7089057",
+        "doi_url": "https://doi.org/10.5281/zenodo.7089059", "metadata": {"title":
+        "Frictionless Data Test Dataset - Draft", "doi": "10.5281/zenodo.7089059",
+        "publication_date": "2022-09-17", "description": "<p>This is a test dataset</p>",
+        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
+        "FD Tester"}], "resource_type": {"title": "Dataset", "type": "dataset"}, "license":
+        {"id": "cc-by-4.0"}, "relations": {"version": [{"index": 0, "is_last": true,
+        "parent": {"pid_type": "recid", "pid_value": "7089057"}}]}}, "title": "Frictionless
+        Data Test Dataset - Draft", "links": {"self": "https://zenodo.org/api/records/7089059",
+        "self_html": "https://zenodo.org/records/7089059", "preview_html": "https://zenodo.org/records/7089059?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7089059", "self_doi": "https://doi.org/10.5281/zenodo.7089059",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089059", "reserve_doi":
+        "https://zenodo.org/api/records/7089059/draft/pids/doi", "parent": "https://zenodo.org/api/records/7089057",
+        "parent_html": "https://zenodo.org/records/7089057", "parent_doi": "https://doi.org/10.5281/zenodo.7089057",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089057", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7089059/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7089059/sequence/default", "files": "https://zenodo.org/api/records/7089059/files",
+        "media_files": "https://zenodo.org/api/records/7089059/media-files", "archive":
+        "https://zenodo.org/api/records/7089059/files-archive", "archive_media": "https://zenodo.org/api/records/7089059/media-files-archive",
+        "latest": "https://zenodo.org/api/records/7089059/versions/latest", "latest_html":
+        "https://zenodo.org/records/7089059/latest", "versions": "https://zenodo.org/api/records/7089059/versions",
+        "draft": "https://zenodo.org/api/records/7089059/draft", "access_links": "https://zenodo.org/api/records/7089059/access/links",
+        "access_grants": "https://zenodo.org/api/records/7089059/access/grants", "access_users":
+        "https://zenodo.org/api/records/7089059/access/users", "access_request": "https://zenodo.org/api/records/7089059/access/request",
+        "access": "https://zenodo.org/api/records/7089059/access", "communities":
+        "https://zenodo.org/api/records/7089059/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7089059/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7089059/requests"}, "updated": "2022-09-18T02:26:39.710746+00:00",
+        "recid": "7089059", "revision": 2, "files": [{"id": "069a17f0-ba88-454d-8aed-3e106d028ef4",
+        "key": "capitals.csv", "size": 76, "checksum": "md5:154d822b8c2aa259867067f01c0efee5",
+        "links": {"self": "https://zenodo.org/api/records/7089059/files/capitals.csv/content"}}],
+        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        62, "unique_downloads": 26, "views": 83, "unique_views": 77, "version_downloads":
+        62, "version_unique_downloads": 26, "version_unique_views": 77, "version_views":
+        83}, "state": "done", "submitted": true}, {"created": "2022-09-18T06:28:27.281204+00:00",
+        "modified": "2022-09-18T14:26:15.949950+00:00", "id": 7089860, "conceptrecid":
+        "7089859", "doi": "10.5281/zenodo.7089860", "conceptdoi": "10.5281/zenodo.7089859",
+        "doi_url": "https://doi.org/10.5281/zenodo.7089860", "metadata": {"title":
+        "Frictionless Data Test Publication Journal", "doi": "10.5281/zenodo.7089860",
+        "publication_date": "2022-09-18", "description": "<p>This is a test journal</p>",
+        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
+        "FD Testing"}], "keywords": ["FDTP", "TPJ"], "resource_type": {"title": "Journal
+        article", "type": "publication", "subtype": "article"}, "license": {"id":
+        "cc-by-4.0"}, "relations": {"version": [{"index": 0, "is_last": true, "parent":
+        {"pid_type": "recid", "pid_value": "7089859"}}]}}, "title": "Frictionless
+        Data Test Publication Journal", "links": {"self": "https://zenodo.org/api/records/7089860",
+        "self_html": "https://zenodo.org/records/7089860", "preview_html": "https://zenodo.org/records/7089860?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7089860", "self_doi": "https://doi.org/10.5281/zenodo.7089860",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089860", "reserve_doi":
+        "https://zenodo.org/api/records/7089860/draft/pids/doi", "parent": "https://zenodo.org/api/records/7089859",
+        "parent_html": "https://zenodo.org/records/7089859", "parent_doi": "https://doi.org/10.5281/zenodo.7089859",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089859", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7089860/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7089860/sequence/default", "files": "https://zenodo.org/api/records/7089860/files",
+        "media_files": "https://zenodo.org/api/records/7089860/media-files", "archive":
+        "https://zenodo.org/api/records/7089860/files-archive", "archive_media": "https://zenodo.org/api/records/7089860/media-files-archive",
+        "latest": "https://zenodo.org/api/records/7089860/versions/latest", "latest_html":
+        "https://zenodo.org/records/7089860/latest", "versions": "https://zenodo.org/api/records/7089860/versions",
+        "draft": "https://zenodo.org/api/records/7089860/draft", "access_links": "https://zenodo.org/api/records/7089860/access/links",
+        "access_grants": "https://zenodo.org/api/records/7089860/access/grants", "access_users":
+        "https://zenodo.org/api/records/7089860/access/users", "access_request": "https://zenodo.org/api/records/7089860/access/request",
+        "access": "https://zenodo.org/api/records/7089860/access", "communities":
+        "https://zenodo.org/api/records/7089860/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7089860/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7089860/requests"}, "updated": "2022-09-18T14:26:15.949950+00:00",
+        "recid": "7089860", "revision": 3, "files": [{"id": "88fb7a5b-9cc6-4bd3-b41c-60604d643adf",
+        "key": "journaltable.xls", "size": 6144, "checksum": "md5:fa0866b4896cd466559076c7ecef61ed",
+        "links": {"self": "https://zenodo.org/api/records/7089860/files/journaltable.xls/content"}}],
+        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        30, "unique_downloads": 14, "views": 39, "unique_views": 37, "version_downloads":
+        30, "version_unique_downloads": 14, "version_unique_views": 37, "version_views":
+        39}, "state": "done", "submitted": true}, {"created": "2022-09-18T06:22:20.797375+00:00",
         "modified": "2022-09-18T14:26:16.711812+00:00", "id": 7089850, "conceptrecid":
         "7089849", "doi": "10.5281/zenodo.7089850", "conceptdoi": "10.5281/zenodo.7089849",
         "doi_url": "https://doi.org/10.5281/zenodo.7089850", "metadata": {"title":
@@ -48,128 +121,9 @@ interactions:
         "key": "pubtable.xls", "size": 6144, "checksum": "md5:fa0866b4896cd466559076c7ecef61ed",
         "links": {"self": "https://zenodo.org/api/records/7089850/files/pubtable.xls/content"}}],
         "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        38, "unique_downloads": 19, "views": 47, "unique_views": 47, "version_downloads":
-        38, "version_unique_downloads": 19, "version_unique_views": 47, "version_views":
-        47}, "state": "done", "submitted": true}, {"created": "2022-09-20T15:04:03.118027+00:00",
-        "modified": "2022-09-21T14:26:29.349341+00:00", "id": 7097299, "conceptrecid":
-        "7097298", "doi": "10.5281/zenodo.7097299", "conceptdoi": "10.5281/zenodo.7097298",
-        "doi_url": "https://doi.org/10.5281/zenodo.7097299", "metadata": {"title":
-        "Test Write File - Remote", "doi": "10.5281/zenodo.7097299", "publication_date":
-        "2022-09-20", "description": "<p>Test Write File - Remote</p>", "access_right":
-        "open", "creators": [{"name": "FD Tester", "affiliation": "FD Testing Write"}],
-        "resource_type": {"title": "Dataset", "type": "dataset"}, "license": {"id":
-        "cc-zero"}, "relations": {"version": [{"index": 0, "is_last": true, "parent":
-        {"pid_type": "recid", "pid_value": "7097298"}}]}}, "title": "Test Write File
-        - Remote", "links": {"self": "https://zenodo.org/api/records/7097299", "self_html":
-        "https://zenodo.org/records/7097299", "preview_html": "https://zenodo.org/records/7097299?preview=1",
-        "doi": "https://doi.org/10.5281/zenodo.7097299", "self_doi": "https://doi.org/10.5281/zenodo.7097299",
-        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7097299", "reserve_doi":
-        "https://zenodo.org/api/records/7097299/draft/pids/doi", "parent": "https://zenodo.org/api/records/7097298",
-        "parent_html": "https://zenodo.org/records/7097298", "parent_doi": "https://doi.org/10.5281/zenodo.7097298",
-        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7097298", "self_iiif_manifest":
-        "https://zenodo.org/api/iiif/record:7097299/manifest", "self_iiif_sequence":
-        "https://zenodo.org/api/iiif/record:7097299/sequence/default", "files": "https://zenodo.org/api/records/7097299/files",
-        "media_files": "https://zenodo.org/api/records/7097299/media-files", "archive":
-        "https://zenodo.org/api/records/7097299/files-archive", "archive_media": "https://zenodo.org/api/records/7097299/media-files-archive",
-        "latest": "https://zenodo.org/api/records/7097299/versions/latest", "latest_html":
-        "https://zenodo.org/records/7097299/latest", "versions": "https://zenodo.org/api/records/7097299/versions",
-        "draft": "https://zenodo.org/api/records/7097299/draft", "access_links": "https://zenodo.org/api/records/7097299/access/links",
-        "access_grants": "https://zenodo.org/api/records/7097299/access/grants", "access_users":
-        "https://zenodo.org/api/records/7097299/access/users", "access_request": "https://zenodo.org/api/records/7097299/access/request",
-        "access": "https://zenodo.org/api/records/7097299/access", "communities":
-        "https://zenodo.org/api/records/7097299/communities", "communities-suggestions":
-        "https://zenodo.org/api/records/7097299/communities-suggestions", "requests":
-        "https://zenodo.org/api/records/7097299/requests"}, "updated": "2022-09-21T14:26:29.349341+00:00",
-        "recid": "7097299", "revision": 2, "files": [{"id": "0ba59941-9f76-4865-aabe-8bebd572593f",
-        "key": "datapackage.json", "size": 541, "checksum": "md5:fb17a3d877b5c4c7c089a29d1f21f7d4",
-        "links": {"self": "https://zenodo.org/api/records/7097299/files/datapackage.json/content"}}],
-        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        488, "unique_downloads": 435, "views": 40, "unique_views": 39, "version_downloads":
-        479, "version_unique_downloads": 426, "version_unique_views": 39, "version_views":
-        40}, "state": "done", "submitted": true}, {"created": "2022-09-20T12:29:36.824177+00:00",
-        "modified": "2022-09-20T14:26:21.352087+00:00", "id": 7096870, "conceptrecid":
-        "7096856", "doi": "10.5281/zenodo.7096870", "conceptdoi": "10.5281/zenodo.7096856",
-        "doi_url": "https://doi.org/10.5281/zenodo.7096870", "metadata": {"title":
-        "Test File", "doi": "10.5281/zenodo.7096870", "publication_date": "2022-09-20",
-        "description": "<p>Test File</p>", "access_right": "open", "creators": [{"name":
-        "FD Tester", "affiliation": "FD Testing"}], "resource_type": {"title": "Dataset",
-        "type": "dataset"}, "license": {"id": "cc-zero"}, "relations": {"version":
-        [{"index": 0, "is_last": true, "parent": {"pid_type": "recid", "pid_value":
-        "7096856"}}]}}, "title": "Test File", "links": {"self": "https://zenodo.org/api/records/7096870",
-        "self_html": "https://zenodo.org/records/7096870", "preview_html": "https://zenodo.org/records/7096870?preview=1",
-        "doi": "https://doi.org/10.5281/zenodo.7096870", "self_doi": "https://doi.org/10.5281/zenodo.7096870",
-        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096870", "reserve_doi":
-        "https://zenodo.org/api/records/7096870/draft/pids/doi", "parent": "https://zenodo.org/api/records/7096856",
-        "parent_html": "https://zenodo.org/records/7096856", "parent_doi": "https://doi.org/10.5281/zenodo.7096856",
-        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096856", "self_iiif_manifest":
-        "https://zenodo.org/api/iiif/record:7096870/manifest", "self_iiif_sequence":
-        "https://zenodo.org/api/iiif/record:7096870/sequence/default", "files": "https://zenodo.org/api/records/7096870/files",
-        "media_files": "https://zenodo.org/api/records/7096870/media-files", "archive":
-        "https://zenodo.org/api/records/7096870/files-archive", "archive_media": "https://zenodo.org/api/records/7096870/media-files-archive",
-        "latest": "https://zenodo.org/api/records/7096870/versions/latest", "latest_html":
-        "https://zenodo.org/records/7096870/latest", "versions": "https://zenodo.org/api/records/7096870/versions",
-        "draft": "https://zenodo.org/api/records/7096870/draft", "access_links": "https://zenodo.org/api/records/7096870/access/links",
-        "access_grants": "https://zenodo.org/api/records/7096870/access/grants", "access_users":
-        "https://zenodo.org/api/records/7096870/access/users", "access_request": "https://zenodo.org/api/records/7096870/access/request",
-        "access": "https://zenodo.org/api/records/7096870/access", "communities":
-        "https://zenodo.org/api/records/7096870/communities", "communities-suggestions":
-        "https://zenodo.org/api/records/7096870/communities-suggestions", "requests":
-        "https://zenodo.org/api/records/7096870/requests"}, "updated": "2022-09-20T14:26:21.352087+00:00",
-        "recid": "7096870", "revision": 2, "files": [{"id": "819bbdfa-0128-4c3a-9d24-27e70583d4b0",
-        "key": "table.xls", "size": 6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3",
-        "links": {"self": "https://zenodo.org/api/records/7096870/files/table.xls/content"}},
-        {"id": "9d3ab86e-993c-4561-b2d5-44e0bfc93b3f", "key": "datapackage.json",
-        "size": 341, "checksum": "md5:0e8c16a24bb893cef6f6c0c460d64113", "links":
-        {"self": "https://zenodo.org/api/records/7096870/files/datapackage.json/content"}}],
-        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        1942, "unique_downloads": 806, "views": 198, "unique_views": 194, "version_downloads":
-        1936, "version_unique_downloads": 804, "version_unique_views": 192, "version_views":
-        194}, "state": "done", "submitted": true}, {"created": "2022-09-17T17:47:53.948272+00:00",
-        "modified": "2024-07-16T02:49:33.227990+00:00", "id": 7089279, "conceptrecid":
-        "7089245", "doi": "10.5281/zenodo.7089279", "conceptdoi": "10.5281/zenodo.7089245",
-        "doi_url": "https://doi.org/10.5281/zenodo.7089279", "metadata": {"title":
-        "Frictionless Data Test Dataset - Version", "doi": "10.5281/zenodo.7089279",
-        "publication_date": "2022-09-17", "description": "<p>This is test dataset</p>",
-        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
-        "FD Testing"}], "version": "1.3", "resource_type": {"title": "Dataset", "type":
-        "dataset"}, "license": {"id": "cc-by-4.0"}, "relations": {"version": [{"index":
-        1, "is_last": false, "parent": {"pid_type": "recid", "pid_value": "7089245"}}]}},
-        "title": "Frictionless Data Test Dataset - Version", "links": {"self": "https://zenodo.org/api/records/7089279",
-        "self_html": "https://zenodo.org/records/7089279", "preview_html": "https://zenodo.org/records/7089279?preview=1",
-        "doi": "https://doi.org/10.5281/zenodo.7089279", "self_doi": "https://doi.org/10.5281/zenodo.7089279",
-        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089279", "reserve_doi":
-        "https://zenodo.org/api/records/7089279/draft/pids/doi", "parent": "https://zenodo.org/api/records/7089245",
-        "parent_html": "https://zenodo.org/records/7089245", "parent_doi": "https://doi.org/10.5281/zenodo.7089245",
-        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089245", "self_iiif_manifest":
-        "https://zenodo.org/api/iiif/record:7089279/manifest", "self_iiif_sequence":
-        "https://zenodo.org/api/iiif/record:7089279/sequence/default", "files": "https://zenodo.org/api/records/7089279/files",
-        "media_files": "https://zenodo.org/api/records/7089279/media-files", "thumbnails":
-        {"10": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E10,/0/default.jpg",
-        "50": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E50,/0/default.jpg",
-        "100": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E100,/0/default.jpg",
-        "250": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E250,/0/default.jpg",
-        "750": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E750,/0/default.jpg",
-        "1200": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E1200,/0/default.jpg"},
-        "archive": "https://zenodo.org/api/records/7089279/files-archive", "archive_media":
-        "https://zenodo.org/api/records/7089279/media-files-archive", "latest": "https://zenodo.org/api/records/7089279/versions/latest",
-        "latest_html": "https://zenodo.org/records/7089279/latest", "versions": "https://zenodo.org/api/records/7089279/versions",
-        "draft": "https://zenodo.org/api/records/7089279/draft", "access_links": "https://zenodo.org/api/records/7089279/access/links",
-        "access_grants": "https://zenodo.org/api/records/7089279/access/grants", "access_users":
-        "https://zenodo.org/api/records/7089279/access/users", "access_request": "https://zenodo.org/api/records/7089279/access/request",
-        "access": "https://zenodo.org/api/records/7089279/access", "communities":
-        "https://zenodo.org/api/records/7089279/communities", "communities-suggestions":
-        "https://zenodo.org/api/records/7089279/communities-suggestions", "requests":
-        "https://zenodo.org/api/records/7089279/requests"}, "updated": "2024-07-16T02:49:33.227990+00:00",
-        "recid": "7089279", "revision": 9, "files": [{"id": "31ca94af-a402-4b3f-ad24-6f535d7bf56d",
-        "key": "document.pdf", "size": 262443, "checksum": "md5:3a503daaa773a3ea32b1fedd9fece844",
-        "links": {"self": "https://zenodo.org/api/records/7089279/files/document.pdf/content"}},
-        {"id": "17c08bec-2993-48ac-9805-066b6cb7b646", "key": "table.xls", "size":
-        6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
-        "https://zenodo.org/api/records/7089279/files/table.xls/content"}}], "swh":
-        {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        130, "unique_downloads": 66, "views": 477, "unique_views": 469, "version_downloads":
-        31, "version_unique_downloads": 22, "version_unique_views": 94, "version_views":
-        98}, "state": "done", "submitted": true}, {"created": "2022-09-18T05:45:05.329568+00:00",
+        38, "unique_downloads": 19, "views": 48, "unique_views": 48, "version_downloads":
+        38, "version_unique_downloads": 19, "version_unique_views": 48, "version_views":
+        48}, "state": "done", "submitted": true}, {"created": "2022-09-18T05:45:05.329568+00:00",
         "modified": "2024-07-16T02:48:23.217315+00:00", "id": 7089818, "conceptrecid":
         "7089245", "doi": "10.5281/zenodo.7089818", "conceptdoi": "10.5281/zenodo.7089245",
         "doi_url": "https://doi.org/10.5281/zenodo.7089818", "metadata": {"title":
@@ -215,50 +169,128 @@ interactions:
         "size": 3698, "checksum": "md5:a19ebaa2a4e15137e0d5d339720d9123", "links":
         {"self": "https://zenodo.org/api/records/7089818/files/table-infer-boolean.xlsx/content"}}],
         "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        130, "unique_downloads": 66, "views": 477, "unique_views": 469, "version_downloads":
-        90, "version_unique_downloads": 38, "version_unique_views": 264, "version_views":
-        265}, "state": "done", "submitted": true}, {"created": "2022-09-20T12:35:03.564992+00:00",
-        "modified": "2022-09-20T14:26:21.406131+00:00", "id": 7096849, "conceptrecid":
-        "7096848", "doi": "10.5281/zenodo.7096849", "conceptdoi": "10.5281/zenodo.7096848",
-        "doi_url": "https://doi.org/10.5281/zenodo.7096849", "metadata": {"title":
-        "Test File", "doi": "10.5281/zenodo.7096849", "publication_date": "2022-09-20",
+        138, "unique_downloads": 74, "views": 483, "unique_views": 475, "version_downloads":
+        94, "version_unique_downloads": 42, "version_unique_views": 267, "version_views":
+        268}, "state": "done", "submitted": true}, {"created": "2022-09-17T17:47:53.948272+00:00",
+        "modified": "2024-07-16T02:49:33.227990+00:00", "id": 7089279, "conceptrecid":
+        "7089245", "doi": "10.5281/zenodo.7089279", "conceptdoi": "10.5281/zenodo.7089245",
+        "doi_url": "https://doi.org/10.5281/zenodo.7089279", "metadata": {"title":
+        "Frictionless Data Test Dataset - Version", "doi": "10.5281/zenodo.7089279",
+        "publication_date": "2022-09-17", "description": "<p>This is test dataset</p>",
+        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
+        "FD Testing"}], "version": "1.3", "resource_type": {"title": "Dataset", "type":
+        "dataset"}, "license": {"id": "cc-by-4.0"}, "relations": {"version": [{"index":
+        1, "is_last": false, "parent": {"pid_type": "recid", "pid_value": "7089245"}}]}},
+        "title": "Frictionless Data Test Dataset - Version", "links": {"self": "https://zenodo.org/api/records/7089279",
+        "self_html": "https://zenodo.org/records/7089279", "preview_html": "https://zenodo.org/records/7089279?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7089279", "self_doi": "https://doi.org/10.5281/zenodo.7089279",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089279", "reserve_doi":
+        "https://zenodo.org/api/records/7089279/draft/pids/doi", "parent": "https://zenodo.org/api/records/7089245",
+        "parent_html": "https://zenodo.org/records/7089245", "parent_doi": "https://doi.org/10.5281/zenodo.7089245",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089245", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7089279/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7089279/sequence/default", "files": "https://zenodo.org/api/records/7089279/files",
+        "media_files": "https://zenodo.org/api/records/7089279/media-files", "thumbnails":
+        {"10": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E10,/0/default.jpg",
+        "50": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E50,/0/default.jpg",
+        "100": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E100,/0/default.jpg",
+        "250": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E250,/0/default.jpg",
+        "750": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E750,/0/default.jpg",
+        "1200": "https://zenodo.org/api/iiif/record:7089279:document.pdf/full/%5E1200,/0/default.jpg"},
+        "archive": "https://zenodo.org/api/records/7089279/files-archive", "archive_media":
+        "https://zenodo.org/api/records/7089279/media-files-archive", "latest": "https://zenodo.org/api/records/7089279/versions/latest",
+        "latest_html": "https://zenodo.org/records/7089279/latest", "versions": "https://zenodo.org/api/records/7089279/versions",
+        "draft": "https://zenodo.org/api/records/7089279/draft", "access_links": "https://zenodo.org/api/records/7089279/access/links",
+        "access_grants": "https://zenodo.org/api/records/7089279/access/grants", "access_users":
+        "https://zenodo.org/api/records/7089279/access/users", "access_request": "https://zenodo.org/api/records/7089279/access/request",
+        "access": "https://zenodo.org/api/records/7089279/access", "communities":
+        "https://zenodo.org/api/records/7089279/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7089279/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7089279/requests"}, "updated": "2024-07-16T02:49:33.227990+00:00",
+        "recid": "7089279", "revision": 9, "files": [{"id": "31ca94af-a402-4b3f-ad24-6f535d7bf56d",
+        "key": "document.pdf", "size": 262443, "checksum": "md5:3a503daaa773a3ea32b1fedd9fece844",
+        "links": {"self": "https://zenodo.org/api/records/7089279/files/document.pdf/content"}},
+        {"id": "17c08bec-2993-48ac-9805-066b6cb7b646", "key": "table.xls", "size":
+        6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
+        "https://zenodo.org/api/records/7089279/files/table.xls/content"}}], "swh":
+        {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        138, "unique_downloads": 74, "views": 483, "unique_views": 475, "version_downloads":
+        33, "version_unique_downloads": 24, "version_unique_views": 95, "version_views":
+        99}, "state": "done", "submitted": true}, {"created": "2022-09-20T12:29:36.824177+00:00",
+        "modified": "2022-09-20T14:26:21.352087+00:00", "id": 7096870, "conceptrecid":
+        "7096856", "doi": "10.5281/zenodo.7096870", "conceptdoi": "10.5281/zenodo.7096856",
+        "doi_url": "https://doi.org/10.5281/zenodo.7096870", "metadata": {"title":
+        "Test File", "doi": "10.5281/zenodo.7096870", "publication_date": "2022-09-20",
         "description": "<p>Test File</p>", "access_right": "open", "creators": [{"name":
         "FD Tester", "affiliation": "FD Testing"}], "resource_type": {"title": "Dataset",
         "type": "dataset"}, "license": {"id": "cc-zero"}, "relations": {"version":
         [{"index": 0, "is_last": true, "parent": {"pid_type": "recid", "pid_value":
-        "7096848"}}]}}, "title": "Test File", "links": {"self": "https://zenodo.org/api/records/7096849",
-        "self_html": "https://zenodo.org/records/7096849", "preview_html": "https://zenodo.org/records/7096849?preview=1",
-        "doi": "https://doi.org/10.5281/zenodo.7096849", "self_doi": "https://doi.org/10.5281/zenodo.7096849",
-        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096849", "reserve_doi":
-        "https://zenodo.org/api/records/7096849/draft/pids/doi", "parent": "https://zenodo.org/api/records/7096848",
-        "parent_html": "https://zenodo.org/records/7096848", "parent_doi": "https://doi.org/10.5281/zenodo.7096848",
-        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096848", "self_iiif_manifest":
-        "https://zenodo.org/api/iiif/record:7096849/manifest", "self_iiif_sequence":
-        "https://zenodo.org/api/iiif/record:7096849/sequence/default", "files": "https://zenodo.org/api/records/7096849/files",
-        "media_files": "https://zenodo.org/api/records/7096849/media-files", "archive":
-        "https://zenodo.org/api/records/7096849/files-archive", "archive_media": "https://zenodo.org/api/records/7096849/media-files-archive",
-        "latest": "https://zenodo.org/api/records/7096849/versions/latest", "latest_html":
-        "https://zenodo.org/records/7096849/latest", "versions": "https://zenodo.org/api/records/7096849/versions",
-        "draft": "https://zenodo.org/api/records/7096849/draft", "access_links": "https://zenodo.org/api/records/7096849/access/links",
-        "access_grants": "https://zenodo.org/api/records/7096849/access/grants", "access_users":
-        "https://zenodo.org/api/records/7096849/access/users", "access_request": "https://zenodo.org/api/records/7096849/access/request",
-        "access": "https://zenodo.org/api/records/7096849/access", "communities":
-        "https://zenodo.org/api/records/7096849/communities", "communities-suggestions":
-        "https://zenodo.org/api/records/7096849/communities-suggestions", "requests":
-        "https://zenodo.org/api/records/7096849/requests"}, "updated": "2022-09-20T14:26:21.406131+00:00",
-        "recid": "7096849", "revision": 2, "files": [{"id": "08af6abd-bca3-48ca-99bf-8c2ff35cabb8",
-        "key": "table-reverse.csv", "size": 30, "checksum": "md5:4eff9a682845a2fa4896bbba16851de7",
-        "links": {"self": "https://zenodo.org/api/records/7096849/files/table-reverse.csv/content"}},
-        {"id": "ba12a8dc-858a-4788-8c4a-61a7590194b1", "key": "datapackage.json",
-        "size": 634, "checksum": "md5:3da470a8515f0e074ccc73af2e256969", "links":
-        {"self": "https://zenodo.org/api/records/7096849/files/datapackage.json/content"}},
-        {"id": "94aee82a-ad6a-4ca6-98bb-f084e61428ac", "key": "table.xls", "size":
-        6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
-        "https://zenodo.org/api/records/7096849/files/table.xls/content"}}], "swh":
-        {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        23, "unique_downloads": 10, "views": 36, "unique_views": 36, "version_downloads":
-        23, "version_unique_downloads": 10, "version_unique_views": 36, "version_views":
-        36}, "state": "done", "submitted": true}, {"created": "2022-09-17T17:25:36.878405+00:00",
+        "7096856"}}]}}, "title": "Test File", "links": {"self": "https://zenodo.org/api/records/7096870",
+        "self_html": "https://zenodo.org/records/7096870", "preview_html": "https://zenodo.org/records/7096870?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7096870", "self_doi": "https://doi.org/10.5281/zenodo.7096870",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096870", "reserve_doi":
+        "https://zenodo.org/api/records/7096870/draft/pids/doi", "parent": "https://zenodo.org/api/records/7096856",
+        "parent_html": "https://zenodo.org/records/7096856", "parent_doi": "https://doi.org/10.5281/zenodo.7096856",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096856", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7096870/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7096870/sequence/default", "files": "https://zenodo.org/api/records/7096870/files",
+        "media_files": "https://zenodo.org/api/records/7096870/media-files", "archive":
+        "https://zenodo.org/api/records/7096870/files-archive", "archive_media": "https://zenodo.org/api/records/7096870/media-files-archive",
+        "latest": "https://zenodo.org/api/records/7096870/versions/latest", "latest_html":
+        "https://zenodo.org/records/7096870/latest", "versions": "https://zenodo.org/api/records/7096870/versions",
+        "draft": "https://zenodo.org/api/records/7096870/draft", "access_links": "https://zenodo.org/api/records/7096870/access/links",
+        "access_grants": "https://zenodo.org/api/records/7096870/access/grants", "access_users":
+        "https://zenodo.org/api/records/7096870/access/users", "access_request": "https://zenodo.org/api/records/7096870/access/request",
+        "access": "https://zenodo.org/api/records/7096870/access", "communities":
+        "https://zenodo.org/api/records/7096870/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7096870/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7096870/requests"}, "updated": "2022-09-20T14:26:21.352087+00:00",
+        "recid": "7096870", "revision": 2, "files": [{"id": "819bbdfa-0128-4c3a-9d24-27e70583d4b0",
+        "key": "table.xls", "size": 6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3",
+        "links": {"self": "https://zenodo.org/api/records/7096870/files/table.xls/content"}},
+        {"id": "9d3ab86e-993c-4561-b2d5-44e0bfc93b3f", "key": "datapackage.json",
+        "size": 341, "checksum": "md5:0e8c16a24bb893cef6f6c0c460d64113", "links":
+        {"self": "https://zenodo.org/api/records/7096870/files/datapackage.json/content"}}],
+        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        1944, "unique_downloads": 808, "views": 199, "unique_views": 195, "version_downloads":
+        1938, "version_unique_downloads": 806, "version_unique_views": 193, "version_views":
+        195}, "state": "done", "submitted": true}, {"created": "2022-09-20T15:04:03.118027+00:00",
+        "modified": "2022-09-21T14:26:29.349341+00:00", "id": 7097299, "conceptrecid":
+        "7097298", "doi": "10.5281/zenodo.7097299", "conceptdoi": "10.5281/zenodo.7097298",
+        "doi_url": "https://doi.org/10.5281/zenodo.7097299", "metadata": {"title":
+        "Test Write File - Remote", "doi": "10.5281/zenodo.7097299", "publication_date":
+        "2022-09-20", "description": "<p>Test Write File - Remote</p>", "access_right":
+        "open", "creators": [{"name": "FD Tester", "affiliation": "FD Testing Write"}],
+        "resource_type": {"title": "Dataset", "type": "dataset"}, "license": {"id":
+        "cc-zero"}, "relations": {"version": [{"index": 0, "is_last": true, "parent":
+        {"pid_type": "recid", "pid_value": "7097298"}}]}}, "title": "Test Write File
+        - Remote", "links": {"self": "https://zenodo.org/api/records/7097299", "self_html":
+        "https://zenodo.org/records/7097299", "preview_html": "https://zenodo.org/records/7097299?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7097299", "self_doi": "https://doi.org/10.5281/zenodo.7097299",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7097299", "reserve_doi":
+        "https://zenodo.org/api/records/7097299/draft/pids/doi", "parent": "https://zenodo.org/api/records/7097298",
+        "parent_html": "https://zenodo.org/records/7097298", "parent_doi": "https://doi.org/10.5281/zenodo.7097298",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7097298", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7097299/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7097299/sequence/default", "files": "https://zenodo.org/api/records/7097299/files",
+        "media_files": "https://zenodo.org/api/records/7097299/media-files", "archive":
+        "https://zenodo.org/api/records/7097299/files-archive", "archive_media": "https://zenodo.org/api/records/7097299/media-files-archive",
+        "latest": "https://zenodo.org/api/records/7097299/versions/latest", "latest_html":
+        "https://zenodo.org/records/7097299/latest", "versions": "https://zenodo.org/api/records/7097299/versions",
+        "draft": "https://zenodo.org/api/records/7097299/draft", "access_links": "https://zenodo.org/api/records/7097299/access/links",
+        "access_grants": "https://zenodo.org/api/records/7097299/access/grants", "access_users":
+        "https://zenodo.org/api/records/7097299/access/users", "access_request": "https://zenodo.org/api/records/7097299/access/request",
+        "access": "https://zenodo.org/api/records/7097299/access", "communities":
+        "https://zenodo.org/api/records/7097299/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7097299/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7097299/requests"}, "updated": "2022-09-21T14:26:29.349341+00:00",
+        "recid": "7097299", "revision": 2, "files": [{"id": "0ba59941-9f76-4865-aabe-8bebd572593f",
+        "key": "datapackage.json", "size": 541, "checksum": "md5:fb17a3d877b5c4c7c089a29d1f21f7d4",
+        "links": {"self": "https://zenodo.org/api/records/7097299/files/datapackage.json/content"}}],
+        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        494, "unique_downloads": 438, "views": 42, "unique_views": 41, "version_downloads":
+        485, "version_unique_downloads": 429, "version_unique_views": 41, "version_views":
+        42}, "state": "done", "submitted": true}, {"created": "2022-09-17T17:25:36.878405+00:00",
         "modified": "2024-07-16T02:49:34.646968+00:00", "id": 7089246, "conceptrecid":
         "7089245", "doi": "10.5281/zenodo.7089246", "conceptdoi": "10.5281/zenodo.7089245",
         "doi_url": "https://doi.org/10.5281/zenodo.7089246", "metadata": {"title":
@@ -298,82 +330,50 @@ interactions:
         "key": "document.pdf", "size": 262443, "checksum": "md5:3a503daaa773a3ea32b1fedd9fece844",
         "links": {"self": "https://zenodo.org/api/records/7089246/files/document.pdf/content"}}],
         "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        130, "unique_downloads": 66, "views": 477, "unique_views": 469, "version_downloads":
-        9, "version_unique_downloads": 6, "version_unique_views": 110, "version_views":
-        113}, "state": "done", "submitted": true}, {"created": "2022-09-17T16:25:09.618510+00:00",
-        "modified": "2022-09-18T02:26:39.710746+00:00", "id": 7089059, "conceptrecid":
-        "7089057", "doi": "10.5281/zenodo.7089059", "conceptdoi": "10.5281/zenodo.7089057",
-        "doi_url": "https://doi.org/10.5281/zenodo.7089059", "metadata": {"title":
-        "Frictionless Data Test Dataset - Draft", "doi": "10.5281/zenodo.7089059",
-        "publication_date": "2022-09-17", "description": "<p>This is a test dataset</p>",
-        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
-        "FD Tester"}], "resource_type": {"title": "Dataset", "type": "dataset"}, "license":
-        {"id": "cc-by-4.0"}, "relations": {"version": [{"index": 0, "is_last": true,
-        "parent": {"pid_type": "recid", "pid_value": "7089057"}}]}}, "title": "Frictionless
-        Data Test Dataset - Draft", "links": {"self": "https://zenodo.org/api/records/7089059",
-        "self_html": "https://zenodo.org/records/7089059", "preview_html": "https://zenodo.org/records/7089059?preview=1",
-        "doi": "https://doi.org/10.5281/zenodo.7089059", "self_doi": "https://doi.org/10.5281/zenodo.7089059",
-        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089059", "reserve_doi":
-        "https://zenodo.org/api/records/7089059/draft/pids/doi", "parent": "https://zenodo.org/api/records/7089057",
-        "parent_html": "https://zenodo.org/records/7089057", "parent_doi": "https://doi.org/10.5281/zenodo.7089057",
-        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089057", "self_iiif_manifest":
-        "https://zenodo.org/api/iiif/record:7089059/manifest", "self_iiif_sequence":
-        "https://zenodo.org/api/iiif/record:7089059/sequence/default", "files": "https://zenodo.org/api/records/7089059/files",
-        "media_files": "https://zenodo.org/api/records/7089059/media-files", "archive":
-        "https://zenodo.org/api/records/7089059/files-archive", "archive_media": "https://zenodo.org/api/records/7089059/media-files-archive",
-        "latest": "https://zenodo.org/api/records/7089059/versions/latest", "latest_html":
-        "https://zenodo.org/records/7089059/latest", "versions": "https://zenodo.org/api/records/7089059/versions",
-        "draft": "https://zenodo.org/api/records/7089059/draft", "access_links": "https://zenodo.org/api/records/7089059/access/links",
-        "access_grants": "https://zenodo.org/api/records/7089059/access/grants", "access_users":
-        "https://zenodo.org/api/records/7089059/access/users", "access_request": "https://zenodo.org/api/records/7089059/access/request",
-        "access": "https://zenodo.org/api/records/7089059/access", "communities":
-        "https://zenodo.org/api/records/7089059/communities", "communities-suggestions":
-        "https://zenodo.org/api/records/7089059/communities-suggestions", "requests":
-        "https://zenodo.org/api/records/7089059/requests"}, "updated": "2022-09-18T02:26:39.710746+00:00",
-        "recid": "7089059", "revision": 2, "files": [{"id": "069a17f0-ba88-454d-8aed-3e106d028ef4",
-        "key": "capitals.csv", "size": 76, "checksum": "md5:154d822b8c2aa259867067f01c0efee5",
-        "links": {"self": "https://zenodo.org/api/records/7089059/files/capitals.csv/content"}}],
-        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        60, "unique_downloads": 24, "views": 83, "unique_views": 77, "version_downloads":
-        60, "version_unique_downloads": 24, "version_unique_views": 77, "version_views":
-        83}, "state": "done", "submitted": true}, {"created": "2022-09-18T06:28:27.281204+00:00",
-        "modified": "2022-09-18T14:26:15.949950+00:00", "id": 7089860, "conceptrecid":
-        "7089859", "doi": "10.5281/zenodo.7089860", "conceptdoi": "10.5281/zenodo.7089859",
-        "doi_url": "https://doi.org/10.5281/zenodo.7089860", "metadata": {"title":
-        "Frictionless Data Test Publication Journal", "doi": "10.5281/zenodo.7089860",
-        "publication_date": "2022-09-18", "description": "<p>This is a test journal</p>",
-        "access_right": "open", "creators": [{"name": "FD Tester", "affiliation":
-        "FD Testing"}], "keywords": ["FDTP", "TPJ"], "resource_type": {"title": "Journal
-        article", "type": "publication", "subtype": "article"}, "license": {"id":
-        "cc-by-4.0"}, "relations": {"version": [{"index": 0, "is_last": true, "parent":
-        {"pid_type": "recid", "pid_value": "7089859"}}]}}, "title": "Frictionless
-        Data Test Publication Journal", "links": {"self": "https://zenodo.org/api/records/7089860",
-        "self_html": "https://zenodo.org/records/7089860", "preview_html": "https://zenodo.org/records/7089860?preview=1",
-        "doi": "https://doi.org/10.5281/zenodo.7089860", "self_doi": "https://doi.org/10.5281/zenodo.7089860",
-        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089860", "reserve_doi":
-        "https://zenodo.org/api/records/7089860/draft/pids/doi", "parent": "https://zenodo.org/api/records/7089859",
-        "parent_html": "https://zenodo.org/records/7089859", "parent_doi": "https://doi.org/10.5281/zenodo.7089859",
-        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7089859", "self_iiif_manifest":
-        "https://zenodo.org/api/iiif/record:7089860/manifest", "self_iiif_sequence":
-        "https://zenodo.org/api/iiif/record:7089860/sequence/default", "files": "https://zenodo.org/api/records/7089860/files",
-        "media_files": "https://zenodo.org/api/records/7089860/media-files", "archive":
-        "https://zenodo.org/api/records/7089860/files-archive", "archive_media": "https://zenodo.org/api/records/7089860/media-files-archive",
-        "latest": "https://zenodo.org/api/records/7089860/versions/latest", "latest_html":
-        "https://zenodo.org/records/7089860/latest", "versions": "https://zenodo.org/api/records/7089860/versions",
-        "draft": "https://zenodo.org/api/records/7089860/draft", "access_links": "https://zenodo.org/api/records/7089860/access/links",
-        "access_grants": "https://zenodo.org/api/records/7089860/access/grants", "access_users":
-        "https://zenodo.org/api/records/7089860/access/users", "access_request": "https://zenodo.org/api/records/7089860/access/request",
-        "access": "https://zenodo.org/api/records/7089860/access", "communities":
-        "https://zenodo.org/api/records/7089860/communities", "communities-suggestions":
-        "https://zenodo.org/api/records/7089860/communities-suggestions", "requests":
-        "https://zenodo.org/api/records/7089860/requests"}, "updated": "2022-09-18T14:26:15.949950+00:00",
-        "recid": "7089860", "revision": 3, "files": [{"id": "88fb7a5b-9cc6-4bd3-b41c-60604d643adf",
-        "key": "journaltable.xls", "size": 6144, "checksum": "md5:fa0866b4896cd466559076c7ecef61ed",
-        "links": {"self": "https://zenodo.org/api/records/7089860/files/journaltable.xls/content"}}],
-        "swh": {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        29, "unique_downloads": 13, "views": 36, "unique_views": 34, "version_downloads":
-        29, "version_unique_downloads": 13, "version_unique_views": 34, "version_views":
-        36}, "state": "done", "submitted": true}, {"created": "2022-09-14T10:32:21.616360+00:00",
+        138, "unique_downloads": 74, "views": 483, "unique_views": 475, "version_downloads":
+        11, "version_unique_downloads": 8, "version_unique_views": 112, "version_views":
+        115}, "state": "done", "submitted": true}, {"created": "2022-09-20T12:35:03.564992+00:00",
+        "modified": "2022-09-20T14:26:21.406131+00:00", "id": 7096849, "conceptrecid":
+        "7096848", "doi": "10.5281/zenodo.7096849", "conceptdoi": "10.5281/zenodo.7096848",
+        "doi_url": "https://doi.org/10.5281/zenodo.7096849", "metadata": {"title":
+        "Test File", "doi": "10.5281/zenodo.7096849", "publication_date": "2022-09-20",
+        "description": "<p>Test File</p>", "access_right": "open", "creators": [{"name":
+        "FD Tester", "affiliation": "FD Testing"}], "resource_type": {"title": "Dataset",
+        "type": "dataset"}, "license": {"id": "cc-zero"}, "relations": {"version":
+        [{"index": 0, "is_last": true, "parent": {"pid_type": "recid", "pid_value":
+        "7096848"}}]}}, "title": "Test File", "links": {"self": "https://zenodo.org/api/records/7096849",
+        "self_html": "https://zenodo.org/records/7096849", "preview_html": "https://zenodo.org/records/7096849?preview=1",
+        "doi": "https://doi.org/10.5281/zenodo.7096849", "self_doi": "https://doi.org/10.5281/zenodo.7096849",
+        "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096849", "reserve_doi":
+        "https://zenodo.org/api/records/7096849/draft/pids/doi", "parent": "https://zenodo.org/api/records/7096848",
+        "parent_html": "https://zenodo.org/records/7096848", "parent_doi": "https://doi.org/10.5281/zenodo.7096848",
+        "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7096848", "self_iiif_manifest":
+        "https://zenodo.org/api/iiif/record:7096849/manifest", "self_iiif_sequence":
+        "https://zenodo.org/api/iiif/record:7096849/sequence/default", "files": "https://zenodo.org/api/records/7096849/files",
+        "media_files": "https://zenodo.org/api/records/7096849/media-files", "archive":
+        "https://zenodo.org/api/records/7096849/files-archive", "archive_media": "https://zenodo.org/api/records/7096849/media-files-archive",
+        "latest": "https://zenodo.org/api/records/7096849/versions/latest", "latest_html":
+        "https://zenodo.org/records/7096849/latest", "versions": "https://zenodo.org/api/records/7096849/versions",
+        "draft": "https://zenodo.org/api/records/7096849/draft", "access_links": "https://zenodo.org/api/records/7096849/access/links",
+        "access_grants": "https://zenodo.org/api/records/7096849/access/grants", "access_users":
+        "https://zenodo.org/api/records/7096849/access/users", "access_request": "https://zenodo.org/api/records/7096849/access/request",
+        "access": "https://zenodo.org/api/records/7096849/access", "communities":
+        "https://zenodo.org/api/records/7096849/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7096849/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7096849/requests"}, "updated": "2022-09-20T14:26:21.406131+00:00",
+        "recid": "7096849", "revision": 2, "files": [{"id": "08af6abd-bca3-48ca-99bf-8c2ff35cabb8",
+        "key": "table-reverse.csv", "size": 30, "checksum": "md5:4eff9a682845a2fa4896bbba16851de7",
+        "links": {"self": "https://zenodo.org/api/records/7096849/files/table-reverse.csv/content"}},
+        {"id": "ba12a8dc-858a-4788-8c4a-61a7590194b1", "key": "datapackage.json",
+        "size": 634, "checksum": "md5:3da470a8515f0e074ccc73af2e256969", "links":
+        {"self": "https://zenodo.org/api/records/7096849/files/datapackage.json/content"}},
+        {"id": "94aee82a-ad6a-4ca6-98bb-f084e61428ac", "key": "table.xls", "size":
+        6144, "checksum": "md5:3a980d1a559c48978c63c0c1d0d2a8f3", "links": {"self":
+        "https://zenodo.org/api/records/7096849/files/table.xls/content"}}], "swh":
+        {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        30, "unique_downloads": 16, "views": 38, "unique_views": 37, "version_downloads":
+        30, "version_unique_downloads": 16, "version_unique_views": 37, "version_views":
+        38}, "state": "done", "submitted": true}, {"created": "2022-09-14T10:32:21.616360+00:00",
         "modified": "2022-09-21T04:51:26.630760+00:00", "id": 7078760, "conceptrecid":
         "7078759", "doi": "10.5281/zenodo.7078760", "conceptdoi": "10.5281/zenodo.7078759",
         "doi_url": "https://doi.org/10.5281/zenodo.7078760", "metadata": {"title":
@@ -413,9 +413,9 @@ interactions:
         114, "checksum": "md5:c028f525f314c49ea48ed09e82292ed2", "links": {"self":
         "https://zenodo.org/api/records/7078760/files/data.csv/content"}}], "swh":
         {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
-        616, "unique_downloads": 114, "views": 104, "unique_views": 87, "version_downloads":
-        616, "version_unique_downloads": 114, "version_unique_views": 86, "version_views":
-        103}, "state": "done", "submitted": true}], "total": 10}, "aggregations":
+        629, "unique_downloads": 121, "views": 106, "unique_views": 89, "version_downloads":
+        629, "version_unique_downloads": 121, "version_unique_views": 88, "version_views":
+        105}, "state": "done", "submitted": true}], "total": 10}, "aggregations":
         {"access_status": {"buckets": [{"key": "open", "doc_count": 10, "label": "Open",
         "is_selected": false}], "label": "Access status"}, "resource_type": {"buckets":
         [{"key": "dataset", "doc_count": 8, "label": "Dataset", "is_selected": false,
@@ -448,17 +448,17 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:42 GMT
+      - Sat, 26 Jul 2025 12:01:31 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '24'
+      - '21'
       server:
       - nginx
       set-cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=1150a9296538db69f8d2c95afd8c3910; path=/;
+      - 5569e5a730cade8ff2b54f1e815f3670=8744e51872eabf6cc8db27f0ab820c1d; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -474,11 +474,11 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '87'
+      - '103'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531313'
       x-request-id:
-      - a54c720fac5877f05e2ac416e04768af
+      - 3037b7f3b20aa875bbc4cf890b5f1cf4
       x-xss-protection:
       - 1; mode=block
     status:
@@ -494,7 +494,82 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://zenodo.org/records/7096870/files/datapackage.json
+  response:
+    body:
+      string: "{\n  \"name\": \"test-tabulator\",\n  \"resources\": [\n    {\n      \"name\":
+        \"first-resource\",\n      \"path\": \"table.xls\",\n      \"schema\": {\n
+        \       \"fields\": [\n          {\n            \"name\": \"id\",\n            \"type\":
+        \"number\"\n          },\n          {\n            \"name\": \"name\",\n            \"type\":
+        \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\n"
+    headers:
+      accept-ranges:
+      - bytes
+      content-disposition:
+      - inline
+      content-encoding:
+      - gzip
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
+      - text/plain; charset=utf-8
+      - text/plain; charset=utf-8
+      date:
+      - Sat, 26 Jul 2025 12:01:31 GMT
+      oc-checksum:
+      - MD5:e8c16a24bb893cef6f6c0c460d64113
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      retry-after:
+      - '22'
+      server:
+      - nginx
+      set-cookie:
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:31 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      transfer-encoding:
+      - chunked
+      vary:
+      - Accept-Encoding
+      x-content-type-options:
+      - nosniff
+      x-download-options:
+      - noopen
+      x-frame-options:
+      - sameorigin
+      x-permitted-cross-domain-policies:
+      - none
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '74'
+      x-ratelimit-reset:
+      - '1753531314'
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -524,18 +599,18 @@ interactions:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
       date:
-      - Fri, 30 May 2025 09:10:42 GMT
+      - Sat, 26 Jul 2025 12:01:31 GMT
       oc-checksum:
       - MD5:fb17a3d877b5c4c7c089a29d1f21f7d4
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '24'
+      - '22'
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:10:42 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:31 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       transfer-encoding:
@@ -553,9 +628,9 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '75'
+      - '73'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:
@@ -571,82 +646,7 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://zenodo.org/records/7096870/files/datapackage.json
-  response:
-    body:
-      string: "{\n  \"name\": \"test-tabulator\",\n  \"resources\": [\n    {\n      \"name\":
-        \"first-resource\",\n      \"path\": \"table.xls\",\n      \"schema\": {\n
-        \       \"fields\": [\n          {\n            \"name\": \"id\",\n            \"type\":
-        \"number\"\n          },\n          {\n            \"name\": \"name\",\n            \"type\":
-        \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\n"
-    headers:
-      accept-ranges:
-      - bytes
-      content-disposition:
-      - inline
-      content-encoding:
-      - gzip
-      content-security-policy:
-      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
-        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
-        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
-      content-type:
-      - text/plain; charset=utf-8
-      - text/plain; charset=utf-8
-      date:
-      - Fri, 30 May 2025 09:10:42 GMT
-      oc-checksum:
-      - MD5:e8c16a24bb893cef6f6c0c460d64113
-      referrer-policy:
-      - strict-origin-when-cross-origin
-      retry-after:
-      - '24'
-      server:
-      - nginx
-      set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:10:42 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
-      strict-transport-security:
-      - max-age=31556926; includeSubDomains
-      transfer-encoding:
-      - chunked
-      vary:
-      - Accept-Encoding
-      x-content-type-options:
-      - nosniff
-      x-download-options:
-      - noopen
-      x-frame-options:
-      - sameorigin
-      x-permitted-cross-domain-policies:
-      - none
-      x-ratelimit-limit:
-      - '133'
-      x-ratelimit-remaining:
-      - '74'
-      x-ratelimit-reset:
-      - '1748596267'
-      x-xss-protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, zstd
-      Connection:
-      - keep-alive
-      Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -679,18 +679,18 @@ interactions:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
       date:
-      - Fri, 30 May 2025 09:10:43 GMT
+      - Sat, 26 Jul 2025 12:01:31 GMT
       oc-checksum:
       - MD5:3da470a8515f0e074ccc73af2e256969
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '23'
+      - '22'
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:10:43 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:31 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       transfer-encoding:
@@ -708,9 +708,9 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '73'
+      - '72'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:
@@ -726,7 +726,7 @@ interactions:
       Connection:
       - keep-alive
       Cookie:
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
@@ -770,18 +770,18 @@ interactions:
       - text/plain; charset=utf-8
       - text/plain; charset=utf-8
       date:
-      - Fri, 30 May 2025 09:10:43 GMT
+      - Sat, 26 Jul 2025 12:01:32 GMT
       oc-checksum:
       - MD5:127f3943c9a2fa7fe892c7159b6fbded
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '23'
+      - '21'
       server:
       - nginx
       set-cookie:
-      - session=95278782715a8729_6839757d.8dj6yf_bGRSEPIJ2cxHyXf_UFlM; Expires=Wed,
-        04 Jun 2025 09:10:43 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:32 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
       strict-transport-security:
       - max-age=31556926; includeSubDomains
       transfer-encoding:
@@ -799,9 +799,9 @@ interactions:
       x-ratelimit-limit:
       - '133'
       x-ratelimit-remaining:
-      - '72'
+      - '71'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531314'
       x-xss-protection:
       - 1; mode=block
     status:

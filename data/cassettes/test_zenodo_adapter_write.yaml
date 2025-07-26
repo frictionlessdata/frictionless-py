@@ -13,24 +13,25 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: POST
-    uri: https://zenodo.org/api//deposit/depositions
+    uri: https://sandbox.zenodo.org/api//deposit/depositions
   response:
     body:
-      string: '{"created": "2025-05-30T09:10:24.453248+00:00", "modified": "2025-05-30T09:10:24.524378+00:00",
-        "id": 15552245, "conceptrecid": "15552244", "metadata": {"access_right": "open",
-        "prereserve_doi": {"doi": "10.5281/zenodo.15552245", "recid": 15552245}},
-        "title": "", "links": {"self": "https://zenodo.org/api/deposit/depositions/15552245",
-        "html": "https://zenodo.org/deposit/15552245", "badge": "https://zenodo.org/badge/doi/.svg",
-        "files": "https://zenodo.org/api/deposit/depositions/15552245/files", "bucket":
-        "https://zenodo.org/api/files/c259400d-7420-4d74-b140-4ad522774165", "latest_draft":
-        "https://zenodo.org/api/deposit/depositions/15552245", "latest_draft_html":
-        "https://zenodo.org/deposit/15552245", "publish": "https://zenodo.org/api/deposit/depositions/15552245/actions/publish",
-        "edit": "https://zenodo.org/api/deposit/depositions/15552245/actions/edit",
-        "discard": "https://zenodo.org/api/deposit/depositions/15552245/actions/discard",
-        "newversion": "https://zenodo.org/api/deposit/depositions/15552245/actions/newversion"},
-        "record_id": 15552245, "owner": 31725, "files": [], "state": "unsubmitted",
+      string: '{"created": "2025-07-26T12:01:11.676533+00:00", "modified": "2025-07-26T12:01:11.762246+00:00",
+        "id": 298273, "conceptrecid": "298272", "metadata": {"access_right": "open",
+        "prereserve_doi": {"doi": "10.5281/zenodo.298273", "recid": 298273}}, "title":
+        "", "links": {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298273",
+        "html": "https://sandbox.zenodo.org/deposit/298273", "badge": "https://sandbox.zenodo.org/badge/doi/.svg",
+        "files": "https://sandbox.zenodo.org/api/deposit/depositions/298273/files",
+        "bucket": "https://sandbox.zenodo.org/api/files/7f0f3af2-bd37-4754-8193-a3ab147c89a1",
+        "latest_draft": "https://sandbox.zenodo.org/api/deposit/depositions/298273",
+        "latest_draft_html": "https://sandbox.zenodo.org/deposit/298273", "publish":
+        "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/publish",
+        "edit": "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/edit",
+        "discard": "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/discard",
+        "newversion": "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/newversion"},
+        "record_id": 298273, "owner": 43920, "files": [], "state": "unsubmitted",
         "submitted": false}'
     headers:
       access-control-allow-origin:
@@ -38,7 +39,7 @@ interactions:
       access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
       content-length:
-      - '1134'
+      - '1194'
       content-security-policy:
       - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
         ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
@@ -46,7 +47,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:24 GMT
+      - Sat, 26 Jul 2025 12:01:11 GMT
       etag:
       - '"4"'
       permissions-policy:
@@ -58,9 +59,9 @@ interactions:
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIyNCwiZXhwIjoxNzQ4NjgyNjI0fQ.Ik9EOE1LWmNxQnhLamd5dXMyWFlkUUM3TEJsUldoejdqIg.Rna5CiEE2OfxxDIYlJ_RCAYNb6oN2bqtmY1rTn7uh4AHGWpslGbd_xzUE5scS9QLJL-uWZ_pohjy2r2Pe0-LaA;
-        Expires=Fri, 06 Jun 2025 09:10:24 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI3MSwiZXhwIjoxNzUzNjE3NjcxfQ.IkZ3TGVONXJkWDZrYjF2QjJtakNQNXg4QnN3WDV0ZnZsIg.2Rm_PeM0i2dw_-Uef5itcAekQyKq0ijCdWtv4Qv6l4pneJazkIU8lgV0cxyZ_xbbtO2uF8QPLrgjymG1iI55fg;
+        Expires=Sat, 02 Aug 2025 12:01:11 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=49f6e1f731e59ba2571d6cc21ea961bc; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -74,9 +75,9 @@ interactions:
       x-ratelimit-remaining:
       - '999'
       x-ratelimit-reset:
-      - '1748596285'
+      - '1753531332'
       x-request-id:
-      - ad000ba41d9500f3c29e452fab776a42
+      - 0a0fd9abc090df08ff50811af4b65e8d
       x-xss-protection:
       - 1; mode=block
     status:
@@ -84,7 +85,7 @@ interactions:
       message: CREATED
 - request:
     body: "{\n  \"metadata\": {\n    \"title\": \"Test File\",\n    \"description\":
-      \"Test File\",\n    \"publication_date\": \"2025-05-30\",\n    \"upload_type\":
+      \"Test File\",\n    \"publication_date\": \"2025-07-26\",\n    \"upload_type\":
       \"dataset\",\n    \"access_right\": \"open\",\n    \"creators\": [\n      {\n
       \       \"name\": \"FD Tester\",\n        \"affiliation\": \"FD Testing\"\n
       \     }\n    ]\n  }\n}"
@@ -100,27 +101,28 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: PUT
-    uri: https://zenodo.org/api//deposit/depositions/15552245
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298273
   response:
     body:
-      string: '{"created": "2025-05-30T09:10:24.453248+00:00", "modified": "2025-05-30T09:10:24.887578+00:00",
-        "id": 15552245, "conceptrecid": "15552244", "metadata": {"title": "Test File",
-        "publication_date": "2025-05-30", "description": "Test File", "access_right":
+      string: '{"created": "2025-07-26T12:01:11.676533+00:00", "modified": "2025-07-26T12:01:12.055945+00:00",
+        "id": 298273, "conceptrecid": "298272", "metadata": {"title": "Test File",
+        "publication_date": "2025-07-26", "description": "Test File", "access_right":
         "open", "creators": [{"name": "FD Tester", "affiliation": "FD Testing"}],
         "license": "cc-zero", "imprint_publisher": "Zenodo", "upload_type": "dataset",
-        "prereserve_doi": {"doi": "10.5281/zenodo.15552245", "recid": 15552245}},
-        "title": "Test File", "links": {"self": "https://zenodo.org/api/deposit/depositions/15552245",
-        "html": "https://zenodo.org/deposit/15552245", "badge": "https://zenodo.org/badge/doi/.svg",
-        "files": "https://zenodo.org/api/deposit/depositions/15552245/files", "bucket":
-        "https://zenodo.org/api/files/c259400d-7420-4d74-b140-4ad522774165", "latest_draft":
-        "https://zenodo.org/api/deposit/depositions/15552245", "latest_draft_html":
-        "https://zenodo.org/deposit/15552245", "publish": "https://zenodo.org/api/deposit/depositions/15552245/actions/publish",
-        "edit": "https://zenodo.org/api/deposit/depositions/15552245/actions/edit",
-        "discard": "https://zenodo.org/api/deposit/depositions/15552245/actions/discard",
-        "newversion": "https://zenodo.org/api/deposit/depositions/15552245/actions/newversion"},
-        "record_id": 15552245, "owner": 31725, "files": [], "state": "unsubmitted",
+        "prereserve_doi": {"doi": "10.5281/zenodo.298273", "recid": 298273}}, "title":
+        "Test File", "links": {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298273",
+        "html": "https://sandbox.zenodo.org/deposit/298273", "badge": "https://sandbox.zenodo.org/badge/doi/.svg",
+        "files": "https://sandbox.zenodo.org/api/deposit/depositions/298273/files",
+        "bucket": "https://sandbox.zenodo.org/api/files/7f0f3af2-bd37-4754-8193-a3ab147c89a1",
+        "latest_draft": "https://sandbox.zenodo.org/api/deposit/depositions/298273",
+        "latest_draft_html": "https://sandbox.zenodo.org/deposit/298273", "publish":
+        "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/publish",
+        "edit": "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/edit",
+        "discard": "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/discard",
+        "newversion": "https://sandbox.zenodo.org/api/deposit/depositions/298273/actions/newversion"},
+        "record_id": 298273, "owner": 43920, "files": [], "state": "unsubmitted",
         "submitted": false}'
     headers:
       access-control-allow-origin:
@@ -136,7 +138,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:24 GMT
+      - Sat, 26 Jul 2025 12:01:12 GMT
       etag:
       - W/"6"
       permissions-policy:
@@ -144,13 +146,13 @@ interactions:
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '60'
+      - '59'
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIyNCwiZXhwIjoxNzQ4NjgyNjI0fQ.IkdYaTA2U3cxdGZvWkJBa1hKZkFqdnQyeklZNEhnOVdtIg.5s5AgLiCqz3CmtfA3NH06xmxVf7bzoTnelukXmz6DA62zTMZxOUBR3CJnEj93L0DMUaaX0b_VSOr9WGRGreXFA;
-        Expires=Fri, 06 Jun 2025 09:10:24 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI3MiwiZXhwIjoxNzUzNjE3NjcyfQ.IjE5YUpNMklGNEJpR1J2T001R0F2bWtSb2ZGODVCSkNjIg.u7kYixhJQLCdStLrtnLPg_DrqENcKdKXNNePmNKxCLK1qVM91zcZMcexxbF2WwtmxTF8olrCBipTKNhODDqGNA;
+        Expires=Sat, 02 Aug 2025 12:01:12 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=4e9e05744db2c0ebb5576f2c8df91de5; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -168,16 +170,16 @@ interactions:
       x-ratelimit-remaining:
       - '998'
       x-ratelimit-reset:
-      - '1748596285'
+      - '1753531332'
       x-request-id:
-      - 5b3bef7d9af39352010d1aedc1f4576c
+      - d36cba4d08aeedb5b723bdae44e55742
       x-xss-protection:
       - 1; mode=block
     status:
       code: 200
       message: OK
 - request:
-    body: "--210545dab2df748af0abff99e2f2583e\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\n/tmp/tmp34s3h2ll/datapackage.json\r\n--210545dab2df748af0abff99e2f2583e\r\nContent-Disposition:
+    body: "--7da414a0065078c7ecba3a7d328b7f52\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\n/tmp/pytest-of-coroa/pytest-9/test_zenodo_adapter_write0/tmpdvqfidec/datapackage.json\r\n--7da414a0065078c7ecba3a7d328b7f52\r\nContent-Disposition:
       form-data; name=\"file\"; filename=\"datapackage.json\"\r\n\r\n{\n  \"name\":
       \"test-tabulator\",\n  \"resources\": [\n    {\n      \"name\": \"first-resource\",\n
       \     \"type\": \"table\",\n      \"path\": \"table.xls\",\n      \"scheme\":
@@ -190,7 +192,7 @@ interactions:
       \"csv\",\n      \"mediatype\": \"text/csv\",\n      \"schema\": {\n        \"fields\":
       [\n          {\n            \"name\": \"id\",\n            \"type\": \"integer\"\n
       \         },\n          {\n            \"name\": \"name\",\n            \"type\":
-      \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\r\n--210545dab2df748af0abff99e2f2583e--\r\n"
+      \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\r\n--7da414a0065078c7ecba3a7d328b7f52--\r\n"
     headers:
       Accept:
       - '*/*'
@@ -199,26 +201,26 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '1126'
+      - '1178'
       Content-Type:
-      - multipart/form-data; boundary=210545dab2df748af0abff99e2f2583e
+      - multipart/form-data; boundary=7da414a0065078c7ecba3a7d328b7f52
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: POST
-    uri: https://zenodo.org/api//deposit/depositions/15552245/files
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298273/files
   response:
     body:
-      string: '{"id": "8e9f994e-3aa1-4756-9a5e-13f4d38fcc66", "filename": "datapackage.json",
+      string: '{"id": "403bd3fa-bd79-4a7e-b935-05abf82325e0", "filename": "datapackage.json",
         "filesize": 852.0, "checksum": "80c53c438d506f2e3f1457c06cd11ebe", "links":
-        {"self": "https://zenodo.org/api/deposit/depositions/15552245/files/8e9f994e-3aa1-4756-9a5e-13f4d38fcc66",
-        "download": "https://zenodo.org/api/records/15552245/draft/files/datapackage.json/content"}}'
+        {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298273/files/403bd3fa-bd79-4a7e-b935-05abf82325e0",
+        "download": "https://sandbox.zenodo.org/api/records/298273/draft/files/datapackage.json/content"}}'
     headers:
       access-control-allow-origin:
       - '*'
       access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
       content-length:
-      - '354'
+      - '366'
       content-security-policy:
       - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
         ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
@@ -226,7 +228,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:25 GMT
+      - Sat, 26 Jul 2025 12:01:12 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
@@ -236,9 +238,9 @@ interactions:
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIyNSwiZXhwIjoxNzQ4NjgyNjI1fQ.InFaZHNoNEhwSktJVUNFR3gySkpnQlRDTTl4djlWSjdhIg.wuswMPfWM5ibA-DdRHbU_2CZLoDeSC9ur1RrxCeNf_6SjluELOaTVIjSfNY-36C2TIG_vbO4ylWt_t65xsW__Q;
-        Expires=Fri, 06 Jun 2025 09:10:25 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI3MiwiZXhwIjoxNzUzNjE3NjcyfQ.IjhsRGs2d25ZUnZRRXVXdk9zUnBjeDRSSWxVdTRJazRQIg.Clx1IoNW8bPNCDxuIqUqMhJqLsjvc4EMe3Uel6qms7O8bXTzt9F7mGwmUDLXKwxIUrJczhld2-uWbS8AldZLsQ;
+        Expires=Sat, 02 Aug 2025 12:01:12 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=4e9e05744db2c0ebb5576f2c8df91de5; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -252,9 +254,9 @@ interactions:
       x-ratelimit-remaining:
       - '997'
       x-ratelimit-reset:
-      - '1748596285'
+      - '1753531332'
       x-request-id:
-      - c8864c5fbbaffe42d3a947686248a4e5
+      - 178425e8b7a1f24a34eea1f2421db6be
       x-xss-protection:
       - 1; mode=block
     status:
@@ -262,9 +264,9 @@ interactions:
       message: CREATED
 - request:
     body: !!binary |
-      LS1lOWNkMTcwZWQyZDI4ZjE0YTU4YmMyOGE1M2EwMDA0MA0KQ29udGVudC1EaXNwb3NpdGlvbjog
-      Zm9ybS1kYXRhOyBuYW1lPSJmaWxlbmFtZSINCg0KZGF0YS90YWJsZS54bHMNCi0tZTljZDE3MGVk
-      MmQyOGYxNGE1OGJjMjhhNTNhMDAwNDANCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsg
+      LS02ZDNhNzE1NGNjNmNjOGU5ZTg0OTE1NDMyNjFjNjI5Mw0KQ29udGVudC1EaXNwb3NpdGlvbjog
+      Zm9ybS1kYXRhOyBuYW1lPSJmaWxlbmFtZSINCg0KZGF0YS90YWJsZS54bHMNCi0tNmQzYTcxNTRj
+      YzZjYzhlOWU4NDkxNTQzMjYxYzYyOTMNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsg
       bmFtZT0iZmlsZSI7IGZpbGVuYW1lPSJ0YWJsZS54bHMiDQoNCtDPEeChsRrhAAAAAAAAAAAAAAAA
       AAAAADsAAwD+/wkABgAAAAAAAAAAAAAAAQAAAAkAAAAAAAAAABAAAAIAAAABAAAA/v///wAAAAAA
       AAAA////////////////////////////////////////////////////////////////////////
@@ -373,8 +375,8 @@ interactions:
       AAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+
       ////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
       AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-      AAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAA0KLS1lOWNkMTcwZWQyZDI4ZjE0YTU4YmMyOGE1M2Ew
-      MDA0MC0tDQo=
+      AAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAA0KLS02ZDNhNzE1NGNjNmNjOGU5ZTg0OTE1NDMyNjFj
+      NjI5My0tDQo=
     headers:
       Accept:
       - '*/*'
@@ -385,24 +387,24 @@ interactions:
       Content-Length:
       - '6392'
       Content-Type:
-      - multipart/form-data; boundary=e9cd170ed2d28f14a58bc28a53a00040
+      - multipart/form-data; boundary=6d3a7154cc6cc8e9e8491543261c6293
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: POST
-    uri: https://zenodo.org/api//deposit/depositions/15552245/files
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298273/files
   response:
     body:
-      string: '{"id": "a2b20d04-d5d6-4ce1-82da-f663277a35f4", "filename": "table.xls",
+      string: '{"id": "993f8fce-2d74-42d3-a589-10c32258cb92", "filename": "table.xls",
         "filesize": 6144.0, "checksum": "3a980d1a559c48978c63c0c1d0d2a8f3", "links":
-        {"self": "https://zenodo.org/api/deposit/depositions/15552245/files/a2b20d04-d5d6-4ce1-82da-f663277a35f4",
-        "download": "https://zenodo.org/api/records/15552245/draft/files/table.xls/content"}}'
+        {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298273/files/993f8fce-2d74-42d3-a589-10c32258cb92",
+        "download": "https://sandbox.zenodo.org/api/records/298273/draft/files/table.xls/content"}}'
     headers:
       access-control-allow-origin:
       - '*'
       access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
       content-length:
-      - '341'
+      - '353'
       content-security-policy:
       - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
         ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
@@ -410,19 +412,19 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:25 GMT
+      - Sat, 26 Jul 2025 12:01:12 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '41'
+      - '59'
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIyNSwiZXhwIjoxNzQ4NjgyNjI1fQ.IkdUTnpOWGs1WlRON2lwNzFRQnZNbjFWUVRPNjlzU2FOIg.rM9qasoTmXLU6yk7rYxt7SJYSHrPJ_5m0KnidH77wxazhZvzGoI2Xp9AxzQa7rnbPnH1KgZWFWT03MG3t3v9Iw;
-        Expires=Fri, 06 Jun 2025 09:10:25 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=1150a9296538db69f8d2c95afd8c3910; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI3MiwiZXhwIjoxNzUzNjE3NjcyfQ.InEyMWx3bkw0dXF1a3ZlbFVGcXpCNkhYSk9KQnpPZmY4Ig.scGPnibJH9uGn0ZMIkqqaG1zQT2lZXZj0iFkr2D-BfSk7w2Rs_SYvaYEWZIGDuPbYqs4iVp5G6l1C0oCtD4ovg;
+        Expires=Sat, 02 Aug 2025 12:01:12 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=4e9e05744db2c0ebb5576f2c8df91de5; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -432,21 +434,21 @@ interactions:
       x-frame-options:
       - sameorigin
       x-ratelimit-limit:
-      - '133'
+      - '1000'
       x-ratelimit-remaining:
-      - '110'
+      - '996'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531332'
       x-request-id:
-      - cfb83052b785ab0e34fda84dafc95073
+      - 0fda0abb80e59f5651ca6074d2f26f23
       x-xss-protection:
       - 1; mode=block
     status:
       code: 201
       message: CREATED
 - request:
-    body: "--7383d55ee90102641e5cc7c09e86aafa\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/table-reverse.csv\r\n--7383d55ee90102641e5cc7c09e86aafa\r\nContent-Disposition:
-      form-data; name=\"file\"; filename=\"table-reverse.csv\"\r\n\r\nid,name\n1,\u4E2D\u56FD\u4EBA\n2,english\n\r\n--7383d55ee90102641e5cc7c09e86aafa--\r\n"
+    body: "--0b6f1254503df3264c9bc7e322ca82bf\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/table-reverse.csv\r\n--0b6f1254503df3264c9bc7e322ca82bf\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"table-reverse.csv\"\r\n\r\nid,name\n1,\u4E2D\u56FD\u4EBA\n2,english\n\r\n--0b6f1254503df3264c9bc7e322ca82bf--\r\n"
     headers:
       Accept:
       - '*/*'
@@ -457,24 +459,24 @@ interactions:
       Content-Length:
       - '294'
       Content-Type:
-      - multipart/form-data; boundary=7383d55ee90102641e5cc7c09e86aafa
+      - multipart/form-data; boundary=0b6f1254503df3264c9bc7e322ca82bf
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: POST
-    uri: https://zenodo.org/api//deposit/depositions/15552245/files
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298273/files
   response:
     body:
-      string: '{"id": "8994dde2-6441-4bf9-ace1-0df06d278f18", "filename": "table-reverse.csv",
+      string: '{"id": "8f7ae55a-46ca-4737-96d1-e3157469a155", "filename": "table-reverse.csv",
         "filesize": 30.0, "checksum": "4eff9a682845a2fa4896bbba16851de7", "links":
-        {"self": "https://zenodo.org/api/deposit/depositions/15552245/files/8994dde2-6441-4bf9-ace1-0df06d278f18",
-        "download": "https://zenodo.org/api/records/15552245/draft/files/table-reverse.csv/content"}}'
+        {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298273/files/8f7ae55a-46ca-4737-96d1-e3157469a155",
+        "download": "https://sandbox.zenodo.org/api/records/298273/draft/files/table-reverse.csv/content"}}'
     headers:
       access-control-allow-origin:
       - '*'
       access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
       content-length:
-      - '355'
+      - '367'
       content-security-policy:
       - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
         ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
@@ -482,19 +484,19 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:25 GMT
+      - Sat, 26 Jul 2025 12:01:13 GMT
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '41'
+      - '58'
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIyNSwiZXhwIjoxNzQ4NjgyNjI1fQ.IlR4QlNCMzh2bjRaWmNRMWxWSDNwdU13NXFBaUxTaFZVIg.XQ0pb63Jdg0KH5nR8dfTuvf59rt74rZhJ-4b8h1MayUxuIl80xqKXMptwuO_agBRTRIYj6iR3mo_yvrCrKusbQ;
-        Expires=Fri, 06 Jun 2025 09:10:25 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=1150a9296538db69f8d2c95afd8c3910; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI3MywiZXhwIjoxNzUzNjE3NjczfQ.IlY5ZmpmSUNxS3VkWnFJZ3FHWmVrRzFNamlQbENEYk50Ig.eSzCYbaQYEVIVAmFAedLUefbKmXmF1u3JQO3UHR1bf5b4_bSegrDwtE_UQ02qH78r7eJI68X3Auew6HCjlBxKA;
+        Expires=Sat, 02 Aug 2025 12:01:13 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=4e9e05744db2c0ebb5576f2c8df91de5; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
@@ -504,13 +506,13 @@ interactions:
       x-frame-options:
       - sameorigin
       x-ratelimit-limit:
-      - '133'
+      - '1000'
       x-ratelimit-remaining:
-      - '109'
+      - '995'
       x-ratelimit-reset:
-      - '1748596267'
+      - '1753531332'
       x-request-id:
-      - 7fcf3728f4bd6efb915cda740cb44802
+      - af7b11e5ae7a43fc66702c4b7135eb07
       x-xss-protection:
       - 1; mode=block
     status:

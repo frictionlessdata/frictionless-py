@@ -2,7 +2,7 @@ interactions:
 - request:
     body: "{\n  \"metadata\": {\n    \"title\": \"Test Write File - Deposition Id\",\n
       \   \"description\": \"Test Write File - Deposition Id\",\n    \"publication_date\":
-      \"2025-05-30\",\n    \"upload_type\": \"dataset\",\n    \"access_right\": \"open\",\n
+      \"2025-07-26\",\n    \"upload_type\": \"dataset\",\n    \"access_right\": \"open\",\n
       \   \"creators\": [\n      {\n        \"name\": \"FD Tester\",\n        \"affiliation\":
       \"FD Testing Write\"\n      }\n    ]\n  }\n}"
     headers:
@@ -17,19 +17,36 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: PUT
-    uri: https://zenodo.org/api//deposit/depositions/7098476
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298287
   response:
     body:
-      string: '{"status": 403, "message": "Permission denied."}'
+      string: '{"created": "2025-07-26T12:01:20.611564+00:00", "modified": "2025-07-26T12:01:20.970323+00:00",
+        "id": 298287, "conceptrecid": "298286", "metadata": {"title": "Test Write
+        File - Deposition Id", "publication_date": "2025-07-26", "description": "Test
+        Write File - Deposition Id", "access_right": "open", "creators": [{"name":
+        "FD Tester", "affiliation": "FD Testing Write"}], "license": "cc-zero", "imprint_publisher":
+        "Zenodo", "upload_type": "dataset", "prereserve_doi": {"doi": "10.5281/zenodo.298287",
+        "recid": 298287}}, "title": "Test Write File - Deposition Id", "links": {"self":
+        "https://sandbox.zenodo.org/api/deposit/depositions/298287", "html": "https://sandbox.zenodo.org/deposit/298287",
+        "badge": "https://sandbox.zenodo.org/badge/doi/.svg", "files": "https://sandbox.zenodo.org/api/deposit/depositions/298287/files",
+        "bucket": "https://sandbox.zenodo.org/api/files/59e75c5c-9de3-412b-8c82-aa6e277a35c7",
+        "latest_draft": "https://sandbox.zenodo.org/api/deposit/depositions/298287",
+        "latest_draft_html": "https://sandbox.zenodo.org/deposit/298287", "publish":
+        "https://sandbox.zenodo.org/api/deposit/depositions/298287/actions/publish",
+        "edit": "https://sandbox.zenodo.org/api/deposit/depositions/298287/actions/edit",
+        "discard": "https://sandbox.zenodo.org/api/deposit/depositions/298287/actions/discard",
+        "newversion": "https://sandbox.zenodo.org/api/deposit/depositions/298287/actions/newversion"},
+        "record_id": 298287, "owner": 43920, "files": [], "state": "unsubmitted",
+        "submitted": false}'
     headers:
       access-control-allow-origin:
       - '*'
       access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      content-length:
-      - '48'
+      content-encoding:
+      - gzip
       content-security-policy:
       - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
         ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
@@ -37,22 +54,29 @@ interactions:
       content-type:
       - application/json
       date:
-      - Fri, 30 May 2025 09:10:35 GMT
+      - Sat, 26 Jul 2025 12:01:21 GMT
+      etag:
+      - W/"6"
       permissions-policy:
       - interest-cohort=()
       referrer-policy:
       - strict-origin-when-cross-origin
       retry-after:
-      - '49'
+      - '50'
       server:
       - nginx
       set-cookie:
-      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc0ODU5NjIzNSwiZXhwIjoxNzQ4NjgyNjM1fQ.InptYkFQTlRuSWpENGZUdlc1MHllZzdDcjN1OVFFeW9tIg.uBjgUPO1mAxWSq8cynYdGoVrMhBdT-SXYm4OHtKQSfHgNWNjmuMjrN5yjB2fQEZoFVBRSgFZcUmQWwWLyR0yvg;
-        Expires=Fri, 06 Jun 2025 09:10:35 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
-      - 5569e5a730cade8ff2b54f1e815f3670=852cce4b5ad82efbabcf7077d7f7913d; path=/;
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI4MSwiZXhwIjoxNzUzNjE3NjgxfQ.ImRua29nOWtkQnZMc2hjNmRtWWhRaUF4enBtOWNnTlhzIg.OdxAMypVha7xO-92UvWo-GIemMPZBrf8756QNT-22i0QfOrCbi2SqhJBH8xnZoObQ8-TSrSv_pSLEMTauuvRoQ;
+        Expires=Sat, 02 Aug 2025 12:01:21 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=49f6e1f731e59ba2571d6cc21ea961bc; path=/;
         HttpOnly; Secure; SameSite=None
       strict-transport-security:
       - max-age=31556926; includeSubDomains
+      - max-age=15768000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Accept-Encoding
       x-content-type-options:
       - nosniff
       x-frame-options:
@@ -60,12 +84,356 @@ interactions:
       x-ratelimit-limit:
       - '1000'
       x-ratelimit-remaining:
-      - '985'
+      - '971'
       x-ratelimit-reset:
-      - '1748596285'
+      - '1753531332'
+      x-request-id:
+      - 03c67cda667622e50a4df7fc9b635a5d
       x-xss-protection:
       - 1; mode=block
     status:
-      code: 403
-      message: FORBIDDEN
+      code: 200
+      message: OK
+- request:
+    body: "--3661c4f2b5055226f0dd9bdecb081785\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\n/tmp/pytest-of-coroa/pytest-9/test_zenodo_adapter_write_reso2/tmpdz49wa09/datapackage.json\r\n--3661c4f2b5055226f0dd9bdecb081785\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"datapackage.json\"\r\n\r\n{\n  \"name\":
+      \"test-tabulator\",\n  \"resources\": [\n    {\n      \"name\": \"first-resource\",\n
+      \     \"type\": \"table\",\n      \"path\": \"table.xls\",\n      \"scheme\":
+      \"file\",\n      \"format\": \"xls\",\n      \"mediatype\": \"application/vnd.ms-excel\",\n
+      \     \"schema\": {\n        \"fields\": [\n          {\n            \"name\":
+      \"id\",\n            \"type\": \"number\"\n          },\n          {\n            \"name\":
+      \"name\",\n            \"type\": \"string\"\n          }\n        ]\n      }\n
+      \   },\n    {\n      \"name\": \"number-two\",\n      \"type\": \"table\",\n
+      \     \"path\": \"table-reverse.csv\",\n      \"scheme\": \"file\",\n      \"format\":
+      \"csv\",\n      \"mediatype\": \"text/csv\",\n      \"schema\": {\n        \"fields\":
+      [\n          {\n            \"name\": \"id\",\n            \"type\": \"integer\"\n
+      \         },\n          {\n            \"name\": \"name\",\n            \"type\":
+      \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\r\n--3661c4f2b5055226f0dd9bdecb081785--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1183'
+      Content-Type:
+      - multipart/form-data; boundary=3661c4f2b5055226f0dd9bdecb081785
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298287/files
+  response:
+    body:
+      string: '{"id": "2da69bc2-22a5-4d37-b418-35b496dff7a0", "filename": "datapackage.json",
+        "filesize": 852.0, "checksum": "80c53c438d506f2e3f1457c06cd11ebe", "links":
+        {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298287/files/2da69bc2-22a5-4d37-b418-35b496dff7a0",
+        "download": "https://sandbox.zenodo.org/api/records/298287/draft/files/datapackage.json/content"}}'
+    headers:
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      content-length:
+      - '366'
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
+      - application/json
+      date:
+      - Sat, 26 Jul 2025 12:01:21 GMT
+      permissions-policy:
+      - interest-cohort=()
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      retry-after:
+      - '50'
+      server:
+      - nginx
+      set-cookie:
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI4MSwiZXhwIjoxNzUzNjE3NjgxfQ.Im9GZGhlNzhCREFhRHJPTUpjZm5iOFNORDZiVkp4MEFDIg.F-1H9M4Hp94UUqZ8AOK-bwzwy8oXFesbnlwbe1KbJMSIJ-oPYjb_snu-El9CqydqxJQgYG7LeI9dJ-QZhgA_ag;
+        Expires=Sat, 02 Aug 2025 12:01:21 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=49f6e1f731e59ba2571d6cc21ea961bc; path=/;
+        HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      - max-age=15768000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - sameorigin
+      x-ratelimit-limit:
+      - '1000'
+      x-ratelimit-remaining:
+      - '970'
+      x-ratelimit-reset:
+      - '1753531332'
+      x-request-id:
+      - 92ed587a0e4976690b6e2388ced71cd6
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: !!binary |
+      LS1jN2M3ODhhNDQyNjNjMGE4OGI5OGFjMmIzNGU1MjUwYQ0KQ29udGVudC1EaXNwb3NpdGlvbjog
+      Zm9ybS1kYXRhOyBuYW1lPSJmaWxlbmFtZSINCg0KZGF0YS90YWJsZS54bHMNCi0tYzdjNzg4YTQ0
+      MjYzYzBhODhiOThhYzJiMzRlNTI1MGENCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsg
+      bmFtZT0iZmlsZSI7IGZpbGVuYW1lPSJ0YWJsZS54bHMiDQoNCtDPEeChsRrhAAAAAAAAAAAAAAAA
+      AAAAADsAAwD+/wkABgAAAAAAAAAAAAAAAQAAAAkAAAAAAAAAABAAAAIAAAABAAAA/v///wAAAAAA
+      AAAA////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////f/////////+////BAAAAAUAAAAG
+      AAAABwAAAAgAAAD+////CgAAAP7/////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////9SAG8AbwB0ACAARQBuAHQAcgB5AAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFgAFAP//////////////
+      /wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///wAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAD+////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAAEAAAACAAAAAwAAAAQAAAAFAAAABgAA
+      AAcAAAAIAAAACQAAAAoAAAALAAAADAAAAA0AAAAOAAAADwAAABAAAAARAAAAEgAAABMAAAAUAAAA
+      FQAAABYAAAAXAAAAGAAAABkAAAAaAAAAGwAAABwAAAAdAAAAHgAAAB8AAAD+////IQAAAP7////+
+      ////JAAAACUAAAAmAAAAJwAAACgAAAD+////KgAAAP7/////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////CQgQAAAGBQC7DcwHAAAAAAYAAADhAAIA
+      sATBAAIAAADiAAAAXABwAAQAAENhbGMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+      ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+      ICAgICAgICAgICAgICBCAAIAsARhAQIAAADAAQAAPQECAAEAnAACAA4ArwECAAAAvAECAAAAPQAS
+      AAAAAAAAQAAgOAAAAAAAAQDgA0AAAgAAAI0AAgAAACIAAgAAAA4AAgABALcBAgAAANoAAgAAADEA
+      GgDIAAAA/3+QAQAAAAIAAAUBQQByAGkAYQBsADEAGgDIAAAA/3+QAQAAAAAAAAUBQQByAGkAYQBs
+      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
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUgBvAG8AdAAgAEUAbgB0AHIAeQAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABYABQD//////////wEAAAAQCAIAAAAA
+      AMAAAAAAAABGAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAwAoAAAAAAABXAG8AcgBrAGIAbwBvAGsA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgACAAIAAAAE
+      AAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYBwAAAAAAAAEA
+      QwBvAG0AcABPAGIAagAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAASAAIAAwAAAP//////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      IAAAAEkAAAAAAAAAAQBPAGwAZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAoAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAiAAAAFAAAAAAAAAAFAFMAdQBtAG0AYQByAHkASQBuAGYAbwByAG0AYQB0
+      AGkAbwBuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAACAP////8FAAAA/////wAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMAAABQAQAAAAAAAAUARABvAGMAdQBtAGUAbgB0
+      AFMAdQBtAG0AYQByAHkASQBuAGYAbwByAG0AYQB0AGkAbwBuAAAAAAAAAAAAAAA4AAIA////////
+      ////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKQAAAHQAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+
+      ////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAP7///8AAAAAAAAAAA0KLS1jN2M3ODhhNDQyNjNjMGE4OGI5OGFjMmIzNGU1
+      MjUwYS0tDQo=
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6392'
+      Content-Type:
+      - multipart/form-data; boundary=c7c788a44263c0a88b98ac2b34e5250a
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298287/files
+  response:
+    body:
+      string: '{"id": "7f22f679-c2f8-45c1-a471-78670745a845", "filename": "table.xls",
+        "filesize": 6144.0, "checksum": "3a980d1a559c48978c63c0c1d0d2a8f3", "links":
+        {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298287/files/7f22f679-c2f8-45c1-a471-78670745a845",
+        "download": "https://sandbox.zenodo.org/api/records/298287/draft/files/table.xls/content"}}'
+    headers:
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      content-length:
+      - '353'
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
+      - application/json
+      date:
+      - Sat, 26 Jul 2025 12:01:21 GMT
+      permissions-policy:
+      - interest-cohort=()
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      retry-after:
+      - '50'
+      server:
+      - nginx
+      set-cookie:
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI4MSwiZXhwIjoxNzUzNjE3NjgxfQ.Im9FZjBhdHlkaUZoa3lkTGhDVG10a3N3Y1dxOE1PSjZGIg.GsoSST9Eu9jXPBuyFg0nPtTVM7lr9GMbCvYQxuXlGtBmbt-SgIQhudxFCIrEAz_uDdS0XyhaHT_Wu-_UAh2rAw;
+        Expires=Sat, 02 Aug 2025 12:01:21 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=4e9e05744db2c0ebb5576f2c8df91de5; path=/;
+        HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      - max-age=15768000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - sameorigin
+      x-ratelimit-limit:
+      - '1000'
+      x-ratelimit-remaining:
+      - '969'
+      x-ratelimit-reset:
+      - '1753531332'
+      x-request-id:
+      - d29034a888c2af9080afb929fe230c7b
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
+- request:
+    body: "--25a19578cb6b06d54a355f0618837e8d\r\nContent-Disposition: form-data; name=\"filename\"\r\n\r\ndata/table-reverse.csv\r\n--25a19578cb6b06d54a355f0618837e8d\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"table-reverse.csv\"\r\n\r\nid,name\n1,\u4E2D\u56FD\u4EBA\n2,english\n\r\n--25a19578cb6b06d54a355f0618837e8d--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '294'
+      Content-Type:
+      - multipart/form-data; boundary=25a19578cb6b06d54a355f0618837e8d
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://sandbox.zenodo.org/api//deposit/depositions/298287/files
+  response:
+    body:
+      string: '{"id": "272dc4f7-912c-43ee-a4f5-f86309063755", "filename": "table-reverse.csv",
+        "filesize": 30.0, "checksum": "4eff9a682845a2fa4896bbba16851de7", "links":
+        {"self": "https://sandbox.zenodo.org/api/deposit/depositions/298287/files/272dc4f7-912c-43ee-a4f5-f86309063755",
+        "download": "https://sandbox.zenodo.org/api/records/298287/draft/files/table-reverse.csv/content"}}'
+    headers:
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+      connection:
+      - close
+      content-length:
+      - '367'
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
+      - application/json
+      date:
+      - Sat, 26 Jul 2025 12:01:21 GMT
+      permissions-policy:
+      - interest-cohort=()
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      retry-after:
+      - '50'
+      server:
+      - nginx
+      set-cookie:
+      - csrftoken=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc1MzUzMTI4MSwiZXhwIjoxNzUzNjE3NjgxfQ.IklpUktBMXpZUzMzNWk4RjNBb1htcEpSZmRTRjM1TDR2Ig.0QXNlbF7ODgxJMnCc4aIkgKAuRPANaLoAkh0Fvi2oaAIpUZXs53TJMz8jqwifILLGU-eJsxklaA2AJXezyoI2w;
+        Expires=Sat, 02 Aug 2025 12:01:21 GMT; Max-Age=604800; Secure; Path=/; SameSite=Lax
+      - 04f20c86f07421a9ec0f9d5ba4be544f=4e9e05744db2c0ebb5576f2c8df91de5; path=/;
+        HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      - max-age=15768000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - sameorigin
+      x-ratelimit-limit:
+      - '1000'
+      x-ratelimit-remaining:
+      - '968'
+      x-ratelimit-reset:
+      - '1753531332'
+      x-request-id:
+      - c259e112697cb395fd014ecaf151e0b8
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: CREATED
 version: 1
