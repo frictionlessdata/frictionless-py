@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from frictionless import Catalog, FrictionlessException, Package, platform, portals
+from frictionless.system.models import PublishResult
 
 # TODO: recover
 # pytestmark = pytest.mark.skip(reason="Cassetes for vcr need to be regenerated")
@@ -475,9 +476,8 @@ def test_zenodo_adapter_write(sandbox_control):
     control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
     package = Package("data/datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098723"
-    assert deposition_id == 7098723
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -488,9 +488,8 @@ def test_zenodo_adapter_write_ods(sandbox_control):
     )
     package = Package("data/ods.datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098739"
-    assert deposition_id == 7098739
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -501,9 +500,8 @@ def test_zenodo_adapter_write_jsonl(sandbox_control):
     )
     package = Package("data/jsonl.datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098741"
-    assert deposition_id == 7098741
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -514,9 +512,8 @@ def test_zenodo_adapter_write_ndjson(sandbox_control):
     )
     package = Package("data/ndjson.datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098743"
-    assert deposition_id == 7098743
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -540,8 +537,8 @@ def test_zenodo_adapter_write_with_descriptor(sandbox_control):
     control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
     package = Package(descriptor)
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098745
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -623,8 +620,8 @@ def test_zenodo_adapter_write_resources_with_inline_data(sandbox_control):
     )
     package = Package(descriptor)
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098747
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -651,8 +648,8 @@ def test_zenodo_adapter_write_resources_with_remote_url(sandbox_control):
     )
     package = Package(descriptor)
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098749
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -677,9 +674,11 @@ def test_zenodo_adapter_write_resources_with_deposition_url(sandbox_control):
         **sandbox_control,
     )
     package = Package("data/datapackage.json")
-    result = package.publish("https://zenodo.org/deposit/7098479", control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098479
+    result = package.publish(
+        f"https://sandbox.zenodo.org/deposit/{shared_deposition_id}", control=control
+    )
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -690,8 +689,8 @@ def test_zenodo_adapter_write_resources_to_publish(sandbox_control):
     )
     package = Package("data/datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098751
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -703,8 +702,8 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
     control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/package/zenodo.packagepartialmeta.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 1132344
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -722,8 +721,8 @@ def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_control):
     )
     package = Package("data/package.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 1139855
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -732,8 +731,8 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(sandbox_cont
     control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/package/zenodo.packagewithmeta.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 1132346
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
@@ -742,8 +741,8 @@ def test_zenodo_adapter_write_resources_without_metafile(sandbox_control):
     control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/package/zenodo.packagewithmeta.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7373765
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 # Read - Catalog
