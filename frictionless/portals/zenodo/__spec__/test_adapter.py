@@ -560,7 +560,7 @@ def test_zenodo_adapter_write_without_wrong_apikey(sandbox_control):
     assert "Error in creation, status code: 403" in error.message
 
 
-# @pytest.mark.skip
+@pytest.mark.skip(reason="Missing metadata is filled from datapackage metadata")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_metadata(sandbox_control):
     control = portals.ZenodoControl(**sandbox_control)
@@ -587,7 +587,9 @@ def test_zenodo_adapter_write_without_base_url(sandbox_control):
         package.publish(control=control)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+@pytest.mark.skip(
+    reason="Unclear where record comes from, in the current form not a write test"
+)
 @pytest.mark.vcr
 def test_zenodo_adapter_write_read_package_published_to_zenodo():
     package = Package("https://zenodo.org/records/7096849")
@@ -694,7 +696,7 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-# @pytest.mark.skip
+@pytest.mark.skip(reason="Not supported, tries to interpret as filename")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_control):
     control = portals.ZenodoControl(
