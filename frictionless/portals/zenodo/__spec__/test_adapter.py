@@ -8,6 +8,7 @@ from frictionless.system.models import PublishResult
 
 # TODO: recover
 # pytestmark = pytest.mark.skip(reason="Cassetes for vcr need to be regenerated")
+pytestmark = pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 
 PACKAGE_WITHOUT_DP = {
     "title": "Frictionless Data Test Dataset Without Descriptor",
@@ -470,7 +471,6 @@ def test_zenodo_adapter_read_record_data_remote(options_with_dp_with_remote_reso
 # Write
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write(sandbox_control):
     control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
@@ -480,7 +480,6 @@ def test_zenodo_adapter_write(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_ods(sandbox_control):
     control = portals.ZenodoControl(
@@ -492,7 +491,6 @@ def test_zenodo_adapter_write_ods(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_jsonl(sandbox_control):
     control = portals.ZenodoControl(
@@ -504,7 +502,6 @@ def test_zenodo_adapter_write_jsonl(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_ndjson(sandbox_control):
     control = portals.ZenodoControl(
@@ -516,7 +513,6 @@ def test_zenodo_adapter_write_ndjson(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_with_descriptor(sandbox_control):
     descriptor = {
@@ -541,7 +537,6 @@ def test_zenodo_adapter_write_with_descriptor(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_apikey(sandbox_control):
     sandbox_control["apikey"] = None
@@ -553,7 +548,6 @@ def test_zenodo_adapter_write_without_apikey(sandbox_control):
     assert "Api key is required for zenodo publishing" in str(excinfo.value.error)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_wrong_apikey(sandbox_control):
     sandbox_control["apikey"] = "test"
@@ -566,8 +560,7 @@ def test_zenodo_adapter_write_without_wrong_apikey(sandbox_control):
     assert "Error in creation, status code: 403" in error.message
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_metadata(sandbox_control):
     control = portals.ZenodoControl(**sandbox_control)
@@ -578,15 +571,13 @@ def test_zenodo_adapter_write_without_metadata(sandbox_control):
     assert "Zenodo API Metadata Creation error" in error.message
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_default_base_url(tmp_path):
     control = portals.ZenodoControl(tmp_path=tmp_path)
     assert control.base_url == "https://zenodo.org/api/"
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_base_url(sandbox_control):
     sandbox_control["base_url"] = None
@@ -608,7 +599,6 @@ def test_zenodo_adapter_write_read_package_published_to_zenodo():
     ]
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_inline_data(sandbox_control):
     descriptor = {
@@ -624,7 +614,6 @@ def test_zenodo_adapter_write_resources_with_inline_data(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_remote_url(sandbox_control):
     descriptor = {
@@ -652,7 +641,6 @@ def test_zenodo_adapter_write_resources_with_remote_url(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_deposition_id(sandbox_control):
     control = portals.ZenodoControl(
@@ -666,7 +654,6 @@ def test_zenodo_adapter_write_resources_with_deposition_id(sandbox_control):
     assert deposition_id == 7098476
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_deposition_url(sandbox_control):
     control = portals.ZenodoControl(
@@ -681,7 +668,6 @@ def test_zenodo_adapter_write_resources_with_deposition_url(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_to_publish(sandbox_control):
     control = portals.ZenodoControl(
@@ -693,8 +679,7 @@ def test_zenodo_adapter_write_resources_to_publish(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_package_metadata(
     sandbox_control,
@@ -706,8 +691,7 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_pack
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_control):
     control = portals.ZenodoControl(
@@ -725,7 +709,6 @@ def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_control):
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(sandbox_control):
     control = portals.ZenodoControl(**sandbox_control)
@@ -735,7 +718,6 @@ def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(sandbox_cont
     assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_resources_without_metafile(sandbox_control):
     control = portals.ZenodoControl(**sandbox_control)
