@@ -577,16 +577,14 @@ def test_zenodo_adapter_write_default_base_url(tmp_path):
     assert control.base_url == "https://zenodo.org/api/"
 
 
-# @pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_write_without_base_url(sandbox_control):
     sandbox_control["base_url"] = None
 
     control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/datapackage.json")
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(AssertionError):
         package.publish(control=control)
-    assert "AssertionError" in str(excinfo)
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")

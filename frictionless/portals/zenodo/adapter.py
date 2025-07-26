@@ -53,6 +53,7 @@ class ZenodoAdapter(Adapter):
 
     def write_package(self, package: Package):
         client = platform.pyzenodo3_upload
+        assert self.control.base_url, "ZenodoControl(base_url=...) may not be empty"
         client.BASE_URL = self.control.base_url
 
         # Ensure api key
