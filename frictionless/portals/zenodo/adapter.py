@@ -244,7 +244,9 @@ def get_package(
             return Package.from_descriptor(f"{basepath}/{path}", title=title)
         if path.endswith("zip") and not is_resource_file:
             try:
-                return Package(f"{basepath}/{path}", title=title)
+                package = Package(f"{basepath}/{path}")
+                package.title = title
+                return package
             except FrictionlessException as exception:
                 # Skips package descriptor not found exception and continues reading
                 # files.
