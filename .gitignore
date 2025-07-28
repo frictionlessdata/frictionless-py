@@ -95,3 +95,6 @@ coverage/
 site/
 tmp/
 .vim
+.zed
+.venv
+venv

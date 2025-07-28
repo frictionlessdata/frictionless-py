@@ -5,46 +5,55 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.28.1
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/68358988
   response:
     body:
-      string: '{"status": 404, "message": "PID does not exist."}'
+      string: '{"status": 404, "message": "The persistent identifier does not exist."}'
     headers:
-      Access-Control-Allow-Origin:
+      access-control-allow-origin:
       - '*'
-      Access-Control-Expose-Headers:
+      access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Length:
-      - '49'
-      Content-Type:
+      content-length:
+      - '71'
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
       - application/json
-      Date:
-      - Sun, 18 Sep 2022 12:38:17 GMT
-      Referrer-Policy:
+      date:
+      - Sat, 26 Jul 2025 12:01:00 GMT
+      permissions-policy:
+      - interest-cohort=()
+      referrer-policy:
       - strict-origin-when-cross-origin
-      Retry-After:
-      - '60'
-      Server:
-      - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - sameorigin
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
+      retry-after:
       - '52'
-      X-RateLimit-Reset:
-      - '1663504758'
-      X-XSS-Protection:
+      server:
+      - nginx
+      set-cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=e26c51e5d1379a16d287881670fdf19c; path=/;
+        HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - sameorigin
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '123'
+      x-ratelimit-reset:
+      - '1753531313'
+      x-xss-protection:
       - 1; mode=block
     status:
       code: 404
