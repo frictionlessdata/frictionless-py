@@ -354,15 +354,17 @@ class Detector:
             runner_fields: List[Field] = []  # we use shared fields
             for candidate in field_candidates:
                 descriptor = candidate.copy()
+
+                if descriptor["type"] == "boolean":
+                    if self.field_true_values != settings.DEFAULT_TRUE_VALUES:
+                        descriptor["true_values"] = self.field_true_values  # type: ignore
+                    if self.field_false_values != settings.DEFAULT_FALSE_VALUES:
+                        descriptor["false_values"] = self.field_false_values  # type: ignore
+
                 descriptor["name"] = "shared"
                 field = Field.from_descriptor(descriptor)
                 if field.type == "number" and self.field_float_numbers:
                     field.float_number = True  # type: ignore
-                elif field.type == "boolean":
-                    if self.field_true_values != settings.DEFAULT_TRUE_VALUES:
-                        field._descriptor.true_values = self.field_true_values  # type: ignore
-                    if self.field_false_values != settings.DEFAULT_FALSE_VALUES:
-                        field._descriptor.false_values = self.field_false_values  # type: ignore
                 runner_fields.append(field)
 
             for index, name in enumerate(names):
