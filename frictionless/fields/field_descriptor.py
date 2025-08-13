@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, ClassVar, Dict, List, Literal, Optional, Union
 
 import pydantic
 from typing_extensions import Self
@@ -16,6 +16,9 @@ from .field_constraints import (
     StringConstraints,
     ValueConstraints,
 )
+
+TableSchemaTypes = Union[bool, str, float, int]
+"""Python equivalents of types supported by the Table schema specification"""
 
 
 class BaseFieldDescriptor(pydantic.BaseModel):
@@ -64,7 +67,7 @@ class BaseFieldDescriptor(pydantic.BaseModel):
 class BooleanFieldDescriptor(BaseFieldDescriptor):
     """The field contains boolean (true/false) data."""
 
-    type: Literal["boolean"] = "boolean"
+    type: ClassVar[Literal["boolean"]] = "boolean"
 
     format: Optional[Literal["default"]] = None
     constraints: Optional[BaseConstraints[bool]] = None
@@ -87,8 +90,23 @@ class BooleanFieldDescriptor(BaseFieldDescriptor):
     Values to be interpreted as “false” for boolean fields
     """
 
-    def read_value(self, cell: Any):
-        if isinstance(cell, bool) and cell is True or cell is False:
+    def read_value(self, cell: TableSchemaTypes) -> Optional[bool]:
+        """read_value converts the physical (possibly typed) representation to
+        a logical boolean representation.
+
+        See "Data representation" in the glossary for more details.
+        https://datapackage.org/standard/glossary/#data-representation
+
+        If the physical representation is already typed as a boolean, the
+        value is returned unchanged.
+
+        If the physical representation is a string, then the string is parsed
+        as a boolean depending on true_values and false_values options. `None`
+        is returned if the string cannot be parsed.
+
+        Any other typed input will return `None`.
+        """
+        if isinstance(cell, bool):
             return cell
 
         if isinstance(cell, str):
@@ -96,9 +114,10 @@ class BooleanFieldDescriptor(BaseFieldDescriptor):
                 return True
             if self.false_values and cell in self.false_values:
                 return False
-            return None
 
-    def write_value(self, cell: Any):
+        return None
+
+    def write_value(self, cell: Optional[bool]) -> Optional[str]:
         if self.true_values and self.false_values:
             return self.true_values[0] if cell else self.false_values[0]
         return None

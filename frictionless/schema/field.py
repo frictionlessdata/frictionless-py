@@ -11,9 +11,9 @@ import pydantic
 
 from .. import errors, settings
 from ..exception import FrictionlessException
+from ..fields.field_descriptor import BooleanFieldDescriptor, FieldDescriptor
 from ..metadata import Metadata
 from ..system import system
-from .field_descriptor import BooleanFieldDescriptor, FieldDescriptor
 
 if TYPE_CHECKING:
     from ..types import IDescriptor
