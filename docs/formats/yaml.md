@@ -3,7 +3,7 @@ script:
   basepath: data
 ---
 
-# Json Format
+# YAML Format
 
 Frictionless supports parsing YAML tables.
 

@@ -53,7 +53,7 @@ class PandasParser(Parser):
                     pk = pk if isinstance(pk, tuple) else [pk]  # type: ignore
                     value = pk[schema.primary_key.index(field.name)]  # type: ignore
                 else:
-                    value = item[field.name]
+                    value = item.to_dict()[field.name]
                 if value is np.nan:
                     value = None
                 elif isinstance(value, pd.Timestamp):
@@ -157,7 +157,7 @@ class PandasParser(Parser):
                     # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
                     if value is None and field.type in ("number", "integer"):
                         fixed_types[field.name] = "number"
-                        value = np.NaN
+                        value = np.nan
                     if field.name in source.schema.primary_key:
                         index_values.append(value)
                     else:

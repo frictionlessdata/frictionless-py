@@ -45,7 +45,13 @@ class Factory(type, Generic[T]):
             path = source
             if isinstance(source, str):
                 path = helpers.join_basepath(source, basepath=basepath)
-            md_type = Detector.detect_metadata_type(path, format=options.get("format"))
+
+            md_type = options.get("datatype")
+            if not md_type:
+                md_type = Detector.detect_metadata_type(
+                    path, format=options.get("format")
+                )
+
             if md_type != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
                 resource = cls(control=control, basepath=basepath, **options)  # type: ignore

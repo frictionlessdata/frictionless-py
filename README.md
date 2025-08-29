@@ -30,7 +30,6 @@ Data management framework for Python that provides functionality to describe, ex
 - Support for compressed files
 - Custom checks and formats
 - Fully pluggable architecture
-- The included API server
 - More than 1000+ tests
 
 ## Installation

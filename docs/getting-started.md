@@ -31,11 +31,11 @@ Still having a problem? Ask us for help on our [Discord](https://discord.com/inv
 ## Usage
 
 The framework can be used:
+
 - as a Python library
 - as a command-line interface
-- as a restful API server (for advanced use cases)
 
-For instance, all the examples below do the same thing:
+For instance, both examples below do the same thing:
 
 ```bash tabs=CLI
 frictionless extract data/table.csv
@@ -47,13 +47,14 @@ from frictionless import extract
 rows = extract('data/table.csv')
 ```
 
-```json tabs=API
-[POST] /extract {"path': 'data/table.csv"}
-```
-
-All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time. You can find the API reference at the bottom of the respective page, for example: [Schema  API Reference](../../docs/framework/schema.html#reference).
+The interfaces are as much alike as possible regarding naming conventions and 
+the way you interact with them. Usually, it's straightforward to translate, 
+for instance, Python code to a command-line call. Frictionless provides code 
+completion for Python and the command-line, which should help to get useful 
+hints in real time.
 
 Arguments conform to the following naming convention:
+
 - for Python interfaces, they are snake_cased, e.g. `missing_values`
 - within dictionaries or JSON objects, they are camelCased, e.g. `missingValues`
 - in the command line, they use dashes, e.g. `--missing-values`

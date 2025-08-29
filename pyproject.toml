@@ -48,7 +48,6 @@ dependencies = [
     "tabulate>=0.8.10",
     "jsonschema>=4.20",
     "simpleeval>=0.9.11",
-    "stringcase>=1.2",
     "typer>=0.12",
     "validators>=0.18",
     "python-slugify>=1.2",
@@ -71,7 +70,6 @@ dev = [
     "pytest-cov",
     "pytest-vcr",
     "pytest-mock",
-    "pytest-only",
     "oauth2client",
     "requests-mock",
     "pytest-dotenv",
@@ -83,7 +81,7 @@ bigquery = ["google-api-python-client>=1.12.1"]
 ckan = ["frictionless-ckan-mapper>=1.0"]
 csv = []
 datasette = ["datasette>=0.64.2"]
-duckdb = ["sqlalchemy>=1.4", "duckdb-engine>=0.7", "duckdb>=0.8"]
+duckdb = ["sqlalchemy>=1.4, <=2.0.35", "duckdb-engine>=0.7", "duckdb>=0.8"]
 excel = ["xlrd>=1.2", "xlwt>=1.2", "openpyxl>=3.0", "tableschema-to-template>=0.0"]
 json = ["ijson>=3.0", "jsonlines>=1.2"]
 github = ["pygithub>=1.50"]

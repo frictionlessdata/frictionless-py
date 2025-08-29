@@ -153,14 +153,19 @@ class SqlMapper(Mapper):
     # Write
 
     def write_schema(  # type: ignore
-        self, schema: Schema, *, table_name: str, with_metadata: bool = False
+        self,
+        schema: Schema,
+        *,
+        table_name: str,
+        with_metadata: bool = False,
+        ignore_constraints: bool = False,
     ) -> Table:
         """Convert frictionless schema to sqlalchemy table"""
         sa = platform.sqlalchemy
         columns: List[Column] = []  # type: ignore
         constraints: List[Constraint] = []
 
-        # Fields
+        # Metadata
         if with_metadata:
             columns.append(  # type: ignore
                 sa.Column(
@@ -171,16 +176,19 @@ class SqlMapper(Mapper):
                 )
             )
             columns.append(sa.Column(settings.ROW_VALID_IDENTIFIER, sa.Boolean))  # type: ignore
+
+        # Fields
         for field in schema.fields:
-            column = self.write_field(field, table_name=table_name)  # type: ignore
+            column = self.write_field(  # type: ignore
+                field, table_name=table_name, ignore_constraints=ignore_constraints
+            )
             columns.append(column)  # type: ignore
 
         # Primary key
         if schema.primary_key:
             Class = sa.UniqueConstraint if with_metadata else sa.PrimaryKeyConstraint
-            if not with_metadata:
-                constraint = Class(*schema.primary_key)
-                constraints.append(constraint)
+            constraint = Class(*schema.primary_key)
+            constraints.append(constraint)
 
         # Foreign keys
         for fk in schema.foreign_keys:
@@ -192,11 +200,18 @@ class SqlMapper(Mapper):
             constraint = sa.ForeignKeyConstraint(fields, foreign_fields)
             constraints.append(constraint)
 
-        # Table
-        table = sa.Table(table_name, sa.MetaData(), *(columns + constraints))
+        # Prepare table
+        table_args = [table_name, sa.MetaData(), *columns]  # type: ignore
+        if not ignore_constraints:
+            table_args += constraints  # type: ignore
+
+        # Create table
+        table = sa.Table(*table_args)
         return table
 
-    def write_field(self, field: Field, *, table_name: str) -> Column:  # type: ignore
+    def write_field(  # type: ignore
+        self, field: Field, *, table_name: str, ignore_constraints: bool = False
+    ) -> Column:  # type: ignore
         """Convert frictionless Field to sqlalchemy Column"""
         sa = platform.sqlalchemy
         quote = self.dialect.identifier_preparer.quote  # type: ignore
@@ -206,7 +221,16 @@ class SqlMapper(Mapper):
         # General properties
         quoted_name = quote(field.name)
         column_type = self.write_type(field.type)  # type: ignore
+
+        # Required constraint
         nullable = not field.required
+
+        # Unique constraint
+        unique = field.constraints.get("unique", False)
+        if self.dialect.name == "mysql":
+            # MySQL requires keys to have an explicit maximum length
+            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+            unique = unique and column_type is not sa.Text
 
         # Length constraints
         if field.type == "string":
@@ -227,13 +251,6 @@ class SqlMapper(Mapper):
                 if not isinstance(column_type, sa.CHAR) or self.dialect.name == "sqlite":
                     checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, min_length)))
 
-        # Unique constraint
-        unique = field.constraints.get("unique", False)
-        if self.dialect.name == "mysql":
-            # MySQL requires keys to have an explicit maximum length
-            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            unique = unique and column_type is not sa.Text
-
         # Others constraints
         for const, value in field.constraints.items():
             if const == "minimum":
@@ -252,15 +269,20 @@ class SqlMapper(Mapper):
                     enum_name = "%s_%s_enum" % (table_name, field.name)
                     column_type = sa.Enum(*value, name=enum_name)
 
-        # Create column
-        column_args = [field.name, column_type] + checks  # type: ignore
+        # Prepare column
         # TODO: shall it use "autoincrement=False"
         # https://github.com/Mause/duckdb_engine/issues/595#issuecomment-1495408566
-        column_kwargs = {"nullable": nullable, "unique": unique}
+        column_args = [field.name, column_type]  # type: ignore
+        column_kwargs = {}
         if field.description:
             column_kwargs["comment"] = field.description
-        column = sa.Column(*column_args, **column_kwargs)
+        if not ignore_constraints:
+            column_args += checks  # type: ignore
+            column_kwargs["nullable"] = nullable
+            column_kwargs["unique"] = unique
 
+        # Create column
+        column = sa.Column(*column_args, **column_kwargs)
         return column
 
     def write_type(self, field_type: str) -> Type[TypeEngine]:  # type: ignore
