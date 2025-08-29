@@ -1,8 +1,9 @@
-from datetime import datetime, time, date
+from datetime import date, datetime, time
 from decimal import Decimal
 
 import isodate
 import polars as pl
+import pytest
 import pytz
 from dateutil.tz import tzutc
 
@@ -168,36 +169,37 @@ def test_polars_write_constraints():
         ]
 
 
-# def test_polars_parser_write_timezone():
-#     # This Test fails because polars does not allow mixing tz aware time with naive time.
-#     source = TableResource(path="data/timezone.csv")
-#     target = source.write(format="polars")
-#     with target:
-#         # Assert schema
-#         assert target.schema.to_descriptor() == {
-#             "fields": [
-#                 {"name": "datetime", "type": "datetime"},
-#                 {"name": "time", "type": "time"},
-#             ],
-#         }
-#         # Polars disallows comparing naive tzs with explicit tzs
-#         # https://github.com/pola-rs/polars/pull/12966#pullrequestreview-1785291945
-#         # Assert rows
-#         assert target.read_rows() == [
-#             {
-#                 "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-#                 "time": time(15),
-#             },
-#             {
-#                 "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
-#                 "time": time(15),
-#             },
-#             {
-#                 "datetime": datetime(2020, 1, 1, 12, 0, tzinfo=tzutc()),
-#                 "time": time(12),
-#             },
-#             {
-#                 "datetime": datetime(2020, 1, 1, 18, 0, tzinfo=tzutc()),
-#                 "time": time(18),
-#             },
-#         ]
+# This Test fails because polars does not allow mixing tz aware time with naive time.
+@pytest.mark.skip
+def test_polars_parser_write_timezone():
+    source = TableResource(path="data/timezone.csv")
+    target = source.write(format="polars")
+    with target:
+        # Assert schema
+        assert target.schema.to_descriptor() == {
+            "fields": [
+                {"name": "datetime", "type": "datetime"},
+                {"name": "time", "type": "time"},
+            ],
+        }
+        # Polars disallows comparing naive tzs with explicit tzs
+        # https://github.com/pola-rs/polars/pull/12966#pullrequestreview-1785291945
+        # Assert rows
+        assert target.read_rows() == [
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": time(15),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": time(15),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 12, 0, tzinfo=tzutc()),
+                "time": time(12),
+            },
+            {
+                "datetime": datetime(2020, 1, 1, 18, 0, tzinfo=tzutc()),
+                "time": time(18),
+            },
+        ]
