@@ -4,8 +4,6 @@ import datetime
 import decimal
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
-from dateutil.tz import tzoffset
-
 from ... import types
 from ...platform import platform
 from ...schema import Field, Schema
