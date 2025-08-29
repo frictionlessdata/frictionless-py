@@ -2,6 +2,7 @@ from datetime import datetime, time
 from decimal import Decimal
 
 import isodate
+import numpy as np
 import pandas as pd
 import pytz
 from dateutil.tz import tzoffset, tzutc
@@ -14,13 +15,44 @@ from frictionless.resources import TableResource
 
 
 def test_pandas_parser():
-    dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
+    test_cases = [
+        {
+            "name": "Integer type only dataframe, cf issue 1678",
+            "df_data": {"int": [1]},
+            "expected_header": ["int"],
+            "expected_rows": [{"int": 1}],
+        },
+        {
+            "name": "Boolean type only dataframe, cf issue 1678",
+            "df_data": {"bool": [True]},
+            "expected_header": ["bool"],
+            "expected_rows": [{"bool": True}],
+        },
+        {
+            "name": "Mixed types dataframe, chinese characters",
+            "df_data": {"id": [1, 2], "name": ["english", "中国人"]},
+            "expected_header": ["id", "name"],
+            "expected_rows": [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ],
+        },
+    ]
+    for tc in test_cases:
+        dataframe = pd.DataFrame(data=tc["df_data"])
+
+        with TableResource(data=dataframe) as resource:
+            assert resource.header == tc["expected_header"], tc["name"]
+            assert resource.read_rows() == tc["expected_rows"], tc["name"]
+
+
+def test_pandas_parser_with_nan():
+    dataframe = pd.DataFrame(data={"x": [np.nan]})
+
     with TableResource(data=dataframe) as resource:
-        assert resource.header == ["id", "name"]
-        assert resource.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
+        test_name = 'np.nan converted to Decimal("NaN")'
+        row = resource.read_rows()[0]
+        assert row["x"].is_nan(), test_name
 
 
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():

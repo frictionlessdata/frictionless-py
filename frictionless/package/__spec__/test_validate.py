@@ -1,5 +1,6 @@
 import json
 import pathlib
+from copy import deepcopy
 
 import pytest
 
@@ -11,6 +12,7 @@ from frictionless import (
     Resource,
     Schema,
     fields,
+    platform,
 )
 
 # General
@@ -302,7 +304,10 @@ def test_validate_package_using_detector_schema_sync_issue_847():
             Resource(
                 data=[["f1"], ["v1"], ["v2"], ["v3"]],
                 schema=Schema(
-                    fields=[fields.StringField(name="f1"), fields.StringField(name="f2")],
+                    fields=[
+                        fields.StringField(name="f1"),
+                        fields.StringField(name="f2"),
+                    ],
                 ),
             ),
         ]
@@ -362,3 +367,313 @@ def test_package_licenses_required_path_or_name_issue_1290():
     descriptor = {"resources": [], "licenses": [{"title": "title"}]}
     report = Package.validate_descriptor(descriptor)
     assert report.errors[0].note.count('license requires "path" or "name"')
+
+
+def test_package_validate_with_skip_errors():
+    ## Test runs on data with two blank-row errors, one primary-key error, see
+    # first test case
+    test_cases = [
+        {"ignore": [], "expect_errors": ["blank-row", "primary-key", "blank-row"]},
+        {"ignore": ["primary-key"], "expect_errors": ["blank-row", "blank-row"]},
+        {"ignore": ["blank-row"], "expect_errors": ["primary-key"]},
+        {"ignore": ["blank-row", "primary-key"], "expect_errors": []},
+    ]
+
+    for tc in test_cases:
+        with open("data/invalid/datapackage.json") as file:
+            package = Package(json.load(file), basepath="data/invalid")
+            checklist = Checklist(skip_errors=tc["ignore"])
+
+            report = package.validate(checklist)
+
+            assert report.flatten(["type"]) == [[t] for t in tc["expect_errors"]]
+
+
+# Stats
+
+DESCRIPTOR_SH = {
+    "resources": [
+        {
+            "name": "resource1",
+            "path": "data/table.csv",
+            "hash": "sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+            "bytes": 30,
+        }
+    ]
+}
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_package_validate_stats():
+    source = deepcopy(DESCRIPTOR_SH)
+    package = Package(source)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_stats_invalid():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["hash"] += "a"
+    source["resources"][0]["bytes"] += 1
+    package = Package(source)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, None, "hash-count"],
+        [None, None, "byte-count"],
+    ]
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_package_validate_stats_size():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0].pop("hash")
+    package = Package(source)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_stats_size_invalid():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["bytes"] += 1
+    source["resources"][0].pop("hash")
+    package = Package(source)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, None, "byte-count"],
+    ]
+
+
+@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+def test_package_validate_stats_hash():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0].pop("bytes")
+    package = Package(source)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_check_file_package_stats_hash_invalid():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0].pop("bytes")
+    source["resources"][0]["hash"] += "a"
+    package = Package(source)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, None, "hash-count"],
+    ]
+
+
+# Schema
+
+DESCRIPTOR_FK = {
+    "resources": [
+        {
+            "name": "cities",
+            "data": [
+                ["id", "name", "next_id"],
+                [1, "london", 2],
+                [2, "paris", 3],
+                [3, "rome", 4],
+                [4, "rio", None],
+            ],
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                    {"name": "next_id", "type": "integer"},
+                ],
+                "foreignKeys": [
+                    {
+                        "fields": "next_id",
+                        "reference": {"resource": "", "fields": "id"},
+                    },
+                    {
+                        "fields": "id",
+                        "reference": {"resource": "people", "fields": "label"},
+                    },
+                ],
+            },
+        },
+        {
+            "name": "people",
+            "data": [["label", "population"], [1, 8], [2, 2], [3, 3], [4, 6]],
+        },
+    ],
+}
+
+MULTI_FK_RESSOURCE = {
+    "name": "travel_time",
+    "data": [["from", "to", "hours"], [1, 2, 1.5], [2, 3, 8], [3, 4, 18]],
+    "schema": {
+        "fields": [
+            {"name": "from", "type": "integer"},
+            {"name": "to", "type": "integer"},
+            {"name": "hours", "type": "number"},
+        ],
+        "foreignKeys": [
+            {
+                "fields": ["from", "to"],
+                "reference": {"resource": "cities", "fields": ["id", "next_id"]},
+            }
+        ],
+    },
+}
+
+
+def test_package_validate_schema_foreign_key_error():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_schema_foreign_key_not_defined():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][0]["schema"]["foreignKeys"]
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_schema_foreign_key_self_referenced_resource_violation():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][0]["data"][4]
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
+        [4, None, "foreign-key", ["3", "rome", "4"]],
+    ]
+
+
+def test_package_validate_schema_foreign_key_internal_resource_violation():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][1]["data"][4]
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
+        [5, None, "foreign-key", ["4", "rio", ""]],
+    ]
+
+
+def test_package_validate_schema_foreign_key_internal_resource_violation_non_existent():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells"]) == [
+        [2, None, "foreign-key", ["1", "london", "2"]],
+        [3, None, "foreign-key", ["2", "paris", "3"]],
+        [4, None, "foreign-key", ["3", "rome", "4"]],
+        [5, None, "foreign-key", ["4", "rio", ""]],
+    ]
+
+
+def test_package_validate_schema_multiple_foreign_key():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    descriptor["resources"].append(MULTI_FK_RESSOURCE)
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.valid
+
+
+def test_package_validate_schema_multiple_foreign_key_resource_violation_non_existent():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    # remove London
+    del descriptor["resources"][0]["data"][1]
+    descriptor["resources"].append(MULTI_FK_RESSOURCE)
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "cells", "note"]) == [
+        [
+            2,
+            None,
+            "foreign-key",
+            ["1", "2", "1.5"],
+            'for "from, to": values "1, 2" not found in the lookup table "cities" as "id, next_id"',
+        ],
+    ]
+
+
+def test_package_validate_schema_multiple_foreign_key_violations():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    # Add some wrong fks
+    descriptor["resources"][0]["data"][3][0] = 5
+    descriptor["resources"][0]["data"][4][0] = 6
+    descriptor["resources"].append(MULTI_FK_RESSOURCE)
+    package = Package(descriptor)
+    report = package.validate()
+    assert report.flatten(
+        [
+            "rowNumber",
+            "fieldNames",
+            "fieldCells",
+            "referenceName",
+            "referenceFieldNames",
+        ]
+    ) == [
+        [3, ["next_id"], ["3"], "", ["id"]],
+        [4, ["next_id"], ["4"], "", ["id"]],
+        [4, ["id"], ["5"], "people", ["label"]],
+        [5, ["id"], ["6"], "people", ["label"]],
+        [4, ["from", "to"], ["3", "4"], "cities", ["id", "next_id"]],
+    ]
+
+
+# Bugs
+
+
+def test_package_validate_using_detector_schema_sync_issue_847():
+    package = Package(
+        resources=[
+            Resource(
+                data=[["f1"], ["v1"], ["v2"], ["v3"]],
+                schema=Schema(
+                    fields=[
+                        fields.AnyField(name="f1"),
+                        fields.AnyField(name="f2"),
+                    ]
+                ),
+            ),
+        ]
+    )
+    for resource in package.resources:
+        resource.detector = Detector(schema_sync=True)
+    report = package.validate()
+    assert report.valid
+
+
+# Parallel
+
+# Note: to test parallel validation, do not use foreign keys to prevent an
+# automatic fallback on single-core execution
+
+
+@pytest.mark.ci
+def test_package_validate_parallel_from_dict():
+    with open("data/datapackage.json") as file:
+        package = Package(json.load(file), basepath="data")
+        report = package.validate(parallel=True)
+        assert report.valid
+
+
+@pytest.mark.ci
+def test_package_validate_parallel_from_dict_invalid():
+    with open("data/invalid/datapackage_no_foreign_key.json") as file:
+        package = Package(json.load(file), basepath="data/invalid")
+        report = package.validate(parallel=True)
+        assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
+            [1, 3, None, "blank-row"],
+            [1, 3, None, "primary-key"],
+            [2, 4, None, "blank-row"],
+        ]
+
+
+@pytest.mark.ci
+def test_package_validate_with_parallel():
+    package = Package("data/invalid/datapackage_no_foreign_key.json")
+    report = package.validate(parallel=True)
+    assert report.flatten(["taskNumber", "rowNumber", "fieldNumber", "type"]) == [
+        [1, 3, None, "blank-row"],
+        [1, 3, None, "primary-key"],
+        [2, 4, None, "blank-row"],
+    ]

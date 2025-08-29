@@ -64,7 +64,8 @@ class XlsxParser(Parser):
                 target = tempfile.NamedTemporaryFile(delete=delete)
                 shutil.copyfileobj(loader.byte_stream, target)
                 target.seek(0)
-            if not target.delete:
+
+            if not delete:
                 control.workbook_cache[path] = target.name  # type: ignore
                 atexit.register(os.remove, target.name)
             # TODO: rebase on using resource without system?
