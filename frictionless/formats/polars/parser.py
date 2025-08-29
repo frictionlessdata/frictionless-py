@@ -108,14 +108,15 @@ class PolarsParser(Parser):
                     if isinstance(value, decimal.Decimal):
                         value = float(value)
                     if isinstance(value, datetime.datetime) and value.tzinfo:
+                        # Polars will only allow one timezone per column
+                        # https://docs.pola.rs/user-guide/transformations/time-series/timezones/
                         value = value.astimezone(datetime.timezone.utc)
-                    if isinstance(value, datetime.time) and value.tzinfo:
-                        value = value.replace(
-                            tzinfo=tzoffset(
-                                datetime.timezone.utc,
-                                value.utcoffset().total_seconds(),  # type: ignore
-                            )
-                        )
+
+                    if isinstance(value, datetime.time) and (os := value.utcoffset()):
+                        # offset information is lost in polars we have to resolve time.
+                        value = (
+                            datetime.datetime.combine(datetime.date.today(), value) - os
+                        ).time()
                     if value is None and field.type in ("number", "integer"):
                         fixed_types[field.name] = "number"
                         value = None
