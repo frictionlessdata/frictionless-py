@@ -123,12 +123,10 @@ class PolarsParser(Parser):
         # Create dtypes/columns
         columns: List[str] = []
         for field in source.schema.fields:
-            if field.name not in source.schema.primary_key:
-                columns.append(field.name)
+            columns.append(field.name)
 
         # Create/set dataframe
-        dataframe = pl.DataFrame(data_rows, orient="row")
-        dataframe.columns = columns
+        dataframe = pl.DataFrame(data_rows, orient="row", schema=columns)
 
         for field in source.schema.fields:
             if (
