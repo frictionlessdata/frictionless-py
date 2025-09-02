@@ -53,7 +53,7 @@ class PolarsParser(Parser):
         schema = Schema()
 
         # Fields
-        for name, dtype in zip(dataframe.columns, dataframe.dtypes):  # type: ignore
+        for name, dtype in dataframe.schema.items():  # type: ignore
             sample = dataframe.select(pl.first(name)).item() if len(dataframe) else None  # type: ignore
             type = self.__read_convert_type(dtype, sample=sample)  # type: ignore
             field = Field.from_descriptor({"name": name, "type": type})
