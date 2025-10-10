@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from frictionless.schema.field import Field
 
-from .. import errors, helpers, settings
+from .. import errors, helpers
 from ..analyzer import Analyzer
 from ..dialect import Dialect
 from ..exception import FrictionlessException
@@ -17,11 +17,9 @@ from ..resource import Resource
 from ..system import system
 from ..table import Header, Lookup, Row, Table
 from ..transformer import Transformer
-from ..validator import Validator
 
 if TYPE_CHECKING:
     from .. import types
-    from ..checklist import Checklist
     from ..indexer import IOnProgress, IOnRow
     from ..pipeline import Pipeline
     from ..system import Loader, Parser
@@ -625,27 +623,6 @@ class TableResource(Resource):
     def transform(self, pipeline: Pipeline):
         transformer = Transformer()
         return transformer.transform_table_resource(self, pipeline)
-
-    # Validate
-
-    def validate(
-        self,
-        checklist: Optional[Checklist] = None,
-        *,
-        name: Optional[str] = None,
-        on_row: Optional[types.ICallbackFunction] = None,
-        parallel: bool = False,
-        limit_rows: Optional[int] = None,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-    ):
-        validator = Validator()
-        return validator.validate_resource(
-            self,
-            checklist=checklist,
-            on_row=on_row,
-            limit_rows=limit_rows,
-            limit_errors=limit_errors,
-        )
 
     # Export
 

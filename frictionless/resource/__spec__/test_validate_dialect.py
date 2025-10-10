@@ -1,7 +1,7 @@
 from frictionless import Dialect, Resource, formats
 from frictionless.resources import TableResource
 
-# General
+# Dialect
 
 
 def test_resource_validate_dialect_delimiter():

@@ -12,7 +12,7 @@ runner = CliRunner()
 def test_console():
     result = runner.invoke(console)
     assert result.exit_code == 2
-    assert result.stdout.count("Usage")
+    assert result.output.count("Usage")
 
 
 def test_console_version():
@@ -30,4 +30,4 @@ def test_console_help():
 def test_console_error_bad_command():
     result = runner.invoke(console, "bad")
     assert result.exit_code == 2
-    assert result.stdout.count("No such command 'bad'")
+    assert result.output.count("No such command 'bad'")
