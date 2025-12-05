@@ -11,7 +11,11 @@ import pydantic
 
 from .. import errors, settings
 from ..exception import FrictionlessException
-from ..fields.field_descriptor import BooleanFieldDescriptor, FieldDescriptor
+from ..fields.field_descriptor import (
+    BooleanFieldDescriptor,
+    FieldDescriptor,
+    IntegerFieldDescriptor,
+)
 from ..metadata import Metadata
 from ..system import system
 
@@ -159,6 +163,8 @@ class Field(Metadata):
         def value_reader(cell: Any):
             if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
                 return self._descriptor.read_value(cell)
+            if self._descriptor and isinstance(self._descriptor, IntegerFieldDescriptor):
+                return self._descriptor.read_value(cell)
             return cell
 
         return value_reader
@@ -198,6 +204,8 @@ class Field(Metadata):
         # Create writer
         def value_writer(cell: Any):
             if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
+                return self._descriptor.write_value(cell)
+            if self._descriptor and isinstance(self._descriptor, IntegerFieldDescriptor):
                 return self._descriptor.write_value(cell)
             return str(cell)
 
@@ -271,15 +279,29 @@ class Field(Metadata):
             except pydantic.ValidationError as ve:
                 error = errors.SchemaError(note=str(ve))
                 raise FrictionlessException(error)
+        elif field.type == "integer":
+            try:
+                field._descriptor = IntegerFieldDescriptor.model_validate(descriptor_copy)
+            except pydantic.ValidationError as ve:
+                error = errors.SchemaError(note=str(ve))
+                raise FrictionlessException(error)
 
         return field
 
     def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
-        if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
-            descr = self._descriptor.model_dump(exclude_none=True, exclude_unset=True)
+        if self._descriptor and isinstance(
+            self._descriptor, (BooleanFieldDescriptor, IntegerFieldDescriptor)
+        ):
+            base_descr = super().to_descriptor(validate=validate)
+            # Set by_alias=True to get camelCase keys used by Frictionless (bareNumber) instead of snake_case (bare_number)
+            # Exclude 'name' from descriptor_descr because it may be "shared" (coming from detector.py)
+            descriptor_descr = self._descriptor.model_dump(
+                exclude_none=True, exclude_unset=True, by_alias=True, exclude={"name"}
+            )
             ## Temporarily, Field properties have priority over
             ## Field._descriptor properties
-            descr = {**descr, **super().to_descriptor(validate=validate)}
+            ## Merge descriptor_descr into base_descr to preserve base order
+            descr = {**base_descr, **descriptor_descr}
             return descr
         else:
             return super().to_descriptor(validate=validate)
