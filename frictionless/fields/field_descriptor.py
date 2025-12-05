@@ -65,11 +65,7 @@ class BaseFieldDescriptor(BaseModel):
 
     @model_validator(mode="after")
     def validate_example(self) -> Self:
-        """Validate that the example value can be converted using read_value() if available.
-        
-        Subclasses can override this method for custom validation logic.
-        For example, BooleanFieldDescriptor checks that the example is in true_values/false_values.
-        """
+        """Validate that the example value can be converted using read_value() if available"""
         if self.example is not None:
             if hasattr(self, "read_value"):
                 read_value_method = getattr(self, "read_value")
