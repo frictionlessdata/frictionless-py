@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from typing import Literal, Optional, Union
 
 from pydantic import Field as PydanticField
@@ -23,6 +22,7 @@ from .integer_descriptor import IntegerFieldDescriptor
 from .number_descriptor import NumberFieldDescriptor
 from .object_descriptor import ObjectFieldDescriptor
 from .string_descriptor import StringFieldDescriptor
+from .time_descriptor import TimeFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -88,14 +88,6 @@ IStringFormat = Literal[
     # Unofficial
     "wkt",
 ]
-
-
-class TimeFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a time without a date."""
-
-    type: Literal["time"] = "time"
-    format: Optional[str] = None
-    constraints: Optional[ValueConstraints[datetime.time]] = None
 
 
 class YearFieldDescriptor(BaseFieldDescriptor):
