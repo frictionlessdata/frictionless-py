@@ -11,10 +11,10 @@ import pydantic
 
 from .. import errors, settings
 from ..exception import FrictionlessException
-from ..fields.boolean_descriptor import BooleanFieldDescriptor
-from ..fields.date_descriptor import DateFieldDescriptor
-from ..fields.integer_descriptor import IntegerFieldDescriptor
-from ..fields.field_descriptor import FieldDescriptor
+# from ..fields.boolean_descriptor import BooleanFieldDescriptor
+# from ..fields.date_descriptor import DateFieldDescriptor
+# from ..fields.integer_descriptor import IntegerFieldDescriptor
+from ..fields.field_descriptor import BooleanFieldDescriptor, DateFieldDescriptor, IntegerFieldDescriptor, FieldDescriptor
 from ..metadata import Metadata
 from ..system import system
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 class Field(Metadata):
     """Field representation"""
 
-    _descriptor: Optional[BooleanFieldDescriptor | IntegerFieldDescriptor | DateFieldDescriptor | FieldDescriptor] = None
+    _descriptor: Optional[ FieldDescriptor] = None
 
     name: str
     """

@@ -14,6 +14,10 @@ from .field_constraints import (
     ValueConstraints,
 )
 
+from .boolean_descriptor import BooleanFieldDescriptor
+from .date_descriptor import DateFieldDescriptor
+from .integer_descriptor import IntegerFieldDescriptor
+
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
     """The field contains a valid JSON array."""
@@ -208,13 +212,13 @@ class YearmonthFieldDescriptor(BaseFieldDescriptor):
 FieldDescriptor = Union[
     AnyFieldDescriptor,
     ArrayFieldDescriptor,  # wip
-    # BooleanFieldDescriptor,  # v
-    # DateFieldDescriptor,  # v
+    BooleanFieldDescriptor,  # v
+    DateFieldDescriptor,  # v
     DatetimeFieldDescriptor,
     DurationFieldDescriptor,
     GeoJSONFieldDescriptor,
     GeoPointFieldDescriptor,
-    # IntegerFieldDescriptor,  # v
+    IntegerFieldDescriptor,  # v
     ListFieldDescriptor,
     NumberFieldDescriptor,
     ObjectFieldDescriptor,
