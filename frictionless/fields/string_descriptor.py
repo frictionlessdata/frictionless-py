@@ -1,14 +1,22 @@
 import base64
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, Union, List
 
-from pydantic import Field as PydanticField
-
+from pydantic import Field as PydanticField, BaseModel
 from ..platform import platform
 from .base_field_descriptor import BaseFieldDescriptor
 from .field_constraints import StringConstraints
-from .field_descriptor import ICategories
+
+class CategoryDict(BaseModel):
+    """Category dictionary for field categories."""
+    value: str
+    label: Optional[str] = None
 
 
+ICategories = Union[
+    List[str],
+    List[CategoryDict],
+]
+"""Categories type used by IntegerFieldDescriptor and StringFieldDescriptor"""
 class StringFieldDescriptor(BaseFieldDescriptor):
     """The field contains strings, that is, sequences of characters."""
 

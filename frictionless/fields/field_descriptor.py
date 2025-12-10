@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import datetime
-from typing import List, Literal, Optional, Union
+from typing import Literal, Optional, Union
 
-from pydantic import Field as PydanticField, BaseModel
+from pydantic import Field as PydanticField
 
 from .base_field_descriptor import BaseFieldDescriptor
 from .field_constraints import (
     CollectionConstraints,
     JSONConstraints,
-    StringConstraints,
     ValueConstraints,
 )
 
@@ -45,18 +44,6 @@ IGeojsonFormat = Literal[
     "topojson",
 ]
 
-
-class CategoryDict(BaseModel):
-    """Category dictionary for field categories."""
-    value: str
-    label: Optional[str] = None
-
-
-ICategories = Union[
-    List[str],
-    List[CategoryDict],
-]
-"""Categories type used by IntegerFieldDescriptor and StringFieldDescriptor"""
 
 
 IItemType = Literal[
