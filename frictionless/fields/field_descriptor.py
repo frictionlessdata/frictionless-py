@@ -23,6 +23,7 @@ from .number_descriptor import NumberFieldDescriptor
 from .object_descriptor import ObjectFieldDescriptor
 from .string_descriptor import StringFieldDescriptor
 from .time_descriptor import TimeFieldDescriptor
+from .year_descriptor import YearFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -88,14 +89,6 @@ IStringFormat = Literal[
     # Unofficial
     "wkt",
 ]
-
-
-class YearFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a calendar year."""
-
-    type: Literal["year"] = "year"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[int]] = None
 
 
 class YearmonthFieldDescriptor(BaseFieldDescriptor):
