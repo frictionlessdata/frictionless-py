@@ -14,7 +14,13 @@ from ..exception import FrictionlessException
 # from ..fields.boolean_descriptor import BooleanFieldDescriptor
 # from ..fields.date_descriptor import DateFieldDescriptor
 # from ..fields.integer_descriptor import IntegerFieldDescriptor
-from ..fields.field_descriptor import BooleanFieldDescriptor, DateFieldDescriptor, IntegerFieldDescriptor, FieldDescriptor
+from ..fields.field_descriptor import (
+    BooleanFieldDescriptor,
+    DateFieldDescriptor,
+    DatetimeFieldDescriptor,
+    FieldDescriptor,
+    IntegerFieldDescriptor,
+)
 from ..metadata import Metadata
 from ..system import system
 
@@ -166,6 +172,8 @@ class Field(Metadata):
                 return self._descriptor.read_value(cell)
             if self._descriptor and isinstance(self._descriptor, DateFieldDescriptor):
                 return self._descriptor.read_value(cell)
+            if self._descriptor and isinstance(self._descriptor, DatetimeFieldDescriptor):
+                return self._descriptor.read_value(cell)
             return cell
 
         return value_reader
@@ -209,6 +217,8 @@ class Field(Metadata):
             if self._descriptor and isinstance(self._descriptor, IntegerFieldDescriptor):
                 return self._descriptor.write_value(cell)
             if self._descriptor and isinstance(self._descriptor, DateFieldDescriptor):
+                return self._descriptor.write_value(cell)
+            if self._descriptor and isinstance(self._descriptor, DatetimeFieldDescriptor):
                 return self._descriptor.write_value(cell)
             return str(cell)
 
@@ -294,12 +304,18 @@ class Field(Metadata):
             except pydantic.ValidationError as ve:
                 error = errors.SchemaError(note=str(ve))
                 raise FrictionlessException(error)
+        elif field.type == "datetime":
+            try:
+                field._descriptor = DatetimeFieldDescriptor.model_validate(descriptor_copy)
+            except pydantic.ValidationError as ve:
+                error = errors.SchemaError(note=str(ve))
+                raise FrictionlessException(error)
 
         return field
 
     def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
         if self._descriptor and isinstance(
-            self._descriptor, (BooleanFieldDescriptor, IntegerFieldDescriptor, DateFieldDescriptor)
+            self._descriptor, (BooleanFieldDescriptor, IntegerFieldDescriptor, DateFieldDescriptor, DatetimeFieldDescriptor)
         ):
             base_descr = super().to_descriptor(validate=validate)
             # Set by_alias=True to get camelCase keys used by Frictionless (bareNumber) instead of snake_case (bare_number)

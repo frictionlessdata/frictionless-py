@@ -16,6 +16,7 @@ from .field_constraints import (
 
 from .boolean_descriptor import BooleanFieldDescriptor
 from .date_descriptor import DateFieldDescriptor
+from .datetime_descriptor import DatetimeFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
 
 
@@ -39,14 +40,6 @@ class AnyFieldDescriptor(BaseFieldDescriptor):
     type: Literal["any"] = "any"
     format: Optional[Literal["default"]] = None
     constraints: Optional[BaseConstraints[str]] = None
-
-
-class DatetimeFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a date with a time."""
-
-    type: Literal["datetime"] = "datetime"
-    format: Optional[str] = None
-    constraints: Optional[ValueConstraints[datetime.datetime]] = None
 
 
 class DurationFieldDescriptor(BaseFieldDescriptor):
