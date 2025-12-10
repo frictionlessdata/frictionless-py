@@ -8,7 +8,6 @@ from .base_field_descriptor import BaseFieldDescriptor
 from .field_constraints import (
     CollectionConstraints,
     JSONConstraints,
-    ValueConstraints,
 )
 
 from .any_descriptor import AnyFieldDescriptor
@@ -24,6 +23,7 @@ from .object_descriptor import ObjectFieldDescriptor
 from .string_descriptor import StringFieldDescriptor
 from .time_descriptor import TimeFieldDescriptor
 from .year_descriptor import YearFieldDescriptor
+from .yearmonth_descriptor import YearmonthFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -90,13 +90,6 @@ IStringFormat = Literal[
     "wkt",
 ]
 
-
-class YearmonthFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a specific month of a specific year."""
-
-    type: Literal["yearmonth"] = "yearmonth"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[str]] = None
 
 FieldDescriptor = Union[
     AnyFieldDescriptor,
