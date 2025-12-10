@@ -1,14 +1,11 @@
-"""field_descriptor.py provides pydantic Models for Field descriptors"""
-
 from __future__ import annotations
 
 import datetime
-from typing import Any, ClassVar, Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 
-import pydantic
-from typing_extensions import Self
+from pydantic import Field as PydanticField, BaseModel
 
-from .. import settings
+from .base_field_descriptor import BaseFieldDescriptor
 from .field_constraints import (
     BaseConstraints,
     CollectionConstraints,
@@ -17,122 +14,9 @@ from .field_constraints import (
     ValueConstraints,
 )
 
-TableSchemaTypes = Union[bool, str, float, int]
-"""Python equivalents of types supported by the Table schema specification"""
-
-
-class BaseFieldDescriptor(pydantic.BaseModel):
-    """Data model of a (unspecialised) field descriptor"""
-
-    name: str
-    """
-    The field descriptor MUST contain a name property.
-    """
-
-    title: Optional[str] = None
-    """
-    A human readable label or title for the field
-    """
-
-    description: Optional[str] = None
-    """
-    A description for this field e.g. “The recipient of the funds”
-    """
-
-    missing_values: Optional[List[str]] = pydantic.Field(
-        default=None, alias="missingValues"
-    )
-    """
-    A list of field values to consider as null values
-    """
-
-    example: Optional[str] = None
-    """
-    An example of a value for the field.
-    """
-
-    @pydantic.model_validator(mode="before")
-    @classmethod
-    def compat(cls, data: Dict[str, Any]) -> Dict[str, Any]:
-        # Backward compatibility for field.format
-
-        format_ = data.get("format")
-        if format_:
-            if format_.startswith("fmt:"):
-                data["format"] = format_[4:]
-
-        return data
-
-
-class BooleanFieldDescriptor(BaseFieldDescriptor):
-    """The field contains boolean (true/false) data."""
-
-    type: ClassVar[Literal["boolean"]] = "boolean"
-
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[BaseConstraints[bool]] = None
-
-    true_values: Optional[List[str]] = pydantic.Field(
-        default=settings.DEFAULT_TRUE_VALUES,
-        alias="trueValues",
-        validation_alias=pydantic.AliasChoices("trueValues", "true_values"),
-    )
-    """
-    Values to be interpreted as “true” for boolean fields
-    """
-
-    false_values: Optional[List[str]] = pydantic.Field(
-        default=settings.DEFAULT_FALSE_VALUES,
-        alias="falseValues",
-        validation_alias=pydantic.AliasChoices("falseValues", "false_values"),
-    )
-    """
-    Values to be interpreted as “false” for boolean fields
-    """
-
-    def read_value(self, cell: TableSchemaTypes) -> Optional[bool]:
-        """read_value converts the physical (possibly typed) representation to
-        a logical boolean representation.
-
-        See "Data representation" in the glossary for more details.
-        https://datapackage.org/standard/glossary/#data-representation
-
-        If the physical representation is already typed as a boolean, the
-        value is returned unchanged.
-
-        If the physical representation is a string, then the string is parsed
-        as a boolean depending on true_values and false_values options. `None`
-        is returned if the string cannot be parsed.
-
-        Any other typed input will return `None`.
-        """
-        if isinstance(cell, bool):
-            return cell
-
-        if isinstance(cell, str):
-            if self.true_values and cell in self.true_values:
-                return True
-            if self.false_values and cell in self.false_values:
-                return False
-
-        return None
-
-    def write_value(self, cell: Optional[bool]) -> Optional[str]:
-        if self.true_values and self.false_values:
-            return self.true_values[0] if cell else self.false_values[0]
-        return None
-
-    @pydantic.model_validator(mode="after")
-    def validate_example(self) -> Self:
-        # If example is provided, check it's in true_values or false_values
-        if self.example is not None:
-            allowed_values = (self.true_values or []) + (self.false_values or [])
-            if self.example not in allowed_values:
-                raise ValueError(
-                    f'example value "{self.example}" for field "{self.name}" is not valid'
-                )
-
-        return self
+from .boolean_descriptor import BooleanFieldDescriptor
+from .date_descriptor import DateFieldDescriptor
+from .integer_descriptor import IntegerFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -142,8 +26,9 @@ class ArrayFieldDescriptor(BaseFieldDescriptor):
     format: Optional[Literal["default"]] = None
     constraints: Optional[JSONConstraints] = None
 
-    # TODO type is not accurate : array item are unnamed, not described etc
-    array_item: Optional[FieldDescriptor] = pydantic.Field(
+    # TODO type is not accurate : array item are unnamed, not described etc
+    # Using string annotation to avoid circular import
+    array_item: Optional["FieldDescriptor"] = PydanticField(
         default=None, alias="arrayItem"
     )
 
@@ -154,14 +39,6 @@ class AnyFieldDescriptor(BaseFieldDescriptor):
     type: Literal["any"] = "any"
     format: Optional[Literal["default"]] = None
     constraints: Optional[BaseConstraints[str]] = None
-
-
-class DateFieldDescriptor(BaseFieldDescriptor):
-    """he field contains a date without a time."""
-
-    type: Literal["date"] = "date"
-    format: Optional[str] = None
-    constraints: Optional[ValueConstraints[str]] = None
 
 
 class DatetimeFieldDescriptor(BaseFieldDescriptor):
@@ -202,7 +79,8 @@ class GeoPointFieldDescriptor(BaseFieldDescriptor):
     constraints: Optional[BaseConstraints[str]] = None
 
 
-class CategoryDict(pydantic.BaseModel):
+class CategoryDict(BaseModel):
+    """Category dictionary for field categories."""
     value: str
     label: Optional[str] = None
 
@@ -211,37 +89,7 @@ ICategories = Union[
     List[str],
     List[CategoryDict],
 ]
-
-
-class IntegerFieldDescriptor(BaseFieldDescriptor):
-    """The field contains integers - that is whole numbers."""
-
-    type: Literal["integer"] = "integer"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[int]] = None
-
-    categories: Optional[ICategories] = None
-    """
-    Property to restrict the field to a finite set of possible values
-    """
-
-    categories_ordered: Optional[bool] = pydantic.Field(
-        default=None, alias="categoriesOrdered"
-    )
-    """
-    When categoriesOrdered is true, implementations SHOULD regard the order of
-    appearance of the values in the categories property as their natural order.
-    """
-
-    group_char: Optional[str] = pydantic.Field(default=None, alias="groupChar")
-    """
-    String whose value is used to group digits for integer/number fields
-    """
-
-    bare_number: Optional[bool] = pydantic.Field(default=None, alias="bareNumber")
-    """
-    If false leading and trailing non numbers will be removed for integer/number fields
-    """
+"""Categories type used by IntegerFieldDescriptor and StringFieldDescriptor"""
 
 
 IItemType = Literal[
@@ -262,7 +110,7 @@ class ListFieldDescriptor(BaseFieldDescriptor):
 
     type: Literal["list"] = "list"
     format: Optional[Literal["default"]] = None
-    constraints: CollectionConstraints = pydantic.Field(
+    constraints: CollectionConstraints = PydanticField(
         default_factory=CollectionConstraints
     )
 
@@ -271,7 +119,7 @@ class ListFieldDescriptor(BaseFieldDescriptor):
     Specifies the character sequence which separates lexically represented list items.
     """
 
-    item_type: Optional[IItemType] = pydantic.Field(default=None, alias="itemType")
+    item_type: Optional[IItemType] = PydanticField(default=None, alias="itemType")
     """
     Specifies the list item type in terms of existent Table Schema types.
     """
@@ -284,17 +132,17 @@ class NumberFieldDescriptor(BaseFieldDescriptor):
     format: Optional[Literal["default"]] = None
     constraints: Optional[ValueConstraints[float]] = None
 
-    decimal_char: Optional[str] = pydantic.Field(default=None, alias="decimalChar")
+    decimal_char: Optional[str] = PydanticField(default=None, alias="decimalChar")
     """
     String whose value is used to represent a decimal point for number fields
     """
 
-    group_char: Optional[str] = pydantic.Field(default=None, alias="groupChar")
+    group_char: Optional[str] = PydanticField(default=None, alias="groupChar")
     """
     String whose value is used to group digits for integer/number fields
     """
 
-    bare_number: Optional[bool] = pydantic.Field(default=None, alias="bareNumber")
+    bare_number: Optional[bool] = PydanticField(default=None, alias="bareNumber")
     """
     If false leading and trailing non numbers will be removed for integer/number fields
     """
@@ -324,7 +172,7 @@ class StringFieldDescriptor(BaseFieldDescriptor):
 
     type: Literal["string"] = "string"
     format: Optional[IStringFormat] = None
-    constraints: StringConstraints = pydantic.Field(default_factory=StringConstraints)
+    constraints: StringConstraints = PydanticField(default_factory=StringConstraints)
 
     categories: Optional[ICategories] = None
     """
@@ -361,17 +209,16 @@ class YearmonthFieldDescriptor(BaseFieldDescriptor):
     format: Optional[Literal["default"]] = None
     constraints: Optional[ValueConstraints[str]] = None
 
-
 FieldDescriptor = Union[
     AnyFieldDescriptor,
-    ArrayFieldDescriptor,
-    BooleanFieldDescriptor,
-    DateFieldDescriptor,
+    ArrayFieldDescriptor,  # wip
+    BooleanFieldDescriptor,  # v
+    DateFieldDescriptor,  # v
     DatetimeFieldDescriptor,
     DurationFieldDescriptor,
     GeoJSONFieldDescriptor,
     GeoPointFieldDescriptor,
-    IntegerFieldDescriptor,
+    IntegerFieldDescriptor,  # v
     ListFieldDescriptor,
     NumberFieldDescriptor,
     ObjectFieldDescriptor,
