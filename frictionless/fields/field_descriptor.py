@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, ClassVar, Dict, List, Literal, Optional, Union
+from typing import Any, ClassVar, Dict, List, Literal, Optional, Union, Pattern
+import re
 
 from pydantic import Field as PydanticField, AliasChoices, model_validator, BaseModel
 from typing_extensions import Self
+
 
 from .. import settings
 from .field_constraints import (
@@ -247,6 +249,8 @@ class IntegerFieldDescriptor(BaseFieldDescriptor):
     If false leading and trailing non numbers will be removed for integer/number fields
     """
 
+    pattern: ClassVar[Pattern[str]] = re.compile(r"((^[^-\d]*)|(\D*$))")
+
     def read_value(self, cell: Any) -> Optional[int]:
         """read_value converts the physical (possibly typed) representation to
         a logical integer representation.
@@ -266,7 +270,6 @@ class IntegerFieldDescriptor(BaseFieldDescriptor):
 
         Any other typed input will return `None`.
         """
-        import re
         from decimal import Decimal
 
         if isinstance(cell, bool):
@@ -280,8 +283,7 @@ class IntegerFieldDescriptor(BaseFieldDescriptor):
 
             # Process the cell (remove non-digit characters if bare_number is False)
             if not self.bare_number:
-                pattern = re.compile(r"((^[^-\d]*)|(\D*$))")
-                cell = pattern.sub("", cell)
+                cell = self.pattern.sub("", cell)
 
             # Cast the cell
             try:
