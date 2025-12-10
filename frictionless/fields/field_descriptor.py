@@ -18,6 +18,7 @@ from .boolean_descriptor import BooleanFieldDescriptor
 from .date_descriptor import DateFieldDescriptor
 from .datetime_descriptor import DatetimeFieldDescriptor
 from .duration_descriptor import DurationFieldDescriptor
+from .geojson_descriptor import GeoJSONFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
 
 
@@ -47,14 +48,6 @@ IGeojsonFormat = Literal[
     "default",
     "topojson",
 ]
-
-
-class GeoJSONFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a JSON object according to GeoJSON or TopoJSON spec."""
-
-    type: Literal["geojson"] = "geojson"
-    format: Optional[IGeojsonFormat] = None
-    constraints: Optional[BaseConstraints[str]] = None
 
 
 class GeoPointFieldDescriptor(BaseFieldDescriptor):
