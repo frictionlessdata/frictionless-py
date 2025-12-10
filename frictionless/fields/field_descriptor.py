@@ -23,6 +23,7 @@ from .geopoint_descriptor import GeoPointFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
 from .number_descriptor import NumberFieldDescriptor
 from .object_descriptor import ObjectFieldDescriptor
+from .string_descriptor import StringFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -100,25 +101,6 @@ IStringFormat = Literal[
     # Unofficial
     "wkt",
 ]
-
-
-class StringFieldDescriptor(BaseFieldDescriptor):
-    """The field contains strings, that is, sequences of characters."""
-
-    type: Literal["string"] = "string"
-    format: Optional[IStringFormat] = None
-    constraints: StringConstraints = PydanticField(default_factory=StringConstraints)
-
-    categories: Optional[ICategories] = None
-    """
-    Property to restrict the field to a finite set of possible values
-    """
-
-    categoriesOrdered: Optional[bool] = None
-    """
-    When categoriesOrdered is true, implementations SHOULD regard the order of
-    appearance of the values in the categories property as their natural order.
-    """
 
 
 class TimeFieldDescriptor(BaseFieldDescriptor):
