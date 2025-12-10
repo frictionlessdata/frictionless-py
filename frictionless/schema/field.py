@@ -21,6 +21,7 @@ from ..fields.field_descriptor import (
     DurationFieldDescriptor,
     FieldDescriptor,
     GeoJSONFieldDescriptor,
+    GeoPointFieldDescriptor,
     IntegerFieldDescriptor,
 )
 from ..metadata import Metadata
@@ -180,6 +181,8 @@ class Field(Metadata):
                 return self._descriptor.read_value(cell)
             if self._descriptor and isinstance(self._descriptor, GeoJSONFieldDescriptor):
                 return self._descriptor.read_value(cell)
+            if self._descriptor and isinstance(self._descriptor, GeoPointFieldDescriptor):
+                return self._descriptor.read_value(cell)
             return cell
 
         return value_reader
@@ -229,6 +232,8 @@ class Field(Metadata):
             if self._descriptor and isinstance(self._descriptor, DurationFieldDescriptor):
                 return self._descriptor.write_value(cell)
             if self._descriptor and isinstance(self._descriptor, GeoJSONFieldDescriptor):
+                return self._descriptor.write_value(cell)
+            if self._descriptor and isinstance(self._descriptor, GeoPointFieldDescriptor):
                 return self._descriptor.write_value(cell)
             return str(cell)
 
@@ -332,12 +337,18 @@ class Field(Metadata):
             except pydantic.ValidationError as ve:
                 error = errors.SchemaError(note=str(ve))
                 raise FrictionlessException(error)
+        elif field.type == "geopoint":
+            try:
+                field._descriptor = GeoPointFieldDescriptor.model_validate(descriptor_copy)
+            except pydantic.ValidationError as ve:
+                error = errors.SchemaError(note=str(ve))
+                raise FrictionlessException(error)
 
         return field
 
     def to_descriptor(self, *, validate: bool = False) -> IDescriptor:
         if self._descriptor and isinstance(
-            self._descriptor, (BooleanFieldDescriptor, IntegerFieldDescriptor, DateFieldDescriptor, DatetimeFieldDescriptor, DurationFieldDescriptor, GeoJSONFieldDescriptor)
+            self._descriptor, (BooleanFieldDescriptor, IntegerFieldDescriptor, DateFieldDescriptor, DatetimeFieldDescriptor, DurationFieldDescriptor, GeoJSONFieldDescriptor, GeoPointFieldDescriptor)
         ):
             base_descr = super().to_descriptor(validate=validate)
             # Set by_alias=True to get camelCase keys used by Frictionless (bareNumber) instead of snake_case (bare_number)

@@ -19,6 +19,7 @@ from .date_descriptor import DateFieldDescriptor
 from .datetime_descriptor import DatetimeFieldDescriptor
 from .duration_descriptor import DurationFieldDescriptor
 from .geojson_descriptor import GeoJSONFieldDescriptor
+from .geopoint_descriptor import GeoPointFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
 
 
@@ -48,14 +49,6 @@ IGeojsonFormat = Literal[
     "default",
     "topojson",
 ]
-
-
-class GeoPointFieldDescriptor(BaseFieldDescriptor):
-    """The field contains data describing a geographic point."""
-
-    type: Literal["geopoint"] = "geopoint"
-    format: Optional[IGeojsonFormat] = None
-    constraints: Optional[BaseConstraints[str]] = None
 
 
 class CategoryDict(BaseModel):
