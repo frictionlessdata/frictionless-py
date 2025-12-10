@@ -1,5 +1,5 @@
+from __future__ import annotations
 from ..schema.field import Field
-
 
 class IntegerField(Field):
     ### TEMP Only required for Metadata compatibility
