@@ -21,6 +21,7 @@ from .duration_descriptor import DurationFieldDescriptor
 from .geojson_descriptor import GeoJSONFieldDescriptor
 from .geopoint_descriptor import GeoPointFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
+from .number_descriptor import NumberFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -94,29 +95,6 @@ class ListFieldDescriptor(BaseFieldDescriptor):
     item_type: Optional[IItemType] = PydanticField(default=None, alias="itemType")
     """
     Specifies the list item type in terms of existent Table Schema types.
-    """
-
-
-class NumberFieldDescriptor(BaseFieldDescriptor):
-    """The field contains numbers of any kind including decimals."""
-
-    type: Literal["number"] = "number"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[float]] = None
-
-    decimal_char: Optional[str] = PydanticField(default=None, alias="decimalChar")
-    """
-    String whose value is used to represent a decimal point for number fields
-    """
-
-    group_char: Optional[str] = PydanticField(default=None, alias="groupChar")
-    """
-    String whose value is used to group digits for integer/number fields
-    """
-
-    bare_number: Optional[bool] = PydanticField(default=None, alias="bareNumber")
-    """
-    If false leading and trailing non numbers will be removed for integer/number fields
     """
 
 
