@@ -17,6 +17,7 @@ from .field_constraints import (
 from .boolean_descriptor import BooleanFieldDescriptor
 from .date_descriptor import DateFieldDescriptor
 from .datetime_descriptor import DatetimeFieldDescriptor
+from .duration_descriptor import DurationFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
 
 
@@ -40,14 +41,6 @@ class AnyFieldDescriptor(BaseFieldDescriptor):
     type: Literal["any"] = "any"
     format: Optional[Literal["default"]] = None
     constraints: Optional[BaseConstraints[str]] = None
-
-
-class DurationFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a duration of time."""
-
-    type: Literal["duration"] = "duration"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[str]] = None
 
 
 IGeojsonFormat = Literal[
