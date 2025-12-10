@@ -7,13 +7,13 @@ from pydantic import Field as PydanticField, BaseModel
 
 from .base_field_descriptor import BaseFieldDescriptor
 from .field_constraints import (
-    BaseConstraints,
     CollectionConstraints,
     JSONConstraints,
     StringConstraints,
     ValueConstraints,
 )
 
+from .any_descriptor import AnyFieldDescriptor
 from .boolean_descriptor import BooleanFieldDescriptor
 from .date_descriptor import DateFieldDescriptor
 from .datetime_descriptor import DatetimeFieldDescriptor
@@ -22,6 +22,7 @@ from .geojson_descriptor import GeoJSONFieldDescriptor
 from .geopoint_descriptor import GeoPointFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
 from .number_descriptor import NumberFieldDescriptor
+from .object_descriptor import ObjectFieldDescriptor
 
 
 class ArrayFieldDescriptor(BaseFieldDescriptor):
@@ -36,14 +37,6 @@ class ArrayFieldDescriptor(BaseFieldDescriptor):
     array_item: Optional["FieldDescriptor"] = PydanticField(
         default=None, alias="arrayItem"
     )
-
-
-class AnyFieldDescriptor(BaseFieldDescriptor):
-    """The field contains values of a unspecified or mixed type."""
-
-    type: Literal["any"] = "any"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[BaseConstraints[str]] = None
 
 
 IGeojsonFormat = Literal[
@@ -96,14 +89,6 @@ class ListFieldDescriptor(BaseFieldDescriptor):
     """
     Specifies the list item type in terms of existent Table Schema types.
     """
-
-
-class ObjectFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a valid JSON object."""
-
-    type: Literal["object"] = "object"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[JSONConstraints] = None
 
 
 IStringFormat = Literal[

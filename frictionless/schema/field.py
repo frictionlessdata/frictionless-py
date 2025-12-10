@@ -15,6 +15,7 @@ from ..exception import FrictionlessException
 # from ..fields.date_descriptor import DateFieldDescriptor
 # from ..fields.integer_descriptor import IntegerFieldDescriptor
 from ..fields.field_descriptor import (
+    AnyFieldDescriptor,
     BooleanFieldDescriptor,
     DateFieldDescriptor,
     DatetimeFieldDescriptor,
@@ -24,6 +25,7 @@ from ..fields.field_descriptor import (
     GeoPointFieldDescriptor,
     IntegerFieldDescriptor,
     NumberFieldDescriptor,
+    ObjectFieldDescriptor,
 )
 from ..metadata import Metadata
 from ..system import system
@@ -186,6 +188,10 @@ class Field(Metadata):
                 return self._descriptor.read_value(cell)
             if self._descriptor and isinstance(self._descriptor, NumberFieldDescriptor):
                 return self._descriptor.read_value(cell)
+            if self._descriptor and isinstance(self._descriptor, ObjectFieldDescriptor):
+                return self._descriptor.read_value(cell)
+            if self._descriptor and isinstance(self._descriptor, AnyFieldDescriptor):
+                return self._descriptor.read_value(cell)
             return cell
 
         return value_reader
@@ -239,6 +245,10 @@ class Field(Metadata):
             if self._descriptor and isinstance(self._descriptor, GeoPointFieldDescriptor):
                 return self._descriptor.write_value(cell)
             if self._descriptor and isinstance(self._descriptor, NumberFieldDescriptor):
+                return self._descriptor.write_value(cell)
+            if self._descriptor and isinstance(self._descriptor, ObjectFieldDescriptor):
+                return self._descriptor.write_value(cell)
+            if self._descriptor and isinstance(self._descriptor, AnyFieldDescriptor):
                 return self._descriptor.write_value(cell)
             return str(cell)
 
@@ -351,6 +361,18 @@ class Field(Metadata):
         elif field.type == "number":
             try:
                 field._descriptor = NumberFieldDescriptor.model_validate(descriptor_copy)
+            except pydantic.ValidationError as ve:
+                error = errors.SchemaError(note=str(ve))
+                raise FrictionlessException(error)
+        elif field.type == "object":
+            try:
+                field._descriptor = ObjectFieldDescriptor.model_validate(descriptor_copy)
+            except pydantic.ValidationError as ve:
+                error = errors.SchemaError(note=str(ve))
+                raise FrictionlessException(error)
+        elif field.type == "any":
+            try:
+                field._descriptor = AnyFieldDescriptor.model_validate(descriptor_copy)
             except pydantic.ValidationError as ve:
                 error = errors.SchemaError(note=str(ve))
                 raise FrictionlessException(error)
