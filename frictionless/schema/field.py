@@ -373,8 +373,9 @@ class Field(Metadata):
             try:
                 field._descriptor = DescriptorClass.model_validate(descriptor_copy)  # type: ignore
             except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
+                # Temporary: Handle Pydantic validation errors
+                # TODO: Remove once Pydantic validation is properly integrated
+                handle_pydantic_error_for_import(ve)
 
         return field
 
@@ -420,13 +421,11 @@ class Field(Metadata):
                 try:
                     DescriptorClass.model_validate(descriptor)
                 except pydantic.ValidationError as ve:
-                    # Extract error messages from Pydantic validation errors 
-                    # TODO: fix to keep tests iso, maybe remove later
-                    for err in ve.errors():
-                        if "msg" in err:
-                            note = err["msg"]
-                            note = note.replace("Value error, ", "")
-                            yield errors.FieldError(note=note)
+                    # Temporary: Handle Pydantic validation errors
+                    # TODO: Remove once Pydantic validation is properly integrated
+                    field_errors = handle_pydantic_error_for_validate(ve)
+                    for field_error in field_errors:
+                        yield field_error
                     return
             
             # Use metadata_select_class + metadata_import directly (without validation) to avoid recursion
@@ -449,6 +448,72 @@ class Field(Metadata):
 
 
 # Internal
+
+
+# Temporary Pydantic error handling functions
+# TODO: Remove these once Pydantic validation is properly integrated
+# These functions centralize the parsing logic to make future removal easier
+
+def parse_pydantic_errors(ve: pydantic.ValidationError) -> List[str]:
+    """Parse Pydantic validation errors into clean error messages.
+    
+    This is a temporary function to handle Pydantic ValidationError objects
+    and convert them to clean error messages by removing Pydantic-specific prefixes.
+    
+    Args:
+        ve: A Pydantic ValidationError
+        
+    Returns:
+        A list of cleaned error messages (with "Value error, " prefix removed)
+    """
+    error_messages: List[str] = []
+    for err in ve.errors():
+        if "msg" in err:
+            note: str = str(err["msg"])
+            # Remove "Value error, " prefix if present (Pydantic-specific formatting)
+            note = note.replace("Value error, ", "")
+            error_messages.append(note)
+    return error_messages
+
+
+def handle_pydantic_error_for_import(ve: pydantic.ValidationError) -> None:
+    """Handle Pydantic ValidationError in metadata_import context.
+    
+    This is a temporary function that converts Pydantic validation errors
+    into Frictionless SchemaError exceptions for use during field import.
+    
+    Args:
+        ve: A Pydantic ValidationError
+        
+    Raises:
+        FrictionlessException with a SchemaError containing the first error message
+    """
+    error_messages = parse_pydantic_errors(ve)
+    
+    # Use the first error message, or fall back to string representation
+    if error_messages:
+        error_note = error_messages[0]
+    else:
+        error_note = str(ve)
+    
+    error = errors.SchemaError(note=error_note)
+    raise FrictionlessException(error)
+
+
+def handle_pydantic_error_for_validate(ve: pydantic.ValidationError) -> List[errors.FieldError]:
+    """Handle Pydantic ValidationError in metadata_validate context.
+    
+    This is a temporary function that converts Pydantic validation errors
+    into Frictionless FieldError objects for use during field validation.
+    
+    Args:
+        ve: A Pydantic ValidationError
+        
+    Returns:
+        A list of FieldError objects, one for each error message
+    """
+    error_messages = parse_pydantic_errors(ve)
+    return [errors.FieldError(note=note) for note in error_messages]
 
 
 def check_required(constraint: bool, cell: Any):

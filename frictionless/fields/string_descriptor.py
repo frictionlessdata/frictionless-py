@@ -55,9 +55,10 @@ class StringFieldDescriptor(BaseFieldDescriptor):
         elif format_value == "email":
             if not isinstance(cell, str):
                 return None
-            if not platform.validators.email(cell):  # type: ignore
-                return None
-            return cell
+            result = platform.validators.email(cell)  # type: ignore
+            if result is True:
+                return cell
+            return None
 
         # Uuid
         elif format_value == "uuid":
