@@ -350,20 +350,14 @@ class Field(Metadata):
         # Examples
         example = descriptor.get("example")
         if example:
+            # Use metadata_select_class + metadata_import directly (without validation) to avoid recursion
+            # This properly initializes the field with all properties including
+            # type-specific ones like trueValues/falseValues for boolean
+            # We need to pass a copy of the descriptor to avoid modifying the original
             type = descriptor.get("type")
-            Class = system.select_field_class(type)
-
-            field = Class(
-                name=descriptor.get("name"),  # type: ignore
-                format=descriptor.get("format", "default"),
-            )
-
-            if type == "boolean":
-                # 'example' value must be compared to customized 'trueValues' and 'falseValues'
-                if "trueValues" in descriptor.keys():
-                    field.true_values = descriptor["trueValues"]
-                if "falseValues" in descriptor.keys():
-                    field.false_values = descriptor["falseValues"]
+            Class = Field.metadata_select_class(type)
+            descriptor_copy = copy.deepcopy(descriptor)
+            field = Class.metadata_import(descriptor_copy)
             _, notes = field.read_cell(example)
             if notes is not None:
                 note = f'example value "{example}" for field "{field.name}" is not valid'
