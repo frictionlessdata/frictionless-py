@@ -58,6 +58,14 @@ TYPE_TO_DESCRIPTOR: Dict[str, Type[BaseModel]] = {
     "yearmonth": YearmonthFieldDescriptor,
 }
 
+FIELD_TO_DESCRIPTOR_PROPERTIES: Dict[str, str] = {
+    "decimal_char": "decimalChar",
+    "group_char": "groupChar",
+    "bare_number": "bareNumber",
+    "float_number": "floatNumber",
+    "true_values": "trueValues",
+    "false_values": "falseValues",
+}
 
 @attrs.define(kw_only=True, repr=False)
 class Field(Metadata):
@@ -129,11 +137,65 @@ class Field(Metadata):
     List of supported constraints for a field.
     """
 
+    # All optional fields for the field descriptor
+    decimal_char: Optional[str] = None
+    group_char: Optional[str] = None
+    bare_number: Optional[bool] = None
+    float_number: Optional[bool] = None
+    true_values: Optional[List[str]] = None
+    false_values: Optional[List[str]] = None
+
+    def __attrs_post_init__(self):
+        self._init_descriptor_from_field()
+
     def __setattr__(self, name: str, value: Any):  # type: ignore
         if name == "type":
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
-        return super().__setattr__(name, value)  # type: ignore
+        
+        result = super().__setattr__(name, value)  # type: ignore
+
+        # Traduction to pydantic descriptor properties
+        if name in FIELD_TO_DESCRIPTOR_PROPERTIES:
+            if self._descriptor is None and hasattr(self, "type") and self.type:
+                self._init_descriptor_from_field()
+            
+            if self._descriptor:
+                if hasattr(self._descriptor, name):
+                    setattr(self._descriptor, name, value)
+        
+        return result
+    
+    def _init_descriptor_from_field(self) -> None:
+        """Initialize _descriptor from Field properties if not already set"""
+        if self._descriptor is not None:
+            return
+        
+        # Skip if type is not defined (e.g., base Field class)
+        if not hasattr(self, "type") or not self.type:
+            return
+        
+        # Get the descriptor class for this field type
+        DescriptorClass = TYPE_TO_DESCRIPTOR.get(self.type)
+        if not DescriptorClass:
+            return
+        
+        # Build descriptor from Field attributes
+        descriptor_dict: Dict[str, Any] = {
+            "name": self.name,
+            "type": self.type,
+        }
+        
+        # Add optional base properties
+        for name, value in self.__dict__.items():
+            if name in FIELD_TO_DESCRIPTOR_PROPERTIES:
+                descriptor_dict[FIELD_TO_DESCRIPTOR_PROPERTIES[name]] = value
+        
+        try:
+            self._descriptor = DescriptorClass.model_validate(descriptor_dict)  # type: ignore
+        except Exception:
+            # If validation fails, leave _descriptor as None
+            pass
 
     @property
     def required(self):
