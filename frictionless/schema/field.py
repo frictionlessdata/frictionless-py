@@ -412,11 +412,27 @@ class Field(Metadata):
         # Examples
         example = descriptor.get("example")
         if example:
+            # Validate descriptor with Pydantic before continuing
+            # This catches Pydantic validation errors (e.g., invalid example values)
+            type = descriptor.get("type")
+            DescriptorClass = TYPE_TO_DESCRIPTOR.get(type) if type else None
+            if DescriptorClass:
+                try:
+                    DescriptorClass.model_validate(descriptor)
+                except pydantic.ValidationError as ve:
+                    # Extract error messages from Pydantic validation errors 
+                    # TODO: fix to keep tests iso, maybe remove later
+                    for err in ve.errors():
+                        if "msg" in err:
+                            note = err["msg"]
+                            note = note.replace("Value error, ", "")
+                            yield errors.FieldError(note=note)
+                    return
+            
             # Use metadata_select_class + metadata_import directly (without validation) to avoid recursion
             # This properly initializes the field with all properties including
             # type-specific ones like trueValues/falseValues for boolean
             # We need to pass a copy of the descriptor to avoid modifying the original
-            type = descriptor.get("type")
             Class = Field.metadata_select_class(type)
             descriptor_copy = copy.deepcopy(descriptor)
             field = Class.metadata_import(descriptor_copy)
