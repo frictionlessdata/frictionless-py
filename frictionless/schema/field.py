@@ -4,10 +4,11 @@ import copy
 import decimal
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern, Type
 
 import attrs
 import pydantic
+from pydantic import BaseModel
 
 from .. import errors, settings
 from ..exception import FrictionlessException
@@ -38,6 +39,24 @@ if TYPE_CHECKING:
     from ..types import IDescriptor
     from . import types
     from .schema import Schema
+
+# Mapping from field type to its corresponding descriptor class
+TYPE_TO_DESCRIPTOR: Dict[str, Type[BaseModel]] = {
+    "any": AnyFieldDescriptor,
+    "boolean": BooleanFieldDescriptor,
+    "date": DateFieldDescriptor,
+    "datetime": DatetimeFieldDescriptor,
+    "duration": DurationFieldDescriptor,
+    "geojson": GeoJSONFieldDescriptor,
+    "geopoint": GeoPointFieldDescriptor,
+    "integer": IntegerFieldDescriptor,
+    "number": NumberFieldDescriptor,
+    "object": ObjectFieldDescriptor,
+    "string": StringFieldDescriptor,
+    "time": TimeFieldDescriptor,
+    "year": YearFieldDescriptor,
+    "yearmonth": YearmonthFieldDescriptor,
+}
 
 
 @attrs.define(kw_only=True, repr=False)
@@ -175,35 +194,9 @@ class Field(Metadata):
 
     def create_value_reader(self) -> types.IValueReader:
         # Create reader
-        def value_reader(cell: Any):
-            if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, IntegerFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, DateFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, DatetimeFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, DurationFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, GeoJSONFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, GeoPointFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, NumberFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, ObjectFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, AnyFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, StringFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, TimeFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, YearFieldDescriptor):
-                return self._descriptor.read_value(cell)
-            if self._descriptor and isinstance(self._descriptor, YearmonthFieldDescriptor):
-                return self._descriptor.read_value(cell)
+        def value_reader(cell: Any) -> Any:
+            if self._descriptor:
+                return self._descriptor.read_value(cell)  # type: ignore
             return cell
 
         return value_reader
@@ -241,36 +234,10 @@ class Field(Metadata):
 
     def create_value_writer(self) -> types.IValueWriter:
         # Create writer
-        def value_writer(cell: Any):
-            if self._descriptor and isinstance(self._descriptor, BooleanFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, IntegerFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, DateFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, DatetimeFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, DurationFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, GeoJSONFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, GeoPointFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, NumberFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, ObjectFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, AnyFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, StringFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, TimeFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, YearFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            if self._descriptor and isinstance(self._descriptor, YearmonthFieldDescriptor):
-                return self._descriptor.write_value(cell)
-            return str(cell)
+        def value_writer(cell: Any) -> Any:
+            if self._descriptor:
+                return self._descriptor.write_value(cell)  # type: ignore
+            return cell
 
         return value_writer
 
@@ -336,87 +303,13 @@ class Field(Metadata):
             with_basepath=with_basepath,
         )
 
-        if field.type == "boolean":
+        # Get the descriptor class for this field type
+        field_type = field.type
+        DescriptorClass = TYPE_TO_DESCRIPTOR.get(field_type) if field_type else None
+
+        if DescriptorClass:
             try:
-                field._descriptor = BooleanFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "integer":
-            try:
-                field._descriptor = IntegerFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "date":
-            try:
-                field._descriptor = DateFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "datetime":
-            try:
-                field._descriptor = DatetimeFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "duration":
-            try:
-                field._descriptor = DurationFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "geojson":
-            try:
-                field._descriptor = GeoJSONFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "geopoint":
-            try:
-                field._descriptor = GeoPointFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "number":
-            try:
-                field._descriptor = NumberFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "object":
-            try:
-                field._descriptor = ObjectFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "any":
-            try:
-                field._descriptor = AnyFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "string":
-            try:
-                field._descriptor = StringFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "time":
-            try:
-                field._descriptor = TimeFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "year":
-            try:
-                field._descriptor = YearFieldDescriptor.model_validate(descriptor_copy)
-            except pydantic.ValidationError as ve:
-                error = errors.SchemaError(note=str(ve))
-                raise FrictionlessException(error)
-        elif field.type == "yearmonth":
-            try:
-                field._descriptor = YearmonthFieldDescriptor.model_validate(descriptor_copy)
+                field._descriptor = DescriptorClass.model_validate(descriptor_copy)  # type: ignore
             except pydantic.ValidationError as ve:
                 error = errors.SchemaError(note=str(ve))
                 raise FrictionlessException(error)

@@ -26,6 +26,16 @@ from .year_descriptor import YearFieldDescriptor
 from .yearmonth_descriptor import YearmonthFieldDescriptor
 
 
+IItemType = Literal[
+    "boolean",
+    "date",
+    "datetime",
+    "integer",
+    "number",
+    "string",
+    "time",
+]
+
 class ArrayFieldDescriptor(BaseFieldDescriptor):
     """The field contains a valid JSON array."""
 
@@ -39,25 +49,7 @@ class ArrayFieldDescriptor(BaseFieldDescriptor):
         default=None, alias="arrayItem"
     )
 
-
-IGeojsonFormat = Literal[
-    "default",
-    "topojson",
-]
-
-
-
-IItemType = Literal[
-    "boolean",
-    "date",
-    "datetime",
-    "integer",
-    "number",
-    "string",
-    "time",
-]
-
-
+# TODO: why is this not implemented?
 class ListFieldDescriptor(BaseFieldDescriptor):
     """The field contains data that is an ordered
     one-level depth collection of primitive values with a fixed item type.
@@ -80,27 +72,16 @@ class ListFieldDescriptor(BaseFieldDescriptor):
     """
 
 
-IStringFormat = Literal[
-    "binary",
-    "default",
-    "email",
-    "uri",
-    "uuid",
-    # Unofficial
-    "wkt",
-]
-
-
 FieldDescriptor = Union[
     AnyFieldDescriptor,
     ArrayFieldDescriptor,  # wip
-    BooleanFieldDescriptor,  # v
-    DateFieldDescriptor,  # v
+    BooleanFieldDescriptor, 
+    DateFieldDescriptor,
     DatetimeFieldDescriptor,
     DurationFieldDescriptor,
     GeoJSONFieldDescriptor,
     GeoPointFieldDescriptor,
-    IntegerFieldDescriptor,  # v
+    IntegerFieldDescriptor,
     ListFieldDescriptor,
     NumberFieldDescriptor,
     ObjectFieldDescriptor,
