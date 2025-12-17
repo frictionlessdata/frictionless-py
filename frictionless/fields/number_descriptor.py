@@ -14,7 +14,7 @@ class NumberFieldDescriptor(BaseFieldDescriptor):
 
     type: Literal["number"] = "number"
     format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[float]] = None
+    constraints: Optional[ValueConstraints[Union[int, float]]] = None
 
     decimal_char: Optional[str] = PydanticField(default=None, alias="decimalChar")
     """
