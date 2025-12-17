@@ -58,7 +58,21 @@ TYPE_TO_DESCRIPTOR: Dict[str, Type[BaseModel]] = {
     "yearmonth": YearmonthFieldDescriptor,
 }
 
-FIELD_TO_DESCRIPTOR_PROPERTIES: Dict[str, str] = {
+# Descriptor integration (temporary, during Field refactor)
+#
+# There are 2 distinct concerns:
+# - Sync (runtime): when a Field attribute changes, update the pydantic `_descriptor` so `read_cell`/`write_cell` use up-to-date parsing logic (e.g. format="email").
+#   This uses *pydantic attribute names* (snake_case): `descriptor.format`, etc.
+# - Init (validation): when creating `_descriptor`, we pass a dict using *Frictionless descriptor keys* (camelCase aliases): `decimalChar`, `trueValues`, etc.
+
+# Field attributes that should be synced to `_descriptor` at runtime.
+# These are pydantic attribute names (snake_case) on FieldDescriptor models.
+
+
+# Mapping from Field attribute -> Frictionless descriptor key (camelCase alias)
+# used when initializing `_descriptor` via `model_validate`.
+DESCRIPTOR_INIT_ALIASES: Dict[str, str] = {
+    "format": "format",
     "decimal_char": "decimalChar",
     "group_char": "groupChar",
     "bare_number": "bareNumber",
@@ -66,6 +80,8 @@ FIELD_TO_DESCRIPTOR_PROPERTIES: Dict[str, str] = {
     "true_values": "trueValues",
     "false_values": "falseValues",
 }
+
+DESCRIPTOR_SYNC_ATTRS: set[str] = { *DESCRIPTOR_INIT_ALIASES.keys() }
 
 @attrs.define(kw_only=True, repr=False)
 class Field(Metadata):
@@ -155,47 +171,65 @@ class Field(Metadata):
         
         result = super().__setattr__(name, value)  # type: ignore
 
-        # Traduction to pydantic descriptor properties
-        if name in FIELD_TO_DESCRIPTOR_PROPERTIES:
-            if self._descriptor is None and hasattr(self, "type") and self.type:
-                self._init_descriptor_from_field()
-            
-            if self._descriptor:
-                if hasattr(self._descriptor, name):
-                    setattr(self._descriptor, name, value)
+        self._sync_descriptor_property(name, value)
         
         return result
+
+    def _sync_descriptor_property(self, name: str, value: Any) -> None:
+        """Keep the internal pydantic descriptor in sync with Field attribute assignments."""
+        if name not in DESCRIPTOR_SYNC_ATTRS:
+            return
+
+        if name == "format" and isinstance(value, str):
+            # Don't sync implicit default format into pydantic, so that it doesnt become "set" and get exported by "model_dump(exclude_unset=True)".
+            if not self._should_include_format():
+                return
+
+        if self._descriptor is None and hasattr(self, "type") and self.type:
+            self._init_descriptor_from_field()
+
+        if self._descriptor and hasattr(self._descriptor, name):
+            setattr(self._descriptor, name, value)
     
     def _init_descriptor_from_field(self) -> None:
-        """Initialize _descriptor from Field properties if not already set"""
+        """Initialize _descriptor from Field properties if not already set
+        Use camelCase keys for descriptor init (as per Frictionless descriptor keys)
+        """
         if self._descriptor is not None:
             return
         
-        # Skip if type is not defined (e.g., base Field class)
         if not hasattr(self, "type") or not self.type:
             return
-        
-        # Get the descriptor class for this field type
-        DescriptorClass = TYPE_TO_DESCRIPTOR.get(self.type)
-        if not DescriptorClass:
+
+        descriptor_class = TYPE_TO_DESCRIPTOR.get(self.type)
+        if not descriptor_class:
             return
         
-        # Build descriptor from Field attributes
         descriptor_dict: Dict[str, Any] = {
             "name": self.name,
             "type": self.type,
         }
-        
-        # Add optional base properties
-        for name, value in self.__dict__.items():
-            if name in FIELD_TO_DESCRIPTOR_PROPERTIES:
-                descriptor_dict[FIELD_TO_DESCRIPTOR_PROPERTIES[name]] = value
+
+        for attr, alias in DESCRIPTOR_INIT_ALIASES.items():
+            if attr == "format":
+                if self._should_include_format():
+                    descriptor_dict["format"] = self.format
+                continue
+            value = getattr(self, attr, None)
+            if value is not None:
+                descriptor_dict[alias] = value
         
         try:
-            self._descriptor = DescriptorClass.model_validate(descriptor_dict)  # type: ignore
-        except Exception:
-            # If validation fails, leave _descriptor as None
-            pass
+            self._descriptor = descriptor_class.model_validate(descriptor_dict)  # type: ignore
+        except pydantic.ValidationError:
+            self._descriptor = None
+
+    def _should_include_format(self) -> bool:
+        """Whether `format` should be considered set for descriptor/init/sync purposes."""
+        fmt = getattr(self, "format", None)
+        if not isinstance(fmt, str) or not fmt:
+            return False
+        return self.has_defined("format") or fmt != settings.DEFAULT_FIELD_FORMAT
 
     @property
     def required(self):
