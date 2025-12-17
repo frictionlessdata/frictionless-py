@@ -5,12 +5,10 @@ from typing import Literal, Optional, Union
 from pydantic import Field as PydanticField
 
 from .base_field_descriptor import BaseFieldDescriptor
-from .field_constraints import (
-    CollectionConstraints,
-    JSONConstraints,
-)
+from .field_constraints import CollectionConstraints
 
 from .any_descriptor import AnyFieldDescriptor
+from .array_descriptor import ArrayFieldDescriptor
 from .boolean_descriptor import BooleanFieldDescriptor
 from .date_descriptor import DateFieldDescriptor
 from .datetime_descriptor import DatetimeFieldDescriptor
@@ -36,19 +34,6 @@ IItemType = Literal[
     "time",
 ]
 
-class ArrayFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a valid JSON array."""
-
-    type: Literal["array"] = "array"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[JSONConstraints] = None
-
-    # TODO type is not accurate : array item are unnamed, not described etc
-    # Using string annotation to avoid circular import
-    array_item: Optional["FieldDescriptor"] = PydanticField(
-        default=None, alias="arrayItem"
-    )
-
 # TODO: why is this not implemented?
 class ListFieldDescriptor(BaseFieldDescriptor):
     """The field contains data that is an ordered
@@ -72,9 +57,8 @@ class ListFieldDescriptor(BaseFieldDescriptor):
     """
 
 
-FieldDescriptor = Union[
+FieldDescriptorNoArrayOrList = Union[
     AnyFieldDescriptor,
-    ArrayFieldDescriptor,  # wip
     BooleanFieldDescriptor, 
     DateFieldDescriptor,
     DatetimeFieldDescriptor,
@@ -82,11 +66,17 @@ FieldDescriptor = Union[
     GeoJSONFieldDescriptor,
     GeoPointFieldDescriptor,
     IntegerFieldDescriptor,
-    ListFieldDescriptor,
     NumberFieldDescriptor,
     ObjectFieldDescriptor,
     StringFieldDescriptor,
     TimeFieldDescriptor,
     YearFieldDescriptor,
     YearmonthFieldDescriptor,
+]
+
+# Recursive field descriptors (reference FieldDescriptor itself)
+FieldDescriptor = Union[
+    FieldDescriptorNoArrayOrList,
+    ArrayFieldDescriptor,
+    ListFieldDescriptor,
 ]

@@ -17,6 +17,7 @@ from ..exception import FrictionlessException
 # from ..fields.integer_descriptor import IntegerFieldDescriptor
 from ..fields.field_descriptor import (
     AnyFieldDescriptor,
+    ArrayFieldDescriptor,
     BooleanFieldDescriptor,
     DateFieldDescriptor,
     DatetimeFieldDescriptor,
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
 # Mapping from field type to its corresponding descriptor class
 TYPE_TO_DESCRIPTOR: Dict[str, Type[BaseModel]] = {
     "any": AnyFieldDescriptor,
+    "array": ArrayFieldDescriptor,
     "boolean": BooleanFieldDescriptor,
     "date": DateFieldDescriptor,
     "datetime": DatetimeFieldDescriptor,
@@ -59,18 +61,9 @@ TYPE_TO_DESCRIPTOR: Dict[str, Type[BaseModel]] = {
 }
 
 # Descriptor integration (temporary, during Field refactor)
-#
-# There are 2 distinct concerns:
-# - Sync (runtime): when a Field attribute changes, update the pydantic `_descriptor` so `read_cell`/`write_cell` use up-to-date parsing logic (e.g. format="email").
-#   This uses *pydantic attribute names* (snake_case): `descriptor.format`, etc.
-# - Init (validation): when creating `_descriptor`, we pass a dict using *Frictionless descriptor keys* (camelCase aliases): `decimalChar`, `trueValues`, etc.
-
-# Field attributes that should be synced to `_descriptor` at runtime.
-# These are pydantic attribute names (snake_case) on FieldDescriptor models.
-
-
-# Mapping from Field attribute -> Frictionless descriptor key (camelCase alias)
-# used when initializing `_descriptor` via `model_validate`.
+# Used at two points:
+# - Sync (runtime): when a Field attribute changes, update the pydantic _descriptor so read_cell/write_cell use up-to-date parsing logic (e.g. format="email").
+# - Init (validation): when creating _descriptor, we pass a dict using Frictionless descriptor keys (camelCase aliases)
 DESCRIPTOR_INIT_ALIASES: Dict[str, str] = {
     "format": "format",
     "decimal_char": "decimalChar",
