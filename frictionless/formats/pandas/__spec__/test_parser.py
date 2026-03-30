@@ -10,6 +10,7 @@ from pandas.api.types import is_datetime64_any_dtype
 from frictionless import Package, Schema, validate
 from frictionless.resources import TableResource
 
+# Infer dtype from real DataFrame as the type is depending on pandas' version
 STRING_DTYPE = pd.DataFrame({"s": ["a"]}).dtypes["s"]
 
 # Read
