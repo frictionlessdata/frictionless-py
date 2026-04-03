@@ -341,10 +341,10 @@ class Platform:
 
     @cached_property
     @extras(name="parquet")
-    def fastparquet(self):
-        import fastparquet  # type: ignore
+    def pyarrow_parquet(self):
+        import pyarrow.parquet  # type: ignore
 
-        return fastparquet
+        return pyarrow.parquet
 
     @cached_property
     @extras(name="spss")
