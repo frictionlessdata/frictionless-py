@@ -216,7 +216,15 @@ class Detector:
             encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
             if confidence < self.encoding_confidence:
+                # low confidence, so we try UTF8
+                # If decoding fails, we fallback to the detected encoding
+                # despite the low-confidence
+                detected = encoding
                 encoding = settings.DEFAULT_ENCODING
+                try:
+                    buffer.decode(encoding)
+                except UnicodeDecodeError:
+                    encoding = detected
             if encoding == "ascii":
                 encoding = settings.DEFAULT_ENCODING
 
@@ -329,7 +337,7 @@ class Detector:
 
             # Handle name/empty
             for index, name in enumerate(names):
-                names[index] = name or f"field{index+1}"
+                names[index] = name or f"field{index + 1}"
 
             # Deduplicate names
             if len(names) != len(set(names)):
