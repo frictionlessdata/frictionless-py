@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ... import types
 from ...platform import platform
 from ...resources import TableResource
 from ...system import Parser
@@ -24,7 +25,7 @@ class ParquetParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self) -> types.ICellStream:
         control = ParquetControl.from_dialect(self.resource.dialect)
         handle = self.resource.normpath
         if self.resource.remote:
@@ -45,9 +46,9 @@ class ParquetParser(Parser):
     # Write
 
     def write_row_stream(self, source: TableResource):
-        import pyarrow as pa
+        import pyarrow as pa  # type: ignore[reportMissingTypeStubs]
 
         pq = platform.pyarrow_parquet
         df = source.to_pandas()
-        table = pa.Table.from_pandas(df)
+        table = pa.Table.from_pandas(df)  # type: ignore[reportUnknownMemberType]
         pq.write_table(table, self.resource.normpath)
