@@ -2,7 +2,6 @@ import os
 
 import pytest
 import sqlalchemy as sa
-from pytest_cov.embed import cleanup_on_sigterm
 
 from frictionless import platform
 
@@ -11,8 +10,13 @@ from frictionless import platform
 
 # Cleanups
 
+try:
+    # For python 3.8 only, that does not support pytest_cov v7
+    from pytest_cov.embed import cleanup_on_sigterm
 
-cleanup_on_sigterm()
+    cleanup_on_sigterm()
+except ImportError:
+    pass
 
 
 # Fixtures
