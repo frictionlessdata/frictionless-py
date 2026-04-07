@@ -6,7 +6,8 @@ from frictionless import Package, platform
 from frictionless.resources import TableResource
 
 pytestmark = pytest.mark.skipif(
-    platform.type == "darwin" or platform.python in ["3.10", "3.11", "3.12"],
+    platform.type == "darwin"
+    or platform.python in ["3.10", "3.11", "3.12", "3.13", "3.14"],
     reason="Not supported MacOS and Python3.10+",
 )
 
