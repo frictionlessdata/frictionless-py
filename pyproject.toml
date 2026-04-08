@@ -95,7 +95,7 @@ postgresql = ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"]
 spss = ["savReaderWriter>=3.0"]
 sql = ["sqlalchemy>=1.4"]
 visidata = ["visidata>=2.10"]
-wkt = ["TatSu>=5.15"]
+wkt = ["TatSu>=5.8.3,<5.15"]
 zenodo = ["pyzenodo3>=1.0"]
 
 [project.scripts]
