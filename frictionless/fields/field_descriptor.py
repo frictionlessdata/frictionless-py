@@ -1,95 +1,27 @@
 from __future__ import annotations
 
-import datetime
-from typing import List, Literal, Optional, Union
+from typing import Literal, Optional, Union
 
-from pydantic import Field as PydanticField, BaseModel
+from pydantic import Field as PydanticField
 
 from .base_field_descriptor import BaseFieldDescriptor
-from .field_constraints import (
-    BaseConstraints,
-    CollectionConstraints,
-    JSONConstraints,
-    StringConstraints,
-    ValueConstraints,
-)
+from .field_constraints import CollectionConstraints
 
+from .any_descriptor import AnyFieldDescriptor
+from .array_descriptor import ArrayFieldDescriptor
 from .boolean_descriptor import BooleanFieldDescriptor
 from .date_descriptor import DateFieldDescriptor
+from .datetime_descriptor import DatetimeFieldDescriptor
+from .duration_descriptor import DurationFieldDescriptor
+from .geojson_descriptor import GeoJSONFieldDescriptor
+from .geopoint_descriptor import GeoPointFieldDescriptor
 from .integer_descriptor import IntegerFieldDescriptor
-
-
-class ArrayFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a valid JSON array."""
-
-    type: Literal["array"] = "array"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[JSONConstraints] = None
-
-    # TODO type is not accurate : array item are unnamed, not described etc
-    # Using string annotation to avoid circular import
-    array_item: Optional["FieldDescriptor"] = PydanticField(
-        default=None, alias="arrayItem"
-    )
-
-
-class AnyFieldDescriptor(BaseFieldDescriptor):
-    """The field contains values of a unspecified or mixed type."""
-
-    type: Literal["any"] = "any"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[BaseConstraints[str]] = None
-
-
-class DatetimeFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a date with a time."""
-
-    type: Literal["datetime"] = "datetime"
-    format: Optional[str] = None
-    constraints: Optional[ValueConstraints[datetime.datetime]] = None
-
-
-class DurationFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a duration of time."""
-
-    type: Literal["duration"] = "duration"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[str]] = None
-
-
-IGeojsonFormat = Literal[
-    "default",
-    "topojson",
-]
-
-
-class GeoJSONFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a JSON object according to GeoJSON or TopoJSON spec."""
-
-    type: Literal["geojson"] = "geojson"
-    format: Optional[IGeojsonFormat] = None
-    constraints: Optional[BaseConstraints[str]] = None
-
-
-class GeoPointFieldDescriptor(BaseFieldDescriptor):
-    """The field contains data describing a geographic point."""
-
-    type: Literal["geopoint"] = "geopoint"
-    format: Optional[IGeojsonFormat] = None
-    constraints: Optional[BaseConstraints[str]] = None
-
-
-class CategoryDict(BaseModel):
-    """Category dictionary for field categories."""
-    value: str
-    label: Optional[str] = None
-
-
-ICategories = Union[
-    List[str],
-    List[CategoryDict],
-]
-"""Categories type used by IntegerFieldDescriptor and StringFieldDescriptor"""
+from .number_descriptor import NumberFieldDescriptor
+from .object_descriptor import ObjectFieldDescriptor
+from .string_descriptor import StringFieldDescriptor
+from .time_descriptor import TimeFieldDescriptor
+from .year_descriptor import YearFieldDescriptor
+from .yearmonth_descriptor import YearmonthFieldDescriptor
 
 
 IItemType = Literal[
@@ -102,7 +34,7 @@ IItemType = Literal[
     "time",
 ]
 
-
+# TODO: why is this not implemented?
 class ListFieldDescriptor(BaseFieldDescriptor):
     """The field contains data that is an ordered
     one-level depth collection of primitive values with a fixed item type.
@@ -125,105 +57,26 @@ class ListFieldDescriptor(BaseFieldDescriptor):
     """
 
 
-class NumberFieldDescriptor(BaseFieldDescriptor):
-    """The field contains numbers of any kind including decimals."""
-
-    type: Literal["number"] = "number"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[float]] = None
-
-    decimal_char: Optional[str] = PydanticField(default=None, alias="decimalChar")
-    """
-    String whose value is used to represent a decimal point for number fields
-    """
-
-    group_char: Optional[str] = PydanticField(default=None, alias="groupChar")
-    """
-    String whose value is used to group digits for integer/number fields
-    """
-
-    bare_number: Optional[bool] = PydanticField(default=None, alias="bareNumber")
-    """
-    If false leading and trailing non numbers will be removed for integer/number fields
-    """
-
-
-class ObjectFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a valid JSON object."""
-
-    type: Literal["object"] = "object"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[JSONConstraints] = None
-
-
-IStringFormat = Literal[
-    "binary",
-    "default",
-    "email",
-    "uri",
-    "uuid",
-    # Unofficial
-    "wkt",
-]
-
-
-class StringFieldDescriptor(BaseFieldDescriptor):
-    """The field contains strings, that is, sequences of characters."""
-
-    type: Literal["string"] = "string"
-    format: Optional[IStringFormat] = None
-    constraints: StringConstraints = PydanticField(default_factory=StringConstraints)
-
-    categories: Optional[ICategories] = None
-    """
-    Property to restrict the field to a finite set of possible values
-    """
-
-    categoriesOrdered: Optional[bool] = None
-    """
-    When categoriesOrdered is true, implementations SHOULD regard the order of
-    appearance of the values in the categories property as their natural order.
-    """
-
-
-class TimeFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a time without a date."""
-
-    type: Literal["time"] = "time"
-    format: Optional[str] = None
-    constraints: Optional[ValueConstraints[datetime.time]] = None
-
-
-class YearFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a calendar year."""
-
-    type: Literal["year"] = "year"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[int]] = None
-
-
-class YearmonthFieldDescriptor(BaseFieldDescriptor):
-    """The field contains a specific month of a specific year."""
-
-    type: Literal["yearmonth"] = "yearmonth"
-    format: Optional[Literal["default"]] = None
-    constraints: Optional[ValueConstraints[str]] = None
-
-FieldDescriptor = Union[
+FieldDescriptorNoArrayOrList = Union[
     AnyFieldDescriptor,
-    ArrayFieldDescriptor,  # wip
-    BooleanFieldDescriptor,  # v
-    DateFieldDescriptor,  # v
+    BooleanFieldDescriptor, 
+    DateFieldDescriptor,
     DatetimeFieldDescriptor,
     DurationFieldDescriptor,
     GeoJSONFieldDescriptor,
     GeoPointFieldDescriptor,
-    IntegerFieldDescriptor,  # v
-    ListFieldDescriptor,
+    IntegerFieldDescriptor,
     NumberFieldDescriptor,
     ObjectFieldDescriptor,
     StringFieldDescriptor,
     TimeFieldDescriptor,
     YearFieldDescriptor,
     YearmonthFieldDescriptor,
+]
+
+# Recursive field descriptors (reference FieldDescriptor itself)
+FieldDescriptor = Union[
+    FieldDescriptorNoArrayOrList,
+    ArrayFieldDescriptor,
+    ListFieldDescriptor,
 ]
