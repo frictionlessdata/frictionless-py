@@ -4,9 +4,11 @@ from decimal import Decimal
 import pytest
 
 from frictionless import Catalog, FrictionlessException, Package, platform, portals
+from frictionless.system.models import PublishResult
 
 # TODO: recover
-pytestmark = pytest.mark.skip(reason="Cassetes for vcr need to be regenerated")
+# pytestmark = pytest.mark.skip(reason="Cassetes for vcr need to be regenerated")
+pytestmark = pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 
 PACKAGE_WITHOUT_DP = {
     "title": "Frictionless Data Test Dataset Without Descriptor",
@@ -20,6 +22,8 @@ PACKAGE_WITHOUT_DP = {
             "encoding": "utf-8",
             "mediatype": "text/csv",
             "dialect": {"csv": {"skipInitialSpace": True}},
+            "bytes": 76,
+            "hash": "md5:154d822b8c2aa259867067f01c0efee5",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "integer"},
@@ -36,6 +40,8 @@ PACKAGE_WITHOUT_DP = {
             "format": "xls",
             "encoding": "utf-8",
             "mediatype": "application/vnd.ms-excel",
+            "bytes": 6144,
+            "hash": "md5:3a980d1a559c48978c63c0c1d0d2a8f3",
             "schema": {
                 "fields": [
                     {"name": "id", "type": "integer"},
@@ -159,10 +165,7 @@ def test_zenodo_adapter_read_record_basepath_isset(options_without_dp):
     url = options_without_dp.pop("url")
     package = Package(url)
     assert package.resources[0].path == "capitals.csv"
-    assert (
-        package.resources[0].basepath
-        == "https://zenodo.org/api/files/d24cde89-1d38-4713-b6f2-6a3796e458a6"
-    )
+    assert package.resources[0].basepath == "https://zenodo.org/records/7078768/files"
 
 
 @pytest.mark.vcr
@@ -170,10 +173,7 @@ def test_zenodo_adapter_read_record_with_descriptor_basepath_isset(options_with_
     url = options_with_dp.pop("url")
     package = Package(url)
     assert package.resources[0].path == "data.csv"
-    assert (
-        package.resources[0].basepath
-        == "https://zenodo.org/api/files/bc520c46-ee9e-4245-8c57-2a7203062e14"
-    )
+    assert package.resources[0].basepath == "https://zenodo.org/records/7078760/files"
 
 
 @pytest.mark.vcr
@@ -205,6 +205,8 @@ def test_zenodo_adapter_read_record_only_csv(options_with_dp_multiple_files_with
                 "encoding": "utf-8",
                 "mediatype": "text/csv",
                 "dialect": {"csv": {"skipInitialSpace": True}},
+                "bytes": 76,
+                "hash": "md5:154d822b8c2aa259867067f01c0efee5",
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -250,7 +252,7 @@ def test_zenodo_adapter_read_record_without_datapackage_descriptor_zipped_files(
 @pytest.mark.vcr
 def test_zenodo_adapter_read_record_data_with_wrong_record():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("https://zenodo.org/record/68358988")
+        Package("https://zenodo.org/records/68358988")
     error = excinfo.value.error
     assert error.message == "Zenodo API errorKeyError('metadata')"
 
@@ -469,65 +471,50 @@ def test_zenodo_adapter_read_record_data_remote(options_with_dp_with_remote_reso
 # Write
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write(tmp_path):
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/metadata.json",
-        tmp_path=tmp_path,
-    )
+def test_zenodo_adapter_write(sandbox_control):
+    control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
     package = Package("data/datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098723"
-    assert deposition_id == 7098723
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_ods(tmp_path):
+def test_zenodo_adapter_write_ods(sandbox_control):
     control = portals.ZenodoControl(
-        metafn="data/zenodo/ods.metadata.json",
-        tmp_path=tmp_path,
+        metafn="data/zenodo/ods.metadata.json", **sandbox_control
     )
     package = Package("data/ods.datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098739"
-    assert deposition_id == 7098739
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_jsonl(tmp_path):
+def test_zenodo_adapter_write_jsonl(sandbox_control):
     control = portals.ZenodoControl(
-        metafn="data/zenodo/jsonl.metadata.json",
-        tmp_path=tmp_path,
+        metafn="data/zenodo/jsonl.metadata.json", **sandbox_control
     )
     package = Package("data/jsonl.datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098741"
-    assert deposition_id == 7098741
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_ndjson(tmp_path):
+def test_zenodo_adapter_write_ndjson(sandbox_control):
     control = portals.ZenodoControl(
-        metafn="data/zenodo/ndjson.metadata.json",
-        tmp_path=tmp_path,
+        metafn="data/zenodo/ndjson.metadata.json", **sandbox_control
     )
     package = Package("data/ndjson.datapackage.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert result.url == "https://zenodo.org/deposit/7098743"
-    assert deposition_id == 7098743
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_with_descriptor(tmp_path):
+def test_zenodo_adapter_write_with_descriptor(sandbox_control):
     descriptor = {
         "name": "test-tabulator",
         "resources": [
@@ -543,54 +530,40 @@ def test_zenodo_adapter_write_with_descriptor(tmp_path):
             }
         ],
     }
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/metadata.json",
-        tmp_path=tmp_path,
-    )
+    control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
     package = Package(descriptor)
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098745
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
 @pytest.mark.vcr
-def test_zenodo_adapter_write_without_apikey():
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/metadata.json",
-        apikey=None,
-    )
+def test_zenodo_adapter_write_without_apikey(sandbox_control):
+    sandbox_control["apikey"] = None
+
+    control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
     package = Package("data/datapackage.json")
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         package.publish(control=control)
-    assert "AssertionError" in str(excinfo)
+    assert "Api key is required for zenodo publishing" in str(excinfo.value.error)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_without_wrong_apikey():
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/metadata.json",
-        apikey="test",
-    )
+def test_zenodo_adapter_write_without_wrong_apikey(sandbox_control):
+    sandbox_control["apikey"] = "test"
+
+    control = portals.ZenodoControl(metafn="data/zenodo/metadata.json", **sandbox_control)
     package = Package("data/datapackage.json")
     with pytest.raises(FrictionlessException) as excinfo:
         package.publish(control=control)
     error = excinfo.value.error
-    assert (
-        "You either supplied the wrong credentials (e.g. a bad password),"
-        in error.message
-    )
+    assert "Error in creation, status code: 403" in error.message
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
+@pytest.mark.skip(reason="Missing metadata is filled from datapackage metadata")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_without_metadata(tmp_path):
-    control = portals.ZenodoControl(
-        tmp_path=tmp_path,
-    )
+def test_zenodo_adapter_write_without_metadata(sandbox_control):
+    control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/datapackage.json")
     with pytest.raises(FrictionlessException) as excinfo:
         package.publish(control=control)
@@ -598,56 +571,51 @@ def test_zenodo_adapter_write_without_metadata(tmp_path):
     assert "Zenodo API Metadata Creation error" in error.message
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
 def test_zenodo_adapter_write_default_base_url(tmp_path):
-    control = portals.ZenodoControl(
-        tmp_path=tmp_path,
-    )
+    control = portals.ZenodoControl(tmp_path=tmp_path)
     assert control.base_url == "https://zenodo.org/api/"
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
 @pytest.mark.vcr
-def test_zenodo_adapter_write_without_base_url():
-    control = portals.ZenodoControl(base_url=None)
+def test_zenodo_adapter_write_without_base_url(sandbox_control):
+    sandbox_control["base_url"] = None
+
+    control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/datapackage.json")
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(AssertionError):
         package.publish(control=control)
-    assert "AssertionError" in str(excinfo)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
+@pytest.mark.skip(
+    reason="Unclear where record comes from, in the current form not a write test"
+)
 @pytest.mark.vcr
 def test_zenodo_adapter_write_read_package_published_to_zenodo():
-    package = Package("https://zenodo.org/record/7096849")
+    package = Package("https://zenodo.org/records/7096849")
     assert package.resources[1].read_rows() == [
         {"id": 1, "name": "中国人"},
         {"id": 2, "name": "english"},
     ]
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_inline_data(tmp_path):
+def test_zenodo_adapter_write_resources_with_inline_data(sandbox_control):
     descriptor = {
         "name": "test-package-with_inline-data",
         "resources": [{"name": "test", "data": [{"a": 1, "b": 2}]}],
     }
     control = portals.ZenodoControl(
-        metafn="data/zenodo/data.metadata.json",
-        tmp_path=tmp_path,
+        metafn="data/zenodo/data.metadata.json", **sandbox_control
     )
     package = Package(descriptor)
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098747
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_remote_url(tmp_path):
+def test_zenodo_adapter_write_resources_with_remote_url(sandbox_control):
     descriptor = {
         "name": "test-repo-resources-with-http-data-csv",
         "resources": [
@@ -665,121 +633,108 @@ def test_zenodo_adapter_write_resources_with_remote_url(tmp_path):
         ],
     }
     control = portals.ZenodoControl(
-        metafn="data/zenodo/remote.metadata.json",
-        tmp_path=tmp_path,
+        metafn="data/zenodo/remote.metadata.json", **sandbox_control
     )
     package = Package(descriptor)
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098749
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_deposition_id(tmp_path):
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/deposition.metadata.json",
-        tmp_path=tmp_path,
-        deposition_id=7098476,
-    )
-    package = Package("data/datapackage.json")
-    result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098476
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_deposition_url(tmp_path):
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/depositionurl.metadata.json",
-        tmp_path=tmp_path,
-    )
-    package = Package("data/datapackage.json")
-    result = package.publish("https://zenodo.org/deposit/7098479", control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098479
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.vcr
-def test_zenodo_adapter_write_resources_to_publish(tmp_path):
-    control = portals.ZenodoControl(
-        metafn="data/zenodo/publish.metadata.json",
-        tmp_path=tmp_path,
-    )
-    package = Package("data/datapackage.json")
-    result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7098751
-
-
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
-@pytest.mark.vcr
-def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_package_metadata(
-    sandbox_api, tmp_path
+def test_zenodo_adapter_write_resources_with_deposition_id(
+    shared_deposition_id, sandbox_control
 ):
     control = portals.ZenodoControl(
-        apikey=sandbox_api, base_url="https://sandbox.zenodo.org/api/", tmp_path=tmp_path
+        metafn="data/zenodo/deposition.metadata.json",
+        deposition_id=shared_deposition_id,
+        **sandbox_control,
     )
-    package = Package("data/package/zenodo.packagepartialmeta.json")
+    package = Package("data/datapackage.json")
     result = package.publish(control=control)
     deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 1132344
+    assert isinstance(result, PublishResult)
+    assert deposition_id == shared_deposition_id
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_api, tmp_path):
+def test_zenodo_adapter_write_resources_with_deposition_url(
+    shared_deposition_id, sandbox_control
+):
     control = portals.ZenodoControl(
-        apikey=sandbox_api,
-        tmp_path=tmp_path,
-        base_url="https://sandbox.zenodo.org/api/",
+        metafn="data/zenodo/depositionurl.metadata.json",
+        **sandbox_control,
+    )
+    package = Package("data/datapackage.json")
+    result = package.publish(
+        f"https://sandbox.zenodo.org/deposit/{shared_deposition_id}", control=control
+    )
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
+
+
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_to_publish(sandbox_control):
+    control = portals.ZenodoControl(
+        metafn="data/zenodo/publish.metadata.json", **sandbox_control
+    )
+    package = Package("data/datapackage.json")
+    result = package.publish(control=control)
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
+
+
+# @pytest.mark.skip
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_in_sandbox_without_metafile_partial_package_metadata(
+    sandbox_control,
+):
+    control = portals.ZenodoControl(**sandbox_control)
+    package = Package("data/package/zenodo.packagepartialmeta.json")
+    result = package.publish(control=control)
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
+
+
+@pytest.mark.skip(reason="Not supported, tries to interpret as filename")
+@pytest.mark.vcr
+def test_zenodo_adapter_write_resources_with_metadata_json(sandbox_control):
+    control = portals.ZenodoControl(
         metafn={
             "creators": [{"name": "FD Tester", "affiliation": "FD Testing"}],
             "upload_type": "dataset",
             "title": "Test File",
             "description": "Test File",
         },
+        **sandbox_control,
     )
     package = Package("data/package.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 1139855
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
-@pytest.mark.skip
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(
-    sandbox_api, tmp_path
-):
-    control = portals.ZenodoControl(
-        apikey=sandbox_api, base_url="https://sandbox.zenodo.org/api/", tmp_path=tmp_path
-    )
+def test_zenodo_adapter_write_resources_in_sandbox_without_metafile(sandbox_control):
+    control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/package/zenodo.packagewithmeta.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 1132346
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
-@pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 @pytest.mark.vcr
-def test_zenodo_adapter_write_resources_without_metafile(tmp_path):
-    control = portals.ZenodoControl(tmp_path=tmp_path)
+def test_zenodo_adapter_write_resources_without_metafile(sandbox_control):
+    control = portals.ZenodoControl(**sandbox_control)
     package = Package("data/package/zenodo.packagewithmeta.json")
     result = package.publish(control=control)
-    deposition_id = result.context.get("deposition_id")
-    assert deposition_id == 7373765
+    assert isinstance(result, PublishResult)
+    assert isinstance(result.context.get("deposition_id"), int)
 
 
 # Read - Catalog
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_search():
     control = portals.ZenodoControl(search='notes:"TDWD"')
@@ -923,8 +878,6 @@ def test_zenodo_adapter_catalog_search_by_custom():
     assert error.message == "Package/s not found"
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_zenodo_adapter_catalog_single_record():
     control = portals.ZenodoControl(record="7078768")

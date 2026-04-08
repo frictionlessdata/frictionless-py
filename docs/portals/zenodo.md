@@ -20,7 +20,7 @@ You can read data from a zenodo repository as follows:
 from pprint import pprint
 from frictionless import portals, Package
 
-package = Package("https://zenodo.org/record/7078768")
+package = Package("https://zenodo.org/records/7078768")
 package.infer()
 print(package)
 ```
@@ -56,7 +56,7 @@ from pprint import pprint
 from frictionless import portals, Package
 
 control = portals.ZenodoControl(apikey=apikey)
-package = Package("https://zenodo.org/record/7078768", control=control)
+package = Package("https://zenodo.org/records/7078768", control=control)
 print(package)
 ```
 
@@ -68,7 +68,7 @@ If the repo has a descriptor it simply returns the descriptor as shown below:
 from pprint import pprint
 from frictionless import portals, Package
 
-package = Package("https://zenodo.org/record/7078760")
+package = Package("https://zenodo.org/records/7078760")
 package.infer()
 print(package)
 ```
@@ -100,7 +100,7 @@ Once you read the package from the repo, you can then easily access the resource
 from pprint import pprint
 from frictionless import portals, Package
 
-package = Package("https://zenodo.org/record/7078760")
+package = Package("https://zenodo.org/records/7078760")
 pprint(package.get_resource('data').read_rows())
 ```
 
@@ -122,7 +122,7 @@ package that was read.
 from pprint import pprint
 from frictionless import portals, Package
 
-package = Package("https://zenodo.org/record/7078760")
+package = Package("https://zenodo.org/records/7078760")
 report = catalog.packages[0].validate()
 pprint(report)
 ```

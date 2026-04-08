@@ -16,7 +16,7 @@ pip install frictionless[sql,zenodo] # for examples in this tutorial
 ## Usage
 
 ```bash
-frictionless query https://zenodo.org/record/3977957
+frictionless query https://zenodo.org/records/3977957
 ```
 
 ```yaml image
