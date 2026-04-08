@@ -58,6 +58,11 @@ class Field(Metadata):
     is found in the field value then it is set as None.
     """
 
+    categories: Dict[str, Any] = attrs.field(factory=dict)
+    """
+    A dictionary of value/label categorical values expected in the field.
+    """
+
     constraints: Dict[str, Any] = attrs.field(factory=dict)
     """
     A dictionary with rules that constraints the data value permitted for a field.
@@ -212,6 +217,9 @@ class Field(Metadata):
             "missingValues": {
                 "type": "array",
                 "items": {"type": "string"},
+            },
+            "categories": {
+                "type": "object"
             },
             "constraints": {
                 "type": "object",
