@@ -1,4 +1,3 @@
-import sys
 import textwrap
 from importlib import import_module
 
@@ -50,7 +49,6 @@ def test_resource_source_non_tabular():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_source_non_tabular_remote():
     path = BASEURL % "data/text.txt"
     with Resource(path) as resource:

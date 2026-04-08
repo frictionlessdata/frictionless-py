@@ -8,17 +8,6 @@ from frictionless import platform
 # TODO: stop using the Bugs section in the tests and split them among themed categories?
 
 
-# Cleanups
-
-try:
-    # For python 3.8 only, that does not support pytest_cov v7
-    from pytest_cov.embed import cleanup_on_sigterm
-
-    cleanup_on_sigterm()
-except ImportError:
-    pass
-
-
 # Fixtures
 
 

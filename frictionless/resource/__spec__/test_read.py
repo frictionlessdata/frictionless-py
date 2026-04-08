@@ -1,13 +1,8 @@
-import sys
-
-import pytest
-
 from frictionless import Resource, resources
 
 # General
 
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
     bytes = resource.read_bytes()
