@@ -18,13 +18,13 @@ def test_console():
 def test_console_version():
     result = runner.invoke(console, "--version")
     assert result.exit_code == 0
-    assert result.stdout.count(__version__)
+    assert result.output.count(__version__)
 
 
 def test_console_help():
     result = runner.invoke(console, "--help")
     assert result.exit_code == 0
-    assert result.stdout.count("Usage")
+    assert result.output.count("Usage")
 
 
 def test_console_error_bad_command():
