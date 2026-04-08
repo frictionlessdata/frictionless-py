@@ -2,6 +2,17 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.19.0
+
+- Deprecation warning for Python 3.8 and 3.9 ahead of future end of support
+- fix: support latest versions for several dependencies (pandas v3, chardet 
+  v7)
+  ([#1768](https://github.com/frictionlessdata/frictionless-py/pull/1768))
+- fix: use an authentic User-Agent
+  ([#1758](https://github.com/frictionlessdata/frictionless-py/pull/1758))
+- fix: foreign keys accept self-referential and circular foreign keys 
+  ([#1750](https://github.com/frictionlessdata/frictionless-py/pull/1750))
+
 ## v5.18.1
 
 - feat: add pass_row as configurable parameter for field_update 

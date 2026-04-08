@@ -12,7 +12,7 @@ from frictionless import platform
 
 try:
     # For python 3.8 only, that does not support pytest_cov v7
-    from pytest_cov.embed import cleanup_on_sigterm
+    from pytest_cov.embed import cleanup_on_sigterm  # type: ignore
 
     cleanup_on_sigterm()
 except ImportError:
