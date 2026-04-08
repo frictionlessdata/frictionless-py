@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data"
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 urls.homepage = "https://github.com/frictionlessdata/frictionless-py"
 urls.changelog = "https://github.com/frictionlessdata/framework/blob/main/CHANGELOG.md"
 authors = [
@@ -26,8 +26,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -43,8 +41,7 @@ dependencies = [
     "pyyaml>=5.3",
     "isodate>=0.6",
     "rfc3986>=1.4",
-    "chardet>=3.0; python_version<'3.10'",
-    "chardet>=6.0; python_version>='3.10'",
+    "chardet>=6.0",
     "pydantic>=2.0",
     "requests>=2.10",
     "humanize>=4.2",
@@ -160,7 +157,7 @@ version = [
 
 
 [[tool.hatch.envs.ci.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.ci.scripts]
 spec = [

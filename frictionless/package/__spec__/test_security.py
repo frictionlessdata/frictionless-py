@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from frictionless import FrictionlessException, Package, Resource, platform, system
@@ -46,7 +44,6 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
