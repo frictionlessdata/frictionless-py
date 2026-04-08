@@ -111,6 +111,8 @@ path = "frictionless/settings.py"
 python = "3.11"
 dependencies = [
   "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
+  # for hatch https://github.com/pypa/hatch/issues/2193
+  'virtualenv<21; python_version<"3.10"',
 ]
 
 [tool.hatch.envs.default.scripts]
