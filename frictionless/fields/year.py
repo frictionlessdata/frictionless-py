@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 import attrs
 
 from ..schema import Field
@@ -17,32 +15,3 @@ class YearField(Field):
         "maximum",
         "enum",
     ]
-
-    # Read
-
-    def create_value_reader(self):
-        # Create reader
-        def value_reader(cell: Any):
-            if not isinstance(cell, int):
-                if not isinstance(cell, str):
-                    return None
-                if len(cell) != 4:
-                    return None
-                try:
-                    cell = int(cell)
-                except Exception:
-                    return None
-            if cell < 0 or cell > 9999:
-                return None
-            return cell
-
-        return value_reader
-
-    # Write
-
-    def create_value_writer(self):
-        # Create writer
-        def value_writer(cell: Any):
-            return str(cell)
-
-        return value_writer
