@@ -1,3 +1,14 @@
+import sys
+import warnings
+
+if sys.version_info < (3, 10):
+    warnings.warn(
+        f"Python {sys.version_info.major}.{sys.version_info.minor} has reached end-of-life "
+        "and is no longer supported. Please upgrade to Python 3.10 or later.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
 from .actions import convert as convert
 from .actions import describe as describe
 from .actions import extract as extract

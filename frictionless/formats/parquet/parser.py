@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ... import types
 from ...platform import platform
 from ...resources import TableResource
 from ...system import Parser
@@ -7,7 +8,7 @@ from .control import ParquetControl
 
 
 class ParquetParser(Parser):
-    """JSONL parser implementation."""
+    """Parquet parser implementation."""
 
     supported_types = [
         "array",
@@ -24,7 +25,7 @@ class ParquetParser(Parser):
 
     # Read
 
-    def read_cell_stream_create(self):
+    def read_cell_stream_create(self) -> types.ICellStream:
         control = ParquetControl.from_dialect(self.resource.dialect)
         handle = self.resource.normpath
         if self.resource.remote:
@@ -32,16 +33,22 @@ class ParquetParser(Parser):
                 self.resource.normpath, "rb", is_text=False
             )
             handle = handles.handle
-        file = platform.fastparquet.ParquetFile(handle)
-        for group, df in enumerate(file.iter_row_groups(**control.to_python()), start=1):
-            with TableResource(data=df, format="pandas") as resource:
-                for line, cells in enumerate(resource.cell_stream, start=1):
-                    # Starting from second group we don't need a header row
-                    if group != 1 and line == 1:
-                        continue
-                    yield cells
+        pq = platform.pyarrow_parquet
+        table = pq.read_table(
+            handle,
+            columns=control.columns,
+            filters=control.filters or None,
+        )
+        df = table.to_pandas(categories=control.categories or None)
+        with TableResource(data=df, format="pandas") as resource:
+            yield from resource.cell_stream
 
     # Write
 
     def write_row_stream(self, source: TableResource):
-        platform.fastparquet.write(self.resource.normpath, source.to_pandas())
+        import pyarrow as pa  # type: ignore[reportMissingTypeStubs]
+
+        pq = platform.pyarrow_parquet
+        df = source.to_pandas()
+        table = pa.Table.from_pandas(df)  # type: ignore[reportUnknownMemberType]
+        pq.write_table(table, self.resource.normpath)

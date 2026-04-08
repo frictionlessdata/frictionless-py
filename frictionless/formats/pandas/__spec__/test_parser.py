@@ -1,15 +1,17 @@
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 from decimal import Decimal
 
 import isodate
 import numpy as np
 import pandas as pd
-import pytz
 from dateutil.tz import tzoffset, tzutc
-from pandas.core.dtypes.common import is_datetime64_ns_dtype
+from pandas.api.types import is_datetime64_any_dtype
 
 from frictionless import Package, Schema, validate
 from frictionless.resources import TableResource
+
+# Infer dtype from real DataFrame as the type is depending on pandas' version
+STRING_DTYPE = pd.DataFrame({"s": ["a"]}).dtypes["s"]
 
 # Read
 
@@ -73,14 +75,14 @@ def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
         # Assert rows
         assert resource.read_rows() == [
             {
-                "Date": datetime(2004, 1, 5, tzinfo=pytz.utc),
+                "Date": datetime(2004, 1, 5, tzinfo=timezone.utc),
                 "VIXClose": Decimal("17.49"),
                 "VIXHigh": Decimal("18.49"),
                 "VIXLow": Decimal("17.44"),
                 "VIXOpen": Decimal("18.45"),
             },
             {
-                "Date": datetime(2004, 1, 6, tzinfo=pytz.utc),
+                "Date": datetime(2004, 1, 6, tzinfo=timezone.utc),
                 "VIXClose": Decimal("16.73"),
                 "VIXHigh": Decimal("17.67"),
                 "VIXLow": Decimal("16.19"),
@@ -112,14 +114,14 @@ def test_pandas_parser_nan_in_integer_resource_column():
         ]
     )
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
+    assert list(df.dtypes) == [pd.Int64Dtype(), np.dtype("float64"), STRING_DTYPE]
 
 
 def test_pandas_parser_nan_in_integer_csv_column():
     # see issue 1109
     res = TableResource(path="data/issue-1109.csv")
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
+    assert list(df.dtypes) == [pd.Int64Dtype(), np.dtype("float64"), STRING_DTYPE]
 
 
 def test_pandas_parser_write_types():
@@ -273,7 +275,7 @@ def test_pandas_parser_nan_with_field_type_information_1143():
     }
     res = TableResource.from_descriptor(descriptor)
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))  # type: ignore
+    assert list(df.dtypes) == [pd.Int64Dtype(), np.dtype("float64"), STRING_DTYPE]
 
 
 def test_pandas_parser_nan_without_field_type_information_1143():
@@ -291,7 +293,7 @@ def test_pandas_parser_nan_without_field_type_information_1143():
     }
     res = TableResource.from_descriptor(descriptor)
     df = res.to_pandas()
-    assert all(df.dtypes.values == pd.array([object, object, object]))  # type: ignore
+    assert list(df.dtypes) == [STRING_DTYPE, STRING_DTYPE, STRING_DTYPE]
 
 
 def test_pandas_parser_preserve_datetime_field_type_1138():
@@ -311,7 +313,7 @@ def test_pandas_parser_preserve_datetime_field_type_1138():
     }
     resource = TableResource.from_descriptor(descriptor)
     df = resource.to_pandas()
-    assert is_datetime64_ns_dtype(df.dtypes.values[1])  # type: ignore
+    assert is_datetime64_any_dtype(df.dtypes.values[1])  # type: ignore
 
 
 def test_pandas_parser_test_issue_sample_data_1138():
@@ -338,7 +340,7 @@ def test_pandas_parser_test_issue_sample_data_1138():
     }
     resource = TableResource.from_descriptor(descriptor)
     df = resource.to_pandas()
-    assert is_datetime64_ns_dtype(df.dtypes.values[0])  # type: ignore
+    assert is_datetime64_any_dtype(df.dtypes.values[0])  # type: ignore
 
 
 def test_validate_package_with_in_code_resources_1245():

@@ -140,8 +140,7 @@ class PandasParser(Parser):
                         value = float(value)
                     # Convert to UTC for timezone aware datetime
                     # From version 0.24 pandas preserves the dateutil object and doesn't by default
-                    # convert to "UTC" and fastparquet write raises error as it can't handle tzutc()
-                    # object
+                    # convert to "UTC"
                     # https://github.com/pandas-dev/pandas/issues/25423#issuecomment-485784044
                     if isinstance(value, datetime.datetime) and value.tzinfo:
                         value = value.astimezone(datetime.timezone.utc)

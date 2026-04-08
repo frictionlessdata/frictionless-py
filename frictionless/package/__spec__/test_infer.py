@@ -75,7 +75,8 @@ def test_package_infer_non_utf8_file():
     package = Package(["data/table-with-accents.csv"])
     package.infer()
     assert len(package.resources) == 1
-    assert package.resources[0].encoding == "iso8859-1"
+    encoding = package.resources[0].encoding
+    assert b"\xe9".decode(encoding) == "é"
 
 
 def test_package_infer_empty_file():

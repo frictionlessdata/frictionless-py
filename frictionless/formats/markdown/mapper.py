@@ -99,7 +99,7 @@ def dicts_to_markdown_table(dicts: List[Dict[str, Any]], **kwargs: Any) -> str:
     if kwargs:
         dicts = [filter_dict(x, **kwargs) for x in dicts]
     df = platform.pandas.DataFrame(dicts)
-    return df.where(df.notnull(), None).to_markdown(index=False)  # type: ignore
+    return df.fillna("").to_markdown(index=False)
 
 
 def filter_dict(

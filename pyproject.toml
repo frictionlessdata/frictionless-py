@@ -31,6 +31,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
@@ -41,7 +43,8 @@ dependencies = [
     "pyyaml>=5.3",
     "isodate>=0.6",
     "rfc3986>=1.4",
-    "chardet>=3.0",
+    "chardet>=3.0; python_version<'3.10'",
+    "chardet>=6.0; python_version>='3.10'",
     "pydantic>=2.0",
     "requests>=2.10",
     "humanize>=4.2",
@@ -90,12 +93,12 @@ html = ["pyquery>=1.4"]
 mysql = ["sqlalchemy>=1.4", "pymysql>=1.0"]
 ods = ["ezodf>=0.3", "lxml>=4.0"]
 pandas = ["pyarrow>=14.0", "pandas>=1.0"]
-parquet = ["fastparquet>=0.8"]
+parquet = ["pyarrow>=14.0"]
 postgresql = ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"]
 spss = ["savReaderWriter>=3.0"]
 sql = ["sqlalchemy>=1.4"]
 visidata = ["visidata>=2.10"]
-wkt = ["TatSu>=5.8.3"]
+wkt = ["TatSu>=5.8.3,<5.15"]
 zenodo = ["pyzenodo3>=1.0"]
 
 [project.scripts]
@@ -105,7 +108,7 @@ frictionless = "frictionless.__main__:console"
 path = "frictionless/settings.py"
 
 [tool.hatch.envs.default]
-python = "3.10"
+python = "3.11"
 dependencies = [
   "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
 ]
@@ -157,7 +160,7 @@ version = [
 
 
 [[tool.hatch.envs.ci.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.ci.scripts]
 spec = [
