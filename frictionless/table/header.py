@@ -179,13 +179,9 @@ class Header(List[str]):  # type: ignore
 
             def required_and_missing(field: Field) -> bool:
                 required = field.required or (
-                    field.schema is not None
-                    and field.name in field.schema.primary_key
+                    field.schema is not None and field.name in field.schema.primary_key
                 )
-                return (
-                    required
-                    and self.__normalize(field.name) not in normalized_labels
-                )
+                return required and self.__normalize(field.name) not in normalized_labels
 
             missing = [field for field in fields if required_and_missing(field)]
 
@@ -236,7 +232,7 @@ class Header(List[str]):  # type: ignore
                     note="",
                     labels=list(map(str, labels)),
                     row_numbers=self.__row_numbers,
-                    label="",
+                    label=label,
                     field_name="",
                     field_number=extra_start + offset,
                 )
