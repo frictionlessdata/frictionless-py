@@ -139,7 +139,7 @@ class Header(List[str]):  # type: ignore
                         note="",
                         labels=list(map(str, labels)),
                         row_numbers=self.__row_numbers,
-                        label="",
+                        label=label,
                         field_name="",
                         field_number=field_number,
                     )

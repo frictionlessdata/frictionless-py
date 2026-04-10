@@ -38,6 +38,7 @@ def test_resource_validate_invalid_resource():
 
 def test_resource_validate_schema_extra_headers_and_cells():
     schema = Schema.from_descriptor({"fields": [{"name": "id", "type": "integer"}]})
+    # resource with extra label "name"
     resource = TableResource(path="data/table.csv", schema=schema)
     report = resource.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
@@ -45,6 +46,10 @@ def test_resource_validate_schema_extra_headers_and_cells():
         [2, 2, "extra-cell"],
         [3, 2, "extra-cell"],
     ]
+
+    extra_label_error = report.task.errors[0]
+    assert extra_label_error.label == "name"
+    assert '"name"' in extra_label_error.message
 
 
 def test_resource_validate_schema_multiple_errors():
