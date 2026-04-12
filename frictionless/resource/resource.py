@@ -239,20 +239,12 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         self.__loader: Optional[Loader] = None
         self.__buffer: Optional[types.IBuffer] = None
 
+        # Activate attributes' tracking before detection so that detected values
+        # (name, scheme, format, etc.) are recorded in metadata_assigned
+        super().__attrs_post_init__()
+
         # Detect resource
         system.detect_resource(self)
-
-        # TODO: remove this defined/not-defined logic?
-        # Define default state
-        self.add_defined("name")
-        self.add_defined("scheme")
-        self.add_defined("format")
-        self.add_defined("compression")
-        self.add_defined("mediatype")
-        self.add_defined("dialect")
-        self.add_defined("stats")
-
-        super().__attrs_post_init__()
 
     # TODO: shall we guarantee here that it's at the beginning for the file?
     # TODO: maybe it's possible to do type narrowing here?
@@ -966,7 +958,9 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         )
 
     def metadata_export(self):  # type: ignore
-        descriptor = super().metadata_export()
+        # TODO : temporary ; check why datatype is not private despite not
+        # being included in the descriptor
+        descriptor = super().metadata_export(exclude=["datatype"])
 
         # Data
         data = descriptor.get("data")
