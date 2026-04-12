@@ -120,7 +120,6 @@ class Dialect(Metadata, metaclass=Factory):
             error = errors.DialectError(note=f'control "{control.type}" already exists')
             raise FrictionlessException(error)
         self.controls.append(control)
-        control.schema = self
 
     def has_control(self, type: str):
         """Check if control is present"""
@@ -143,7 +142,6 @@ class Dialect(Metadata, metaclass=Factory):
             prev_control = self.get_control(control.type)
             index = self.controls.index(prev_control)
             self.controls[index] = control
-            control.schema = self
             return prev_control
         self.add_control(control)
 
