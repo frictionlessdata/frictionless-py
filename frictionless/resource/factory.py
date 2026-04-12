@@ -23,6 +23,11 @@ class Factory(type, Generic[T]):
         source = helpers.normalize_source(source)
         resources = platform.frictionless_resources
 
+        # Only forward basepath when explicitly provided
+        basepath_opt: dict[str, Any] = {}
+        if basepath is not None:
+            basepath_opt["basepath"] = basepath
+
         # Adapter
         if source is not None:
             adapter = system.create_adapter(
@@ -54,7 +59,7 @@ class Factory(type, Generic[T]):
 
             if md_type != "resource":
                 options["path" if isinstance(source, str) else "data"] = source
-                resource = cls(control=control, basepath=basepath, **options)  # type: ignore
+                resource = cls(control=control, **basepath_opt, **options)  # type: ignore
                 return cast(T, resource)
 
         # Descriptor
@@ -73,16 +78,16 @@ class Factory(type, Generic[T]):
             elif control not in dialect.controls:
                 dialect.add_control(control)
             options["dialect"] = dialect
-            resource = cls(basepath=basepath, **options)  # type: ignore
+            resource = cls(**basepath_opt, **options)  # type: ignore
             return cast(T, resource)
 
         # Routing
         if cls is platform.frictionless.Resource:
             Router = type("Router", (platform.frictionless.Resource,), {})
-            resource = Router(basepath=basepath, **options)
+            resource = Router(**basepath_opt, **options)
             Class = system.select_resource_class(datatype=resource.datatype)
-            resource = Class(basepath=basepath, **options)
+            resource = Class(**basepath_opt, **options)
             return cast(T, resource)
 
         # Default
-        return cast(T, type.__call__(cls, basepath=basepath, **options))
+        return cast(T, type.__call__(cls, **basepath_opt, **options))
