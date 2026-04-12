@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import decimal
 import re
+import warnings
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
 
@@ -83,6 +84,16 @@ class Field(Metadata):
     """
     Specifies if field is the builtin feature.
     """
+
+    @property
+    def schema(self) -> Optional[Schema]:
+        """Deprecated: use field._schema instead."""
+        warnings.warn(
+            "Field.schema is deprecated. Use field._schema instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._schema
 
     supported_constraints: ClassVar[List[str]] = []
     """
