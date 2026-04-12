@@ -400,7 +400,7 @@ class Detector:
                         ):
                             field = runner["field"].to_copy()
                             field.name = name
-                            field.schema = schema
+                            field._schema = schema
                             fields[index] = field
                             break
 

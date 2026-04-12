@@ -50,9 +50,7 @@ class Field(Metadata):
     For example: "default","array" etc.
     """
 
-    missing_values: List[str] = attrs.field(
-        factory=settings.DEFAULT_MISSING_VALUES.copy
-    )
+    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
     List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
@@ -73,7 +71,10 @@ class Field(Metadata):
     An example of a value for the field.
     """
 
-    schema: Optional[Schema] = None
+    # This _schema property is needed for inherited properties defined at schema-level (as the time of writing, only "missing_values")
+    # Replacing it with _inherited_missing_values does however not work currently, as it breaks the live link
+    # if e.g. the missing values are changed in the schema.
+    _schema: Optional[Schema] = attrs.field(default=None, alias="schema")
     """
     Schema class of which the field is part of.
     """
@@ -114,8 +115,8 @@ class Field(Metadata):
 
         # Create missing values
         missing_values = self.missing_values
-        if not self.has_defined("missing_values") and self.schema:
-            missing_values = self.schema.missing_values
+        if not self.has_defined("missing_values") and self._schema:
+            missing_values = self._schema.missing_values
 
         # TODO: review where we need to cast constraints
         # Create checks
@@ -170,8 +171,8 @@ class Field(Metadata):
         # Create missing value
         try:
             missing_value = self.missing_values[0]
-            if not self.has_defined("missing_values") and self.schema:
-                missing_value = self.schema.missing_values[0]
+            if not self.has_defined("missing_values") and self._schema:
+                missing_value = self._schema.missing_values[0]
         except IndexError:
             missing_value = settings.DEFAULT_MISSING_VALUES[0]
 
@@ -276,9 +277,7 @@ class Field(Metadata):
                     field.false_values = descriptor["falseValues"]
             _, notes = field.read_cell(example)
             if notes is not None:
-                note = (
-                    f'example value "{example}" for field "{field.name}" is not valid'
-                )
+                note = f'example value "{example}" for field "{field.name}" is not valid'
                 yield errors.FieldError(note=note)
 
         # Misleading

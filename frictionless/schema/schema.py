@@ -80,7 +80,7 @@ class Schema(Metadata, metaclass=Factory):
 
     def __attrs_post_init__(self):
         for field in self.fields:
-            field.schema = self
+            field._schema = self
         super().__attrs_post_init__()
 
     def __bool__(self):
@@ -101,7 +101,7 @@ class Schema(Metadata, metaclass=Factory):
 
     def add_field(self, field: Field, *, position: Optional[int] = None) -> None:
         """Add new field to the schema"""
-        field.schema = self
+        field._schema = self
         if position is None:
             self.fields.append(field)
         else:
@@ -129,7 +129,7 @@ class Schema(Metadata, metaclass=Factory):
             prev_field = self.get_field(field.name)
             index = self.fields.index(prev_field)
             self.fields[index] = field
-            field.schema = self
+            field._schema = self
             return prev_field
         self.add_field(field)
 
@@ -144,7 +144,7 @@ class Schema(Metadata, metaclass=Factory):
         field_descriptor = prev_field.to_descriptor()
         field_descriptor.update(descriptor)
         new_field = Field.from_descriptor(field_descriptor)
-        new_field.schema = self
+        new_field._schema = self
         self.fields[field_index] = new_field
         return prev_field
 
