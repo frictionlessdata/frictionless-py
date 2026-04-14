@@ -45,6 +45,7 @@ class System:
         "create_loader",
         "create_parser",
         "detect_resource",
+        "matches_datatype",
         # TODO: replace by detect_schema?
         "detect_field_candidates",
         "select_check_class",
@@ -256,7 +257,20 @@ class System:
         resource.detector.detect_resource(resource)
         for func in self.methods["detect_resource"].values():
             func(resource)
-        resource.datatype = resource.datatype or "file"
+
+    def matches_datatype(
+        self, resource: Resource
+    ) -> tuple[Optional[str], Optional[str]]:
+        """Dispatch: return (datatype, plugin_name) the plugins recognize.
+
+        Iterates plugins in registration order; first non-None wins. Does
+        not mutate the resource.
+        """
+        for name, func in self.methods["matches_datatype"].items():
+            result = func(resource)
+            if result is not None:
+                return result, name
+        return None, None
 
     def detect_field_candidates(self) -> List[dict[str, Any]]:
         """Create candidates

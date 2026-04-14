@@ -14,7 +14,10 @@ class ImagePlugin(Plugin):
 
     # Hooks
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format in settings.FORMATS:
+            return "image"
+
     def detect_resource(self, resource: Resource):
         if resource.format in settings.FORMATS:
-            resource.datatype = resource.datatype or "image"
             resource.mediatype = resource.mediatype or f"image/{resource.format}"

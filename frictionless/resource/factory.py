@@ -40,6 +40,8 @@ class Factory(type, Generic[T]):
                 package = adapter.read_package()
                 if package:
                     data = package.to_descriptor()
+                    # PackageResource's datatype is fixed by its ClassVar
+                    options.pop("datatype", None)
                     resource = resources.PackageResource(
                         data=data, basepath=package.basepath, **options
                     )
@@ -81,13 +83,20 @@ class Factory(type, Generic[T]):
             resource = cls(**basepath_opt, **options)  # type: ignore
             return cast(T, resource)
 
-        # Routing
+        # Routing: `datatype` is a hint for class selection only — strip it
+        # before constructing so it isn't forwarded to __init__.
         if cls is platform.frictionless.Resource:
-            Router = type("Router", (platform.frictionless.Resource,), {})
+            explicit_datatype = options.pop("datatype", None)
+            Router = type(
+                "Router", (platform.frictionless.Resource,), {"_is_router": True}
+            )
             resource = Router(**basepath_opt, **options)
-            Class = system.select_resource_class(datatype=resource.datatype)
+            dt_match, _ = system.matches_datatype(resource)
+            datatype = explicit_datatype or dt_match or "file"
+            Class = system.select_resource_class(datatype=datatype)
             resource = Class(**basepath_opt, **options)
             return cast(T, resource)
 
         # Default
+        options.pop("datatype", None)
         return cast(T, type.__call__(cls, **basepath_opt, **options))

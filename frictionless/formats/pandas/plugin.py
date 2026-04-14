@@ -26,14 +26,20 @@ class PandasPlugin(Plugin):
         if resource.format == "pandas":
             return PandasParser(resource)
 
-    def detect_resource(self, resource: Resource):
-        if resource.data is not None:
-            if helpers.is_type(resource.data, "DataFrame"):
-                resource.format = resource.format or "pandas"
+    def matches_datatype(self, resource: Resource):
+        if resource.data is not None and helpers.is_type(resource.data, "DataFrame"):
+            return "table"
         if resource.format == "pandas":
+            return "table"
+
+    def detect_resource(self, resource: Resource):
+        is_dataframe = resource.data is not None and helpers.is_type(
+            resource.data, "DataFrame"
+        )
+        if is_dataframe or resource.format == "pandas":
+            resource.format = resource.format or "pandas"
             if resource.data is None:
                 resource.data = platform.pandas.DataFrame()
-            resource.datatype = resource.datatype or "table"
             resource.mediatype = resource.mediatype or "application/pandas"
 
     def select_control_class(self, type: Optional[str] = None):

@@ -13,7 +13,9 @@ if TYPE_CHECKING:
 
 
 class InlinePlugin(Plugin):
-    """Plugin for Inline"""
+    """Handles data already parsed to python object, provided through the
+    resource "data" property
+    """
 
     # Hooks
 
@@ -21,22 +23,38 @@ class InlinePlugin(Plugin):
         if resource.format == "inline":
             return InlineParser(resource)
 
-    def detect_resource(self, resource: Resource):
+    def matches_datatype(self, resource: Resource):
         if resource.data is not None:
-            if not hasattr(resource.data, "read"):
-                types: Any = (list, typing.Iterator, typing.Generator)
-                if callable(resource.data) or isinstance(resource.data, types):
-                    resource.format = resource.format or "inline"
-                    resource.datatype = resource.datatype or "table"
-                elif isinstance(resource.data, dict):
-                    resource.format = resource.format or "inline"
-                    resource.datatype = (
-                        resource.datatype
-                        or Detector.detect_metadata_type(resource.data)
-                        or "json"
-                    )
-        # TODO: remove
-        elif resource.format == "inline":
+            if hasattr(resource.data, "read"):
+                # raw-bytes - handled by the StreamPlugin
+                return None
+
+            if isinstance(resource.data, dict):
+                return Detector.detect_metadata_type(resource.data) or "json"  # pyright: ignore[reportUnknownMemberType]
+
+            is_iterable = isinstance(
+                resource.data, (list, typing.Iterator, typing.Generator)
+            )
+            is_factory = callable(resource.data)
+            if is_factory or is_iterable:
+                return "table"
+
+        # Degenerate case: format=inline, no data. `detect_resource` will seed
+        # table data
+        if resource.data is None and resource.format == "inline":
+            return resource.datatype or "table"
+
+    def detect_resource(self, resource: Resource):
+        # Mirrors matches_datatype: inline owns resources with in-memory data
+        # (dict/iterable/callable) or explicit format=inline.
+        if resource.data is not None and not hasattr(resource.data, "read"):
+            is_inline = isinstance(
+                resource.data,
+                (dict, list, typing.Iterator, typing.Generator),
+            ) or callable(resource.data)
+            if is_inline:
+                resource.format = resource.format or "inline"
+        elif resource.data is None and resource.format == "inline":
             resource.data = []
 
     def select_control_class(self, type: Optional[str] = None):

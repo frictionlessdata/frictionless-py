@@ -38,9 +38,12 @@ class ExcelPlugin(Plugin):
         elif resource.format == "xls":
             return XlsParser(resource)
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format in ["xlsx", "xls"]:
+            return "table"
+
     def detect_resource(self, resource: Resource):
         if resource.format in ["xlsx", "xls"]:
-            resource.datatype = resource.datatype or "table"
             resource.mediatype = resource.mediatype or "application/vnd.ms-excel"
 
     def select_control_class(self, type: Optional[str] = None):

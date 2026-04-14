@@ -65,11 +65,31 @@ class Plugin:
         pass
 
     def detect_resource(self, resource: Resource) -> None:
-        """Hook into resource detection
+        """Hook into resource detection.
+
+        Called on the final resource instance after the Detector has filled
+        in path-derived fields (name, scheme, format, compression). Plugins
+        guard themselves internally (e.g. `if resource.format == "csv"`) and
+        fill in their own defaults (mediatype, scheme, seed data, ...).
 
         Parameters:
             resource (Resource): resource
 
+        """
+        pass
+
+    def matches_datatype(self, resource: Resource) -> Optional[str]:
+        """Return the datatype for a resource this plugin recognizes, or None.
+
+        Must not mutate the resource. Used for class dispatch before the
+        final Resource subclass is instantiated. First match wins across
+        plugins; user-registered plugins have precedence over default plugins.
+
+        Parameters:
+            resource (Resource): resource to inspect
+
+        Returns:
+            Optional[str]: datatype name or None
         """
         pass
 

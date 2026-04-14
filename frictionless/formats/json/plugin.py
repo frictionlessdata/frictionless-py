@@ -22,19 +22,23 @@ class JsonPlugin(Plugin):
         elif resource.format in ["jsonl", "ndjson"]:
             return JsonlParser(resource)
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format == "json":
+            # Short-circuit on resource.datatype to avoid redundant I/O
+            # (detect_metadata_type fetches bytes for remote sources)
+            return (
+                resource.datatype
+                or Detector.detect_metadata_type(resource.normpath, format="json")
+                or "json"
+            )
+        if resource.format in ["jsonl", "ndjson"]:
+            return "table"
+        if resource.format in ["geojson", "topojson"]:
+            return "map"
+
     def detect_resource(self, resource: Resource):
         if resource.format in ["json", "jsonl", "ndjson", "geojson", "topojson"]:
             resource.mediatype = resource.mediatype or f"text/{resource.format}"
-            if resource.format == "json":
-                resource.datatype = (
-                    resource.datatype
-                    or Detector.detect_metadata_type(resource.normpath, format="json")
-                    or "json"
-                )
-            if resource.format in ["jsonl", "ndjson"]:
-                resource.datatype = resource.datatype or "table"
-            if resource.format in ["geojson", "topojson"]:
-                resource.datatype = resource.datatype or "map"
 
     def select_control_class(self, type: Optional[str] = None):
         if type == "json":

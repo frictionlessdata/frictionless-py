@@ -132,11 +132,6 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     If not set, it'll be inferred from `source`.
     """
 
-    _datatype: Optional[str] = attrs.field(default="", alias="datatype")
-    """
-    Frictionless Framework specific data type as "table" or "schema"
-    """
-
     mediatype: Optional[str] = None
     """
     Mediatype/mimetype of the resource e.g. “text/csv”,
@@ -225,15 +220,22 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     Whether the resource is tabular
     """
 
+    datatype: ClassVar[str] = ""
+    """
+    Frictionless Framework specific data type (e.g. "table", "schema").
+    Read-only; derived from the resource subclass.
+    """
+
+    _is_router: ClassVar[bool] = False
+    """
+    Flag set on the anonymous Router subclass used by Factory for class
+    dispatch. When True, __attrs_post_init__ skips plugin detect_resource
+    hooks — only the Detector runs — to avoid mutating a throwaway instance.
+    """
+
     def __attrs_post_init__(self):
         self.name = self._name or ""
-        self.datatype = self._datatype or ""
         self.stats = ResourceStats()
-
-        # Datatype
-        datatype = getattr(type(self), "datatype", None)
-        if isinstance(datatype, str):
-            self.datatype = datatype
 
         # Internal
         self.__loader: Optional[Loader] = None
@@ -243,7 +245,13 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         # (name, scheme, format, etc.) are recorded in metadata_assigned
         super().__attrs_post_init__()
 
-        # Detect resource
+        # Router instances are disposable (Factory uses them only for class
+        # dispatch). Only fill path-derived fields so matches_datatype can
+        # inspect them; skip plugin hooks to avoid side effects.
+        if self._is_router:
+            self.detector.detect_resource(self)
+            return
+
         system.detect_resource(self)
 
     # TODO: shall we guarantee here that it's at the beginning for the file?
@@ -423,9 +431,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     ) -> Self:
         if datatype:
             cls = system.select_resource_class(datatype=datatype)
-            self = cls.from_descriptor(descriptor, **options)
-            self.datatype = datatype
-            return self
+            return cls.from_descriptor(descriptor, **options)
         return super().from_descriptor(descriptor, **options)
 
     # Read
@@ -958,9 +964,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         )
 
     def metadata_export(self):  # type: ignore
-        # TODO : temporary ; check why datatype is not private despite not
-        # being included in the descriptor
-        descriptor = super().metadata_export(exclude=["datatype"])
+        descriptor = super().metadata_export()
 
         # Data
         data = descriptor.get("data")

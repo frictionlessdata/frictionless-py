@@ -13,7 +13,10 @@ class PythonPlugin(Plugin):
 
     # Hooks
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format == "py":
+            return "script"
+
     def detect_resource(self, resource: Resource):
         if resource.format == "py":
-            resource.datatype = resource.datatype or "script"
             resource.mediatype = resource.mediatype or "text/x-python"

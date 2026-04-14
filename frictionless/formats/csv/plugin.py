@@ -19,9 +19,12 @@ class CsvPlugin(Plugin):
         if resource.format in ["csv", "tsv"]:
             return CsvParser(resource)
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format in ["csv", "tsv"]:
+            return "table"
+
     def detect_resource(self, resource: Resource):
         if resource.format in ["csv", "tsv"]:
-            resource.datatype = resource.datatype or "table"
             resource.mediatype = resource.mediatype or f"text/{resource.format}"
 
     def select_control_class(self, type: Optional[str] = None):

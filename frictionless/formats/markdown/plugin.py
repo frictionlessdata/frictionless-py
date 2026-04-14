@@ -13,7 +13,10 @@ class MarkdownPlugin(Plugin):
 
     # Hooks
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format == "md":
+            return "article"
+
     def detect_resource(self, resource: Resource):
         if resource.format == "md":
-            resource.datatype = resource.datatype or "article"
             resource.mediatype = resource.mediatype or "text/markdown"

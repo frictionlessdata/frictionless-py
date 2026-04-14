@@ -19,9 +19,12 @@ class HtmlPlugin(Plugin):
         if resource.format == "html":
             return HtmlParser(resource)
 
+    def matches_datatype(self, resource: Resource):
+        if resource.format == "html":
+            return "text"
+
     def detect_resource(self, resource: Resource):
         if resource.format == "html":
-            resource.datatype = resource.datatype or "text"
             resource.mediatype = resource.mediatype or "text/html"
 
     def select_control_class(self, type: Optional[str] = None):

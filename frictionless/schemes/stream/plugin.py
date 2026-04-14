@@ -22,11 +22,11 @@ class StreamPlugin(Plugin):
             return StreamLoader(resource)
 
     def detect_resource(self, resource: Resource):
-        if resource.data is not None:
-            if hasattr(resource.data, "read"):
-                resource.scheme = "stream"
+        if resource.data is not None and hasattr(resource.data, "read"):
+            resource.scheme = "stream"
         elif resource.scheme == "stream":
-            resource.data = io.BufferedRandom(io.BytesIO())  # type: ignore
+            if resource.data is None:
+                resource.data = io.BufferedRandom(io.BytesIO())  # type: ignore
 
     def select_control_class(self, type: Optional[str] = None):
         if type == "stream":

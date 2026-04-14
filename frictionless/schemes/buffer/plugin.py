@@ -21,11 +21,11 @@ class BufferPlugin(Plugin):
             return BufferLoader(resource)
 
     def detect_resource(self, resource: Resource):
-        if resource.data is not None:
-            if isinstance(resource.data, bytes):
-                resource.scheme = "buffer"
+        if resource.data is not None and isinstance(resource.data, bytes):
+            resource.scheme = "buffer"
         elif resource.scheme == "buffer":
-            resource.data = b""
+            if resource.data is None:
+                resource.data = b""
 
     def select_control_class(self, type: Optional[str] = None):
         if type == "buffer":
