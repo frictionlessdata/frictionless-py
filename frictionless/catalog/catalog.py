@@ -58,16 +58,24 @@ class Catalog(Metadata, metaclass=Factory):
     A list of datasets. Each package in the list is a Data Dataset.
     """
 
-    basepath: Optional[str] = None
+    _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
     """
     A basepath of the catalog. The normpath of the resource is joined
     `basepath` and `/path`
     """
 
+    @property
+    def basepath(self) -> Optional[str]:
+        return self._basepath
+
+    @basepath.setter
+    def basepath(self, value: Optional[str]) -> None:
+        self._basepath = value
+
     def __attrs_post_init__(self):
         for dataset in self.datasets:
-            dataset.catalog = self
-            dataset.package.dataset = dataset
+            dataset._catalog = self
+            dataset.package._dataset = dataset
         super().__attrs_post_init__()
 
     # Datasets
@@ -82,7 +90,7 @@ class Catalog(Metadata, metaclass=Factory):
         if isinstance(dataset, str):
             dataset = Dataset.from_descriptor(dataset, basepath=self.basepath)
         self.datasets.append(dataset)
-        dataset.catalog = self
+        dataset._catalog = self
         return dataset
 
     def has_dataset(self, name: str) -> bool:

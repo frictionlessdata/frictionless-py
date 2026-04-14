@@ -293,7 +293,7 @@ class Dialect(Metadata, metaclass=Factory):
     def metadata_export(self):  # type: ignore
         from ..system import system
 
-        descriptor = super().metadata_export()
+        descriptor = super().metadata_export(exclude=["controls"])
 
         # Controls
         for control in self.controls:

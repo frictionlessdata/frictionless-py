@@ -204,11 +204,25 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     For more information, please check the Detector documentation.
     """
 
-    package: Optional[Package] = None
+    _package: Optional[Package] = attrs.field(default=None, alias="package")
     """
     Parental to this resource package.
     For more information, please check the Package documentation.
     """
+
+    @property
+    def package(self) -> Optional[Package]:
+        return self._package
+
+    @package.setter
+    def package(self, value: Optional[Package]) -> None:
+        warnings.warn(
+            "Setting Resource.package manually is deprecated; "
+            "this back-reference is managed by Package.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._package = value
 
     stats: ResourceStats = attrs.field(init=False)
     """

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from multiprocessing import Pool
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
 
@@ -146,11 +147,25 @@ class Package(Metadata, metaclass=Factory):
     It can be dicts or Resource instances
     """
 
-    dataset: Optional[Dataset] = None
+    _dataset: Optional[Dataset] = attrs.field(default=None, alias="dataset")
     """
     It returns reference to dataset of which catalog the package is part of. If package
     is not part of any catalog, then it is set to None.
     """
+
+    @property
+    def dataset(self) -> Optional[Dataset]:
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, value: Optional[Dataset]) -> None:
+        warnings.warn(
+            "Setting Package.dataset manually is deprecated; "
+            "this back-reference is managed by Catalog.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._dataset = value
 
     _dialect: Optional[Dialect] = attrs.field(default=None, alias="dialect")
     """
@@ -164,7 +179,7 @@ class Package(Metadata, metaclass=Factory):
 
     def __attrs_post_init__(self):
         for resource in self.resources:
-            resource.package = self
+            resource._package = self
             if self._dialect:
                 resource.dialect = self._dialect
             if self._detector:
@@ -203,7 +218,7 @@ class Package(Metadata, metaclass=Factory):
         if isinstance(resource, str):
             resource = Resource.from_descriptor(resource, basepath=self.basepath)
         self.resources.append(resource)
-        resource.package = self
+        resource._package = self
         return resource
 
     def has_resource(self, name: str) -> bool:
@@ -244,7 +259,7 @@ class Package(Metadata, metaclass=Factory):
             prev_resource = self.get_resource(resource.name)
             index = self.resources.index(prev_resource)
             self.resources[index] = resource
-            resource.package = self
+            resource._package = self
             return prev_resource
         self.add_resource(resource)
 
@@ -255,7 +270,7 @@ class Package(Metadata, metaclass=Factory):
         resource_descriptor = prev_resource.to_descriptor()
         resource_descriptor.update(descriptor)
         new_resource = Resource.from_descriptor(resource_descriptor)
-        new_resource.package = self
+        new_resource._package = self
         self.resources[resource_index] = new_resource
         return prev_resource
 

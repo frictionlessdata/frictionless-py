@@ -191,15 +191,6 @@ def test_resource_set_detector():
     assert resource.detector == detector_set
 
 
-def test_resource_set_package():
-    test_package_1 = Package()
-    resource = Resource(package=test_package_1)
-    assert resource.package == test_package_1
-    test_package_2 = Package()
-    resource.package = test_package_2
-    assert resource.package == test_package_2
-
-
 @pytest.mark.skip
 def test_resource_pprint():
     resource = Resource(

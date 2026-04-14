@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, ClassVar, Optional, Union
 
 import attrs
@@ -50,10 +51,24 @@ class Dataset(Metadata):
     # TODO: add docs
     """
 
-    catalog: Optional[Catalog] = None
+    _catalog: Optional[Catalog] = attrs.field(default=None, alias="catalog")
     """
     # TODO: add docs
     """
+
+    @property
+    def catalog(self) -> Optional[Catalog]:
+        return self._catalog
+
+    @catalog.setter
+    def catalog(self, value: Optional[Catalog]) -> None:
+        warnings.warn(
+            "Setting Dataset.catalog manually is deprecated; "
+            "this back-reference is managed by Catalog.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._catalog = value
 
     @property
     def package(self) -> Package:
