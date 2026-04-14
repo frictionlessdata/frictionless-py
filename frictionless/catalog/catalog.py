@@ -115,7 +115,7 @@ class Catalog(Metadata, metaclass=Factory):
             prev_dataset = self.get_dataset(dataset.name)
             index = self.datasets.index(prev_dataset)
             self.datasets[index] = dataset
-            dataset.dataset = self
+            dataset._catalog = self
             return prev_dataset
         self.add_dataset(dataset)
 
