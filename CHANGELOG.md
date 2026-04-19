@@ -2,6 +2,12 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## [Unreleased]
+
+- fix: declare `pandas` as a runtime dependency of the `parquet` extra — fixes
+  `ModuleNotFoundError: pandas` when reading `.parquet` files with only
+  `frictionless[parquet]` installed.
+
 ## v5.19.0
 
 - Deprecation warning for Python 3.8 and 3.9 ahead of future end of support
