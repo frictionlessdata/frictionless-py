@@ -266,7 +266,7 @@ limit_rows = Option(
 
 parallel = Option(
     default=None,
-    help="Enable multiprocessing",
+    help="Enable multiprocessing for package/inquiry validation",
 )
 
 output_path = Option(
