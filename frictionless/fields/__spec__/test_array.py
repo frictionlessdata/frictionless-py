@@ -20,6 +20,12 @@ from frictionless import Field, Package, fields
         ("default", 1, None, {}),
         ("default", "3.14", None, {}),
         ("default", "", None, {}),
+        ("csv", "val1,val2", ["val1", "val2"], {}),
+        ("csv", "val1, val2", ["val1", "val2"], {}),
+        ("csv", '"val1,val2", val3', ["val1,val2", "val3"], {}),
+        ("csv", ["val1", "val2"], ["val1", "val2"], {}),
+        ("csv", ("val1", "val2"), ["val1", "val2"], {}),
+        ("csv", 1, None, {}),
     ],
 )
 def test_array_read_cell(format, source, target, options):
@@ -36,6 +42,13 @@ def test_array_read_cell(format, source, target, options):
 def test_array_read_cell_array_item():
     field = fields.ArrayField(name="name", array_item={"type": "integer"})
     cell, notes = field.read_cell('["1", "2", "3"]')
+    assert cell == [1, 2, 3]
+    assert notes is None
+
+
+def test_array_read_cell_array_item_csv():
+    field = fields.ArrayField(name="name", format="csv", array_item={"type": "integer"})
+    cell, notes = field.read_cell("1,2,3")
     assert cell == [1, 2, 3]
     assert notes is None
 
