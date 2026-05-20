@@ -270,24 +270,21 @@ class TableResource(Resource):
                     self.__lookup[source_name][source_key].add(cells)
 
     def __open_row_stream(self):
-        # TODO: we need to rework this field_info / row code
-        # During row streaming we create a field info structure
-        # This structure is optimized and detached version of schema.fields
-        # We create all data structures in-advance to share them between rows
-
-        # Create field info
-        field_number = 0
-        field_info: Dict[str, Any] = {"names": [], "objects": [], "mapping": {}}
-        for field in self.schema.fields:
-            field_number += 1
-            field_info["names"].append(field.name)
-            field_info["objects"].append(field.to_copy())
-            field_info["mapping"][field.name] = (
-                field,
-                field_number,
-                field.create_cell_reader(),
-                field.create_cell_writer(),
-            )
+        # Determine the fields to expect in the data, in order.
+        # Under schema_sync, fields whose name is missing from the labels
+        # (i.e. required fields injected by the detector) are filtered out
+        # so they don't trigger spurious row-level errors.
+        expected_fields: List[Field] = list(self.schema.fields)
+        if self.detector.schema_sync:
+            is_case_sensitive = self.dialect.header_case
+            field_names = [f.name for f in expected_fields]
+            expected_fields = [
+                f
+                for f in expected_fields
+                if not self.label_is_missing(
+                    f.name, field_names, self.labels, is_case_sensitive
+                )
+            ]
 
         # Create state
         memory_unique: Dict[str, Any] = {}
@@ -320,7 +317,7 @@ class TableResource(Resource):
 
                 row = Row(
                     cells,
-                    field_info=field_info,
+                    fields=expected_fields,
                     row_number=row_number,
                 )
 
@@ -400,23 +397,8 @@ class TableResource(Resource):
                 # Yield row
                 yield row
 
-        if self.detector.schema_sync:
-            # Missing required labels are not included in the
-            # field_info parameter used for row creation
-            for field in self.schema.fields:
-                self.remove_missing_required_label_from_field_info(field, field_info)
-
         # Create row stream
         self.__row_stream = row_stream()
-
-    def remove_missing_required_label_from_field_info(
-        self, field: Field, field_info: Dict[str, Any]
-    ):
-        is_case_sensitive = self.dialect.header_case
-        if self.label_is_missing(
-            field.name, field_info["names"], self.labels, is_case_sensitive
-        ):
-            self.remove_field_from_field_info(field.name, field_info)
 
     @staticmethod
     def label_is_missing(
@@ -436,13 +418,6 @@ class TableResource(Resource):
             ]
 
         return field_name not in table_labels and field_name in expected_field_names
-
-    @staticmethod
-    def remove_field_from_field_info(field_name: str, field_info: Dict[str, Any]):
-        field_index = field_info["names"].index(field_name)
-        del field_info["names"][field_index]
-        del field_info["objects"][field_index]
-        del field_info["mapping"][field_name]
 
     def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
         """Create a tuple containg all cells from a given row associated to primary
