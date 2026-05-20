@@ -216,7 +216,7 @@ class Detector:
             encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
             if confidence < self.encoding_confidence:
-                # low confidence, so we try UTF8
+                # low confidence, so we try default encoding
                 # If decoding fails, we fallback to the detected encoding
                 # despite the low-confidence
                 detected = encoding
