@@ -205,3 +205,7 @@ strict = ["frictionless"]
 include = ["frictionless"]
 exclude = ["frictionless/vendors"]
 ignore = ["**/__spec__/**", "**/__init__.py", "**/conftest.py"]
+# typer's Option/Argument overloads include Any in their signatures, which
+# trips these two rules on every call site without revealing real bugs.
+reportUnknownMemberType = false
+reportUnknownVariableType = false
