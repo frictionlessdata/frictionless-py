@@ -201,7 +201,7 @@ filterwarnings = [
 ]
 
 [tool.pyright]
-strict = ["frictionless"]
+typeCheckingMode = "strict"
 include = ["frictionless"]
 exclude = ["frictionless/vendors"]
 ignore = ["**/__spec__/**", "**/__init__.py", "**/conftest.py"]
