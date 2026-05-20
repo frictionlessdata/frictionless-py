@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from ..exception import FrictionlessException
 from ..schema import Field
@@ -155,31 +155,42 @@ class Header(List[str]):  # type: ignore
                 return self.__labels[len(self.__fields) :]
         return []
 
-    def _get_missing_fields(self) -> List[Field]:
-        """Returns schema fields that don't have a corresponding label.
+    def _get_missing_fields(self) -> List[Tuple[int, Field]]:
+        """Returns (field_number, field) pairs for schema fields that don't
+        have a corresponding label.
 
         Without `schema_sync`, fields beyond the labels count are considered
         missing. With `schema_sync`, only required fields whose name is not
         among the labels are missing.
+
+        The field_number is `len(labels) + offset + 1` in both modes: under
+        no-sync the missing fields are precisely the tail of the schema, so
+        this matches their position; under sync the missing fields have no
+        natural position in the data, so we place them after the labels by
+        convention.
         """
         fields = self.__fields
         labels = self.__labels
+
         if not self.__schema_sync:
-            if len(fields) > len(labels):
-                return fields[len(labels) :]
-            return []
+            missing = fields[len(labels) :] if len(fields) > len(labels) else []
+        else:
+            normalized_labels = [self.__normalize(label) for label in labels]
 
-        normalized_labels = [self.__normalize(label) for label in labels]
+            def required_and_missing(field: Field) -> bool:
+                required = field.required or (
+                    field.schema is not None
+                    and field.name in field.schema.primary_key
+                )
+                return (
+                    required
+                    and self.__normalize(field.name) not in normalized_labels
+                )
 
-        def required_and_missing(field: Field) -> bool:
-            required = field.required or (
-                field.schema is not None and field.name in field.schema.primary_key
-            )
-            return (
-                required and self.__normalize(field.name) not in normalized_labels
-            )
+            missing = [field for field in fields if required_and_missing(field)]
 
-        return [field for field in fields if required_and_missing(field)]
+        start = len(labels) + 1
+        return [(start + offset, field) for offset, field in enumerate(missing)]
 
     def __find_field_by_name(self, name: str) -> Optional[Field]:
         target = self.__normalize(name)
@@ -232,24 +243,28 @@ class Header(List[str]):  # type: ignore
             )
 
         # Missing fields
-        missing_fields = self._get_missing_fields()
-        if missing_fields:
-            missing_ids = {id(field) for field in missing_fields}
-            for field_number, field in enumerate(fields, start=1):
-                if field is None or id(field) not in missing_ids:
-                    continue
-                self.__errors.append(
-                    errors.MissingLabelError(
-                        note="",
-                        labels=list(map(str, labels)),
-                        row_numbers=self.__row_numbers,
-                        label="",
-                        field_name=field.name,
-                        field_number=field_number,
-                    )
+        for field_number, field in self._get_missing_fields():
+            self.__errors.append(
+                errors.MissingLabelError(
+                    note="",
+                    labels=list(map(str, labels)),
+                    row_numbers=self.__row_numbers,
+                    label="",
+                    field_name=field.name,
+                    field_number=field_number,
                 )
+            )
 
         # Iterate items
+        # Under schema_sync, labels and fields are matched by name (not by
+        # position), so the positional comparisons below (blank label vs
+        # field at the same index, incorrect label vs field name at the same
+        # index) don't apply. Duplicate labels are still invalid, but they
+        # are rejected earlier by get_expected_fields(), which raises a
+        # FrictionlessException — so detecting them here would be redundant.
+        if self.__schema_sync:
+            return
+
         field_number = 0
         for field, label in zip(fields, labels):
             field_number += 1

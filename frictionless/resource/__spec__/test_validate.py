@@ -509,10 +509,12 @@ def test_resource_validate_detector_sync_schema():
     )
     report = resource.validate()
     assert report.valid
+    # schema_sync no longer mutates the user-provided schema: the order
+    # given by the user is preserved.
     assert resource.schema.to_descriptor() == {
         "fields": [
-            {"name": "name", "type": "string"},
             {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
         ],
     }
 
