@@ -3,6 +3,7 @@ import pytest
 import frictionless
 from frictionless import Schema, fields
 from frictionless.resources import TableResource
+from frictionless.table.header import Header
 
 # General
 
@@ -40,6 +41,70 @@ def test_missing_label():
         assert header == ["id", "name", "extra"]
         assert header.labels == ["id", "name"]
         assert header.valid is False
+
+
+# get_expected_fields
+
+
+def _make_header(labels, field_names, *, schema_sync=False, ignore_case=False):
+    return Header(
+        labels,
+        fields=[fields.AnyField(name=name) for name in field_names],
+        row_numbers=[1],
+        ignore_case=ignore_case,
+        schema_sync=schema_sync,
+    )
+
+
+@pytest.mark.parametrize(
+    "labels, field_names, schema_sync, ignore_case, expected_names",
+    [
+        pytest.param(
+            ["a", "b"], ["a", "b"], False, False, ["a", "b"],
+            id="no-sync: schema fields are returned as-is",
+        ),
+        pytest.param(
+            ["b", "a"], ["a", "b"], False, False, ["a", "b"],
+            id="no-sync: schema order is kept even if labels differ",
+        ),
+        pytest.param(
+            ["b", "a"], ["a", "b"], True, False, ["b", "a"],
+            id="sync: fields are reordered to match labels",
+        ),
+        pytest.param(
+            ["a", "extra"], ["a"], True, False, ["a", "extra"],
+            id="sync: extra labels get a default any-typed field",
+        ),
+        pytest.param(
+            ["a"], ["a", "b"], True, False, ["a"],
+            id="sync: fields absent from labels are dropped",
+        ),
+        pytest.param(
+            ["B", "A"], ["a", "b"], True, True, ["b", "a"],
+            id="sync + ignore_case: matching is case-insensitive",
+        ),
+    ],
+)
+def test_get_expected_fields(
+    labels, field_names, schema_sync, ignore_case, expected_names
+):
+    header = _make_header(
+        labels, field_names, schema_sync=schema_sync, ignore_case=ignore_case
+    )
+    actual = [f.name for f in header.get_expected_fields()]
+    assert actual == expected_names
+
+
+def test_get_expected_fields_sync_default_field_is_any_typed():
+    header = _make_header(["a", "extra"], ["a"], schema_sync=True)
+    expected = header.get_expected_fields()
+    assert expected[1].type == "any"
+
+
+def test_get_expected_fields_sync_raises_on_duplicate_labels():
+    header = _make_header(["a", "a"], ["a"], schema_sync=True)
+    with pytest.raises(frictionless.FrictionlessException):
+        header.get_expected_fields()
 
 
 @pytest.mark.parametrize(
