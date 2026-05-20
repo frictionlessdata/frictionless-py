@@ -31,7 +31,14 @@ class Header(List[str]):  # type: ignore
         schema_sync: bool = False,
     ):
         super().__init__(field.name for field in fields)
-        self.__fields = [field.to_copy() for field in fields]
+        self.__fields = []
+        for field in fields:
+            copy = field.to_copy()
+            # to_copy() goes through the descriptor and drops the back-reference
+            # to the schema; restore it so checks like "field belongs to schema's
+            # primary_key" remain accurate.
+            copy.schema = field.schema
+            self.__fields.append(copy)
         self.__field_names = self.copy()
         self.__row_numbers = row_numbers
         self.__ignore_case = ignore_case

@@ -217,6 +217,7 @@ class TableResource(Resource):
             fields=self.schema.fields,
             row_numbers=self.dialect.header_rows,
             ignore_case=not self.dialect.header_case,
+            schema_sync=self.detector.schema_sync,
         )
 
         # Handle errors
@@ -270,21 +271,9 @@ class TableResource(Resource):
                     self.__lookup[source_name][source_key].add(cells)
 
     def __open_row_stream(self):
-        # Determine the fields to expect in the data, in order.
-        # Under schema_sync, fields whose name is missing from the labels
-        # (i.e. required fields injected by the detector) are filtered out
-        # so they don't trigger spurious row-level errors.
-        expected_fields: List[Field] = list(self.schema.fields)
-        if self.detector.schema_sync:
-            is_case_sensitive = self.dialect.header_case
-            field_names = [f.name for f in expected_fields]
-            expected_fields = [
-                f
-                for f in expected_fields
-                if not self.label_is_missing(
-                    f.name, field_names, self.labels, is_case_sensitive
-                )
-            ]
+        # The header knows the fields to expect in the data (in order, and
+        # accounting for schema_sync rules).
+        expected_fields: List[Field] = self.header.get_expected_fields()
 
         # Create state
         memory_unique: Dict[str, Any] = {}
@@ -399,25 +388,6 @@ class TableResource(Resource):
 
         # Create row stream
         self.__row_stream = row_stream()
-
-    @staticmethod
-    def label_is_missing(
-        field_name: str,
-        expected_field_names: List[str],
-        table_labels: types.ILabels,
-        case_sensitive: bool,
-    ) -> bool:
-        """Check if a schema field name is missing from the TableResource
-        labels.
-        """
-        if not case_sensitive:
-            field_name = field_name.lower()
-            table_labels = [label.lower() for label in table_labels]
-            expected_field_names = [
-                field_name.lower() for field_name in expected_field_names
-            ]
-
-        return field_name not in table_labels and field_name in expected_field_names
 
     def primary_key_cells(self, row: Row, case_sensitive: bool) -> Tuple[Any, ...]:
         """Create a tuple containg all cells from a given row associated to primary
