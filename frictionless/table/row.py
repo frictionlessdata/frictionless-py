@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 
 from .. import errors, helpers
 from ..platform import platform
+from ..schema import Field
 
 # NOTE:
 # Currently dict.update/setdefault/pop/popitem/clear is not disabled (can be confusing)
@@ -36,9 +37,16 @@ class Row(Dict[str, Any]):
         self,
         cells: List[Any],
         *,
-        field_info: Dict[str, Any],
+        field_info: Optional[Dict[str, Any]] = None,
+        fields: Optional[List[Field]] = None,
         row_number: int,
     ):
+        if field_info is None and fields is None:
+            raise TypeError("Row requires either 'field_info' or 'fields'")
+        if field_info is not None and fields is not None:
+            raise TypeError("Row accepts 'field_info' or 'fields', not both")
+        if field_info is None:
+            field_info = self.__build_field_info(fields)  # type: ignore[arg-type]
         self.__cells = cells
         self.__field_info = field_info
         self.__row_number = row_number
@@ -46,6 +54,20 @@ class Row(Dict[str, Any]):
         self.__blank_cells: Dict[str, Any] = {}
         self.__error_cells: Dict[str, Any] = {}
         self.__errors: list[errors.RowError] = []
+
+    @staticmethod
+    def __build_field_info(fields: List[Field]) -> Dict[str, Any]:
+        info: Dict[str, Any] = {"names": [], "objects": [], "mapping": {}}
+        for field_number, field in enumerate(fields, start=1):
+            info["names"].append(field.name)
+            info["objects"].append(field.to_copy())
+            info["mapping"][field.name] = (
+                field,
+                field_number,
+                field.create_cell_reader(),
+                field.create_cell_writer(),
+            )
+        return info
 
     def __eq__(self, other: object):
         self.__process()
