@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import cached_property
 from itertools import zip_longest
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 from .. import errors, helpers
 from ..platform import platform
@@ -11,6 +11,13 @@ from ..schema import Field
 # NOTE:
 # Currently dict.update/setdefault/pop/popitem/clear is not disabled (can be confusing)
 # We can consider adding row.header property to provide more comprehensive API
+
+
+class _CellHandler(NamedTuple):
+    field: Field
+    field_number: int
+    reader: Callable[..., Any]
+    writer: Callable[..., Any]
 
 
 # TODO: add types
@@ -29,7 +36,7 @@ class Row(Dict[str, Any]):
 
     Parameters:
         cells (any[]): array of cells
-        field_info (dict): special field info structure
+        fields (Field[]): schema fields, in the order expected in the data
         row_number (int): row number from 1
     """
 
@@ -37,37 +44,25 @@ class Row(Dict[str, Any]):
         self,
         cells: List[Any],
         *,
-        field_info: Optional[Dict[str, Any]] = None,
-        fields: Optional[List[Field]] = None,
+        fields: List[Field],
         row_number: int,
     ):
-        if field_info is None and fields is None:
-            raise TypeError("Row requires either 'field_info' or 'fields'")
-        if field_info is not None and fields is not None:
-            raise TypeError("Row accepts 'field_info' or 'fields', not both")
-        if field_info is None:
-            field_info = self.__build_field_info(fields)  # type: ignore[arg-type]
         self.__cells = cells
-        self.__field_info = field_info
+        self.__field_copies: List[Field] = [field.to_copy() for field in fields]
+        self.__handlers: Dict[str, _CellHandler] = {
+            field.name: _CellHandler(
+                field=field,
+                field_number=field_number,
+                reader=field.create_cell_reader(),
+                writer=field.create_cell_writer(),
+            )
+            for field_number, field in enumerate(fields, start=1)
+        }
         self.__row_number = row_number
         self.__processed: bool = False
         self.__blank_cells: Dict[str, Any] = {}
         self.__error_cells: Dict[str, Any] = {}
         self.__errors: list[errors.RowError] = []
-
-    @staticmethod
-    def __build_field_info(fields: List[Field]) -> Dict[str, Any]:
-        info: Dict[str, Any] = {"names": [], "objects": [], "mapping": {}}
-        for field_number, field in enumerate(fields, start=1):
-            info["names"].append(field.name)
-            info["objects"].append(field.to_copy())
-            info["mapping"][field.name] = (
-                field,
-                field_number,
-                field.create_cell_reader(),
-                field.create_cell_writer(),
-            )
-        return info
 
     def __eq__(self, other: object):
         self.__process()
@@ -87,7 +82,7 @@ class Row(Dict[str, Any]):
 
     def __setitem__(self, key: str, value: Any):
         try:
-            _, field_number, _, _ = self.__field_info["mapping"][key]
+            field_number = self.__handlers[key].field_number
         except KeyError:
             raise KeyError(f"Row does not have a field {key}")
         if len(self.__cells) < field_number:
@@ -99,30 +94,30 @@ class Row(Dict[str, Any]):
         return self.__process(key)
 
     def __iter__(self):
-        return iter(self.__field_info["names"])
+        return iter(self.__handlers)
 
     def __len__(self):
-        return len(self.__field_info["names"])
+        return len(self.__handlers)
 
     def __contains__(self, key: object):
-        return key in self.__field_info["mapping"]
+        return key in self.__handlers
 
     def __reversed__(self):
-        return reversed(self.__field_info["names"])
+        return reversed(self.__handlers)
 
     def keys(self):
-        return iter(self.__field_info["names"])
+        return iter(self.__handlers)
 
     def values(self):  # type: ignore
-        for name in self.__field_info["names"]:
+        for name in self.__handlers:
             yield self[name]
 
     def items(self):  # type: ignore
-        for name in self.__field_info["names"]:
+        for name in self.__handlers:
             yield (name, self[name])
 
     def get(self, key: str, default: Optional[Any] = None):
-        if key not in self.__field_info["names"]:
+        if key not in self.__handlers:
             return default
         return self[key]
 
@@ -140,7 +135,7 @@ class Row(Dict[str, Any]):
         Returns:
             Field[]: table schema fields
         """
-        return self.__field_info["objects"]
+        return self.__field_copies
 
     @cached_property
     def field_names(self) -> List[str]:
@@ -148,7 +143,7 @@ class Row(Dict[str, Any]):
         Returns:
             str[]: field names
         """
-        return self.__field_info["names"]
+        return list(self.__handlers)
 
     @cached_property
     def field_numbers(self):
@@ -156,7 +151,7 @@ class Row(Dict[str, Any]):
         Returns:
             str[]: field numbers
         """
-        return list(range(1, len(self.__field_info["names"]) + 1))
+        return list(range(1, len(self.__handlers) + 1))
 
     @cached_property
     def row_number(self) -> int:
@@ -227,14 +222,14 @@ class Row(Dict[str, Any]):
 
         # Prepare
         self.__process()
-        result = [self[name] for name in self.__field_info["names"]]
+        result = [self[name] for name in self.__handlers]
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
 
         # Convert
         if types is not None:
-            for index, field_mapping in enumerate(self.__field_info["mapping"].values()):
-                field, _, _, cell_writer = field_mapping
+            for index, handler in enumerate(self.__handlers.values()):
+                field = handler.field
                 # Here we can optimize performance if we use a types mapping
                 if field.type in types:
                     continue
@@ -242,7 +237,7 @@ class Row(Dict[str, Any]):
                 if json is True and field.type == "number" and field.float_number:
                     continue
                 cell = result[index]
-                cell, _ = cell_writer(cell, ignore_missing=True)
+                cell, _ = handler.writer(cell, ignore_missing=True)
                 result[index] = cell
 
         # Return
@@ -261,7 +256,7 @@ class Row(Dict[str, Any]):
 
         # Prepare
         self.__process()
-        result = {name: self[name] for name in self.__field_info["names"]}
+        result = {name: self[name] for name in self.__handlers}
         if types is None and json:
             types = platform.frictionless_formats.JsonParser.supported_types
         if types is None and csv:
@@ -269,12 +264,12 @@ class Row(Dict[str, Any]):
 
         # Convert
         if types is not None:
-            for field_mapping in self.__field_info["mapping"].values():
-                field, _, _, cell_writer = field_mapping
+            for handler in self.__handlers.values():
+                field = handler.field
                 # Here we can optimize performance if we use a types mapping
                 if field.type not in types:
                     cell = result[field.name]
-                    cell, _ = cell_writer(cell, ignore_missing=True)
+                    cell, _ = handler.writer(cell, ignore_missing=True)
                     result[field.name] = cell
 
         # Return
@@ -294,31 +289,33 @@ class Row(Dict[str, Any]):
         # Prepare context
         cells = self.__cells
         to_str = lambda v: str(v) if v is not None else ""  # type: ignore
-        fields = self.__field_info["objects"]
-        field_mapping = self.__field_info["mapping"]
-        iterator = zip_longest(field_mapping.values(), cells)
+        handlers = self.__handlers
         is_empty = not bool(super().__len__())
         if key:
             try:
-                field, field_number, cell_reader, cell_writer = self.__field_info[
-                    "mapping"
-                ][key]
+                handler = handlers[key]
             except KeyError:
                 raise KeyError(f"Row does not have a field {key}")
-            cell = cells[field_number - 1] if len(cells) >= field_number else None
-            iterator = zip([(field, field_number, cell_reader, cell_writer)], [cell])
+            cell = (
+                cells[handler.field_number - 1]
+                if len(cells) >= handler.field_number
+                else None
+            )
+            iterator = zip([handler], [cell])
+        else:
+            iterator = zip_longest(handlers.values(), cells)
 
         # Iterate cells
-        for field_mapping, source in iterator:
+        for handler, source in iterator:
             # Prepare context
-            if field_mapping is None:
+            if handler is None:
                 break
-            field, field_number, cell_reader, _ = field_mapping
+            field = handler.field
             if not is_empty and super().__contains__(field.name):
                 continue
 
             # Read cell
-            target, notes = cell_reader(source)
+            target, notes = handler.reader(source)
             type_note = notes.pop("type", None) if notes else None
             if target is None and not type_note:
                 self.__blank_cells[field.name] = source
@@ -333,7 +330,7 @@ class Row(Dict[str, Any]):
                         row_number=self.__row_number,
                         cell=str(source),
                         field_name=field.name,
-                        field_number=field_number,
+                        field_number=handler.field_number,
                     )
                 )
 
@@ -347,7 +344,7 @@ class Row(Dict[str, Any]):
                             row_number=self.__row_number,
                             cell=str(source),
                             field_name=field.name,
-                            field_number=field_number,
+                            field_number=handler.field_number,
                         )
                     )
 
@@ -357,10 +354,10 @@ class Row(Dict[str, Any]):
                 return target
 
         # Extra cells
-        if len(fields) < len(cells):
-            start = len(fields) + 1
-            iterator = cells[len(fields) :]
-            for field_number, cell in enumerate(iterator, start=start):
+        n_fields = len(handlers)
+        if n_fields < len(cells):
+            start = n_fields + 1
+            for field_number, cell in enumerate(cells[n_fields:], start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
@@ -373,24 +370,22 @@ class Row(Dict[str, Any]):
                 )
 
         # Missing cells
-        if len(fields) > len(cells):
-            start = len(cells) + 1
-            iterator = fields[len(cells) :]
-            for field_number, field in enumerate(iterator, start=start):
-                if field is not None:
-                    self.__errors.append(
-                        errors.MissingCellError(
-                            note="",
-                            cells=list(map(to_str, cells)),  # type: ignore
-                            row_number=self.__row_number,
-                            cell="",
-                            field_name=field.name,
-                            field_number=field_number,
-                        )
+        if n_fields > len(cells):
+            missing_handlers = list(handlers.values())[len(cells) :]
+            for handler in missing_handlers:
+                self.__errors.append(
+                    errors.MissingCellError(
+                        note="",
+                        cells=list(map(to_str, cells)),  # type: ignore
+                        row_number=self.__row_number,
+                        cell="",
+                        field_name=handler.field.name,
+                        field_number=handler.field_number,
                     )
+                )
 
         # Blank row
-        if len(fields) == len(self.__blank_cells):
+        if n_fields == len(self.__blank_cells):
             self.__errors = [
                 errors.BlankRowError(
                     note="",

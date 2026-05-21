@@ -9,7 +9,6 @@ import attrs
 
 from .. import helpers, settings
 from ..dialect import Dialect
-from ..exception import FrictionlessException
 from ..fields import AnyField
 from ..metadata import Metadata
 from ..platform import platform
