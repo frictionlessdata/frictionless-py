@@ -3,9 +3,9 @@ from __future__ import annotations
 from functools import cached_property
 from typing import List, Optional, Tuple
 
+from .. import errors, helpers
 from ..exception import FrictionlessException
 from ..schema import Field
-from .. import errors, helpers
 
 
 class Header(List[str]):  # type: ignore
