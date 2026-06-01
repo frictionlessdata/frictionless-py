@@ -11,6 +11,7 @@ from .. import errors, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
+from .missing_values import MISSING_VALUES_PROFILE, MissingValues
 
 if TYPE_CHECKING:
     from ..types import IDescriptor
@@ -50,12 +51,15 @@ class Field(Metadata):
     For example: "default","array" etc.
     """
 
-    missing_values: List[str] = attrs.field(
-        factory=settings.DEFAULT_MISSING_VALUES.copy
+    missing_values: MissingValues = attrs.field(
+        factory=lambda: MissingValues.from_descriptor(
+            settings.DEFAULT_MISSING_VALUES.copy()
+        ),
     )
     """
-    List of string values to be set as missing values in the field. If any of string in missing values
-    is found in the field value then it is set as None.
+    Values to be treated as missing values in the field. If any of them is found
+    in the field value then it is set as None. Accepts either the string form
+    (``["", "NA"]``) or the object form (``[{"value": "-99", "label": "REFUSED"}]``).
     """
 
     constraints: Dict[str, Any] = attrs.field(factory=dict)
@@ -92,6 +96,8 @@ class Field(Metadata):
         if name == "type":
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
+        if name == "missing_values" and not isinstance(value, MissingValues):
+            value = MissingValues.from_descriptor(value)
         return super().__setattr__(name, value)  # type: ignore
 
     @property
@@ -168,12 +174,10 @@ class Field(Metadata):
         value_writer = self.create_value_writer()
 
         # Create missing value
-        try:
-            missing_value = self.missing_values[0]
-            if not self.has_defined("missing_values") and self.schema:
-                missing_value = self.schema.missing_values[0]
-        except IndexError:
-            missing_value = settings.DEFAULT_MISSING_VALUES[0]
+        missing_values = self.missing_values
+        if not self.has_defined("missing_values") and self.schema:
+            missing_values = self.schema.missing_values
+        missing_value = missing_values.representation
 
         # Create writer
         def cell_writer(cell: Any, *, ignore_missing: bool = False):
@@ -209,10 +213,7 @@ class Field(Metadata):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "format": {"type": "string"},
-            "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
-            },
+            "missingValues": MISSING_VALUES_PROFILE,
             "constraints": {
                 "type": "object",
                 "properties": {
@@ -286,6 +287,12 @@ class Field(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
+
+    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+        if "missingValues" in descriptor:
+            descriptor["missingValues"] = self.missing_values.to_descriptor()
+        return descriptor
 
 
 # Internal

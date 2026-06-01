@@ -11,6 +11,7 @@ from ..metadata import Metadata
 from ..platform import platform
 from .factory import Factory
 from .field import Field
+from .missing_values import MISSING_VALUES_PROFILE, MissingValues
 from .types import INotes
 
 
@@ -62,10 +63,16 @@ class Schema(Metadata, metaclass=Factory):
     A List of fields in the schema.
     """
 
-    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
+    missing_values: MissingValues = attrs.field(
+        factory=lambda: MissingValues.from_descriptor(
+            settings.DEFAULT_MISSING_VALUES.copy()
+        ),
+    )
     """
-    List of string values to be set as missing values in the schema fields. If any of string in
-    missing values is found in any of the field value then it is set as None.
+    Values to be treated as missing values in the schema fields. If any of them
+    is found in a field value then it is set as None. Accepts either the string
+    form (``["", "NA"]``) or the object form
+    (``[{"value": "-99", "label": "REFUSED"}]``).
     """
 
     primary_key: List[str] = attrs.field(factory=list)
@@ -82,6 +89,11 @@ class Schema(Metadata, metaclass=Factory):
         for field in self.fields:
             field.schema = self
         super().__attrs_post_init__()
+
+    def __setattr__(self, name: str, value: Any):  # type: ignore
+        if name == "missing_values" and not isinstance(value, MissingValues):
+            value = MissingValues.from_descriptor(value)
+        super().__setattr__(name, value)
 
     def __bool__(self):
         return bool(self.fields) or bool(self.to_descriptor())
@@ -292,10 +304,7 @@ class Schema(Metadata, metaclass=Factory):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
-            "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
-            },
+            "missingValues": MISSING_VALUES_PROFILE,
             "primaryKey": {
                 "type": "array",
                 "items": {"type": "string"},
@@ -386,3 +395,9 @@ class Schema(Metadata, metaclass=Factory):
                 note = 'foreign key fields "%s" does not match the reference fields "%s"'
                 note = note % (fk["fields"], fk["reference"]["fields"])
                 yield errors.SchemaError(note=note)
+
+    def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+        if "missingValues" in descriptor:
+            descriptor["missingValues"] = self.missing_values.to_descriptor()
+        return descriptor

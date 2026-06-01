@@ -43,3 +43,20 @@ def test_field_read_cell_number_missingValues():
     assert field.read_cell("NA") == (None, None)
     assert field.read_cell("N/A") == (None, None)
     assert field.read_cell(0) == (None, None)
+
+
+def test_field_read_cell_object_missingValues():
+    descriptor = {
+        "name": "name",
+        "type": "string",
+        "missingValues": [
+            {"value": "", "label": "OMITTED"},
+            {"value": "-99", "label": "REFUSED"},
+        ],
+    }
+    field = Field.from_descriptor(descriptor)
+    assert field.read_cell("") == (None, None)
+    assert field.read_cell("-99") == (None, None)
+    assert field.read_cell("x") == ("x", None)
+    # serialization stays lossless
+    assert field.to_descriptor()["missingValues"] == descriptor["missingValues"]
