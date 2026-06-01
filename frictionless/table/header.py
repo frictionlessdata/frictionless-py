@@ -31,7 +31,7 @@ class Header(List[str]):  # type: ignore
         schema_sync: bool = False,
     ):
         super().__init__(field.name for field in fields)
-        self.__fields = []
+        self.__fields: List[Field] = []
         for field in fields:
             copy = field.to_copy()
             # to_copy() goes through the descriptor and drops the back-reference

@@ -105,7 +105,7 @@ class Row(Dict[str, Any]):
     def __reversed__(self):
         return reversed(self.__handlers)
 
-    def keys(self):
+    def keys(self):  # type: ignore
         return iter(self.__handlers)
 
     def values(self):  # type: ignore
@@ -234,7 +234,7 @@ class Row(Dict[str, Any]):
                 if field.type in types:
                     continue
                 # NOTE: Move somehow to be in the json plugin
-                if json is True and field.type == "number" and field.float_number:
+                if json is True and field.type == "number" and field.float_number:  # type: ignore
                     continue
                 cell = result[index]
                 cell, _ = handler.writer(cell, ignore_missing=True)
