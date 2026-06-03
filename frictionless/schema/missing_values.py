@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Iterator, List, Optional, Union
+from typing import Any, Iterator, List, Optional, Sequence, Union
 
 import attrs
 from pydantic import BaseModel, ConfigDict
@@ -9,7 +9,7 @@ from .. import settings
 
 # Descriptor entries are either a plain string or an object with a value/label.
 # Per the datapackage spec the array is homogeneous: all strings OR all objects.
-IMissingValue = Union[str, dict[str, str]]
+IMissingValueEntry = Union[str, dict[str, str]]
 
 # JSON Schema profile shared by Field and Schema. The "anyOf" enforces the
 # homogeneity of the array (a mixed string/object array matches neither branch)
@@ -47,7 +47,7 @@ class MissingValue(BaseModel):
     label: Optional[str] = None
 
     @classmethod
-    def from_descriptor(cls, entry: IMissingValue) -> MissingValue:
+    def from_descriptor(cls, entry: IMissingValueEntry) -> MissingValue:
         if isinstance(entry, str):
             return cls(value=entry)
         return cls(**entry)
@@ -71,12 +71,27 @@ class MissingValues:
     as_objects: bool = False
 
     @classmethod
-    def from_descriptor(cls, descriptor: List[IMissingValue]) -> MissingValues:
+    def from_descriptor(cls, descriptor: Sequence[IMissingValueEntry]) -> MissingValues:
         as_objects = any(isinstance(entry, dict) for entry in descriptor)
         items = [MissingValue.from_descriptor(entry) for entry in descriptor]
         return cls(items=items, as_objects=as_objects)
 
-    def to_descriptor(self) -> List[IMissingValue]:
+    def validation_notes(self) -> List[str]:
+        """Notes describing why the collection is invalid (empty if valid).
+
+        Per the spec, each object entry must have a unique value and an
+        optional unique label. Labels left out do not collide with each other.
+        """
+        notes: List[str] = []
+        values = [item.value for item in self.items]
+        for value in _duplicates(values):
+            notes.append(f'missing value "{value}" is not unique')
+        labels = [item.label for item in self.items if item.label is not None]
+        for label in _duplicates(labels):
+            notes.append(f'missing value label "{label}" is not unique')
+        return notes
+
+    def to_descriptor(self) -> List[IMissingValueEntry]:
         if self.as_objects:
             return [item.model_dump(exclude_none=True) for item in self.items]
         return [item.value for item in self.items]
@@ -116,3 +131,14 @@ class MissingValues:
 
     def __contains__(self, cell: str) -> bool:
         return any(item.value == cell for item in self.items)
+
+
+def _duplicates(values: List[str]) -> List[str]:
+    """Values appearing more than once, each reported once in order."""
+    seen: set[str] = set()
+    duplicates: List[str] = []
+    for value in values:
+        if value in seen and value not in duplicates:
+            duplicates.append(value)
+        seen.add(value)
+    return duplicates

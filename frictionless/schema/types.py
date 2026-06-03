@@ -1,8 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Literal, Optional, Protocol, Tuple
+from typing import Any, Callable, Dict, List, Literal, Optional, Protocol, Tuple, Union
 
 from typing_extensions import Required, TypedDict
+
+
+class IMissingValue(TypedDict, total=False):
+    value: Required[str]
+    label: str
 
 
 class ISchema(TypedDict, total=False):
@@ -11,7 +16,7 @@ class ISchema(TypedDict, total=False):
     title: str
     description: str
     fields: Required[IField]
-    missingValues: List[str]
+    missingValues: List[Union[str, IMissingValue]]
     primary_key: List[str]
     foreign_keys: List[IForeignKey]
 
@@ -21,7 +26,7 @@ class IField(TypedDict, total=False):
     title: str
     description: str
     format: str
-    missingValues: List[str]
+    missingValues: List[Union[str, IMissingValue]]
 
 
 class IAnyField(IField, total=False):

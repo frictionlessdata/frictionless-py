@@ -282,6 +282,12 @@ class Field(Metadata):
                 )
                 yield errors.FieldError(note=note)
 
+        # Missing values
+        missing_values = descriptor.get("missingValues")
+        if missing_values is not None:
+            for note in MissingValues.from_descriptor(missing_values).validation_notes():
+                yield errors.FieldError(note=note)
+
         # Misleading
         for name in ["required"]:
             if name in descriptor:

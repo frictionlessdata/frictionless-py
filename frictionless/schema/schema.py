@@ -396,6 +396,12 @@ class Schema(Metadata, metaclass=Factory):
                 note = note % (fk["fields"], fk["reference"]["fields"])
                 yield errors.SchemaError(note=note)
 
+        # Missing values
+        missing_values = descriptor.get("missingValues")
+        if missing_values is not None:
+            for note in MissingValues.from_descriptor(missing_values).validation_notes():
+                yield errors.SchemaError(note=note)
+
     def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
         descriptor = super().metadata_export(exclude=exclude)
         if "missingValues" in descriptor:
