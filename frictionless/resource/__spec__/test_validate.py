@@ -509,8 +509,7 @@ def test_resource_validate_detector_sync_schema():
     )
     report = resource.validate()
     assert report.valid
-    # schema_sync no longer mutates the user-provided schema: the order
-    # given by the user is preserved.
+    # schema is nonmutated
     assert resource.schema.to_descriptor() == {
         "fields": [
             {"name": "id", "type": "integer"},
