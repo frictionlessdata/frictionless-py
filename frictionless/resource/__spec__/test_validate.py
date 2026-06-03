@@ -509,10 +509,11 @@ def test_resource_validate_detector_sync_schema():
     )
     report = resource.validate()
     assert report.valid
+    # schema is nonmutated
     assert resource.schema.to_descriptor() == {
         "fields": [
-            {"name": "name", "type": "string"},
             {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
         ],
     }
 

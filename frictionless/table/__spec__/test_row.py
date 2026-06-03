@@ -1,7 +1,9 @@
 import json
 from decimal import Decimal
 
+from frictionless import fields
 from frictionless.resources import TableResource
+from frictionless.table.row import Row, create_cell_handlers
 
 # General
 
@@ -17,6 +19,23 @@ def test_basic():
     assert row.errors == []
     assert row.to_list() == [1, 2, 3]
     assert row.to_dict() == {"field1": 1, "field2": 2, "field3": 3}
+
+
+def test_row_can_be_built_from_fields_list():
+    row = Row(
+        ["1", "2"],
+        handlers=create_cell_handlers(
+            [fields.IntegerField(name="a"), fields.IntegerField(name="b")]
+        ),
+        row_number=2,
+    )
+    assert row == {"a": 1, "b": 2}
+    assert row.field_names == ["a", "b"]
+    assert row.field_numbers == [1, 2]
+    assert row.row_number == 2
+    assert row.errors == []
+    assert row.to_list() == [1, 2]
+    assert row.to_dict() == {"a": 1, "b": 2}
 
 
 # Convert
