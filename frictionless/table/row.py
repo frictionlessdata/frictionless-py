@@ -20,6 +20,25 @@ class _CellHandler(NamedTuple):
     writer: Callable[..., Any]
 
 
+def create_cell_handlers(fields: List[Field]) -> Dict[str, _CellHandler]:
+    """Build the cell handlers for reading and writing rows.
+
+    For performance reasons, this must be computed once per row stream and reused for every row.
+    The fields are copied once here (not per row) to shield the schema's fields from
+    mutation by row consumers, while keeping `field.to_copy()` out of the per-row hot path.
+    """
+    handlers: Dict[str, _CellHandler] = {}
+    for field_number, field in enumerate(fields, start=1):
+        field = field.to_copy()
+        handlers[field.name] = _CellHandler(
+            field=field,
+            field_number=field_number,
+            reader=field.create_cell_reader(),
+            writer=field.create_cell_writer(),
+        )
+    return handlers
+
+
 # TODO: add types
 class Row(Dict[str, Any]):
     """Row representation
@@ -36,7 +55,8 @@ class Row(Dict[str, Any]):
 
     Parameters:
         cells (any[]): array of cells
-        fields (Field[]): schema fields, in the order expected in the data
+        handlers (dict): cell handlers shared by every row of the stream,
+            built once via `create_cell_handlers`
         row_number (int): row number from 1
     """
 
@@ -44,20 +64,11 @@ class Row(Dict[str, Any]):
         self,
         cells: List[Any],
         *,
-        fields: List[Field],
+        handlers: Dict[str, _CellHandler],
         row_number: int,
     ):
         self.__cells = cells
-        self.__field_copies: List[Field] = [field.to_copy() for field in fields]
-        self.__handlers: Dict[str, _CellHandler] = {
-            field.name: _CellHandler(
-                field=field,
-                field_number=field_number,
-                reader=field.create_cell_reader(),
-                writer=field.create_cell_writer(),
-            )
-            for field_number, field in enumerate(fields, start=1)
-        }
+        self.__handlers = handlers
         self.__row_number = row_number
         self.__processed: bool = False
         self.__blank_cells: Dict[str, Any] = {}
@@ -135,7 +146,7 @@ class Row(Dict[str, Any]):
         Returns:
             Field[]: table schema fields
         """
-        return self.__field_copies
+        return [handler.field for handler in self.__handlers.values()]
 
     @cached_property
     def field_names(self) -> List[str]:
@@ -244,7 +255,11 @@ class Row(Dict[str, Any]):
         return result
 
     def to_dict(
-        self, *, csv: bool = False, json: bool = False, types: Optional[List[str]] = None
+        self,
+        *,
+        csv: bool = False,
+        json: bool = False,
+        types: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Parameters:

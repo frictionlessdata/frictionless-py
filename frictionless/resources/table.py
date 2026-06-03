@@ -15,7 +15,7 @@ from ..indexer import Indexer
 from ..platform import platform
 from ..resource import Resource
 from ..system import system
-from ..table import Header, Lookup, Row, Table
+from ..table import Header, Lookup, Row, Table, create_cell_handlers
 from ..transformer import Transformer
 
 if TYPE_CHECKING:
@@ -272,8 +272,10 @@ class TableResource(Resource):
 
     def __open_row_stream(self):
         # The header knows the fields to expect in the data (in order, and
-        # accounting for schema_sync rules).
+        # accounting for schema_sync rules). The cell handlers only depend on
+        # those fields, so build them once here and reuse them for every row.
         expected_fields: List[Field] = self.header.get_expected_fields()
+        handlers = create_cell_handlers(expected_fields)
 
         # Create state
         memory_unique: Dict[str, Any] = {}
@@ -306,7 +308,7 @@ class TableResource(Resource):
 
                 row = Row(
                     cells,
-                    fields=expected_fields,
+                    handlers=handlers,
                     row_number=row_number,
                 )
 

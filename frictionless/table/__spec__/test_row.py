@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from frictionless import fields
 from frictionless.resources import TableResource
-from frictionless.table.row import Row
+from frictionless.table.row import Row, create_cell_handlers
 
 # General
 
@@ -24,7 +24,9 @@ def test_basic():
 def test_row_can_be_built_from_fields_list():
     row = Row(
         ["1", "2"],
-        fields=[fields.IntegerField(name="a"), fields.IntegerField(name="b")],
+        handlers=create_cell_handlers(
+            [fields.IntegerField(name="a"), fields.IntegerField(name="b")]
+        ),
         row_number=2,
     )
     assert row == {"a": 1, "b": 2}
