@@ -29,9 +29,11 @@ def create_cell_handlers(fields: List[Field]) -> Dict[str, _CellHandler]:
     """
     handlers: Dict[str, _CellHandler] = {}
     for field_number, field in enumerate(fields, start=1):
-        field = field.to_copy()
+        # Build the reader/writer from the original field so they keep the
+        # schema back-references (e.g. schema-level missingValues). Only the
+        # stored field, exposed via `Row.fields`, is copied for isolation.
         handlers[field.name] = _CellHandler(
-            field=field,
+            field=field.to_copy(),
             field_number=field_number,
             reader=field.create_cell_reader(),
             writer=field.create_cell_writer(),
