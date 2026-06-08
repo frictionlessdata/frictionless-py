@@ -576,6 +576,13 @@ class Metadata:
                     yield from Class.metadata_validate(value)  # type: ignore
 
     @classmethod
+    def _accepts_schema_profile(cls) -> bool:
+        """Whether the class declares the `schema_profile` field (i.e. handles
+        `$schema`). The `attrs.has` narrowing is kept local here to avoid
+        polluting the type of `cls` in the callers."""
+        return attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls)
+
+    @classmethod
     def metadata_import(
         cls,
         descriptor: types.IDescriptor,
@@ -595,10 +602,10 @@ class Metadata:
         # Only the subclasses declaring the `schema_profile` field
         # accept the kwarg; for the others `$schema` is
         # left in the descriptor and round-trips through `custom`.
-        if attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls):
+        if cls._accepts_schema_profile():
             schema_profile = descriptor.pop("$schema", None)
             if schema_profile is not None:
-                merged_options.setdefault("schema_profile", schema_profile)
+                merged_options.setdefault("schema_profile", schema_profile)  # type: ignore
         is_typed_class = isinstance(getattr(cls, "type", None), str)
         for name in profile.get("properties", {}):
             value = descriptor.pop(name, None)
