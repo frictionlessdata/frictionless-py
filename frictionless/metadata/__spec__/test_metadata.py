@@ -1,6 +1,6 @@
 import pytest
 
-from frictionless import Dialect, Metadata, Package, Resource, Schema, settings
+from frictionless import Dialect, Metadata, Package, Resource, Schema
 
 # General
 
