@@ -21,6 +21,7 @@ from typing import (
     Union,
 )
 
+import attrs
 from typing_extensions import Self
 
 from .. import helpers
@@ -589,6 +590,15 @@ class Metadata:
         merged_options = {}
         profile = cls.metadata_ensure_profile()
         basepath = options.pop("basepath", None)
+
+        # Special handling of `$schema`
+        # Only the subclasses declaring the `schema_profile` field
+        # accept the kwarg; for the others `$schema` is
+        # left in the descriptor and round-trips through `custom`.
+        if attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls):
+            schema_profile = descriptor.pop("$schema", None)
+            if schema_profile is not None:
+                merged_options.setdefault("schema_profile", schema_profile)
         is_typed_class = isinstance(getattr(cls, "type", None), str)
         for name in profile.get("properties", {}):
             value = descriptor.pop(name, None)
