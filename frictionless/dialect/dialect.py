@@ -26,6 +26,12 @@ class Dialect(Metadata, metaclass=Factory):
     # TODO: add docs
     """
 
+    _schema_profile: Optional[str] = attrs.field(default=None, alias="schema_profile")
+    """
+    `$schema` property value, a JSON-schema profile URL this metadata follows.
+    See `Metadata._schema_profile`.
+    """
+
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.
