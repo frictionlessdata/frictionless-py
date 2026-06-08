@@ -1,6 +1,6 @@
 import pytest
 
-from frictionless import Metadata, Package, Resource, Schema, settings
+from frictionless import Dialect, Metadata, Package, Resource, Schema, settings
 
 # General
 
@@ -63,8 +63,9 @@ SCHEMA_PROFILE = "https://datapackage.org/profiles/2.0/datapackage.json"
         (Package, {"resources": []}),
         (Schema, {"fields": []}),
         (Resource, {"name": "table", "path": "table.csv"}),
+        (Dialect, {}),
     ),
-    ids=["package", "schema", "resource"],
+    ids=["package", "schema", "resource", "dialect"],
 )
 def test_schema_profile_imported_from_descriptor(Entity, descriptor):
     metadata = Entity.from_descriptor({**descriptor, "$schema": SCHEMA_PROFILE})
@@ -79,8 +80,9 @@ def test_schema_profile_imported_from_descriptor(Entity, descriptor):
         (Package, {"resources": []}),
         (Schema, {"fields": []}),
         (Resource, {"name": "table", "path": "table.csv"}),
+        (Dialect, {}),
     ),
-    ids=["package", "schema", "resource"],
+    ids=["package", "schema", "resource", "dialect"],
 )
 def test_schema_profile_exported_to_descriptor(Entity, kwargs):
     metadata = Entity(schema_profile=SCHEMA_PROFILE, **kwargs)
