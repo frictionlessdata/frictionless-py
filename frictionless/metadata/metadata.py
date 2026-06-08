@@ -642,5 +642,10 @@ class Metadata:
             if isinstance(value, (list, dict)):
                 value = deepcopy(value)  # type: ignore
             descriptor[name] = value
+
+        # Special handling of `$schema`
+        if self._schema_profile is not None:
+            descriptor["$schema"] = self._schema_profile
+
         descriptor.update(self.custom)  # type: ignore
         return descriptor  # type: ignore
