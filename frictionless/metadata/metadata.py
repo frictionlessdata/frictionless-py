@@ -66,6 +66,13 @@ class Metadata:
     classe's "profile" (See the "metadata_profile_*" properties)
     """
 
+    _schema_profile: Optional[str] = None
+    """
+    `$schema` property value, a JSON-schema profile URL this metadata follows.
+    It is (de)serialized specially in `metadata_import`/`metadata_export` because
+    `$schema` is not a valid Python identifier.
+    """
+
     def __new__(cls, *args: Any, **kwargs: Any):
         obj = super().__new__(cls)
         obj.custom = obj.custom.copy()
