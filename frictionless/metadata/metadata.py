@@ -20,11 +20,12 @@ from typing import (
     Type,
     Union,
 )
+from urllib.parse import urlparse
 
 import attrs
 from typing_extensions import Self
 
-from .. import helpers
+from .. import helpers, settings
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..vendors import stringcase
@@ -73,6 +74,59 @@ class Metadata:
     It is (de)serialized specially in `metadata_import`/`metadata_export` because
     `$schema` is not a valid Python identifier.
     """
+
+    _inherited_datapackage_version: Optional[types.IStandards] = None
+    """
+    Data Package standard version pushed in by a parent entity (e.g. a `Package`
+    pushing into its `Resource`s during `metadata_import`). When set, it takes
+    precedence over the version this entity would infer on its own.
+    """
+
+    @property
+    def datapackage_version(self) -> types.IStandards:
+        """Resolve the Data Package standard version for this entity.
+
+        A version pushed in by a parent (`_inherited_datapackage_version`) takes
+        precedence; otherwise the version is resolved from this entity's own
+        `$schema` value.
+        """
+        if self._inherited_datapackage_version:
+            return self._inherited_datapackage_version
+        return self._resolve_datapackage_version(self._schema_profile)
+
+    def inherit(self, datapackage_version: types.IStandards) -> Self:
+        """Adopt the Data Package standard version resolved by a parent entity.
+
+        Used on the programmatic path (e.g. `Package.add_resource`), where the
+        version cannot be pushed in at construction time. Returns the entity;
+        it currently mutates in place, but will return a copy once descriptors
+        become immutable.
+        """
+        self._inherited_datapackage_version = datapackage_version
+        return self
+
+    @staticmethod
+    def _resolve_datapackage_version(
+        schema_profile: Optional[str],
+    ) -> types.IStandards:
+        """Resolve the Data Package standard version from a `$schema` value.
+
+        - a missing `$schema` defaults to "v1" (as mandated by the spec);
+        - a standard datapackage.org profile uses the version from its URL;
+        - any custom profile falls back to `DEFAULT_CUSTOM_PROFILE_STANDARDS`.
+        """
+        if not schema_profile:
+            return "v1"
+
+        url = urlparse(schema_profile)
+        if url.netloc == "datapackage.org":
+            match = re.search(r"/profiles/(\d+)\.\d+/", url.path)
+            if match:
+                if match.group(1) == "1":
+                    return "v1"
+                if match.group(1) == "2":
+                    return "v2"
+        return settings.DEFAULT_CUSTOM_PROFILE_DATAPACKAGE_VERSION
 
     def __new__(cls, *args: Any, **kwargs: Any):
         obj = super().__new__(cls)
@@ -583,6 +637,17 @@ class Metadata:
         return attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls)
 
     @classmethod
+    def _inherited_options(cls, datapackage_version: types.IStandards) -> Dict[str, Any]:
+        """Options a parent pushes into this child class during `metadata_import`.
+
+        Only classes declaring the `_inherited_datapackage_version` field accept
+        the pushed standard version; for the others nothing is pushed.
+        """
+        if attrs.has(cls) and "_inherited_datapackage_version" in attrs.fields_dict(cls):
+            return {"inherited_datapackage_version": datapackage_version}
+        return {}
+
+    @classmethod
     def metadata_import(
         cls,
         descriptor: types.IDescriptor,
@@ -607,6 +672,11 @@ class Metadata:
             if schema_profile is not None:
                 merged_options.setdefault("schema_profile", schema_profile)  # type: ignore
         is_typed_class = isinstance(getattr(cls, "type", None), str)
+        # Standard version pushed down to children that support inheritance
+        # (e.g. a `Package` pushing into its `Resource`s).
+        inherited_version = options.get(
+            "inherited_datapackage_version"
+        ) or cls._resolve_datapackage_version(merged_options.get("schema_profile"))
         for name in profile.get("properties", {}):
             value = descriptor.pop(name, None)
             if value is None or value == {}:
@@ -620,11 +690,23 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)  # type: ignore
+                            value[ix] = ItemClass.metadata_import(  # type: ignore
+                                item,
+                                basepath=basepath,
+                                **ItemClass._inherited_options(inherited_version),
+                            )
                         elif isinstance(item, str):
-                            value[ix] = Class.from_descriptor(item, basepath=basepath)
+                            value[ix] = Class.from_descriptor(
+                                item,
+                                basepath=basepath,
+                                **Class._inherited_options(inherited_version),
+                            )
                 elif isinstance(value, dict):
-                    value = Class.metadata_import(value, basepath=basepath)  # type: ignore
+                    value = Class.metadata_import(  # type: ignore
+                        value,
+                        basepath=basepath,
+                        **Class._inherited_options(inherited_version),
+                    )
             merged_options.setdefault(stringcase.snakecase(name), value)  # type: ignore
         merged_options.update(options)  # type: ignore
         if with_basepath:

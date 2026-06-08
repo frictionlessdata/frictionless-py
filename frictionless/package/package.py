@@ -146,7 +146,7 @@ class Package(Metadata, metaclass=Factory):
     The datetime must conform to the string formats for RFC3339 datetime,
     """
 
-    resources: List[Resource] = attrs.field(factory=list)
+    _resources: List[Resource] = attrs.field(factory=list, alias="resources")
     """
     A list of resource descriptors.
     It can be dicts or Resource instances
@@ -169,7 +169,16 @@ class Package(Metadata, metaclass=Factory):
     """
 
     def __attrs_post_init__(self):
+        # `resources` is stored in the `_resources` field (so the `resources`
+        # property/setter can drive standard-version inheritance). Because
+        # `add_resource` mutates the list in place rather than reassigning it,
+        # and the underscore field bypasses `Metadata.__setattr__` tracking,
+        # we mark `resources` as defined here so it is always exported (it is a
+        # required property anyway). Mirrors `Resource.__attrs_post_init__`
+        # doing the same for `dialect`.
+        self.add_defined("resources")
         for resource in self.resources:
+            resource.inherit(self.datapackage_version)
             resource.package = self
             if self._dialect:
                 resource.dialect = self._dialect
@@ -195,6 +204,17 @@ class Package(Metadata, metaclass=Factory):
     # Resources
 
     @property
+    def resources(self) -> List[Resource]:
+        """A list of resources of the package"""
+        return self._resources
+
+    @resources.setter
+    def resources(self, resources: List[Resource]):
+        self._resources = []
+        for resource in resources:
+            self.add_resource(resource)
+
+    @property
     def resource_names(self) -> List[str]:
         """Return names of resources"""
         return [resource.name for resource in self.resources if resource.name is not None]  # type: ignore
@@ -207,7 +227,13 @@ class Package(Metadata, metaclass=Factory):
     def add_resource(self, resource: Union[Resource, str]) -> Resource:
         """Add new resource to the package"""
         if isinstance(resource, str):
-            resource = Resource.from_descriptor(resource, basepath=self.basepath)
+            resource = Resource.from_descriptor(
+                resource,
+                basepath=self.basepath,
+                inherited_datapackage_version=self.datapackage_version,
+            )
+        else:
+            resource = resource.inherit(self.datapackage_version)
         self.resources.append(resource)
         resource.package = self
         return resource

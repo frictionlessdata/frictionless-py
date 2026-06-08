@@ -209,6 +209,12 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     See `Metadata._schema_profile`.
     """
 
+    _inherited_datapackage_version: Optional[types.IStandards] = None
+    """
+    Data Package standard version pushed in by a parent `Package`.
+    See `Metadata._inherited_datapackage_version`.
+    """
+
     detector: Detector = attrs.field(factory=Detector)
     """
     File/table detector.
@@ -257,6 +263,14 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         self.add_defined("mediatype")
         self.add_defined("dialect")
         self.add_defined("stats")
+
+        # Push the resolved standard version into pre-built children. A child
+        # given as a path (str) is left untouched here; the getter inherits when
+        # it materializes the descriptor.
+        if isinstance(self._schema, Schema):
+            self._schema.inherit(self.datapackage_version)
+        if isinstance(self._dialect, Dialect):
+            self._dialect.inherit(self.datapackage_version)
 
         super().__attrs_post_init__()
 
@@ -325,21 +339,29 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     @property
     def dialect(self) -> Dialect:
         if isinstance(self._dialect, str):
-            self._dialect = Dialect.from_descriptor(self._dialect, basepath=self.basepath)
+            self._dialect = Dialect.from_descriptor(
+                self._dialect, basepath=self.basepath
+            ).inherit(self.datapackage_version)
         return self._dialect
 
     @dialect.setter
     def dialect(self, value: Union[Dialect, str]):
+        if isinstance(value, Dialect):
+            value = value.inherit(self.datapackage_version)
         self._dialect = value
 
     @property
     def schema(self) -> Schema:
         if isinstance(self._schema, str):
-            self._schema = Schema.from_descriptor(self._schema, basepath=self.basepath)
+            self._schema = Schema.from_descriptor(
+                self._schema, basepath=self.basepath
+            ).inherit(self.datapackage_version)
         return self._schema
 
     @schema.setter
     def schema(self, value: Union[Schema, str]):
+        if isinstance(value, Schema):
+            value = value.inherit(self.datapackage_version)
         self._schema = value
 
     @property

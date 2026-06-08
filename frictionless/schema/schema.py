@@ -40,6 +40,12 @@ class Schema(Metadata, metaclass=Factory):
     See `Metadata._schema_profile`.
     """
 
+    _inherited_datapackage_version: Optional[types.IStandards] = None
+    """
+    Data Package standard version pushed in by a parent `Package`.
+    See `Metadata._inherited_datapackage_version`.
+    """
+
     # TODO: why it's optional??
     name: Optional[str] = None
     """
@@ -317,7 +323,10 @@ class Schema(Metadata, metaclass=Factory):
                             "required": ["resource", "fields"],
                             "properties": {
                                 "resource": {"type": "string"},
-                                "fields": {"type": "array", "items": {"type": "string"}},
+                                "fields": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
                             },
                         },
                     },

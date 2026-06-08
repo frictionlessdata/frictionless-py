@@ -32,6 +32,12 @@ class Dialect(Metadata, metaclass=Factory):
     See `Metadata._schema_profile`.
     """
 
+    _inherited_datapackage_version: Optional[types.IStandards] = None
+    """
+    Data Package standard version pushed in by a parent `Package`.
+    See `Metadata._inherited_datapackage_version`.
+    """
+
     name: Optional[str] = None
     """
     A short url-usable (and preferably human-readable) name.

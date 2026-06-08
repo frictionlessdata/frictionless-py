@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import os
 
+from .types import IStandards
+
 # Version
 
 VERSION = "5.19.0"
@@ -18,6 +20,12 @@ COMPRESSION_FORMATS = ["zip", "gz", "bz2", "xz"]
 # Defaults
 
 DEFAULT_STANDARDS = "v2"
+
+# Standards version assumed when a Data Package `$schema` points to a custom
+# (non datapackage.org) profile, whose base version cannot be inferred from the
+# URL.
+DEFAULT_CUSTOM_PROFILE_DATAPACKAGE_VERSION: IStandards = "v2"
+
 DEFAULT_TYPE = "file"
 DEFAULT_ENCODING = "utf-8"
 DEFAULT_INNERPATH = ""
@@ -53,9 +61,7 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
-DEFAULT_HTTP_HEADERS = {
-    "User-Agent": "frictionless-py/" + VERSION
-}
+DEFAULT_HTTP_HEADERS = {"User-Agent": "frictionless-py/" + VERSION}
 DEFAULT_FIELD_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},
