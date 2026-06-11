@@ -92,6 +92,10 @@ class Field(Metadata):
         if name == "type":
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
+        if name == "missing_values" and isinstance(value, list):
+            value = [
+                item["value"] if isinstance(item, dict) else item for item in value
+            ]
         return super().__setattr__(name, value)  # type: ignore
 
     @property
@@ -210,8 +214,23 @@ class Field(Metadata):
             "description": {"type": "string"},
             "format": {"type": "string"},
             "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
+                "anyOf": [
+                    {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["value"],
+                            "properties": {
+                                "value": {"type": "string"},
+                                "label": {"type": "string"},
+                            },
+                        },
+                    },
+                ],
             },
             "constraints": {
                 "type": "object",
