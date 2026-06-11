@@ -278,8 +278,16 @@ class Metadata:
         return metadata  # type: ignore
 
     def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
-        """Return a descriptor associated to the class instance.
-        If `validate = True`, the descriptor will additionnaly be validated.
+        """Export the instance as a descriptor.
+
+        The descriptor is a canonical form of the metadata: it preserves all
+        the information the instance holds, but is not guaranteed to be
+        syntactically identical to the descriptor the instance was created
+        from (equivalent notations are normalized). Exporting is idempotent:
+        re-importing the result and exporting it again returns the same
+        descriptor.
+
+        If `validate = True`, the descriptor will additionally be validated.
         """
         descriptor = self.metadata_export()
         if validate:
