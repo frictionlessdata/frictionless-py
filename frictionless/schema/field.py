@@ -93,6 +93,11 @@ class Field(Metadata):
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
         if name == "missing_values" and isinstance(value, list):
+            self._missing_values_labels = {
+                item["value"]: item["label"]
+                for item in value
+                if isinstance(item, dict) and item.get("label") is not None
+            }
             value = [
                 item["value"] if isinstance(item, dict) else item for item in value
             ]
@@ -305,6 +310,24 @@ class Field(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
+
+    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+
+        # Canonical form: object entries if and only if at least one label exists
+        missing_values = descriptor.get("missingValues")
+        labels = getattr(self, "_missing_values_labels", {})
+        if isinstance(missing_values, list) and any(
+            value in labels for value in missing_values
+        ):
+            descriptor["missingValues"] = [
+                {"value": value, "label": labels[value]}
+                if value in labels
+                else {"value": value}
+                for value in missing_values
+            ]
+
+        return descriptor
 
 
 # Internal
