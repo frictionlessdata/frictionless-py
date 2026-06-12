@@ -84,6 +84,18 @@ class Schema(Metadata, metaclass=Factory):
     Specifies the foreign keys for the schema.
     """
 
+    def __setattr__(self, name: str, value: Any):  # type: ignore
+        if name == "missing_values" and isinstance(value, list):
+            self._missing_values_labels = {
+                item["value"]: item["label"]
+                for item in value
+                if isinstance(item, dict) and item.get("label") is not None
+            }
+            value = [
+                item["value"] if isinstance(item, dict) else item for item in value
+            ]
+        return super().__setattr__(name, value)  # type: ignore
+
     def __attrs_post_init__(self):
         for field in self.fields:
             field.schema = self
@@ -299,8 +311,23 @@ class Schema(Metadata, metaclass=Factory):
             "description": {"type": "string"},
             "fields": {"type": "array"},
             "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
+                "anyOf": [
+                    {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["value"],
+                            "properties": {
+                                "value": {"type": "string"},
+                                "label": {"type": "string"},
+                            },
+                        },
+                    },
+                ],
             },
             "primaryKey": {
                 "type": "array",

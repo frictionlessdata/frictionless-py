@@ -87,6 +87,27 @@ def test_schema_read_cells_null_values():
     assert len(notes) == 5
 
 
+def test_schema_read_cells_object_missing_values():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "age", "type": "integer"},
+            ],
+            "missingValues": [
+                {"value": "", "label": "OMITTED"},
+                {"value": "-99", "label": "REFUSED"},
+            ],
+        }
+    )
+    assert schema.missing_values == ["", "-99"]
+    source = ["-99", ""]
+    target = [None, None]
+    cells, notes = schema.read_cells(source)
+    assert cells == target
+    assert len(notes) == 2
+
+
 def test_schema_read_cells_too_short():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string"]
