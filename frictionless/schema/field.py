@@ -269,6 +269,12 @@ class Field(Metadata):
                 note = f'constraint "{name}" is not supported by type "{cls.type}"'
                 yield errors.FieldError(note=note)
 
+        # Missing Values
+        for note in missing_values_module.validation_notes(
+            descriptor.get("missingValues", [])
+        ):
+            yield errors.FieldError(note=note)
+
         # Examples
         example = descriptor.get("example")
         if example:

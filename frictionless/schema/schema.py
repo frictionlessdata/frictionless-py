@@ -397,6 +397,12 @@ class Schema(Metadata, metaclass=Factory):
                 note = note % (pk, field_names)
                 yield errors.SchemaError(note=note)
 
+        # Missing Values
+        for note in missing_values_module.validation_notes(
+            descriptor.get("missingValues", [])
+        ):
+            yield errors.SchemaError(note=note)
+
         # Foreign Keys
         fks = descriptor.get("foreignKeys", [])
         for fk in fks:

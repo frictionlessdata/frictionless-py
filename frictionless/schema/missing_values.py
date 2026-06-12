@@ -45,6 +45,29 @@ def split(entries: IEntries) -> Tuple[List[str], Dict[str, str]]:
     return values, labels
 
 
+def validation_notes(entries: IEntries) -> List[str]:
+    """Uniqueness notes for object entries (empty if valid)
+
+    Object entries must have a unique value and an optional unique label;
+    absent labels do not collide with each other. Plain string entries keep
+    the lax v1 behavior (duplicates allowed).
+    """
+    notes: List[str] = []
+    if not any(isinstance(entry, dict) for entry in entries):
+        return notes
+    values = [entry["value"] if isinstance(entry, dict) else entry for entry in entries]
+    for value in _duplicates(values):
+        notes.append(f'missing value "{value}" is not unique')
+    labels = [
+        entry["label"]
+        for entry in entries
+        if isinstance(entry, dict) and entry.get("label") is not None
+    ]
+    for label in _duplicates(labels):
+        notes.append(f'missing value label "{label}" is not unique')
+    return notes
+
+
 def export(
     values: List[str], labels: Dict[str, str]
 ) -> Union[List[str], List[Dict[str, str]]]:
@@ -59,3 +82,14 @@ def export(
         )
         for value in values
     ]
+
+
+def _duplicates(values: List[str]) -> List[str]:
+    """Values appearing more than once, each reported once in order"""
+    seen: set[str] = set()
+    duplicates: List[str] = []
+    for value in values:
+        if value in seen and value not in duplicates:
+            duplicates.append(value)
+        seen.add(value)
+    return duplicates
