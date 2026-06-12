@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Optional, Union, cast
 
 import attrs
 from tabulate import tabulate
@@ -9,6 +9,7 @@ from .. import errors, settings, types
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
+from . import missing_values as missing_values_module
 from .factory import Factory
 from .field import Field
 from .types import INotes
@@ -86,14 +87,9 @@ class Schema(Metadata, metaclass=Factory):
 
     def __setattr__(self, name: str, value: Any):  # type: ignore
         if name == "missing_values" and isinstance(value, list):
-            self._missing_values_labels = {
-                item["value"]: item["label"]
-                for item in value
-                if isinstance(item, dict) and item.get("label") is not None
-            }
-            value = [
-                item["value"] if isinstance(item, dict) else item for item in value
-            ]
+            value, self._missing_values_labels = missing_values_module.split(
+                cast(missing_values_module.IEntries, value)
+            )
         return super().__setattr__(name, value)  # type: ignore
 
     def __attrs_post_init__(self):
@@ -310,25 +306,7 @@ class Schema(Metadata, metaclass=Factory):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
-            "missingValues": {
-                "anyOf": [
-                    {
-                        "type": "array",
-                        "items": {"type": "string"},
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": ["value"],
-                            "properties": {
-                                "value": {"type": "string"},
-                                "label": {"type": "string"},
-                            },
-                        },
-                    },
-                ],
-            },
+            "missingValues": missing_values_module.PROFILE,
             "primaryKey": {
                 "type": "array",
                 "items": {"type": "string"},
@@ -382,6 +360,18 @@ class Schema(Metadata, metaclass=Factory):
                     fk["fields"] = [fk["fields"]]
                 if not isinstance(fk["reference"]["fields"], list):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
+
+    def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+
+        missing_values = descriptor.get("missingValues")
+        if isinstance(missing_values, list):
+            descriptor["missingValues"] = missing_values_module.export(
+                cast(List[str], missing_values),
+                getattr(self, "_missing_values_labels", {}),
+            )
+
+        return descriptor
 
     @classmethod
     def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore

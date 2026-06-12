@@ -3,7 +3,17 @@ from __future__ import annotations
 import decimal
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Pattern,
+    cast,
+)
 
 import attrs
 
@@ -11,6 +21,7 @@ from .. import errors, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..system import system
+from . import missing_values as missing_values_module
 
 if TYPE_CHECKING:
     from ..types import IDescriptor
@@ -93,14 +104,9 @@ class Field(Metadata):
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
         if name == "missing_values" and isinstance(value, list):
-            self._missing_values_labels = {
-                item["value"]: item["label"]
-                for item in value
-                if isinstance(item, dict) and item.get("label") is not None
-            }
-            value = [
-                item["value"] if isinstance(item, dict) else item for item in value
-            ]
+            value, self._missing_values_labels = missing_values_module.split(
+                cast(missing_values_module.IEntries, value)
+            )
         return super().__setattr__(name, value)  # type: ignore
 
     @property
@@ -218,25 +224,7 @@ class Field(Metadata):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "format": {"type": "string"},
-            "missingValues": {
-                "anyOf": [
-                    {
-                        "type": "array",
-                        "items": {"type": "string"},
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": ["value"],
-                            "properties": {
-                                "value": {"type": "string"},
-                                "label": {"type": "string"},
-                            },
-                        },
-                    },
-                ],
-            },
+            "missingValues": missing_values_module.PROFILE,
             "constraints": {
                 "type": "object",
                 "properties": {
@@ -314,18 +302,12 @@ class Field(Metadata):
     def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
         descriptor = super().metadata_export(exclude=exclude)
 
-        # Canonical form: object entries if and only if at least one label exists
         missing_values = descriptor.get("missingValues")
-        labels = getattr(self, "_missing_values_labels", {})
-        if isinstance(missing_values, list) and any(
-            value in labels for value in missing_values
-        ):
-            descriptor["missingValues"] = [
-                {"value": value, "label": labels[value]}
-                if value in labels
-                else {"value": value}
-                for value in missing_values
-            ]
+        if isinstance(missing_values, list):
+            descriptor["missingValues"] = missing_values_module.export(
+                cast(List[str], missing_values),
+                getattr(self, "_missing_values_labels", {}),
+            )
 
         return descriptor
 
