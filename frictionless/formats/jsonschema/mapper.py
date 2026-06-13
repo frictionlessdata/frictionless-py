@@ -27,14 +27,16 @@ class JsonschemaMapper(Mapper):
             # Field
             assert isinstance(name, str)
             assert isinstance(prop, dict)
-            field = Field.from_descriptor({"type": type, "name": name})
-            schema.add_field(field)
-
+            field_descriptor = {"type": type, "name": name}
+            
             # Description
             description = prop.get("description")  # type: ignore
             if description:
                 assert isinstance(description, str)
-                field.description = description
+                field_descriptor["description"] = description
+            
+            field = Field.from_descriptor(field_descriptor)
+            schema.add_field(field)
 
             # Required
             if name in required:

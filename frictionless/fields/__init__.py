@@ -1,6 +1,6 @@
 from .any import AnyField as AnyField
 from .array import ArrayField as ArrayField
-from .boolean import BooleanField as BooleanField
+from .boolean import BooleanField
 from .date import DateField as DateField
 from .datetime import DatetimeField as DatetimeField
 from .duration import DurationField as DurationField
