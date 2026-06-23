@@ -398,10 +398,21 @@ class Schema(Metadata, metaclass=Factory):
                 yield errors.SchemaError(note=note)
 
         # Missing Values
-        for note in missing_values_module.validation_notes(
-            descriptor.get("missingValues", [])
-        ):
+        missing_values = descriptor.get("missingValues", [])
+        for note in missing_values_module.validation_notes(missing_values):
             yield errors.SchemaError(note=note)
+
+        # Missing Values version gate
+        # Read `$schema` directly: the version is only gated when explicitly
+        # declared (an absent `$schema` stays lenient), and `$schema` is still
+        # in the descriptor at validation time (popped later, in metadata_import).
+        schema_profile = descriptor.get("$schema")
+        if schema_profile:
+            version = cls._resolve_datapackage_version(schema_profile)
+            for note in missing_values_module.version_gate_notes(
+                missing_values, version
+            ):
+                yield errors.SchemaError(note=note)
 
         # Foreign Keys
         fks = descriptor.get("foreignKeys", [])

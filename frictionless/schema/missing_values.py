@@ -9,7 +9,7 @@ least one current value has a label.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 IEntries = List[Union[str, Dict[str, str]]]
 
@@ -66,6 +66,20 @@ def validation_notes(entries: IEntries) -> List[str]:
     for label in _duplicates(labels):
         notes.append(f'missing value label "{label}" is not unique')
     return notes
+
+
+def version_gate_notes(entries: IEntries, version: Optional[str]) -> List[str]:
+    """Notes when object entries appear under an explicitly declared v1 schema
+
+    The object form `{value, label?}` is a datapackage v2 addition. It is
+    rejected only when the version is explicitly resolved to v1; an undeclared
+    version (`None`) stays lenient and accepts the v1 union v2 superset.
+    """
+    if version != "v1":
+        return []
+    if not any(isinstance(entry, dict) for entry in entries):
+        return []
+    return ["missing values in object form require datapackage v2"]
 
 
 def export(

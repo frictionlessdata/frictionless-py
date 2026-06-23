@@ -20,17 +20,17 @@ from typing import (
     Type,
     Union,
 )
+from urllib.parse import urlparse
 
 import attrs
 from typing_extensions import Self
 
-from .. import helpers
+from .. import helpers, settings, types
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..vendors import stringcase
 
 if TYPE_CHECKING:
-    from .. import types
     from ..error import Error
     from ..report import Report
 
@@ -589,6 +589,28 @@ class Metadata:
         `$schema`). The `attrs.has` narrowing is kept local here to avoid
         polluting the type of `cls` in the callers."""
         return attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls)
+
+    @staticmethod
+    def _resolve_datapackage_version(
+        schema_profile: Optional[str],
+    ) -> types.IStandards:
+        """Resolve the Data Package standard version from a `$schema` value.
+
+        - a missing `$schema` defaults to "v1" (as mandated by the spec);
+        - a standard datapackage.org profile uses the version from its URL;
+        - any custom profile falls back to the latest known standard.
+        """
+        if not schema_profile:
+            return "v1"
+        url = urlparse(schema_profile)
+        if url.netloc == "datapackage.org":
+            match = re.search(r"/profiles/(\d+)\.\d+/", url.path)
+            if match:
+                if match.group(1) == "1":
+                    return "v1"
+                if match.group(1) == "2":
+                    return "v2"
+        return settings.DEFAULT_STANDARDS
 
     @classmethod
     def metadata_import(

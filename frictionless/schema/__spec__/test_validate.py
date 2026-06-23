@@ -98,6 +98,49 @@ def test_validate_field_missing_values_uniqueness():
     ]
 
 
+# Missing values (version gate)
+#
+# The object form `{value, label?}` is a datapackage v2 addition.
+# It is rejected only under an explicitly declared v1 `$schema`.
+# An absent `$schema` (undeclared version) keeps accepting the v1 union v2
+# superset, and a custom (unrecognized) profile is treated as v2 by default.
+
+V1_PROFILE = "https://datapackage.org/profiles/1.0/tableschema.json"
+V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
+CUSTOM_PROFILE = "https://example.com/profiles/custom-tableschema.json"
+
+OBJECT_MISSING_VALUES = [{"value": "-99", "label": "REFUSED"}]
+
+MISSING_VALUES_VERSION_GATE_CASES = [
+    (
+        "v1-objects-rejected",
+        V1_PROFILE,
+        OBJECT_MISSING_VALUES,
+        [["schema-error", "missing values in object form require datapackage v2"]],
+    ),
+    ("v1-strings-valid", V1_PROFILE, ["", "NA"], []),
+    ("v2-objects-valid", V2_PROFILE, OBJECT_MISSING_VALUES, []),
+    ("custom-objects-valid", CUSTOM_PROFILE, OBJECT_MISSING_VALUES, []),
+    ("no-schema-objects-valid", None, OBJECT_MISSING_VALUES, []),
+]
+
+
+@pytest.mark.parametrize(
+    "name, schema, source, expected",
+    MISSING_VALUES_VERSION_GATE_CASES,
+    ids=[case[0] for case in MISSING_VALUES_VERSION_GATE_CASES],
+)
+def test_validate_missing_values_version_gate(name, schema, source, expected):
+    descriptor = {
+        "fields": [{"name": "name", "type": "string"}],
+        "missingValues": source,
+    }
+    if schema is not None:
+        descriptor["$schema"] = schema
+    report = Schema.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
 def test_validate_inline_set_default_field_type_if_missing():
     report = Schema.validate_descriptor(
         {"fields": [{"name": "name"}, {"name": "id", "type": "integer"}]}
