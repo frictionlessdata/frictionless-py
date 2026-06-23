@@ -543,6 +543,7 @@ class Metadata:
         *,
         profile: Optional[Union[types.IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
+        datapackage_version: Optional[types.IStandards] = None,
     ) -> Generator[Error, None, None]:
         """Validates a descriptor according to a profile
 
@@ -551,6 +552,12 @@ class Metadata:
 
         The profile to validate can be set explicitely ("profile" parameter),
         otherwise it defaults to the class profile.
+
+        "datapackage_version" is the Data Package standard version imposed by an
+        ancestor's `$schema` (top-down inheritance). When `None`, the descriptor
+        may declare its own `$schema`; the resulting version is propagated to all
+        children. Subclasses read it (via `metadata_effective_datapackage_version`)
+        to gate version-specific properties.
         """
         Error = error_class
         if not Error:
@@ -570,6 +577,7 @@ class Metadata:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
 
+        version = cls.effective_datapackage_version(descriptor, datapackage_version)
         for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
@@ -579,9 +587,15 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            yield from ItemClass.metadata_validate(item)  # type: ignore
+                            yield from ItemClass.metadata_validate(
+                                item,  # type: ignore
+                                datapackage_version=version,
+                            )
                 elif isinstance(value, dict):
-                    yield from Class.metadata_validate(value)  # type: ignore
+                    yield from Class.metadata_validate(
+                        value,  # type: ignore
+                        datapackage_version=version,
+                    )
 
     @classmethod
     def _accepts_schema_profile(cls) -> bool:
@@ -611,6 +625,26 @@ class Metadata:
                 if match.group(1) == "2":
                     return "v2"
         return settings.DEFAULT_STANDARDS
+
+    @classmethod
+    def effective_datapackage_version(
+        cls,
+        descriptor: types.IDescriptor,
+        inherited: Optional[types.IStandards],
+    ) -> Optional[types.IStandards]:
+        """Version imposed top-down on this descriptor and its descendants.
+
+        An ancestor's `$schema` wins (a descendant cannot escape it); otherwise
+        the descriptor's own `$schema`, if any, sets the version. Returns `None`
+        when no `$schema` is declared anywhere in the chain (undeclared version,
+        which validation treats leniently).
+        """
+        if inherited is not None:
+            return inherited
+        schema_profile = descriptor.get("$schema")
+        if schema_profile:
+            return cls._resolve_datapackage_version(schema_profile)
+        return None
 
     @classmethod
     def metadata_import(

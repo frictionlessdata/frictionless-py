@@ -24,7 +24,7 @@ from ..system import system
 from . import missing_values as missing_values_module
 
 if TYPE_CHECKING:
-    from ..types import IDescriptor
+    from ..types import IDescriptor, IStandards
     from . import types
     from .schema import Schema
 
@@ -61,9 +61,7 @@ class Field(Metadata):
     For example: "default","array" etc.
     """
 
-    missing_values: List[str] = attrs.field(
-        factory=settings.DEFAULT_MISSING_VALUES.copy
-    )
+    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
     List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
@@ -257,8 +255,15 @@ class Field(Metadata):
             descriptor["format"] = format.replace("fmt:", "")
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: IDescriptor,
+        *,
+        datapackage_version: Optional[IStandards] = None,
+    ):
+        metadata_errors = list(
+            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
@@ -270,9 +275,17 @@ class Field(Metadata):
                 yield errors.FieldError(note=note)
 
         # Missing Values
-        for note in missing_values_module.validation_notes(
-            descriptor.get("missingValues", [])
-        ):
+        missing_values = descriptor.get("missingValues", [])
+        for note in missing_values_module.validation_notes(missing_values):
+            yield errors.FieldError(note=note)
+
+        # Missing Values version gate
+        # A field never declares its own `$schema`; the version is the one
+        # imposed top-down by an ancestor (`None` undeclared stays lenient).
+        version = cls.metadata_effective_datapackage_version(
+            descriptor, datapackage_version
+        )
+        for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.FieldError(note=note)
 
         # Examples
@@ -294,9 +307,7 @@ class Field(Metadata):
                     field.false_values = descriptor["falseValues"]
             _, notes = field.read_cell(example)
             if notes is not None:
-                note = (
-                    f'example value "{example}" for field "{field.name}" is not valid'
-                )
+                note = f'example value "{example}" for field "{field.name}" is not valid'
                 yield errors.FieldError(note=note)
 
         # Misleading

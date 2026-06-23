@@ -110,13 +110,14 @@ V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
 CUSTOM_PROFILE = "https://example.com/profiles/custom-tableschema.json"
 
 OBJECT_MISSING_VALUES = [{"value": "-99", "label": "REFUSED"}]
+GATE_NOTE = "missing values in object form require datapackage v2"
 
 MISSING_VALUES_VERSION_GATE_CASES = [
     (
         "v1-objects-rejected",
         V1_PROFILE,
         OBJECT_MISSING_VALUES,
-        [["schema-error", "missing values in object form require datapackage v2"]],
+        [["schema-error", GATE_NOTE]],
     ),
     ("v1-strings-valid", V1_PROFILE, ["", "NA"], []),
     ("v2-objects-valid", V2_PROFILE, OBJECT_MISSING_VALUES, []),
@@ -134,6 +135,37 @@ def test_validate_missing_values_version_gate(name, schema, source, expected):
     descriptor = {
         "fields": [{"name": "name", "type": "string"}],
         "missingValues": source,
+    }
+    if schema is not None:
+        descriptor["$schema"] = schema
+    report = Schema.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+# Missing values version gate — inheritance
+#
+# A `$schema` imposes its version on all descendants (top-down): a schema's
+# version applies to its fields, and a field never declares its own `$schema`.
+
+MISSING_VALUES_FIELD_INHERITS_SCHEMA_CASES = [
+    ("v1-schema-rejects-field-objects", V1_PROFILE, [["field-error", GATE_NOTE]]),
+    ("v2-schema-accepts-field-objects", V2_PROFILE, []),
+    ("no-schema-accepts-field-objects", None, []),
+]
+
+
+@pytest.mark.parametrize(
+    "name, schema, expected",
+    MISSING_VALUES_FIELD_INHERITS_SCHEMA_CASES,
+    ids=[case[0] for case in MISSING_VALUES_FIELD_INHERITS_SCHEMA_CASES],
+)
+def test_validate_missing_values_version_gate_field_inherits_schema(
+    name, schema, expected
+):
+    descriptor = {
+        "fields": [
+            {"name": "name", "type": "string", "missingValues": OBJECT_MISSING_VALUES}
+        ]
     }
     if schema is not None:
         descriptor["$schema"] = schema

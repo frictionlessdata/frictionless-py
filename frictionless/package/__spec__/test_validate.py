@@ -677,3 +677,85 @@ def test_package_validate_with_parallel():
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
+
+
+# Missing values version gate — inheritance through the package
+#
+# A package `$schema` imposes its version on its resources/schemas/fields
+# (top-down). The object form of `missingValues` is a datapackage v2 addition,
+# rejected when the imposed version is v1. A descendant cannot escape it by
+# declaring a v2 `$schema` of its own.
+
+DP_V1_PROFILE = "https://datapackage.org/profiles/1.0/datapackage.json"
+DP_V2_PROFILE = "https://datapackage.org/profiles/2.0/datapackage.json"
+TS_V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
+GATE_NOTE = "missing values in object form require datapackage v2"
+OBJECT_MISSING_VALUES = [{"value": "-99", "label": "REFUSED"}]
+
+
+def _package_with_object_missing_values(package_profile, schema_own_profile, location):
+    schema = {"fields": [{"name": "name", "type": "string"}]}
+    if schema_own_profile is not None:
+        schema["$schema"] = schema_own_profile
+    if location == "schema":
+        schema["missingValues"] = OBJECT_MISSING_VALUES
+    else:
+        schema["fields"][0]["missingValues"] = OBJECT_MISSING_VALUES
+    descriptor = {
+        "resources": [{"name": "table", "path": "data/table.csv", "schema": schema}]
+    }
+    if package_profile is not None:
+        descriptor["$schema"] = package_profile
+    return descriptor
+
+
+MISSING_VALUES_INHERITANCE_CASES = [
+    # schema inherits the package version
+    (
+        "schema-inherits-package-v1",
+        DP_V1_PROFILE,
+        None,
+        "schema",
+        [["schema-error", GATE_NOTE]],
+    ),
+    ("schema-inherits-package-v2", DP_V2_PROFILE, None, "schema", []),
+    # field inherits the package version (through a schema without its own $schema)
+    (
+        "field-inherits-package-v1",
+        DP_V1_PROFILE,
+        None,
+        "field",
+        [["field-error", GATE_NOTE]],
+    ),
+    ("field-inherits-package-v2", DP_V2_PROFILE, None, "field", []),
+    # a descendant cannot escape the imposed v1 by declaring its own v2 $schema
+    (
+        "schema-cannot-escape-package-v1",
+        DP_V1_PROFILE,
+        TS_V2_PROFILE,
+        "schema",
+        [["schema-error", GATE_NOTE]],
+    ),
+    (
+        "field-cannot-escape-package-v1",
+        DP_V1_PROFILE,
+        TS_V2_PROFILE,
+        "field",
+        [["field-error", GATE_NOTE]],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, package_profile, schema_own_profile, location, expected",
+    MISSING_VALUES_INHERITANCE_CASES,
+    ids=[case[0] for case in MISSING_VALUES_INHERITANCE_CASES],
+)
+def test_package_validate_missing_values_version_gate_inheritance(
+    name, package_profile, schema_own_profile, location, expected
+):
+    descriptor = _package_with_object_missing_values(
+        package_profile, schema_own_profile, location
+    )
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected

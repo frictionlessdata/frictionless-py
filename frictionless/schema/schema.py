@@ -322,7 +322,10 @@ class Schema(Metadata, metaclass=Factory):
                             "required": ["resource", "fields"],
                             "properties": {
                                 "resource": {"type": "string"},
-                                "fields": {"type": "array", "items": {"type": "string"}},
+                                "fields": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
                             },
                         },
                     },
@@ -374,8 +377,15 @@ class Schema(Metadata, metaclass=Factory):
         return descriptor
 
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        datapackage_version: Optional[types.IStandards] = None,
+    ):
+        metadata_errors = list(
+            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
@@ -403,16 +413,11 @@ class Schema(Metadata, metaclass=Factory):
             yield errors.SchemaError(note=note)
 
         # Missing Values version gate
-        # Read `$schema` directly: the version is only gated when explicitly
-        # declared (an absent `$schema` stays lenient), and `$schema` is still
-        # in the descriptor at validation time (popped later, in metadata_import).
-        schema_profile = descriptor.get("$schema")
-        if schema_profile:
-            version = cls._resolve_datapackage_version(schema_profile)
-            for note in missing_values_module.version_gate_notes(
-                missing_values, version
-            ):
-                yield errors.SchemaError(note=note)
+        # The version is the one imposed top-down by an ancestor's `$schema`, or
+        # this schema's own `$schema` otherwise; `None` (undeclared) stays lenient.
+        version = cls.effective_datapackage_version(descriptor, datapackage_version)
+        for note in missing_values_module.version_gate_notes(missing_values, version):
+            yield errors.SchemaError(note=note)
 
         # Foreign Keys
         fks = descriptor.get("foreignKeys", [])
