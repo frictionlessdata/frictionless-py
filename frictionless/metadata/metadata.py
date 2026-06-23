@@ -556,7 +556,7 @@ class Metadata:
         "datapackage_version" is the Data Package standard version imposed by an
         ancestor's `$schema` (top-down inheritance). When `None`, the descriptor
         may declare its own `$schema`; the resulting version is propagated to all
-        children. Subclasses read it (via `metadata_effective_datapackage_version`)
+        children. Subclasses read it (via `effective_datapackage_version`)
         to gate version-specific properties.
         """
         Error = error_class

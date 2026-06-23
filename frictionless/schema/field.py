@@ -282,9 +282,7 @@ class Field(Metadata):
         # Missing Values version gate
         # A field never declares its own `$schema`; the version is the one
         # imposed top-down by an ancestor (`None` undeclared stays lenient).
-        version = cls.metadata_effective_datapackage_version(
-            descriptor, datapackage_version
-        )
+        version = cls.effective_datapackage_version(descriptor, datapackage_version)
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.FieldError(note=note)
 
