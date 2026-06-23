@@ -31,6 +31,22 @@ def test_field_read_cell_string_missing_values():
     assert field.read_cell("N/A") == (None, None)
 
 
+def test_field_read_cell_object_missing_values():
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "string",
+            "missingValues": [
+                {"value": "", "label": "OMITTED"},
+                {"value": "-99", "label": "REFUSED"},
+            ],
+        }
+    )
+    assert field.read_cell("") == (None, None)
+    assert field.read_cell("-99") == (None, None)
+    assert field.read_cell("x") == ("x", None)
+
+
 def test_field_read_cell_number_missingValues():
     field = Field.from_descriptor(
         {

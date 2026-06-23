@@ -896,8 +896,15 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        datapackage_version: Optional[types.IStandards] = None,
+    ):
+        metadata_errors = list(
+            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
@@ -948,6 +955,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
                 descriptor,
                 profile=profile,
                 error_class=cls.metadata_Error,
+                datapackage_version=datapackage_version,
             )
 
         # Profile (tabular)

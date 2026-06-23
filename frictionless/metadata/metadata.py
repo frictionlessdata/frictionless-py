@@ -20,17 +20,17 @@ from typing import (
     Type,
     Union,
 )
+from urllib.parse import urlparse
 
 import attrs
 from typing_extensions import Self
 
-from .. import helpers
+from .. import helpers, settings, types
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..vendors import stringcase
 
 if TYPE_CHECKING:
-    from .. import types
     from ..error import Error
     from ..report import Report
 
@@ -278,8 +278,16 @@ class Metadata:
         return metadata  # type: ignore
 
     def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
-        """Return a descriptor associated to the class instance.
-        If `validate = True`, the descriptor will additionnaly be validated.
+        """Export the instance as a descriptor.
+
+        The descriptor is a canonical form of the metadata: it preserves all
+        the information the instance holds, but is not guaranteed to be
+        syntactically identical to the descriptor the instance was created
+        from (equivalent notations are normalized). Exporting is idempotent:
+        re-importing the result and exporting it again returns the same
+        descriptor.
+
+        If `validate = True`, the descriptor will additionally be validated.
         """
         descriptor = self.metadata_export()
         if validate:
@@ -535,6 +543,7 @@ class Metadata:
         *,
         profile: Optional[Union[types.IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
+        datapackage_version: Optional[types.IStandards] = None,
     ) -> Generator[Error, None, None]:
         """Validates a descriptor according to a profile
 
@@ -543,6 +552,12 @@ class Metadata:
 
         The profile to validate can be set explicitely ("profile" parameter),
         otherwise it defaults to the class profile.
+
+        "datapackage_version" is the Data Package standard version imposed by an
+        ancestor's `$schema` (top-down inheritance). When `None`, the descriptor
+        may declare its own `$schema`; the resulting version is propagated to all
+        children. Subclasses read it (via `effective_datapackage_version`)
+        to gate version-specific properties.
         """
         Error = error_class
         if not Error:
@@ -562,6 +577,7 @@ class Metadata:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
 
+        version = cls.effective_datapackage_version(descriptor, datapackage_version)
         for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
@@ -571,9 +587,15 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            yield from ItemClass.metadata_validate(item)  # type: ignore
+                            yield from ItemClass.metadata_validate(
+                                item,  # type: ignore
+                                datapackage_version=version,
+                            )
                 elif isinstance(value, dict):
-                    yield from Class.metadata_validate(value)  # type: ignore
+                    yield from Class.metadata_validate(
+                        value,  # type: ignore
+                        datapackage_version=version,
+                    )
 
     @classmethod
     def _accepts_schema_profile(cls) -> bool:
@@ -581,6 +603,48 @@ class Metadata:
         `$schema`). The `attrs.has` narrowing is kept local here to avoid
         polluting the type of `cls` in the callers."""
         return attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls)
+
+    @staticmethod
+    def _resolve_datapackage_version(
+        schema_profile: Optional[str],
+    ) -> types.IStandards:
+        """Resolve the Data Package standard version from a `$schema` value.
+
+        - a missing `$schema` defaults to "v1" (as mandated by the spec);
+        - a standard datapackage.org profile uses the version from its URL;
+        - any custom profile falls back to the latest known standard.
+        """
+        if not schema_profile:
+            return "v1"
+        url = urlparse(schema_profile)
+        if url.netloc == "datapackage.org":
+            match = re.search(r"/profiles/(\d+)\.\d+/", url.path)
+            if match:
+                if match.group(1) == "1":
+                    return "v1"
+                if match.group(1) == "2":
+                    return "v2"
+        return settings.DEFAULT_STANDARDS
+
+    @classmethod
+    def effective_datapackage_version(
+        cls,
+        descriptor: types.IDescriptor,
+        inherited: Optional[types.IStandards],
+    ) -> Optional[types.IStandards]:
+        """Version imposed top-down on this descriptor and its descendants.
+
+        An ancestor's `$schema` wins (a descendant cannot escape it); otherwise
+        the descriptor's own `$schema`, if any, sets the version. Returns `None`
+        when no `$schema` is declared anywhere in the chain (undeclared version,
+        which validation treats leniently).
+        """
+        if inherited is not None:
+            return inherited
+        schema_profile = descriptor.get("$schema")
+        if schema_profile:
+            return cls._resolve_datapackage_version(schema_profile)
+        return None
 
     @classmethod
     def metadata_import(

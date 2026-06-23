@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Optional, Union, cast
 
 import attrs
 from tabulate import tabulate
@@ -9,6 +9,7 @@ from .. import errors, settings, types
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
+from . import missing_values as missing_values_module
 from .factory import Factory
 from .field import Field
 from .types import INotes
@@ -83,6 +84,13 @@ class Schema(Metadata, metaclass=Factory):
     """
     Specifies the foreign keys for the schema.
     """
+
+    def __setattr__(self, name: str, value: Any):  # type: ignore
+        if name == "missing_values" and isinstance(value, list):
+            value, self._missing_values_labels = missing_values_module.split(
+                cast(missing_values_module.IEntries, value)
+            )
+        return super().__setattr__(name, value)  # type: ignore
 
     def __attrs_post_init__(self):
         for field in self.fields:
@@ -298,10 +306,7 @@ class Schema(Metadata, metaclass=Factory):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
-            "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
-            },
+            "missingValues": missing_values_module.PROFILE,
             "primaryKey": {
                 "type": "array",
                 "items": {"type": "string"},
@@ -317,7 +322,10 @@ class Schema(Metadata, metaclass=Factory):
                             "required": ["resource", "fields"],
                             "properties": {
                                 "resource": {"type": "string"},
-                                "fields": {"type": "array", "items": {"type": "string"}},
+                                "fields": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
                             },
                         },
                     },
@@ -356,9 +364,28 @@ class Schema(Metadata, metaclass=Factory):
                 if not isinstance(fk["reference"]["fields"], list):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
+    def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+
+        missing_values = descriptor.get("missingValues")
+        if isinstance(missing_values, list):
+            descriptor["missingValues"] = missing_values_module.export(
+                cast(List[str], missing_values),
+                getattr(self, "_missing_values_labels", {}),
+            )
+
+        return descriptor
+
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        datapackage_version: Optional[types.IStandards] = None,
+    ):
+        metadata_errors = list(
+            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
@@ -379,6 +406,18 @@ class Schema(Metadata, metaclass=Factory):
                 note = 'primary key "%s" does not match the fields "%s"'
                 note = note % (pk, field_names)
                 yield errors.SchemaError(note=note)
+
+        # Missing Values
+        missing_values = descriptor.get("missingValues", [])
+        for note in missing_values_module.validation_notes(missing_values):
+            yield errors.SchemaError(note=note)
+
+        # Missing Values version gate
+        # The version is the one imposed top-down by an ancestor's `$schema`, or
+        # this schema's own `$schema` otherwise; `None` (undeclared) stays lenient.
+        version = cls.effective_datapackage_version(descriptor, datapackage_version)
+        for note in missing_values_module.version_gate_notes(missing_values, version):
+            yield errors.SchemaError(note=note)
 
         # Foreign Keys
         fks = descriptor.get("foreignKeys", [])
