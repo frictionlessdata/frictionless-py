@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from multiprocessing import Pool
+from pathlib import PurePosixPath, PureWindowsPath
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union
+from urllib.parse import urlparse
 
 import attrs
 from typing_extensions import Self
@@ -674,6 +676,8 @@ class Package(Metadata, metaclass=Factory):
 
         # Security
         if not system.trusted:
+            from ..schemes.remote import settings as remote_settings
+
             keys = ["profile"]
             for key in keys:
                 value = descriptor.get(key)
@@ -682,6 +686,30 @@ class Package(Metadata, metaclass=Factory):
                     if item and isinstance(item, str) and not helpers.is_safe_path(item):
                         yield errors.PackageError(note=f'path "{item}" is not safe')
                         return
+
+            paths = [descriptor.get("image")]
+            for name in ["contributors", "licenses", "sources"]:
+                paths.extend(item.get("path") for item in descriptor.get(name, []))
+            for path in paths:
+                if not path:
+                    continue
+                posix_path = PurePosixPath(path.replace("\\", "/"))
+                is_absolute = (
+                    posix_path.is_absolute() or PureWindowsPath(path).is_absolute()
+                )
+                try:
+                    scheme = urlparse(path).scheme
+                except ValueError:
+                    yield errors.PackageError(note=f'path "{path}" is not safe')
+                    continue
+                is_remote = scheme in remote_settings.DEFAULT_SCHEMES
+                if not is_remote and (
+                    scheme
+                    or is_absolute
+                    or ".." in posix_path.parts
+                    or not helpers.is_safe_path(path)
+                ):
+                    yield errors.PackageError(note=f'path "{path}" is not safe')
 
         # Resource Names
         resource_names: List[str] = []
