@@ -230,6 +230,12 @@ class Header(List[str]):  # type: ignore
         start = len(labels) + 1
         return [(start + offset, field) for offset, field in enumerate(missing)]
 
+    def __has_matching_field(self) -> bool:
+        """Whether at least one label corresponds to a schema field"""
+        return any(
+            self.__find_field_by_name(label) is not None for label in self.__labels
+        )
+
     def __find_field_by_name(self, name: str) -> Optional[Field]:
         target = self.__normalize(name)
         for f in self.__fields:
@@ -276,6 +282,24 @@ class Header(List[str]):  # type: ignore
                     label=label,
                     field_name="",
                     field_number=field_number,
+                )
+            )
+
+        # Unmatched header
+        # `partial` tolerates both extra labels and missing fields, so it is
+        # the only mode where the header can end up sharing nothing with the
+        # schema. The violation belongs to the header as a whole, hence a
+        # header error rather than one error per declared field.
+        if (
+            self.__fields_match == "partial"
+            and fields
+            and not self.__has_matching_field()
+        ):
+            self.__errors.append(
+                errors.UnmatchedHeaderError(
+                    note="",
+                    labels=list(map(str, labels)),
+                    row_numbers=self.__row_numbers,
                 )
             )
 

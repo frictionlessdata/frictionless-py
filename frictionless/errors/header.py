@@ -45,3 +45,10 @@ class BlankHeaderError(HeaderError):
     title = "Blank Header"
     description = "This header is empty. A header should contain at least one value."
     template = "Header is completely blank"
+
+
+class UnmatchedHeaderError(HeaderError):
+    type = "unmatched-header"
+    title = "Unmatched Header"
+    description = 'With "fieldsMatch" set to "partial", the header must contain at least one of the fields defined in the schema.'
+    template = "None of the fields defined in the schema is present in the header"

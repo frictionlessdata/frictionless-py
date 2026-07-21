@@ -219,6 +219,40 @@ def test_errors_exact_reports_reordered_labels_as_incorrect():
     ]
 
 
+def test_errors_partial_requires_at_least_one_matching_field():
+    header = _make_header(["x", "y"], ["a", "b"], fields_match="partial")
+    assert [e.type for e in header.errors] == ["unmatched-header"]
+
+
+def test_errors_partial_accepts_a_single_matching_field():
+    header = _make_header(["x", "a"], ["a", "b"], fields_match="partial")
+    assert header.errors == []
+
+
+def test_errors_partial_with_a_schema_without_fields():
+    # Nothing is declared, so there is nothing to match: not an error.
+    header = _make_header(["x"], [], fields_match="partial")
+    assert header.errors == []
+
+
+@pytest.mark.parametrize("fields_match", ["exact", "equal", "subset", "superset"])
+def test_errors_unmatched_header_is_specific_to_partial(fields_match):
+    # The other modes report the mismatch label by label or field by field:
+    # extra labels are errors in `equal` and `superset`, missing fields are
+    # errors in `exact`, `equal` and `subset`.
+    header = _make_header(["x", "y"], ["a", "b"], fields_match=fields_match)
+    assert "unmatched-header" not in [e.type for e in header.errors]
+
+
+@pytest.mark.parametrize("fields_match", ["exact", *NAME_MATCHED])
+def test_errors_a_header_matching_nothing_is_never_silent(fields_match):
+    # Only the diagnosis differs between modes; the verdict does not. `partial`
+    # tolerates extra labels *and* missing fields, so it is the only mode that
+    # would stay silent here -- which is what its "at least one" rule prevents.
+    header = _make_header(["x", "y"], ["a", "b"], fields_match=fields_match)
+    assert header.errors != []
+
+
 def test_errors_extra_label_is_reported_at_its_position_in_the_data():
     # Under name matching the extra label can sit anywhere, so it is reported
     # where it actually is rather than after the declared fields.
@@ -226,16 +260,22 @@ def test_errors_extra_label_is_reported_at_its_position_in_the_data():
     assert _errors(header) == [("extra-label", "extra", "", 1)]
 
 
+# The schema below declares a single field, so a header that doesn't carry it
+# shares nothing with the schema: `partial` (the mode schema_sync maps to)
+# reports that as an `unmatched-header` on top of the missing label.
+UNMATCHED = ["unmatched-header", "missing-label"]
+
+
 @pytest.mark.parametrize(
     "source, required, valid_report, nb_errors, types_errors_expected, header_case",
     [
-        ([["B"], ["foo"]], {"required": True}, False, 1, ["missing-label"], True),
-        ([["B"], ["foo"]], {}, False, 1, ["missing-label"], True),
-        ([["a"], ["foo"]], {"required": True}, False, 1, ["missing-label"], True),
-        ([["a"], ["foo"]], {}, False, 1, ["missing-label"], True),
+        ([["B"], ["foo"]], {"required": True}, False, 2, UNMATCHED, True),
+        ([["B"], ["foo"]], {}, False, 2, UNMATCHED, True),
+        ([["a"], ["foo"]], {"required": True}, False, 2, UNMATCHED, True),
+        ([["a"], ["foo"]], {}, False, 2, UNMATCHED, True),
         # Ignore header_case
-        ([["B"], ["foo"]], {"required": True}, False, 1, ["missing-label"], False),
-        ([["B"], ["foo"]], {}, False, 1, ["missing-label"], False),
+        ([["B"], ["foo"]], {"required": True}, False, 2, UNMATCHED, False),
+        ([["B"], ["foo"]], {}, False, 2, UNMATCHED, False),
         ([["a"], ["foo"]], {"required": True}, True, 0, [], False),
         ([["a"], ["foo"]], {}, True, 0, [], False),
     ],

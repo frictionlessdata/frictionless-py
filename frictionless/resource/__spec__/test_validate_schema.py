@@ -416,10 +416,13 @@ def test_validate_resource_ignoring_header_case_issue_1635():
             "expected_flattened_report": [],
         },
         {
+            # Case-sensitive: no label matches any field, so the header as a
+            # whole is unmatched on top of both fields being missing.
             "source": [["AA", "bb"], ["a", "b"]],
             "header_case": True,
             "expected_valid_report": False,
             "expected_flattened_report": [
+                [None, None, None, "unmatched-header"],
                 [None, 3, "aa", "missing-label"],
                 [None, 4, "BB", "missing-label"],
             ],
