@@ -217,7 +217,9 @@ class TableResource(Resource):
             fields=self.schema.fields,
             row_numbers=self.dialect.header_rows,
             ignore_case=not self.dialect.header_case,
-            schema_sync=self.detector.schema_sync,
+            # TODO: read `fieldsMatch` from the schema (deprecated `schema_sync`
+            # is the legacy spelling of the `partial` mode)
+            fields_match="partial" if self.detector.schema_sync else "exact",
         )
 
         # Handle errors
