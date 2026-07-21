@@ -173,6 +173,16 @@ def test_validate_missing_values_version_gate_field_inherits_schema(
     assert report.flatten(["type", "note"]) == expected
 
 
+# Fields match
+
+
+def test_validate_fields_match_unknown_value():
+    report = Schema.validate_descriptor(
+        {"fields": [{"name": "name", "type": "string"}], "fieldsMatch": "bogus"}
+    )
+    assert report.flatten(["type"]) == [["schema-error"]]
+
+
 def test_validate_inline_set_default_field_type_if_missing():
     report = Schema.validate_descriptor(
         {"fields": [{"name": "name"}, {"name": "id", "type": "integer"}]}

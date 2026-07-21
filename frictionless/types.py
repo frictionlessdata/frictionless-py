@@ -34,6 +34,7 @@ ISample = List[List[Any]]
 IFragment = List[List[Any]]
 ILabels = List[str]
 IOnerror = Literal["ignore", "warn", "raise"]
+IFieldsMatch = Literal["exact", "equal", "subset", "superset", "partial"]
 ITabularData = Dict[str, List[Dict[str, Any]]]
 
 
