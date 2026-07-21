@@ -211,15 +211,20 @@ class TableResource(Resource):
     def __open_header(self):
         assert self.__labels is not None
 
+        # Prepare fields match
+        # TODO: warn about the deprecated `schema_sync`, and about it being
+        # ignored when the schema declares `fieldsMatch` itself.
+        fields_match = self.schema.fields_match
+        if self.detector.schema_sync and not self.schema.has_defined("fields_match"):
+            fields_match = "partial"
+
         # Create header
         self.__header = Header(
             self.__labels,
             fields=self.schema.fields,
             row_numbers=self.dialect.header_rows,
             ignore_case=not self.dialect.header_case,
-            # TODO: read `fieldsMatch` from the schema (deprecated `schema_sync`
-            # is the legacy spelling of the `partial` mode)
-            fields_match="partial" if self.detector.schema_sync else "exact",
+            fields_match=fields_match,
         )
 
         # Handle errors
