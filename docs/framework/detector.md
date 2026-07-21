@@ -137,7 +137,39 @@ print(resource.read_rows())
 
 As we can see, the textual values equal to "67" are now considered nulls. Usually, it's handy when you have data with values like: '-', 'n/a', and similar.
 
+## Fields Match
+
+A Table Schema describes the fields it expects in the data. The `fieldsMatch` property, introduced by datapackage v2, says how strictly that description must correspond to the data's columns:
+
+| value | the data source | fields are mapped by |
+| ----- | --------------- | -------------------- |
+| `exact` (default) | must have exactly the declared fields | order |
+| `equal` | must have exactly the declared fields | name |
+| `subset` | must have all the declared fields, and may have more | name |
+| `superset` | must only have declared fields, and may have fewer | name |
+| `partial` | must have at least one of the declared fields | name |
+
+Only the default maps the fields by their position. All the other values map them by name, so the columns may appear in any order, and a mismatch is reported as an `extra-label` (a column the schema does not declare) or a `missing-label` (a declared field the data does not carry).
+
+Here a schema describes a single column of a two-column file, which `subset` allows:
+
+```python script tabs=Python
+from frictionless import Resource, Schema
+
+schema = Schema.from_descriptor({
+    'fields': [{'name': 'name', 'type': 'string'}],
+    'fieldsMatch': 'subset',
+})
+with Resource('table.csv', schema=schema) as resource:
+    print(resource.header.valid)
+    print([row.to_dict() for row in resource.read_rows()])
+```
+
+The undeclared column is still read, as an `any` field. Note that `superset` and `partial`, which tolerate a data source with fewer fields, still require the fields the schema declares as `required` or lists in its `primaryKey`.
+
 ## Schema Sync
+
+> Deprecated: use the `fieldsMatch` property described above. Set it to `subset` to describe only some of the data's columns, which is what this option is mostly used for.
 
 There is a way to sync provided schema based on a header row's field order. It's very useful when you have a schema that describes a subset or a superset of the resource's fields:
 
@@ -149,8 +181,10 @@ detector = Detector(schema_sync=True)
 schema = Schema(fields=[fields.StringField(name='name'), fields.IntegerField(name='id')])
 with Resource('table.csv', schema=schema, detector=detector) as resource:
     print(resource.schema)
-    print(resource.read_rows())
+    print([row.to_dict() for row in resource.read_rows()])
 ```
+
+This option maps to `fieldsMatch: partial`, the most permissive mode. A schema that declares `fieldsMatch` itself takes precedence over it.
 
 ## Schema Patch
 

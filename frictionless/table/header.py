@@ -151,7 +151,10 @@ class Header(List[str]):  # type: ignore
             return self.__expected_fields
 
         if len(self.__labels) != len(set(self.__labels)):
-            note = '"schema_sync" requires unique labels in the header'
+            note = (
+                f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
+                "requires unique labels in the header"
+            )
             raise FrictionlessException(note)
 
         expected: List[Field] = []

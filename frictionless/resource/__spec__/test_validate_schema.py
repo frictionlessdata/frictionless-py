@@ -303,7 +303,11 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     )
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        ["error", '"schema_sync" requires unique labels in the header'],
+        [
+            "error",
+            'matching fields by name ("fieldsMatch": "partial") '
+            "requires unique labels in the header",
+        ],
     ]
 
 

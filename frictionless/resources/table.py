@@ -16,6 +16,7 @@ from ..platform import platform
 from ..resource import Resource
 from ..system import system
 from ..table import Header, Lookup, Row, Table, create_cell_handlers
+from ..table import fields_match as fields_match_module
 from ..transformer import Transformer
 
 if TYPE_CHECKING:
@@ -212,11 +213,12 @@ class TableResource(Resource):
         assert self.__labels is not None
 
         # Prepare fields match
-        # TODO: warn about the deprecated `schema_sync`, and about it being
-        # ignored when the schema declares `fieldsMatch` itself.
-        fields_match = self.schema.fields_match
-        if self.detector.schema_sync and not self.schema.has_defined("fields_match"):
-            fields_match = "partial"
+        declared = (
+            self.schema.fields_match if self.schema.has_defined("fields_match") else None
+        )
+        fields_match = fields_match_module.resolve(
+            declared, schema_sync=self.detector.schema_sync
+        )
 
         # Create header
         self.__header = Header(
