@@ -229,10 +229,10 @@ field_missing_values = Option(
 
 schema_sync = Option(
     default=None,
-    # NOTE: no square brackets here, rich reads them as style markup
+    hidden=True,
     help=(
         "Sync the schema based on the data's header row "
-        "(deprecated: use the schema's \"fieldsMatch\" property instead)"
+        '(deprecated: use the schema\'s "fieldsMatch" property instead)'
     ),
 )
 

@@ -172,8 +172,7 @@ class Header(List[str]):  # type: ignore
 
         Under `exact`, the extras are the labels beyond the schema's field
         count. Under name matching, an extra label is one whose name matches no
-        field, wherever it sits in the data — hence the reported number is its
-        actual position rather than a rank after the declared fields.
+        field.
 
         `subset` and `partial` accept extra labels, so they report none.
         """
@@ -289,10 +288,6 @@ class Header(List[str]):  # type: ignore
             )
 
         # Unmatched header
-        # `partial` tolerates both extra labels and missing fields, so it is
-        # the only mode where the header can end up sharing nothing with the
-        # schema. The violation belongs to the header as a whole, hence a
-        # header error rather than one error per declared field.
         if (
             self.__fields_match == "partial"
             and fields
