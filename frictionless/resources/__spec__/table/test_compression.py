@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from frictionless import FrictionlessException
@@ -166,7 +164,6 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = b"id,filename\n\1,dump"
     resource = TableResource(data=source, format="csv", compression="gz")

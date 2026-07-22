@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 import yaml
 
@@ -9,7 +7,6 @@ from frictionless import FrictionlessException, Package, Resource, system
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_profiles_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -23,7 +20,6 @@ def test_package_profiles_invalid_local():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_profiles_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -84,7 +80,6 @@ def test_package_profile_type(profile):
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_package_profiles_from_descriptor_standards_v1():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -114,8 +109,7 @@ def test_package_profiles_to_descriptor_standards_v1():
 
 
 def test_package_preserver_profile_issue_1480():
-    descriptor = yaml.safe_load(
-        """
+    descriptor = yaml.safe_load("""
     profile: tabular-data-package
     resources:
       -
@@ -126,16 +120,14 @@ def test_package_preserver_profile_issue_1480():
         mediatype: text/csv
         encoding: utf-8
         schema: schema.json
-    """
-    )
+    """)
     package = Package(descriptor)
     assert package.profile == "tabular-data-package"
     assert package.get_resource("some-table").profile == "tabular-data-resource"
 
 
 def test_package_profile_tabular_requirements_issue_1484():
-    descriptor = yaml.safe_load(
-        """
+    descriptor = yaml.safe_load("""
     profile: tabular-data-package
     resources:
       -
@@ -145,8 +137,7 @@ def test_package_profile_tabular_requirements_issue_1484():
         mediatype: text/csv
         encoding: utf-8
         schema: schema.json
-    """
-    )
+    """)
     report = Package.validate_descriptor(descriptor)
     assert report.flatten(["type", "note"]) == [
         [
@@ -157,8 +148,7 @@ def test_package_profile_tabular_requirements_issue_1484():
 
 
 def test_package_profile_tabular_requirements_schema_issue_1484():
-    descriptor = yaml.safe_load(
-        """
+    descriptor = yaml.safe_load("""
     profile: tabular-data-package
     resources:
       -
@@ -168,8 +158,7 @@ def test_package_profile_tabular_requirements_schema_issue_1484():
         format: csv
         mediatype: text/csv
         encoding: utf-8
-    """
-    )
+    """)
     report = Package.validate_descriptor(descriptor)
     assert report.flatten(["type", "note"]) == [
         [

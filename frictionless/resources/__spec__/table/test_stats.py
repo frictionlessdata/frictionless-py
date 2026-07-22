@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from frictionless import Dialect
@@ -30,7 +28,6 @@ def test_resource_stats_hash_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_stats_hash_remote():
     with TableResource(path=BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
@@ -53,7 +50,6 @@ def test_resource_stats_bytes_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_stats_bytes_remote():
     with TableResource(path=BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
@@ -70,7 +66,6 @@ def test_resource_stats_fields():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_stats_fields_remote():
     with TableResource(path=BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
@@ -87,7 +82,6 @@ def test_resource_stats_rows():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_resource_stats_rows_remote():
     with TableResource(path=BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
