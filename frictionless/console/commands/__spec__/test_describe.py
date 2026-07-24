@@ -106,8 +106,8 @@ def test_console_describe_json():
 def test_console_describe_error_not_found():
     actual = runner.invoke(console, "describe data/bad.csv")
     assert actual.exit_code == 1
-    assert actual.stdout.count("[Errno 2]")
-    assert actual.stdout.count("data/bad.csv")
+    assert actual.stderr.count("[Errno 2]")
+    assert actual.stderr.count("data/bad.csv")
 
 
 def test_console_describe_basepath():
@@ -199,3 +199,19 @@ def test_console_describe_package_with_glob_having_one_incorrect_dialect_1126():
     assert output["resources"][1]["schema"] == {
         "fields": [{"type": "string", "name": "# Author: the scientist"}]
     }
+
+
+def test_console_describe_error_goes_to_stderr_not_stdout_issue_1749():
+    """Errors must not pollute stdout, so `--json > out.json` stays parseable."""
+    actual = runner.invoke(console, "describe data/bad.csv --json")
+    assert actual.exit_code == 1
+    assert "[Errno 2]" in actual.stderr
+    # nothing at all on stdout: redirecting it must not capture the error panel
+    assert actual.stdout == ""
+
+
+def test_console_describe_success_still_writes_to_stdout_issue_1749():
+    actual = runner.invoke(console, "describe data/table.csv --json")
+    assert actual.exit_code == 0
+    assert json.loads(actual.stdout)
+    assert actual.stderr == ""

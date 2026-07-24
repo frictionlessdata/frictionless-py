@@ -222,7 +222,7 @@ def test_console_validate_single_invalid_resource_221():
         console, "validate data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("number-twoo")
+    assert actual.stderr.count("number-twoo")
 
 
 def test_console_validate_multipart_resource_1140():

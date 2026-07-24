@@ -254,14 +254,26 @@ def index_resource(
 # Console
 
 
+# Errors go to stderr so that redirecting stdout captures only the requested
+# output. Without this, `frictionless describe data.csv --json > out.json`
+# writes the error panel into out.json when the source cannot be read.
+error_console = Console(stderr=True)
+
+
 def print_success(console: Console, *, note: str, title: str = "Success") -> None:
     panel = Panel(note, title=title, border_style="green", title_align="left")
     console.print(panel)
 
 
+def print_panel(console: Console, *, note: str, title: str, border_style: str) -> None:
+    """Render a panel as part of the report itself, on the given console."""
+    panel = Panel(note, title=title, border_style=border_style, title_align="left")
+    console.print(panel)
+
+
 def print_error(console: Console, *, note: str, title: str = "Error") -> None:
     panel = Panel(note, title=title, border_style="red", title_align="left")
-    console.print(panel)
+    error_console.print(panel)
 
 
 def print_exception(
@@ -271,8 +283,8 @@ def print_exception(
     debug: Optional[bool] = False,
 ) -> None:
     if debug:
-        console.print_exception()
+        error_console.print_exception()
         return
     text = escape(str(exception))
     panel = Panel(text, title="Error", border_style="red", title_align="left")
-    console.print(panel)
+    error_console.print(panel)
