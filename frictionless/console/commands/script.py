@@ -7,13 +7,13 @@ import tempfile
 from typing import List
 
 import typer
-from rich.console import Console
 
 from ...helpers import write_file
 from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 
 @console.command(name="script")
@@ -29,7 +29,6 @@ def console_script(
     standards: str = common.standards,
 ):
     """Script data"""
-    console = Console()
 
     # Setup system
     if trusted:
@@ -45,7 +44,7 @@ def console_script(
         raise typer.Exit(code=1)
 
     # Index resource
-    console.rule("[bold]Index")
+    output_console.rule("[bold]Index")
     try:
         # Create resource
         resource = Resource(
@@ -66,7 +65,6 @@ def console_script(
         for resource in resources:
             names.extend(
                 helpers.index_resource(
-                    console,
                     resource=resource,
                     database=database,
                     fast=True,
@@ -85,7 +83,7 @@ def console_script(
         raise typer.Exit(1)
 
     # Enter interpreter
-    console.rule("[bold]Script")
+    output_console.rule("[bold]Script")
     file = tempfile.NamedTemporaryFile(delete=False, suffix=".py")
     atexit.register(os.remove, file.name)
     startup = generate_startup(database, names=names)

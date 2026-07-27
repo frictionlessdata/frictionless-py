@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
 from ...helpers import to_json, to_yaml
@@ -11,6 +10,7 @@ from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 
 @console.command(name="list")
@@ -55,8 +55,6 @@ def console_describe(
     """
     List a data source.
     """
-    console = Console()
-
     # Setup system
     if trusted:
         system.trusted = trusted
@@ -133,7 +131,7 @@ def console_describe(
         raise typer.Exit()
 
     # Default mode
-    console.rule("[bold]Dataset")
+    output_console.rule("[bold]Dataset")
     view = Table(title="dataset")
     view.add_column("name")
     view.add_column("type")
@@ -142,4 +140,4 @@ def console_describe(
         style = "sky_blue1" if resource.tabular else ""
         row = [resource.name, resource.type, resource.path]
         view.add_row(*row, style=style)
-    console.print(view)
+    output_console.print(view)
