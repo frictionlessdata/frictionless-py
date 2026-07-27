@@ -259,11 +259,6 @@ output_console = Console()
 error_console = Console(stderr=True)
 
 
-def print_success(*, note: str, title: str = "Success") -> None:
-    panel = Panel(note, title=title, border_style="green", title_align="left")
-    output_console.print(panel)
-
-
 def print_panel(*, note: str, title: str) -> None:
     panel = Panel(note, title=title, title_align="left")
     output_console.print(panel)
