@@ -245,7 +245,7 @@ def index_resource(
         return names
     except Exception as exception:
         if debug:
-            print_exception(console, exception=exception, debug=debug)
+            print_exception(exception=exception, debug=debug)
             raise typer.Exit(code=1)
         console.print(f"\\[{resource.name}] errored")
         return []
@@ -267,13 +267,12 @@ def print_panel(console: Console, *, note: str, title: str, border_style: str) -
     console.print(panel)
 
 
-def print_error(console: Console, *, note: str, title: str = "Error") -> None:
+def print_error(*, note: str, title: str = "Error") -> None:
     panel = Panel(note, title=title, border_style="red", title_align="left")
     error_console.print(panel)
 
 
 def print_exception(
-    console: Console,
     *,
     exception: Exception,
     debug: Optional[bool] = False,
