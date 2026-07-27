@@ -90,7 +90,7 @@ def console_extract(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     try:
@@ -173,7 +173,7 @@ def console_extract(
         # List resources
         resources = resource.list()
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
@@ -191,7 +191,7 @@ def console_extract(
     # No data
     if not data:
         note = "No tabular data have been found in the source"
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     # TODO: rework
@@ -230,7 +230,7 @@ def console_extract(
     for title, items in data.items():
         # Empty
         if not items:
-            helpers.print_error(console, note="No rows found", title="Empty")
+            helpers.print_panel(console, note="No rows found", title="Empty")
             continue
 
         # General

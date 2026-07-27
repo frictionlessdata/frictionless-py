@@ -2,12 +2,13 @@ import json
 
 import pytest
 import yaml
-from typer.testing import CliRunner
 
 from frictionless import Detector, Dialect, validate
 from frictionless.console import console
 
-runner = CliRunner()
+from .conftest import create_runner
+
+runner = create_runner()
 
 
 # General
@@ -222,7 +223,7 @@ def test_console_validate_single_invalid_resource_221():
         console, "validate data/datapackage.json --resource-name number-twoo"
     )
     assert actual.exit_code == 1
-    assert actual.stdout.count("number-twoo")
+    assert actual.stderr.count("number-twoo")
 
 
 def test_console_validate_multipart_resource_1140():

@@ -4,7 +4,6 @@ import os
 from typing import List
 
 import typer
-from rich.console import Console
 
 from ...resource import Resource
 from ...system import system
@@ -29,8 +28,6 @@ def console_explore(
     Please read the commands reference:
     - https://www.visidata.org/man/
     """
-    console = Console()
-
     # Setup system
     if trusted:
         system.trusted = trusted
@@ -41,7 +38,7 @@ def console_explore(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     # Get paths
@@ -55,7 +52,7 @@ def console_explore(
         resources = resource.list(name=name)
         paths = [resource.normpath for resource in resources if resource.normpath]
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Enter editor

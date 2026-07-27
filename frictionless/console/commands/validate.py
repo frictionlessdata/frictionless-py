@@ -85,7 +85,7 @@ def console_validate(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     try:
@@ -156,7 +156,7 @@ def console_validate(
         )
         code = int(not report.valid)
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
