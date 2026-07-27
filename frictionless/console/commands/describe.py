@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
 from ...dialect import Dialect
@@ -14,6 +13,7 @@ from ...schema import Schema
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 DEFAULT_MAX_FIELDS = 10
 
@@ -64,8 +64,6 @@ def console_describe(
     Based on the inferred data source type it will return resource or package descriptor.
     Default output format is YAML with a front matter.
     """
-    console = Console()
-
     # Setup system
     if trusted:
         system.trusted = trusted
@@ -137,7 +135,7 @@ def console_describe(
         raise typer.Exit()
 
     # Default mode
-    console.rule("[bold]Dataset")
+    output_console.rule("[bold]Dataset")
     assert isinstance(metadata, (Resource, Package))
     resources = [metadata] if isinstance(metadata, Resource) else metadata.resources
     view = Table(title="dataset")
@@ -158,8 +156,8 @@ def console_describe(
             row.append(str(resource.fields or ""))
             row.append(str(resource.rows or ""))
         view.add_row(*row, style=style)
-    console.print(view)
-    console.rule("[bold]Tables")
+    output_console.print(view)
+    output_console.rule("[bold]Tables")
     for resource in resources:
         if isinstance(resource, TableResource):
             view = Table(title=resource.name)
@@ -172,4 +170,4 @@ def console_describe(
             if len(labels) > DEFAULT_MAX_FIELDS:
                 row.append("...")
             view.add_row(*row)
-            console.print(view)
+            output_console.print(view)

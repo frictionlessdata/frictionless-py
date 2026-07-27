@@ -202,7 +202,6 @@ def create_pipeline(
 
 
 def index_resource(
-    console: Console,
     *,
     resource: Resource,
     database: str,
@@ -241,30 +240,33 @@ def index_resource(
                 use_fallback=use_fallback,
                 qsv_path=qsv_path,
             )
-        console.print(f"{progress.tasks[status].description} in {timer.time} seconds")
+        output_console.print(
+            f"{progress.tasks[status].description} in {timer.time} seconds"
+        )
         return names
     except Exception as exception:
         if debug:
             print_exception(exception=exception, debug=debug)
             raise typer.Exit(code=1)
-        console.print(f"\\[{resource.name}] errored")
+        output_console.print(f"\\[{resource.name}] errored")
         return []
 
 
 # Console
 
 
+output_console = Console()
 error_console = Console(stderr=True)
 
 
-def print_success(console: Console, *, note: str, title: str = "Success") -> None:
+def print_success(*, note: str, title: str = "Success") -> None:
     panel = Panel(note, title=title, border_style="green", title_align="left")
-    console.print(panel)
+    output_console.print(panel)
 
 
-def print_panel(console: Console, *, note: str, title: str) -> None:
+def print_panel(*, note: str, title: str) -> None:
     panel = Panel(note, title=title, title_align="left")
-    console.print(panel)
+    output_console.print(panel)
 
 
 def print_error(*, note: str, title: str = "Error") -> None:

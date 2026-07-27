@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
 from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 
 @console.command(name="validate")
@@ -72,7 +72,6 @@ def console_validate(
     Based on the inferred data source type it will validate resource or package.
     Default output format is YAML with a front matter.
     """
-    console = Console()
     name = name or resource_name
 
     # Setup system
@@ -179,7 +178,7 @@ def console_validate(
 
     # Status
     if report.tasks:
-        console.rule("[bold]Dataset")
+        output_console.rule("[bold]Dataset")
         view = Table(title="dataset")
         view.add_column("name")
         view.add_column("type")
@@ -190,11 +189,11 @@ def console_validate(
             style = "green" if task.valid else "bold red"
             status_row = [task.name, task.type, task.place, status]
             view.add_row(*status_row, style=style)
-        console.print(view)
+        output_console.print(view)
 
     # Errors
     if not report.valid:
-        console.rule("[bold]Tables")
+        output_console.rule("[bold]Tables")
         for name, errors in zip(names, matrix):
             if errors:
                 view = Table(title=name)
@@ -205,7 +204,7 @@ def console_validate(
                     for prop in props:
                         error_row.append(str(getattr(error, prop, None)))
                     view.add_row(*error_row)
-                console.print(view)
+                output_console.print(view)
 
     # Proper retcode
     raise typer.Exit(code=code)

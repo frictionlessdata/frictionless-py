@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 from rich.progress import track
 
 from ...exception import FrictionlessException
@@ -12,6 +11,7 @@ from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 
 @console.command(name="convert")
@@ -51,8 +51,6 @@ def console_convert(
     """
     Convert data table
     """
-    console = Console()
-
     # Setup system
     if trusted:
         system.trusted = trusted
@@ -115,7 +113,7 @@ def console_convert(
             raise FrictionlessException(note)
 
         # Convert resource
-        console.rule("[bold]Convert")
+        output_console.rule("[bold]Convert")
         # TODO: replace dummy progress bar a normal one
         for stage in track(["start", "end"], description="Converting..."):
             if stage == "end":
@@ -128,5 +126,5 @@ def console_convert(
         raise typer.Exit(code=1)
 
     # Print result
-    console.rule("[bold]Result")
-    console.print(f"Succesefully converted to [bold]{to_path}[/bold]")
+    output_console.rule("[bold]Result")
+    output_console.print(f"Succesefully converted to [bold]{to_path}[/bold]")
