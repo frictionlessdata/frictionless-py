@@ -9,7 +9,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 def test_resource_dialect_header():
     with TableResource(path="data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -36,7 +36,7 @@ def test_resource_dialect_header_false():
 
 def test_resource_dialect_header_unicode():
     with TableResource(path="data/table-unicode-headers.csv") as resource:
-        assert resource.header == ["id", "国人"]
+        assert resource.header.field_names == ["id", "国人"]
         assert resource.read_rows() == [
             {"id": 1, "国人": "english"},
             {"id": 2, "国人": "中国人"},
@@ -46,7 +46,7 @@ def test_resource_dialect_header_unicode():
 def test_resource_dialect_header_stream_context_manager():
     source = open("data/table.csv", mode="rb")
     with TableResource(data=source, format="csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -57,7 +57,7 @@ def test_resource_dialect_header_inline():
     source = [[], ["id", "name"], ["1", "english"], ["2", "中国人"]]
     dialect = Dialect(header_rows=[2])
     with TableResource(data=source, dialect=dialect) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -67,7 +67,7 @@ def test_resource_dialect_header_inline():
 def test_resource_dialect_header_json_keyed():
     data = "[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
     with resources.TableResource(data=data.encode("utf-8"), format="json") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -77,7 +77,7 @@ def test_resource_dialect_header_json_keyed():
 def test_resource_dialect_header_inline_keyed():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with TableResource(data=source) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -89,7 +89,7 @@ def test_resource_dialect_header_inline_keyed_headers_is_none():
     dialect = Dialect(header=False)
     with TableResource(data=source, dialect=dialect) as resource:
         assert resource.labels == []
-        assert resource.header == ["field1", "field2"]
+        assert resource.header.field_names == ["field1", "field2"]
         assert resource.read_rows() == [
             {"field1": "id", "field2": "name"},
             {"field1": "1", "field2": "english"},
@@ -102,7 +102,7 @@ def test_resource_dialect_header_xlsx_multiline():
     control = Control.from_descriptor({"type": "excel", "fillMergedCells": True})
     dialect = Dialect(header_rows=[1, 2, 3, 4, 5], controls=[control])
     with TableResource(path=source, dialect=dialect) as resource:
-        header = resource.header
+        header = resource.header.field_names
         assert header == [
             "Region",
             "Caloric contribution (%)",
@@ -118,7 +118,7 @@ def test_resource_dialect_header_csv_multiline_headers_join():
     source = b"k1\nk2\nv1\nv2\nv3"
     dialect = Dialect(header_rows=[1, 2], header_join=":")
     with TableResource(data=source, format="csv", dialect=dialect) as resource:
-        assert resource.header == ["k1:k2"]
+        assert resource.header.field_names == ["k1:k2"]
         assert resource.read_rows() == [
             {"k1:k2": "v1"},
             {"k1:k2": "v2"},
@@ -130,7 +130,7 @@ def test_resource_dialect_header_csv_multiline_headers_duplicates():
     source = b"k1\nk1\nv1\nv2\nv3"
     dialect = Dialect(header_rows=[1, 2])
     with TableResource(data=source, format="csv", dialect=dialect) as resource:
-        assert resource.header == ["k1"]
+        assert resource.header.field_names == ["k1"]
         assert resource.read_rows() == [
             {"k1": "v1"},
             {"k1": "v2"},
@@ -143,7 +143,7 @@ def test_resource_dialect_header_strip_and_non_strings():
     dialect = Dialect(header_rows=[1])
     with TableResource(data=source, dialect=dialect) as resource:
         assert resource.labels == ["header", "2", "3", ""]
-        assert resource.header == ["header", "2", "3", "field4"]
+        assert resource.header.field_names == ["header", "2", "3", "field4"]
         assert resource.read_rows() == [
             {"header": "value1", "2": "value2", "3": "value3", "field4": "value4"},
         ]
@@ -154,7 +154,7 @@ def test_resource_layout_header_case_default():
     with TableResource(path="data/table.csv", schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
         assert resource.labels == ["id", "name"]
-        assert resource.header == ["ID", "NAME"]
+        assert resource.header.field_names == ["ID", "NAME"]
         assert resource.header.valid is False
         assert resource.header.errors[0].type == "incorrect-label"
         assert resource.header.errors[1].type == "incorrect-label"
@@ -166,7 +166,7 @@ def test_resource_layout_header_case_is_false():
     with TableResource(path="data/table.csv", dialect=dialect, schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
         assert resource.labels == ["id", "name"]
-        assert resource.header == ["ID", "NAME"]
+        assert resource.header.field_names == ["ID", "NAME"]
         assert resource.header.valid is True
 
 
@@ -174,7 +174,7 @@ def test_resource_dialect_skip_rows():
     source = "data/skip-rows.csv"
     dialect = Dialect(comment_char="#", comment_rows=[5])
     with TableResource(path=source, dialect=dialect) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
         ]
@@ -184,7 +184,7 @@ def test_resource_dialect_skip_rows_with_headers():
     source = "data/skip-rows.csv"
     dialect = Dialect(comment_char="#")
     with TableResource(path=source, dialect=dialect) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -195,7 +195,7 @@ def test_resource_layout_skip_rows_with_headers_example_from_readme():
     dialect = Dialect(comment_char="#")
     source = [["#comment"], ["name", "order"], ["John", 1], ["Alex", 2]]
     with TableResource(data=source, dialect=dialect) as resource:
-        assert resource.header == ["name", "order"]
+        assert resource.header.field_names == ["name", "order"]
         assert resource.read_rows() == [
             {"name": "John", "order": 1},
             {"name": "Alex", "order": 2},
@@ -233,7 +233,7 @@ def test_resource_dialect_csv_default():
         assert control.double_quote is True
         assert control.quote_char == '"'
         assert control.skip_initial_space is False
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.dialect.header is True
         assert resource.dialect.header_rows == [1]
         # TODO: review
@@ -248,7 +248,7 @@ def test_resource_dialect_csv_default():
 
 def test_resource_dialect_csv_delimiter():
     with TableResource(path="data/delimiter.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.dialect.to_descriptor() == {"csv": {"delimiter": ";"}}
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -260,7 +260,7 @@ def test_resource_dialect_json_property():
     data = b'{"root": [["header1", "header2"], ["value1", "value2"]]}'
     dialect = Dialect.from_descriptor({"json": {"property": "root"}})
     with resources.TableResource(data=data, format="json", dialect=dialect) as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
         ]

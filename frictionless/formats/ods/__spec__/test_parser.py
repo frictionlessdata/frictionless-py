@@ -15,7 +15,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 def test_ods_parser():
     with TableResource(path="data/table.ods") as resource:
         assert resource.format == "ods"
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -26,7 +26,7 @@ def test_ods_parser():
 def test_ods_parser_remote():
     path = BASEURL % "data/table.ods"
     with TableResource(path=path) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -36,7 +36,7 @@ def test_ods_parser_remote():
 def test_ods_parser_sheet_by_index():
     control = formats.OdsControl(sheet=1)
     with TableResource(path="data/table.ods", control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -48,7 +48,7 @@ def test_ods_parser_2nd_sheet_by_index():
     with TableResource(
         path="data/table-with-two-sheets.ods", control=control
     ) as resource:
-        assert resource.header == ["a", "b", "c"]
+        assert resource.header.field_names == ["a", "b", "c"]
         assert resource.read_rows() == [{"a": 1, "b": 2, "c": 3}]
 
 
@@ -65,7 +65,7 @@ def test_ods_parser_sheet_by_index_not_existent():
 def test_ods_parser_sheet_by_name():
     control = formats.OdsControl(sheet="Лист1")
     with TableResource(path="data/table.ods", control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -77,7 +77,7 @@ def test_ods_parser_2nd_sheet_by_name():
     with TableResource(
         path="data/table-with-two-sheets.ods", control=control
     ) as resource:
-        assert resource.header == ["a", "b", "c"]
+        assert resource.header.field_names == ["a", "b", "c"]
         assert resource.read_rows() == [{"a": 1, "b": 2, "c": 3}]
 
 
@@ -95,7 +95,7 @@ def test_ods_parser_sheet_by_name_not_existent():
 
 def test_ods_parser_with_boolean():
     with TableResource(path="data/table-with-booleans.ods") as resource:
-        assert resource.header == ["id", "boolean"]
+        assert resource.header.field_names == ["id", "boolean"]
         assert resource.read_rows() == [
             {"id": 1, "boolean": True},
             {"id": 2, "boolean": False},
@@ -121,7 +121,7 @@ def test_ods_parser_write(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.ods")))
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -135,7 +135,7 @@ def test_ods_parser_write_skip_header(tmpdir):
     path = str(tmpdir.join("table.ods"))
     target = TableResource(path=path, dialect=dialect, control=control)
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         resource.write_table(target)
     table = target.read_table()
-    assert table.header == ["field1", "field2"]
+    assert table.header.field_names == ["field1", "field2"]

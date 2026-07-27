@@ -18,7 +18,7 @@ def test_sql_parser(sqlite_url_data):
             ],
             "primaryKey": ["id"],
         }
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -28,7 +28,7 @@ def test_sql_parser(sqlite_url_data):
 def test_sql_parser_order_by(sqlite_url_data):
     control = formats.SqlControl(table="table", order_by="id")
     with TableResource(path=sqlite_url_data, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -38,7 +38,7 @@ def test_sql_parser_order_by(sqlite_url_data):
 def test_sql_parser_order_by_desc(sqlite_url_data):
     control = formats.SqlControl(table="table", order_by="id desc")
     with TableResource(path=sqlite_url_data, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 2, "name": "中国人"},
             {"id": 1, "name": "english"},
@@ -48,7 +48,7 @@ def test_sql_parser_order_by_desc(sqlite_url_data):
 def test_sql_parser_where(sqlite_url_data):
     control = formats.SqlControl(table="table", where="name = '中国人'")
     with TableResource(path=sqlite_url_data, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 2, "name": "中国人"},
         ]
@@ -84,7 +84,7 @@ def test_sql_parser_write(sqlite_url_data):
     control = formats.SqlControl(table="name", order_by="id")
     target = source.write(path=sqlite_url_data, control=control)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -96,7 +96,7 @@ def test_sql_parser_write_where(sqlite_url_data):
     control = formats.SqlControl(table="name", where="name = '中国人'")
     target = source.write(path=sqlite_url_data, control=control)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 2, "name": "中国人"},
         ]
@@ -107,7 +107,7 @@ def test_sql_parser_write_timezone(sqlite_url):
     control = formats.SqlControl(table="timezone")
     target = source.write(path=sqlite_url, control=control)
     with target:
-        assert target.header == ["datetime", "time"]
+        assert target.header.field_names == ["datetime", "time"]
         assert target.read_rows() == [
             {
                 "datetime": datetime(2020, 1, 1, 15),
@@ -139,7 +139,7 @@ def test_sql_parser_write_string_pk_issue_777_sqlite(sqlite_url):
     target = source.write(path=sqlite_url, control=control)
     with target:
         assert target.schema.primary_key == ["name"]
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

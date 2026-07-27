@@ -11,19 +11,18 @@ from frictionless.table.header import Header
 def test_basic():
     with TableResource(data=[["field1", "field2", "field3"], [1, 2, 3]]) as resource:
         header = resource.header
-        assert header == ["field1", "field2", "field3"]
+        assert header.field_names == ["field1", "field2", "field3"]
         assert header.labels == ["field1", "field2", "field3"]
         assert header.field_numbers == [1, 2, 3]
         assert header.row_numbers == [1]
         assert header.errors == []
-        assert header == ["field1", "field2", "field3"]
 
 
 def test_extra_label():
     schema = Schema(fields=[fields.AnyField(name="id")])
     with TableResource(path="data/table.csv", schema=schema) as resource:
         header = resource.header
-        assert header == ["id"]
+        assert header.field_names == ["id"]
         assert header.labels == ["id", "name"]
         assert header.valid is False
 
@@ -38,7 +37,7 @@ def test_missing_label():
     )
     with TableResource(path="data/table.csv", schema=schema) as resource:
         header = resource.header
-        assert header == ["id", "name", "extra"]
+        assert header.field_names == ["id", "name", "extra"]
         assert header.labels == ["id", "name"]
         assert header.valid is False
 
@@ -314,3 +313,17 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633(
         assert len(errors) == nb_errors
         for error, type_expected in zip(errors, types_errors_expected):
             assert error.type == type_expected
+
+
+# Deprecated
+
+
+# `Header` inherits from `List[str]` and, as such, exposes the schema field
+# names — which `header.field_names` states explicitly.
+def test_header_used_as_a_list_is_deprecated():
+    with TableResource(data=[["field1", "field2"], [1, 2]]) as resource:
+        header = resource.header
+        assert header == ["field1", "field2"]
+        assert header[0] == "field1"
+        assert len(header) == 2
+        assert list(header) == header.field_names

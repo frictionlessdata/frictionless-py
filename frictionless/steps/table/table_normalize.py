@@ -29,7 +29,7 @@ class table_normalize(Step):
         # Data
         def data():  # type: ignore
             with current:
-                yield current.header.to_list()  # type: ignore
+                yield list(current.header.field_names)  # type: ignore
                 for row in current.row_stream:  # type: ignore
                     yield row.to_list()  # type: ignore
 

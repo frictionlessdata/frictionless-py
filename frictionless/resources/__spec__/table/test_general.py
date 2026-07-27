@@ -127,7 +127,7 @@ def test_resource_source_path():
     assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
     assert resource.fragment == [["1", "english"], ["2", "中国人"]]
     assert resource.labels == ["id", "name"]
-    assert resource.header == ["id", "name"]
+    assert resource.header.field_names == ["id", "name"]
     if not platform.type == "windows":
         assert resource.stats.md5 == "6c2c61dd9b0e9c6876139a449ed87933"
         assert (
@@ -193,7 +193,7 @@ def test_resource_source_data():
         assert resource.sample == data
         assert resource.fragment == data[1:]
         assert resource.labels == ["id", "name"]
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.stats.fields == 2
         assert resource.stats.rows == 2
 
@@ -241,7 +241,7 @@ def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
     source = "data/skip-blank-at-the-end.csv"
     with TableResource(path=source, dialect=dialect) as resource:
         rows = resource.read_rows()
-        assert resource.header == ["test1", "test2"]
+        assert resource.header.field_names == ["test1", "test2"]
         assert rows[0].cells == ["1", "2"]
         assert rows[1].cells == []
 
@@ -271,7 +271,10 @@ def test_resource_skip_rows_non_string_cell_issue_320():
         controls=[Control.from_descriptor({"type": "excel", "fillMergedCells": True})],
     )
     with TableResource(path=source, dialect=dialect) as resource:
-        assert resource.header[7] == "Current Population Analysed % of total county Pop"
+        assert (
+            resource.header.field_names[7]
+            == "Current Population Analysed % of total county Pop"
+        )
 
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")

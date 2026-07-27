@@ -26,7 +26,7 @@ def test_s3_loader(bucket_name):
 
     # Read
     with TableResource(path="s3://%s/table.csv" % bucket_name) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -48,7 +48,7 @@ def test_s3_loader_write(bucket_name):
 
     # Read
     with TableResource(path="s3://%s/table.csv" % bucket_name) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -132,7 +132,7 @@ def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
 
     # Read
     with TableResource(path="s3://%s/table with space.csv" % bucket_name) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

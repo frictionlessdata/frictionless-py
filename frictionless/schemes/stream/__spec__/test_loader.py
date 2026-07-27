@@ -9,7 +9,7 @@ from frictionless.resources import TableResource
 def test_stream_loader():
     with open("data/table.csv", mode="rb") as file:
         with TableResource(data=file, format="csv") as resource:
-            assert resource.header == ["id", "name"]
+            assert resource.header.field_names == ["id", "name"]
             assert resource.read_rows() == [
                 {"id": 1, "name": "english"},
                 {"id": 2, "name": "中国人"},
@@ -19,7 +19,7 @@ def test_stream_loader():
 def test_stream_loader_text_stream():
     with open("data/table.csv") as file:
         with TableResource(data=file, format="csv") as resource:
-            assert resource.header == ["id", "name"]
+            assert resource.header.field_names == ["id", "name"]
             assert resource.read_rows() == [
                 {"id": 1, "name": "english"},
                 {"id": 2, "name": "中国人"},

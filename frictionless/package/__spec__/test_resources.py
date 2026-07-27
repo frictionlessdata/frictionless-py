@@ -105,4 +105,4 @@ def test_package_resources_respect_layout_set_after_creation_issue_503():
     resource = package.get_table_resource("table")
     resource.dialect = Dialect(comment_rows=[3])
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
-    assert resource.header == ["id", "name"]
+    assert resource.header.field_names == ["id", "name"]

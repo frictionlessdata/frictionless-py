@@ -11,7 +11,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 def test_xls_parser():
     with TableResource(path="data/table.xls") as table:
-        assert table.header == ["id", "name"]
+        assert table.header.field_names == ["id", "name"]
         assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -21,7 +21,7 @@ def test_xls_parser():
 @pytest.mark.vcr
 def test_xls_parser_remote():
     with TableResource(path=BASEURL % "data/table.xls") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -32,7 +32,7 @@ def test_xls_parser_sheet_by_index():
     path = "data/sheet2.xls"
     control = formats.ExcelControl(sheet=2)
     with TableResource(path=path, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -51,7 +51,7 @@ def test_xls_parser_sheet_by_name():
     path = "data/sheet2.xls"
     control = formats.ExcelControl(sheet="Sheet2")
     with TableResource(path=path, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -91,7 +91,7 @@ def test_xls_parser_merged_cells_fill():
 
 def test_xls_parser_with_boolean():
     with TableResource(path="data/table-with-booleans.xls") as resource:
-        assert resource.header == ["id", "boolean"]
+        assert resource.header.field_names == ["id", "boolean"]
         assert resource.read_rows() == [
             {"id": 1, "boolean": True},
             {"id": 2, "boolean": False},
@@ -106,7 +106,7 @@ def test_xls_parser_write(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.xls")))
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -119,7 +119,7 @@ def test_xls_parser_write_sheet_name(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.xls")), control=control)
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -133,10 +133,10 @@ def test_xls_parser_write_skip_header(tmpdir):
     path = str(tmpdir.join("table.xls"))
     target = TableResource(path=path, dialect=dialect, control=control)
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         resource.write_table(target)
     table = target.read_table()
-    assert table.header == ["field1", "field2"]
+    assert table.header.field_names == ["field1", "field2"]
 
 
 # Bugs

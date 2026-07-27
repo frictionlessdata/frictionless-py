@@ -15,7 +15,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_remote_loader():
     with TableResource(path=BASEURL % "data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -57,7 +57,7 @@ def test_remote_loader_http_preload():
         assert control.http_preload is True
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
 
 
 # Write

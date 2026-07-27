@@ -112,7 +112,7 @@ def test_resource_schema_from_path_error_bad_path():
 
 def test_resource_schema_inferred():
     with TableResource(path="data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -136,7 +136,7 @@ def test_resource_schema_provided():
     )
     with TableResource(path="data/table.csv", schema=schema) as resource:
         assert resource.labels == ["id", "name"]
-        assert resource.header == ["new1", "new2"]
+        assert resource.header.field_names == ["new1", "new2"]
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "new1", "type": "string"},

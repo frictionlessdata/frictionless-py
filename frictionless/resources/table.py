@@ -629,7 +629,7 @@ class TableResource(Resource):
         """
         snap: List[List[Any]] = []
         with helpers.ensure_open(self):
-            snap.append(self.header.to_list())
+            snap.append(list(self.header.field_names))
             for row in self.row_stream:
                 snap.append(row.to_list(json=json))
         return snap

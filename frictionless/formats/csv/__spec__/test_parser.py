@@ -13,7 +13,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 def test_csv_parser():
     with TableResource(path="data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -22,7 +22,7 @@ def test_csv_parser():
 
 def test_csv_parser_with_bom():
     with TableResource(path="data/bom.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -31,7 +31,7 @@ def test_csv_parser_with_bom():
 
 def test_csv_parser_with_bom_with_encoding():
     with TableResource(path="data/bom.csv", encoding="utf-8") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -41,7 +41,7 @@ def test_csv_parser_with_bom_with_encoding():
 def test_csv_parser_excel():
     data = b"header1,header2\nvalue1,value2\nvalue3,value4"
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},
@@ -52,7 +52,7 @@ def test_csv_parser_excel_tab():
     data = b"header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
     control = formats.CsvControl(delimiter="\t")
     with TableResource(data=data, format="csv", control=control) as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},
@@ -62,7 +62,7 @@ def test_csv_parser_excel_tab():
 def test_csv_parser_unix():
     data = b'"header1","header2"\n"value1","value2"\n"value3","value4"'
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},
@@ -72,7 +72,7 @@ def test_csv_parser_unix():
 def test_csv_parser_escaping():
     control = formats.CsvControl(escape_char="\\")
     with TableResource(path="data/escaping.csv", control=control) as resource:
-        assert resource.header == ["ID", "Test"]
+        assert resource.header.field_names == ["ID", "Test"]
         assert resource.read_rows() == [
             {"ID": 1, "Test": "Test line 1"},
             {"ID": 2, "Test": 'Test " line 2'},
@@ -82,7 +82,7 @@ def test_csv_parser_escaping():
 
 def test_csv_parser_doublequote():
     with TableResource(path="data/doublequote.csv") as resource:
-        assert len(resource.header) == 17
+        assert len(resource.header.field_names) == 17
         for row in resource.row_stream:
             assert len(row) == 17
 
@@ -90,7 +90,7 @@ def test_csv_parser_doublequote():
 def test_csv_parser_stream():
     data = open("data/table.csv", mode="rb")
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -100,7 +100,7 @@ def test_csv_parser_stream():
 def test_csv_parser_buffer():
     data = "id,name\n1,english\n2,中国人\n".encode("utf-8")
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -111,7 +111,7 @@ def test_csv_parser_buffer():
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_csv_parser_remote():
     with TableResource(path=BASEURL % "data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -122,7 +122,7 @@ def test_csv_parser_remote():
 def test_csv_parser_remote_non_ascii_url():
     path = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"
     with TableResource(path=path) as resource:
-        assert resource.header == [
+        assert resource.header.field_names == [
             "Entity",
             "Transaction Posting Date",
             "Merchant Name",
@@ -135,7 +135,7 @@ def test_csv_parser_delimiter():
     data = b'"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
     control = formats.CsvControl(delimiter=";")
     with TableResource(data=data, format="csv", control=control) as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},
@@ -146,7 +146,7 @@ def test_csv_parser_escapechar():
     data = b"header1%,header2\nvalue1%,value2\nvalue3%,value4"
     control = formats.CsvControl(escape_char="%")
     with TableResource(data=data, format="csv", control=control) as resource:
-        assert resource.header == ["header1,header2"]
+        assert resource.header.field_names == ["header1,header2"]
         assert resource.read_rows() == [
             {"header1,header2": "value1,value2"},
             {"header1,header2": "value3,value4"},
@@ -157,7 +157,7 @@ def test_csv_parser_quotechar():
     data = b"%header1,header2%\n%value1,value2%\n%value3,value4%"
     control = formats.CsvControl(quote_char="%")
     with TableResource(data=data, format="csv", control=control) as resource:
-        assert resource.header == ["header1,header2"]
+        assert resource.header.field_names == ["header1,header2"]
         assert resource.read_rows() == [
             {"header1,header2": "value1,value2"},
             {"header1,header2": "value3,value4"},
@@ -168,7 +168,7 @@ def test_csv_parser_skipinitialspace():
     data = b"header1, header2\nvalue1, value2\nvalue3, value4"
     control = formats.CsvControl(skip_initial_space=False)
     with TableResource(data=data, format="csv", control=control) as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": " value2"},
             {"header1": "value3", "header2": " value4"},
@@ -178,7 +178,7 @@ def test_csv_parser_skipinitialspace():
 def test_csv_parser_skipinitialspace_default():
     data = b"header1, header2\nvalue1, value2\nvalue3, value4"
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},
@@ -220,9 +220,9 @@ def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtable
     data2 = b"a,b,c\n#comment"
     control = formats.CsvControl(delimiter=";")
     with TableResource(data=data1, format="csv", control=control) as resource:
-        assert resource.header == ["a", "b", "c"]
+        assert resource.header.field_names == ["a", "b", "c"]
     with TableResource(data=data2, format="csv") as resource:
-        assert resource.header == ["a", "b", "c"]
+        assert resource.header.field_names == ["a", "b", "c"]
 
 
 # TODO: recover on py3.11+
@@ -231,7 +231,7 @@ def test_csv_parser_quotechar_is_empty_string():
     data = b'header1,header2",header3\nvalue1,value2",value3'
     control = formats.CsvControl(quote_char="")
     with TableResource(data=data, format="csv", control=control) as resource:
-        assert resource.header == ["header1", 'header2"', "header3"]
+        assert resource.header.field_names == ["header1", 'header2"', "header3"]
         assert resource.read_rows() == [
             {"header1": "value1", 'header2"': 'value2"', "header3": "value3"},
         ]
@@ -241,7 +241,7 @@ def test_csv_parser_format_tsv():
     detector = Detector(schema_patch={"missingValues": ["\\N"]})
     with TableResource(path="data/table.tsv", detector=detector) as resource:
         assert resource.dialect.to_descriptor() == {"csv": {"delimiter": "\t"}}
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -258,7 +258,7 @@ def test_csv_parser_write(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -272,7 +272,7 @@ def test_csv_parser_write_delimiter(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.csv")), control=control)
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.dialect.to_descriptor() == {"csv": {"delimiter": ";"}}
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
@@ -286,7 +286,7 @@ def test_csv_parser_write_inline_source(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
-        assert target.header == ["key1", "key2"]
+        assert target.header.field_names == ["key1", "key2"]
         assert target.read_rows() == [
             {"key1": "value1", "key2": "value2"},
         ]
@@ -333,7 +333,7 @@ def test_csv_parser_write_skip_header(tmpdir):
     data = b"header1,header2\nvalue11,value12\nvalue21,value22"
     path = str(tmpdir.join("table.csv"))
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         resource.write_table(path, dialect=Dialect(header=False))
     with open(path, "rb") as file:
         assert file.read() == b"value11,value12\r\nvalue21,value22\r\n"

@@ -632,7 +632,7 @@ def test_resource_validate_detector_infer_names():
     assert resource.schema.fields[1].name == "name"
     assert resource.stats.rows == 3
     assert resource.labels == []
-    assert resource.header == ["id", "name"]
+    assert resource.header.field_names == ["id", "name"]
 
 
 # Encoding

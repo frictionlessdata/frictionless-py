@@ -21,5 +21,5 @@ def test_system_use_context_http_session():
         with TableResource(path=BASEURL % "data/table.csv") as resource:
             control = resource.dialect.get_control("remote")
             assert isinstance(control, schemes.RemoteControl)
-            assert resource.header == ["id", "name"]
+            assert resource.header.field_names == ["id", "name"]
     assert system.http_session is not session

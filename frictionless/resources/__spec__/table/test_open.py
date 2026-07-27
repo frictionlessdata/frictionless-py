@@ -18,7 +18,7 @@ def test_resource_open():
         assert resource.compression is None
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.header.row_numbers == [1]
         assert resource.schema.to_descriptor() == {
             "fields": [
@@ -54,7 +54,7 @@ def test_resource_open_read_rows():
 
 def test_resource_open_row_stream():
     with TableResource(path="data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert list(resource.row_stream) == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -64,7 +64,7 @@ def test_resource_open_row_stream():
 
 def test_resource_open_row_stream_iterate():
     with TableResource(path="data/table.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         for row in resource.row_stream:
             assert len(row) == 2
             assert row.row_number in [2, 3]
@@ -78,7 +78,7 @@ def test_resource_open_row_stream_error_cells():
     detector = Detector(field_type="integer")
     with TableResource(path="data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert row1.errors[0].type == "type-error"
         assert row1.error_cells == {"name": "english"}
         assert row1.to_dict() == {"id": 1, "name": None}
@@ -93,7 +93,7 @@ def test_resource_open_row_stream_blank_cells():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
     with TableResource(path="data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert row1.blank_cells == {"id": "1"}
         assert row1.to_dict() == {"id": None, "name": "english"}
         assert row1.valid is True
@@ -136,14 +136,14 @@ def test_resource_open_cell_stream_iterate():
 def test_resource_open_empty():
     with TableResource(path="data/empty.csv") as resource:
         assert resource.header.missing
-        assert resource.header == []
+        assert resource.header.field_names == []
         assert resource.schema.to_descriptor() == {"fields": []}
         assert resource.read_rows() == []
 
 
 def test_resource_open_without_rows():
     with TableResource(path="data/without-rows.csv") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == []
         assert resource.schema.to_descriptor() == {
             "fields": [
@@ -158,7 +158,7 @@ def test_resource_open_without_headers():
     with TableResource(path="data/without-headers.csv", dialect=dialect) as resource:
         assert resource.labels == []
         assert resource.header.missing
-        assert resource.header == ["field1", "field2"]
+        assert resource.header.field_names == ["field1", "field2"]
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "field1", "type": "integer"},
@@ -184,7 +184,7 @@ def test_resource_open_source_error_data():
 def test_resource_reopen():
     with TableResource(path="data/table.csv") as resource:
         # Open
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -192,7 +192,7 @@ def test_resource_reopen():
 
         # Re-open
         resource.open()
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

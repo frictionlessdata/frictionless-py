@@ -46,7 +46,8 @@ class Header(List[str]):  # type: ignore
         ignore_case: bool = False,
         fields_match: types.IFieldsMatch = "exact",
     ):
-        super().__init__(field.name for field in fields)
+        field_names = [field.name for field in fields]
+        super().__init__(field_names)
         self.__fields: List[Field] = []
         for field in fields:
             copy = field.to_copy()
@@ -55,7 +56,7 @@ class Header(List[str]):  # type: ignore
             # primary_key" remain accurate.
             copy.schema = field.schema
             self.__fields.append(copy)
-        self.__field_names = self.copy()
+        self.__field_names = field_names
         self.__row_numbers = row_numbers
         self.__ignore_case = ignore_case
         self.__fields_match = fields_match
@@ -268,8 +269,8 @@ class Header(List[str]):  # type: ignore
         return helpers.stringify_csv_string(cells)
 
     def to_list(self):
-        """Convert to a list"""
-        return self.copy()
+        """Convert to a list of the schema field names"""
+        return list(self.__field_names)
 
     # Process
 

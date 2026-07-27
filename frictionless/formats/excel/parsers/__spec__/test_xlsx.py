@@ -23,7 +23,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 def test_xlsx_parser_table():
     data = io.open("data/table.xlsx", mode="rb")
     with TableResource(data=data, format="xlsx") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1.0, "name": "english"},
             {"id": 2.0, "name": "中国人"},
@@ -38,7 +38,7 @@ def test_xlsx_parser_table():
 def test_xlsx_parser_remote():
     path = BASEURL % "data/table.xlsx"
     with TableResource(path=path) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1.0, "name": "english"},
             {"id": 2.0, "name": "中国人"},
@@ -49,7 +49,7 @@ def test_xlsx_parser_sheet_by_index():
     path = "data/sheet2.xlsx"
     control = formats.ExcelControl(sheet=2)
     with TableResource(path=path, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1.0, "name": "english"},
             {"id": 2.0, "name": "中国人"},
@@ -71,7 +71,7 @@ def test_xlsx_parser_sheet_by_name():
     path = "data/sheet2.xlsx"
     control = formats.ExcelControl(sheet="Sheet2")
     with TableResource(path=path, control=control) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1.0, "name": "english"},
             {"id": 2.0, "name": "中国人"},
@@ -234,7 +234,7 @@ def test_xlsx_parser_write(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.xlsx")))
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -247,7 +247,7 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.xlsx")), control=control)
     source.write(target)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -261,10 +261,10 @@ def test_xlsx_parser_write_skip_header(tmpdir):
     path = str(tmpdir.join("table.xlsx"))
     target = TableResource(path=path, dialect=dialect, control=control)
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header == ["header1", "header2"]
+        assert resource.header.field_names == ["header1", "header2"]
         resource.write_table(target)
     table = target.read_table()
-    assert table.header == ["field1", "field2"]
+    assert table.header.field_names == ["field1", "field2"]
 
 
 # Bugs
@@ -275,7 +275,7 @@ def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():
     dialect = Dialect(header_rows=[10, 11, 12], controls=[control])
     with TableResource(path="data/issue-1024.xlsx", dialect=dialect) as resource:
         assert resource.header
-        assert resource.header[21] == "Current Phase P3+ #"
+        assert resource.header.field_names[21] == "Current Phase P3+ #"
 
 
 def test_xlsx_parser_stats_no_bytes_and_hash_issue_938():

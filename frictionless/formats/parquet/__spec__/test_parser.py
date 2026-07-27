@@ -10,7 +10,7 @@ from frictionless.resources import TableResource
 
 def test_parquet_parser():
     with TableResource(path="data/table.parq") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -19,7 +19,7 @@ def test_parquet_parser():
 
 def test_parquet_parser_parquet_extension():
     with TableResource(path="data/table.parquet") as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -29,7 +29,7 @@ def test_parquet_parser_parquet_extension():
 def test_parquet_parser_columns():
     control = formats.ParquetControl(columns=["id"])
     with TableResource(path="data/table.parq", control=control) as resource:
-        assert resource.header == ["id"]
+        assert resource.header.field_names == ["id"]
         assert resource.read_rows() == [
             {"id": 1},
             {"id": 2},
@@ -56,7 +56,7 @@ def test_parquet_parser_write(tmpdir):
     source.write(target)
     with target:
         assert target.format == "parq"
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -69,7 +69,7 @@ def test_parquet_parser_write_datetime_field_with_timezone(tmpdir):
     source.write(target)
     with target:
         assert target.format == "parq"
-        assert target.header == ["datetimewithtimezone"]
+        assert target.header.field_names == ["datetimewithtimezone"]
         assert target.read_rows() == [
             {
                 "datetimewithtimezone": datetime.datetime(

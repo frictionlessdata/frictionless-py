@@ -15,7 +15,7 @@ from frictionless.resources import TableResource
 def test_gsheets_parser():
     path = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing"
     with TableResource(path=path) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -26,7 +26,7 @@ def test_gsheets_parser():
 def test_gsheets_parser_with_gid():
     path = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit#gid=960698813"
     with TableResource(path=path) as resource:
-        assert resource.header == ["id", "name"]
+        assert resource.header.field_names == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 2, "name": "中国人"},
             {"id": 3, "name": "german"},
@@ -54,7 +54,7 @@ def test_gsheets_parser_write(google_credentials_path):
     source = TableResource(path="data/table.csv")
     target = source.write(path=path, control=control)
     with target:
-        assert target.header == ["id", "name"]
+        assert target.header.field_names == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
