@@ -91,6 +91,23 @@ def test_schema_to_descriptor_missing_values_canonical_form(name, source, expect
     assert reimported.to_descriptor()["missingValues"] == exported
 
 
+# Fields match
+#
+# The default is not exported (nothing was declared), but an explicitly
+# declared value is preserved -- including when it equals the default.
+
+
+def test_schema_to_descriptor_fields_match_default_is_not_exported():
+    descriptor = {"fields": [{"name": "name", "type": "string"}]}
+    assert "fieldsMatch" not in Schema.from_descriptor(descriptor).to_descriptor()
+
+
+@pytest.mark.parametrize("value", ["exact", "subset"])
+def test_schema_to_descriptor_fields_match_is_preserved(value):
+    descriptor = {"fields": [{"name": "name", "type": "string"}], "fieldsMatch": value}
+    assert Schema.from_descriptor(descriptor).to_descriptor() == descriptor
+
+
 def test_schema_to_json(tmpdir):
     output_file_path = str(tmpdir.join("schema.json"))
     schema = Schema.from_descriptor(DESCRIPTOR_MIN)

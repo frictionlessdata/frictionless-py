@@ -69,6 +69,14 @@ class Schema(Metadata, metaclass=Factory):
     A List of fields in the schema.
     """
 
+    fields_match: types.IFieldsMatch = "exact"
+    """
+    How the fields declared above match the fields of the data source.
+    `exact` (the default) maps them by order and requires the very same fields;
+    the other values map them by name and relax the requirement in one way or
+    another (see the Data Package v2 specification).
+    """
+
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
     List of string values to be set as missing values in the schema fields. If any of string in
@@ -306,6 +314,10 @@ class Schema(Metadata, metaclass=Factory):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
+            "fieldsMatch": {
+                "type": "string",
+                "enum": ["exact", "equal", "subset", "superset", "partial"],
+            },
             "missingValues": missing_values_module.PROFILE,
             "primaryKey": {
                 "type": "array",

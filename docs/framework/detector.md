@@ -137,9 +137,14 @@ print(resource.read_rows())
 
 As we can see, the textual values equal to "67" are now considered nulls. Usually, it's handy when you have data with values like: '-', 'n/a', and similar.
 
-## Schema Sync
+## Schema Sync (deprecated)
 
-There is a way to sync provided schema based on a header row's field order. It's very useful when you have a schema that describes a subset or a superset of the resource's fields:
+> Deprecated: use the 
+  [`fieldsMatch`](https://datapackage.org/standard/table-schema/#fieldsMatch) schema property instead.
+
+There is a way to sync provided schema based on a header row's field order. 
+It's very useful when you have a schema that describes a subset or a superset 
+of the resource's fields:
 
 ```python script tabs=Python
 from frictionless import Detector, Resource, Schema, fields
@@ -149,8 +154,10 @@ detector = Detector(schema_sync=True)
 schema = Schema(fields=[fields.StringField(name='name'), fields.IntegerField(name='id')])
 with Resource('table.csv', schema=schema, detector=detector) as resource:
     print(resource.schema)
-    print(resource.read_rows())
+    print([row.to_dict() for row in resource.read_rows()])
 ```
+
+This option maps to `fieldsMatch: partial`, the most permissive mode. A schema that declares `fieldsMatch` itself takes precedence over it.
 
 ## Schema Patch
 

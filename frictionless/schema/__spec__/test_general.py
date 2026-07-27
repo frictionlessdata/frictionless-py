@@ -424,6 +424,19 @@ def test_schema_pprint_with_constraints():
     assert repr(schema) == textwrap.dedent(expected).strip()
 
 
+# Fields match
+
+
+def test_schema_fields_match_defaults_to_exact():
+    assert Schema(DESCRIPTOR_MIN).fields_match == "exact"
+
+
+@pytest.mark.parametrize("value", ["exact", "equal", "subset", "superset", "partial"])
+def test_schema_fields_match_from_descriptor(value):
+    descriptor = {**DESCRIPTOR_MIN, "fieldsMatch": value}
+    assert Schema.from_descriptor(descriptor).fields_match == value
+
+
 # Bugs
 
 

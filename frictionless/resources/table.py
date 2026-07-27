@@ -16,6 +16,7 @@ from ..platform import platform
 from ..resource import Resource
 from ..system import system
 from ..table import Header, Lookup, Row, Table, create_cell_handlers
+from ..table import fields_match as fields_match_module
 from ..transformer import Transformer
 
 if TYPE_CHECKING:
@@ -211,13 +212,21 @@ class TableResource(Resource):
     def __open_header(self):
         assert self.__labels is not None
 
+        # Prepare fields match
+        declared = (
+            self.schema.fields_match if self.schema.has_defined("fields_match") else None
+        )
+        fields_match = fields_match_module.resolve(
+            declared, schema_sync=self.detector.schema_sync
+        )
+
         # Create header
         self.__header = Header(
             self.__labels,
             fields=self.schema.fields,
             row_numbers=self.dialect.header_rows,
             ignore_case=not self.dialect.header_case,
-            schema_sync=self.detector.schema_sync,
+            fields_match=fields_match,
         )
 
         # Handle errors

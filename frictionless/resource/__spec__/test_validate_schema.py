@@ -303,7 +303,11 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     )
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        ["error", '"schema_sync" requires unique labels in the header'],
+        [
+            "error",
+            'matching fields by name ("fieldsMatch": "partial") '
+            "requires unique labels in the header",
+        ],
     ]
 
 
@@ -416,10 +420,13 @@ def test_validate_resource_ignoring_header_case_issue_1635():
             "expected_flattened_report": [],
         },
         {
+            # Case-sensitive: no label matches any field, so the header as a
+            # whole is unmatched on top of both fields being missing.
             "source": [["AA", "bb"], ["a", "b"]],
             "header_case": True,
             "expected_valid_report": False,
             "expected_flattened_report": [
+                [None, None, None, "unmatched-header"],
                 [None, 3, "aa", "missing-label"],
                 [None, 4, "BB", "missing-label"],
             ],
@@ -443,4 +450,96 @@ def test_validate_resource_ignoring_header_case_issue_1635():
         assert report.valid == tc["expected_valid_report"]
         assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == tc[
             "expected_flattened_report"
+        ]
+
+
+# Fields match
+#
+# End-to-end counterpart of the Header unit tests: the `fieldsMatch` property
+# of the schema drives how the data's header is matched against the fields.
+
+
+def _validate_fields_match(field_names, fields_match, source):
+    schema = Schema.from_descriptor(
+        {
+            "fields": [{"name": name, "type": "string"} for name in field_names],
+            "fieldsMatch": fields_match,
+        }
+    )
+    return frictionless.validate(TableResource(source, schema=schema))
+
+
+REORDERED = [["name", "id"], ["english", "1"]]
+
+
+@pytest.mark.parametrize(
+    "fields_match, expected",
+    [
+        (
+            "exact",
+            [[None, 1, "id", "incorrect-label"], [None, 2, "name", "incorrect-label"]],
+        ),
+        ("equal", []),
+        ("subset", []),
+        ("superset", []),
+        ("partial", []),
+    ],
+)
+def test_resource_validate_fields_match_reordered_labels(fields_match, expected):
+    report = _validate_fields_match(["id", "name"], fields_match, REORDERED)
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == expected
+
+
+@pytest.mark.parametrize(
+    "fields_match, expected",
+    [
+        ("exact", [[None, 2, "", "extra-label"], [2, 2, "", "extra-cell"]]),
+        ("equal", [[None, 2, "", "extra-label"]]),
+        ("superset", [[None, 2, "", "extra-label"]]),
+        ("subset", []),
+        ("partial", []),
+    ],
+)
+def test_resource_validate_fields_match_extra_label(fields_match, expected):
+    report = _validate_fields_match(["name"], fields_match, REORDERED)
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == expected
+
+
+@pytest.mark.parametrize(
+    "fields_match, expected",
+    [
+        (
+            "exact",
+            [
+                [None, 3, "extra", "missing-label"],
+                [2, 3, "extra", "missing-cell"],
+            ],
+        ),
+        ("equal", [[None, 3, "extra", "missing-label"]]),
+        ("subset", [[None, 3, "extra", "missing-label"]]),
+        ("superset", []),
+        ("partial", []),
+    ],
+)
+def test_resource_validate_fields_match_missing_field(fields_match, expected):
+    report = _validate_fields_match(["name", "id", "extra"], fields_match, REORDERED)
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == expected
+
+
+def test_resource_fields_match_reads_cells_by_name():
+    # The mapping drives the row stream too: the declared order is not the
+    # data's order, yet each cell is read with its own field's type.
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "fieldsMatch": "equal",
+        }
+    )
+    with TableResource(path="data/sync-schema.csv", schema=schema) as resource:
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
