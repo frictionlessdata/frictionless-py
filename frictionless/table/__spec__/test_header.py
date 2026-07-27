@@ -320,10 +320,20 @@ def test_missing_primary_key_label_with_shema_sync_issue_1633(
 
 # `Header` inherits from `List[str]` and, as such, exposes the schema field
 # names — which `header.field_names` states explicitly.
-def test_header_used_as_a_list_is_deprecated():
+@pytest.mark.parametrize(
+    "usage, expected",
+    [
+        (lambda header: header == ["field1", "field2"], True),
+        (lambda header: header[0], "field1"),
+        (lambda header: len(header), 2),
+        (lambda header: "field1" in header, True),
+        (lambda header: list(header), ["field1", "field2"]),
+    ],
+    ids=["==", "[]", "len()", "in", "iteration"],
+)
+def test_header_used_as_a_list_is_deprecated(usage, expected):
     with TableResource(data=[["field1", "field2"], [1, 2]]) as resource:
         header = resource.header
-        assert header == ["field1", "field2"]
-        assert header[0] == "field1"
-        assert len(header) == 2
-        assert list(header) == header.field_names
+        with pytest.warns(DeprecationWarning, match="deprecated"):
+            assert usage(header) == expected
+        assert header.field_names == ["field1", "field2"]

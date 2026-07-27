@@ -274,7 +274,7 @@ def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():
     control = formats.ExcelControl(sheet="IPC", fill_merged_cells=True)
     dialect = Dialect(header_rows=[10, 11, 12], controls=[control])
     with TableResource(path="data/issue-1024.xlsx", dialect=dialect) as resource:
-        assert resource.header
+        assert resource.header.field_names
         assert resource.header.field_names[21] == "Current Phase P3+ #"
 
 
