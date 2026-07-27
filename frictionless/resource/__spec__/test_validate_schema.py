@@ -493,13 +493,6 @@ def test_resource_validate_fields_match_reordered_labels(fields_match, expected)
 @pytest.mark.parametrize(
     "fields_match, expected",
     [
-        # Under `exact` the unmatched column has no field at all, so it is
-        # also reported on every row; the name-matched modes give it an
-        # `any` field and report it once.
-        # FIXME: the `extra-cell` is a pre-existing bug -- that error is meant
-        # for rows carrying more cells than the header, not for a column the
-        # schema does not cover, which `extra-label` already reports in full.
-        # Characterized here, to be fixed separately.
         ("exact", [[None, 2, "", "extra-label"], [2, 2, "", "extra-cell"]]),
         ("equal", [[None, 2, "", "extra-label"]]),
         ("superset", [[None, 2, "", "extra-label"]]),
@@ -515,11 +508,6 @@ def test_resource_validate_fields_match_extra_label(fields_match, expected):
 @pytest.mark.parametrize(
     "fields_match, expected",
     [
-        # Same asymmetry as above: `exact` keeps the field in the row stream
-        # and reports a missing cell on every row.
-        # FIXME: symmetric counterpart of the `extra-cell` bug above -- the
-        # rows are not truncated, the schema simply declares a field the data
-        # does not carry, which `missing-label` already reports.
         (
             "exact",
             [
