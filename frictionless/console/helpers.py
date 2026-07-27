@@ -282,6 +282,4 @@ def print_exception(
     if debug:
         error_console.print_exception()
         return
-    text = escape(str(exception))
-    panel = Panel(text, title="Error", border_style="red", title_align="left")
-    error_console.print(panel)
+    print_error(note=escape(str(exception)))
