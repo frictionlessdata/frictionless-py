@@ -262,8 +262,8 @@ def print_success(console: Console, *, note: str, title: str = "Success") -> Non
     console.print(panel)
 
 
-def print_panel(console: Console, *, note: str, title: str, border_style: str) -> None:
-    panel = Panel(note, title=title, border_style=border_style, title_align="left")
+def print_panel(console: Console, *, note: str, title: str) -> None:
+    panel = Panel(note, title=title, title_align="left")
     console.print(panel)
 
 

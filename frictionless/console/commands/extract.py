@@ -230,9 +230,7 @@ def console_extract(
     for title, items in data.items():
         # Empty
         if not items:
-            helpers.print_panel(
-                console, note="No rows found", title="Empty", border_style="red"
-            )
+            helpers.print_panel(console, note="No rows found", title="Empty")
             continue
 
         # General
