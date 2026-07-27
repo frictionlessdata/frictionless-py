@@ -115,10 +115,8 @@ class Detector:
     provide a subset of fields to be applied on top of the inferred
     fields or the provided schema can have different order of fields.
 
-    Deprecated: use the `fieldsMatch` property of the Table Schema instead,
-    introduced by datapackage v2. Set it to `subset` to declare a schema
-    covering only some of the data's columns. A schema that declares
-    `fieldsMatch` takes precedence over this option.
+    Deprecated: use the `fieldsMatch` schema property instead.
+    A schema that declares `fieldsMatch` takes precedence over this option.
     """
 
     schema_patch: Optional[Dict[str, Any]] = None
@@ -428,4 +426,3 @@ class Detector:
             schema = Schema.from_descriptor(descriptor)
 
         return schema
-
