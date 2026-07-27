@@ -1,8 +1,8 @@
-from typer.testing import CliRunner
-
 from frictionless.console import console
 
-runner = CliRunner()
+from .conftest import create_runner
+
+runner = create_runner()
 
 
 def test_console_transform():
