@@ -61,7 +61,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "moto",
-    "ruff",
+    # 0.16 greatly expands the default rule set
+    "ruff<0.16",
     "httpx",
     "hatch",
     "yattag",
