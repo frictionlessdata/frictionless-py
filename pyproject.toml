@@ -62,7 +62,7 @@ dependencies = [
 dev = [
     "moto",
     # 0.16 greatly expands the default rule set
-    "ruff>=0.15,<0.16",
+    "ruff<0.16",
     "httpx",
     "hatch",
     "yattag",
