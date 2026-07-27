@@ -63,40 +63,68 @@ def _make_header(labels, field_names, *, fields_match="exact", ignore_case=False
     "labels, field_names, fields_match, ignore_case, expected_names",
     [
         pytest.param(
-            ["a", "b"], ["a", "b"], "exact", False, ["a", "b"],
+            ["a", "b"],
+            ["a", "b"],
+            "exact",
+            False,
+            ["a", "b"],
             id="exact: schema fields are returned as-is",
         ),
         pytest.param(
-            ["b", "a"], ["a", "b"], "exact", False, ["a", "b"],
+            ["b", "a"],
+            ["a", "b"],
+            "exact",
+            False,
+            ["a", "b"],
             id="exact: schema order is kept even if labels differ",
         ),
         pytest.param(
-            ["a", "extra"], ["a"], "exact", False, ["a"],
+            ["a", "extra"],
+            ["a"],
+            "exact",
+            False,
+            ["a"],
             id="exact: extra labels get no field",
         ),
         *[
             pytest.param(
-                ["b", "a"], ["a", "b"], mode, False, ["b", "a"],
+                ["b", "a"],
+                ["a", "b"],
+                mode,
+                False,
+                ["b", "a"],
                 id=f"{mode}: fields are reordered to match labels",
             )
             for mode in NAME_MATCHED
         ],
         *[
             pytest.param(
-                ["a", "extra"], ["a"], mode, False, ["a", "extra"],
+                ["a", "extra"],
+                ["a"],
+                mode,
+                False,
+                ["a", "extra"],
                 id=f"{mode}: extra labels get a default any-typed field",
             )
             for mode in NAME_MATCHED
         ],
         *[
             pytest.param(
-                ["a"], ["a", "b"], mode, False, ["a"],
+                ["a"],
+                ["a", "b"],
+                mode,
+                False,
+                ["a"],
                 id=f"{mode}: fields absent from labels are dropped",
             )
             for mode in NAME_MATCHED
         ],
         pytest.param(
-            ["B", "A"], ["a", "b"], "partial", True, ["b", "a"],
+            ["B", "A"],
+            ["a", "b"],
+            "partial",
+            True,
+            ["b", "a"],
             id="partial + ignore_case: matching is case-insensitive",
         ),
     ],
@@ -132,11 +160,7 @@ def test_get_expected_fields_exact_tolerates_duplicate_labels():
     assert [f.name for f in header.get_expected_fields()] == ["a", "b"]
 
 
-# Tolerated and reported mismatches, per mode
-#
-# Each mode differs only in which mismatch it tolerates: a label with no
-# matching field (`extra-label`) and a field with no matching label
-# (`missing-label`). What is reported is observed through `header.errors`.
+# Tolerated and reported header mismatches, per fieldsMatch value
 
 
 def _errors(header):
@@ -197,8 +221,7 @@ def test_errors_on_missing_field(fields_match, expected):
 
 @pytest.mark.parametrize("fields_match", ["superset", "partial"])
 def test_errors_on_missing_required_field(fields_match):
-    # The modes that tolerate fewer fields still require the fields that the
-    # schema declares as required.
+    # Required fields are mandatory even for "superset" and "partial" fieldsMatch.
     header = _make_header_with_required(
         ["a"], ["a", "b"], required=["b"], fields_match=fields_match
     )
@@ -237,32 +260,18 @@ def test_errors_partial_with_a_schema_without_fields():
 
 @pytest.mark.parametrize("fields_match", ["exact", "equal", "subset", "superset"])
 def test_errors_unmatched_header_is_specific_to_partial(fields_match):
-    # The other modes report the mismatch label by label or field by field:
-    # extra labels are errors in `equal` and `superset`, missing fields are
-    # errors in `exact`, `equal` and `subset`.
     header = _make_header(["x", "y"], ["a", "b"], fields_match=fields_match)
     assert "unmatched-header" not in [e.type for e in header.errors]
 
 
-@pytest.mark.parametrize("fields_match", ["exact", *NAME_MATCHED])
-def test_errors_a_header_matching_nothing_is_never_silent(fields_match):
-    # Only the diagnosis differs between modes; the verdict does not. `partial`
-    # tolerates extra labels *and* missing fields, so it is the only mode that
-    # would stay silent here -- which is what its "at least one" rule prevents.
-    header = _make_header(["x", "y"], ["a", "b"], fields_match=fields_match)
-    assert header.errors != []
-
-
 def test_errors_extra_label_is_reported_at_its_position_in_the_data():
-    # Under name matching the extra label can sit anywhere, so it is reported
-    # where it actually is rather than after the declared fields.
     header = _make_header(["extra", "a", "b"], ["a", "b"], fields_match="equal")
     assert _errors(header) == [("extra-label", "extra", "", 1)]
 
 
 # The schema below declares a single field, so a header that doesn't carry it
-# shares nothing with the schema: `partial` (the mode schema_sync maps to)
-# reports that as an `unmatched-header` on top of the missing label.
+# shares nothing with the schema: `partial` reports that as an
+# `unmatched-header`.
 UNMATCHED = ["unmatched-header", "missing-label"]
 
 

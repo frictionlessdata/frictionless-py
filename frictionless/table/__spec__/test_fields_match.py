@@ -12,13 +12,7 @@ from frictionless.resources import TableResource
 
 
 def _validate(schema, *, schema_sync):
-    """Validate, keeping the header verdict only.
-
-    Cell errors are filtered out on purpose: under `exact` an undeclared
-    column also raises an `extra-cell` on every row, which is a known bug
-    (characterized in `resource/__spec__/test_validate_schema.py`) and is not
-    what these tests are about.
-    """
+    """Validate, keeping the header verdict only"""
     resource = TableResource(
         path="data/sync-schema.csv",
         schema=schema,
@@ -56,15 +50,12 @@ def test_resource_fields_match_takes_precedence_over_schema_sync(recwarn):
 
 
 def test_resource_explicit_exact_takes_precedence_over_schema_sync(recwarn):
-    # Declaring the default explicitly is a decision too: it disables the
-    # deprecated option rather than being mistaken for "nothing declared".
     report = _validate(_schema("exact"), schema_sync=True)
     assert report.flatten(["type", "label"]) == [["extra-label", "id"]]
     assert [warning.category for warning in recwarn] == [UserWarning]
 
 
 def test_resource_schema_sync_on_an_inferred_schema_is_deprecated():
-    # No schema at all: nothing is declared, so the option still applies.
     resource = TableResource(
         path="data/sync-schema.csv", detector=Detector(schema_sync=True)
     )
