@@ -18,12 +18,20 @@ TOLERATES_MISSING_FIELDS = ("superset", "partial")
 class Header(List[str]):  # type: ignore
     """Header representation
 
+    Compares the header row read from the data source (the "labels") with the
+    fields declared in the schema, and reports the mismatches as errors.
+
     > Constructor of this object is not Public API
 
+    > Deprecated: using a `Header` directly as a list is deprecated, as the list
+    > ambiguously holds the names of the *schema* fieldss. Use its properties instead:
+    > `labels` for the header row as read from the data source, `fields`/`field_names`
+    > for the schema fields.
+
     Parameters:
-        labels (any[]): header row labels
-        fields (Field[]): table fields
-        row_numbers (int[]): row numbers
+        labels (any[]): the header row as read from the data source
+        fields (Field[]): the fields declared in the schema, in schema order
+        row_numbers (int[]): row numbers the header spans in the data source
         ignore_case (bool): ignore case
         fields_match (str): how the fields match the data source
 
@@ -60,7 +68,7 @@ class Header(List[str]):  # type: ignore
     def labels(self):
         """
         Returns:
-            Schema: table labels
+            str[]: the header row as read from the data source
         """
         return self.__labels
 
@@ -68,7 +76,7 @@ class Header(List[str]):  # type: ignore
     def fields(self):
         """
         Returns:
-            Schema: table fields
+            Field[]: copies of the schema fields, in schema order
         """
         return self.__fields
 
@@ -76,7 +84,7 @@ class Header(List[str]):  # type: ignore
     def field_names(self):
         """
         Returns:
-            str[]: table field names
+            str[]: the names of the schema fields, in schema order
         """
         return self.__field_names
 
