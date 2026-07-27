@@ -202,11 +202,9 @@ def test_console_describe_package_with_glob_having_one_incorrect_dialect_1126():
 
 
 def test_console_describe_error_goes_to_stderr_not_stdout_issue_1749():
-    """Errors must not pollute stdout, so `--json > out.json` stays parseable."""
     actual = runner.invoke(console, "describe data/bad.csv --json")
     assert actual.exit_code == 1
     assert "[Errno 2]" in actual.stderr
-    # nothing at all on stdout: redirecting it must not capture the error panel
     assert actual.stdout == ""
 
 

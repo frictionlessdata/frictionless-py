@@ -230,8 +230,6 @@ def console_extract(
     for title, items in data.items():
         # Empty
         if not items:
-            # Part of the report body on a successful run, not an error, so it
-            # stays on stdout with the tables it sits between.
             helpers.print_panel(
                 console, note="No rows found", title="Empty", border_style="red"
             )
