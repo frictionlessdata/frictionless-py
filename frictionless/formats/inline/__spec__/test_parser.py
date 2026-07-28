@@ -12,7 +12,7 @@ from frictionless.resources import TableResource
 def test_inline_parser():
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     with TableResource(data=data) as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -23,7 +23,7 @@ def test_inline_parser_keyed():
     data = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with TableResource(data=data, format="inline") as resource:
         assert resource.dialect.to_descriptor() == {"inline": {"keyed": True}}
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -34,7 +34,7 @@ def test_inline_parser_keyed_order_is_preserved():
     data = [{"name": "english", "id": "1"}, {"name": "中国人", "id": "2"}]
     with TableResource(data=data, format="inline") as resource:
         assert resource.dialect.to_descriptor() == {"inline": {"keyed": True}}
-        assert resource.header.field_names == ["name", "id"]
+        assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -48,7 +48,7 @@ def test_inline_parser_keyed_with_keys_provided():
         assert resource.dialect.to_descriptor() == {
             "inline": {"keyed": True, "keys": ["name", "id"]}
         }
-        assert resource.header.field_names == ["name", "id"]
+        assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -62,7 +62,7 @@ def test_inline_parser_from_generator():
         yield ["2", "中国人"]
 
     with TableResource(data=data) as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -76,7 +76,7 @@ def test_inline_parser_from_generator_not_callable():
         yield ["2", "中国人"]
 
     with TableResource(data=data()) as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -91,7 +91,7 @@ def test_inline_parser_from_ordered_dict():
     with TableResource(data=data) as resource:
         rows = resource.read_rows()
         assert resource.dialect.to_descriptor() == {"inline": {"keyed": True}}
-        assert resource.header.field_names == ["name", "id"]
+        assert resource.header == ["name", "id"]
         assert rows[0].cells == ["english", "1"]
         assert rows[1].cells == ["中国人", "2"]
 

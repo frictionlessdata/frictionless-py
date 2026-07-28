@@ -9,7 +9,7 @@ from frictionless.resources import TableResource
 def test_resource_encoding():
     with TableResource(path="data/table.csv") as resource:
         assert resource.encoding == "utf-8"
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -19,7 +19,7 @@ def test_resource_encoding():
 def test_resource_encoding_explicit_utf8():
     with TableResource(path="data/table.csv", encoding="utf-8") as resource:
         assert resource.encoding == "utf-8"
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -29,7 +29,7 @@ def test_resource_encoding_explicit_utf8():
 def test_resource_encoding_explicit_latin1():
     with TableResource(path="data/latin1.csv", encoding="latin1") as resource:
         assert resource.encoding == "iso8859-1"
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "©"},

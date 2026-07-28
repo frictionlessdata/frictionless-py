@@ -15,7 +15,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 def test_json_parser():
     with TableResource(path="data/table.json") as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -25,7 +25,7 @@ def test_json_parser():
 def test_json_parser_keyed():
     with TableResource(path="data/table.keyed.json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -38,7 +38,7 @@ def test_json_parser_keyed_with_keys_provided():
         assert resource.dialect.to_descriptor() == {
             "json": {"keyed": True, "keys": ["name", "id"]}
         }
-        assert resource.header.field_names == ["name", "id"]
+        assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -48,7 +48,7 @@ def test_json_parser_keyed_with_keys_provided():
 def test_json_parser_from_buffer():
     data = '[["id", "name"], [1, "english"], [2, "中国人"]]'.encode("utf-8")
     with TableResource(data=data, format="json") as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -59,7 +59,7 @@ def test_json_parser_from_buffer_keyed():
     data = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'.encode("utf-8")
     with TableResource(data=data, format="json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -70,7 +70,7 @@ def test_json_parser_from_buffer_keyed():
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
 def test_json_parser_from_remote():
     with TableResource(path=BASEURL % "data/table.json") as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -82,7 +82,7 @@ def test_json_parser_from_remote():
 def test_json_parser_from_remote_keyed():
     with TableResource(path=BASEURL % "data/table.keyed.json") as resource:
         assert resource.dialect.to_descriptor() == {"json": {"keyed": True}}
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

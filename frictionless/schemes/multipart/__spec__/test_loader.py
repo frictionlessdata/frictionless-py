@@ -16,7 +16,7 @@ def test_multipart_loader():
     with TableResource(
         path="data/chunk1.csv", extrapaths=["data/chunk2.csv"]
     ) as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -170,7 +170,7 @@ def test_multipart_loader_with_compressed_parts_issue_1215():
     ) as resource:
         assert resource.innerpath is None
         assert resource.compression == "zip"
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

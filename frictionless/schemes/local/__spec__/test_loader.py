@@ -8,7 +8,7 @@ from frictionless.resources import TableResource
 
 def test_local_loader():
     with TableResource(path="data/table.csv") as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -19,7 +19,7 @@ def test_local_loader_pathlib_path():
     pathlib = import_module("pathlib")
     with Resource(pathlib.Path("data/table.csv")) as resource:
         assert isinstance(resource, TableResource)
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

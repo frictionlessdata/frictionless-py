@@ -37,7 +37,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
 
     ```python
     with Resource("data/table.csv") as resource:
-        resource.header.field_names == ["id", "name"]
+        resource.header == ["id", "name"]
         resource.read_rows() == [
             {'id': 1, 'name': 'english'},
             {'id': 2, 'name': '中国人'},

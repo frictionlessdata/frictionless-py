@@ -9,7 +9,7 @@ from frictionless.resources import TableResource
 def test_buffer_loader():
     data = b"header1,header2\nvalue1,value2\nvalue3,value4"
     with TableResource(data=data, format="csv") as resource:
-        assert resource.header.field_names == ["header1", "header2"]
+        assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},

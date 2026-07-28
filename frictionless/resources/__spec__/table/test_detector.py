@@ -10,7 +10,7 @@ def test_resource_detector_encoding_function():
         assert resource.encoding == "utf-8"
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
 
 
 def test_resource_detector_field_type():
@@ -23,7 +23,7 @@ def test_resource_detector_field_type():
             {"name": "name", "type": "string"},
         ]
     }
-    assert resource.header.field_names == ["id", "name"]
+    assert resource.header == ["id", "name"]
     assert resource.read_rows() == [
         {"id": "1", "name": "english"},
         {"id": "2", "name": "中国人"},
@@ -41,7 +41,7 @@ def test_resource_detector_field_names():
         ]
     }
     assert resource.labels == ["id", "name"]
-    assert resource.header.field_names == ["new1", "new2"]
+    assert resource.header == ["new1", "new2"]
     assert resource.read_rows() == [
         {"new1": 1, "new2": "english"},
         {"new1": 2, "new2": "中国人"},
@@ -58,7 +58,7 @@ def test_resource_detector_field_float_numbers():
             {"name": "number", "type": "number", "floatNumber": True},
         ]
     }
-    assert resource.header.field_names == ["number"]
+    assert resource.header == ["number"]
     assert resource.read_rows() == [
         {"number": 1.1},
         {"number": 2.2},
@@ -69,7 +69,7 @@ def test_resource_detector_field_float_numbers():
 def test_resource_detector_field_type_with_open():
     detector = Detector(field_type="string")
     with TableResource(path="data/table.csv", detector=detector) as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "string"},
@@ -92,7 +92,7 @@ def test_resource_detector_field_names_with_open():
             ]
         }
         assert resource.labels == ["id", "name"]
-        assert resource.header.field_names == ["new1", "new2"]
+        assert resource.header == ["new1", "new2"]
         assert resource.read_rows() == [
             {"new1": 1, "new2": "english"},
             {"new1": 2, "new2": "中国人"},
@@ -115,7 +115,7 @@ def test_resource_detector_schema_sync():
         assert resource.schema == schema
         assert resource.sample == [["name", "id"], ["english", "1"], ["中国人", "2"]]
         assert resource.fragment == [["english", "1"], ["中国人", "2"]]
-        assert resource.header.field_names == ["name", "id"]
+        assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -139,7 +139,7 @@ def test_resource_detector_schema_sync_with_infer():
     assert resource.schema == schema
     assert resource.sample == [["name", "id"], ["english", "1"], ["中国人", "2"]]
     assert resource.fragment == [["english", "1"], ["中国人", "2"]]
-    assert resource.header.field_names == ["name", "id"]
+    assert resource.header == ["name", "id"]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -156,7 +156,7 @@ def test_resource_detector_schema_patch():
             ]
         }
         assert resource.labels == ["id", "name"]
-        assert resource.header.field_names == ["ID", "name"]
+        assert resource.header == ["ID", "name"]
         assert resource.read_rows() == [
             {"ID": "1", "name": "english"},
             {"ID": "2", "name": "中国人"},
@@ -166,7 +166,7 @@ def test_resource_detector_schema_patch():
 def test_resource_detector_schema_patch_missing_values():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
     with TableResource(path="data/table.csv", detector=detector) as resource:
-        assert resource.header.field_names == ["id", "name"]
+        assert resource.header == ["id", "name"]
         assert resource.schema.to_descriptor() == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -191,7 +191,7 @@ def test_resource_detector_schema_patch_with_infer():
         ]
     }
     assert resource.labels == ["id", "name"]
-    assert resource.header.field_names == ["ID", "name"]
+    assert resource.header == ["ID", "name"]
     assert resource.read_rows() == [
         {"ID": "1", "name": "english"},
         {"ID": "2", "name": "中国人"},

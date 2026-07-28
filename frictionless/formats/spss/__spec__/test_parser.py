@@ -19,7 +19,7 @@ def test_spss_parser_write(tmpdir):
     source = TableResource(path="data/table.csv")
     target = source.write(str(tmpdir.join("table.sav")))
     with target:
-        assert target.header.field_names == ["id", "name"]
+        assert target.header == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -110,7 +110,7 @@ def test_spss_parser_write_timezone(tmpdir):
     source = TableResource(path="data/timezone.csv")
     target = source.write(path=str(tmpdir.join("table.sav")))
     with target:
-        assert target.header.field_names == ["datetime", "time"]
+        assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
             {
                 "datetime": datetime(2020, 1, 1, 15),

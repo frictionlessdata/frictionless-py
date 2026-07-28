@@ -556,7 +556,7 @@ def test_ckan_parser(options_lh):
     source = TableResource(path="data/table.csv")
     target = source.write(path=baseurl, control=control, format="csv")
     with target:
-        assert target.header.field_names == ["id", "name"]
+        assert target.header == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

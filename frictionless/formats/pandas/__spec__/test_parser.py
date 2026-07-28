@@ -44,7 +44,7 @@ def test_pandas_parser():
         dataframe = pd.DataFrame(data=tc["df_data"])
 
         with TableResource(data=dataframe) as resource:
-            assert resource.header.field_names == tc["expected_header"], tc["name"]
+            assert resource.header == tc["expected_header"], tc["name"]
             assert resource.read_rows() == tc["expected_rows"], tc["name"]
 
 

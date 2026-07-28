@@ -23,7 +23,7 @@ def test_sql_parser_write_timezone_postgresql(postgresql_url):
     control = formats.SqlControl(table="timezone")
     target = source.write(postgresql_url, control=control)
     with target:
-        assert target.header.field_names == ["datetime", "time"]
+        assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
             {
                 "datetime": datetime(2020, 1, 1, 15),
@@ -57,7 +57,7 @@ def test_sql_parser_write_string_pk_issue_777_postgresql(postgresql_url):
     target = source.write(postgresql_url, control=control)
     with target:
         assert target.schema.primary_key == ["name"]
-        assert target.header.field_names == ["id", "name"]
+        assert target.header == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},

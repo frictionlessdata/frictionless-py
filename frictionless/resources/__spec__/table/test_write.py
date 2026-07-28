@@ -12,7 +12,7 @@ def test_resource_write(tmpdir):
     target = TableResource(path=str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
-        assert target.header.field_names == ["id", "name"]
+        assert target.header == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -24,7 +24,7 @@ def test_resource_write_to_path(tmpdir):
     source = TableResource(path="data/table.csv")
     target = source.write(str(tmpdir.join("table.csv")))
     with target:
-        assert target.header.field_names == ["id", "name"]
+        assert target.header == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
