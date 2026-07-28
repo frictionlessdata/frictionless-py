@@ -36,7 +36,7 @@ def test_resource_open_read_rows():
     with TableResource(path="data/table.csv") as resource:
         headers = resource.header
         row1, row2 = resource.read_rows()
-        assert headers.field_names == ["id", "name"]
+        assert headers == ["id", "name"]
         assert headers.field_numbers == [1, 2]
         assert headers.errors == []
         assert headers.valid is True

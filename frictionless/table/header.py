@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import warnings
 from functools import cached_property
-from typing import Any, Iterator, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from .. import errors, helpers, types
 from ..exception import FrictionlessException
@@ -66,38 +65,6 @@ class Header(List[str]):  # type: ignore
         self.__expected_fields: Optional[List[Field]] = None
         self.__matching = LabelMatching(labels, self.__fields, ignore_case=ignore_case)
         self.__process()
-
-    # Deprecated
-
-    def __warn_list_usage(self, usage: str) -> None:
-        warnings.warn(
-            f"Using a Header as a list ({usage}) is deprecated, as the list "
-            "ambiguously holds the names of the schema fields. Use "
-            "`header.field_names` instead, or `header.labels` for the header "
-            "row as read from the data source.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
-
-    def __eq__(self, other: Any) -> bool:
-        self.__warn_list_usage("==")
-        return super().__eq__(other)
-
-    def __getitem__(self, index: Any) -> Any:
-        self.__warn_list_usage("[]")
-        return super().__getitem__(index)
-
-    def __iter__(self) -> Iterator[str]:
-        self.__warn_list_usage("iteration")
-        return super().__iter__()
-
-    def __len__(self) -> int:
-        self.__warn_list_usage("len()")
-        return super().__len__()
-
-    def __contains__(self, item: Any) -> bool:
-        self.__warn_list_usage("in")
-        return super().__contains__(item)
 
     @cached_property
     def labels(self):
