@@ -311,6 +311,31 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     ]
 
 
+def test_resource_validate_duplicate_labels_ignoring_header_case():
+    # Labels differing only by case match the same field once `header_case` is
+    # off, so they are duplicates -- and they used to silently collapse onto
+    # that single field, which was reported as a spurious `extra-cell`.
+    schema = Schema.from_descriptor(
+        {
+            "fields": [{"name": "name", "type": "string"}],
+            "fieldsMatch": "partial",
+        }
+    )
+    resource = TableResource(
+        [["Name", "name"], ["a", "b"]],
+        schema=schema,
+        dialect=Dialect(header_case=False),
+    )
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "error",
+            'matching fields by name ("fieldsMatch": "partial") '
+            "requires unique labels in the header",
+        ],
+    ]
+
+
 def test_resource_validate_less_actual_fields_with_required_constraint_issue_950():
     schema = Schema.describe("data/table.csv")
     schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))
