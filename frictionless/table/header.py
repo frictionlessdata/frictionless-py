@@ -140,7 +140,8 @@ class Header(List[str]):  # type: ignore
     def get_expected_fields(self) -> List[Field]:
         """Returns the fields, in the order expected in the data.
 
-        Under `exact`, this is just the schema fields unchanged.
+        Under `exact`, schema fields keep their order and are truncated or
+        extended with `any`-typed fields to match the labels.
 
         Under the name-matched modes, fields are reordered to match the labels;
         labels without a matching field get a fresh `any`-typed field (even
@@ -151,8 +152,26 @@ class Header(List[str]):  # type: ignore
         if self.__expected_fields is not None:
             return self.__expected_fields
 
-        if not self.__matches_by_name:
+        if self.missing:
             self.__expected_fields = self.__fields
+            return self.__expected_fields
+
+        if not self.__matches_by_name:
+            expected = self.__fields[: len(self.__labels)]
+            used_names = {field.name for field in expected}
+
+            for label in self.__labels[len(expected) :]:
+                name = label
+                suffix = 2
+
+                while name in used_names:
+                    name = f"{label}{suffix}"
+                    suffix += 1
+
+                used_names.add(name)
+                expected.append(Field.from_descriptor({"name": name, "type": "any"}))
+
+            self.__expected_fields = expected
             return self.__expected_fields
 
         # ignore_case can make fields ambiguous as their keys are identical,
