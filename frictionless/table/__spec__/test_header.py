@@ -153,6 +153,35 @@ def test_get_expected_fields_raises_on_duplicate_labels(fields_match):
         header.get_expected_fields()
 
 
+@pytest.mark.parametrize("fields_match", NAME_MATCHED)
+def test_get_expected_fields_raises_on_fields_colliding_under_ignore_case(fields_match):
+    header = _make_header(["a"], ["a", "A"], fields_match=fields_match, ignore_case=True)
+    with pytest.raises(frictionless.FrictionlessException) as excinfo:
+        header.get_expected_fields()
+    assert excinfo.value.error.type == "metadata-error"
+
+
+def test_get_expected_fields_colliding_fields_error_names_the_culprits():
+    header = _make_header(["a"], ["a", "A"], fields_match="partial", ignore_case=True)
+    with pytest.raises(frictionless.FrictionlessException) as excinfo:
+        header.get_expected_fields()
+    note = excinfo.value.error.note
+    assert "header_case" in note
+    assert '"a"' in note and '"A"' in note
+
+
+def test_get_expected_fields_exact_tolerates_fields_colliding_under_ignore_case():
+    # Mapping is positional, so the fields are never told apart by name.
+    header = _make_header(["a", "A"], ["a", "A"], fields_match="exact", ignore_case=True)
+    assert [f.name for f in header.get_expected_fields()] == ["a", "A"]
+
+
+def test_get_expected_fields_tolerates_case_distinct_fields_when_case_matters():
+    # Without `ignore_case`, `a` and `A` are simply two distinct fields.
+    header = _make_header(["a", "A"], ["a", "A"], fields_match="partial")
+    assert [f.name for f in header.get_expected_fields()] == ["a", "A"]
+
+
 def test_get_expected_fields_exact_tolerates_duplicate_labels():
     # Mapping is positional, so duplicates are unambiguous here; they are
     # reported as a `duplicate-label` error rather than raising.

@@ -49,6 +49,20 @@ class LabelMatching:
         ]
 
     @property
+    def ambiguous_fields(self) -> List[List[Field]]:
+        """Groups of fields that normalization merges into a single key
+
+        Fields sharing the very same name make the schema itself invalid, which is caught
+        before a header is ever built.
+        """
+        groups: Dict[str, List[Field]] = {}
+        for field in self.__fields:
+            groups.setdefault(self.__normalize(field.name), []).append(field)
+        return [
+            group for group in groups.values() if len({field.name for field in group}) > 1
+        ]
+
+    @property
     def has_duplicate_labels(self) -> bool:
         """Whether two labels match the same field, which makes the mapping ambiguous
 

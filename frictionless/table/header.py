@@ -155,6 +155,17 @@ class Header(List[str]):  # type: ignore
             self.__expected_fields = self.__fields
             return self.__expected_fields
 
+        # ignore_case can make fields ambiguous as their keys are identical,
+        # e.g. "A" and "a"
+        for group in self.__matching.ambiguous_fields:
+            names = ", ".join(f'"{field.name}"' for field in group)
+            note = (
+                f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
+                f"is ambiguous: fields {names} differ only by case, which "
+                '"header_case" is set to ignore'
+            )
+            raise FrictionlessException(errors.MetadataError(note=note))
+
         if self.__matching.has_duplicate_labels:
             note = (
                 f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
