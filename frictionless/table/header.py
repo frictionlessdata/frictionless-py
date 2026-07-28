@@ -7,6 +7,7 @@ from typing import Any, Iterator, List, Optional, Tuple
 from .. import errors, helpers, types
 from ..exception import FrictionlessException
 from ..schema import Field
+from .label_matching import LabelMatching
 
 # The `fieldsMatch` modes are told apart by which mismatch they tolerate: a
 # label with no matching field, or a declared field with no matching label
@@ -25,7 +26,7 @@ class Header(List[str]):  # type: ignore
     > Constructor of this object is not Public API
 
     > Deprecated: using a `Header` directly as a list is deprecated, as the list
-    > ambiguously holds the names of the *schema* fieldss. Use its properties instead:
+    > ambiguously holds the names of the *schema* fields. Use its properties instead:
     > `labels` for the header row as read from the data source, `fields`/`field_names`
     > for the schema fields.
 
@@ -64,6 +65,7 @@ class Header(List[str]):  # type: ignore
         self.__labels = labels
         self.__errors: List[errors.HeaderError] = []
         self.__expected_fields: Optional[List[Field]] = None
+        self.__matching = LabelMatching(labels, self.__fields, ignore_case=ignore_case)
         self.__process()
 
     # Deprecated
@@ -201,7 +203,7 @@ class Header(List[str]):  # type: ignore
 
         expected: List[Field] = []
         for label in self.__labels:
-            field = self.__find_field_by_name(label)
+            field = self.__matching.matching_field(label)
             if field is None:
                 field = Field.from_descriptor({"name": label, "type": "any"})
             expected.append(field)
@@ -233,7 +235,7 @@ class Header(List[str]):  # type: ignore
         return [
             (number, label)
             for number, label in enumerate(labels, start=1)
-            if self.__find_field_by_name(label) is None
+            if self.__matching.matching_field(label) is None
         ]
 
     def _get_missing_fields(self) -> List[Tuple[int, Field]]:
@@ -257,38 +259,18 @@ class Header(List[str]):  # type: ignore
         if not self.__matches_by_name:
             missing = fields[len(labels) :] if len(fields) > len(labels) else []
         else:
-            normalized_labels = [self.__normalize(label) for label in labels]
-
-            def is_absent(field: Field) -> bool:
-                return self.__normalize(field.name) not in normalized_labels
 
             def is_required(field: Field) -> bool:
                 return field.required or (
                     field.schema is not None and field.name in field.schema.primary_key
                 )
 
-            missing = [field for field in fields if is_absent(field)]
+            missing = self.__matching.unmatched_fields
             if self.__fields_match in TOLERATES_MISSING_FIELDS:
                 missing = [field for field in missing if is_required(field)]
 
         start = len(labels) + 1
         return [(start + offset, field) for offset, field in enumerate(missing)]
-
-    def __has_matching_field(self) -> bool:
-        """Whether at least one label corresponds to a schema field"""
-        return any(
-            self.__find_field_by_name(label) is not None for label in self.__labels
-        )
-
-    def __find_field_by_name(self, name: str) -> Optional[Field]:
-        target = self.__normalize(name)
-        for f in self.__fields:
-            if self.__normalize(f.name) == target:
-                return f
-        return None
-
-    def __normalize(self, s: str) -> str:
-        return s.lower() if self.__ignore_case else s
 
     # Convert
 
@@ -330,11 +312,7 @@ class Header(List[str]):  # type: ignore
             )
 
         # Unmatched header
-        if (
-            self.__fields_match == "partial"
-            and fields
-            and not self.__has_matching_field()
-        ):
+        if self.__fields_match == "partial" and fields and not self.__matching.has_match:
             self.__errors.append(
                 errors.UnmatchedHeaderError(
                     note="",
