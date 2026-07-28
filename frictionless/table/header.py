@@ -155,7 +155,7 @@ class Header(List[str]):  # type: ignore
             self.__expected_fields = self.__fields
             return self.__expected_fields
 
-        if len(self.__labels) != len(set(self.__labels)):
+        if self.__matching.has_duplicate_labels:
             note = (
                 f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
                 "requires unique labels in the header"

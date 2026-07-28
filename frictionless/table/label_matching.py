@@ -49,6 +49,16 @@ class LabelMatching:
         ]
 
     @property
+    def has_duplicate_labels(self) -> bool:
+        """Whether two labels match the same field, which makes the mapping ambiguous
+
+        Labels are compared the way they are matched, so under `ignore_case`
+        two labels differing only by case are duplicates.
+        """
+        keys = [self.__normalize(label) for label in self.__labels]
+        return len(keys) != len(set(keys))
+
+    @property
     def has_match(self) -> bool:
         """Whether at least one label matches a schema field"""
         return any(self.matching_field(label) is not None for label in self.__labels)
