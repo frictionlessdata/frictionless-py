@@ -24,11 +24,6 @@ class Header(List[str]):  # type: ignore
 
     > Constructor of this object is not Public API
 
-    > Deprecated: using a `Header` directly as a list is deprecated, as the list
-    > ambiguously holds the names of the (possibly inferred) *schema* fields. Use its
-    > properties instead: `labels` for the header row as read from the data source,
-    > `fields`/`field_names` for the schema fields.
-
     Parameters:
         labels (any[]): the header row as read from the data source
         fields (Field[]): the fields declared in the schema, in schema order
