@@ -333,6 +333,34 @@ def test_resource_validate_duplicate_labels_ignoring_header_case():
     ]
 
 
+def test_resource_validate_fields_only_distinguished_by_case_are_rejected():
+    # The schema is valid: "a" and "A" are distinct field names. But with
+    # `header_case` off they collapse onto the same key.
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "a", "type": "string"},
+                {"name": "A", "type": "integer"},
+            ],
+            "fieldsMatch": "partial",
+        }
+    )
+    resource = TableResource(
+        [["A"], ["x"]],
+        schema=schema,
+        dialect=Dialect(header_case=False),
+    )
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "metadata-error",
+            'matching fields by name ("fieldsMatch": "partial") is ambiguous: '
+            'fields "a", "A" differ only by case, which "header_case" is set '
+            "to ignore",
+        ],
+    ]
+
+
 def test_resource_validate_less_actual_fields_with_required_constraint_issue_950():
     schema = Schema.describe("data/table.csv")
     schema.add_field(fields.AnyField(name="bad", constraints={"required": True}))
