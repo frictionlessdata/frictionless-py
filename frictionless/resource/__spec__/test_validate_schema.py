@@ -312,9 +312,6 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
 
 
 def test_resource_validate_duplicate_labels_ignoring_header_case():
-    # Labels differing only by case match the same field once `header_case` is
-    # off, so they are duplicates -- and they used to silently collapse onto
-    # that single field, which was reported as a spurious `extra-cell`.
     schema = Schema.from_descriptor(
         {
             "fields": [{"name": "name", "type": "string"}],
