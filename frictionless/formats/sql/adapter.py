@@ -41,11 +41,19 @@ class SqlAdapter(Adapter):
             self.metadata = sa.MetaData(schema=self.control.namespace)
             self.metadata.reflect(conn, views=True)
 
+    def _table_key(self, table_name: str) -> str:
+        # MetaData(schema=namespace) keys tables as "<namespace>.<name>",
+        # matching Table.key. Looking them up by the bare name raises
+        # KeyError whenever a namespace is set (issue #1602).
+        if self.control.namespace:
+            return f"{self.control.namespace}.{table_name}"
+        return table_name
+
     # Delete
 
     def delete_resource(self, table_name: str) -> None:
         with self.engine.begin() as conn:
-            table = self.metadata.tables[table_name]
+            table = self.metadata.tables[self._table_key(table_name)]
             self.metadata.drop_all(conn, tables=[table])
 
     # Read
@@ -62,12 +70,12 @@ class SqlAdapter(Adapter):
         return package
 
     def read_schema(self, table_name: str) -> Schema:
-        table = self.metadata.tables[table_name]
+        table = self.metadata.tables[self._table_key(table_name)]
         return self.mapper.read_schema(table, with_metadata=self.control.with_metadata)
 
     def read_cell_stream(self, control: SqlControl) -> Generator[List[Any], None, None]:
         sa = platform.sqlalchemy
-        table = self.metadata.tables[control.table]  # type: ignore
+        table = self.metadata.tables[self._table_key(control.table)]  # type: ignore
         with self.engine.begin() as conn:
             # Prepare columns
             columns = table.c
@@ -126,7 +134,7 @@ class SqlAdapter(Adapter):
     ) -> None:
         with self.engine.begin() as conn:
             if force:
-                existing_table = self.metadata.tables.get(table_name)
+                existing_table = self.metadata.tables.get(self._table_key(table_name))
                 if existing_table is not None:
                     self.metadata.drop_all(conn, tables=[existing_table])
                     self.metadata.remove(existing_table)
@@ -149,7 +157,7 @@ class SqlAdapter(Adapter):
         sa = platform.sqlalchemy
         with self.engine.begin() as conn:
             buffer: List[Dict[str, Any]] = []
-            table = self.metadata.tables[table_name]
+            table = self.metadata.tables[self._table_key(table_name)]
             for row in row_stream:
                 buffer.append(self.mapper.write_row(row))
                 if len(buffer) > settings.BUFFER_SIZE:
@@ -178,7 +186,7 @@ class SqlAdapter(Adapter):
 
             # Validate/iterate
             buffer: List[Dict[str, Any]] = []
-            table = self.metadata.tables[table_name]
+            table = self.metadata.tables[self._table_key(table_name)]
             report = resource.validate(on_row=process_row)
             if len(buffer):
                 conn.execute(sa.insert(table), buffer)
