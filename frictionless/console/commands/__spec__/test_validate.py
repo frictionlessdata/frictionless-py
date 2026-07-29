@@ -3,7 +3,7 @@ import json
 import pytest
 import yaml
 
-from frictionless import Detector, Dialect, validate
+from frictionless import Detector, Dialect, Schema, validate
 from frictionless.console import console
 
 from .conftest import create_runner
@@ -66,6 +66,19 @@ def test_console_validate_field_names():
     actual = runner.invoke(console, "validate data/table.csv --json --field-names 'a,b'")
     expect = validate("data/table.csv", detector=Detector(field_names=["a", "b"]))
     assert actual.exit_code == 1
+    assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
+
+
+def test_console_validate_jsonschema_1500():
+    actual = runner.invoke(
+        console,
+        "validate data/table.csv --json --jsonschema data/jsonschema.json",
+    )
+    expect = validate(
+        "data/table.csv",
+        schema=Schema.from_jsonschema("data/jsonschema.json"),
+    )
+    assert actual.exit_code == 0
     assert no_time(json.loads(actual.stdout)) == no_time(expect.to_descriptor())
 
 
