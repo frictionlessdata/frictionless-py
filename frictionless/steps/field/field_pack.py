@@ -1,6 +1,7 @@
 # type: ignore
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING, Any, Iterator, List
 
 import attrs
@@ -56,7 +57,9 @@ class field_pack(Step):
             for name in self.from_names:
                 resource.schema.remove_field(name)
         processor = iterpackdict if self.as_object else iterpack  # type: ignore
-        resource.data = processor(table, self.name, self.from_names, self.preserve)
+        resource.data = partial(
+            processor, table, self.name, self.from_names, self.preserve
+        )
 
     # Metadata
 
