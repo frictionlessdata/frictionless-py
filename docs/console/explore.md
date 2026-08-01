@@ -18,7 +18,7 @@ pip install frictionless[visidata,zenodo] # for examples in this tutorial
 For example, let's expore this interesing dataset:
 
 ```bash tabs=CLI
-frictionless explore https://zenodo.org/record/3977957
+frictionless explore https://zenodo.org/records/3977957
 ```
 
 ```yaml image
