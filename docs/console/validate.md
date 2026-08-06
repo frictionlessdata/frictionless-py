@@ -14,3 +14,7 @@ With `validate` command you can validate your tabular files (individual or the w
 ```bash script tabs=CLI
 frictionless validate table.csv invalid.csv
 ```
+
+The `--parallel` option enables multiprocessing for validation jobs that contain multiple
+independent resources or tasks, such as Data Packages and Inquiries. It does not split validation
+of a single file into multiple processes.
