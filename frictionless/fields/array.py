@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 from typing import Any, Dict, Optional
 
@@ -52,6 +53,17 @@ class ArrayField(Field):
                             notes[name] = f"array item {note}"
                     cell[index] = item_cell
             return cell, notes
+
+        if self.format == "csv":
+            def csv_cell_reader(cell: Any):
+                if isinstance(cell, str):
+                    try:
+                        cell = next(csv.reader([cell], skipinitialspace=True))
+                    except csv.Error:
+                        cell = None
+                return cell_reader(cell)
+
+            return csv_cell_reader
 
         return cell_reader
 
