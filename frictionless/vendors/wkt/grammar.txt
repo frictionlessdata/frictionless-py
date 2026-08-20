@@ -1,8 +1,15 @@
 wkt_representation =
+    srid_specification wkt_representation_body |
+    wkt_representation_body;
+
+wkt_representation_body =
     point_text_representation |
     curve_text_representation |
     surface_text_representation |
     collection_text_representation;
+
+srid_specification =
+    "SRID=" number ";";
 
 point_text_representation = "POINT" [ z_m ] point_text;
 
