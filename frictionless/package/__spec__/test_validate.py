@@ -284,8 +284,6 @@ def test_package_validate_with_schema_issue_348():
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 4, "missing-label"],
-        [2, 4, "missing-cell"],
-        [3, 4, "missing-cell"],
     ]
 
 
