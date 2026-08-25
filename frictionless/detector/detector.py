@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
 
 import attrs
 
@@ -342,12 +342,16 @@ class Detector:
 
             # Deduplicate names
             if len(names) != len(set(names)):
-                seen_names: List[str] = []
+                used_names: Set[str] = set()
                 names = names.copy()
                 for index, name in enumerate(names):
-                    count = seen_names.count(name) + 1
-                    names[index] = "%s%s" % (name, count) if count > 1 else name
-                    seen_names.append(name)
+                    new_name = name
+                    suffix = 2
+                    while new_name in used_names:
+                        new_name = f"{name}{suffix}"
+                        suffix += 1
+                    names[index] = new_name
+                    used_names.add(new_name)
 
             # Handle type/empty
             if self.field_type or not fragment:
