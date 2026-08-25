@@ -57,7 +57,12 @@ class Header(List[str]):  # type: ignore
         self.__labels = labels
         self.__errors: List[errors.HeaderError] = []
         self.__expected_fields: Optional[List[Field]] = None
-        self.__matching = LabelMatching(labels, self.__fields, ignore_case=ignore_case)
+        self.__matching = LabelMatching(
+            labels,
+            self.__fields,
+            ignore_case=ignore_case,
+            by_name=self.__matches_by_name,
+        )
         self.__process()
 
     @cached_property
@@ -139,14 +144,15 @@ class Header(List[str]):  # type: ignore
     def get_expected_fields(self) -> List[Field]:
         """Returns the fields, in the order expected in the data.
 
-        Under `exact`, schema fields keep their order and are truncated or
-        extended with `any`-typed fields to match the labels.
+        Each label gets the field it pairs with (by position when
+        `fieldsMatch` is `"exact"`, by name otherwise), a label
+        with no field gets an artificial `any`-typed
+        field named after it (so that it is reported once rather than once per
+        row), and fields no label pairs with are dropped.
 
-        Under the name-matched modes, fields are reordered to match the labels;
-        labels without a matching field get a fresh `any`-typed field (even
-        where such a label is an error, so that it is reported once rather than
-        once per row), and fields not present in labels are dropped. Duplicate
-        labels are rejected, as they make the mapping ambiguous.
+        Under the name-matched modes, duplicate labels are rejected, as they make
+        the pairing ambiguous. Under `exact`, fabricated `any`-typed field
+        names are deduplicated.
         """
         if self.__expected_fields is not None:
             return self.__expected_fields
@@ -155,81 +161,72 @@ class Header(List[str]):  # type: ignore
             self.__expected_fields = self.__fields
             return self.__expected_fields
 
-        if not self.__matches_by_name:
-            expected = self.__fields[: len(self.__labels)]
-            extra_labels = self.__labels[len(expected) :]
-            # The schema field names come first, so deduplication only ever
-            # renames the fabricated ones
-            names = deduplicate_names([field.name for field in expected] + extra_labels)
-            for name in names[len(expected) :]:
-                expected.append(Field.from_descriptor({"name": name, "type": "any"}))
+        if self.__matches_by_name:
+            # ignore_case can make fields ambiguous as their keys are identical,
+            # e.g. "A" and "a"
+            for group in self.__matching.ambiguous_fields:
+                names = ", ".join(f'"{field.name}"' for field in group)
+                note = (
+                    f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
+                    f"is ambiguous: fields {names} differ only by case, which "
+                    '"header_case" is set to ignore'
+                )
+                raise FrictionlessException(errors.MetadataError(note=note))
 
-            self.__expected_fields = expected
-            return self.__expected_fields
+            if self.__matching.has_duplicate_labels:
+                note = (
+                    f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
+                    "requires unique labels in the header"
+                )
+                raise FrictionlessException(note)
 
-        # ignore_case can make fields ambiguous as their keys are identical,
-        # e.g. "A" and "a"
-        for group in self.__matching.ambiguous_fields:
-            names = ", ".join(f'"{field.name}"' for field in group)
-            note = (
-                f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
-                f"is ambiguous: fields {names} differ only by case, which "
-                '"header_case" is set to ignore'
+        matched = [
+            self.__matching.matching_field(position, label)
+            for position, label in enumerate(self.__labels)
+        ]
+
+        # A fabricated field is named after its label, deduplicated if needed.
+        # Matched fields are already unique and come first, so deduplication will only rename
+        # fabricated fields.
+        names = deduplicate_names(
+            [
+                field.name if field is not None else label
+                for field, label in zip(matched, self.__labels)
+            ]
+        )
+        self.__expected_fields = [
+            (
+                field
+                if field is not None
+                else Field.from_descriptor({"name": name, "type": "any"})
             )
-            raise FrictionlessException(errors.MetadataError(note=note))
-
-        if self.__matching.has_duplicate_labels:
-            note = (
-                f'matching fields by name ("fieldsMatch": "{self.__fields_match}") '
-                "requires unique labels in the header"
-            )
-            raise FrictionlessException(note)
-
-        expected: List[Field] = []
-        for label in self.__labels:
-            field = self.__matching.matching_field(label)
-            if field is None:
-                field = Field.from_descriptor({"name": label, "type": "any"})
-            expected.append(field)
-        self.__expected_fields = expected
+            for field, name in zip(matched, names)
+        ]
         return self.__expected_fields
 
     def _get_extra_labels(self) -> List[Tuple[int, str]]:
         """Returns (field_number, label) pairs for labels in the data that
-        don't correspond to any schema field.
-
-        Under `exact`, the extras are the labels beyond the schema's field
-        count. Under name matching, an extra label is one whose name matches no
-        field.
+        pair with no schema field: the labels beyond the schema's field count
+        under `exact`, the labels whose name matches no field under name
+        matching.
 
         `subset` and `partial` accept extra labels, so they report none.
         """
-        labels = self.__labels
-
-        if not self.__matches_by_name:
-            return [
-                (number, label)
-                for number, label in enumerate(labels, start=1)
-                if number > len(self.__fields)
-            ]
-
         if self.__fields_match in TOLERATES_EXTRA_LABELS:
             return []
 
         return [
             (number, label)
-            for number, label in enumerate(labels, start=1)
-            if self.__matching.matching_field(label) is None
+            for number, label in enumerate(self.__labels, start=1)
+            if self.__matching.matching_field(number - 1, label) is None
         ]
 
     def _get_missing_fields(self) -> List[Tuple[int, Field]]:
-        """Returns (field_number, field) pairs for schema fields that don't
-        have a corresponding label.
-
-        Under `exact`, the missing fields are those beyond the labels count.
-        Under name matching, they are the fields whose name is not among the
-        labels — restricted to the required ones for `superset` and `partial`,
-        which otherwise accept a data source with fewer fields.
+        """Returns (field_number, field) pairs for schema fields that pair
+        with no label: the fields beyond the labels count when `fieldsMatch`
+        is `"exact"`, the fields whose name is not among the labels under name matching —
+        restricted to the required ones for `superset` and `partial`, which
+        otherwise accept a data source with fewer fields.
 
         The field_number is `len(labels) + offset + 1` in every mode: under
         `exact` the missing fields are precisely the tail of the schema, so
@@ -237,23 +234,17 @@ class Header(List[str]):  # type: ignore
         have no natural position in the data, so we place them after the
         labels by convention.
         """
-        fields = self.__fields
-        labels = self.__labels
 
-        if not self.__matches_by_name:
-            missing = fields[len(labels) :] if len(fields) > len(labels) else []
-        else:
+        def is_required(field: Field) -> bool:
+            return field.required or (
+                field.schema is not None and field.name in field.schema.primary_key
+            )
 
-            def is_required(field: Field) -> bool:
-                return field.required or (
-                    field.schema is not None and field.name in field.schema.primary_key
-                )
+        missing = self.__matching.unmatched_fields
+        if self.__fields_match in TOLERATES_MISSING_FIELDS:
+            missing = [field for field in missing if is_required(field)]
 
-            missing = self.__matching.unmatched_fields
-            if self.__fields_match in TOLERATES_MISSING_FIELDS:
-                missing = [field for field in missing if is_required(field)]
-
-        start = len(labels) + 1
+        start = len(self.__labels) + 1
         return [(start + offset, field) for offset, field in enumerate(missing)]
 
     # Convert
