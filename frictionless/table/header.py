@@ -53,7 +53,6 @@ class Header(List[str]):  # type: ignore
             self.__fields.append(copy)
         self.__field_names = self.copy()
         self.__row_numbers = row_numbers
-        self.__ignore_case = ignore_case
         self.__fields_match = fields_match
         self.__labels = labels
         self.__errors: List[errors.HeaderError] = []
@@ -376,10 +375,7 @@ class Header(List[str]):  # type: ignore
 
             # Incorrect Label
             if label:
-                name = field.name
-                # NOTE: review where we normalize the label/name
-                lname = label.replace("\n", " ").strip()
-                if name.lower() != lname.lower() if self.__ignore_case else name != lname:
+                if not self.__matching.matches(label, field):
                     self.__errors.append(
                         errors.IncorrectLabelError(
                             note="",
