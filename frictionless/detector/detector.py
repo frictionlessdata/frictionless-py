@@ -331,7 +331,6 @@ class Detector:
 
             # Prepare names
             names = copy(self.field_names or labels or [])
-            names = list(map(lambda cell: cell.replace("\n", " ").strip(), names))
             if not names:
                 if not fragment:
                     return schema

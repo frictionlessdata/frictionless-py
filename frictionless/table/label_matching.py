@@ -38,6 +38,15 @@ class LabelMatching:
         """Returns the field the given label matches, or None if there is none"""
         return self.__fields_by_key.get(self.__normalize(label))
 
+    def matches(self, label: str, field: Field) -> bool:
+        """Whether the given label and field designate the same column
+
+        Unlike `matching_field`, which searches the whole schema, this answers
+        for one given pair -- what the positional modes need, since there the
+        pairing comes from the order rather than from the names.
+        """
+        return self.__normalize(label) == self.__normalize(field.name)
+
     @property
     def unmatched_fields(self) -> List[Field]:
         """The fields no label matches, in schema order"""
