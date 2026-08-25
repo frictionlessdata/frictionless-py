@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 from .. import errors, helpers, types
 from ..exception import FrictionlessException
 from ..schema import Field
-from .label_matching import LabelMatching
+from .label_matching import LabelMatching, deduplicate_names
 
 # The `fieldsMatch` modes are told apart by which mismatch they tolerate: a
 # label with no matching field, or a declared field with no matching label
@@ -157,17 +157,11 @@ class Header(List[str]):  # type: ignore
 
         if not self.__matches_by_name:
             expected = self.__fields[: len(self.__labels)]
-            used_names = {field.name for field in expected}
-
-            for label in self.__labels[len(expected) :]:
-                name = label
-                suffix = 2
-
-                while name in used_names:
-                    name = f"{label}{suffix}"
-                    suffix += 1
-
-                used_names.add(name)
+            extra_labels = self.__labels[len(expected) :]
+            # The schema field names come first, so deduplication only ever
+            # renames the fabricated ones
+            names = deduplicate_names([field.name for field in expected] + extra_labels)
+            for name in names[len(expected) :]:
                 expected.append(Field.from_descriptor({"name": name, "type": "any"}))
 
             self.__expected_fields = expected

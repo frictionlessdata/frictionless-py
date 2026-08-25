@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import attrs
 
@@ -13,6 +13,7 @@ from ..fields import AnyField
 from ..metadata import Metadata
 from ..platform import platform
 from ..schema import Field, Schema
+from ..table.label_matching import deduplicate_names
 
 if TYPE_CHECKING:
     from .. import types
@@ -341,17 +342,7 @@ class Detector:
                 names[index] = name or f"field{index + 1}"
 
             # Deduplicate names
-            if len(names) != len(set(names)):
-                used_names: Set[str] = set()
-                names = names.copy()
-                for index, name in enumerate(names):
-                    new_name = name
-                    suffix = 2
-                    while new_name in used_names:
-                        new_name = f"{name}{suffix}"
-                        suffix += 1
-                    names[index] = new_name
-                    used_names.add(new_name)
+            names = deduplicate_names(names)
 
             # Handle type/empty
             if self.field_type or not fragment:

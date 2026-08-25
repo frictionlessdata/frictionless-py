@@ -1,8 +1,29 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from ..schema import Field
+
+
+def deduplicate_names(names: List[str]) -> List[str]:
+    """Renames the duplicated names so that every name is unique.
+
+    The first occurrence keeps its name; a later duplicate becomes the first
+    free name among `{name}2`, `{name}3`, etc. Names are compared
+    case-sensitively, matching the schema validity rule (fields differing
+    only by case are distinct).
+    """
+    result: List[str] = []
+    used_names: Set[str] = set()
+    for name in names:
+        new_name = name
+        suffix = 2
+        while new_name in used_names:
+            new_name = f"{name}{suffix}"
+            suffix += 1
+        result.append(new_name)
+        used_names.add(new_name)
+    return result
 
 
 class LabelMatching:
