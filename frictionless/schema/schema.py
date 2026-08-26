@@ -180,15 +180,6 @@ class Schema(Metadata, metaclass=Factory):
         """Remove all the fields"""
         self.fields = []
 
-    def deduplicate_fields(self):
-        if len(self.field_names) != len(set(self.field_names)):
-            seen_names: List[str] = []
-            for index, name in enumerate(self.field_names):
-                count = seen_names.count(name) + 1
-                if count > 1:
-                    self.fields[index].name = "%s%s" % (name, count)
-                seen_names.append(name)
-
     # Describe
 
     @staticmethod
