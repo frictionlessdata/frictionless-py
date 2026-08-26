@@ -29,8 +29,8 @@ def deduplicate_names(names: List[str]) -> List[str]:
 class LabelMatching:
     """Pairs the labels read from the data source with the schema fields.
 
-    Labels and fields are paired by name or, when `by_name` is false, by
-    their position -- how the `exact` fieldsMatch mode expects them to match.
+    Labels and fields are paired by name when `by_name` is true, by
+    their position otherwise.
 
     Parameters:
         labels (str[]): the header row as read from the data source
