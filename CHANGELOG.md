@@ -2,6 +2,25 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v5.20.0
+
+- feat: Data Package v2, accept `$schema` property
+  ([#1784](https://github.com/frictionlessdata/frictionless-py/pull/1784))
+- feat: Data Package v2, support `missingValues` as objects
+  ([#1787](https://github.com/frictionlessdata/frictionless-py/pull/1787))
+- feat: Data Package v2, support `fieldsMatch` property
+  ([#1790](https://github.com/frictionlessdata/frictionless-py/pull/1790))
+- fix: Console errors are now sent to stderr instead of stdout
+  ([#1792](https://github.com/frictionlessdata/frictionless-py/pull/1792))
+- fix: Various fixes on header matching: correct
+  reporting of duplicate labels with `header_case=False`, error on ambiguous 
+  fields, no redundant extra-cell or missing-cell errors 
+  ([#1797](https://github.com/frictionlessdata/frictionless-py/pull/1797),
+  [#1798](https://github.com/frictionlessdata/frictionless-py/pull/1798),
+  [#1799](https://github.com/frictionlessdata/frictionless-py/pull/1799))
+- fix: missing label in "extra-label" error message
+  ([#1772](https://github.com/frictionlessdata/frictionless-py/pull/1772))
+
 ## v5.19.0
 
 - Deprecation warning for Python 3.8 and 3.9 ahead of future end of support
