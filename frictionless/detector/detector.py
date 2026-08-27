@@ -13,6 +13,7 @@ from ..fields import AnyField
 from ..metadata import Metadata
 from ..platform import platform
 from ..schema import Field, Schema
+from ..table.label_matching import deduplicate_names
 
 if TYPE_CHECKING:
     from .. import types
@@ -331,7 +332,6 @@ class Detector:
 
             # Prepare names
             names = copy(self.field_names or labels or [])
-            names = list(map(lambda cell: cell.replace("\n", " ").strip(), names))
             if not names:
                 if not fragment:
                     return schema
@@ -342,13 +342,7 @@ class Detector:
                 names[index] = name or f"field{index + 1}"
 
             # Deduplicate names
-            if len(names) != len(set(names)):
-                seen_names: List[str] = []
-                names = names.copy()
-                for index, name in enumerate(names):
-                    count = seen_names.count(name) + 1
-                    names[index] = "%s%s" % (name, count) if count > 1 else name
-                    seen_names.append(name)
+            names = deduplicate_names(names)
 
             # Handle type/empty
             if self.field_type or not fragment:

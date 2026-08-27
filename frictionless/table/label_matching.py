@@ -1,17 +1,42 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from ..schema import Field
 
 
+def deduplicate_names(names: List[str]) -> List[str]:
+    """Renames the duplicated names so that every name is unique.
+
+    The first occurrence keeps its name; a later duplicate becomes the first
+    free name among `{name}2`, `{name}3`, etc. Names are compared
+    case-sensitively, matching the schema validity rule (fields differing
+    only by case are distinct).
+    """
+    result: List[str] = []
+    used_names: Set[str] = set()
+    for name in names:
+        new_name = name
+        suffix = 2
+        while new_name in used_names:
+            new_name = f"{name}{suffix}"
+            suffix += 1
+        result.append(new_name)
+        used_names.add(new_name)
+    return result
+
+
 class LabelMatching:
-    """Pairs the labels read from the data source with the schema fields, by name.
+    """Pairs the labels read from the data source with the schema fields.
+
+    Labels and fields are paired by name when `by_name` is true, by
+    their position otherwise.
 
     Parameters:
         labels (str[]): the header row as read from the data source
         fields (Field[]): the fields declared in the schema, in schema order
         ignore_case (bool): compare labels and field names case-insensitively
+        by_name (bool): pair labels and fields by name rather than by position
     """
 
     def __init__(
@@ -20,10 +45,12 @@ class LabelMatching:
         fields: List[Field],
         *,
         ignore_case: bool = False,
+        by_name: bool = True,
     ) -> None:
         self.__labels = labels
         self.__fields = fields
         self.__ignore_case = ignore_case
+        self.__by_name = by_name
 
         # Keyed by normalized name, in schema order; the first field wins in
         # case of duplicates under normalization, so the duplicate fields are
@@ -34,13 +61,31 @@ class LabelMatching:
 
         self.__fields_by_key = fields_by_key
 
-    def matching_field(self, label: str) -> Optional[Field]:
-        """Returns the field the given label matches, or None if there is none"""
+    def matching_field(self, position: int, label: str) -> Optional[Field]:
+        """Returns the field the label at the given position pairs with, or None
+
+        Parameters:
+            position (int): 0-based position of the label in the header
+            label (str): the label itself
+        """
+        if not self.__by_name:
+            return self.__fields[position] if position < len(self.__fields) else None
         return self.__fields_by_key.get(self.__normalize(label))
+
+    def matches(self, label: str, field: Field) -> bool:
+        """Whether the given label and field designate the same column
+
+        Unlike `matching_field`, which searches the whole schema, this answers
+        for one given pair -- what the positional modes need, since there the
+        pairing comes from the order rather than from the names.
+        """
+        return self.__normalize(label) == self.__normalize(field.name)
 
     @property
     def unmatched_fields(self) -> List[Field]:
-        """The fields no label matches, in schema order"""
+        """The fields no label pairs with, in schema order"""
+        if not self.__by_name:
+            return self.__fields[len(self.__labels) :]
         matched = {self.__normalize(label) for label in self.__labels}
         return [
             field
@@ -74,8 +119,11 @@ class LabelMatching:
 
     @property
     def has_match(self) -> bool:
-        """Whether at least one label matches a schema field"""
-        return any(self.matching_field(label) is not None for label in self.__labels)
+        """Whether at least one label pairs with a schema field"""
+        return any(
+            self.matching_field(position, label) is not None
+            for position, label in enumerate(self.__labels)
+        )
 
     def __normalize(self, name: str) -> str:
         """The normalized value a label and a field name are compared through"""

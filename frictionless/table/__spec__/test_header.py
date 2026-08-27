@@ -83,8 +83,24 @@ def _make_header(labels, field_names, *, fields_match="exact", ignore_case=False
             ["a"],
             "exact",
             False,
+            ["a", "extra"],
+            id="exact: extra labels get a default any-typed field",
+        ),
+        pytest.param(
             ["a"],
-            id="exact: extra labels get no field",
+            ["a", "b"],
+            "exact",
+            False,
+            ["a"],
+            id="exact: fields are truncated to match labels",
+        ),
+        pytest.param(
+            [],
+            ["a"],
+            "exact",
+            False,
+            ["a"],
+            id="exact: a missing header keeps the schema fields",
         ),
         *[
             pytest.param(
@@ -139,11 +155,19 @@ def test_get_expected_fields(
     assert actual == expected_names
 
 
-@pytest.mark.parametrize("fields_match", NAME_MATCHED)
+@pytest.mark.parametrize("fields_match", ["exact", *NAME_MATCHED])
 def test_get_expected_fields_default_field_is_any_typed(fields_match):
     header = _make_header(["a", "extra"], ["a"], fields_match=fields_match)
     expected = header.get_expected_fields()
     assert expected[1].type == "any"
+
+
+def test_get_expected_fields_exact_uses_unique_names_for_extra_fields():
+    header = _make_header(["a", "a"], ["a"], fields_match="exact")
+    expected = header.get_expected_fields()
+
+    assert len(expected) == 2
+    assert len({field.name for field in expected}) == 2
 
 
 @pytest.mark.parametrize("fields_match", NAME_MATCHED)

@@ -285,22 +285,32 @@ class TableResource(Resource):
         # those fields, so build them once here and reuse them for every row.
         expected_fields: List[Field] = self.header.get_expected_fields()
         handlers = create_cell_handlers(expected_fields)
+        expected_field_names = {field.name for field in expected_fields}
 
-        # Create state
+        primary_key_fields = set(self.schema.primary_key)
+        has_primary_key = bool(primary_key_fields) and primary_key_fields.issubset(
+            expected_field_names
+        )
+
         memory_unique: Dict[str, Any] = {}
         memory_primary: Dict[Tuple[Any], Any] = {}
         foreign_groups: List[Any] = []
-        is_integrity = bool(self.schema.primary_key)
-        for field in self.schema.fields:
+        is_integrity = has_primary_key
+
+        for field in expected_fields:
             if field.constraints.get("unique"):
                 memory_unique[field.name] = {}
                 is_integrity = True
+
         if self.__lookup:
             for fk in self.schema.foreign_keys:
+                target_key = tuple(fk["fields"])
+                if not set(target_key).issubset(expected_field_names):
+                    continue
                 group = {}
                 group["sourceName"] = fk["reference"]["resource"]
                 group["sourceKey"] = tuple(fk["reference"]["fields"])
-                group["targetKey"] = tuple(fk["fields"])
+                group["targetKey"] = target_key
                 foreign_groups.append(group)
                 is_integrity = True
 
@@ -335,7 +345,7 @@ class TableResource(Resource):
                                 row.errors.append(error)
 
                 # Primary Key Error
-                if is_integrity and self.schema.primary_key:
+                if has_primary_key:
                     try:
                         cells = self.primary_key_cells(row, self.dialect.header_case)
                     except KeyError:
