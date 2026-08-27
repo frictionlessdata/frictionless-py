@@ -53,7 +53,10 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
+DEFAULT_LIST_DELIMITER = ","
+DEFAULT_LIST_ITEM_TYPE = "string"
 DEFAULT_HTTP_HEADERS = {"User-Agent": "frictionless-py/" + VERSION}
+
 DEFAULT_FIELD_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},

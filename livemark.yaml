@@ -191,6 +191,8 @@ pages:
           name: Geopoint
         - path: docs/fields/integer
           name: Integer
+        - path: docs/fields/list
+          name: List
         - path: docs/fields/number
           name: Number
         - path: docs/fields/object
