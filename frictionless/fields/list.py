@@ -18,7 +18,6 @@ class ListField(Field):
         "required",
         "minLength",
         "maxLength",
-        "enum",
     ]
 
     item_types: ClassVar[List[str]] = ITEM_TYPES
@@ -40,6 +39,19 @@ class ListField(Field):
     """
 
     # Read
+
+    def create_cell_reader(self):
+        default_reader = super().create_cell_reader()
+        item_type = self.item_type
+
+        # Create reader
+        def cell_reader(cell: Any):
+            value, notes = default_reader(cell)
+            if notes and "type" in notes and isinstance(cell, (str, list, tuple)):
+                notes["type"] = f'expected item type is "{item_type}"'
+            return value, notes
+
+        return cell_reader
 
     def create_value_reader(self):
         item_reader = self.__create_item_field().create_value_reader()

@@ -38,8 +38,9 @@ def test_list_read_cell(source, target, options):
 
 
 def test_list_read_cell_type_error_note():
-    field = fields.ListField(name="name", item_type="integer")
-    cell, notes = field.read_cell("1,bad,3")
+    # A cell that is not a string or a sequence is not a list at all
+    field = fields.ListField(name="name")
+    cell, notes = field.read_cell(1)
     assert cell is None
     assert notes == {"type": 'type is "list/default"'}
 
@@ -76,6 +77,13 @@ def test_list_read_cell_item_type_default_format_only():
     assert field.read_cell("21/11/2006")[0] is None
 
 
+def test_list_read_cell_item_type_error_note():
+    field = fields.ListField(name="name", item_type="integer")
+    cell, notes = field.read_cell("1,bad,3")
+    assert cell is None
+    assert notes == {"type": 'expected item type is "integer"'}
+
+
 # Missing Values
 
 
@@ -85,9 +93,9 @@ def test_list_read_cell_missing_value():
 
 
 def test_list_read_cell_missing_value_is_not_an_item():
-    field = fields.ListField(name="name", item_type="integer", missing_values=["-"])
+    field = fields.ListField(name="name", item_type="string", missing_values=["-"])
     assert field.read_cell("-")[0] is None
-    assert field.read_cell("1,-,3")[0] is None
+    assert field.read_cell("1,-,3")[0] == ["1", "-", "3"]
 
 
 # Constraints
@@ -112,22 +120,21 @@ def test_list_read_cell_max_length():
     assert field.read_cell("a,b,c")[1] == {"maxLength": 'constraint "maxLength" is "2"'}
 
 
-def test_list_read_cell_enum():
-    field = fields.ListField(
-        name="name", item_type="integer", constraints={"enum": ["1,2"]}
-    )
-    assert field.read_cell("1,2")[1] is None
-    assert field.read_cell("1,3")[1] == {"enum": 'constraint "enum" is "[\'1,2\']"'}
-
-
-def test_list_read_cell_unsupported_constraint():
+@pytest.mark.parametrize(
+    "name, value",
+    [
+        ("pattern", "a.*"),
+        ("enum", ["1,2"]),
+    ],
+)
+def test_list_read_cell_unsupported_constraint(name, value):
     with pytest.raises(FrictionlessException) as excinfo:
         Field.from_descriptor(
-            {"name": "name", "type": "list", "constraints": {"pattern": "a.*"}}
+            {"name": "name", "type": "list", "constraints": {name: value}}
         )
     reasons = excinfo.value.reasons
     assert reasons[0].type == "field-error"
-    assert reasons[0].note == 'constraint "pattern" is not supported by type "list"'
+    assert reasons[0].note == f'constraint "{name}" is not supported by type "list"'
 
 
 # Write
@@ -184,7 +191,7 @@ def test_list_metadata_export():
 # Schema
 
 
-def test_list_schema_from_descriptor_issue_1741():
+def test_list_schema_from_descriptor():
     schema = Schema.from_descriptor(
         {
             "fields": [
