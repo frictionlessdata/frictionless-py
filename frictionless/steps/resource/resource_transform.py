@@ -53,3 +53,8 @@ class resource_transform(Step):
             "steps": {"type": "array"},
         },
     }
+
+    @classmethod
+    def metadata_select_property_class(cls, name: str):
+        if name == "steps":
+            return Step
