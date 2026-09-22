@@ -4,7 +4,7 @@ import datetime
 import json
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from ...catalog import Catalog, Dataset
 from ...exception import FrictionlessException
@@ -37,8 +37,10 @@ class ZenodoAdapter(Adapter):
         try:
             dataset = client.get_record(self.control.record)
             if dataset:
-                name = self.control.name or dataset.data["metadata"]["title"]
-                package = get_package(dataset, name, self.control.formats)
+                title = dataset.data["metadata"]["title"]
+                package = get_package(
+                    dataset, title, self.control.formats, name=self.control.name
+                )
         except Exception as exception:
             note = "Zenodo API error" + repr(exception)
             raise FrictionlessException(note)
@@ -51,6 +53,7 @@ class ZenodoAdapter(Adapter):
 
     def write_package(self, package: Package):
         client = platform.pyzenodo3_upload
+        assert self.control.base_url, "ZenodoControl(base_url=...) may not be empty"
         client.BASE_URL = self.control.base_url
 
         # Ensure api key
@@ -103,8 +106,8 @@ class ZenodoAdapter(Adapter):
                     )
 
             # Upload metadata
-            with tempfile.NamedTemporaryFile("wt") as file:
-                data = dict(metadata=metadata.model_dump(exclude_none=True))
+            with tempfile.NamedTemporaryFile("wt", dir=self.control.tmp_path) as file:
+                data = dict(metadata=metadata.model_dump(exclude_none=True))  # type: ignore
                 json.dump(data, file, indent=2)
                 file.flush()
                 client.upload_meta(
@@ -114,7 +117,7 @@ class ZenodoAdapter(Adapter):
                 )
 
             # Upload package
-            with tempfile.TemporaryDirectory() as dir:
+            with tempfile.TemporaryDirectory(dir=self.control.tmp_path) as dir:
                 path = Path(dir) / "datapackage.json"
                 package.to_json(str(path))
                 client.upload_data(
@@ -136,7 +139,7 @@ class ZenodoAdapter(Adapter):
 
             # Return result
             return PublishResult(
-                url=f"https://zenodo.org/deposit/{deposition_id}",
+                url=f"https://zenodo.org/upload/{deposition_id}",
                 context=dict(deposition_id=deposition_id),
             )
 
@@ -214,26 +217,46 @@ class ZenodoAdapter(Adapter):
         raise FrictionlessException(note)
 
 
-def get_package(record: Record, title: str, formats: List[str]) -> Package:  # type: ignore
-    package = Package(title=title)
-    package.title = title
+def get_package(
+    record: Record,  # type: ignore
+    title: str,
+    formats: List[str],
+    name: Optional[str] = None,
+) -> Package:
+    """
+    Create a package from a zenodo record
+
+    Note
+    ----
+    The api access links for files have a structure like:
+    https://zenodo.org/api/records/7078768/files/table.xls/content
+    which makes it difficult for the type detection using file endings.
+
+    Therefore, we redirect here to the html endpoint, where the same file is retrieved as
+    https://zenodo.org/records/7078768/files/table.xls
+    """
+    basepath = cast(str, record.data["links"]["self_html"] + "/files")  # type: ignore
+    package = Package(title=title, basepath=basepath, name=name)  # type: ignore
     for file in record.data["files"]:  # type: ignore
-        path = file["links"]["self"]  # type: ignore
-        is_resource_file = any(path.endswith(ext) for ext in formats)  # type: ignore
-        if path.endswith(("datapackage.json")):  # type: ignore
-            return Package.from_descriptor(path, title=title)  # type: ignore
-        if path.endswith("zip") and not is_resource_file:  # type: ignore
+        path = cast(str, file["key"])
+        is_resource_file = any(path.endswith(ext) for ext in formats)
+        if path.endswith("datapackage.json"):
+            return Package.from_descriptor(f"{basepath}/{path}", title=title)
+        if path.endswith("zip") and not is_resource_file:
             try:
-                package = Package(path)  # type: ignore
+                package = Package(f"{basepath}/{path}")
                 package.title = title
                 return package
             except FrictionlessException as exception:
-                # Skips package descriptor not found exception
-                # and continues reading files.
+                # Skips package descriptor not found exception and continues reading
+                # files.
                 if "[Errno 2] No such file or directory" not in str(exception):
                     raise exception
         if is_resource_file:
-            package.basepath = f'https://zenodo.org/api/files/{file["bucket"]}'
-            resource = Resource(path=file["key"])  # type: ignore
+            resource = Resource(
+                path=cast(str, file["key"]),
+                hash=cast(str, file["checksum"]),
+                bytes=cast(int, file["size"]),
+            )
             package.add_resource(resource)
     return package

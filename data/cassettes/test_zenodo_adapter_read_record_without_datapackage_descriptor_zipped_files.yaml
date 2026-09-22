@@ -5,72 +5,107 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.28.1
+      - python-requests/2.32.4
     method: GET
     uri: https://zenodo.org/api/records/7247979
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAA7RV3W+bMBD/VxCvC8F8JYCqPqxVHyZN20O1aZuqyNhHYsXBDJt0a5X/fWdIFtom
-        abtqEg/m7nfn33363mWqYlAbroSbuwEZJ2Ea+HdQKa7G0zCeZtPUHe1QDTDBETdQNEANWFlIwtAL
-        iBcm1yTNSZhH6TgiEzKZviMkJwTBJy7JUF0KCdrNf9y7RcuWYBA7ibKo5Bn1gmkRe3GYTDya8dBL
-        SZxFPCO0iArLYgFsqdsVWqx4kmeThE2ihFMWMR6SOCSUEppQNClYQa3FEn4juFSSQxOM70SNMimq
-        Jd5/72qQJWoXxtQ693dEVTP3aS38jqb/Emb+0P9m5GpxB24ex+nINb9rPLq94s0BAyMcsiLiZRAD
-        pcBLBqycQMRpwMJJ+Sjg8D8HHD4T8M3ItW20rfyAR0H5HA4T6VQ+dpB/uH/Gej3HkP4m8s2x7Lv+
-        31mlW1YPhmznBv86H0eH7hVwOz4Ls5KHWeLYqob7e6jEmdUnstQb6CcWs1fccbqnHt+AzbICQzk1
-        1DYCZQy0njVivrA0VQ0VuhxKZwwZzVVju1q3nWK3jlTTb5GKrmzZri6da+QuqnnXeRw0a0RthKpQ
-        eVafXy+EdvCjjg3RsRQ0mDO/Pn9+ZUnBoNJgKXeL8eLCe//Ni8fEBlS3BeqpvWmGXuHBkkTjBmxW
-        +UxwqIwoBWx57/9PreTOug9C6C9oi+dPdtI1LocucMvdRrxDdiO27pHdRUy1FaY3wHGsOPxyc4In
-        PZPU9oZpWrB1x6qzhZDcGteCz7aD3D8Fo060prK1skExa9qA9f1Cm9TdbG42lqpWbcNga4GbqS22
-        xrQxgklAcyOMtJIPCK2odAaaHjpIvOWyw181glkZbgDtXGKZu77oTlhw57uoa+DOx1YaUUtwruyq
-        cL4Ks1CtcT5TtqTzXmqdqtuqr1dMkiQJuzSvRZ9aTKg21HT55giUinL8IWPMb1uJny3MjojXAm53
-        om2lnkB38iOeHqkPeTwoU7K1XdMLh4C9AsNua370vc/GwTQOYrJ97zd/AAAA//8DAMOTL8ddCAAA
+      string: '{"created": "2022-10-25T08:02:38.306067+00:00", "modified": "2022-10-25T14:26:24.174296+00:00",
+        "id": 7247979, "conceptrecid": "7247978", "doi": "10.5281/zenodo.7247979",
+        "conceptdoi": "10.5281/zenodo.7247978", "doi_url": "https://doi.org/10.5281/zenodo.7247979",
+        "metadata": {"title": "Frictionless Data Test Dataset Zipped Multiple Files
+        Without Package File", "doi": "10.5281/zenodo.7247979", "publication_date":
+        "2022-10-25", "description": "<p>This is a test dataset</p>", "access_right":
+        "open", "creators": [{"name": "FD Testing", "affiliation": null}], "resource_type":
+        {"title": "Journal article", "type": "publication", "subtype": "article"},
+        "license": {"id": "cc-by-4.0"}, "relations": {"version": [{"index": 0, "is_last":
+        true, "parent": {"pid_type": "recid", "pid_value": "7247978"}}]}}, "title":
+        "Frictionless Data Test Dataset Zipped Multiple Files Without Package File",
+        "links": {"self": "https://zenodo.org/api/records/7247979", "self_html": "https://zenodo.org/records/7247979",
+        "preview_html": "https://zenodo.org/records/7247979?preview=1", "doi": "https://doi.org/10.5281/zenodo.7247979",
+        "self_doi": "https://doi.org/10.5281/zenodo.7247979", "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.7247979",
+        "reserve_doi": "https://zenodo.org/api/records/7247979/draft/pids/doi", "parent":
+        "https://zenodo.org/api/records/7247978", "parent_html": "https://zenodo.org/records/7247978",
+        "parent_doi": "https://doi.org/10.5281/zenodo.7247978", "parent_doi_html":
+        "https://zenodo.org/doi/10.5281/zenodo.7247978", "self_iiif_manifest": "https://zenodo.org/api/iiif/record:7247979/manifest",
+        "self_iiif_sequence": "https://zenodo.org/api/iiif/record:7247979/sequence/default",
+        "files": "https://zenodo.org/api/records/7247979/files", "media_files": "https://zenodo.org/api/records/7247979/media-files",
+        "archive": "https://zenodo.org/api/records/7247979/files-archive", "archive_media":
+        "https://zenodo.org/api/records/7247979/media-files-archive", "latest": "https://zenodo.org/api/records/7247979/versions/latest",
+        "latest_html": "https://zenodo.org/records/7247979/latest", "versions": "https://zenodo.org/api/records/7247979/versions",
+        "draft": "https://zenodo.org/api/records/7247979/draft", "access_links": "https://zenodo.org/api/records/7247979/access/links",
+        "access_grants": "https://zenodo.org/api/records/7247979/access/grants", "access_users":
+        "https://zenodo.org/api/records/7247979/access/users", "access_request": "https://zenodo.org/api/records/7247979/access/request",
+        "access": "https://zenodo.org/api/records/7247979/access", "communities":
+        "https://zenodo.org/api/records/7247979/communities", "communities-suggestions":
+        "https://zenodo.org/api/records/7247979/communities-suggestions", "requests":
+        "https://zenodo.org/api/records/7247979/requests"}, "updated": "2022-10-25T14:26:24.174296+00:00",
+        "recid": "7247979", "revision": 2, "files": [{"id": "02e06f01-82e7-4be2-92d2-cdfb9455be1a",
+        "key": "folder2.zip", "size": 448, "checksum": "md5:ec0de9b3df14eaaedfcecf6e3da1c26f",
+        "links": {"self": "https://zenodo.org/api/records/7247979/files/folder2.zip/content"}},
+        {"id": "7d516d41-dd93-458b-98ba-e73c824bdc2b", "key": "folder1.zip", "size":
+        448, "checksum": "md5:965c635dac3cd20420aa0a5a93dbcbab", "links": {"self":
+        "https://zenodo.org/api/records/7247979/files/folder1.zip/content"}}], "swh":
+        {}, "owners": [{"id": "405552"}], "status": "published", "stats": {"downloads":
+        73, "unique_downloads": 37, "views": 66, "unique_views": 63, "version_downloads":
+        73, "version_unique_downloads": 37, "version_unique_views": 63, "version_views":
+        66}, "state": "done", "submitted": true}'
     headers:
-      Access-Control-Allow-Origin:
+      access-control-allow-origin:
       - '*'
-      Access-Control-Expose-Headers:
+      access-control-expose-headers:
       - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Encoding:
+      cache-control:
+      - private
+      content-encoding:
       - gzip
-      Content-Type:
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
       - application/json
-      Date:
-      - Tue, 25 Oct 2022 10:10:25 GMT
-      ETag:
-      - W/"1"
-      Last-Modified:
-      - Tue, 25 Oct 2022 08:02:39 GMT
-      Link:
-      - <https://zenodo.org/api/records/7247979>; rel="self"
-      Referrer-Policy:
+      date:
+      - Sat, 26 Jul 2025 12:00:59 GMT
+      etag:
+      - W/"2"
+      link:
+      - <https://zenodo.org/api/records/7247979> ; rel="linkset" ; type="application/linkset+json"
+      permissions-policy:
+      - interest-cohort=()
+      referrer-policy:
       - strict-origin-when-cross-origin
-      Retry-After:
-      - '60'
-      Server:
+      retry-after:
+      - '53'
+      server:
       - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      Transfer-Encoding:
+      set-cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=8744e51872eabf6cc8db27f0ab820c1d; path=/;
+        HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      - max-age=15768000
+      transfer-encoding:
       - chunked
-      Vary:
+      vary:
       - Accept-Encoding
-      X-Content-Type-Options:
+      x-content-type-options:
       - nosniff
-      X-Frame-Options:
+      x-frame-options:
       - sameorigin
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '59'
-      X-RateLimit-Reset:
-      - '1666692686'
-      X-Request-ID:
-      - 9cd86afa48f5b757d692ac740b3944ea
-      X-XSS-Protection:
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '124'
+      x-ratelimit-reset:
+      - '1753531313'
+      x-request-id:
+      - 74c76c589305679aac49d194f52bce6f
+      x-xss-protection:
       - 1; mode=block
     status:
       code: 200
@@ -81,172 +116,16 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
+      Cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://zenodo.org/api/files/6393fd9a-17b4-4256-a9d2-80493d90ab3b/folder1.zip
-  response:
-    body:
-      string: !!binary |
-        UEsDBBQAAAAAAMVtWVUAAAAAAAAAAAAAAAAIACAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4
-        CwABBOgDAAAE6AMAAFBLAwQUAAgACAAxbVlVAAAAAAAAAABKAAAAFAAgAGZvbGRlcjEvYWRkcmVz
-        czMuY3N2VVQNAAeylldjP5dXY8eXV2N1eAsAAQToAwAABOgDAADLTNHJyU9OLMnMz4vPTNFJTEkp
-        Si0ujjfkMtQx1DEyMzBQ8M1MSclJTctMzUlRCMpPTOEy0gFCE4Xg1OT8vBQFx7LUvNJULi4uAFBL
-        BwgumIfVSgAAAEoAAABQSwECFAMUAAAAAADFbVlVAAAAAAAAAAAAAAAACAAgAAAAAAAAAAAA/UEA
-        AAAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAIADFt
-        WVUumIfVSgAAAEoAAAAUACAAAAAAAAAAAAC0gUYAAABmb2xkZXIxL2FkZHJlc3MzLmNzdlVUDQAH
-        spZXYz+XV2PHl1djdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAuAAAAPIAAAAAAA==
-    headers:
-      Accept-Ranges:
-      - none
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Disposition:
-      - attachment; filename=folder1.zip
-      Content-Length:
-      - '448'
-      Content-MD5:
-      - 965c635dac3cd20420aa0a5a93dbcbab
-      Content-Security-Policy:
-      - default-src 'none';
-      Content-Type:
-      - application/octet-stream
-      - application/octet-stream
-      Date:
-      - Tue, 25 Oct 2022 10:10:26 GMT
-      ETag:
-      - '"md5:965c635dac3cd20420aa0a5a93dbcbab"'
-      Last-Modified:
-      - Tue, 25 Oct 2022 08:02:38 GMT
-      OC-Checksum:
-      - MD5:965c635dac3cd20420aa0a5a93dbcbab
-      Referrer-Policy:
-      - strict-origin-when-cross-origin
-      Retry-After:
-      - '59'
-      Server:
-      - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      X-Content-Type-Options:
-      - nosniff
-      X-Download-Options:
-      - noopen
-      X-Frame-Options:
-      - sameorigin
-      X-Permitted-Cross-Domain-Policies:
-      - none
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '59'
-      X-RateLimit-Reset:
-      - '1666692686'
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://zenodo.org/api/files/6393fd9a-17b4-4256-a9d2-80493d90ab3b/folder1.zip
-  response:
-    body:
-      string: !!binary |
-        UEsDBBQAAAAAAMVtWVUAAAAAAAAAAAAAAAAIACAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4
-        CwABBOgDAAAE6AMAAFBLAwQUAAgACAAxbVlVAAAAAAAAAABKAAAAFAAgAGZvbGRlcjEvYWRkcmVz
-        czMuY3N2VVQNAAeylldjP5dXY8eXV2N1eAsAAQToAwAABOgDAADLTNHJyU9OLMnMz4vPTNFJTEkp
-        Si0ujjfkMtQx1DEyMzBQ8M1MSclJTctMzUlRCMpPTOEy0gFCE4Xg1OT8vBQFx7LUvNJULi4uAFBL
-        BwgumIfVSgAAAEoAAABQSwECFAMUAAAAAADFbVlVAAAAAAAAAAAAAAAACAAgAAAAAAAAAAAA/UEA
-        AAAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAIADFt
-        WVUumIfVSgAAAEoAAAAUACAAAAAAAAAAAAC0gUYAAABmb2xkZXIxL2FkZHJlc3MzLmNzdlVUDQAH
-        spZXYz+XV2PHl1djdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAuAAAAPIAAAAAAA==
-    headers:
-      Accept-Ranges:
-      - none
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Disposition:
-      - attachment; filename=folder1.zip
-      Content-Length:
-      - '448'
-      Content-MD5:
-      - 965c635dac3cd20420aa0a5a93dbcbab
-      Content-Security-Policy:
-      - default-src 'none';
-      Content-Type:
-      - application/octet-stream
-      - application/octet-stream
-      Date:
-      - Tue, 25 Oct 2022 10:10:28 GMT
-      ETag:
-      - '"md5:965c635dac3cd20420aa0a5a93dbcbab"'
-      Last-Modified:
-      - Tue, 25 Oct 2022 08:02:38 GMT
-      OC-Checksum:
-      - MD5:965c635dac3cd20420aa0a5a93dbcbab
-      Referrer-Policy:
-      - strict-origin-when-cross-origin
-      Retry-After:
-      - '59'
-      Server:
-      - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      X-Content-Type-Options:
-      - nosniff
-      X-Download-Options:
-      - noopen
-      X-Frame-Options:
-      - sameorigin
-      X-Permitted-Cross-Domain-Policies:
-      - none
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '58'
-      X-RateLimit-Reset:
-      - '1666692688'
-      X-XSS-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
-        like Gecko) Chrome/54.0.2840.87 Safari/537.36
-    method: GET
-    uri: https://zenodo.org/api/files/6393fd9a-17b4-4256-a9d2-80493d90ab3b/folder2.zip
+    uri: https://zenodo.org/records/7247979/files/folder2.zip
   response:
     body:
       string: !!binary |
@@ -259,55 +138,49 @@ interactions:
         WVUumIfVSgAAAEoAAAAUACAAAAAAAAAAAAC0gUYAAABmb2xkZXIyL2FkZHJlc3MyLmNzdlVUDQAH
         spZXYz+XV2NQl1djdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAuAAAAPIAAAAAAA==
     headers:
-      Accept-Ranges:
-      - none
+      accept-ranges:
       - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Disposition:
+      content-disposition:
       - attachment; filename=folder2.zip
-      Content-Length:
+      content-length:
       - '448'
-      Content-MD5:
-      - ec0de9b3df14eaaedfcecf6e3da1c26f
-      Content-Security-Policy:
-      - default-src 'none';
-      Content-Type:
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
       - application/octet-stream
       - application/octet-stream
-      Date:
-      - Tue, 25 Oct 2022 10:10:29 GMT
-      ETag:
-      - '"md5:ec0de9b3df14eaaedfcecf6e3da1c26f"'
-      Last-Modified:
-      - Tue, 25 Oct 2022 08:02:38 GMT
-      OC-Checksum:
+      date:
+      - Sat, 26 Jul 2025 12:00:59 GMT
+      oc-checksum:
       - MD5:ec0de9b3df14eaaedfcecf6e3da1c26f
-      Referrer-Policy:
+      referrer-policy:
       - strict-origin-when-cross-origin
-      Retry-After:
-      - '59'
-      Server:
+      retry-after:
+      - '54'
+      server:
       - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      X-Content-Type-Options:
+      set-cookie:
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:00:59 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      x-content-type-options:
       - nosniff
-      X-Download-Options:
+      x-download-options:
       - noopen
-      X-Frame-Options:
+      x-frame-options:
       - sameorigin
-      X-Permitted-Cross-Domain-Policies:
+      x-permitted-cross-domain-policies:
       - none
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '57'
-      X-RateLimit-Reset:
-      - '1666692689'
-      X-XSS-Protection:
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '114'
+      x-ratelimit-reset:
+      - '1753531314'
+      x-xss-protection:
       - 1; mode=block
     status:
       code: 200
@@ -318,14 +191,16 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, zstd
       Connection:
       - keep-alive
+      Cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
       User-Agent:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://zenodo.org/api/files/6393fd9a-17b4-4256-a9d2-80493d90ab3b/folder2.zip
+    uri: https://zenodo.org/records/7247979/files/folder2.zip
   response:
     body:
       string: !!binary |
@@ -338,55 +213,199 @@ interactions:
         WVUumIfVSgAAAEoAAAAUACAAAAAAAAAAAAC0gUYAAABmb2xkZXIyL2FkZHJlc3MyLmNzdlVUDQAH
         spZXYz+XV2NQl1djdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAuAAAAPIAAAAAAA==
     headers:
-      Accept-Ranges:
-      - none
+      accept-ranges:
       - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-      Content-Disposition:
+      content-disposition:
       - attachment; filename=folder2.zip
-      Content-Length:
+      content-length:
       - '448'
-      Content-MD5:
-      - ec0de9b3df14eaaedfcecf6e3da1c26f
-      Content-Security-Policy:
-      - default-src 'none';
-      Content-Type:
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
       - application/octet-stream
       - application/octet-stream
-      Date:
-      - Tue, 25 Oct 2022 10:10:30 GMT
-      ETag:
-      - '"md5:ec0de9b3df14eaaedfcecf6e3da1c26f"'
-      Last-Modified:
-      - Tue, 25 Oct 2022 08:02:38 GMT
-      OC-Checksum:
+      date:
+      - Sat, 26 Jul 2025 12:00:59 GMT
+      oc-checksum:
       - MD5:ec0de9b3df14eaaedfcecf6e3da1c26f
-      Referrer-Policy:
+      referrer-policy:
       - strict-origin-when-cross-origin
-      Retry-After:
-      - '59'
-      Server:
+      retry-after:
+      - '54'
+      server:
       - nginx
-      Strict-Transport-Security:
-      - max-age=0
-      X-Content-Type-Options:
+      set-cookie:
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:00:59 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      x-content-type-options:
       - nosniff
-      X-Download-Options:
+      x-download-options:
       - noopen
-      X-Frame-Options:
+      x-frame-options:
       - sameorigin
-      X-Permitted-Cross-Domain-Policies:
+      x-permitted-cross-domain-policies:
       - none
-      X-RateLimit-Limit:
-      - '60'
-      X-RateLimit-Remaining:
-      - '56'
-      X-RateLimit-Reset:
-      - '1666692690'
-      X-XSS-Protection:
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '113'
+      x-ratelimit-reset:
+      - '1753531314'
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://zenodo.org/records/7247979/files/folder1.zip
+  response:
+    body:
+      string: !!binary |
+        UEsDBBQAAAAAAMVtWVUAAAAAAAAAAAAAAAAIACAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4
+        CwABBOgDAAAE6AMAAFBLAwQUAAgACAAxbVlVAAAAAAAAAABKAAAAFAAgAGZvbGRlcjEvYWRkcmVz
+        czMuY3N2VVQNAAeylldjP5dXY8eXV2N1eAsAAQToAwAABOgDAADLTNHJyU9OLMnMz4vPTNFJTEkp
+        Si0ujjfkMtQx1DEyMzBQ8M1MSclJTctMzUlRCMpPTOEy0gFCE4Xg1OT8vBQFx7LUvNJULi4uAFBL
+        BwgumIfVSgAAAEoAAABQSwECFAMUAAAAAADFbVlVAAAAAAAAAAAAAAAACAAgAAAAAAAAAAAA/UEA
+        AAAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAIADFt
+        WVUumIfVSgAAAEoAAAAUACAAAAAAAAAAAAC0gUYAAABmb2xkZXIxL2FkZHJlc3MzLmNzdlVUDQAH
+        spZXYz+XV2PHl1djdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAuAAAAPIAAAAAAA==
+    headers:
+      accept-ranges:
+      - bytes
+      content-disposition:
+      - attachment; filename=folder1.zip
+      content-length:
+      - '448'
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
+      - application/octet-stream
+      - application/octet-stream
+      date:
+      - Sat, 26 Jul 2025 12:01:00 GMT
+      oc-checksum:
+      - MD5:965c635dac3cd20420aa0a5a93dbcbab
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      retry-after:
+      - '53'
+      server:
+      - nginx
+      set-cookie:
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:00 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      x-content-type-options:
+      - nosniff
+      x-download-options:
+      - noopen
+      x-frame-options:
+      - sameorigin
+      x-permitted-cross-domain-policies:
+      - none
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '112'
+      x-ratelimit-reset:
+      - '1753531314'
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Cookie:
+      - 5569e5a730cade8ff2b54f1e815f3670=ee05b1c4fc826a86b832f3008890c77d; session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://zenodo.org/records/7247979/files/folder1.zip
+  response:
+    body:
+      string: !!binary |
+        UEsDBBQAAAAAAMVtWVUAAAAAAAAAAAAAAAAIACAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4
+        CwABBOgDAAAE6AMAAFBLAwQUAAgACAAxbVlVAAAAAAAAAABKAAAAFAAgAGZvbGRlcjEvYWRkcmVz
+        czMuY3N2VVQNAAeylldjP5dXY8eXV2N1eAsAAQToAwAABOgDAADLTNHJyU9OLMnMz4vPTNFJTEkp
+        Si0ujjfkMtQx1DEyMzBQ8M1MSclJTctMzUlRCMpPTOEy0gFCE4Xg1OT8vBQFx7LUvNJULi4uAFBL
+        BwgumIfVSgAAAEoAAABQSwECFAMUAAAAAADFbVlVAAAAAAAAAAAAAAAACAAgAAAAAAAAAAAA/UEA
+        AAAAZm9sZGVyMS9VVA0AB8eXV2PIl1djx5dXY3V4CwABBOgDAAAE6AMAAFBLAQIUAxQACAAIADFt
+        WVUumIfVSgAAAEoAAAAUACAAAAAAAAAAAAC0gUYAAABmb2xkZXIxL2FkZHJlc3MzLmNzdlVUDQAH
+        spZXYz+XV2PHl1djdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAuAAAAPIAAAAAAA==
+    headers:
+      accept-ranges:
+      - bytes
+      content-disposition:
+      - attachment; filename=folder1.zip
+      content-length:
+      - '448'
+      content-security-policy:
+      - 'default-src ''self'' fonts.googleapis.com *.gstatic.com data: ''unsafe-inline''
+        ''unsafe-eval'' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch
+        maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch'
+      content-type:
+      - application/octet-stream
+      - application/octet-stream
+      date:
+      - Sat, 26 Jul 2025 12:01:00 GMT
+      oc-checksum:
+      - MD5:965c635dac3cd20420aa0a5a93dbcbab
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      retry-after:
+      - '53'
+      server:
+      - nginx
+      set-cookie:
+      - session=e95d003b25bdc0a8_6884c375.quaFFyl1wVZl9JF9_wGqPGH5YOE; Expires=Thu,
+        31 Jul 2025 12:01:00 GMT; Secure; HttpOnly; Path=/; SameSite=Lax
+      strict-transport-security:
+      - max-age=31556926; includeSubDomains
+      x-content-type-options:
+      - nosniff
+      x-download-options:
+      - noopen
+      x-frame-options:
+      - sameorigin
+      x-permitted-cross-domain-policies:
+      - none
+      x-ratelimit-limit:
+      - '133'
+      x-ratelimit-remaining:
+      - '111'
+      x-ratelimit-reset:
+      - '1753531314'
+      x-xss-protection:
       - 1; mode=block
     status:
       code: 200

@@ -29,9 +29,15 @@ class ZenodoPlugin(Plugin):
             if not control or isinstance(control, ZenodoControl):
                 if parsed.netloc == "zenodo.org":
                     control = control or ZenodoControl()
+                    if parsed.path.startswith("/records/"):
+                        control.record = parsed.path.replace("/records/", "")
                     if parsed.path.startswith("/record/"):
+                        # old name for /records/
                         control.record = parsed.path.replace("/record/", "")
+                    if parsed.path.startswith("/upload/"):
+                        control.deposition_id = int(parsed.path.replace("/upload/", ""))
                     if parsed.path.startswith("/deposit/"):
+                        # old name for /upload/
                         control.deposition_id = int(parsed.path.replace("/deposit/", ""))
                     return ZenodoAdapter(control)
         if source is None and isinstance(control, ZenodoControl):
