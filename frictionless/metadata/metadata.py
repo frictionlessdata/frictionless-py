@@ -29,6 +29,7 @@ from .. import helpers, settings, types
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..vendors import stringcase
+from .context import ValidationContext
 
 if TYPE_CHECKING:
     from ..error import Error
@@ -543,7 +544,7 @@ class Metadata:
         *,
         profile: Optional[Union[types.IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
-        datapackage_version: Optional[types.IStandards] = None,
+        context: Optional[ValidationContext] = None,
     ) -> Generator[Error, None, None]:
         """Validates a descriptor according to a profile
 
@@ -553,12 +554,14 @@ class Metadata:
         The profile to validate can be set explicitely ("profile" parameter),
         otherwise it defaults to the class profile.
 
-        "datapackage_version" is the Data Package standard version imposed by an
-        ancestor's `$schema` (top-down inheritance). When `None`, the descriptor
-        may declare its own `$schema`; the resulting version is propagated to all
+        "context" carries the information shared down the recursion, such as
+        the Data Package standard version imposed by an ancestor's `$schema`
+        (top-down inheritance). When no version is imposed, the descriptor may
+        declare its own `$schema`; the resulting version is propagated to all
         children. Subclasses read it (via `effective_datapackage_version`)
         to gate version-specific properties.
         """
+        context = context or ValidationContext()
         Error = error_class
         if not Error:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
@@ -596,7 +599,8 @@ class Metadata:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
 
-        version = cls.effective_datapackage_version(descriptor, datapackage_version)
+        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
+        child_context = attrs.evolve(context, datapackage_version=version)
         for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
@@ -608,12 +612,12 @@ class Metadata:
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
                             yield from ItemClass.metadata_validate(
                                 item,  # type: ignore
-                                datapackage_version=version,
+                                context=child_context,
                             )
                 elif isinstance(value, dict):
                     yield from Class.metadata_validate(
                         value,  # type: ignore
-                        datapackage_version=version,
+                        context=child_context,
                     )
 
     @classmethod

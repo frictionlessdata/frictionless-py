@@ -128,6 +128,23 @@ def test_package_profile_remote_ref_resolved_by_frictionless(
     assert [error.note for error in report.errors] == notes
 
 
+# A remote "$ref" shared by several resources is downloaded only once
+# during the validation of a package
+def test_package_profile_remote_ref_retrieved_once(tmp_path, requests_mock):
+    remote = "https://example.com/profiles/remote.json"
+    requests_mock.get(remote, json={"required": ["name"]})
+    profile = tmp_path / "profile.json"
+    profile.write_text(json.dumps({"allOf": [{"$ref": remote}]}))
+    resources = [
+        {"name": name, "path": "data/table.csv", "profile": str(profile)}
+        for name in ["table1", "table2", "table3"]
+    ]
+    with system.use_context(trusted=True):
+        report = Package.validate_descriptor({"resources": resources})
+    assert report.valid
+    assert requests_mock.call_count == 1
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
 def test_package_profile_type(profile):

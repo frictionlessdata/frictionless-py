@@ -9,7 +9,7 @@ from .. import errors, helpers, settings, types
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..package import Package
 from ..report import Report
 from ..resource import Resource
@@ -218,10 +218,11 @@ class InquiryTask(Metadata):
         cls,
         descriptor: types.IDescriptor,
         *,
-        datapackage_version: Optional[types.IStandards] = None,
+        context: Optional[ValidationContext] = None,
     ):
+        context = context or ValidationContext()
         metadata_errors = list(
-            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+            super().metadata_validate(descriptor, context=context)
         )
         if metadata_errors:
             yield from metadata_errors

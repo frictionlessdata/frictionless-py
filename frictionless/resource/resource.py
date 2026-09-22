@@ -12,7 +12,7 @@ from ..checklist import Checklist
 from ..detector import Detector
 from ..dialect import Control, Dialect
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..platform import platform
 from ..report import Report
 from ..schema import Schema
@@ -900,10 +900,11 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         cls,
         descriptor: types.IDescriptor,
         *,
-        datapackage_version: Optional[types.IStandards] = None,
+        context: Optional[ValidationContext] = None,
     ):
+        context = context or ValidationContext()
         metadata_errors = list(
-            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+            super().metadata_validate(descriptor, context=context)
         )
         if metadata_errors:
             yield from metadata_errors
@@ -955,7 +956,7 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
                 descriptor,
                 profile=profile,
                 error_class=cls.metadata_Error,
-                datapackage_version=datapackage_version,
+                context=context,
             )
 
         # Profile (tabular)

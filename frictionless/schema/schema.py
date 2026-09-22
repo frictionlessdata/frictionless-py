@@ -7,7 +7,7 @@ from tabulate import tabulate
 
 from .. import errors, settings, types
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..platform import platform
 from . import missing_values as missing_values_module
 from .factory import Factory
@@ -384,10 +384,11 @@ class Schema(Metadata, metaclass=Factory):
         cls,
         descriptor: types.IDescriptor,
         *,
-        datapackage_version: Optional[types.IStandards] = None,
+        context: Optional[ValidationContext] = None,
     ):
+        context = context or ValidationContext()
         metadata_errors = list(
-            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+            super().metadata_validate(descriptor, context=context)
         )
         if metadata_errors:
             yield from metadata_errors
@@ -418,7 +419,7 @@ class Schema(Metadata, metaclass=Factory):
         # Missing Values version gate
         # The version is the one imposed top-down by an ancestor's `$schema`, or
         # this schema's own `$schema` otherwise; `None` (undeclared) stays lenient.
-        version = cls.effective_datapackage_version(descriptor, datapackage_version)
+        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.SchemaError(note=note)
 
