@@ -261,6 +261,35 @@ def test_package_profile_ref_unsafe_or_unsupported(
     assert reason in notes[0]
 
 
+# A remote profile or "$ref" is retrieved with the same timeout as remote data,
+# so that an unresponsive server cannot block the validation forever
+@pytest.mark.parametrize(
+    "profile",
+    [
+        "https://example.com/profiles/profile.json",
+        "profile.json",
+    ],
+)
+def test_package_profile_remote_retrieval_timeout(
+    profile, tmp_path, monkeypatch, requests_mock
+):
+    remote_ref = {"allOf": [{"$ref": "https://example.com/profiles/target.json"}]}
+    (tmp_path / "profile.json").write_text(json.dumps(remote_ref))
+    requests_mock.get("https://example.com/profiles/profile.json", json=remote_ref)
+    requests_mock.get("https://example.com/profiles/target.json", json={})
+    monkeypatch.chdir(tmp_path)
+    descriptor = {
+        "profile": profile,
+        "resources": [{"name": "table", "data": [["id"], [1]]}],
+    }
+    report = Package.validate_descriptor(descriptor)
+    assert report.valid
+    assert requests_mock.request_history
+    assert [request.timeout for request in requests_mock.request_history] == [
+        10 for _ in requests_mock.request_history
+    ]
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
 def test_package_profile_type(profile):

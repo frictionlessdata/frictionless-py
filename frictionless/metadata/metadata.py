@@ -487,8 +487,14 @@ class Metadata:
                     descriptor = str(descriptor)
 
                 if helpers.is_remote_path(descriptor):
+                    # Same timeout as remote data (imported locally to avoid
+                    # a circular import)
+                    from ..schemes.remote.settings import DEFAULT_HTTP_TIMEOUT
+
                     session = platform.frictionless.system.http_session
-                    response = session.get(descriptor, stream=True)
+                    response = session.get(
+                        descriptor, stream=True, timeout=DEFAULT_HTTP_TIMEOUT
+                    )
                     response.raise_for_status()
                     response.raw.decode_content = True
                     content = response.raw.read(size).decode("utf-8")
