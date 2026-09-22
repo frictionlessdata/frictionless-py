@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import io
 import json
+import os
 import pprint
 import re
 from collections.abc import Mapping
@@ -520,25 +521,44 @@ class Metadata:
     ) -> Resource:
         """Retrieve the JSON Schema referenced by a profile's "$ref"
 
-        A local "$ref" follows the same safety rules as the profile path. The
+        A local "$ref" follows the same safety rules as the profile path: when
+        untrusted, it must resolve inside the current working directory. The
         JSON Schemas are cached in the validation context, so that each one is
         retrieved only once per validation.
         """
         # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
+        from urllib.request import url2pathname
+
         from referencing import Resource
         from referencing.jsonschema import DRAFT202012
 
-        trusted = platform.frictionless.system.trusted
-        if not trusted and not helpers.is_remote_path(uri):
-            if not helpers.is_safe_path(uri):
-                Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
-                note = f'path "{uri}" is not safe'
-                raise FrictionlessException(Error(note=note))
+        def unsafe() -> FrictionlessException:
+            # The error does not mention the path: made relative to the current
+            # working directory, it would disclose where this directory is
+            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+            return FrictionlessException(Error(note='"$ref" path is not safe'))
+
+        # Local "$ref"s are resolved as "file:" URIs (see `metadata_validate`)
+        path = uri
+        url = urlparse(uri)
+        if url.scheme == "file":
+            # A host would be reached through the network (e.g. SMB on Windows)
+            if url.netloc not in ["", "localhost"]:
+                raise unsafe()
+            path = url2pathname(url.path)
+
+        if not platform.frictionless.system.trusted and not helpers.is_remote_path(path):
+            try:
+                path = os.path.relpath(path)
+            except ValueError:  # on another drive (Windows)
+                raise unsafe()
+            if not helpers.is_safe_path(path):
+                raise unsafe()
 
         cache = context.json_schema_cache
         if uri not in cache:
             cache[uri] = Resource.from_contents(
-                cls.metadata_retrieve(uri),
+                cls.metadata_retrieve(path),
                 default_specification=DRAFT202012,
             )
         return cache[uri]
@@ -601,11 +621,17 @@ class Metadata:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
 
         profile = profile or cls.metadata_ensure_profile()
+        profile_uri = None
         if isinstance(profile, str):
+            # A base URI has to be absolute to resolve relative "$ref"s correctly
+            profile_uri = profile
+            if not helpers.is_remote_path(profile):
+                profile_uri = Path(os.path.abspath(profile)).as_uri()
             profile = cls.metadata_retrieve(profile)
 
         # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
-        from referencing import Registry
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
 
         # "$ref"s are retrieved by frictionless instead of jsonschema,
         # whose automatic retrieval is deprecated
@@ -613,7 +639,14 @@ class Metadata:
             retrieve=lambda uri: cls.metadata_retrieve_json_schema(uri, context=context)
         )
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
-        validator = validator_class(profile, registry=registry)  # type: ignore
+        schema = profile
+        if profile_uri:
+            # The profile is registered under its URI and used as the root
+            # document, so that its relative "$ref"s are resolved against it
+            resource = Resource.from_contents(profile, default_specification=DRAFT202012)
+            registry = registry.with_resource(profile_uri, resource)
+            schema = {"$ref": profile_uri}
+        validator = validator_class(schema, registry=registry)  # type: ignore
         try:
             errors = list(validator.iter_errors(descriptor))  # type: ignore
         except Exception as exception:
@@ -637,7 +670,9 @@ class Metadata:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
 
-        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
         child_context = attrs.evolve(context, datapackage_version=version)
         for name in profile.get("properties", {}):
             value = descriptor.get(name)

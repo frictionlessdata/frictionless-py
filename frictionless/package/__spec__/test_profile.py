@@ -178,7 +178,44 @@ def test_package_profile_local_ref_safety(ref, trusted, read, tmp_path, monkeypa
         assert notes == ["'secret' is a required property"]
     else:
         assert len(notes) == 1
-        assert f'path "{ref}" is not safe' in notes[0]
+        assert '"$ref" path is not safe' in notes[0]
+        # the server's directories are not disclosed
+        assert str(tmp_path) not in notes[0]
+
+
+# A relative "$ref" is resolved against the location of the profile
+# (JSON Schema base URI), not against the current working directory
+@pytest.mark.parametrize(
+    "profile, ref, required",
+    [
+        ("profiles/profile.json", "target.json", "sibling"),
+        ("profiles/profile.json", "../target.json", "cwd"),
+        ("https://example.com/profiles/profile.json", "target.json", "sibling"),
+    ],
+)
+def test_package_profile_relative_ref_resolved_from_profile(
+    profile, ref, required, tmp_path, monkeypatch, requests_mock
+):
+    profile_descriptor = {"allOf": [{"$ref": ref}]}
+    (tmp_path / "profiles").mkdir()
+    (tmp_path / "profiles" / "profile.json").write_text(json.dumps(profile_descriptor))
+    (tmp_path / "profiles" / "target.json").write_text('{"required": ["sibling"]}')
+    (tmp_path / "target.json").write_text('{"required": ["cwd"]}')
+    requests_mock.get(
+        "https://example.com/profiles/profile.json", json=profile_descriptor
+    )
+    requests_mock.get(
+        "https://example.com/profiles/target.json", json={"required": ["sibling"]}
+    )
+    monkeypatch.chdir(tmp_path)
+    descriptor = {
+        "profile": profile,
+        "resources": [{"name": "table", "data": [["id"], [1]]}],
+    }
+    report = Package.validate_descriptor(descriptor)
+    assert [error.note for error in report.errors] == [
+        f"'{required}' is a required property"
+    ]
 
 
 @pytest.mark.skip
