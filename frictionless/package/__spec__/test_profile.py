@@ -84,8 +84,7 @@ def test_package_profile_unresolvable_ref_issue_1812(mocker):
 
 
 def test_package_profile_unresolvable_ref_keeps_cause_issue_1812(mocker):
-    # The underlying exception must stay chained, as it carries the actual
-    # reason (eg a certificate failure) that "--debug" reports to the user
+    # cause information should be preserved
     mocker.patch(
         "urllib.request.urlopen",
         side_effect=urllib.error.URLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
@@ -148,8 +147,7 @@ def test_package_profiles_to_descriptor_standards_v1():
 
 
 def test_package_preserver_profile_issue_1480():
-    descriptor = yaml.safe_load(
-        """
+    descriptor = yaml.safe_load("""
     profile: tabular-data-package
     resources:
       -
@@ -160,16 +158,14 @@ def test_package_preserver_profile_issue_1480():
         mediatype: text/csv
         encoding: utf-8
         schema: schema.json
-    """
-    )
+    """)
     package = Package(descriptor)
     assert package.profile == "tabular-data-package"
     assert package.get_resource("some-table").profile == "tabular-data-resource"
 
 
 def test_package_profile_tabular_requirements_issue_1484():
-    descriptor = yaml.safe_load(
-        """
+    descriptor = yaml.safe_load("""
     profile: tabular-data-package
     resources:
       -
@@ -179,8 +175,7 @@ def test_package_profile_tabular_requirements_issue_1484():
         mediatype: text/csv
         encoding: utf-8
         schema: schema.json
-    """
-    )
+    """)
     report = Package.validate_descriptor(descriptor)
     assert report.flatten(["type", "note"]) == [
         [
@@ -191,8 +186,7 @@ def test_package_profile_tabular_requirements_issue_1484():
 
 
 def test_package_profile_tabular_requirements_schema_issue_1484():
-    descriptor = yaml.safe_load(
-        """
+    descriptor = yaml.safe_load("""
     profile: tabular-data-package
     resources:
       -
@@ -202,8 +196,7 @@ def test_package_profile_tabular_requirements_schema_issue_1484():
         format: csv
         mediatype: text/csv
         encoding: utf-8
-    """
-    )
+    """)
     report = Package.validate_descriptor(descriptor)
     assert report.flatten(["type", "note"]) == [
         [
