@@ -1,4 +1,5 @@
 import sys
+import urllib.error
 
 import pytest
 import yaml
@@ -66,6 +67,39 @@ def test_package_external_profile_invalid_remote_from_descriptor():
     assert len(reasons) == 5
     for error in reasons:
         assert "required" in error.message
+
+
+def test_package_profile_unresolvable_ref_issue_1812(mocker):
+    # A profile whose "$ref" cannot be fetched must not crash validation with a
+    # jsonschema-internal exception: validate() has to return a report instead
+    mocker.patch(
+        "urllib.request.urlopen",
+        side_effect=urllib.error.URLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
+    )
+    resource = Resource(name="table", path="data/table.csv")
+    package = Package(resources=[resource], profile="data/profiles/unresolvable-ref.json")
+    report = package.validate()
+    assert not report.valid
+    assert "failed to resolve json-schema profile" in report.errors[0].note
+
+
+def test_package_profile_unresolvable_ref_keeps_cause_issue_1812(mocker):
+    # The underlying exception must stay chained, as it carries the actual
+    # reason (eg a certificate failure) that "--debug" reports to the user
+    mocker.patch(
+        "urllib.request.urlopen",
+        side_effect=urllib.error.URLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
+    )
+    resource = Resource(name="table", path="data/table.csv")
+    package = Package(resources=[resource], profile="data/profiles/unresolvable-ref.json")
+    with pytest.raises(FrictionlessException) as excinfo:
+        package.to_descriptor(validate=True)
+    causes = []
+    cause = excinfo.value.__cause__
+    while cause is not None:
+        causes.append(cause)
+        cause = cause.__cause__
+    assert any(isinstance(cause, urllib.error.URLError) for cause in causes)
 
 
 @pytest.mark.skip

@@ -569,7 +569,13 @@ class Metadata:
 
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
         validator = validator_class(profile)  # type: ignore
-        for error in validator.iter_errors(descriptor):  # type: ignore
+        try:
+            errors = list(validator.iter_errors(descriptor))  # type: ignore
+        except Exception as exception:
+            note = f'failed to resolve json-schema profile because "{exception}"'
+            raise FrictionlessException(Error(note=note)) from exception
+
+        for error in errors:
             metadata_path = "/".join(map(str, error.path))  # type: ignore
             message = re.sub(r"\s+", " ", error.message)  # type: ignore
             note = message
